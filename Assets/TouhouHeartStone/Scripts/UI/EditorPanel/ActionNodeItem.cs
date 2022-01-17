@@ -93,16 +93,14 @@ namespace UI
                 });
             }
         }
-
-        /**
-         * 设置初始选项
-         */
-        public void SetEventOptions(List<string> eventInfos)
+        /// <summary>
+        /// 初始化事件类型名称
+        /// </summary>
+        /// <param name="eventNames"></param>
+        public void initEventTypes(string[] eventNames)
         {
-            eventInfos.ForEach(info =>
-            {
-                _eventNameDropDown.asDropdown.options.Add(new Dropdown.OptionData(info));
-            });
+            _eventTypeDropdown.ClearOptions();
+            _eventTypeDropdown.AddOptions(new List<string>(eventNames));
         }
         public void setOutputs(string[] outputNames)
         {
@@ -134,8 +132,7 @@ namespace UI
         }
         public void setTrigger(string[] targetTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
-            // _eventNameInputField.SetTextWithoutNotify(eventName);
-            _eventNameDropDown.asDropdown.value = eventIndex;
+            _eventTypeDropdown.SetValueWithoutNotify(eventIndex);
             updateTargetCheckerList(targetTypes, targetCheckers);
         }
         public void updateTargetCheckerList(string[] targetTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
@@ -205,7 +202,7 @@ namespace UI
                 _targetCheckerTemplate.gameObject.SetActive(false);
             }
             // _eventNameInputField.onEndEdit.AddListener(onEndEditEventNameInputField);
-            _eventNameDropDown.asDropdown.onValueChanged.AddListener(onChangeSelectedEventIndex);
+            _eventTypeDropdown.onValueChanged.AddListener(onChangeSelectedEventIndex);
             _editConditionButton.onClick.AddListener(onClickEditConditionButtonCallback);
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
             _newBuffButton.onClick.AddListener(onClickNewBuffButtonCallback);
@@ -249,13 +246,9 @@ namespace UI
         {
             onClickConstValueButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform));
         }
-        private void onEndEditEventNameInputField(string eventName)
-        {
-            onEventNameChanged?.Invoke(this, eventName);
-        }
         private void onChangeSelectedEventIndex(int eventIndex)
         {
-            onSelectedEventIndex?.Invoke(this, eventIndex);
+            onEventTypeDropdownValueChanged?.Invoke(this, eventIndex);
         }
         private void onClickEditConditionButtonCallback()
         {
@@ -323,7 +316,7 @@ namespace UI
         public event Action<ActionNodeItem, int, object> onConstValueChanged;
         public event Action<ActionNodeItem, int> onClickConstValueButton;
         public event Action<ActionNodeItem, string> onEventNameChanged;
-        public event Action<ActionNodeItem, int> onSelectedEventIndex;
+        public event Action<ActionNodeItem, int> onEventTypeDropdownValueChanged;
         public event Action<ActionNodeItem> onClickEditConditionButton;
         public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
         public event Action<ActionNodeItem, int, int> onTargetCheckerTypeValueChanged;
@@ -371,7 +364,7 @@ namespace UI
         [SerializeField]
         InputField _eventNameInputField;
         [SerializeField]
-        DropdownLight _eventNameDropDown;
+        Dropdown _eventTypeDropdown;
         [SerializeField]
         Button _editConditionButton;
         [SerializeField]

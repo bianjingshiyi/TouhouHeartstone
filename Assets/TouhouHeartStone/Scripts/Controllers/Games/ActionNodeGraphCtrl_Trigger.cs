@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-
+using UI;
+using Card = TouhouCardEngine.Card;
 namespace Controllers
 {
     partial class ActionNodeGraphCtrl
@@ -80,73 +81,6 @@ namespace Controllers
         }
         #endregion
         /// <summary>
-        /// 打开一个触发器的动作节点图
-        /// </summary>
-        /// <param name="trigger"></param>
-        private async Task openTriggerGraph(TriggerGraph trigger)
-        {
-            _actionNodeList.Clear();
-            _actionNodeItemList.Clear();
-            _entryType = null;
-            _effect = null;
-            _valueRef = null;
-            _targetChecker = null;
-            _trigger = trigger;
-            
-            //转成index
-            var triggerIndex = getEventTypeIndex(_trigger.eventName);
-
-            //显示UI
-            _ui.clearGraph();
-            //创建入口节点
-            _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
-            //初始化事件选项
-            _entryNodeItem.SetEventOptions(_eventTypeInfoList.Select(i => i.eventName).ToList());
-            if (trigger.action != null)
-            {
-                var actionNodeItem = await createGraph4ActionNode(trigger.action);
-                _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0);
-            }
-            //创建离散节点
-            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
-            {
-                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
-            }
-        }
-        private (int typeIndex, string name, string errorTip)[] getTriggerTargetCheckerViewData()
-        {
-            var targetCheckers = new (int typeIndex, string name, string errorTip)[_trigger.targetCheckerList.Count];
-            for (int i = 0; i < targetCheckers.Length; i++)
-            {
-                targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, _trigger.targetCheckerList[i].targetType);
-                targetCheckers[i].name = "目标" + (i + 1);
-                targetCheckers[i].errorTip = _trigger.targetCheckerList[i].errorTip;
-            }
-            return targetCheckers;
-        }
-        /// <summary>
-        /// 获取当前触发器的输出值的名称。
-        /// </summary>
-        /// <returns></returns>
-        private string[] getTriggerOutputNames()
-        {
-            int typeIndex = getEventTypeIndex(_trigger.eventName);
-            EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
-            if (eventTypeInfo.variableInfos != null)
-            {
-                string[] outputNames = new string[eventTypeInfo.variableInfos.Length];
-                for (int i = 0; i < outputNames.Length; i++)
-                {
-                    //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
-                    //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
-                    outputNames[i] = game.langManager.getString(eventTypeInfo.variableInfos[i].name);
-                }
-                return outputNames;
-            }
-            else
-                return null;
-        }
-        /// <summary>
         /// 加载所有事件类型
         /// </summary>
         private void loadEventTypes()
@@ -186,7 +120,141 @@ namespace Controllers
                     }
                 }
             }
+            //一些无法通过反射加载的事件类型
+            _eventTypeInfoList.Add(new EventTypeInfo()
+            {
+                eventName = "ActiveEvent",
+                variableInfos = new EventVariableInfo[]
+                {
+                    new EventVariableInfo()
+                    {
+                        type = typeof(Player),
+                        name = "玩家"
+                    },
+                    new EventVariableInfo()
+                    {
+                        type = typeof(Card),
+                        name = "卡牌"
+                    },
+                    new EventVariableInfo()
+                    {
+                        type = typeof(Card),
+                        name = "目标卡牌"
+                    },
+                }
+            });
             //以后可能有自定义的事件类型，不过先不管
+        }
+        /// <summary>
+        /// 打开一个触发器的动作节点图
+        /// </summary>
+        /// <param name="trigger"></param>
+        private async Task openTriggerGraph(TriggerGraph trigger)
+        {
+            _actionNodeList.Clear();
+            _actionNodeItemList.Clear();
+            _entryType = null;
+            _effect = null;
+            _valueRef = null;
+            _targetChecker = null;
+            _trigger = trigger;
+            //显示UI
+            _ui.clearGraph();
+            //转成index
+            int triggerIndex = getEventTypeIndex(_trigger.eventName);
+            //创建入口节点
+            _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
+            _entryNodeItem.setOutputs(getTriggerOutputNames());
+            if (trigger.action != null)
+            {
+                var actionNodeItem = await createGraph4ActionNode(trigger.action);
+                _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
+            }
+            //创建离散节点
+            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            {
+                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+            }
+        }
+        private (int typeIndex, string name, string errorTip)[] getTriggerTargetCheckerViewData()
+        {
+            var targetCheckers = new (int typeIndex, string name, string errorTip)[_trigger.targetCheckerList.Count];
+            for (int i = 0; i < targetCheckers.Length; i++)
+            {
+                targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, _trigger.targetCheckerList[i].targetType);
+                targetCheckers[i].name = "目标" + (i + 1);
+                targetCheckers[i].errorTip = _trigger.targetCheckerList[i].errorTip;
+            }
+            return targetCheckers;
+        }
+        /// <summary>
+        /// 获取当前触发器的输出值的名称。
+        /// </summary>
+        /// <returns></returns>
+        private string[] getTriggerOutputNames()
+        {
+            int typeIndex = getEventTypeIndex(_trigger.eventName);
+            EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
+            if (eventTypeInfo.variableInfos != null)
+            {
+                string[] outputNames = new string[eventTypeInfo.variableInfos.Length + 1];
+                //动作输出
+                outputNames[0] = string.Empty;
+                for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
+                {
+                    //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
+                    //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
+                    outputNames[i + 1] = game.langManager.getString(eventTypeInfo.variableInfos[i].name);
+                }
+                return outputNames;
+            }
+            else
+            {
+                //只有一个动作输出
+                return new string[]
+                {
+                    string.Empty
+                };
+            }
+        }
+        /// <summary>
+        /// 将事件节点的输出值连接到输入上
+        /// </summary>
+        /// <param name="outputIndex"></param>
+        /// <param name="inputActionNode"></param>
+        /// <param name="inputIndex"></param>
+        private void connectNode4TriggerEventVarRef(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        {
+            string[] curEventVarNames = getEventVarNames();
+            //判断是否已经相连
+            if (inputActionNode.inputs != null &&
+                inputActionNode.inputs.Length > inputIndex &&
+                inputActionNode.inputs[inputIndex] != null)
+            {
+                if (inputActionNode.inputs[inputIndex].eventVarName == curEventVarNames[outputIndex])
+                {
+                    //已经相连，什么也不做
+                    return;
+                }
+                else
+                {
+                    //相连的是其他输入节点，断开连接
+                    if (inputActionNode.inputs[inputIndex].action != null)
+                    {
+                        unconnectNode4ValueRef(inputActionNode.inputs[inputIndex].action, inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
+                    }
+                    else if (!string.IsNullOrEmpty(inputActionNode.inputs[inputIndex].eventVarName))
+                    {
+                        unconnectNode4TriggerEventVarRef(inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
+                    }
+                }
+            }
+            //建立新的连接
+            inputActionNode.inputs[inputIndex] = new ActionValueRef(curEventVarNames[outputIndex]);
+        }
+        private void unconnectNode4TriggerEventVarRef(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        {
+            throw new NotImplementedException();
         }
         private int getEventTypeIndex(string eventName)
         {
@@ -195,6 +263,30 @@ namespace Controllers
         private string getEventTypeNameByIndex(int index)
         {
             return _eventTypeInfoList[index].eventName;
+        }
+        private string[] getEventTypeNames()
+        {
+            string[] eventNames = new string[_eventTypeInfoList.Count];
+            for (int i = 0; i < eventNames.Length; i++)
+            {
+                eventNames[i] = _eventTypeInfoList[i].eventName;
+            }
+            return eventNames;
+        }
+        private string[] getEventVarNames()
+        {
+            EventTypeInfo eventTypeInfo = _eventTypeInfoList.Find(e => e.eventName == _trigger.eventName);
+            if (eventTypeInfo.variableInfos != null)
+            {
+                string[] varNames = new string[eventTypeInfo.variableInfos.Length];
+                for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
+                {
+                    varNames[i] = eventTypeInfo.variableInfos[i].name;
+                }
+                return varNames;
+            }
+            else
+                return null;
         }
         #endregion
         #region 属性字段

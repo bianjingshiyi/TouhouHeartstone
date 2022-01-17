@@ -35,7 +35,7 @@ namespace UI
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
-            actionNodeItem.onSelectedEventIndex += onTriggerNodeEventIndexChanged;
+            actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
@@ -72,7 +72,7 @@ namespace UI
             };
             //onSelectedEventIndex
             actionNodeItem.setOutputs(outputNames);
-            
+
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;
@@ -87,7 +87,7 @@ namespace UI
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
-            actionNodeItem.onSelectedEventIndex += onTriggerNodeEventIndexChanged;
+            actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
@@ -115,7 +115,7 @@ namespace UI
         /// <param name="outputIndex"></param>
         /// <param name="targetNode"></param>
         /// <param name="inputIndex"></param>
-        public void connectNode(ActionNodeItem node, int outputIndex, ActionNodeItem targetNode, int inputIndex)
+        public void connectNode(ActionNodeItem node, int outputIndex, ActionNodeItem targetNode, int inputIndex, ActionNodeConnectionType connectionType)
         {
             if (node == targetNode)
                 throw new ArgumentException("一个节点不能连接自己");
@@ -299,9 +299,10 @@ namespace UI
         {
             return _actionNodesRoot.InverseTransformPoint(worldPosition);
         }
-        public void init(string[] languages)
+        public void init(string[] languages, string[] eventTypes)
         {
-            _actionNodeItemTemplate.setBuffLanguages(languages);
+            _actionNodeItemTemplate.initBuffLanguages(languages);
+            _actionNodeItemTemplate.initEventTypes(eventTypes);
         }
         #endregion
         #region 私有方法
@@ -569,10 +570,10 @@ namespace UI
         {
             onChangeTriggerEventName?.Invoke(eventName);
         }
-        
+
         private void onTriggerNodeEventIndexChanged(ActionNodeItem item, int eventIndex)
         {
-            onSelectedEventIndex?.Invoke(eventIndex);
+            onTriggerEventTypeChanged?.Invoke(eventIndex);
         }
         private void onClickTriggerNodeEditConditionButton(ActionNodeItem item)
         {
@@ -701,7 +702,7 @@ namespace UI
         /// <summary>
         /// 当触发器节点的事件名称改变，参数为更改后的事件名称的索引ID
         /// </summary>
-        public event Action<int> onSelectedEventIndex;
+        public event Action<int> onTriggerEventTypeChanged;
         /// <summary>
         /// 当点击触发器节点的编辑条件按钮
         /// </summary>
@@ -842,5 +843,10 @@ namespace UI
         /// 触发器集合
         /// </summary>
         triggerCollection,
+    }
+    public enum ActionNodeConnectionType
+    {
+        action,
+        value
     }
 }

@@ -38,7 +38,7 @@ namespace UI
         /// 设置皮肤有哪些语言可选
         /// </summary>
         /// <param name="languages"></param>
-        public void setBuffLanguages(string[] languages)
+        public void initBuffLanguages(string[] languages)
         {
             _buffLanguageDropdown.ClearOptions();
             _buffLanguageDropdown.AddOptions(new List<string>(languages));
