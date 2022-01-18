@@ -195,7 +195,8 @@ namespace Controllers
             _ui.onClickMenuItem += onClickMenuItem;
             _ui.onConnectNodes += onConnectNodes;
             _ui.onUnconnectNodes += onUnconnectNodes;
-            _ui.onClickActionNode += onClickActionNode;
+            _ui.onLeftClickActionNode += onLeftClickActionNode;
+            _ui.onRightClickActionNode += onRightClickActionNode;
             _ui.onLongPressActionNode += onLongPressActionNode;
             _ui.onDragActionNode += onDragActionNode;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
@@ -237,7 +238,7 @@ namespace Controllers
         /// <param name="posY"></param>
         private void onLongPressBackground(float posX, float posY)
         {
-            openMenu(posX, posY);
+            openMenu(posX, posY, _backgroundMenuOptionList.Select(menuItem => menuItem.title + (menuItem.childList != null ? " >" : "")).ToArray());
         }
         /// <summary>
         /// 当用户左击背景，隐藏菜单。
@@ -256,7 +257,7 @@ namespace Controllers
         /// <param name="posY"></param>
         private void onRightClickBackground(float posX, float posY)
         {
-            openMenu(posX, posY);
+            openMenu(posX, posY, _backgroundMenuOptionList.Select(menuItem => menuItem.title + (menuItem.childList != null ? " >" : "")).ToArray());
         }
         /// <summary>
         /// 当用户点击菜单项，视具体点击的项目决定干什么
@@ -705,13 +706,32 @@ namespace Controllers
             }
         }
         /// <summary>
-        /// 当点击动作节点
+        /// 当左击动作节点
         /// </summary>
         /// <param name="actionNodeItem"></param>
-        void onClickActionNode(ActionNodeItem actionNodeItem)
+        void onLeftClickActionNode(ActionNodeItem actionNodeItem)
         {
             _curActionNode = null;
             closeMenu();
+        }
+        /// <summary>
+        /// 当右击动作节点
+        /// </summary>
+        /// <param name="actionNodeItem"></param>
+        void onRightClickActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
+        {
+            //入口节点不能通过长按编辑
+            if (actionNodeItem == _entryNodeItem)
+                return;
+            //出口节点也不行
+            if (actionNodeItem == _returnNodeItem)
+                return;
+            _curActionNode = getActionNode(actionNodeItem);
+            Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
+            openMenu(position, new string[]
+            {
+                game.langManager.getString(StringTable.DELETE),//删除
+            });
         }
         /// <summary>
         /// 当用户长按节点，展开节点菜单。
@@ -727,7 +747,7 @@ namespace Controllers
                 return;
             _curActionNode = getActionNode(actionNodeItem);
             Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
-            _ui.openMenu(position.x, position.y, new string[]
+            openMenu(position, new string[]
             {
                 game.langManager.getString(StringTable.DELETE),//删除
             });
@@ -1703,20 +1723,21 @@ namespace Controllers
         /// </summary>
         /// <param name="posX"></param>
         /// <param name="posY"></param>
-        private void openMenu(float posX, float posY)
+        /// <param name="options">菜单选项</param>
+        private void openMenu(float posX, float posY, string[] options)
         {
             _curPosX = posX;
             _curPosY = posY;
-            string[] options = new string[_backgroundMenuOptionList.Count];
-            for (int i = 0; i < options.Length; i++)
-            {
-                options[i] = _backgroundMenuOptionList[i].title;
-                if (_backgroundMenuOptionList[i].childList != null)
-                {
-                    options[i] += " >";
-                }
-            }
             _ui.openMenu(posX, posY, options);
+        }
+        /// <summary>
+        /// 在对应位置打开菜单
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="options">菜单选项</param>
+        private void openMenu(Vector2 postion, string[] options)
+        {
+            openMenu(postion.x, postion.y, options);
         }
         private void closeMenu()
         {

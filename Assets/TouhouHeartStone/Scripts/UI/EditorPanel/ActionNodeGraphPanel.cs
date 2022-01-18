@@ -532,7 +532,14 @@ namespace UI
                 }
                 else
                 {
-                    onClickActionNode?.Invoke(item);
+                    if ((eventData as PointerEventData).button == PointerEventData.InputButton.Right)
+                    {
+                        onRightClickActionNode?.Invoke(item, eventData.position);
+                    }
+                    else
+                    {
+                        onLeftClickActionNode?.Invoke(item);
+                    }
                 }
             }
         }
@@ -676,9 +683,13 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, int, ActionNodeItem, int> onUnconnectNodes;
         /// <summary>
-        /// 当点击节点，参数为点击的节点
+        /// 当左节点，参数为点击的节点
         /// </summary>
-        public event Action<ActionNodeItem> onClickActionNode;
+        public event Action<ActionNodeItem> onLeftClickActionNode;
+        /// <summary>
+        /// 当右节点，参数为点击的节点和鼠标位置
+        /// </summary>
+        public event Action<ActionNodeItem, Vector2> onRightClickActionNode;
         /// <summary>
         /// 当拖拽节点，参数为拖拽的节点和图坐标位置
         /// </summary>
