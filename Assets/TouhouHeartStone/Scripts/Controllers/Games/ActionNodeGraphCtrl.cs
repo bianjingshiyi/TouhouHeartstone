@@ -833,9 +833,23 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
-                        new string[0],
+                        new IOConnectInfo[]
+                        {
+                            new IOConnectInfo()
+                            {
+                                type = String.Empty,
+                                label = String.Empty
+                            }
+                        },
                         new ActionNodeValueInfo[0],
-                        new string[] { string.Empty });
+                        new IOConnectInfo[]
+                        {
+                            new IOConnectInfo()
+                            {
+                                type = String.Empty,
+                                label = String.Empty
+                            }
+                        });
                     var actionNodeItem = await createGraph4ActionNode(_effect.onEnableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
                 }
@@ -843,9 +857,23 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
-                        new string[0],
+                        new IOConnectInfo[]
+                        {
+                            new IOConnectInfo()
+                            {
+                                type = String.Empty,
+                                label = String.Empty
+                            }
+                        },
                         new ActionNodeValueInfo[0],
-                        new string[] { string.Empty });
+                        new IOConnectInfo[]
+                        {
+                            new IOConnectInfo()
+                            {
+                                type = String.Empty,
+                                label = String.Empty
+                            }
+                        });
                 }
             }
             else if (entryType == nameof(GeneratedEffect.onDisableAction))
@@ -854,9 +882,23 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
-                        new string[0],
+                        new IOConnectInfo[]
+                        {
+                            new IOConnectInfo()
+                            {
+                                type = String.Empty,
+                                label = String.Empty
+                            }
+                        },
                         new ActionNodeValueInfo[0],
-                        new string[] { string.Empty });
+                        new IOConnectInfo[]
+                        {
+                            new IOConnectInfo()
+                            {
+                                type = String.Empty,
+                                label = String.Empty
+                            }
+                        });
                     var actionNodeItem = await createGraph4ActionNode(_effect.onDisableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
                 }
@@ -864,9 +906,23 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
-                        new string[0],
+                        new IOConnectInfo[]
+                        {
+                            new IOConnectInfo()
+                            {
+                                type = String.Empty,
+                                label = String.Empty
+                            }
+                        },
                         new ActionNodeValueInfo[0],
-                        new string[] { string.Empty });
+                        new IOConnectInfo[]
+                        {
+                            new IOConnectInfo()
+                            {
+                                type = String.Empty,
+                                label = String.Empty
+                            }
+                        });
                 }
             }
         }
@@ -888,9 +944,23 @@ namespace Controllers
             _trigger = null;
             _returnNodeItem = _ui.createNode(0, 0,
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
-                new string[] { string.Empty },
+                new IOConnectInfo[]
+                {
+                    new IOConnectInfo()
+                    {
+                        type = String.Empty,
+                        label = String.Empty
+                    }
+                },
                 new ActionNodeValueInfo[0],
-                new string[0]);
+                new IOConnectInfo[]
+                {
+                    new IOConnectInfo()
+                    {
+                        type = String.Empty,
+                        label = String.Empty
+                    }
+                });
             if (valueRef.action != null)
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
@@ -910,7 +980,14 @@ namespace Controllers
             var actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
             _returnNodeItem = _ui.createNode(0, 0,
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
-                new string[] { string.Empty },
+                new IOConnectInfo[]
+                {
+                    new IOConnectInfo()
+                    {
+                        type = String.Empty,
+                        label = String.Empty
+                    }
+                },
                 new ActionNodeValueInfo[]
                 {
                     new ActionNodeValueInfo()
@@ -926,7 +1003,14 @@ namespace Controllers
                         value = _targetChecker.errorTip
                     }
                 },
-                new string[0]);
+                new IOConnectInfo[]
+                {
+                    new IOConnectInfo()
+                    {
+                        type = String.Empty,
+                        label = String.Empty
+                    }
+                });
             _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
         }
         /// <summary>
@@ -1183,9 +1267,9 @@ namespace Controllers
                     posX,
                     posY,
                     getActionNodeName(actionNode),
-                    getActionNodeInputNames(actionNode),
+                    getActionNodeInputInfos(actionNode),
                     getActionNodeConstValueInfo(actionNode),
-                    getActionNodeOutputNames(actionNode));
+                    getActionNodeOutputInfos(actionNode));
             }
             _actionNodeItemList.Add(actionNodeItem);
             if (!_actionNodeList.Contains(actionNode))
@@ -1601,6 +1685,66 @@ namespace Controllers
             }
             return inputNameList.ToArray();
         }
+        
+        
+        IOConnectInfo[] getActionNodeInputInfos(ActionNode actionNode)
+        {
+            //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
+            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            List<IOConnectInfo> inputNameList = new List<IOConnectInfo>();
+            //前一个动作节点
+            inputNameList.Add(new IOConnectInfo()
+            {
+                type = String.Empty,
+                label = string.Empty
+            });
+            //输入
+            string inputName;
+            for (int i = 0; i < actionNode.inputs.Length; i++)
+            {
+                if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams && i >= actionDefine.inputs.Length - 1)
+                {
+                    inputName = actionDefine.inputs.Last().name;
+                    if (_nameTextDict.TryGetValue(inputName, out inputName))
+                    {
+                        inputName = game.langManager.getString(inputName);
+                    }
+                    Debug.Log("inputs1：" + inputName);
+                    inputNameList.Add(new IOConnectInfo()
+                    {
+                        type = inputName,
+                        label = inputName + (i - actionDefine.inputs.Length + 2)
+                    });
+                }
+                else if (i < actionDefine.inputs.Length)
+                {
+                    //有可能由于ActionDefine的参数数量变化导致存在的输入参数比实际的多，忽略已有的参数
+                    Debug.Log("inputs2：" + actionDefine.inputs[i].name);
+                    inputNameList.Add(new IOConnectInfo()
+                    {
+                        type = actionDefine.inputs[i].name,
+                        label = actionDefine.inputs[i].name
+                    });
+                }
+            }
+            if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams)
+            {
+                inputName = actionDefine.inputs.Last().name;
+                if (_nameTextDict.TryGetValue(inputName, out inputName))
+                {
+                    inputName = game.langManager.getString(inputName);
+                }
+                
+                Debug.Log("inputs3：" + inputName);
+                inputNameList.Add(new IOConnectInfo()
+                {
+                    type = inputName,
+                    label = inputName + (actionNode.inputs.Length - actionDefine.inputs.Length + 2)
+                });
+            }
+            return inputNameList.ToArray();
+        }
+        
         ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
             var actionDefine = _actionDefineDict[actionNode.defineName];
@@ -1651,6 +1795,36 @@ namespace Controllers
                 else
                 {
                     outputNames[i] = actionDefine.outputs[i - actionNode.branches.Length].name;
+                }
+            }
+            return outputNames;
+        }
+        
+        IOConnectInfo[] getActionNodeOutputInfos(ActionNode actionNode)
+        {
+            //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
+            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+   
+            IOConnectInfo[] outputNames = new IOConnectInfo[actionDefine.outputs.Length + actionNode.branches.Length];
+            for (int i = 0; i < outputNames.Length; i++)
+            {
+                if (i < actionNode.branches.Length)
+                {
+                    //TODO:下一个动作节点不知道该叫啥，就先不给名字好了
+                    outputNames[i] = new IOConnectInfo()
+                    {
+                        type = String.Empty,
+                        label = String.Empty
+                    };
+                }
+                else
+                {
+                    Debug.Log("output：" + actionDefine.outputs[i - actionNode.branches.Length].name);
+                    outputNames[i] = new IOConnectInfo()
+                    {
+                        type = actionDefine.outputs[i - actionNode.branches.Length].name,
+                        label = actionDefine.outputs[i - actionNode.branches.Length].name
+                    };
                 }
             }
             return outputNames;

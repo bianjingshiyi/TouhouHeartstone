@@ -60,6 +60,39 @@ namespace UI
                 });
             }
         }
+        
+        public void setInputs(IOConnectInfo[] inputNamesInfos, List<Color> listColor)
+        {
+            if (inputNamesInfos == null || inputNamesInfos.Length < 1)
+            {
+                _inputRoot.gameObject.SetActive(false);
+            }
+            else
+            {
+                _inputRoot.gameObject.SetActive(true);
+                UIHelper.updateList(_inputRoot, _inputTemplate, _inputList, inputNamesInfos.Length, (i, itemRect) =>
+                {
+                    ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
+                    item.setName(inputNamesInfos[i].label);
+                    var index = GetTypeIndex(inputNamesInfos[i].type);
+                    if (index >= listColor.Count) index = 0;
+                    //Debug.Log("type:" + outputInfos[i].type + listColor[index]);
+                    item.SetColor(listColor[index]);
+                }, itemRect =>
+                {
+                    ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
+                    item.onBeginDragNode += onBeginDragInputNodeCallback;
+                    item.onDragNode += onDragInputNodeCallback;
+                    item.onEndDragNode += onEndDragInputNodeCallback;
+                }, itemRect =>
+                {
+                    ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
+                    item.onBeginDragNode -= onBeginDragInputNodeCallback;
+                    item.onDragNode -= onDragInputNodeCallback;
+                    item.onEndDragNode -= onEndDragInputNodeCallback;
+                });
+            }
+        }
         public void setConsts(ActionNodeValueInfo[] valueInfos)
         {
             if (valueInfos == null || valueInfos.Length < 1)
@@ -102,6 +135,81 @@ namespace UI
             _eventTypeDropdown.ClearOptions();
             _eventTypeDropdown.AddOptions(new List<string>(eventNames));
         }
+
+
+        /// <summary>
+        /// 获取类型索引，用于输出颜色、
+        /// 这里可以添加各类字符串类型来控制最终的IO输出的颜色。
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public int GetTypeIndex(string type)
+        {
+            var index = 0;
+            switch (type)
+            {
+                case "Owner": 
+                case "Player": 
+                case "玩家": index = 1;
+                    break;
+                case "Value":
+                case "Card":
+                case "卡牌": index = 2;
+                    break;
+                case "目标卡牌": index = 3;
+                    break;
+                case "Buff":
+                    index = 4;
+                    break;
+                case "":
+                    index = 5;
+                    break;;
+            }
+
+            return index;
+        }
+        /// <summary>
+        /// 新的设置输出点颜色的函数
+        /// </summary>
+        /// <param name="outputInfos"></param>
+        /// <param name="listColor">传入的颜色列表</param>
+        public void setOutputs(IOConnectInfo[] outputInfos, List<Color> listColor)
+        {
+            if (outputInfos == null || outputInfos.Length < 1)
+            {
+                _outputRoot.gameObject.SetActive(false);
+            }
+            else
+            {
+                _outputRoot.gameObject.SetActive(true);
+                UIHelper.updateList(_outputRoot, _outputTemplate, _outputList, outputInfos.Length, (i, itemRect) =>
+                {
+                    ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();
+                    item.setName(outputInfos[i].label);
+                    var index = GetTypeIndex(outputInfos[i].type);
+                    if (index >= listColor.Count) index = 0;
+                    //Debug.Log("type:" + outputInfos[i].type + listColor[index]);
+                    item.SetColor(listColor[index]);
+                }, itemRect =>
+                {
+                    ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();
+                    item.onBeginDragNode += onBeginDragOutputNodeCallback;
+                    item.onDragNode += onDragOutputNodeCallback;
+                    item.onEndDragNode += onEndDragOutputNodeCallback;
+                }, itemRect =>
+                {
+                    ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();
+                    item.onBeginDragNode -= onBeginDragOutputNodeCallback;
+                    item.onDragNode -= onDragOutputNodeCallback;
+                    item.onEndDragNode -= onEndDragOutputNodeCallback;
+                });
+            }
+        }
+        
+        /// <summary>
+        /// 保留旧的函数方法，用于buff之类的创建
+        /// </summary>
+        /// <param name="outputNames"></param>
         public void setOutputs(string[] outputNames)
         {
             if (outputNames == null || outputNames.Length < 1)
@@ -175,6 +283,15 @@ namespace UI
         public Vector2 getOutputWorldPosition(int index)
         {
             return _outputList[index].GetComponent<ActionNodeItemOutput>().getNodeWorldPosition();
+        }
+        
+        public ActionNodeItemInput getInput(int index)
+        {
+            return _inputList[index].GetComponent<ActionNodeItemInput>();
+        }
+        public ActionNodeItemOutput getOutput(int index)
+        {
+            return _outputList[index].GetComponent<ActionNodeItemOutput>();
         }
         #endregion
         #region 私有方法

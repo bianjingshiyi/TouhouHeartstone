@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using BJSYGameCore.UI;
 using UnityEngine.UI;
 using BJSYGameCore;
+using Controllers;
 using Timer = BJSYGameCore.Timer;
 namespace UI
 {
@@ -28,7 +29,7 @@ namespace UI
         /// <param name="nodeName"></param>
         /// <param name="outputNames"></param>
         /// <returns></returns>
-        public ActionNodeItem createNode(float posX, float posY, string nodeName, string[] inputNames, ActionNodeValueInfo[] constsInfo, string[] outputNames)
+        public ActionNodeItem createNode(float posX, float posY, string nodeName, IOConnectInfo[] inputNames, ActionNodeValueInfo[] constsInfo, IOConnectInfo[] outputNames)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
@@ -44,9 +45,9 @@ namespace UI
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.switchToActionNode();
             actionNodeItem.setName(nodeName);
-            actionNodeItem.setInputs(inputNames);
+            actionNodeItem.setInputs(inputNames,_listColor);
             actionNodeItem.setConsts(constsInfo);
-            actionNodeItem.setOutputs(outputNames);
+            actionNodeItem.setOutputs(outputNames,_listColor);
             return actionNodeItem;
         }
         /// <summary>
@@ -115,7 +116,7 @@ namespace UI
         /// <param name="outputIndex"></param>
         /// <param name="targetNode"></param>
         /// <param name="inputIndex"></param>
-        public void connectNode(ActionNodeItem node, int outputIndex, ActionNodeItem targetNode, int inputIndex, ActionNodeConnectionType connectionType)
+        public void connectNodeWithOutColor(ActionNodeItem node, int outputIndex, ActionNodeItem targetNode, int inputIndex, ActionNodeConnectionType connectionType)
         {
             if (node == targetNode)
                 throw new ArgumentException("一个节点不能连接自己");
@@ -129,6 +130,43 @@ namespace UI
             Vector2 to = targetNode.getInputWorldPosition(inputIndex);
             to = _actionNodeLineRoot.InverseTransformPoint(to);
             ActionNodeGraphLine line = createLine(from, to);
+            _connectionList.Add(new ActionNodeConnectionData()
+            {
+                outputNode = node,
+                outputIndex = outputIndex,
+                inputNode = targetNode,
+                inputIndex = inputIndex,
+                line = line
+            });
+        }
+        
+        /// <summary>
+        /// 将节点的指定输出连接到目标节点的输入上
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="outputIndex"></param>
+        /// <param name="targetNode"></param>
+        /// <param name="inputIndex"></param>
+        public void connectNode(ActionNodeItem node, int outputIndex, ActionNodeItem targetNode, int inputIndex, ActionNodeConnectionType connectionType)
+        {
+            if (node == targetNode)
+                throw new ArgumentException("一个节点不能连接自己");
+            if (_connectionList.Exists(c => c.outputNode == node && c.outputIndex == outputIndex && c.inputNode == targetNode && c.inputIndex == inputIndex))
+            {
+                //已经存在连接
+                return;
+            }
+            
+            var output = node.getOutput(outputIndex);
+            Vector2 from = output.getNodeWorldPosition();
+            from = _actionNodeLineRoot.InverseTransformPoint(from);
+            
+            var input = targetNode.getInput(inputIndex);
+            Vector2 to = input.getNodeWorldPosition();
+            to = _actionNodeLineRoot.InverseTransformPoint(to);
+            
+            ActionNodeGraphLine line = createLine(from, to, output.GetColor());
+            
             _connectionList.Add(new ActionNodeConnectionData()
             {
                 outputNode = node,
@@ -386,7 +424,7 @@ namespace UI
                 from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
                 Vector2 to = eventData.currentInputModule.input.mousePosition;
                 to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-                _dragLine = createLine(from, to);
+                _dragLine = createLine(from, to, input.GetColor());
             }
             else
             {
@@ -458,7 +496,7 @@ namespace UI
                 from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
                 Vector2 to = eventData.currentInputModule.input.mousePosition;
                 to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-                _dragLine = createLine(from, to);
+                _dragLine = createLine(from, to, output.GetColor());
             }
             else
             {
@@ -628,6 +666,52 @@ namespace UI
             line.setPosition(from, to);
             return line;
         }
+
+
+        /// <summary>
+        /// 在指定位置创建连线
+        /// </summary>
+        /// <param name="from">相对于连线根节点的局部坐标</param>
+        /// <param name="to">相对于连线根节点的局部坐标</param>
+        /// <returns></returns>
+        private ActionNodeGraphLine createLine(Vector2 from, Vector2 to, int colorIndex)
+        {
+            ActionNodeGraphLine line = Instantiate(_actionNodeLineTemplate, _actionNodeLineRoot);
+            line.gameObject.SetActive(true);
+            line.setPosition(from, to);
+            line.SetColor(GetCurrentColor(colorIndex));
+            return line;
+        }
+        
+        /// <summary>
+        /// 在指定位置创建连线
+        /// </summary>
+        /// <param name="from">相对于连线根节点的局部坐标</param>
+        /// <param name="to">相对于连线根节点的局部坐标</param>
+        /// <returns></returns>
+        private ActionNodeGraphLine createLine(Vector2 from, Vector2 to, Color color)
+        {
+            ActionNodeGraphLine line = Instantiate(_actionNodeLineTemplate, _actionNodeLineRoot);
+            line.gameObject.SetActive(true);
+            line.setPosition(from, to);
+            line.SetColor(color);
+            return line;
+        }
+
+
+        public Color GetCurrentColor(int colorIndex)
+        {
+            if (_listColor.Count < colorIndex)
+            {
+                //容错
+                return Color.white;
+            }
+            else
+            {
+                return _listColor[colorIndex];
+            }
+        }
+        
         /// <summary>
         /// 创建一个不确定类型的节点，必须在之后对其进行初始化。
         /// </summary>
@@ -752,6 +836,8 @@ namespace UI
         /// 自动生成位置的高度间隔
         /// </summary>
         public float autoPosSpacingHeight => _autoPosSpacingHeight;
+        
+        [Header("模板属性和UI控件")]
         [SerializeField]
         float _autoPosSpacingWidth = 600;
         [SerializeField]
@@ -790,8 +876,23 @@ namespace UI
         Vector2 _dragItemPositionOffset;
         [SerializeField]
         ActionNodeGraphLine _dragLine;
+        
+        [Header("编辑器线条属性")]
+        [SerializeField]
+        List<Color> _listColor;
         #endregion
+        
+        /// <summary>
+        /// 获取类型颜色组
+        /// </summary>
+        /// <returns></returns>
+        public List<Color> GetTypeListColor()
+        {
+            return _listColor;
+        }
     }
+    
+    
     public struct ActionNodeValueInfo
     {
         public string name;

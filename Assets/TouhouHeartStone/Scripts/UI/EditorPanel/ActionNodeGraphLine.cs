@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -15,6 +16,17 @@ namespace UI
             rectTransform.anchoredPosition = from;
             rectTransform.right = (to - from).normalized;
             rectTransform.sizeDelta = new Vector2(Vector2.Distance(from, to), rectTransform.sizeDelta.y);
+        }
+
+        
+        /// <summary>
+        /// 设置线条的颜色
+        /// </summary>
+        /// <param name="baseColor">基础颜色</param>
+        public void SetColor(Color baseColor)
+        {
+            var image = GetComponent<Image>();
+            image.color = baseColor;
         }
     }
 }

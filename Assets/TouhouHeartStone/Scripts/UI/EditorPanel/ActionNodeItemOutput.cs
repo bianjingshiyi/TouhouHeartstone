@@ -11,6 +11,35 @@ namespace UI
         {
             _nameText.text = name;
         }
+
+        /// <summary>
+        /// 设置节点颜色
+        /// </summary>
+        /// <param name="color"></param>
+        public void SetColor(Color color)
+        {
+            Image image = _nodeRect.gameObject.GetComponent<Image>();
+            if (image != null)
+            {
+                image.color = color;
+            }
+        }
+        
+        // <summary>
+        /// 获取节点颜色
+        /// </summary>
+        /// <returns></returns>
+        public Color GetColor()
+        {
+            Image image = _nodeRect.gameObject.GetComponent<Image>();
+            if (image != null)
+            {
+                return image.color;
+            }
+
+            return Color.white;
+        }
+        
         public Vector2 getNodeWorldPosition()
         {
             return _nodeRect.position;

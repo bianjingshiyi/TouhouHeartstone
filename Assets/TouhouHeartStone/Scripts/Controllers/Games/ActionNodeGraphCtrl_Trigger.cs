@@ -8,6 +8,11 @@ using UI;
 using Card = TouhouCardEngine.Card;
 namespace Controllers
 {
+    public class IOConnectInfo
+    {
+        public string type = String.Empty;
+        public string label = String.Empty;
+    }
     partial class ActionNodeGraphCtrl
     {
         #region 公有方法
@@ -25,7 +30,7 @@ namespace Controllers
         private void onChangeTriggerTypeIndex(int typeIndex)
         {
             _trigger.eventName = getEventTypeNameByIndex(typeIndex);
-            _entryNodeItem.setOutputs(getTriggerOutputNames());
+            _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
         }
         /// <summary>
         /// 当用户更改触发器的事件名称，将事件名称改为更改值
@@ -164,7 +169,7 @@ namespace Controllers
             int triggerIndex = getEventTypeIndex(_trigger.eventName);
             //创建入口节点
             _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
-            _entryNodeItem.setOutputs(getTriggerOutputNames());
+            _entryNodeItem.setOutputs(getTriggerOutputNames(),_ui.GetTypeListColor());
             if (trigger.action != null)
             {
                 var actionNodeItem = await createGraph4ActionNode(trigger.action);
@@ -191,30 +196,43 @@ namespace Controllers
         /// 获取当前触发器的输出值的名称。
         /// </summary>
         /// <returns></returns>
-        private string[] getTriggerOutputNames()
+        private IOConnectInfo[] getTriggerOutputNames()
         {
             int typeIndex = getEventTypeIndex(_trigger.eventName);
             EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
             if (eventTypeInfo.variableInfos != null)
             {
-                string[] outputNames = new string[eventTypeInfo.variableInfos.Length + 1];
+                IOConnectInfo[] outputNames = new IOConnectInfo[eventTypeInfo.variableInfos.Length + 1];
                 //动作输出
-                outputNames[0] = string.Empty;
+                outputNames[0] = new IOConnectInfo()
+                {
+                    type = String.Empty,
+                    label =  String.Empty
+                };
                 for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
                 {
-                    //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
-                    //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
-                    outputNames[i + 1] = game.langManager.getString(eventTypeInfo.variableInfos[i].name);
+                    //这里加入了类型，这块有些凌乱，我暂时就用string来处理type
+                    outputNames[i + 1] = new IOConnectInfo()
+                    {
+                        type = eventTypeInfo.variableInfos[i].name,
+                        //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
+                        //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
+                        label =  game.langManager.getString(eventTypeInfo.variableInfos[i].name)
+                    };
                 }
                 return outputNames;
             }
             else
             {
                 //只有一个动作输出
-                return new string[]
+                return new IOConnectInfo[]
                 {
-                    string.Empty
-                };
+                    new IOConnectInfo()
+                    {
+                        type = String.Empty,
+                        label =  String.Empty
+                    }
+                };;
             }
         }
         /// <summary>
