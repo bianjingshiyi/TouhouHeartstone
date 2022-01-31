@@ -269,10 +269,25 @@ namespace Controllers
             }
             //建立新的连接
             inputActionNode.inputs[inputIndex] = new ActionValueRef(curEventVarNames[outputIndex]);
+            //更新ui
+            _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.value);
         }
         private void unconnectNode4TriggerEventVarRef(int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
-            throw new NotImplementedException();
+            string[] curEventVarNames = getEventVarNames();
+            //判断是否已经相连
+            if (inputActionNode.inputs != null &&
+                inputActionNode.inputs.Length > inputIndex &&
+                inputActionNode.inputs[inputIndex] != null)
+            {
+                if (inputActionNode.inputs[inputIndex].eventVarName == curEventVarNames[outputIndex])
+                {
+                    //相连，断开连接
+                    inputActionNode.inputs[inputIndex] = null;
+                    //更新ui
+                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex);
+                }
+            }
         }
         private int getEventTypeIndex(string eventName)
         {
@@ -305,6 +320,28 @@ namespace Controllers
             }
             else
                 return null;
+        }
+        private int getEventVarNameIndex(string eventVarName)
+        {
+            EventTypeInfo eventTypeInfo = _eventTypeInfoList.Find(e => e.eventName == _trigger.eventName);
+            if (eventTypeInfo.variableInfos != null)
+            {
+                for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
+                {
+                    if (eventTypeInfo.variableInfos[i].name == eventVarName)
+                        return i;
+                }
+            }
+            return -1;
+        }
+        private EventVariableInfo getEventVarInfo(int index)
+        {
+            EventTypeInfo eventTypeInfo = _eventTypeInfoList.Find(e => e.eventName == _trigger.eventName);
+            if (eventTypeInfo.variableInfos != null && index < eventTypeInfo.variableInfos.Length)
+            {
+                return eventTypeInfo.variableInfos[index];
+            }
+            return null;
         }
         #endregion
         #region 属性字段

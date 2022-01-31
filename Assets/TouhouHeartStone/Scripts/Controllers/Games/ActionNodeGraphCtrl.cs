@@ -228,7 +228,8 @@ namespace Controllers
             _ui.onItemBuffLanguageChanged += onItemBuffLanguageChangedCallback;
             _ui.onItemNeedSelectBuffImage += onItemNeedSelectBuffImage;
 
-            _ui.init(game.langManager.getLanguages(), getEventTypeNames());        }
+            _ui.init(game.langManager.getLanguages(), getEventTypeNames());
+        }
         #endregion
         #region 事件回调
         /// <summary>
@@ -271,51 +272,52 @@ namespace Controllers
                 if (index == 0)//删除
                 {
                     int actionNodeIndex = _actionNodeList.IndexOf(_curActionNode);
-                    var actionNodeItem = _actionNodeItemList[actionNodeIndex];
-                    var actionNode = _curActionNode;
+                    ActionNodeItem actionNodeItem = _actionNodeItemList[actionNodeIndex];
+                    ActionNode actionNode = _curActionNode;
                     //断开节点和所有其他节点的连接
-                    for (int i = 0; i < _actionNodeList.Count; i++)
-                    {
-                        //断开前一个动作
-                        int branchNodeIndex = Array.IndexOf(_actionNodeList[i].branches, actionNode);
-                        if (branchNodeIndex >= 0)
-                        {
-                            _actionNodeList[i].branches[branchNodeIndex] = null;
-                            _ui.unconnectNode(_actionNodeItemList[i], branchNodeIndex, actionNodeItem, 0);
-                        }
-                        //断开输入
-                        int inputValueRefIndex = Array.FindIndex(actionNode.inputs, v => v != null && (v.action == _actionNodeList[i] || v.actionNodeId == _actionNodeList[i].id));
-                        if (inputValueRefIndex >= 0)
-                        {
-                            var inputActionNode = _actionNodeList[i];
-                            var inputValueRef = actionNode.inputs[inputValueRefIndex];
-                            actionNode.inputs[inputValueRefIndex] = null;
-                            _ui.unconnectNode(_actionNodeItemList[i], inputActionNode.branches.Length + inputValueRef.index, actionNodeItem, 1 + inputValueRefIndex);
-                        }
-                        //断开后一个动作
-                        branchNodeIndex = Array.IndexOf(actionNode.branches, _actionNodeList[i]);
-                        if (branchNodeIndex >= 0)
-                        {
-                            actionNode.branches[branchNodeIndex] = null;
-                            _ui.unconnectNode(actionNodeItem, branchNodeIndex, _actionNodeItemList[i], 0);
-                        }
-                        //断开输出
-                        inputValueRefIndex = Array.FindIndex(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id));
-                        if (inputValueRefIndex >= 0)
-                        {
-                            var inputValueRef = _actionNodeList[i].inputs[inputValueRefIndex];
-                            _actionNodeList[i].inputs[inputValueRefIndex] = null;
-                            _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + inputValueRef.index, _actionNodeItemList[i], 1 + inputValueRefIndex);
-                        }
-                    }
+                    //for (int i = 0; i < _actionNodeList.Count; i++)
+                    //{
+                    //    //断开前一个动作
+                    //    int branchNodeIndex = Array.IndexOf(_actionNodeList[i].branches, actionNode);
+                    //    if (branchNodeIndex >= 0)
+                    //    {
+                    //        _actionNodeList[i].branches[branchNodeIndex] = null;
+                    //        _ui.unconnectNode(_actionNodeItemList[i], branchNodeIndex, actionNodeItem, 0);
+                    //    }
+                    //    //断开输入
+                    //    int inputValueRefIndex = Array.FindIndex(actionNode.inputs, v => v != null && (v.action == _actionNodeList[i] || v.actionNodeId == _actionNodeList[i].id));
+                    //    if (inputValueRefIndex >= 0)
+                    //    {
+                    //        var inputActionNode = _actionNodeList[i];
+                    //        var inputValueRef = actionNode.inputs[inputValueRefIndex];
+                    //        actionNode.inputs[inputValueRefIndex] = null;
+                    //        _ui.unconnectNode(_actionNodeItemList[i], inputActionNode.branches.Length + inputValueRef.index, actionNodeItem, 1 + inputValueRefIndex);
+                    //    }
+                    //    //断开后一个动作
+                    //    branchNodeIndex = Array.IndexOf(actionNode.branches, _actionNodeList[i]);
+                    //    if (branchNodeIndex >= 0)
+                    //    {
+                    //        actionNode.branches[branchNodeIndex] = null;
+                    //        _ui.unconnectNode(actionNodeItem, branchNodeIndex, _actionNodeItemList[i], 0);
+                    //    }
+                    //    //断开输出
+                    //    inputValueRefIndex = Array.FindIndex(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id));
+                    //    if (inputValueRefIndex >= 0)
+                    //    {
+                    //        var inputValueRef = _actionNodeList[i].inputs[inputValueRefIndex];
+                    //        _actionNodeList[i].inputs[inputValueRefIndex] = null;
+                    //        _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + inputValueRef.index, _actionNodeItemList[i], 1 + inputValueRefIndex);
+                    //    }
+                    //}
+                    unconnectNodeAll(actionNode);
                     //从列表中移除
                     _actionNodeList.RemoveAt(actionNodeIndex);
                     _actionNodeItemList.RemoveAt(actionNodeIndex);
-                    //将节点从UI上移除
-                    _ui.removeNode(actionNodeItem);
                     //从编辑器信息中删除
                     removeNodeInfo(actionNode);
                     graphInfo.freeActionNodeList.Remove(actionNode);
+                    //将节点从UI上移除
+                    _ui.removeNode(actionNodeItem);
                 }
                 closeMenu();
             }
@@ -363,132 +365,215 @@ namespace Controllers
             if (outputActionNodeItem == _entryNodeItem)
             {
                 ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                //入口节点更加特殊，它只有一个分支需要检查
-                if (rootActionNode != null)
+                if (outputIndex < 1)
                 {
-                    _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
-                    rootActionNode = null;
+                    //动作连接
+                    //检查合法性
+                    if (inputIndex > 0)
+                    {
+                        //值输出只能与值输入相互连接
+                        _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                        return;
+                    }
+                    //连接节点
+                    connectNode4RootAction(inputActionNode);
                 }
-                //如果输入已经和其他节点输出连接了的话，先断开连接
-                ActionValueRef outputValueRef = inputIndex < inputActionNode.branches.Length ? null :
-                    inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
-                if (outputValueRef != null)
+                else
                 {
-                    var actionNode = outputValueRef.action != null ? outputValueRef.action : getActionNode(outputValueRef.actionNodeId);
-                    actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
-                    var actionNodeItem = getActionNodeItem(actionNode);
-                    _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
+                    //事件变量值连接
+                    //检查合法性
+                    if (inputIndex < inputActionNode.branches.Length)
+                    {
+                        //值输出只能与值输入相互连接
+                        _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                        return;
+                    }
+                    Type outputType = getEventVarInfo(outputIndex - 1).type;
+                    Type inputType = _actionDefineDict[inputActionNode.defineName].inputs[inputIndex - inputActionNode.branches.Length].type;
+                    if (!outputType.IsAssignableFrom(inputType) && !inputType.IsAssignableFrom(outputType))
+                    {
+                        //相互连接的输入输出类型必须可以相互转化
+                        _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                        return;
+                    }
+                    connectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
                 }
-                //检查合法性
-                //入口节点只有一个输出节点
-                if (outputIndex != 0 || inputIndex != 0)
-                {
-                    //值输出只能与值输入相互连接
-                    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
-                    return;
-                }
-                rootActionNode = inputActionNode;
-                //从离散节点列表中去掉被连接的节点
-                graphInfo.freeActionNodeList.Remove(inputActionNode);
+                //ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                ////入口节点更加特殊，它只有一个分支需要检查
+                //if (rootActionNode != null)
+                //{
+                //    _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
+                //    rootActionNode = null;
+                //}
+                ////如果输入已经和其他节点输出连接了的话，先断开连接
+                //ActionValueRef outputValueRef = inputIndex < inputActionNode.branches.Length ? null :
+                //    inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
+                //if (outputValueRef != null)
+                //{
+                //    var actionNode = outputValueRef.action != null ? outputValueRef.action : getActionNode(outputValueRef.actionNodeId);
+                //    actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                //    var actionNodeItem = getActionNodeItem(actionNode);
+                //    _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
+                //}
+                ////检查合法性
+                ////入口节点只有一个输出节点
+                //if (outputIndex != 0 || inputIndex != 0)
+                //{
+                //    //值输出只能与值输入相互连接
+                //    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                //    return;
+                //}
+                //rootActionNode = inputActionNode;
+                ////从离散节点列表中去掉被连接的节点
+                //graphInfo.freeActionNodeList.Remove(inputActionNode);
             }
             else if (inputActionNodeItem == _returnNodeItem)
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                //出口节点也只有一个参数
-                if (rootActionNode != null)
-                {
-                    _ui.unconnectNode(getActionNodeItem(rootActionNode), valueRef.index + 1, _returnNodeItem, 0);
-                    rootActionNode = null;
-                }
-                //检查合法性
-                //输出值节点只有一个输出节点
-                if (outputIndex == 0)
+                //检查连接合法性
+                if (outputIndex < outputActionNode.branches.Length)
                 {
                     //值输出只能与值输入相互连接
                     _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
                     return;
                 }
-                rootActionNode = outputActionNode;
-                valueRef.index = outputIndex - 1;
-                //从离散节点列表中去掉被连接的节点
-                graphInfo.freeActionNodeList.Remove(outputActionNode);
+                connectNode4ReturnValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, 0);
+                //出口节点也只有一个参数
+                //if (rootActionNode != null)
+                //{
+                //    _ui.unconnectNode(getActionNodeItem(rootActionNode), valueRef.index + 1, _returnNodeItem, 0);
+                //    rootActionNode = null;
+                //}
+                ////检查合法性
+                ////输出值节点只有一个输出节点
+                //if (outputIndex == 0)
+                //{
+                //    //值输出只能与值输入相互连接
+                //    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                //    return;
+                //}
+                //rootActionNode = outputActionNode;
+                //valueRef.index = outputIndex - 1;
+                ////从离散节点列表中去掉被连接的节点
+                //graphInfo.freeActionNodeList.Remove(outputActionNode);
             }
             else
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
                 ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                //一个节点的动作输出只可以连接一个动作输入，先自动断开和之前节点的连接
                 if (inputIndex == 0)
                 {
-                    ActionNode prevOutputActionNode = null;
-                    int prevOutputIndex = -1;
-                    for (int i = 0; i < _actionNodeList.Count; i++)
+                    //动作连接
+                    if (outputActionNode.branches == null)
                     {
-                        if (_actionNodeList[i].branches == null)
-                            continue;
-                        for (int j = 0; j < _actionNodeList[i].branches.Length; j++)
-                        {
-                            if (_actionNodeList[i].branches[j] == inputActionNode)
-                            {
-                                prevOutputActionNode = _actionNodeList[i];
-                                prevOutputIndex = j;
-                                break;
-                            }
-                        }
-                        if (prevOutputActionNode != null)
-                        {
-                            break;
-                        }
+                        outputActionNode.branches = new ActionNode[1];
                     }
-                    if (prevOutputActionNode != null)
+                    //检查合法性
+                    if (outputIndex >= outputActionNode.branches.Length)
                     {
-                        prevOutputActionNode.branches[prevOutputIndex] = null;
-                        //将断开连接的节点加入离散列表
-                        if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
-                            graphInfo.freeActionNodeList.Add(inputActionNode);
-                        _ui.unconnectNode(getActionNodeItem(prevOutputActionNode), prevOutputIndex, inputActionNodeItem, inputIndex);
+                        //值输出只能与值输入相互连接
+                        _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                        return;
                     }
+                    connectNode4Action(outputActionNode, outputIndex, inputActionNode);
                 }
-                if (outputActionNode.branches != null && outputIndex < outputActionNode.branches.Length)
+                else
                 {
-                    ActionNode prevInputActionNode = outputActionNode.branches[outputIndex];
-                    if (prevInputActionNode != null)
+                    //值连接
+                    if (outputActionNode.branches == null)
                     {
-                        outputActionNode.branches[outputIndex] = null;
-                        //将断开连接的节点加入离散列表
-                        if (!graphInfo.freeActionNodeList.Contains(prevInputActionNode))
-                            graphInfo.freeActionNodeList.Add(prevInputActionNode);
-                        _ui.unconnectNode(outputActionNodeItem, outputIndex, getActionNodeItem(prevInputActionNode), 0);
+                        outputActionNode.branches = new ActionNode[1];
                     }
-                }
-                //一个值输入只能接受一个节点的值输出，自动断开之前的输出连接
-                if (inputActionNode.inputs != null &&
-                    inputIndex > 0 &&
-                    inputIndex - 1 < inputActionNode.inputs.Length &&
-                    (inputActionNode.inputs[inputIndex - 1] == null ||
-                    (inputActionNode.inputs[inputIndex - 1].action != outputActionNode &&
-                    inputActionNode.inputs[inputIndex - 1].actionNodeId != outputActionNode.id)))
-                {
-                    ActionValueRef inputValueRef = inputActionNode.inputs[inputIndex - 1];
-                    //一个节点可能提供多个输出值，但是只有在顺序上最先引用它的节点才会保存对它的引用以便序列化，其余情况只保留id和index
-                    inputActionNode.inputs[inputIndex - 1] = null;
-                    if (inputValueRef != null)
+                    //检查合法性
+                    if (outputIndex < outputActionNode.branches.Length)
                     {
-                        ActionNode prevOutputActionNode = inputValueRef.action != null ? inputValueRef.action : getActionNode(inputValueRef.actionNodeId);
-                        _ui.unconnectNode(getActionNodeItem(prevOutputActionNode), prevOutputActionNode.branches.Length + inputValueRef.index, inputActionNodeItem, inputIndex);
-                        if (isFreeActionNode(prevOutputActionNode))
-                        {
-                            prevOutputActionNode.regVar = null;
-                            if (!graphInfo.freeActionNodeList.Contains(prevOutputActionNode))
-                                graphInfo.freeActionNodeList.Add(prevOutputActionNode);
-                        }
-                        else
-                        {
-                            //如果之前的输出节点没有变成自由节点，那要更新一下它的输出变量状态
-                            updateRegVar(prevOutputActionNode);
-                        }
+                        //值输出只能与值输入相互连接
+                        _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                        return;
                     }
+                    //检查类型合法性
+                    Type outputType = _actionDefineDict[outputActionNode.defineName].outputs[outputIndex - outputActionNode.branches.Length].type;
+                    Type inputType = _actionDefineDict[inputActionNode.defineName].inputs[inputIndex - 1].type;
+                    if (!outputType.IsAssignableFrom(inputType) && !inputType.IsAssignableFrom(outputType))
+                    {
+                        //相互连接的输入输出类型必须可以相互转化
+                        _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                        return;
+                    }
+                    connectNode4ValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputActionNode, inputIndex - 1);
                 }
+                ////一个节点的动作输出只可以连接一个动作输入，先自动断开和之前节点的连接
+                //if (inputIndex == 0)
+                //{
+                //    ActionNode prevOutputActionNode = null;
+                //    int prevOutputIndex = -1;
+                //    for (int i = 0; i < _actionNodeList.Count; i++)
+                //    {
+                //        if (_actionNodeList[i].branches == null)
+                //            continue;
+                //        for (int j = 0; j < _actionNodeList[i].branches.Length; j++)
+                //        {
+                //            if (_actionNodeList[i].branches[j] == inputActionNode)
+                //            {
+                //                prevOutputActionNode = _actionNodeList[i];
+                //                prevOutputIndex = j;
+                //                break;
+                //            }
+                //        }
+                //        if (prevOutputActionNode != null)
+                //        {
+                //            break;
+                //        }
+                //    }
+                //    if (prevOutputActionNode != null)
+                //    {
+                //        prevOutputActionNode.branches[prevOutputIndex] = null;
+                //        //将断开连接的节点加入离散列表
+                //        if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
+                //            graphInfo.freeActionNodeList.Add(inputActionNode);
+                //        _ui.unconnectNode(getActionNodeItem(prevOutputActionNode), prevOutputIndex, inputActionNodeItem, inputIndex);
+                //    }
+                //}
+                //if (outputActionNode.branches != null && outputIndex < outputActionNode.branches.Length)
+                //{
+                //    ActionNode prevInputActionNode = outputActionNode.branches[outputIndex];
+                //    if (prevInputActionNode != null)
+                //    {
+                //        outputActionNode.branches[outputIndex] = null;
+                //        //将断开连接的节点加入离散列表
+                //        if (!graphInfo.freeActionNodeList.Contains(prevInputActionNode))
+                //            graphInfo.freeActionNodeList.Add(prevInputActionNode);
+                //        _ui.unconnectNode(outputActionNodeItem, outputIndex, getActionNodeItem(prevInputActionNode), 0);
+                //    }
+                //}
+                ////一个值输入只能接受一个节点的值输出，自动断开之前的输出连接
+                //if (inputActionNode.inputs != null &&
+                //    inputIndex > 0 &&
+                //    inputIndex - 1 < inputActionNode.inputs.Length &&
+                //    (inputActionNode.inputs[inputIndex - 1] == null ||
+                //    (inputActionNode.inputs[inputIndex - 1].action != outputActionNode &&
+                //    inputActionNode.inputs[inputIndex - 1].actionNodeId != outputActionNode.id)))
+                //{
+                //    ActionValueRef inputValueRef = inputActionNode.inputs[inputIndex - 1];
+                //    //一个节点可能提供多个输出值，但是只有在顺序上最先引用它的节点才会保存对它的引用以便序列化，其余情况只保留id和index
+                //    inputActionNode.inputs[inputIndex - 1] = null;
+                //    if (inputValueRef != null)
+                //    {
+                //        ActionNode prevOutputActionNode = inputValueRef.action != null ? inputValueRef.action : getActionNode(inputValueRef.actionNodeId);
+                //        _ui.unconnectNode(getActionNodeItem(prevOutputActionNode), prevOutputActionNode.branches.Length + inputValueRef.index, inputActionNodeItem, inputIndex);
+                //        if (isFreeActionNode(prevOutputActionNode))
+                //        {
+                //            prevOutputActionNode.regVar = null;
+                //            if (!graphInfo.freeActionNodeList.Contains(prevOutputActionNode))
+                //                graphInfo.freeActionNodeList.Add(prevOutputActionNode);
+                //        }
+                //        else
+                //        {
+                //            //如果之前的输出节点没有变成自由节点，那要更新一下它的输出变量状态
+                //            updateRegVar(prevOutputActionNode);
+                //        }
+                //    }
+                //}
                 //ActionValueRef outputValueRef =
                 //    inputIndex < inputActionNode.branches.Length ||
                 //    inputIndex - inputActionNode.branches.Length >= inputActionNode.inputs.Length ?
@@ -501,89 +586,89 @@ namespace Controllers
                 //    _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
                 //}
                 //检查合法性
-                if ((outputIndex < outputActionNode.branches.Length) != (inputIndex == 0))
-                {
-                    //值输出只能与值输入相互连接
-                    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
-                    return;
-                }
-                if (outputIndex >= outputActionNode.branches.Length && inputIndex > 0)
-                {
-                    //值的相互连接
-                    var outputActionDefine = _actionDefineDict[outputActionNode.defineName];
-                    var outputValueDefine = outputActionDefine.outputs[outputIndex - outputActionNode.branches.Length];
-                    var inputActionDefine = _actionDefineDict[inputActionNode.defineName];
-                    if (inputActionDefine.inputs.Last().isParams && inputIndex - 1 >= inputActionDefine.inputs.Length - 1)
-                    {
-                        //是允许输入多个值的参数
-                        var inputValueDefine = inputActionDefine.inputs.Last();
-                        if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
-                        {
-                            //相互连接的输入输出类型必须可以相互转化
-                            _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
-                            return;
-                        }
-                        if (inputIndex - 1 >= inputActionNode.inputs.Length)
-                        {
-                            //如果是赋值给最后一个空白参数，那么自动添加一个空的参数
-                            ActionValueRef[] inputs = new ActionValueRef[inputActionNode.inputs.Length + 1];
-                            inputActionNode.inputs.CopyTo(inputs, 0);
-                            inputActionNode.inputs = inputs;
-                        }
-                        inputActionNodeItem.setInputs(getActionNodeInputNames(inputActionNode));
-                    }
-                    else
-                    {
-                        var inputValueDefine = inputActionDefine.inputs[inputIndex - 1];
-                        if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
-                        {
-                            //相互连接的输入输出类型必须可以相互转化
-                            _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
-                            return;
-                        }
-                    }
-                    //一个输出值可以与多个输入相连，只有顺序上第一个输入或者动作输入才可以保持对节点本身的引用
-                    if (!isValueRefedInParentNodes(outputActionNode, inputActionNode))
-                    {
-                        inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length);
-                        //遍历子节点，使其中所有对相同值输出的引用从直接引用变为id引用
-                        traverseActionNode(inputActionNode, false, a =>
-                        {
-                            if (a == inputActionNode)
-                                return;
-                            if (a.inputs != null && a.inputs.Length > 0)
-                            {
-                                for (int i = 0; i < a.inputs.Length; i++)
-                                {
-                                    if (a.inputs[i] == null)
-                                        continue;
-                                    if (a.inputs[i].action == outputActionNode)
-                                    {
-                                        a.inputs[i].action = null;
-                                        a.inputs[i].actionNodeId = outputActionNode.id;
-                                    }
-                                }
-                            }
-                        });
-                    }
-                    else
-                    {
-                        inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode.id, outputIndex - outputActionNode.branches.Length);
-                    }
-                    //更新输出节点的输出变量状态
-                    updateRegVar(outputActionNode);
-                    //输出值的节点一定不是离散节点
-                    graphInfo.freeActionNodeList.Remove(outputActionNode);
-                }
-                else
-                {
-                    //动作的相互连接
-                    outputActionNode.branches[outputIndex] = inputActionNode;
-                    //后一个动作节点一定不是离散节点
-                    graphInfo.freeActionNodeList.Remove(inputActionNode);
-                }
+                //if ((outputIndex < outputActionNode.branches.Length) != (inputIndex == 0))
+                //{
+                //    //值输出只能与值输入相互连接
+                //    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                //    return;
+                //}
+                //if (outputIndex >= outputActionNode.branches.Length && inputIndex > 0)
+                //{
+                //    //值的相互连接
+                //    var outputActionDefine = _actionDefineDict[outputActionNode.defineName];
+                //    var outputValueDefine = outputActionDefine.outputs[outputIndex - outputActionNode.branches.Length];
+                //    var inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+                //    if (inputActionDefine.inputs.Last().isParams && inputIndex - 1 >= inputActionDefine.inputs.Length - 1)
+                //    {
+                //        //是允许输入多个值的参数
+                //        var inputValueDefine = inputActionDefine.inputs.Last();
+                //        if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
+                //        {
+                //            //相互连接的输入输出类型必须可以相互转化
+                //            _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                //            return;
+                //        }
+                //        if (inputIndex - 1 >= inputActionNode.inputs.Length)
+                //        {
+                //            //如果是赋值给最后一个空白参数，那么自动添加一个空的参数
+                //            ActionValueRef[] inputs = new ActionValueRef[inputActionNode.inputs.Length + 1];
+                //            inputActionNode.inputs.CopyTo(inputs, 0);
+                //            inputActionNode.inputs = inputs;
+                //        }
+                //        inputActionNodeItem.setInputs(getActionNodeInputNames(inputActionNode));
+                //    }
+                //    else
+                //    {
+                //        var inputValueDefine = inputActionDefine.inputs[inputIndex - 1];
+                //        if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
+                //        {
+                //            //相互连接的输入输出类型必须可以相互转化
+                //            _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                //            return;
+                //        }
+                //    }
+                //    //一个输出值可以与多个输入相连，只有顺序上第一个输入或者动作输入才可以保持对节点本身的引用
+                //    if (!isValueRefedInParentNodes(outputActionNode, inputActionNode))
+                //    {
+                //        inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length);
+                //        //遍历子节点，使其中所有对相同值输出的引用从直接引用变为id引用
+                //        traverseActionNode(inputActionNode, false, a =>
+                //        {
+                //            if (a == inputActionNode)
+                //                return;
+                //            if (a.inputs != null && a.inputs.Length > 0)
+                //            {
+                //                for (int i = 0; i < a.inputs.Length; i++)
+                //                {
+                //                    if (a.inputs[i] == null)
+                //                        continue;
+                //                    if (a.inputs[i].action == outputActionNode)
+                //                    {
+                //                        a.inputs[i].action = null;
+                //                        a.inputs[i].actionNodeId = outputActionNode.id;
+                //                    }
+                //                }
+                //            }
+                //        });
+                //    }
+                //    else
+                //    {
+                //        inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode.id, outputIndex - outputActionNode.branches.Length);
+                //    }
+                //    //更新输出节点的输出变量状态
+                //    updateRegVar(outputActionNode);
+                //    //输出值的节点一定不是离散节点
+                //    graphInfo.freeActionNodeList.Remove(outputActionNode);
+                //}
+                //else
+                //{
+                //    //动作的相互连接
+                //    outputActionNode.branches[outputIndex] = inputActionNode;
+                //    //后一个动作节点一定不是离散节点
+                //    graphInfo.freeActionNodeList.Remove(inputActionNode);
+                //}
             }
-            _ui.connectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex, ActionNodeConnectionType.action);
+            //_ui.connectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex, ActionNodeConnectionType.action);
         }
         /// <summary>
         /// 当用户断开节点连接
@@ -594,15 +679,27 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onUnconnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
+            ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+            ActionNode inputActionNode = getActionNode(inputActionNodeItem);
             if (outputActionNodeItem == _entryNodeItem)
             {
-                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                if (inputActionNode == rootActionNode)
+                if (inputIndex == 0)
                 {
-                    //断开与入口动作节点的连接
-                    _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
-                    rootActionNode = null;
+                    //动作连接
+                    unconnectNode4RootAction(inputActionNode);
                 }
+                else
+                {
+                    //值连接
+                    unconnectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - 1);
+                }
+                //ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                //if (inputActionNode == rootActionNode)
+                //{
+                //    //断开与入口动作节点的连接
+                //    _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
+                //    rootActionNode = null;
+                //}
                 //else
                 //{
                 //    //断开与值节点的连接
@@ -617,92 +714,103 @@ namespace Controllers
                 //    }
                 //}
                 //输入节点一定会变得离散
-                if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
-                    graphInfo.freeActionNodeList.Add(inputActionNode);
+                //if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
+                //    graphInfo.freeActionNodeList.Add(inputActionNode);
             }
-            else if (inputActionNodeItem == _returnNodeItem)
+            else if (inputActionNodeItem == _returnNodeItem && valueRef != null)
             {
-                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                if (rootActionNode == outputActionNode)
-                {
-                    //断开与返回值节点的连接
-                    _ui.unconnectNode(outputActionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
-                    rootActionNode = null;
-                }
-                //输出节点一定会变得离散
-                if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
-                    graphInfo.freeActionNodeList.Add(outputActionNode);
+                unconnectNode4ReturnValueRef(outputActionNode, valueRef.index, 0);
+                //ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                //if (rootActionNode == outputActionNode)
+                //{
+                //    //断开与返回值节点的连接
+                //    _ui.unconnectNode(outputActionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
+                //    rootActionNode = null;
+                //}
+                ////输出节点一定会变得离散
+                //if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
+                //    graphInfo.freeActionNodeList.Add(outputActionNode);
             }
             else
             {
-                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                if (outputIndex < outputActionNode.branches.Length)
+                if (inputIndex == 0)
                 {
-                    outputActionNode.branches[outputIndex] = null;
-                    _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
-                    //输入节点一定会变得离散
-                    if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
-                        graphInfo.freeActionNodeList.Add(inputActionNode);
+                    //动作连接
+                    unconnectNode4Action(outputActionNode, outputIndex, inputActionNode);
                 }
                 else
                 {
-                    ActionValueRef inputActionValueRef = inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
-                    ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
-                    if (inputActionDefine.inputs.Last().isParams && inputIndex - inputActionNode.branches.Length >= inputActionDefine.inputs.Length - 1)
-                    {
-                        //如果断开的是多参数节点
-                        List<ActionValueRef> inputList = new List<ActionValueRef>(inputActionNode.inputs);
-                        inputList.RemoveAt(inputIndex - inputActionNode.branches.Length);
-                        inputActionNode.inputs = inputList.ToArray();
-                        //断开所有连接再重新连接
-                        _ui.unconnectNodeAllInput(inputActionNodeItem);
-                        for (int i = 0; i < inputActionNode.branches.Length; i++)
-                        {
-                            _ui.connectNode(getActionNodeItem(inputActionNode.branches[i]), 0, inputActionNodeItem, i, ActionNodeConnectionType.value);
-                        }
-                        for (int i = inputActionNode.branches.Length; i < inputList.Count; i++)
-                        {
-                            _ui.connectNode(getActionNodeItem(inputList[i].action), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
-                        }
-                    }
-                    else
-                    {
-                        inputActionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
-                        _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
-                    }
-                    if (inputActionValueRef.action != null)
-                    {
-                        //寻找子节点中的第一个值引用，将其改为引用对象本身
-                        traverseActionNode(inputActionNode, false, a =>
-                        {
-                            if (a.inputs == null)
-                                return false;
-                            for (int i = 0; i < a.inputs.Length; i++)
-                            {
-                                if (a.inputs[i] != null && a.inputs[i].actionNodeId == inputActionValueRef.action.id)
-                                {
-                                    a.inputs[i].action = inputActionValueRef.action;
-                                    a.inputs[i].actionNodeId = 0;
-                                    return true;
-                                }
-                            }
-                            return false;
-                        });
-                    }
-                    if (isFreeActionNode(outputActionNode))
-                    {
-                        outputActionNode.regVar = null;
-                        //如果输出节点变为离散节点，将其添加进入列表
-                        if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
-                            graphInfo.freeActionNodeList.Add(outputActionNode);
-                    }
-                    else
-                    {
-                        //更新输出变量状态
-                        updateRegVar(outputActionNode);
-                    }
+                    //值连接
+                    unconnectNode4ValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputActionNode, inputIndex - 1);
                 }
+                //ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                //ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                //if (outputIndex < outputActionNode.branches.Length)
+                //{
+                //    outputActionNode.branches[outputIndex] = null;
+                //    _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
+                //    //输入节点一定会变得离散
+                //    if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
+                //        graphInfo.freeActionNodeList.Add(inputActionNode);
+                //}
+                //else
+                //{
+                //    ActionValueRef inputActionValueRef = inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
+                //    ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+                //    if (inputActionDefine.inputs.Last().isParams && inputIndex - inputActionNode.branches.Length >= inputActionDefine.inputs.Length - 1)
+                //    {
+                //        //如果断开的是多参数节点
+                //        List<ActionValueRef> inputList = new List<ActionValueRef>(inputActionNode.inputs);
+                //        inputList.RemoveAt(inputIndex - inputActionNode.branches.Length);
+                //        inputActionNode.inputs = inputList.ToArray();
+                //        //断开所有连接再重新连接
+                //        _ui.unconnectNodeAllInput(inputActionNodeItem);
+                //        for (int i = 0; i < inputActionNode.branches.Length; i++)
+                //        {
+                //            _ui.connectNode(getActionNodeItem(inputActionNode.branches[i]), 0, inputActionNodeItem, i, ActionNodeConnectionType.value);
+                //        }
+                //        for (int i = inputActionNode.branches.Length; i < inputList.Count; i++)
+                //        {
+                //            _ui.connectNode(getActionNodeItem(inputList[i].action), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        inputActionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
+                //        _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
+                //    }
+                //    if (inputActionValueRef.action != null)
+                //    {
+                //        //寻找子节点中的第一个值引用，将其改为引用对象本身
+                //        traverseActionNode(inputActionNode, false, a =>
+                //        {
+                //            if (a.inputs == null)
+                //                return false;
+                //            for (int i = 0; i < a.inputs.Length; i++)
+                //            {
+                //                if (a.inputs[i] != null && a.inputs[i].actionNodeId == inputActionValueRef.action.id)
+                //                {
+                //                    a.inputs[i].action = inputActionValueRef.action;
+                //                    a.inputs[i].actionNodeId = 0;
+                //                    return true;
+                //                }
+                //            }
+                //            return false;
+                //        });
+                //    }
+                //    if (isFreeActionNode(outputActionNode))
+                //    {
+                //        outputActionNode.regVar = null;
+                //        //如果输出节点变为离散节点，将其添加进入列表
+                //        if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
+                //            graphInfo.freeActionNodeList.Add(outputActionNode);
+                //    }
+                //    else
+                //    {
+                //        //更新输出变量状态
+                //        updateRegVar(outputActionNode);
+                //    }
+                //}
             }
         }
         /// <summary>
@@ -1319,15 +1427,29 @@ namespace Controllers
         /// <param name="inputActionNode"></param>
         private void connectNode4RootAction(ActionNode inputActionNode)
         {
-            //判断是否已经相连
+            //判断判断输出是否与输入相连
+            if (rootActionNode != null)
+            {
+                if (rootActionNode == inputActionNode)
+                {
+                    //输出已经与输入相连，什么都不做
+                    return;
+                }
+                else
+                {
+                    //输出与其他输入相连，断开连接
+                    unconnectNode4RootAction(rootActionNode);
+                }
+            }
+            //判断输入是否与输出相连
             if (rootActionNode == inputActionNode)
             {
-                //已经相连，什么也不做
+                //输入已经与输出相连，什么都不做
                 return;
             }
-            //如果输入已经和其他输出连接，则断开。
-            if (tryGetPrevActionNode(inputActionNode, out ActionNode prevActionNode, out int prevOutputIndex))
+            else if (tryGetPrevActionNode(inputActionNode, out ActionNode prevActionNode, out int prevOutputIndex))
             {
+                //如果输入已经和其他输出连接，则断开。
                 unconnectNode4Action(prevActionNode, prevOutputIndex, inputActionNode);
             }
             //建立新的连接
@@ -1378,27 +1500,56 @@ namespace Controllers
         /// <param name="inputActionNode"></param>
         private void connectNode4Action(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode)
         {
-            //判断是否已经相连
+            //判断输出是否已经和输入相连
+            if (outputActionNode.branches != null &&
+                outputActionNode.branches.Length > outputIndex)
+            {
+                if (outputActionNode.branches[outputIndex] == inputActionNode)
+                {
+                    //输出已经和输入相连，什么都不做
+                    return;
+                }
+                else if (outputActionNode.branches[outputIndex] != null)
+                {
+                    //输出已经和其他节点输入相连，断开
+                    unconnectNode4Action(outputActionNode, outputIndex, outputActionNode.branches[outputIndex]);
+                }
+            }
+            else
+            {
+                //数组长度不够，扩大
+                ActionNode[] branches = new ActionNode[outputIndex + 1];
+                if (outputActionNode.branches != null)
+                {
+                    Array.Copy(outputActionNode.branches, 0, branches, 0, outputActionNode.branches.Length);
+                }
+                outputActionNode.branches = branches;
+            }
+            //判断输入是否已经和输出相连
             if (rootActionNode == inputActionNode)
             {
-                //已经相连，什么也不做
-                return;
+                //输入与入口动作输出相连，断开
+                unconnectNode4RootAction(inputActionNode);
             }
-            //如果输入已经和其他输出连接，则断开。
-            if (tryGetPrevActionNode(inputActionNode, out ActionNode prevActionNode, out int prevOutputIndex))
+            else if (tryGetPrevActionNode(inputActionNode, out ActionNode prevActionNode, out int prevOutputIndex))
             {
                 if (prevActionNode == outputActionNode && prevOutputIndex == outputIndex)
                 {
-
+                    //输入已经和输出相连，什么也不做
+                    return;
                 }
-                unconnectNode4Action(prevActionNode, prevOutputIndex, inputActionNode);
+                else
+                {
+                    //输入已经和其他输出连接，则断开。
+                    unconnectNode4Action(prevActionNode, prevOutputIndex, inputActionNode);
+                }
             }
             //建立新的连接
-            rootActionNode = inputActionNode;
+            outputActionNode.branches[outputIndex] = inputActionNode;
             //从离散节点列表中去掉被连接的节点
             graphInfo.freeActionNodeList.Remove(inputActionNode);
             //更新ui
-            _ui.connectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
+            _ui.connectNode(getActionNodeItem(outputActionNode), outputIndex, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
         }
         /// <summary>
         /// 连接节点的值输入输出
@@ -1409,11 +1560,111 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void connectNode4ValueRef(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
-            throw new NotImplementedException();
+            //值的输出可以与任意数量的输入相连，所以不做检查
+            //判断输入是否已经和输出相连
+            if (inputActionNode.inputs != null &&
+                inputActionNode.inputs.Length > inputIndex)
+            {
+                if (inputActionNode.inputs[inputIndex] != null)
+                {
+                    if ((inputActionNode.inputs[inputIndex].action == outputActionNode || inputActionNode.inputs[inputIndex].actionNodeId == outputActionNode.id) &&
+                        inputActionNode.inputs[inputIndex].index == outputIndex)
+                    {
+                        //输入已经与输出相连，什么都不做
+                        return;
+                    }
+                    else if (inputActionNode.inputs[inputIndex].action != null)
+                    {
+                        //输入与其他输出相连，断开
+                        unconnectNode4ValueRef(inputActionNode.inputs[inputIndex].action, inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
+                    }
+                    else if (inputActionNode.inputs[inputIndex].actionNodeId != 0)
+                    {
+                        //输入与其他输出相连，断开
+                        unconnectNode4ValueRef(getActionNode(inputActionNode.inputs[inputIndex].actionNodeId), inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
+                    }
+                    else if (!string.IsNullOrEmpty(inputActionNode.inputs[inputIndex].eventVarName))
+                    {
+                        //输入与触发节点值输出相连，断开
+                        unconnectNode4TriggerEventVarRef(getEventVarNameIndex(inputActionNode.inputs[inputIndex].eventVarName), inputActionNode, inputIndex);
+                    }
+                }
+            }
+            else
+            {
+                //数组长度不够，增长
+                ActionValueRef[] inputs = new ActionValueRef[inputIndex + 1];
+                if (inputActionNode.inputs != null)
+                {
+                    Array.Copy(inputActionNode.inputs, 0, inputs, 0, inputActionNode.inputs.Length);
+                }
+                inputActionNode.inputs = inputs;
+            }
+            //建立新的连接，一个输出值可以与多个输入相连
+            //要从当前叶子节点出发，寻找父节点直到根
+            //如果这个输出节点是第一次被引用，那么保存它的完整对象
+            //否则保存它的id，然后从环境中获取它的输出值。
+            //对于包含多个分支的动作，这里会有一个作用域的问题。
+            //就像是在if的分支里面声明一个变量，在后续动作作用域中这个变量不一定都存在。
+            //目前选择的解决方法是对于超出作用域的节点是无法通过id引用的。
+            //这种解决方案会导致一个问题，那就是在ui上显示为一个的节点，实际上可能是多个不同的节点。
+            if (!isActionNodeValueRefedInPrevNodes(outputActionNode, inputActionNode, inputIndex))
+            {
+                inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
+                //遍历子节点，使其中所有对相同值输出的引用从直接引用变为id引用
+                traverseActionNode(inputActionNode, false, a =>
+                {
+                    if (a == inputActionNode)
+                        return;
+                    if (a.inputs != null && a.inputs.Length > 0)
+                    {
+                        for (int i = 0; i < a.inputs.Length; i++)
+                        {
+                            if (a.inputs[i] == null)
+                                continue;
+                            if (a.inputs[i].action == outputActionNode)
+                            {
+                                a.inputs[i].action = null;
+                                a.inputs[i].actionNodeId = outputActionNode.id;
+                            }
+                        }
+                    }
+                });
+            }
+            else
+            {
+                inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode.id, outputIndex);
+            }
+            //更新输出节点的输出变量状态
+            updateRegVar(outputActionNode);
+            //从离散节点列表中去掉被连接的节点
+            graphInfo.freeActionNodeList.Remove(inputActionNode);
+            //更新ui
+            _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
+        }
+        private void unconnectNode4RootAction(ActionNode inputActionNode)
+        {
+            if (inputActionNode == rootActionNode)
+            {
+                //断开与入口动作节点的连接
+                rootActionNode = null;
+            }
+            //输入节点一定会变得离散
+            if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
+                graphInfo.freeActionNodeList.Add(inputActionNode);
+            _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0);
         }
         private void unconnectNode4ReturnValueRef(ActionNode outputActionNode, int outputIndex, int inputIndex)
         {
-            throw new NotImplementedException();
+            if (rootActionNode == outputActionNode)
+            {
+                //断开与返回值节点的连接
+                rootActionNode = null;
+            }
+            //输出节点一定会变得离散
+            if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
+                graphInfo.freeActionNodeList.Add(outputActionNode);
+            _ui.unconnectNode(getActionNodeItem(outputActionNode), valueRef.index + 1, _returnNodeItem, 0);
         }
         /// <summary>
         /// 断开节点的动作输入输出连接
@@ -1423,7 +1674,18 @@ namespace Controllers
         /// <param name="inputActionNode"></param>
         private void unconnectNode4Action(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode)
         {
-            throw new NotImplementedException();
+            //断开节点连接
+            if (outputActionNode.branches != null &&
+                outputActionNode.branches.Length > outputIndex)
+            {
+                outputActionNode.branches[outputIndex] = null;
+            }
+            //更新节点是否离散
+            //输入节点一定会变得离散
+            if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
+                graphInfo.freeActionNodeList.Add(inputActionNode);
+            //更新ui
+            _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex, getActionNodeItem(inputActionNode), 0);
         }
         /// <summary>
         /// 断开节点的值输入输出连接
@@ -1434,7 +1696,67 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void unconnectNode4ValueRef(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
-            throw new NotImplementedException();
+            ActionNodeItem inputActionNodeItem = getActionNodeItem(inputActionNode);
+            ActionNodeItem outputActionNodeItem = getActionNodeItem(outputActionNode);
+            ActionValueRef inputActionValueRef = inputActionNode.inputs[inputIndex];
+            //断开之前的节点连接
+            ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+            if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length - 1)
+            {
+                //如果断开的是多参数节点
+                List<ActionValueRef> inputList = new List<ActionValueRef>(inputActionNode.inputs);
+                inputList.RemoveAt(inputIndex);
+                inputActionNode.inputs = inputList.ToArray();
+                //更新ui
+                _ui.unconnectNodeAllInput(inputActionNodeItem);
+                for (int i = 0; i < inputActionNode.branches.Length; i++)
+                {
+                    _ui.connectNode(getActionNodeItem(inputActionNode.branches[i]), 0, inputActionNodeItem, i, ActionNodeConnectionType.value);
+                }
+                for (int i = inputActionNode.branches.Length; i < inputList.Count; i++)
+                {
+                    _ui.connectNode(getActionNodeItem(inputList[i].action), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
+                }
+            }
+            else
+            {
+                //不是端参数，直接断开
+                inputActionNode.inputs[inputIndex] = null;
+                //更新ui
+                _ui.unconnectNode(outputActionNodeItem, outputActionNode.branches.Length + outputIndex, inputActionNodeItem, inputActionNode.branches.Length + inputIndex);
+            }
+            if (inputActionValueRef.action != null)
+            {
+                //寻找子节点中的第一个值引用，将其改为引用对象本身
+                traverseActionNode(inputActionNode, false, a =>
+                {
+                    if (a.inputs == null)
+                        return false;
+                    for (int i = 0; i < a.inputs.Length; i++)
+                    {
+                        if (a.inputs[i] != null && a.inputs[i].actionNodeId == inputActionValueRef.action.id)
+                        {
+                            a.inputs[i].action = inputActionValueRef.action;
+                            a.inputs[i].actionNodeId = 0;
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            }
+            //更新离散和输出状态
+            if (isFreeActionNode(outputActionNode))
+            {
+                outputActionNode.regVar = null;
+                //如果输出节点变为离散节点，将其添加进入列表
+                if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
+                    graphInfo.freeActionNodeList.Add(outputActionNode);
+            }
+            else
+            {
+                //更新输出变量状态
+                updateRegVar(outputActionNode);
+            }
         }
         /// <summary>
         /// 断开一个节点和其他节点的所有连接
@@ -1442,7 +1764,67 @@ namespace Controllers
         /// <param name="actionNode"></param>
         private void unconnectNodeAll(ActionNode actionNode)
         {
-            throw new NotImplementedException();
+            //与入口节点断开连接
+            if (rootActionNode == actionNode)
+            {
+                if (valueRef != null)
+                    unconnectNode4ReturnValueRef(actionNode, valueRef.index, 0);
+                else
+                    unconnectNode4RootAction(actionNode);
+            }
+            if (actionNode.inputs != null)
+            {
+                for (int i = 0; i < actionNode.inputs.Length; i++)
+                {
+                    if (!string.IsNullOrEmpty(actionNode.inputs[i].eventVarName))
+                    {
+                        unconnectNode4TriggerEventVarRef(getEventVarNameIndex(actionNode.inputs[i].eventVarName), actionNode, i);
+                    }
+                }
+            }
+            //与其他节点断开连接
+            for (int i = 0; i < _actionNodeList.Count; i++)
+            {
+                if (_actionNodeList[i] == null)
+                    continue;
+                //与输出动作断开连接
+                int index;
+                if (actionNode.branches != null)
+                {
+                    index = Array.IndexOf(actionNode.branches, _actionNodeList[i]);
+                    if (index >= 0)
+                    {
+                        unconnectNode4Action(actionNode, index, _actionNodeList[i]);
+                    }
+                }
+                //与输出值断开连接
+                if (_actionNodeList[i].inputs != null)
+                {
+                    index = Array.FindIndex(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id));
+                    if (index >= 0)
+                    {
+                        unconnectNode4ValueRef(actionNode, _actionNodeList[i].inputs[index].index, _actionNodeList[i], index);
+                    }
+                }
+                //与输入动作断开连接
+                if (_actionNodeList[i].branches != null)
+                {
+                    index = Array.IndexOf(_actionNodeList[i].branches, actionNode);
+                    if (index >= 0)
+                    {
+                        unconnectNode4Action(_actionNodeList[i], index, actionNode);
+                    }
+                }
+                //与输入值断开连接
+                if (actionNode.inputs != null)
+                {
+                    index = Array.FindIndex(actionNode.inputs, v => v != null && (v.action == _actionNodeList[i] || v.actionNodeId == _actionNodeList[i].id));
+                    if (index >= 0)
+                    {
+                        unconnectNode4ValueRef(_actionNodeList[i], actionNode.inputs[index].index, actionNode, index);
+                    }
+                }
+            }
         }
         /// <summary>
         /// 判断一个节点是否是离散的节点，实际上不影响游戏但是可能对没有完成的编辑工作有用所以保存在编辑器里
@@ -1553,6 +1935,116 @@ namespace Controllers
                 }
             }
             return count;
+        }
+        /// <summary>
+        /// 获取引用了特定节点的输出的所有节点以及引用的输入索引
+        /// </summary>
+        /// <returns></returns>
+        private (ActionNode actionNode, int index)[] getValueRefedActionNodes(ActionNode outputActionNode, int outputIndex)
+        {
+            List<(ActionNode actionNode, int index)> list = new List<(ActionNode actionNode, int index)>();
+            for (int i = 0; i < _actionNodeList.Count; i++)
+            {
+                if (_actionNodeList[i].inputs == null || _actionNodeList[i].inputs.Length < 1)
+                    continue;
+                for (int j = 0; j < _actionNodeList[i].inputs.Length; j++)
+                {
+                    if (_actionNodeList[i].inputs[j] == null)
+                        continue;
+                    if ((_actionNodeList[i].inputs[j].action == outputActionNode || _actionNodeList[i].inputs[j].actionNodeId == outputActionNode.id) &&
+                        _actionNodeList[i].inputs[j].index == outputIndex)
+                    {
+                        list.Add((_actionNodeList[i], j));
+                    }
+                }
+            }
+            return list.ToArray();
+        }
+        /// <summary>
+        /// 获取一个动作节点的根节点，如果它已经是根节点那么就返回它。
+        /// </summary>
+        /// <param name="actionNode"></param>
+        /// <returns></returns>
+        private ActionNode getRootNode(ActionNode actionNode)
+        {
+            if (actionNode == null)
+                return null;
+            if (tryGetPrevActionNode(actionNode, out ActionNode prevActionNode, out _))
+            {
+                return getRootNode(prevActionNode);
+            }
+            else
+                return actionNode;
+        }
+        /// <summary>
+        /// 判断一个节点是否在当前节点之前的动作节点中被引用了。
+        /// </summary>
+        /// <param name="valueActionNode"></param>
+        /// <param name="curActionNode"></param>
+        /// <returns></returns>
+        private bool isActionNodeValueRefedInPrevNodes(ActionNode valueActionNode, ActionNode curActionNode, int curIndex)
+        {
+            //判断当前节点是否已经引用了
+            if (isActionNodeValueRefedInNode(valueActionNode, curActionNode, curIndex))
+            {
+                return true;
+            }
+            if (!tryGetPrevActionNode(curActionNode, out curActionNode, out _))
+            {
+                return false;
+            }
+            //判断父节点
+            while (curActionNode != null)
+            {
+                if (isActionNodeValueRefedInNode(valueActionNode, curActionNode))
+                {
+                    return true;
+                }
+                if (!tryGetPrevActionNode(curActionNode, out curActionNode, out _))
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+        private bool isActionNodeValueRefedInNode(ActionNode valueActionNode, ActionNode actionNode, int curIndex = -1)
+        {
+            if (valueActionNode == actionNode)
+                return true;
+            if (actionNode.inputs == null)
+                return false;
+            if (curIndex < 0 || curIndex >= actionNode.inputs.Length)
+            {
+                for (int i = 0; i < actionNode.inputs.Length; i++)
+                {
+                    ActionNode childActionNode;
+                    if (actionNode.inputs[i].action != null)
+                        childActionNode = actionNode.inputs[i].action;
+                    else
+                        childActionNode = getActionNode(actionNode.inputs[i].actionNodeId);
+                    if (isActionNodeValueRefedInNode(valueActionNode, childActionNode))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                for (int i = 0; i < curIndex; i++)
+                {
+                    ActionNode childActionNode;
+                    if (actionNode.inputs[i].action != null)
+                        childActionNode = actionNode.inputs[i].action;
+                    else
+                        childActionNode = getActionNode(actionNode.inputs[i].actionNodeId);
+                    if (isActionNodeValueRefedInNode(valueActionNode, childActionNode))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
         /// <summary>
         /// 判断一个节点是否在父节点和父节点之上的节点中被引用为值
