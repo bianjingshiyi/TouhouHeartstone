@@ -1640,7 +1640,7 @@ namespace Controllers
             //从离散节点列表中去掉被连接的节点
             graphInfo.freeActionNodeList.Remove(inputActionNode);
             //更新ui
-            _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
+            _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.action);
         }
         private void unconnectNode4RootAction(ActionNode inputActionNode)
         {
@@ -2177,8 +2177,8 @@ namespace Controllers
             }
             return inputNameList.ToArray();
         }
-        
-        
+
+
         IOConnectInfo[] getActionNodeInputInfos(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
@@ -2226,7 +2226,7 @@ namespace Controllers
                 {
                     inputName = game.langManager.getString(inputName);
                 }
-                
+
                 Debug.Log("inputs3：" + inputName);
                 inputNameList.Add(new IOConnectInfo()
                 {
@@ -2236,7 +2236,7 @@ namespace Controllers
             }
             return inputNameList.ToArray();
         }
-        
+
         ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
             var actionDefine = _actionDefineDict[actionNode.defineName];
@@ -2291,12 +2291,12 @@ namespace Controllers
             }
             return outputNames;
         }
-        
+
         IOConnectInfo[] getActionNodeOutputInfos(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
-   
+
             IOConnectInfo[] outputNames = new IOConnectInfo[actionDefine.outputs.Length + actionNode.branches.Length];
             for (int i = 0; i < outputNames.Length; i++)
             {
