@@ -1195,26 +1195,35 @@ namespace Controllers
                     continue;
                 if (sizeDict == null)
                     sizeDict = new Dictionary<ActionNode, Vector2>();
-                ActionNode inputActionNode = valueRef.action != null ? valueRef.action : getActionNode(valueRef.actionNodeId);
-                try
+                if (string.IsNullOrEmpty(valueRef.eventVarName))
                 {
-                    if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
+                    //与普通节点连接
+                    ActionNode inputActionNode = valueRef.action != null ? valueRef.action : getActionNode(valueRef.actionNodeId);
+                    try
                     {
-                        inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
-                            nextNodeItem: actionNodeItem,
-                            startPosOffset: lastNodeOffset,
-                            sizeDict: sizeDict);
-                        Vector2 size = calcActionNodeGraphSize(inputActionNode, sizeDict);
-                        lastNodeOffset -= size.y;
+                        if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
+                        {
+                            inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
+                                nextNodeItem: actionNodeItem,
+                                startPosOffset: lastNodeOffset,
+                                sizeDict: sizeDict);
+                            Vector2 size = calcActionNodeGraphSize(inputActionNode, sizeDict);
+                            lastNodeOffset -= size.y;
+                        }
+                        //输出索引要被动作分支占用若干个空位
+                        //输入索引要被前置动作占用一个空位
+                        _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
                     }
-                    //输出索引要被动作分支占用若干个空位
-                    //输入索引要被前置动作占用一个空位
-                    _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                    catch (Exception e)
+                    {
+                        Debug.LogError("创建子节点" + inputActionNode + "的图像时发生异常：" + e);
+                        continue;
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    Debug.LogError("创建子节点" + inputActionNode + "的图像时发生异常：" + e);
-                    continue;
+                    //与入口节点连接
+                    _ui.connectNode(_entryNodeItem, 1 + getEventVarNameIndex(valueRef.eventVarName), actionNodeItem, 1 + i, ActionNodeConnectionType.value);
                 }
             }
             return actionNodeItem;
