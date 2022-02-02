@@ -36,10 +36,6 @@ namespace TouhouHeartstone
                         {
                             try
                             {
-                                if (logger == null)
-                                    UberDebug.LogDebugChannel("Load", "加载内置卡片" + define.ToJson());
-                                else
-                                    logger.log("Load", "加载内置卡片" + define.ToJson());
                                 cardList.Add(define);
                             }
                             catch (Exception e)
