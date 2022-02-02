@@ -163,6 +163,8 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            //初始化序列化设置
+            JsonHelper.init();
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             Main main = ui.getObject<Main>();
             main.MainMenu.lANButton.onClick.set(() =>

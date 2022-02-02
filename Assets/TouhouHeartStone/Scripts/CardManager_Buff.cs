@@ -11,52 +11,45 @@ namespace Game
         #region 公有方法
         public GeneratedBuffDefine createBuffDefine(int cardPoolId)
         {
-            if (!_externalBuffDefineDict.TryGetValue(cardPoolId, out var buffDefineList))
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                buffDefineList = new List<GeneratedBuffDefine>();
-                _externalBuffDefineDict.Add(cardPoolId, buffDefineList);
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
             int newBuffDefineId = 0;
-            for (int i = 0; i < buffDefineList.Count; i++)
+            for (int i = 0; i < cardPool.buffDefineList.Count; i++)
             {
-                if (buffDefineList[i].getId() > newBuffDefineId)
-                    newBuffDefineId = buffDefineList[i].getId();
+                if (cardPool.buffDefineList[i].getId() > newBuffDefineId)
+                    newBuffDefineId = cardPool.buffDefineList[i].getId();
             }
             newBuffDefineId++;
             GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(newBuffDefineId);
-            buffDefineList.Add(buffDefine);
+            cardPool.buffDefineList.Add(buffDefine);
             return buffDefine;
         }
         public bool removeBuffDefine(int cardPoolId, GeneratedBuffDefine buffDefine)
         {
-            if (_externalBuffDefineDict.TryGetValue(cardPoolId, out var buffDefineList))
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                return buffDefineList.Remove(buffDefine);
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
-            else
-                return false;
+            return cardPool.buffDefineList.Remove(buffDefine);
         }
         public bool tryGetBuffDefine(int cardPoolId, int buffDefineId, out GeneratedBuffDefine buffDefine)
         {
-            if (_externalBuffDefineDict.TryGetValue(cardPoolId, out var buffDefineList))
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                buffDefine = buffDefineList.Find(b => b.id == buffDefineId);
-                return buffDefine != null;
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
-            else
-            {
-                buffDefine = null;
-                return false;
-            }
+            buffDefine = cardPool.buffDefineList.Find(b => b.id == buffDefineId);
+            return buffDefine != null;
         }
         public GeneratedBuffDefine[] getBuffDefines(int cardPoolId)
         {
-            if (_externalBuffDefineDict.TryGetValue(cardPoolId, out var buffList))
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                return buffList.ToArray();
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
-            else
-                return new GeneratedBuffDefine[0];
+            return cardPool.buffDefineList.ToArray();
         }
         public GeneratedBuffDefine[] getBuffDefines(IEnumerable<int> cardPoolsId)
         {
@@ -79,30 +72,28 @@ namespace Game
         }
         public BuffSkin createBuffSkin(int cardPoolId, int buffId, string language)
         {
-            if (!_externalBuffSkinDict.TryGetValue(cardPoolId, out List<BuffSkin> buffSkinList))
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                buffSkinList = new List<BuffSkin>();
-                _externalBuffSkinDict.Add(cardPoolId, buffSkinList);
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
             BuffSkin buffSkin = new BuffSkin()
             {
                 language = language,
                 buffId = buffId
             };
-            if (buffSkinList.Find(s => s.buffId == buffId && s.language == language) != null)
+            if (cardPool.buffSkinList.Find(s => s.buffId == buffId && s.language == language) != null)
             {
                 Debug.LogWarning("已经存在增益" + buffId + "的语言为" + language + "的皮肤");
             }
-            buffSkinList.Add(buffSkin);
+            cardPool.buffSkinList.Add(buffSkin);
             return buffSkin;
         }
         public bool removeBuffSkin(BuffSkin buffSkin)
         {
-            foreach (var pair in _externalBuffSkinDict)
+            foreach (var cardPool in _cardPoolDict.Values)
             {
-                if (pair.Value.Contains(buffSkin))
+                if (cardPool.buffSkinList.Remove(buffSkin))
                 {
-                    pair.Value.Remove(buffSkin);
                     return true;
                 }
             }
@@ -116,7 +107,11 @@ namespace Game
         public BuffSkin getBuffSkin(BuffDefine buffDefine)
         {
             int cardPoolId = getCardPoolIdOfBuffDefine(buffDefine);
-            var buffSkinList = _externalBuffSkinDict[cardPoolId].FindAll(s => s.buffId == buffDefine.getId());
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+            }
+            var buffSkinList = cardPool.buffSkinList.FindAll(s => s.buffId == buffDefine.getId());
             BuffSkin buffSkin = buffSkinList.Find(s => s.language == game.langManager.getLanguage());
             if (buffSkin == null)
                 buffSkin = buffSkinList.Count > 0 ? buffSkinList[0] : null;
@@ -124,9 +119,9 @@ namespace Game
         }
         public int getCardPoolIdOfBuffDefine(BuffDefine buffDefine)
         {
-            foreach (var pair in _externalBuffDefineDict)
+            foreach (var pair in _cardPoolDict)
             {
-                if (pair.Value.Contains(buffDefine as GeneratedBuffDefine))
+                if (pair.Value.buffDefineList.Contains(buffDefine as GeneratedBuffDefine))
                 {
                     return pair.Key;
                 }
@@ -135,37 +130,35 @@ namespace Game
         }
         public BuffSkin[] getBuffSkins(int cardPoolId, int buffId)
         {
-            if (_externalBuffSkinDict.TryGetValue(cardPoolId, out var externalBuffSkinList))
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                List<BuffSkin> buffSkinList = new List<BuffSkin>();
-                for (int i = 0; i < externalBuffSkinList.Count; i++)
-                {
-                    if (externalBuffSkinList[i].buffId == buffId)
-                    {
-                        buffSkinList.Add(externalBuffSkinList[i]);
-                    }
-                }
-                return buffSkinList.ToArray();
-            }
-            else
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+            }
+            List<BuffSkin> buffSkinList = new List<BuffSkin>();
+            for (int i = 0; i < cardPool.buffSkinList.Count; i++)
+            {
+                if (cardPool.buffSkinList[i].buffId == buffId)
+                {
+                    buffSkinList.Add(cardPool.buffSkinList[i]);
+                }
+            }
+            return buffSkinList.ToArray();
         }
         public BuffSkin[] getBuffSkins(int cardPoolId)
         {
-            if (_externalBuffSkinDict.TryGetValue(cardPoolId, out List<BuffSkin> buffSkinList))
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                return buffSkinList.ToArray();
-            }
-            else
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+            }
+            return cardPool.buffSkinList.ToArray();
         }
         #endregion
         #region 属性字段
         /// <summary>
         /// 外部增益定义字段，Key为卡池Id，值为增益定义列表
         /// </summary>
-        Dictionary<int, List<GeneratedBuffDefine>> _externalBuffDefineDict = new Dictionary<int, List<GeneratedBuffDefine>>();
-        Dictionary<int, List<BuffSkin>> _externalBuffSkinDict = new Dictionary<int, List<BuffSkin>>();
+        //Dictionary<int, List<GeneratedBuffDefine>> _externalBuffDefineDict = new Dictionary<int, List<GeneratedBuffDefine>>();
+        //Dictionary<int, List<BuffSkin>> _externalBuffSkinDict = new Dictionary<int, List<BuffSkin>>();
         #endregion
     }
 }

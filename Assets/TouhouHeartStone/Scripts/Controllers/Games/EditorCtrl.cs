@@ -180,13 +180,9 @@ namespace Controllers
             _ui.setDeckListActive(false);
             _ui.setEditDeckPanelActive(true);
             _curCardPoolPath = null;
-            _curCardPoolInfo = new CardPoolInfo()
-            {
-                cardPoolId = allocCardPoolId()
-            };
+            game.card.createCardPool(allocCardPoolId(), out _curCardPoolInfo, out _);
             _cardPoolInfoList.Add(_curCardPoolInfo);
             _cardPoolPathList.Add(null);
-            game.card.addExternalCardPool(_curCardPoolInfo.cardPoolId);
             _curCardPoolInfo.cardPoolName = "新建卡组";
             _curCardPoolInfo.imageResPath = null;
             _cardDefineList.Clear();
@@ -215,7 +211,7 @@ namespace Controllers
                 CardSkinData newCardSkin = new CardSkinData();
                 newCardSkin.id = newCardDefine.id;
                 _cardSkinList.Add(newCardSkin);
-                game.card.addExternalCard(_curCardPoolInfo.cardPoolId, newCardDefine, newCardSkin);
+                game.card.createCard(_curCardPoolInfo.cardPoolId, newCardDefine, newCardSkin);
                 await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, newCardDefine, getSelectableCharacters());
             }
         }
@@ -311,10 +307,13 @@ namespace Controllers
             actionNodeGraphInfoList.Clear();
             if (!string.IsNullOrEmpty(cardPoolPath))
             {
-                var (defines, skins, actionGraphInfos) = await game.card.getOrLoadCardPoolContents(cardPoolPath);
-                _cardDefineList.AddRange(defines);
-                _cardSkinList.AddRange(skins);
-                actionNodeGraphInfoList.AddRange(actionGraphInfos);
+                if (!game.card.tryGetCardPool(cardPoolPath, out CardPool cardPool))
+                {
+                    cardPool = (await game.card.loadCardPool(cardPoolPath)).cardPool;
+                }
+                _cardDefineList.AddRange(cardPool.cardDefineList);
+                _cardSkinList.AddRange(cardPool.cardSkinList);
+                actionNodeGraphInfoList.AddRange(cardPool.actionNodeGraphInfoList);
                 //尝试修复受损的数据
                 for (int i = 0; i < _cardDefineList.Count; i++)
                 {
@@ -440,18 +439,29 @@ namespace Controllers
                 //                        path = Path.GetFullPath(path);
                 //                }
                 //#endif
-                if (_curCardPoolPath.StartsWith("sa:"))
+                if (!string.IsNullOrEmpty(_curCardPoolPath))
                 {
-                    //StreamingAssets不需要区分根目录
-                    if (!path.StartsWith("sa:"))
-                        path = "sa:" + Path.Combine(game.card.textureDirName, path);
-                    return game.card.loadExternalImage(path, null);
+                    if (string.IsNullOrEmpty(path))
+                    {
+                        return Task.FromResult<Sprite>(null);
+                    }
+                    else if (_curCardPoolPath.StartsWith("sa:") &&
+                        !path.StartsWith("sa:") &&
+                        !path.StartsWith("res:"))
+                    {
+                        //StreamingAssets不需要区分根目录
+                        return game.card.loadExternalImage("sa:" + Path.Combine(game.card.textureDirName, path), null);
+                    }
+                    else
+                    {
+                        //因为在Editor下无法区分可持续化文件和工程文件，这里必须获取卡池目录的完整根目录
+                        return game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(_curCardPoolPath), game.card.textureDirName));
+                    }
                 }
                 else
                 {
-                    //因为在Editor下无法区分可持续化文件和工程文件，这里必须获取卡池目录的完整根目录
-                    string dirName = Path.Combine(game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(_curCardPoolInfo)), game.card.textureDirName);
-                    return game.card.loadExternalImage(path, dirName);
+                    //没有卡池信息
+                    return game.card.loadExternalImage(path, game.card.textureDirName);
                 }
             }
         }

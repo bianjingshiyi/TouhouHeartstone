@@ -11,12 +11,13 @@ namespace Controllers
 {
     public static class JsonHelper
     {
-        public static string toJson(this object obj)
+        public static void init()
         {
             ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
-            string json = obj.ToJson();
-            ConventionRegistry.Remove(nameof(CustomClassMapConvention));
-            return json;
+        }
+        public static string toJson(this object obj)
+        {
+            return obj.ToJson();
         }
         public static T fromJson<T>(string json)
         {
@@ -53,8 +54,17 @@ namespace Controllers
                     //忽略所有带有忽略特性的字段
                     BsonMemberMap memberMap = classMap.MapMember(fieldInfo);
                     //如果为null或者默认值则忽略
-                    memberMap.SetIgnoreIfDefault(true);
-                    memberMap.SetIgnoreIfNull(true);
+                    if (fieldInfo.FieldType.IsValueType)
+                    {
+                        //值类型的默认值可以直接创建
+                        memberMap.SetDefaultValue(Activator.CreateInstance(fieldInfo.FieldType));
+                        memberMap.SetIgnoreIfDefault(true);
+                    }
+                    else
+                    {
+                        //引用类型的默认值为null
+                        memberMap.SetIgnoreIfNull(true);
+                    }
                 }
                 classMap = classMap.BaseClassMap;
             }

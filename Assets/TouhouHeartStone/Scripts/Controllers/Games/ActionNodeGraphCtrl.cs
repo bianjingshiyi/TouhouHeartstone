@@ -679,10 +679,9 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onUnconnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
-            ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-            ActionNode inputActionNode = getActionNode(inputActionNodeItem);
             if (outputActionNodeItem == _entryNodeItem)
             {
+                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
                 if (inputIndex == 0)
                 {
                     //动作连接
@@ -719,6 +718,7 @@ namespace Controllers
             }
             else if (inputActionNodeItem == _returnNodeItem && valueRef != null)
             {
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
                 unconnectNode4ReturnValueRef(outputActionNode, valueRef.index, 0);
                 //ActionNode outputActionNode = getActionNode(outputActionNodeItem);
                 //if (rootActionNode == outputActionNode)
@@ -733,6 +733,8 @@ namespace Controllers
             }
             else
             {
+                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
                 if (inputIndex == 0)
                 {
                     //动作连接

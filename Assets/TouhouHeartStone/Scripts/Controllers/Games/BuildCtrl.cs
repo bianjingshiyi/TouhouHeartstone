@@ -179,10 +179,33 @@ namespace Controllers
                 item.card.setCard(cardDefine, cardSkin);
                 if (cardSkin != null && cardSkin.image == null)
                 {
-                    Sprite sprite = cardSkin.imagePath.StartsWith("sa:") || cardSkin.imagePath.StartsWith("res:") ?
-                        await game.card.loadExternalImage(cardSkin.imagePath, null) :
-                        await game.card.loadExternalImage(cardSkin.imagePath,
-                            Path.Combine(game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(game.card.getCardPoolOfCard(cardDefine))), game.card.textureDirName));
+                    Sprite sprite;
+                    string path = cardSkin.imagePath;
+                    if (game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPool &&
+                        game.card.getCardPoolPath(cardPool) is string cardPoolPath)
+                    {
+                        if (string.IsNullOrEmpty(path))
+                        {
+                            sprite = null;
+                        }
+                        else if (cardPoolPath.StartsWith("sa:") &&
+                            !path.StartsWith("sa;") &&
+                            !path.StartsWith("res:"))
+                        {
+                            //流文件
+                            sprite = await game.card.loadExternalImage("sa:" + Path.Combine(game.card.textureDirName, path), null);
+                        }
+                        else
+                        {
+                            //绝对路径
+                            sprite = await game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(cardPoolPath), game.card.textureDirName));
+                        }
+                    }
+                    else
+                    {
+                        //没有卡池信息
+                        sprite = await game.card.loadExternalImage(path, game.card.textureDirName);
+                    }
                     item.card.setImage(sprite);
                 }
                 if (_deck == null)
@@ -672,7 +695,7 @@ namespace Controllers
                 return Task.FromResult(skin.image);
             else
             {
-                return game.card.loadExternalImage(skin.imagePath, null);
+                return game.card.loadExternalImage(skin.imagePath, game.card.textureDirName);
             }
         }
         /// <summary>

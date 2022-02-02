@@ -464,7 +464,7 @@ namespace Game
         /// <returns></returns>
         public CardDefine GetCardDefine(int id)
         {
-            if (tryGetExternalCardDefine(id, out CardDefine card))
+            if (tryGetCardDefine(id, out CardDefine card))
                 return card;
             return defineDic.ContainsKey(id) ? defineDic[id] : null;
         }
@@ -478,11 +478,11 @@ namespace Game
             List<CardDefine> cardList = new List<CardDefine>();
             if (includeExternalCard)
             {
-                foreach (var externalCardList in _externalCardDefineDict.Values)
+                foreach (var cardPool in _cardPoolDict.Values)
                 {
                     cardList.AddRange(filter != null ?
-                        externalCardList.Where(c => filter.Invoke(c)) :
-                        externalCardList);
+                        cardPool.cardDefineList.Where(c => filter.Invoke(c)) :
+                        cardPool.cardDefineList);
                 }
             }
             cardList.AddRange(filter != null ?
@@ -492,9 +492,9 @@ namespace Game
         }
         public CardDefine[] getCardDefines(int cardPoolId)
         {
-            if (_externalCardDefineDict.TryGetValue(cardPoolId, out var cardDefineList))
+            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
             {
-                return cardDefineList.ToArray();
+                return cardPool.cardDefineList.ToArray();
             }
             else
                 return new CardDefine[0];
@@ -510,7 +510,7 @@ namespace Game
         /// <returns></returns>
         public CardSkinData getSkin(int id)
         {
-            if (tryGetExternalSkin(id, out CardSkinData skin))
+            if (tryGetCardSkin(id, out CardSkinData skin))
                 return skin;
             if (tempSkinDic.ContainsKey(id))
                 return tempSkinDic[id];

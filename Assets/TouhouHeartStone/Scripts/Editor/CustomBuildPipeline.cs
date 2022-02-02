@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 namespace TouhouHeartstone
 {
-    [BuilderStep(-2)]
+    [BuilderStep(2)]
     public class CustomBuildPipeline: IBuilderStep
     {
         public void ActionAfter()

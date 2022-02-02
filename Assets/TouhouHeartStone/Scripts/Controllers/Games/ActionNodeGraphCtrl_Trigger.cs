@@ -169,7 +169,7 @@ namespace Controllers
             int triggerIndex = getEventTypeIndex(_trigger.eventName);
             //创建入口节点
             _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
-            _entryNodeItem.setOutputs(getTriggerOutputNames(),_ui.GetTypeListColor());
+            _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
             if (trigger.action != null)
             {
                 var actionNodeItem = await createGraph4ActionNode(trigger.action);
@@ -207,7 +207,7 @@ namespace Controllers
                 outputNames[0] = new IOConnectInfo()
                 {
                     type = String.Empty,
-                    label =  String.Empty
+                    label = String.Empty
                 };
                 for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
                 {
@@ -217,7 +217,7 @@ namespace Controllers
                         type = eventTypeInfo.variableInfos[i].name,
                         //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
                         //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
-                        label =  game.langManager.getString(eventTypeInfo.variableInfos[i].name)
+                        label = game.langManager.getString(eventTypeInfo.variableInfos[i].name)
                     };
                 }
                 return outputNames;
@@ -232,7 +232,7 @@ namespace Controllers
                         type = String.Empty,
                         label =  String.Empty
                     }
-                };;
+                }; ;
             }
         }
         /// <summary>
@@ -259,11 +259,17 @@ namespace Controllers
                     //相连的是其他输入节点，断开连接
                     if (inputActionNode.inputs[inputIndex].action != null)
                     {
+                        //直接与节点值连接
                         unconnectNode4ValueRef(inputActionNode.inputs[inputIndex].action, inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
+                    }
+                    else if (inputActionNode.inputs[inputIndex].actionNodeId != 0)
+                    {
+                        //间接与节点值连接
+                        unconnectNode4ValueRef(getActionNode(inputActionNode.inputs[inputIndex].actionNodeId), inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
                     }
                     else if (!string.IsNullOrEmpty(inputActionNode.inputs[inputIndex].eventVarName))
                     {
-                        unconnectNode4TriggerEventVarRef(inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
+                        unconnectNode4TriggerEventVarRef(getEventVarNameIndex(inputActionNode.inputs[inputIndex].eventVarName), inputActionNode, inputIndex);
                     }
                 }
             }
