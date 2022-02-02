@@ -99,77 +99,7 @@ namespace Controllers
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
         }
         #endregion
-        #endregion
-
-        private void updateSkinNames()
-        {
-            _ui.setSkinNames(getSkins().GroupBy(s => s.skinId)
-                .Select(g => g.FirstOrDefault(s => s.language == game.langManager.getLanguage()) is CardSkinData s2 ? s2.skinName : g.First().skinName)
-                .ToArray());
-        }
-        private async Task setCurSkinIndex(int skinIndex)
-        {
-            var skinGroup = getSkins().GroupBy(s => s.skinId).ElementAt(skinIndex);
-            //获取对应语言的皮肤
-            _curCardSkin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
-            //如果没有对应语言，就第一个
-            if (_curCardSkin == null)
-                _curCardSkin = skinGroup.First();
-            _ui.setSkin(skinIndex);
-            _ui.setLanguage(Array.IndexOf(game.langManager.getLanguages(), _curCardSkin.language));
-            _ui.setName(_curCardSkin.name);
-            _ui.setSubName(_curCardSkin.subname);
-            _ui.setDesc(_curCardSkin.desc);
-            Sprite image;
-            string path = _curCardSkin.imagePath;
-            //除了StreamingAssets以外，因为无法区分可持续化文件和工程文件必须获取完整根目录
-            if (game.card.getCardPoolInfo(_cardPoolId) is CardPoolInfo cardPool &&
-                game.card.getCardPoolPath(cardPool) is string cardPoolPath)
-            {
-                if (string.IsNullOrEmpty(path))
-                {
-                    image = null;
-                }
-                else if (cardPoolPath.StartsWith("sa:") &&
-                    !path.StartsWith("sa:") &&
-                    !path.StartsWith("res:"))
-                {
-                    //流文件
-                    image = await game.card.loadExternalImage("sa:" + Path.Combine(game.card.textureDirName, path), null);
-                }
-                else
-                {
-                    //绝对路径文件
-                    image = await game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(cardPoolPath), game.card.textureDirName));
-                }
-            }
-            else
-            {
-                //没有卡池，只能默认读
-                image = await game.card.loadExternalImage(path, game.card.textureDirName);
-            }
-            if (image != null)
-            {
-                _ui.setImage(image);
-            }
-        }
-        int getSkinCount()
-        {
-            return getSkins().GroupBy(s => s.skinId).Count();
-        }
-        void updateEffectList(GeneratedEffect[] effects)
-        {
-            _ui.setEffects(game.card.getEffectNames(effects));
-        }
-        int allocSkinId()
-        {
-            return getSkins().GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1;
-        }
-        IEnumerable<CardSkinData> getSkins()
-        {
-            return game.card.getAllSkins(_cardDefine.id);
-        }
-        #region UI回调
+        #region 事件回调
         private async void onChangeSkin(int skinIndex)
         {
             if (skinIndex == getSkinCount())
@@ -488,6 +418,76 @@ namespace Controllers
             scene.editor.display(false, false, -1, true);
         }
         #endregion
+        #endregion
+
+        private void updateSkinNames()
+        {
+            _ui.setSkinNames(getSkins().GroupBy(s => s.skinId)
+                .Select(g => g.FirstOrDefault(s => s.language == game.langManager.getLanguage()) is CardSkinData s2 ? s2.skinName : g.First().skinName)
+                .ToArray());
+        }
+        private async Task setCurSkinIndex(int skinIndex)
+        {
+            var skinGroup = getSkins().GroupBy(s => s.skinId).ElementAt(skinIndex);
+            //获取对应语言的皮肤
+            _curCardSkin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
+            //如果没有对应语言，就第一个
+            if (_curCardSkin == null)
+                _curCardSkin = skinGroup.First();
+            _ui.setSkin(skinIndex);
+            _ui.setLanguage(Array.IndexOf(game.langManager.getLanguages(), _curCardSkin.language));
+            _ui.setName(_curCardSkin.name);
+            _ui.setSubName(_curCardSkin.subname);
+            _ui.setDesc(_curCardSkin.desc);
+            Sprite image;
+            string path = _curCardSkin.imagePath;
+            //除了StreamingAssets以外，因为无法区分可持续化文件和工程文件必须获取完整根目录
+            if (game.card.getCardPoolInfo(_cardPoolId) is CardPoolInfo cardPool &&
+                game.card.getCardPoolPath(cardPool) is string cardPoolPath)
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    image = null;
+                }
+                else if (cardPoolPath.StartsWith("sa:") &&
+                    !path.StartsWith("sa:") &&
+                    !path.StartsWith("res:"))
+                {
+                    //流文件
+                    image = await game.card.loadExternalImage("sa:" + Path.Combine(game.card.textureDirName, path), null);
+                }
+                else
+                {
+                    //绝对路径文件
+                    image = await game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(cardPoolPath), game.card.textureDirName));
+                }
+            }
+            else
+            {
+                //没有卡池，只能默认读
+                image = await game.card.loadExternalImage(path, game.card.textureDirName);
+            }
+            if (image != null)
+            {
+                _ui.setImage(image);
+            }
+        }
+        int getSkinCount()
+        {
+            return getSkins().GroupBy(s => s.skinId).Count();
+        }
+        void updateEffectList(GeneratedEffect[] effects)
+        {
+            _ui.setEffects(game.card.getEffectNames(effects));
+        }
+        int allocSkinId()
+        {
+            return getSkins().GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1;
+        }
+        IEnumerable<CardSkinData> getSkins()
+        {
+            return game.card.getAllSkins(_cardDefine.id);
+        }
         [Obsolete]
         public IAppManager app { get; }
         [Obsolete]

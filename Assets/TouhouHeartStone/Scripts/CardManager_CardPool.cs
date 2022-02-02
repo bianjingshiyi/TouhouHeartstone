@@ -93,8 +93,10 @@ namespace Game
         public void createCardPool(int cardPoolId, out CardPoolInfo cardPoolInfo, out CardPool cardPool)
         {
             cardPoolInfo = new CardPoolInfo();
+            cardPoolInfo.cardPoolId = cardPoolId;
+            cardPoolInfo.version = CARD_POOL_VERSION_0_1;
             cardPool = new CardPool();
-            _cardPoolDict.Add(cardPoolId, cardPool);
+            _cardPoolDict[cardPoolId] = cardPool;
         }
         public async Task saveCardPool(CardPoolInfo cardPoolInfo, CardDefine[] cardDefines, CardSkinData[] cardSkins, ActionNodeGraphInfo[] actionNodeGraphInfos)
         {
@@ -439,6 +441,10 @@ namespace Game
         }
         public bool removeCardPool(int cardPoolId)
         {
+            if (_cardPoolDict.ContainsKey(cardPoolId))
+            {
+                _cardPoolDict.Remove(cardPoolId);
+            }
             string path = null;
             foreach (var pair in _cardPoolInfoDict)
             {
