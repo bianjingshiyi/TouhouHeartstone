@@ -17,20 +17,20 @@ namespace Game
 
         #region 简单抽牌节点
         [TranslateMsg("编辑器/行动/简单抽牌节点_名称")]
-            public const string EDITOR_NODE__SIMPLE_DRAW_CARD__NAME = "简单抽牌";
-            [TranslateMsg("编辑器/行动/简单抽牌节点_参数_抽牌玩家")]
-            public const string EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER = "Player";
-            [TranslateMsg("编辑器/行动/简单抽牌节点_参数_抽牌事件")]
-            public const string EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT = "Event";
-            #endregion
+        public const string EDITOR_NODE__SIMPLE_DRAW_CARD__NAME = "简单抽牌";
+        [TranslateMsg("编辑器/行动/简单抽牌节点_参数_抽牌玩家")]
+        public const string EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER = "Player";
+        [TranslateMsg("编辑器/行动/简单抽牌节点_参数_抽牌事件")]
+        public const string EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT = "Event";
+        #endregion
 
-            #region 简单召唤
-            [TranslateMsg("编辑器/行动/简单召唤召唤物_名称")]
-            public const string EDITOR_NODE__SIMPLE_CREATE_TOKEN__NAME = "简单召唤召唤物";
-            [TranslateMsg("编辑器/行动/简单抽牌节点_参数_召唤玩家")]
-            public const string EDITOR_NODE__SIMPLE_CREATE_TOKEN__PLAYER = "Player";
-            [TranslateMsg("编辑器/行动/简单抽牌节点_参数_召唤物定义")]
-            public const string EDITOR_NODE__SIMPLE_CREATE_TOKEN__DEFINE = "Define";
+        #region 简单召唤
+        [TranslateMsg("编辑器/行动/简单召唤召唤物_名称")]
+        public const string EDITOR_NODE__SIMPLE_CREATE_TOKEN__NAME = "简单召唤召唤物";
+        [TranslateMsg("编辑器/行动/简单抽牌节点_参数_召唤玩家")]
+        public const string EDITOR_NODE__SIMPLE_CREATE_TOKEN__PLAYER = "Player";
+        [TranslateMsg("编辑器/行动/简单抽牌节点_参数_召唤物定义")]
+        public const string EDITOR_NODE__SIMPLE_CREATE_TOKEN__DEFINE = "Define";
         #endregion
 
 

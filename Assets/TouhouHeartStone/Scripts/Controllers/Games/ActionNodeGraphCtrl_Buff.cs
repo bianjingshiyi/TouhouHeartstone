@@ -153,54 +153,56 @@ namespace Controllers
                 await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
             }
         }
-        private async void onItemBuffLanguageChangedCallback(ActionNodeItem item, string value)
+        private async void onItemBuffLanguageChangedCallback(ActionNodeItem item, int index)
         {
             int buffDefineId = (int)getActionNode(item).consts[0];
             if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
                 buffDefine is GeneratedBuffDefine generatedBuffDefine)
             {
                 var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
-                buffSkin.language = value;
+                string[] languages = game.langManager.getLanguages();
+                buffSkin.language = languages[index];
                 await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
             }
         }
         private async void onItemNeedSelectBuffImage(ActionNodeItem item)
         {
-            string imagePath = "";
-            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-            {
-                //手机端
-                var permission = NativeGallery.GetImageFromGallery(path =>
-                {
-                    imagePath = path;
-                });
-                if (permission == NativeGallery.Permission.Denied)
-                {
-                    Debug.LogError("没有打开相册的权限");
-                    // 拒绝权限后应当弹出框提示需要设置权限
-                    NativeGallery.OpenSettings();
-                }
-            }
-            else
-            {
-                //默认PC
-                string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
-                {
-                    new ExtensionFilter("Image Files", "png","jpg")
-                }, false);
-                if (paths == null || paths.Length < 1)
-                {
-                    return;
-                }
-                imagePath = paths[0];
-            }
-            
+            Sprite sprite = await game.card.selectExternalImage();
+            //string imagePath = "";
+            //if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            //{
+            //    //手机端
+            //    var permission = NativeGallery.GetImageFromGallery(path =>
+            //    {
+            //        imagePath = path;
+            //    });
+            //    if (permission == NativeGallery.Permission.Denied)
+            //    {
+            //        Debug.LogError("没有打开相册的权限");
+            //        // 拒绝权限后应当弹出框提示需要设置权限
+            //        NativeGallery.OpenSettings();
+            //    }
+            //}
+            //else
+            //{
+            //    //默认PC
+            //    string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
+            //    {
+            //        new ExtensionFilter("Image Files", "png","jpg")
+            //    }, false);
+            //    if (paths == null || paths.Length < 1)
+            //    {
+            //        return;
+            //    }
+            //    imagePath = paths[0];
+            //}
+
             int buffDefineId = (int)getActionNode(item).consts[0];
             if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
                 buffDefine is GeneratedBuffDefine generatedBuffDefine)
             {
                 var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
-                buffSkin.imagePath = imagePath;
+                buffSkin.imagePath = sprite != null ? game.card.getSpritePath(sprite) : null;
                 await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
             }
         }

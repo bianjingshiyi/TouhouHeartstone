@@ -89,7 +89,7 @@ namespace UI
         {
             onItemBuffDescChanged?.Invoke(item, value);
         }
-        private void onItemBuffLanguageChangedCallback(ActionNodeItem item, string value)
+        private void onItemBuffLanguageChangedCallback(ActionNodeItem item, int value)
         {
             onItemBuffLanguageChanged?.Invoke(item, value);
         }
@@ -112,7 +112,7 @@ namespace UI
         public event Action<ActionNodeItem, int> onItemPropModifierEditEffect;
         public event Action<ActionNodeItem, string> onItemBuffNameChanged;
         public event Action<ActionNodeItem, string> onItemBuffDescChanged;
-        public event Action<ActionNodeItem, string> onItemBuffLanguageChanged;
+        public event Action<ActionNodeItem, int> onItemBuffLanguageChanged;
         public event Action<ActionNodeItem> onItemNeedSelectBuffImage;
 
         #endregion

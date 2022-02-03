@@ -322,12 +322,12 @@ namespace UI
             _eventTypeDropdown.onValueChanged.AddListener(onChangeSelectedEventIndex);
             _editConditionButton.onClick.AddListener(onClickEditConditionButtonCallback);
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
-            _newBuffButton.onClick.AddListener(onClickNewBuffButtonCallback);
-            _deleteBuffButton.onClick.AddListener(onClickDeleteBuffButtonCallback);
             _addPropModifierButton.onClick.AddListener(onClickAddPropModifierButtonCallback);
             _effectList.onClickAddEffect += onClickPropertyModifierAddEffectMenuCallback;
             _effectList.onClickItemRemoveButton += onClickPropertyModifierEffectRemoveButtonCallback;
             _effectList.onClickItemEditButton += onClickPropertyModifierEffectEditButtonCallback;
+            //增益
+            onAwake_Buff();
         }
         #endregion
         #region 事件回调

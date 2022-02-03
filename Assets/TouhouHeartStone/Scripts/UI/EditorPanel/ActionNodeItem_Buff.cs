@@ -93,6 +93,21 @@ namespace UI
         }
         #endregion
         #region 私有方法
+        private void onAwake_Buff()
+        {
+            _buffDropdown.onValueChanged.AddListener(onBuffDropdownValueChanged);
+            _newBuffButton.onClick.AddListener(onClickNewBuffButtonCallback);
+            _deleteBuffButton.onClick.AddListener(onClickDeleteBuffButtonCallback);
+            _buffLanguageDropdown.onValueChanged.AddListener(onBuffLanguageDropdownValueChanged);
+            _buffNameInputField.onEndEdit.AddListener(onBuffNameInputFieldEndEdit);
+            _buffDescInputField.onEndEdit.AddListener(onBuffDescInputFieldEndEdit);
+            _buffImageButton.onClick.AddListener(onClickBuffImage);
+        }
+        #region 事件回调
+        private void onBuffDropdownValueChanged(int value)
+        {
+            onBuffChanged?.Invoke(this, value);
+        }
         private void onClickNewBuffButtonCallback()
         {
             onClickNewBuffButton?.Invoke(this);
@@ -100,6 +115,22 @@ namespace UI
         private void onClickDeleteBuffButtonCallback()
         {
             onClickDeleteBuffButton?.Invoke(this);
+        }
+        private void onBuffLanguageDropdownValueChanged(int value)
+        {
+            onBuffLanguageChanged?.Invoke(this, value);
+        }
+        private void onBuffNameInputFieldEndEdit(string value)
+        {
+            onBuffNameChanged?.Invoke(this, value);
+        }
+        private void onBuffDescInputFieldEndEdit(string value)
+        {
+            onBuffDescChanged?.Invoke(this, value);
+        }
+        private void onClickBuffImage()
+        {
+            onNeedSelectBuffImage?.Invoke(this);
         }
         private void onClickAddPropModifierButtonCallback()
         {
@@ -134,10 +165,15 @@ namespace UI
             onPropModifierEditEffect?.Invoke(this, index);
         }
         #endregion
+        #endregion
         #region 事件
         public event Action<ActionNodeItem, int> onBuffChanged;
         public event Action<ActionNodeItem> onClickNewBuffButton;
         public event Action<ActionNodeItem> onClickDeleteBuffButton;
+        public event Action<ActionNodeItem, int> onBuffLanguageChanged;
+        public event Action<ActionNodeItem, string> onBuffNameChanged;
+        public event Action<ActionNodeItem, string> onBuffDescChanged;
+        public event Action<ActionNodeItem> onNeedSelectBuffImage;
         public event Action<ActionNodeItem> onClickAddPropModifierButton;
         public event Action<ActionNodeItem, int> onClickRemovePropModifierButton;
         public event Action<ActionNodeItem, int, int> onPropModifierPropertyTypeChanged;
@@ -146,10 +182,6 @@ namespace UI
         public event Action<ActionNodeItem, int> onPropModifierAddEffect;
         public event Action<ActionNodeItem, int> onPropModifierRemoveEffect;
         public event Action<ActionNodeItem, int> onPropModifierEditEffect;
-        public event Action<ActionNodeItem, string> onBuffNameChanged;
-        public event Action<ActionNodeItem, string> onBuffDescChanged;
-        public event Action<ActionNodeItem, string> onBuffLanguageChanged;
-        public event Action<ActionNodeItem> onNeedSelectBuffImage;
         #endregion
         #region 属性字段
         [SerializeField]
@@ -164,6 +196,8 @@ namespace UI
         Dropdown _buffLanguageDropdown;
         [SerializeField]
         Image _buffImage;
+        [SerializeField]
+        Button _buffImageButton;
         [SerializeField]
         InputField _buffNameInputField;
         [SerializeField]

@@ -228,7 +228,12 @@ namespace Controllers
             _ui.onItemBuffLanguageChanged += onItemBuffLanguageChangedCallback;
             _ui.onItemNeedSelectBuffImage += onItemNeedSelectBuffImage;
 
-            _ui.init(game.langManager.getLanguages(), getEventTypeNames());
+            string[] languages = game.langManager.getLanguages();
+            for (int i = 0; i < languages.Length; i++)
+            {
+                languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
+            }
+            _ui.init(languages, getEventTypeNames());
         }
         #endregion
         #region 事件回调
@@ -271,53 +276,7 @@ namespace Controllers
                 //节点菜单
                 if (index == 0)//删除
                 {
-                    int actionNodeIndex = _actionNodeList.IndexOf(_curActionNode);
-                    ActionNodeItem actionNodeItem = _actionNodeItemList[actionNodeIndex];
-                    ActionNode actionNode = _curActionNode;
-                    //断开节点和所有其他节点的连接
-                    //for (int i = 0; i < _actionNodeList.Count; i++)
-                    //{
-                    //    //断开前一个动作
-                    //    int branchNodeIndex = Array.IndexOf(_actionNodeList[i].branches, actionNode);
-                    //    if (branchNodeIndex >= 0)
-                    //    {
-                    //        _actionNodeList[i].branches[branchNodeIndex] = null;
-                    //        _ui.unconnectNode(_actionNodeItemList[i], branchNodeIndex, actionNodeItem, 0);
-                    //    }
-                    //    //断开输入
-                    //    int inputValueRefIndex = Array.FindIndex(actionNode.inputs, v => v != null && (v.action == _actionNodeList[i] || v.actionNodeId == _actionNodeList[i].id));
-                    //    if (inputValueRefIndex >= 0)
-                    //    {
-                    //        var inputActionNode = _actionNodeList[i];
-                    //        var inputValueRef = actionNode.inputs[inputValueRefIndex];
-                    //        actionNode.inputs[inputValueRefIndex] = null;
-                    //        _ui.unconnectNode(_actionNodeItemList[i], inputActionNode.branches.Length + inputValueRef.index, actionNodeItem, 1 + inputValueRefIndex);
-                    //    }
-                    //    //断开后一个动作
-                    //    branchNodeIndex = Array.IndexOf(actionNode.branches, _actionNodeList[i]);
-                    //    if (branchNodeIndex >= 0)
-                    //    {
-                    //        actionNode.branches[branchNodeIndex] = null;
-                    //        _ui.unconnectNode(actionNodeItem, branchNodeIndex, _actionNodeItemList[i], 0);
-                    //    }
-                    //    //断开输出
-                    //    inputValueRefIndex = Array.FindIndex(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id));
-                    //    if (inputValueRefIndex >= 0)
-                    //    {
-                    //        var inputValueRef = _actionNodeList[i].inputs[inputValueRefIndex];
-                    //        _actionNodeList[i].inputs[inputValueRefIndex] = null;
-                    //        _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + inputValueRef.index, _actionNodeItemList[i], 1 + inputValueRefIndex);
-                    //    }
-                    //}
-                    unconnectNodeAll(actionNode);
-                    //从列表中移除
-                    _actionNodeList.RemoveAt(actionNodeIndex);
-                    _actionNodeItemList.RemoveAt(actionNodeIndex);
-                    //从编辑器信息中删除
-                    removeNodeInfo(actionNode);
-                    graphInfo.freeActionNodeList.Remove(actionNode);
-                    //将节点从UI上移除
-                    _ui.removeNode(actionNodeItem);
+                    removeActionNode();
                 }
                 closeMenu();
             }
@@ -1400,6 +1359,56 @@ namespace Controllers
             }
             return actionNodeItem;
         }
+        private void removeActionNode()
+        {
+            ActionNode actionNode = _curActionNode;
+            int actionNodeIndex = _actionNodeList.IndexOf(_curActionNode);
+            ActionNodeItem actionNodeItem = getActionNodeItem(actionNode);
+            //断开节点和所有其他节点的连接
+            //for (int i = 0; i < _actionNodeList.Count; i++)
+            //{
+            //    //断开前一个动作
+            //    int branchNodeIndex = Array.IndexOf(_actionNodeList[i].branches, actionNode);
+            //    if (branchNodeIndex >= 0)
+            //    {
+            //        _actionNodeList[i].branches[branchNodeIndex] = null;
+            //        _ui.unconnectNode(_actionNodeItemList[i], branchNodeIndex, actionNodeItem, 0);
+            //    }
+            //    //断开输入
+            //    int inputValueRefIndex = Array.FindIndex(actionNode.inputs, v => v != null && (v.action == _actionNodeList[i] || v.actionNodeId == _actionNodeList[i].id));
+            //    if (inputValueRefIndex >= 0)
+            //    {
+            //        var inputActionNode = _actionNodeList[i];
+            //        var inputValueRef = actionNode.inputs[inputValueRefIndex];
+            //        actionNode.inputs[inputValueRefIndex] = null;
+            //        _ui.unconnectNode(_actionNodeItemList[i], inputActionNode.branches.Length + inputValueRef.index, actionNodeItem, 1 + inputValueRefIndex);
+            //    }
+            //    //断开后一个动作
+            //    branchNodeIndex = Array.IndexOf(actionNode.branches, _actionNodeList[i]);
+            //    if (branchNodeIndex >= 0)
+            //    {
+            //        actionNode.branches[branchNodeIndex] = null;
+            //        _ui.unconnectNode(actionNodeItem, branchNodeIndex, _actionNodeItemList[i], 0);
+            //    }
+            //    //断开输出
+            //    inputValueRefIndex = Array.FindIndex(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id));
+            //    if (inputValueRefIndex >= 0)
+            //    {
+            //        var inputValueRef = _actionNodeList[i].inputs[inputValueRefIndex];
+            //        _actionNodeList[i].inputs[inputValueRefIndex] = null;
+            //        _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + inputValueRef.index, _actionNodeItemList[i], 1 + inputValueRefIndex);
+            //    }
+            //}
+            unconnectNodeAll(actionNode);
+            //从列表中移除
+            _actionNodeList.RemoveAt(actionNodeIndex);
+            _actionNodeItemList.RemoveAt(actionNodeIndex);
+            //从编辑器信息中删除
+            removeNodeInfo(actionNode);
+            graphInfo.freeActionNodeList.Remove(actionNode);
+            //将节点从UI上移除
+            _ui.removeNode(actionNodeItem);
+        }
         private ActionNodeItem getActionNodeItem(ActionNode actionNode)
         {
             int index = _actionNodeList.IndexOf(actionNode);
@@ -1418,10 +1427,6 @@ namespace Controllers
                 actionNodeItem = _actionNodeItemList[index];
                 return true;
             }
-        }
-        private ActionNodeItem getActionNodeItem(int actionNodeId)
-        {
-            return getActionNodeItem(getActionNode(actionNodeId));
         }
         private ActionNode getActionNode(ActionNodeItem actionNodeItem)
         {

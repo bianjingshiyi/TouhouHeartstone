@@ -239,73 +239,79 @@ namespace Controllers
         /// <summary>
         /// 当需要用户选择图片，根据平台不同调用不同的插件方法，返回选择的贴图。新建的贴图需要缓存在内存中。
         /// </summary>
-        Task<Sprite> onNeedSelectImage()
+        async Task<Sprite> onNeedSelectImage()
         {
-            TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
-            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            Sprite sprite = await game.card.selectExternalImage();
+            if (sprite != null)
             {
-                //手机端
-                var permission = NativeGallery.GetImageFromGallery(async path =>
-                {
-                    if (path != null)
-                    {
-                        Sprite sprite = await game.card.getSpriteFromCache(path);
-                        if (sprite == null)
-                        {
-                            Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
-                            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-                            //缓存外部图片
-                            game.card.addSpriteToCache(path, sprite);
-                        }
-                        //更改贴图路径为外部文件路径
-                        _curCardSkin.imagePath = path;
-                        tcs.SetResult(sprite);
-                    }
-                });
-                if (permission == NativeGallery.Permission.Denied)
-                {
-                    Debug.LogError("没有打开相册的权限");
-                    // 拒绝权限后应当弹出框提示需要设置权限
-                    NativeGallery.OpenSettings();
-                }
+                _curCardSkin.imagePath = game.card.getSpritePath(sprite);
             }
-            else
-            {
-                //默认PC
-                string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
-                {
-                    new ExtensionFilter("Image Files", "png","jpg")
-                }, false);
-                if (paths == null || paths.Length < 1)
-                {
-                    return null;
-                }
-                string path = paths[0];
-                UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path);
-                uwr.SendWebRequest().completed += async op =>
-                {
-                    if (uwr.isNetworkError || uwr.isHttpError)
-                    {
-                        Debug.LogError(uwr.error);
-                    }
-                    else
-                    {
-                        Sprite sprite = await game.card.getSpriteFromCache(path);
-                        if (sprite == null)
-                        {
-                            Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
-                            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-                            //缓存外部图片
-                            game.card.addSpriteToCache(path, sprite);
-                        }
-                        //更改贴图路径为外部文件路径
-                        _curCardSkin.imagePath = path;
-                        tcs.SetResult(sprite);
-                    }
-                    uwr.Dispose();
-                };
-            }
-            return tcs.Task;
+            return sprite;
+            //TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
+            //if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            //{
+            //    //手机端
+            //    var permission = NativeGallery.GetImageFromGallery(async path =>
+            //    {
+            //        if (path != null)
+            //        {
+            //            Sprite sprite = await game.card.getSpriteFromCache(path);
+            //            if (sprite == null)
+            //            {
+            //                Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
+            //                sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
+            //                //缓存外部图片
+            //                game.card.addSpriteToCache(path, sprite);
+            //            }
+            //            //更改贴图路径为外部文件路径
+            //            _curCardSkin.imagePath = path;
+            //            tcs.SetResult(sprite);
+            //        }
+            //    });
+            //    if (permission == NativeGallery.Permission.Denied)
+            //    {
+            //        Debug.LogError("没有打开相册的权限");
+            //        // 拒绝权限后应当弹出框提示需要设置权限
+            //        NativeGallery.OpenSettings();
+            //    }
+            //}
+            //else
+            //{
+            //    //默认PC
+            //    string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
+            //    {
+            //        new ExtensionFilter("Image Files", "png","jpg")
+            //    }, false);
+            //    if (paths == null || paths.Length < 1)
+            //    {
+            //        return null;
+            //    }
+            //    string path = paths[0];
+            //    UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path);
+            //    uwr.SendWebRequest().completed += async op =>
+            //    {
+            //        if (uwr.isNetworkError || uwr.isHttpError)
+            //        {
+            //            Debug.LogError(uwr.error);
+            //        }
+            //        else
+            //        {
+            //            Sprite sprite = await game.card.getSpriteFromCache(path);
+            //            if (sprite == null)
+            //            {
+            //                Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+            //                sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
+            //                //缓存外部图片
+            //                game.card.addSpriteToCache(path, sprite);
+            //            }
+            //            //更改贴图路径为外部文件路径
+            //            _curCardSkin.imagePath = path;
+            //            tcs.SetResult(sprite);
+            //        }
+            //        uwr.Dispose();
+            //    };
+            //}
+            //return tcs.Task;
         }
         /// <summary>
         /// 当用户更改卡片描述

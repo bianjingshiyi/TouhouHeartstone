@@ -5657,6 +5657,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dialog: {fileID: 371506342}
+  _languageTranslateNameMapList:
+  - languageName: zh-Hans
+    translateName: "\u7B80\u4F53\u4E2D\u6587"
+  - languageName: en-US
+    translateName: "\u82F1\u6587"
+  - languageName: ja
+    translateName: "\u65E5\u6587"
 --- !u!4 &1113116655
 Transform:
   m_ObjectHideFlags: 0
