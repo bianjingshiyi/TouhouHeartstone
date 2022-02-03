@@ -240,18 +240,30 @@ namespace Game
             else
             {
                 //外部文件
-                if (cardPoolId > 0)
+                byte[] bytes;
+                if (getCardPoolInfo(cardPoolId) is CardPoolInfo cardPoolInfo &&
+                    getCardPoolPath(cardPoolInfo) is string cardPoolPath)
                 {
-                    //存在卡池，要考虑一下记载这个路径的卡池的路径，综合得到绝对路径
-                    //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
-                    //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
-                    CardPoolInfo cardPool = getCardPoolInfo(cardPoolId);
-                    if (cardPool != null)
+                    if (cardPoolPath.StartsWith("sa:") &&
+                        !path.StartsWith("sa:") &&
+                        !path.StartsWith("res:"))
                     {
-                        path = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPool)), textureDirName, path);
+                        path = Path.Combine(textureDirName, path);
+                        bytes = await game.fileManager.readStreamingBinaryFile(path);
+                    }
+                    else
+                    {
+                        //存在卡池，要考虑一下记载这个路径的卡池的路径，综合得到绝对路径
+                        //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
+                        //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
+                        path = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName, path);
+                        bytes = await game.fileManager.readBinaryFile(path);
                     }
                 }
-                byte[] bytes = await game.fileManager.readBinaryFile(path);
+                else
+                {
+                    throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                }
                 Texture2D texture = new Texture2D(512, 512);
                 texture.LoadImage(bytes);
                 sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
