@@ -60,7 +60,14 @@ namespace Controllers
                 if (reloadCardPool)
                 {
                     //重新加载牌库中的所有卡牌和皮肤
-                    await readCardPoolAsync(_curCardPoolPath);
+                    if (string.IsNullOrEmpty(_curCardPoolPath))
+                    {
+                        await readCardPoolByIdAsync(_curCardPoolInfo.cardPoolId);
+                    }
+                    else
+                    {
+                        await readCardPoolByPathAsync(_curCardPoolPath);
+                    }
                 }
                 await updateDeckCardListUI();
                 //+1是为了显示新建卡牌按钮
@@ -295,38 +302,70 @@ namespace Controllers
             }
         }
         /// <summary>
-        /// 读取卡池文件中的所有卡牌
+        /// 读取指定路径上的卡池文件中的所有卡牌
         /// </summary>
-        /// <param name="cardPoolPath">卡池文件相对路径</param>
+        /// <param name="cardPoolId">卡池文件相对路径</param>
         /// <returns></returns>
         /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
-        private async Task readCardPoolAsync(string cardPoolPath)
+        private async Task readCardPoolByPathAsync(string cardPoolPath)
         {
             _cardDefineList.Clear();
             _cardSkinList.Clear();
             actionNodeGraphInfoList.Clear();
-            if (!string.IsNullOrEmpty(cardPoolPath))
+            if (!game.card.tryGetCardPool(cardPoolPath, out CardPool cardPool))
             {
-                if (!game.card.tryGetCardPool(cardPoolPath, out CardPool cardPool))
+                cardPool = (await game.card.loadCardPool(cardPoolPath)).cardPool;
+            }
+            _cardDefineList.AddRange(cardPool.cardDefineList);
+            _cardSkinList.AddRange(cardPool.cardSkinList);
+            actionNodeGraphInfoList.AddRange(cardPool.actionNodeGraphInfoList);
+            //尝试修复受损的数据
+            for (int i = 0; i < _cardDefineList.Count; i++)
+            {
+                if (_cardDefineList[i].id >= 0)
                 {
-                    cardPool = (await game.card.loadCardPool(cardPoolPath)).cardPool;
-                }
-                _cardDefineList.AddRange(cardPool.cardDefineList);
-                _cardSkinList.AddRange(cardPool.cardSkinList);
-                actionNodeGraphInfoList.AddRange(cardPool.actionNodeGraphInfoList);
-                //尝试修复受损的数据
-                for (int i = 0; i < _cardDefineList.Count; i++)
-                {
-                    if (_cardDefineList[i].id >= 0)
+                    //重新分配丢失的卡牌Id
+                    int id = allocCardId();
+                    foreach (var skin in _cardSkinList.Where(s => s.id == _cardDefineList[i].id))
                     {
-                        //重新分配丢失的卡牌Id
-                        int id = allocCardId();
-                        foreach (var skin in _cardSkinList.Where(s => s.id == _cardDefineList[i].id))
-                        {
-                            skin.id = id;
-                        }
-                        _cardDefineList[i].id = id;
+                        skin.id = id;
                     }
+                    _cardDefineList[i].id = id;
+                }
+            }
+        }
+        /// <summary>
+        /// 读取指定id的卡池文件中的所有卡牌
+        /// </summary>
+        /// <param name="cardPoolId">卡池id</param>
+        /// <returns></returns>
+        /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
+        private async Task readCardPoolByIdAsync(int cardPoolId)
+        {
+            _cardDefineList.Clear();
+            _cardSkinList.Clear();
+            actionNodeGraphInfoList.Clear();
+            if (!game.card.tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                CardPoolInfo cardPoolInfo = game.card.getCardPoolInfo(cardPoolId);
+                string cardPoolPath = game.card.getCardPoolPath(cardPoolInfo);
+                cardPool = (await game.card.loadCardPool(cardPoolPath)).cardPool;
+            }
+            _cardDefineList.AddRange(cardPool.cardDefineList);
+            _cardSkinList.AddRange(cardPool.cardSkinList);
+            actionNodeGraphInfoList.AddRange(cardPool.actionNodeGraphInfoList);
+            //尝试修复受损的数据
+            for (int i = 0; i < _cardDefineList.Count; i++)
+            {
+                if (_cardDefineList[i].id >= 0)
+                {
+                    //重新分配丢失的卡牌Id
+                    int id = allocCardId();
+                    foreach (var skin in _cardSkinList.Where(s => s.id == _cardDefineList[i].id))
+                    {
+                        skin.id = id;
+                    }
+                    _cardDefineList[i].id = id;
                 }
             }
         }

@@ -167,6 +167,13 @@ namespace Controllers
             _ui.clearGraph();
             //转成index
             int triggerIndex = getEventTypeIndex(_trigger.eventName);
+            if (triggerIndex < 0)
+            {
+                //没有类型
+                string[] eventNames = getEventTypeNames();
+                triggerIndex = eventNames.Length - 1;
+                _trigger.eventName = eventNames[triggerIndex];
+            }
             //创建入口节点
             _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
             _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());

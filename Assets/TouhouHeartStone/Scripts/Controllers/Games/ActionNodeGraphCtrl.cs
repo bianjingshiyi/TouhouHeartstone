@@ -1787,6 +1787,10 @@ namespace Controllers
             {
                 for (int i = 0; i < actionNode.inputs.Length; i++)
                 {
+                    if (actionNode.inputs[i] == null)
+                    {
+                        continue;
+                    }
                     if (!string.IsNullOrEmpty(actionNode.inputs[i].eventVarName))
                     {
                         unconnectNode4TriggerEventVarRef(getEventVarNameIndex(actionNode.inputs[i].eventVarName), actionNode, i);
