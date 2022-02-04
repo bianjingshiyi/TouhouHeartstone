@@ -45,9 +45,9 @@ namespace UI
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.switchToActionNode();
             actionNodeItem.setName(nodeName);
-            actionNodeItem.setInputs(inputNames,_listColor);
+            actionNodeItem.setInputs(inputNames, _listColor);
             actionNodeItem.setConsts(constsInfo);
-            actionNodeItem.setOutputs(outputNames,_listColor);
+            actionNodeItem.setOutputs(outputNames, _listColor);
             return actionNodeItem;
         }
         /// <summary>
@@ -139,7 +139,7 @@ namespace UI
                 line = line
             });
         }
-        
+
         /// <summary>
         /// 将节点的指定输出连接到目标节点的输入上
         /// </summary>
@@ -156,17 +156,17 @@ namespace UI
                 //已经存在连接
                 return;
             }
-            
+
             var output = node.getOutput(outputIndex);
             Vector2 from = output.getNodeWorldPosition();
             from = _actionNodeLineRoot.InverseTransformPoint(from);
-            
+
             var input = targetNode.getInput(inputIndex);
             Vector2 to = input.getNodeWorldPosition();
             to = _actionNodeLineRoot.InverseTransformPoint(to);
-            
+
             ActionNodeGraphLine line = createLine(from, to, output.GetColor());
-            
+
             _connectionList.Add(new ActionNodeConnectionData()
             {
                 outputNode = node,
@@ -336,6 +336,10 @@ namespace UI
         public Vector2 worldPositionToGraphPosition(Vector2 worldPosition)
         {
             return _actionNodesRoot.InverseTransformPoint(worldPosition);
+        }
+        public void setScrollViewContentSize(Vector2 size)
+        {
+            _scrollViewContentRectTransform.sizeDelta = size;
         }
         public void init(string[] languages, string[] eventTypes)
         {
@@ -682,7 +686,7 @@ namespace UI
             line.SetColor(GetCurrentColor(colorIndex));
             return line;
         }
-        
+
         /// <summary>
         /// 在指定位置创建连线
         /// </summary>
@@ -711,7 +715,7 @@ namespace UI
                 return _listColor[colorIndex];
             }
         }
-        
+
         /// <summary>
         /// 创建一个不确定类型的节点，必须在之后对其进行初始化。
         /// </summary>
@@ -836,12 +840,16 @@ namespace UI
         /// 自动生成位置的高度间隔
         /// </summary>
         public float autoPosSpacingHeight => _autoPosSpacingHeight;
-        
+
         [Header("模板属性和UI控件")]
         [SerializeField]
         float _autoPosSpacingWidth = 600;
         [SerializeField]
         float _autoPosSpacingHeight = 300;
+        [SerializeField]
+        ScrollRect _scrollRect;
+        [SerializeField]
+        RectTransform _scrollViewContentRectTransform;
         [SerializeField]
         Button _returnButton;
         [SerializeField]
@@ -876,12 +884,12 @@ namespace UI
         Vector2 _dragItemPositionOffset;
         [SerializeField]
         ActionNodeGraphLine _dragLine;
-        
+
         [Header("编辑器线条属性")]
         [SerializeField]
         List<Color> _listColor;
         #endregion
-        
+
         /// <summary>
         /// 获取类型颜色组
         /// </summary>
@@ -891,8 +899,8 @@ namespace UI
             return _listColor;
         }
     }
-    
-    
+
+
     public struct ActionNodeValueInfo
     {
         public string name;

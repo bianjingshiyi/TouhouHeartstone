@@ -347,7 +347,6 @@ namespace Controllers
         private async void onClickDeckListItemDeleteButton(int index)
         {
             game.deck.RemoveDeck(deckList[index].id);
-            deckList.RemoveAt(index);
             await updateDeckListUI();
         }
         /// <summary>
@@ -374,7 +373,7 @@ namespace Controllers
             _ui.hideMasterSelectPanel();
             Deck newDeck = new Deck()
             {
-                id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
+                //id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
                 name = StringTable.BUILD_NEW_DECK_DEFAULT_NAME,
                 masterId = _selectableMasters[index].id
             };
@@ -388,7 +387,7 @@ namespace Controllers
         private async void onDeckListItemNameValueChanged(int index, string name)
         {
             deckList[index].name = name;
-            game.deck.RenameDeck(deckList[index].id, name);
+            //game.deck.RenameDeck(deckList[index].id, name);
             await updateDeckListUI();
         }
         /// <summary>
@@ -750,10 +749,19 @@ namespace Controllers
         /// </summary>
         private void saveDeck()
         {
-            game.deck.ClearDeck(_deck.id);
-            foreach (var card in _deck.toIdArray(includeMasterCard: false))
+            if (game.deck.HasDeck(_deck.id))
             {
-                game.deck.AddCard(_deck.id, card);
+                game.deck.RenameDeck(_deck.id, _deck.name);
+                game.deck.ClearDeck(_deck.id);
+            }
+            else
+            {
+                _deck.id = (int)game.deck.CreateDeck(_deck.name, _deck.masterId);
+                deckList.Add(_deck);
+            }
+            foreach (var cardId in _deck.toIdArray(includeMasterCard: false))
+            {
+                game.deck.AddCard(_deck.id, cardId);
             }
             _isDeckChanged = false;
         }

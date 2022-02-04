@@ -821,7 +821,7 @@ namespace Controllers
                 game.langManager.getString(StringTable.DELETE),//删除
             });
         }
-        void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
+        private void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
             if (actionNodeItem == _entryNodeItem || actionNodeItem == _returnNodeItem)
             {
@@ -829,9 +829,11 @@ namespace Controllers
                 return;
             }
             ActionNodeGraphNodeInfo nodeInfo = getNodeInfo(getActionNode(actionNodeItem));
-            nodeInfo.posX = graphPosition.x;
-            nodeInfo.posY = graphPosition.y;
+            ActionNodeItem rootActionNodeItem = _entryNodeItem != null ? _entryNodeItem : _returnNodeItem;
+            nodeInfo.posX = graphPosition.x - (rootActionNodeItem.transform as RectTransform).anchoredPosition.x;
+            nodeInfo.posY = graphPosition.y - (rootActionNodeItem.transform as RectTransform).anchoredPosition.y;
             _ui.moveActionNodeTo(actionNodeItem, graphPosition);
+            updateContentSize();
         }
         /// <summary>
         /// 当用户更改节点的常量值，设置对应的常量。
@@ -994,6 +996,7 @@ namespace Controllers
                         });
                 }
             }
+            updateContentSize();
         }
         /// <summary>
         /// 打开一个有输出的值引用动作节点
@@ -1035,6 +1038,7 @@ namespace Controllers
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
                 _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.action);
             }
+            updateContentSize();
         }
         private async Task openTargetCheckerGraph(TargetChecker targetChecker)
         {
@@ -1046,7 +1050,6 @@ namespace Controllers
             _valueRef = null;
             _targetChecker = targetChecker;
             _trigger = null;
-            var actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
             _returnNodeItem = _ui.createNode(0, 0,
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new IOConnectInfo[]
@@ -1080,7 +1083,9 @@ namespace Controllers
                         label = String.Empty
                     }
                 });
+            var actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
             _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
+            updateContentSize();
         }
         /// <summary>
         /// 为动作节点以及其所有子节点创建动作节点图
@@ -1093,11 +1098,13 @@ namespace Controllers
             ActionNodeGraphNodeInfo nodeInfo =
                 hasNodeInfo(actionNode) ?
                 getNodeInfo(actionNode) : null;
+            ActionNodeItem rootActionNodeItem = _entryNodeItem != null ? _entryNodeItem : _returnNodeItem;
             Vector2 pos;
             if (nodeInfo != null)
             {
                 //有图信息，从图中取位置
-                pos = new Vector2(nodeInfo.posX, nodeInfo.posY);
+                pos = new Vector2((rootActionNodeItem.transform as RectTransform).anchoredPosition.x + nodeInfo.posX,
+                    (rootActionNodeItem.transform as RectTransform).anchoredPosition.y + nodeInfo.posY);
             }
             else if (prevNodeItem != null)
             {
@@ -1107,7 +1114,8 @@ namespace Controllers
                 if (sizeDict == null)
                     sizeDict = new Dictionary<ActionNode, Vector2>();
                 Vector2 size = calcActionNodeGraphSize(actionNode, sizeDict);
-                pos = new Vector2(prevNodeItem.posX + size.x, startPosOffset);
+                pos = new Vector2((rootActionNodeItem.transform as RectTransform).anchoredPosition.x + prevNodeItem.posX + size.x,
+                   (rootActionNodeItem.transform as RectTransform).anchoredPosition.y + startPosOffset);
                 nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
                 setNodeInfo(actionNode, nodeInfo);
             }
@@ -1116,14 +1124,15 @@ namespace Controllers
                 if (sizeDict == null)
                     sizeDict = new Dictionary<ActionNode, Vector2>();
                 Vector2 size = calcActionNodeGraphSize(actionNode, sizeDict);
-                pos = new Vector2(nextNodeItem.posX - size.x, startPosOffset);
+                pos = new Vector2((rootActionNodeItem.transform as RectTransform).anchoredPosition.x + nextNodeItem.posX - size.x,
+                     (rootActionNodeItem.transform as RectTransform).anchoredPosition.y + startPosOffset);
                 nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
                 setNodeInfo(actionNode, nodeInfo);
             }
             else
             {
                 //没有信息也没有前置节点，那我也不知道该放在哪里了。
-                pos = new Vector2(0, 0);
+                pos = new Vector2((rootActionNodeItem.transform as RectTransform).anchoredPosition.x, (rootActionNodeItem.transform as RectTransform).anchoredPosition.y);
                 nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
                 setNodeInfo(actionNode, nodeInfo);
             }
@@ -1408,6 +1417,7 @@ namespace Controllers
             graphInfo.freeActionNodeList.Remove(actionNode);
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
+            updateContentSize();
         }
         private ActionNodeItem getActionNodeItem(ActionNode actionNode)
         {
@@ -2377,13 +2387,15 @@ namespace Controllers
         {
             return graphInfo.actionInfoDict.Remove(node.id.ToString());
         }
-        private Task<ActionNodeItem> createActionNodeAtCurPos(string defineName, ActionDefine actionDefine)
+        private async Task<ActionNodeItem> createActionNodeAtCurPos(string defineName, ActionDefine actionDefine)
         {
             var actionNode = new ActionNode(defineName,
                 new ActionValueRef[actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams ? actionDefine.inputs.Length - 1 : actionDefine.inputs.Length],
                 new object[actionDefine.consts.Length],
                 new ActionNode[1]);
-            return createNodeUI4ActionNodeAt(actionNode, _curPosX, _curPosY);
+            ActionNodeItem actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, _curPosX, _curPosY);
+            updateContentSize();
+            return actionNodeItem;
         }
         private void enterSubMenu(int[] index)
         {
@@ -2438,6 +2450,41 @@ namespace Controllers
                 targetCheckerTypes[i] = game.langManager.getString(_nameTextDict[_targetCheckerTypes[i]]);
             }
             return targetCheckerTypes;
+        }
+        private void updateContentSize()
+        {
+            Rect rect = new Rect();
+            //计算边界
+            for (int i = 0; i < _actionNodeItemList.Count; i++)
+            {
+                ActionNodeItem actionNodeItem = _actionNodeItemList[i];
+                Rect childRect = (actionNodeItem.transform as RectTransform).rect;
+                if (childRect.xMax > rect.xMax)
+                {
+                    rect.xMax = childRect.xMax;
+                }
+                if (childRect.xMin < rect.xMin)
+                {
+                    rect.xMin = childRect.xMin;
+                }
+                if (childRect.yMax > rect.yMax)
+                {
+                    rect.yMax = childRect.yMax;
+                }
+                if (childRect.yMin < rect.yMin)
+                {
+                    rect.yMin = childRect.yMin;
+                }
+            }
+            //边界不能小于屏幕
+            rect.width /= game.ui.canvasScale;
+            rect.height /= game.ui.canvasScale;
+            if (rect.width < Screen.width)
+                rect.width = Screen.width;
+            if (rect.height < Screen.height)
+                rect.height = Screen.height;
+            //更新边界
+            _ui.setScrollViewContentSize(rect.size);
         }
         #endregion
         [Obsolete]

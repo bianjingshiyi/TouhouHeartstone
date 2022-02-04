@@ -3805,7 +3805,7 @@ PrefabInstance:
     - target: {fileID: 6841205957398837312, guid: 4659cf81342551a4ba1145f37b06cd07,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000059127808
+      value: -0.000061035156
       objectReference: {fileID: 0}
     - target: {fileID: 6841205957411209117, guid: 4659cf81342551a4ba1145f37b06cd07,
         type: 3}
@@ -5656,6 +5656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f14724ef1e9489c4f92cdf428f509588, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _canvas: {fileID: 721947171}
   _dialog: {fileID: 371506342}
   _languageTranslateNameMapList:
   - languageName: zh-Hans

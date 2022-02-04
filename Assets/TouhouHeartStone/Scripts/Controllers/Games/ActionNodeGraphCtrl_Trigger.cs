@@ -187,6 +187,7 @@ namespace Controllers
             {
                 await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
             }
+            updateContentSize();
         }
         private (int typeIndex, string name, string errorTip)[] getTriggerTargetCheckerViewData()
         {
