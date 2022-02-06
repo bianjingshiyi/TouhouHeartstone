@@ -351,15 +351,17 @@ namespace UI
         #region 生命周期
         protected void Awake()
         {
-            EventTrigger trigger = _backgroundImage.gameObject.AddComponent<EventTrigger>();
-            EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerDown;
-            entry.callback.AddListener(onPointerDownBackgroundImage);
-            trigger.triggers.Add(entry);
-            entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerUp;
-            entry.callback.AddListener(onPointerUpBackgroundImage);
-            trigger.triggers.Add(entry);
+            //EventTrigger trigger = _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            //EventTrigger.Entry entry = new EventTrigger.Entry();
+            //entry.eventID = EventTriggerType.PointerDown;
+            //entry.callback.AddListener(onPointerDownBackgroundImage);
+            //trigger.triggers.Add(entry);
+            //entry = new EventTrigger.Entry();
+            //entry.eventID = EventTriggerType.PointerUp;
+            //entry.callback.AddListener(onPointerUpBackgroundImage);
+            //trigger.triggers.Add(entry);
+            _backgroundEventTrigger.onPointerDown += onPointerDownBackgroundImage;
+            _backgroundEventTrigger.onPointerUp += onPointerUpBackgroundImage;
             if (_actionNodeItemTemplate.transform.parent == _actionNodesRoot)
             {
                 _actionNodeItemTemplate.gameObject.SetActive(false);
@@ -389,11 +391,11 @@ namespace UI
         }
         #endregion
         #region 事件回调
-        private void onPointerDownBackgroundImage(BaseEventData eventData)
+        private void onPointerDownBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
             _longPressTimer.start();
         }
-        private void onPointerUpBackgroundImage(BaseEventData eventData)
+        private void onPointerUpBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
             Vector2 screenPosition = eventData.currentInputModule.input.mousePosition;
             Vector2 localPoistion = _backgroundImage.transform.InverseTransformPoint(screenPosition);
@@ -854,6 +856,8 @@ namespace UI
         Button _returnButton;
         [SerializeField]
         Image _backgroundImage;
+        [SerializeField]
+        EventTriggerWithoutUseEvent _backgroundEventTrigger;
         [SerializeField]
         ActionNodeItem _actionNodeItemTemplate;
         [SerializeField]
