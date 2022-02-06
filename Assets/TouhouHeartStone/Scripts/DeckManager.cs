@@ -152,12 +152,6 @@ namespace Game
         {
             // 先清理卡定义
             db.Execute($@"DELETE FROM {tableCards} WHERE deckID = ?", null, args: id);
-            // 清理运行时的卡组列表
-            var deck = _deckList.Find(d => d.id == id);
-            if (deck != null)
-            {
-                deck.cardList.Clear();
-            }
         }
 
         /// <summary>
@@ -239,12 +233,6 @@ namespace Game
                 }
             }
             long insertId = db.GetLastInsertID(tableCards);
-            //运行时修改
-            var deck = _deckList.Find(d => d.id == deckID);
-            if (deck != null)
-            {
-                deck.addCard((int)cardID);
-            }
             return insertId;
         }
 
