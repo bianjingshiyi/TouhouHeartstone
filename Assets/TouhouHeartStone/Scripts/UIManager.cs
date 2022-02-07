@@ -19,6 +19,7 @@ namespace Game
         #region 属性字段
         public UIDialog dialog => _dialog;
         public float canvasScale => _canvas.transform.localScale.x;
+        public Canvas canvas => _canvas;
         [SerializeField]
         Canvas _canvas;
         [SerializeField]

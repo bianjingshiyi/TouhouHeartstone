@@ -2453,38 +2453,58 @@ namespace Controllers
         }
         private void updateContentSize()
         {
-            Rect rect = new Rect();
-            //计算边界
+            //Rect rect = new Rect();
+            ////计算边界
+            //for (int i = 0; i < _actionNodeItemList.Count; i++)
+            //{
+            //    ActionNodeItem actionNodeItem = _actionNodeItemList[i];
+            //    Rect childRect = (actionNodeItem.transform as RectTransform).rect;
+            //    if (childRect.xMax > rect.xMax)
+            //    {
+            //        rect.xMax = childRect.xMax;
+            //    }
+            //    if (childRect.xMin < rect.xMin)
+            //    {
+            //        rect.xMin = childRect.xMin;
+            //    }
+            //    if (childRect.yMax > rect.yMax)
+            //    {
+            //        rect.yMax = childRect.yMax;
+            //    }
+            //    if (childRect.yMin < rect.yMin)
+            //    {
+            //        rect.yMin = childRect.yMin;
+            //    }
+            //}
+            ////边界不能小于滚动视图本身的大小
+            //if (rect.width < Screen.width)
+            //    rect.width = Screen.width;
+            //if (rect.height < Screen.height)
+            //    rect.height = Screen.height;
+            //更新边界
+            Vector2 size = new Vector2();
             for (int i = 0; i < _actionNodeItemList.Count; i++)
             {
-                ActionNodeItem actionNodeItem = _actionNodeItemList[i];
-                Rect childRect = (actionNodeItem.transform as RectTransform).rect;
-                if (childRect.xMax > rect.xMax)
+                RectTransform childRectTransform = _actionNodeItemList[i].transform as RectTransform;
+                Rect childRect = childRectTransform.rect;
+                if (size.x < Mathf.Abs(childRectTransform.anchoredPosition.x + childRect.xMin))
                 {
-                    rect.xMax = childRect.xMax;
+                    size.x = Mathf.Abs(childRectTransform.anchoredPosition.x + childRect.xMin);
                 }
-                if (childRect.xMin < rect.xMin)
+                if (size.x < Mathf.Abs(childRectTransform.anchoredPosition.x + childRect.xMax))
                 {
-                    rect.xMin = childRect.xMin;
+                    size.x = Mathf.Abs(childRectTransform.anchoredPosition.x + childRect.xMax);
                 }
-                if (childRect.yMax > rect.yMax)
+                if (size.y < Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMin))
                 {
-                    rect.yMax = childRect.yMax;
+                    size.y = Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMin);
                 }
-                if (childRect.yMin < rect.yMin)
+                if (size.y < Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMax))
                 {
-                    rect.yMin = childRect.yMin;
+                    size.y = Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMax);
                 }
             }
-            //边界不能小于屏幕
-            rect.width /= game.ui.canvasScale;
-            rect.height /= game.ui.canvasScale;
-            if (rect.width < Screen.width)
-                rect.width = Screen.width;
-            if (rect.height < Screen.height)
-                rect.height = Screen.height;
-            //更新边界
-            _ui.setScrollViewContentSize(rect.size);
+            _ui.setScrollViewContentSize(size * 2);
         }
         #endregion
         [Obsolete]
