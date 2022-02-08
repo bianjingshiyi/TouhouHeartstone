@@ -50,7 +50,35 @@ namespace Game
 
         //  卡牌（包括随从）的操作，比如addbuff，attack
         #region 卡牌
-
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
+        public static CardDefine getCardDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] CardReference cardRef)
+        {
+            return game.getDefine(cardRef.cardId);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
+        public static CardDefine[] getCardDefineArray(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] CardReference[] cardRefs)
+        {
+            if (cardRefs == null || cardRefs.Length < 1)
+                return new CardDefine[0];
+            CardDefine[] cardDefines = new CardDefine[cardRefs.Length];
+            for (int i = 0; i < cardRefs.Length; i++)
+            {
+                cardDefines[i] = game.getDefine(cardRefs[i].cardId);
+            }
+            return cardDefines;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_PARAM_NAME_GET_RANDOM_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
+        public static CardDefine getRandomCardDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine[] cardDefines)
+        {
+            if (cardDefines == null || cardDefines.Length < 1)
+                return null;
+            if (cardDefines.Length == 1)
+                return cardDefines[0];
+            return cardDefines[game.randomInt(0, cardDefines.Length - 1)];
+        }
         /// <summary>
         /// 卡牌类型判断节点
         /// </summary>
@@ -61,7 +89,7 @@ namespace Game
         [return: ActionNodeParam("Value")]
         public static bool IsCardDefine([ActionNodeParam("Card")] Card card, [ActionNodeParam("Type", isConst: true)] CardDefineSelect select)
         {
-            switch (select) 
+            switch (select)
             {
                 case CardDefineSelect.Spell:
                     return card.isSpell();
@@ -93,12 +121,12 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="drawEvent"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__NAME,StringTable.EDITOR_CATEGORY__ACTION__NAME)]
-        public static Task simpleDrawCard(CardEngine game,Card card,
+        [ActionNodeMethod(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__NAME, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        public static Task simpleDrawCard(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent)
         {
-            return player.draw(game,out drawEvent);
+            return player.draw(game, out drawEvent);
         }
 
 

@@ -42,13 +42,16 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(DEFINE.LIFE);
         }
-
         public static bool hasKeyword(this CardDefine define, string keyword)
         {
             string[] keywords = define.getProp<string[]>(DEFINE.KEYWORDS);
             if (keywords == null)
                 return false;
             return keywords.Contains(keyword);
+        }
+        public static void setKeywords(this CardDefine define, string[] keywords)
+        {
+            define.setProp(DEFINE.KEYWORDS, keywords);
         }
         public static string[] getTags(this CardDefine define)
         {

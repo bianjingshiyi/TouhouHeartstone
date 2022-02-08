@@ -79,6 +79,23 @@ namespace UI
             _card.setTypeByName(_typeDropdown.options[typeIndex].text);
         }
         /// <summary>
+        /// 初始化可选的卡牌关键词
+        /// </summary>
+        /// <param name="keywords"></param>
+        public void initKeywords(string[] keywords)
+        {
+            _keywordsDropdown.ClearOptions();
+            _keywordsDropdown.AddOptions(new List<string>(keywords));
+        }
+        /// <summary>
+        /// 设置卡牌关键词的选择状态
+        /// </summary>
+        /// <param name="value"></param>
+        public void setKeywords(bool[] value)
+        {
+            _keywordsDropdown.SetValueWithoutNotify(value);
+        }
+        /// <summary>
         /// 设置费用
         /// </summary>
         /// <param name="cost"></param>
@@ -449,6 +466,10 @@ namespace UI
         /// </summary>
         public event Action<int> onChangeType;
         /// <summary>
+        /// 当卡牌的关键词发生改变，参数为更改后的关键词选择状态。
+        /// </summary>
+        public event Action<bool[]> onChangeKeywords;
+        /// <summary>
         /// 当更换所属角色，参数为更换角色索引。
         /// </summary>
         public event Action<int> onChangeCharacter;
@@ -511,6 +532,8 @@ namespace UI
         Text _idText;
         [SerializeField]
         Dropdown _typeDropdown;
+        [SerializeField]
+        MultiSelectDropdown _keywordsDropdown;
         [SerializeField]
         Dropdown _characterDropdown;
         [SerializeField]

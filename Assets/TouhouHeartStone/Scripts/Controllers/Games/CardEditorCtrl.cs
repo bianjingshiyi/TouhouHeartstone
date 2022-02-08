@@ -31,6 +31,12 @@ namespace Controllers
             updateSkinNames();
             _ui.setId(_cardDefine.id);
             _ui.setType(Array.IndexOf(_types, _cardDefine.type));
+            bool[] keywordsValue = new bool[_keywords.Length];
+            for (int i = 0; i < keywordsValue.Length; i++)
+            {
+                keywordsValue[i] = _cardDefine.hasKeyword(_keywords[i]);
+            }
+            _ui.setKeywords(keywordsValue);
             string[] charactersName = new string[selectableCharacters.Length + 1];
             charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
             for (int i = 1; i < charactersName.Length; i++)
@@ -78,7 +84,55 @@ namespace Controllers
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
+            string[] languages = game.langManager.getLanguages();
+            for (int i = 0; i < languages.Length; i++)
+            {
+                languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
+            }
+            _ui.setLanguages(languages);
             _ui.onChangeLanguage += onChangeLanguage;
+            string[] keywords = new string[]
+            {
+                "守卫",
+                "先攻",
+                "速攻",
+                "护盾",
+                "隐形",
+                "永久隐形",
+                "吸血",
+                "致命",
+                "魔免",
+                "禁锢",
+                "唯一",
+                "自动施放",
+                "无法攻击",
+                "双击",
+                "无敌",
+                "陷阱",
+                "任务"
+            };
+            _keywords = new string[]
+            {
+                "taunt",
+                "charge",
+                "rush",
+                "shield",
+                "stealth",
+                "permanentStealth",
+                "drain",
+                "poisonous",
+                "elusive",
+                "freeze",
+                "unique",
+                "autocast",
+                "cantattack",
+                "windfury",
+                "immunity",
+                "secret",
+                "mission"
+            };
+            _ui.initKeywords(keywords);
+            _ui.onChangeKeywords += onChangeKeywords;
             _ui.onChangeType += onChangeType;
             _ui.onChangeCharacter += onChangeCharacter;
             _ui.onChangeCost += onChangeCost;
@@ -138,7 +192,7 @@ namespace Controllers
             updateSkinNames();
             await setCurSkinIndex(0);
         }
-        async void onChangeLanguage(int languageIndex)
+        private async void onChangeLanguage(int languageIndex)
         {
             string language = game.langManager.getLanguages()[languageIndex];
             var skinGroup = getSkins().GroupBy(s => s.skinId).First(g => g.Key == _curCardSkin.skinId);
@@ -190,10 +244,26 @@ namespace Controllers
         /// 当用户更改类型
         /// </summary>
         /// <param name="typeIndex"></param>
-        void onChangeType(int typeIndex)
+        private void onChangeType(int typeIndex)
         {
             _cardDefine.type = _types[typeIndex];
             //_ui.setType(typeIndex);
+        }
+        /// <summary>
+        /// 当用户更改卡牌的关键词
+        /// </summary>
+        /// <param name="value"></param>
+        private void onChangeKeywords(bool[] value)
+        {
+            List<string> keywordList = new List<string>();
+            for (int i = 0; i < _keywords.Length; i++)
+            {
+                if (value[i])
+                {
+                    keywordList.Add(_keywords[i]);
+                }
+            }
+            _cardDefine.setKeywords(keywordList.ToArray());
         }
         private void onChangeCharacter(int characterIndex)
         {
@@ -500,6 +570,7 @@ namespace Controllers
         public MainCtrl main { get; }
         CardEditorPanel _ui;
         string[] _types;
+        string[] _keywords;
         string[] _tags;
         int _cardPoolId;
         CardDefine _cardDefine;
