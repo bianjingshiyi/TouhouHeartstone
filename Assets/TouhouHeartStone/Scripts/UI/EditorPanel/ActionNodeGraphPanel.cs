@@ -983,6 +983,10 @@ namespace UI
         /// 触发器集合
         /// </summary>
         triggerCollection,
+        /// <summary>
+        /// 卡牌引用
+        /// </summary>
+        cardReference
     }
     public enum ActionNodeConnectionType
     {
