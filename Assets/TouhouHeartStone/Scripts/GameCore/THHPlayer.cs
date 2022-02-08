@@ -142,7 +142,7 @@ namespace TouhouHeartstone
                 {
                     Player p = arg.player;
                     card = arg.card;
-                    if (card.define is SpellCardDefine spell && card.define.hasKeyword(KEYWORD.AUTOCAST))
+                    if (card.isSpell() && card.define.hasKeyword(KEYWORD.AUTOCAST))
                     {
                         await p.getDeck().moveTo(game, card, p.getWarp());
                         game.logger.logTrace("debug");
@@ -201,7 +201,7 @@ namespace TouhouHeartstone
             if (!card.isUsable(game, player, out _))
                 //卡牌不可用
                 return false;
-            if (targets.Any(t => t is Card targetCard && targetCard.isElusive(game) && (card.define is SkillCardDefine || card.define is SpellCardDefine)))
+            if (targets.Any(t => t is Card targetCard && targetCard.isElusive(game) && card.isSpell()))
                 //目标是魔免
                 return false;
             if (card.isSkill())
@@ -431,12 +431,10 @@ namespace TouhouHeartstone
                     game.logger.logTrace(player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
                 else
                     game.logger.logTrace(player + "将" + arg.card + "置入战场，位于" + arg.position);
-                if (card.define is ServantCardDefine servant)//设置随从状态
-                {
-                    await card.setDead(game, false);
-                    await card.setCurrentLife(game, card.getLife(game));
-                    await card.setReady(game, false);
-                }
+                //设置随从状态
+                await card.setDead(game, false);
+                await card.setCurrentLife(game, card.getLife(game));
+                await card.setReady(game, false);
                 if (from != null)
                     await from.moveTo(game, arg.card, player.getField(), arg.position);//从某pile召唤随从
                 else
@@ -630,17 +628,19 @@ namespace TouhouHeartstone
                     if (cards.count > 0)
                     {
                         show = cards.random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
@@ -648,18 +648,20 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isSpell()) > 0)
                     {
                         show = cards.Where(c => c.isSpell()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
+                            return Task.CompletedTask;
                         });
                         return show;
 
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
@@ -667,18 +669,20 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isServant()) > 0)
                     {
                         show = cards.Where(c => c.isServant()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
+                            return Task.CompletedTask;
                         });
                         return show;
 
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
@@ -686,18 +690,20 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isItem()) > 0)
                     {
                         show = cards.Where(c => c.isItem()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
+                            return Task.CompletedTask;
                         });
                         return show;
 
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
@@ -723,21 +729,19 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static List<Card> getNormalRandomPool(this Player player, isInRange isInRange, CardEngine game, int count = 3, bool isFull = false)
         {
-
-
             int MasterID = player.getMaster().id;
             List<Card> cards = new List<Card>();
-            IEnumerable<THHCardDefine> defines;
+            IEnumerable<CardDefine> defines;
             if (isFull)
             {
-                defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CATEGORY.CHARACTER_ALL))
-                    .Where(define => !define.isToken && isInRange(game, define)).randomTake(game, count).ToArray();
+                defines = game.getDefinesOf(CATEGORY.CHARACTER_ALL)
+                    .Where(define => !define.isToken() && isInRange(game, define)).randomTake(game, count).ToArray();
                 return game.createCards(defines.ToArray()).ToList();
             }
             else
             {
-                defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(new int[] { MasterID, CATEGORY.CHARACTER_NEUTRAL }))
-                    .Where(define => !define.isToken && isInRange(game, define)).randomTake(game, count).ToArray();
+                defines = game.getDefinesOf(new int[] { MasterID, CATEGORY.CHARACTER_NEUTRAL })
+                    .Where(define => !define.isToken() && isInRange(game, define)).randomTake(game, count).ToArray();
                 return game.createCards(defines.ToArray()).ToList();
             }
         }
