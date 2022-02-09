@@ -70,8 +70,9 @@ namespace UI
                 _toggle.gameObject.SetActive(false);
             }
             //单选下拉菜单
-            if (info.type == ActionNodeValueType.enumValue)
+            if (info.type == ActionNodeValueType.enumValue || info.type == ActionNodeValueType.cardReference)
             {
+                if(info.type == ActionNodeValueType.cardReference) _Card.gameObject.SetActive(true);
                 _dropdown.gameObject.SetActive(true);
                 _enumType = info.enumType;
                 Array enumValues = Enum.GetValues(_enumType);
@@ -87,6 +88,7 @@ namespace UI
             }
             else
             {
+                _Card.gameObject.SetActive(false);
                 _dropdown.gameObject.SetActive(false);
             }
             //多选下拉菜单
@@ -321,6 +323,8 @@ namespace UI
         string[] _pileNames;
         [SerializeField]
         string[] _pileValues;
+        [SerializeField]
+        public Card _Card;
         [SerializeField]
         ActionNodeValueType _valueType;
         object _value;
