@@ -2,7 +2,7 @@
 
 namespace Game
 {
-    public partial class StringTable
+    partial class StringTable
     {
         #region 通用
         [TranslateMsg("所有按钮上通用的确认")]

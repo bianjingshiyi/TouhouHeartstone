@@ -923,10 +923,34 @@ namespace UI
 
     public struct ActionNodeValueInfo
     {
+        public ActionNodeValueInfo(string name, ActionNodeValueType type, object value) : this(name, type, value, null, null)
+        {
+        }
+        public ActionNodeValueInfo(string name, ActionNodeValueType type, object value, Type enumType)
+        {
+            this.name = name;
+            this.type = type;
+            this.value = value;
+            optionalValues = Enum.GetValues(enumType).Cast<object>().ToArray();
+            optionalNames = new string[optionalValues.Length];
+            for (int i = 0; i < optionalNames.Length; i++)
+            {
+                optionalNames[i] = Enum.GetName(enumType, optionalValues[i]);
+            }
+        }
+        public ActionNodeValueInfo(string name, ActionNodeValueType type, object value, string[] optionalNames, object[] optionalValues)
+        {
+            this.name = name;
+            this.type = type;
+            this.value = value;
+            this.optionalNames = optionalNames;
+            this.optionalValues = optionalValues;
+        }
         public string name;
         public ActionNodeValueType type;
         public object value;
-        public Type enumType;
+        public string[] optionalNames;
+        public object[] optionalValues;
     }
     [Serializable]
     struct ActionNodeConnectionData

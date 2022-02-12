@@ -38,6 +38,18 @@ namespace Controllers
 
             _ui.gameObject.SetActive(true);
             //UI更新
+            string[] cardPoolNames = new string[_cardPoolList.Count];
+            for (int i = 0; i < cardPoolNames.Length; i++)
+            {
+                cardPoolNames[i] = _cardPoolList[i].info.cardPoolName;
+            }
+            bool[] cardPoolValues = new bool[_cardPoolList.Count];
+            for (int i = 0; i < cardPoolValues.Length; i++)
+            {
+                cardPoolValues[i] = _cardPoolList[i].isEnabled;
+            }
+            _ui.setCardPoolOptions(cardPoolNames);
+            _ui.setCardPoolValue(cardPoolValues);
             _ui.setSortType(_sortType);
             _ui.setCharacterFilters(_characterFilters.Select(id =>
             {
@@ -48,14 +60,12 @@ namespace Controllers
             _ui.setCharacterFilter(_characterFiltersValue);
             _ui.setCostFilter(_costFiltersValue);
             _ui.setTypeFilter(_typeFiltersValue);
-            _ui.switchRightPanelModeButtonGroup(true);
             _ui.setCardListActive(true);
             _ui.updateCardListCount(_cardDefineList.Count);
             _ui.setEnableDrag(false);
             //右侧栏
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
-            _ui.setRightFilterDetialPanelActive(false);
             await updateDeckListUI();
         }
         /// <summary>
@@ -92,7 +102,18 @@ namespace Controllers
             _ui.setCharacterName(masterSkin.name);
 
             // 更新UI
-            _ui.switchRightPanelModeButtonGroup(true);
+            string[] cardPoolNames = new string[_cardPoolList.Count];
+            for (int i = 0; i < cardPoolNames.Length; i++)
+            {
+                cardPoolNames[i] = _cardPoolList[i].info.cardPoolName;
+            }
+            bool[] cardPoolValues = new bool[_cardPoolList.Count];
+            for (int i = 0; i < cardPoolValues.Length; i++)
+            {
+                cardPoolValues[i] = _cardPoolList[i].isEnabled;
+            }
+            _ui.setCardPoolOptions(cardPoolNames);
+            _ui.setCardPoolValue(cardPoolValues);
             _ui.setCardListActive(true);
             _ui.updateCardListCount(_cardDefineList.Count);
             _ui.setDeckListActive(false);
@@ -102,7 +123,6 @@ namespace Controllers
             //右侧栏
             _ui.setDeckListActive(false);
             _ui.setEditDeckPanelActive(true);
-            _ui.setRightFilterDetialPanelActive(false);
             await updateDeckCardListUI();
         }
         #endregion
@@ -120,6 +140,7 @@ namespace Controllers
             _ui.onStartDragDeckCardListItem += onStartDragDeckCardListItem;
             _ui.onEndDragCardListItem += onEndDragCardListItem;
             _ui.onEndDragDeckCardListItem += onEndDragDeckCardListItem;
+            _ui.onCardPoolValuesChanged += onCardPoolValuesChanged;
             _ui.setSortTypes(_sortTypes);
             _ui.onSortTypeValueChanged += onSortTypeValueChanged;
             _ui.onCharacterFilterValueChanged += onCharacterFiltersValueChanged;
@@ -127,9 +148,6 @@ namespace Controllers
             _ui.onCostFilterValueChanged += onCostFiltersValueChanged;
             _ui.setTypeFilters(_typeFilters);
             _ui.onTypeFilterValueChanged += onTypeFilterValueChanged;
-            _ui.onSwitchRightToFilterDetailButtonClick += onSwitchRightToFilterDetailButtonClick;
-            _ui.onSwitchRightToDeckButtonClick += onSwitchRightToDeckButtonClick;
-            _ui.onFilterDetailCardPoolItemToggleValueChanged += onFilterDetailCardPoolItemToggleValueChanged;
             _ui.onClickDeckListItem += onClickDeckListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeckListItemDeleteButton;
             _ui.onDeckListItemNameValueChanged += onDeckListItemNameValueChanged;
@@ -282,6 +300,24 @@ namespace Controllers
             else
                 _ui.showMessage(errorTip);
         }
+        private async void onCardPoolValuesChanged(bool[] value)
+        {
+            //保存当前引用的卡池文件状态
+            for (int i = 0; i < value.Length; i++)
+            {
+                //不能更改一定会包含的标准卡池
+                if (game.card.isStandardCardPool(_cardPoolList[i].info))
+                {
+                    _cardPoolList[i].isEnabled = true;
+                    continue;
+                }
+                _cardPoolList[i].isEnabled = value[i];
+            }
+            //应用筛选条件
+            await loadCardListThenFilterAndSort();
+            //更新卡牌列表
+            _ui.updateCardListCount(_cardDefineList.Count);
+        }
         private async void onSortTypeValueChanged(int index)
         {
             _sortType = index;
@@ -304,40 +340,6 @@ namespace Controllers
         {
             _typeFiltersValue = value;
             await loadCardListThenFilterAndSort();
-            _ui.updateCardListCount(_cardDefineList.Count);
-        }
-        /// <summary>
-        /// 当玩家点击切换右侧栏到编辑扩展牌库模式
-        /// </summary>
-        private void onSwitchRightToFilterDetailButtonClick()
-        {
-            (string name, bool value)[] viewData = new (string name, bool value)[_cardPoolList.Count];
-            for (int i = 0; i < viewData.Length; i++)
-            {
-                viewData[i].name = _cardPoolList[i].info.cardPoolName;
-                viewData[i].value = _cardPoolList[i].isEnabled;
-            }
-            _ui.updateFilterDetailCardPoolList(viewData);
-            _ui.switchRightPanelModeButtonGroup(false);
-            _ui.setDeckListActive(false);
-            _ui.setEditDeckPanelActive(false);
-            _ui.setRightFilterDetialPanelActive(true);
-        }
-        private async void onSwitchRightToDeckButtonClick()
-        {
-            _ui.switchRightPanelModeButtonGroup(true);
-            _ui.setRightFilterDetialPanelActive(false);
-            _ui.setDeckListActive(_deck == null);
-            _ui.setEditDeckPanelActive(_deck != null);
-            await updateDeckCardListUI();
-        }
-        private async void onFilterDetailCardPoolItemToggleValueChanged(int index, bool value)
-        {
-            //保存当前引用的卡池文件状态
-            _cardPoolList[index].isEnabled = value;
-            //应用筛选条件
-            await loadCardListThenFilterAndSort();
-            //更新卡牌列表
             _ui.updateCardListCount(_cardDefineList.Count);
         }
         private void onClickDeckListItem(int index)
@@ -589,6 +591,11 @@ namespace Controllers
             List<string> pathList = new List<string>();
             for (int i = 0; i < _cardPoolList.Count; i++)
             {
+                //标准卡池一定包含
+                if (game.card.isStandardCardPool(_cardPoolList[i].info))
+                {
+                    _cardPoolList[i].isEnabled = true;
+                }
                 //分析一下当前卡组是否有卡牌使用到了外部卡池
                 if (isDeckContainsExternalCard(_cardPoolList[i].info.cardPoolId))
                 {

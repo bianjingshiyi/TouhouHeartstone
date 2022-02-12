@@ -253,6 +253,8 @@ namespace Controllers
                 return ActionNodeValueType.trigger;
             else if (type == typeof(TriggerCollection))
                 return ActionNodeValueType.triggerCollection;
+            else if (type == typeof(CardReference))
+                return ActionNodeValueType.cardReference;
             else
                 throw new NotImplementedException();
         }

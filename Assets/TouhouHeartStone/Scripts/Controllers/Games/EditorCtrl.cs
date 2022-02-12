@@ -510,6 +510,7 @@ namespace Controllers
         private EditorPanel _ui;
         List<string> _cardPoolPathList = new List<string>();
         List<CardPoolInfo> _cardPoolInfoList = new List<CardPoolInfo>();
+        bool[] _cardPoolFilterValues;
         string _curCardPoolPath;
         CardPoolInfo _curCardPoolInfo;
         readonly List<CardDefine> _cardDefineList = new List<CardDefine>();

@@ -5,9 +5,6 @@ using UnityEngine;
 
 namespace Game
 {
-    /// <summary>
-    /// 边境求求你整理一下你那sb一样的StringTable吧
-    /// </summary>
     public partial class StringTable
     {
         #region 行动

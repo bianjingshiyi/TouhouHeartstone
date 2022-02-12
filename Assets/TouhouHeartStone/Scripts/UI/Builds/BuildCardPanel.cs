@@ -29,90 +29,6 @@ namespace UI
         {
             _enableDrag = value;
         }
-        public void setRightFilterDetialPanelActive(bool value)
-        {
-            _filterDetailRightPanel.SetActive(value);
-        }
-        public void switchRightPanelModeButtonGroup(bool isToEditExternalCardPool)
-        {
-            _switchRightToDeckButton.gameObject.SetActive(!isToEditExternalCardPool);
-            _switchRightToFilterButton.gameObject.SetActive(isToEditExternalCardPool);
-        }
-        public void setSortTypes(string[] sortTypes)
-        {
-            _sortDropdown.ClearOptions();
-            _sortDropdown.AddOptions(new List<string>(sortTypes));
-        }
-        public void setSortType(int index)
-        {
-            _sortDropdown.SetValueWithoutNotify(index);
-        }
-        public void setCharacterFilters(string[] characterFilters)
-        {
-            _characterFilterDropdown.ClearOptions();
-            _characterFilterDropdown.AddOptions(new List<string>(characterFilters));
-        }
-        public void setCharacterFilter(bool[] value)
-        {
-            _characterFilterDropdown.SetValueWithoutNotify(value);
-        }
-        public void setCostFilters(string[] costFilters)
-        {
-            _costFilterDropdown.ClearOptions();
-            _costFilterDropdown.AddOptions(new List<string>(costFilters));
-        }
-        public void setCostFilter(bool[] value)
-        {
-            _costFilterDropdown.SetValueWithoutNotify(value);
-        }
-        public void setTypeFilters(string[] typeFilters)
-        {
-            _typeFilterDropdown.ClearOptions();
-            _typeFilterDropdown.AddOptions(new List<string>(typeFilters));
-        }
-        public void setTypeFilter(bool[] value)
-        {
-            _typeFilterDropdown.SetValueWithoutNotify(value);
-        }
-        //public void addFilterDetailCardPoolItem(string cardPoolName, bool value)
-        //{
-        //    RectTransform itemRect = Instantiate(_filterDetailCardPoolItemTemplate, _filterDetailCardPoolItemRoot);
-        //    _filterDetailCardPoolItemList.Add(itemRect);
-        //    itemRect.gameObject.SetActive(true);
-        //    BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
-        //    item.setName(cardPoolName);
-        //    item.setValue(value);
-        //    item.onValueChanged += onFilterDetialCardPoolItemToggleValueChangedCallback;
-        //}
-        //public void clearFilterDetailCardPoolItems()
-        //{
-        //    for (int i = 0; i < _filterDetailCardPoolItemList.Count; i++)
-        //    {
-        //        if (_filterDetailCardPoolItemList[i] == null)
-        //            continue;
-        //        BuildFilterDetailCardPoolItem item = _filterDetailCardPoolItemList[i].GetComponent<BuildFilterDetailCardPoolItem>();
-        //        item.onValueChanged -= onFilterDetialCardPoolItemToggleValueChangedCallback;
-        //        Destroy(_filterDetailCardPoolItemList[i].gameObject);
-        //    }
-        //    _filterDetailCardPoolItemList.Clear();
-        //}
-        public void updateFilterDetailCardPoolList((string name, bool value)[] viewData)
-        {
-            BJSYGameCore.UI.UIHelper.updateList(_filterDetailCardPoolItemRoot, _filterDetailCardPoolItemTemplate, _filterDetailCardPoolItemList, viewData.Length, (i, itemRect) =>
-            {
-                BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
-                item.setName(viewData[i].name);
-                item.setValue(viewData[i].value);
-            }, itemRect =>
-            {
-                BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
-                item.onValueChanged += onFilterDetialCardPoolItemToggleValueChangedCallback;
-            }, itemRect =>
-            {
-                BuildFilterDetailCardPoolItem item = itemRect.GetComponent<BuildFilterDetailCardPoolItem>();
-                item.onValueChanged -= onFilterDetialCardPoolItemToggleValueChangedCallback;
-            });
-        }
         public void setCharacterName(string name)
         {
             _characterNameText.text = name;
@@ -165,22 +81,11 @@ namespace UI
             HintMessageText.gameObject.SetActive(false);
             setLoadingUIActive(false);
 
-            _characterFilterDropdown.onValueChanged.AddListener(onCharacterFilterValueChangedCallback);
-            _costFilterDropdown.onValueChanged.AddListener(onCostFilterValueChangedCallback);
-            _typeFilterDropdown.onValueChanged.AddListener(onTypeFilterValueChangedCallback);
-            _sortDropdown.onValueChanged.AddListener(onSortTypeValueChangedCallback);
-            _switchRightToDeckButton.onClick.AddListener(onSwitchRightToDeckButtonClickCallback);
-            _switchRightToFilterButton.onClick.AddListener(onSwitchRightToFilterDetailButtonClickCallback);
-
             _exportDeckButton.onClick.AddListener(onClickExportDeckButtonCallback);
             _exitEditButton.onClick.AddListener(onClickExitEditButtonCallback);
             _importDeckButton.onClick.AddListener(onClickImportDeckButtonCallback);
             _uploadDeckButton.onClick.AddListener(onClickUploadDeckButtonCallback);
             _downloadDeckButton.onClick.AddListener(onClickDownloadDeckButtonCallback);
-            if (_filterDetailCardPoolItemTemplate.transform.parent == _filterDetailCardPoolItemRoot)
-            {
-                _filterDetailCardPoolItemTemplate.gameObject.SetActive(false);
-            }
         }
         #endregion
         #region 事件回调
@@ -220,7 +125,7 @@ namespace UI
                         {
                             _isDraggingHorizontal = true;
                             showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
-                            onStartDargCardListItem?.Invoke(cardListLayoutGroup.getItemIndex(item.transform as RectTransform));
+                            onStartDargCardListItem?.Invoke(getCardItemIndex(item.transform as RectTransform));
                         }
                     }
                     else
@@ -322,37 +227,6 @@ namespace UI
             //gameObject.SetActive(true);
             //GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
-        /// <summary>
-        /// 修改了排序
-        /// </summary>
-        private void onSortTypeValueChangedCallback(int value)
-        {
-            onSortTypeValueChanged?.Invoke(value);
-        }
-        private void onCharacterFilterValueChangedCallback(bool[] value)
-        {
-            onCharacterFilterValueChanged?.Invoke(value);
-        }
-        private void onCostFilterValueChangedCallback(bool[] value)
-        {
-            onCostFilterValueChanged?.Invoke(value);
-        }
-        private void onTypeFilterValueChangedCallback(bool[] value)
-        {
-            onTypeFilterValueChanged?.Invoke(value);
-        }
-        private void onFilterDetialCardPoolItemToggleValueChangedCallback(BuildFilterDetailCardPoolItem item, bool value)
-        {
-            onFilterDetailCardPoolItemToggleValueChanged?.Invoke(_filterDetailCardPoolItemList.IndexOf(item.transform as RectTransform), value);
-        }
-        private void onSwitchRightToDeckButtonClickCallback()
-        {
-            onSwitchRightToDeckButtonClick?.Invoke();
-        }
-        private void onSwitchRightToFilterDetailButtonClickCallback()
-        {
-            onSwitchRightToFilterDetailButtonClick?.Invoke();
-        }
         private void onClickExportDeckButtonCallback()
         {
             onClickExportDeckButton?.Invoke();
@@ -390,9 +264,6 @@ namespace UI
         public event Action<bool[]> onCharacterFilterValueChanged;
         public event Action<bool[]> onCostFilterValueChanged;
         public event Action<bool[]> onTypeFilterValueChanged;
-        public event Action onSwitchRightToFilterDetailButtonClick;
-        public event Action onSwitchRightToDeckButtonClick;
-        public event Action<int, bool> onFilterDetailCardPoolItemToggleValueChanged;
         public event Action<int> onClickMasterSelectPanelItem
         {
             add { _masterSelectionPanel.onClickItem += value; }
@@ -534,29 +405,9 @@ namespace UI
         [SerializeField]
         float _dragThreshold = 50f;
         [SerializeField]
-        Dropdown _sortDropdown;
-        [SerializeField]
-        MultiSelectDropdown _characterFilterDropdown;
-        [SerializeField]
-        MultiSelectDropdown _costFilterDropdown;
-        [SerializeField]
-        MultiSelectDropdown _typeFilterDropdown;
-        [SerializeField]
         ScrollRect _cardListScrollRect;
         [SerializeField]
-        Button _switchRightToDeckButton;
-        [SerializeField]
-        Button _switchRightToFilterButton;
-        [SerializeField]
         RectTransform _deckListViewportRect;
-        [SerializeField]
-        GameObject _filterDetailRightPanel;
-        [SerializeField]
-        RectTransform _filterDetailCardPoolItemRoot;
-        [SerializeField]
-        RectTransform _filterDetailCardPoolItemTemplate;
-        [SerializeField]
-        List<RectTransform> _filterDetailCardPoolItemList = new List<RectTransform>();
         [SerializeField]
         Text _characterNameText;
         [SerializeField]

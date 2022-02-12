@@ -153,7 +153,9 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作参数名称之卡牌定义")]
         public const string EDITOR_PARAM_NAME_CARD_DEFINE = "卡牌定义";
         [TranslateMsg("动作图编辑器中动作节点名称之获取随机卡牌定义")]
-        public const string EDITOR_PARAM_NAME_GET_RANDOM_CARD_DEFINE = "获取随机卡牌定义";
+        public const string EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE = "获取随机卡牌定义";
+        [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并置入手牌")]
+        public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HAND = "创建衍生卡并置入手牌";
         #endregion
         #region 修改器 
         [TranslateMsg("动作图编辑器中动作节点分类之修改器")]

@@ -69,7 +69,7 @@ namespace Game
             }
             return cardDefines;
         }
-        [ActionNodeMethod(StringTable.EDITOR_PARAM_NAME_GET_RANDOM_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getRandomCardDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine[] cardDefines)
         {
@@ -98,6 +98,21 @@ namespace Game
                 default:
                     return card.isItem();
             }
+        }
+        /// <summary>
+        /// 创建衍生卡
+        /// </summary>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HAND, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card> createTokenCardToHand(CardEngine game, Card card, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            Player player = card.getOwner();
+            if (player.getHand().isFull)
+                return null;
+            Card createdCard = game.createCard(cardDefine);
+            await player.getHand().add(game, createdCard);
+            return createdCard;
         }
         #endregion
 

@@ -2273,29 +2273,27 @@ namespace Controllers
             var infoArray = new ActionNodeValueInfo[actionDefine.consts.Length];
             for (int i = 0; i < infoArray.Length; i++)
             {
-                infoArray[i] = new ActionNodeValueInfo()
-                {
-                    //TODO:这里应该考虑动作节点常量值的翻译，但是暂时先不这么做。
-                    name = actionDefine.consts[i].name,
-                    value = actionNode.consts[i]
-                };
+                //TODO:这里应该考虑动作节点常量值的翻译，但是暂时先不这么做。
                 Type type = actionDefine.consts[i].type;
                 if (type == typeof(int))
-                    infoArray[i].type = ActionNodeValueType.integer;
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.integer, actionNode.consts[i]);
                 else if (type == typeof(float))
-                    infoArray[i].type = ActionNodeValueType.real;
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.real, actionNode.consts[i]);
                 else if (type == typeof(bool))
-                    infoArray[i].type = ActionNodeValueType.boolean;
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.boolean, actionNode.consts[i]);
                 else if (type == typeof(string))
-                    infoArray[i].type = ActionNodeValueType.text;
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.text, actionNode.consts[i]);
                 else if (type.IsEnum)
                 {
-                    infoArray[i].type = ActionNodeValueType.enumValue;
-                    infoArray[i].enumType = type;
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.enumValue, actionNode.consts[i], type);
                 }
                 else if (type == typeof(ActionValueRef))
                 {
-                    infoArray[i].type = ActionNodeValueType.actionValueRef;
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.actionValueRef, actionNode.consts[i]);
+                }
+                else if (type == typeof(CardReference))
+                {
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReference, actionNode.consts[i]);
                 }
                 else
                     throw new NotImplementedException("没有" + type + "对应的常数类型");

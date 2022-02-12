@@ -25,30 +25,30 @@ namespace UI
                 _nameText.gameObject.SetActive(true);
                 _nameText.text = name;
             }
-            _valueType = info.type;
+            _valueInfo = info;
             _removeItemButton.gameObject.SetActive(isListItem);
             //输入框
-            if (info.type == ActionNodeValueType.integer)
+            if (_valueInfo.type == ActionNodeValueType.integer)
             {
                 _inputField.gameObject.SetActive(true);
-                if (info.value != null)
-                    _inputField.SetTextWithoutNotify(info.value.ToString());
+                if (_valueInfo.value != null)
+                    _inputField.SetTextWithoutNotify(_valueInfo.value.ToString());
                 else
                     _inputField.SetTextWithoutNotify("0");
             }
-            else if (info.type == ActionNodeValueType.real)
+            else if (_valueInfo.type == ActionNodeValueType.real)
             {
                 _inputField.gameObject.SetActive(true);
-                if (info.value != null)
-                    _inputField.SetTextWithoutNotify(info.value.ToString());
+                if (_valueInfo.value != null)
+                    _inputField.SetTextWithoutNotify(_valueInfo.value.ToString());
                 else
                     _inputField.SetTextWithoutNotify("0");
             }
-            else if (info.type == ActionNodeValueType.text)
+            else if (_valueInfo.type == ActionNodeValueType.text)
             {
                 _inputField.gameObject.SetActive(true);
-                if (info.value != null)
-                    _inputField.SetTextWithoutNotify((string)info.value);
+                if (_valueInfo.value != null)
+                    _inputField.SetTextWithoutNotify((string)_valueInfo.value);
                 else
                     _inputField.SetTextWithoutNotify(string.Empty);
             }
@@ -57,11 +57,11 @@ namespace UI
                 _inputField.gameObject.SetActive(false);
             }
             //勾选框
-            if (info.type == ActionNodeValueType.boolean)
+            if (_valueInfo.type == ActionNodeValueType.boolean)
             {
                 _toggle.gameObject.SetActive(true);
-                if (info.value != null)
-                    _toggle.SetIsOnWithoutNotify((bool)info.value);
+                if (_valueInfo.value != null)
+                    _toggle.SetIsOnWithoutNotify((bool)_valueInfo.value);
                 else
                     _toggle.SetIsOnWithoutNotify(false);
             }
@@ -70,21 +70,14 @@ namespace UI
                 _toggle.gameObject.SetActive(false);
             }
             //单选下拉菜单
-            if (info.type == ActionNodeValueType.enumValue || info.type == ActionNodeValueType.cardReference)
+            if (_valueInfo.type == ActionNodeValueType.enumValue || _valueInfo.type == ActionNodeValueType.cardReference)
             {
-                if(info.type == ActionNodeValueType.cardReference) _Card.gameObject.SetActive(true);
+                if (_valueInfo.type == ActionNodeValueType.cardReference)
+                    _Card.gameObject.SetActive(true);
                 _dropdown.gameObject.SetActive(true);
-                _enumType = info.enumType;
-                Array enumValues = Enum.GetValues(_enumType);
-                int index = Array.IndexOf(enumValues, info.value);
-                List<string> enumNames = new List<string>();
-                for (int i = 0; i < enumValues.Length; i++)
-                {
-                    enumNames.Add(Enum.GetName(_enumType, enumValues.GetValue(i)));
-                }
                 _dropdown.ClearOptions();
-                _dropdown.AddOptions(enumNames);
-                _dropdown.SetValueWithoutNotify(index);
+                _dropdown.AddOptions(new List<string>(_valueInfo.optionalNames));
+                _dropdown.SetValueWithoutNotify(Array.IndexOf(_valueInfo.optionalValues, _valueInfo.value));
             }
             else
             {
@@ -92,14 +85,13 @@ namespace UI
                 _dropdown.gameObject.SetActive(false);
             }
             //多选下拉菜单
-            if (info.type == ActionNodeValueType.pileNameCollection)
+            if (_valueInfo.type == ActionNodeValueType.pileNameCollection)
             {
                 _multiSelectDropdown.gameObject.SetActive(true);
                 _multiSelectDropdown.ClearOptions();
                 _multiSelectDropdown.AddOptions(new List<string>(_pileNames));
-                if (info.value is PileNameCollection pileNameCollection)
+                if (_valueInfo.value is PileNameCollection pileNameCollection)
                 {
-                    _value = pileNameCollection;
                     for (int i = 0; i < pileNameCollection.Count; i++)
                     {
                         //剔除掉未知的PileName
@@ -119,9 +111,9 @@ namespace UI
                 else
                 {
                     //如果集合为null，则立刻给它新建一个空的并触发事件。
-                    _value = new PileNameCollection();
+                    _valueInfo.value = new PileNameCollection();
                     _multiSelectDropdown.SetValueWithoutNotify(new bool[_pileValues.Length]);
-                    onValueChanged?.Invoke(this, _value);
+                    onValueChanged?.Invoke(this, _valueInfo.value);
                 }
             }
             else
@@ -169,8 +161,8 @@ namespace UI
                 }
                 else
                 {
-                    _value = new TriggerCollection();
-                    onValueChanged?.Invoke(this, _value);
+                    _valueInfo.value = new TriggerCollection();
+                    onValueChanged?.Invoke(this, _valueInfo.value);
                 }
             }
             else
@@ -198,7 +190,7 @@ namespace UI
         #region 事件回调
         private void onEndEditInputField(string text)
         {
-            if (_valueType == ActionNodeValueType.integer)
+            if (_valueInfo.type == ActionNodeValueType.integer)
             {
                 if (int.TryParse(text, out int value))
                 {
@@ -210,7 +202,7 @@ namespace UI
                     _inputField.SetTextWithoutNotify("0");
                 }
             }
-            else if (_valueType == ActionNodeValueType.real)
+            else if (_valueInfo.type == ActionNodeValueType.real)
             {
                 if (float.TryParse(text, out float value))
                 {
@@ -221,7 +213,7 @@ namespace UI
                     _inputField.SetTextWithoutNotify("0");
                 }
             }
-            else if (_valueType == ActionNodeValueType.text)
+            else if (_valueInfo.type == ActionNodeValueType.text)
             {
                 onValueChanged?.Invoke(this, text);
             }
@@ -232,12 +224,11 @@ namespace UI
         }
         private void onDropdownValueChangedCallback(int index)
         {
-            Array enumValues = Enum.GetValues(_enumType);
-            onValueChanged?.Invoke(this, enumValues.GetValue(index));
+            onValueChanged?.Invoke(this, _valueInfo.optionalValues[index]);
         }
         private void onMultiSelectDropdownValueChangedCallback(bool[] value)
         {
-            if (_value is PileNameCollection pileNameCollection)
+            if (_valueInfo.value is PileNameCollection pileNameCollection)
             {
                 bool isValueChanged = false;
                 for (int i = 0; i < value.Length; i++)
@@ -326,9 +317,7 @@ namespace UI
         [SerializeField]
         public Card _Card;
         [SerializeField]
-        ActionNodeValueType _valueType;
-        object _value;
-        Type _enumType;
+        ActionNodeValueInfo _valueInfo;
         #endregion
     }
 }

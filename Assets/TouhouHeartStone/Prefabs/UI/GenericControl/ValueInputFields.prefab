@@ -112,7 +112,6 @@ MonoBehaviour:
   _pileNames: []
   _pileValues: []
   _Card: {fileID: 5126548240768758034}
-  _valueType: 0
 --- !u!1 &1468405184553934221
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,7 +147,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 78.00001, y: 0}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 1.0000001, y: 0.5}
 --- !u!222 &3936068166231481295
@@ -242,7 +241,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 83, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &396762409078396003

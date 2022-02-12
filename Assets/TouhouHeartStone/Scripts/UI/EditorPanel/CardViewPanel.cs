@@ -11,13 +11,53 @@ namespace UI
     class CardViewPanel : MonoBehaviour
     {
         #region 公有方法
+        public void setCardPoolOptions(string[] cardPoolNames)
+        {
+            _cardPoolViewPanel.setCardPoolOptions(cardPoolNames);
+        }
+        public void setCardPoolValue(bool[] value)
+        {
+            _cardPoolViewPanel.setCardPoolValues(value);
+        }
+        public void setSortTypes(string[] sortTypes)
+        {
+            _cardPoolViewPanel.setSortTypes(sortTypes);
+        }
+        public void setSortType(int index)
+        {
+            _cardPoolViewPanel.setSortType(index);
+        }
+        public void setCharacterFilters(string[] characterFilters)
+        {
+            _cardPoolViewPanel.setCharacterFilters(characterFilters);
+        }
+        public void setCharacterFilter(bool[] value)
+        {
+            _cardPoolViewPanel.setCharacterFilter(value);
+        }
+        public void setCostFilters(string[] costFilters)
+        {
+            _cardPoolViewPanel.setCostFilters(costFilters);
+        }
+        public void setCostFilter(bool[] value)
+        {
+            _cardPoolViewPanel.setCostFilter(value);
+        }
+        public void setTypeFilters(string[] typeFilters)
+        {
+            _cardPoolViewPanel.setTypeFilters(typeFilters);
+        }
+        public void setTypeFilter(bool[] value)
+        {
+            _cardPoolViewPanel.setTypeFilter(value);
+        }
         /// <summary>
         /// 显示左边的卡牌总览
         /// </summary>
         /// <param name="value"></param>
         public void setCardListActive(bool value)
         {
-            _cardList.SetActive(value);
+            _cardPoolViewPanel.setCardListActive(value);
         }
         /// <summary>
         /// 显示右边的卡组列表
@@ -44,7 +84,11 @@ namespace UI
         /// <param name="count"></param>
         public void updateCardListCount(int count)
         {
-            _cardListLayoutGroup.setCount(count);
+            _cardPoolViewPanel.updateCardListCount(count);
+        }
+        public int getCardItemIndex(RectTransform rect)
+        {
+            return _cardPoolViewPanel.getCardItemIndex(rect);
         }
         /// <summary>
         /// 更新自定义卡池列表
@@ -97,12 +141,6 @@ namespace UI
         protected virtual void Awake()
         {
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
-            if (_cardListLayoutGroup.cellPrefab.transform.parent == _cardListLayoutGroup.transform)
-            {
-                _cardListLayoutGroup.cellPrefab.gameObject.SetActive(false);
-            }
-            _cardListLayoutGroup.onEnableItem += onEnableCardListItem;
-            _cardListLayoutGroup.onDisableItem += onDisableCardListItem;
             if (_deckListItemTemplate.transform.parent == _deckListRoot)
             {
                 _deckListItemTemplate.gameObject.SetActive(false);
@@ -117,6 +155,8 @@ namespace UI
             }
             _editDeckNameButton.onClick.AddListener(onClickEditDeckNameButtonCallback);
             _deckNameInputField.onEndEdit.AddListener(onEndEditDeckNameInputFieldCallback);
+            _cardPoolViewPanel.onEnableCardListItem += onEnableCardListItem;
+            _cardPoolViewPanel.onDisableCardListItem += onDisableCardListItem;
         }
         #endregion
         #region 事件回调
@@ -136,7 +176,7 @@ namespace UI
         }
         private void onClickCardListItemCallback(EditorCardListItem item)
         {
-            int index = _cardListLayoutGroup.getItemIndex(item.transform as RectTransform);
+            int index = _cardPoolViewPanel.getCardItemIndex(item.transform as RectTransform);
             onClickCardListItem?.Invoke(index);
         }
         private void onClickDeckListItemCallback(DeckListItem item)
@@ -198,8 +238,8 @@ namespace UI
         /// </summary>
         public event Action<int, RectTransform> onUpdateCardListItem
         {
-            add { _cardListLayoutGroup.onUpdateItem += value; }
-            remove { _cardListLayoutGroup.onUpdateItem -= value; }
+            add { _cardPoolViewPanel.onUpdateCardListItem += value; }
+            remove { _cardPoolViewPanel.onUpdateCardListItem -= value; }
         }
         /// <summary>
         /// 当点击卡牌列表，参数为点击的列表项索引
@@ -234,6 +274,14 @@ namespace UI
         /// </summary>
         public event Action onClickDeleteCurCardPoolButton;
         /// <summary>
+        /// 当更改卡池过滤选项，参数为更改后的卡池选择状态
+        /// </summary>
+        public event Action<bool[]> onCardPoolValuesChanged
+        {
+            add { _cardPoolViewPanel.onCardPoolsValueChanged += value; }
+            remove { _cardPoolViewPanel.onCardPoolsValueChanged -= value; }
+        }
+        /// <summary>
         /// 当更改排序类型，参数为更改的索引
         /// </summary>
         public event Action<int> onChangeSortTypeValue;
@@ -247,7 +295,6 @@ namespace UI
         public event Action<string> onDeckNameInputFieldValueChanged;
         #endregion
         #region 属性字段
-        public VirtualListLayoutGroup cardListLayoutGroup => _cardListLayoutGroup;
         public List<RectTransform> deckCardItemList => _cardPoolCardItemList;
         [SerializeField]
         Button _returnButton;
@@ -258,9 +305,7 @@ namespace UI
         [SerializeField]
         List<RectTransform> _cardPoolCardItemList = new List<RectTransform>();
         [SerializeField]
-        GameObject _cardList;
-        [SerializeField]
-        VirtualListLayoutGroup _cardListLayoutGroup;
+        CardPoolViewPanel _cardPoolViewPanel;
         [SerializeField]
         GameObject _deckList;
         [SerializeField]
