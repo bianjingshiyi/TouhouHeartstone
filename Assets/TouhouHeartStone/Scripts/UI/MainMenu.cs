@@ -19,6 +19,7 @@ namespace UI
             base.Awake();
             autoInit();
             _vsBotButton.onClick.AddListener(onVsBotButtonClickCallback);
+            _pveButton.onClick.AddListener(onPVEButtonClickCallback);
             _buildCardButton.onClick.AddListener(onBuildCardButtonClickCallback);
             buildButton.onClick.AddListener(() =>
             {
@@ -51,6 +52,10 @@ namespace UI
         {
             onVsBotButtonClick?.Invoke();
         }
+        private void onPVEButtonClickCallback()
+        {
+            onPVEButtonClick?.Invoke();
+        }
         private void onEditorButtonClickCallback()
         {
             onEditorButtonClick?.Invoke();
@@ -63,11 +68,14 @@ namespace UI
         #endregion
         #region 事件
         public event Action onVsBotButtonClick;
+        public event Action onPVEButtonClick;
         public event Action onEditorButtonClick;
         public event Action onBuildCardButtonClick;
         #endregion
         [SerializeField]
         Button _vsBotButton;
+        [SerializeField]
+        Button _pveButton;
         [SerializeField]
         Button _buildCardButton;
     }

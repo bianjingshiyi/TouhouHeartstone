@@ -15,7 +15,7 @@ namespace UI
     using BJSYGameCore;
     using UnityEngine.UI;
     using UI;
-
+    
     public partial class MainMenu
     {
         public void autoInit()
@@ -45,6 +45,8 @@ namespace UI
             _quitButton.onClick.AddListener(UitButtonClickCallback);
             _editorButton = transform.Find(PATH_EDITORBUTTON).GetComponent<Button>();
             _editorButton.onClick.AddListener(DitorButtonClickCallback);
+            _pVEButton = transform.Find(PATH_PVEBUTTON).GetComponent<Button>();
+            _pVEButton.onClick.AddListener(VEButtonClickCallback);
         }
         public void autoClear()
         {
@@ -57,6 +59,7 @@ namespace UI
             _settingButton.onClick.RemoveListener(EttingButtonClickCallback);
             _quitButton.onClick.RemoveListener(UitButtonClickCallback);
             _editorButton.onClick.RemoveListener(DitorButtonClickCallback);
+            _pVEButton.onClick.RemoveListener(VEButtonClickCallback);
         }
         public GameObject _buttonPanel;
         public const string PATH_BUTTONPANEL = "ButtonPanel";
@@ -344,6 +347,27 @@ namespace UI
             if ((onDitorButtonClick != null))
             {
                 onDitorButtonClick(this);
+            }
+        }
+        public Button _pVEButton;
+        public const string PATH_PVEBUTTON = "ButtonPanel/MainBtn/PVE";
+        public Button pVEButton
+        {
+            get
+            {
+                if ((_pVEButton == null))
+                {
+                    _pVEButton = transform.Find(PATH_PVEBUTTON).GetComponent<Button>();
+                }
+                return _pVEButton;
+            }
+        }
+        public event Action<MainMenu> onVEButtonClick;
+        private void VEButtonClickCallback()
+        {
+            if ((onVEButtonClick != null))
+            {
+                onVEButtonClick(this);
             }
         }
     }

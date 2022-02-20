@@ -27,6 +27,8 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<MainMenu>();
             }
+
+            _ui.onPVEButtonClick += onEntryPVEMode;
             _ui.onVsBotButtonClick += onClickVsBotButton;
             _ui.onBuildCardButtonClick += onBuildButtonClick;
             _ui.onEditorButtonClick += onEditorButtonClick;
@@ -54,6 +56,23 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             scene.build.display();
         }
+
+        private async void onEntryPVEMode()
+        {
+            await scene.game.network.logic.CreateLocalRoom();
+            RoomData currentRoomData = scene.game.network.logic.CurrentRoom;
+            currentRoomData.maxPlayerCount = 2; // 炉石两个人
+            
+            HearthstoneOption option = new HearthstoneOption();
+            var rand = new byte[4];
+            System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
+            option.randomSeed = BitConverter.ToInt32(rand, 0);
+            currentRoomData.setOption(option);
+            
+            hide();
+            scene.room.display(currentRoomData, true);
+        }
+        
         private void onEditorButtonClick()
         {
             _ui.gameObject.SetActive(false);
