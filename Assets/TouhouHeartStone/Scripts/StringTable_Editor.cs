@@ -4,6 +4,10 @@ namespace Game
 {
     partial class StringTable
     {
+        [TranslateMsg("编辑器中新建卡池的默认名称")]
+        public const string EDITOR_NEW_CARDPOOL_DEFAULT_NAME = "新建卡池";
+        [TranslateMsg("编辑器中新建皮肤的默认名称")]
+        public const string EDITOR_NEW_SKIN_DEFAULT_NAME = "新建皮肤";
         [TranslateMsg("编辑器中效果类型名称之通用效果")]
         public const string EDITOR_EFFECT_NAME_NORMAL_EFFECT = "通用效果";
         [TranslateMsg("编辑器中效果类型名称之光环效果")]

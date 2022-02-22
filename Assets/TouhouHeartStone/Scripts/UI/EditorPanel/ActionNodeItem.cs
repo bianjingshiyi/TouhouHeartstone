@@ -60,7 +60,7 @@ namespace UI
                 });
             }
         }
-        
+
         public void setInputs(IOConnectInfo[] inputNamesInfos, List<Color> listColor)
         {
             if (inputNamesInfos == null || inputNamesInfos.Length < 1)
@@ -126,6 +126,10 @@ namespace UI
                 });
             }
         }
+        public ValueInputField getConstInputField(int index)
+        {
+            return _valueList[index].GetComponent<ValueInputField>();
+        }
         /// <summary>
         /// 初始化事件类型名称
         /// </summary>
@@ -148,22 +152,25 @@ namespace UI
             var index = 0;
             switch (type)
             {
-                case "Owner": 
-                case "Player": 
-                case "玩家": index = 1;
+                case "Owner":
+                case "Player":
+                case "玩家":
+                    index = 1;
                     break;
                 case "Value":
                 case "Card":
-                case "卡牌": index = 2;
+                case "卡牌":
+                    index = 2;
                     break;
-                case "目标卡牌": index = 3;
+                case "目标卡牌":
+                    index = 3;
                     break;
                 case "Buff":
                     index = 4;
                     break;
                 case "":
                     index = 5;
-                    break;;
+                    break; ;
             }
 
             return index;
@@ -205,7 +212,7 @@ namespace UI
                 });
             }
         }
-        
+
         /// <summary>
         /// 保留旧的函数方法，用于buff之类的创建
         /// </summary>
@@ -284,7 +291,7 @@ namespace UI
         {
             return _outputList[index].GetComponent<ActionNodeItemOutput>().getNodeWorldPosition();
         }
-        
+
         public ActionNodeItemInput getInput(int index)
         {
             return _inputList[index].GetComponent<ActionNodeItemInput>();

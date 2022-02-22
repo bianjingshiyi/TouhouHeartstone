@@ -70,10 +70,8 @@ namespace UI
                 _toggle.gameObject.SetActive(false);
             }
             //单选下拉菜单
-            if (_valueInfo.type == ActionNodeValueType.enumValue || _valueInfo.type == ActionNodeValueType.cardReference)
+            if (_valueInfo.type == ActionNodeValueType.enumValue)
             {
-                if (_valueInfo.type == ActionNodeValueType.cardReference)
-                    _Card.gameObject.SetActive(true);
                 _dropdown.gameObject.SetActive(true);
                 _dropdown.ClearOptions();
                 _dropdown.AddOptions(new List<string>(_valueInfo.optionalNames));
@@ -81,7 +79,6 @@ namespace UI
             }
             else
             {
-                _Card.gameObject.SetActive(false);
                 _dropdown.gameObject.SetActive(false);
             }
             //多选下拉菜单
@@ -169,6 +166,15 @@ namespace UI
             {
                 _listRoot.gameObject.SetActive(false);
             }
+            //卡牌
+            if (_valueInfo.type == ActionNodeValueType.cardReference)
+            {
+                _Card.gameObject.SetActive(true);
+            }
+            else
+            {
+                _Card.gameObject.SetActive(false);
+            }
         }
         public void setupPileNames(string[] pileNames, string[] pileValues)
         {
@@ -186,6 +192,7 @@ namespace UI
             _button.onClick.AddListener(onClickButtonCallback);
             _addItemButton.onClick.AddListener(onClickAddItemButtonCallback);
             _removeItemButton.onClick.AddListener(onClickRemoveButtonCallback);
+            _cardButton.onClick.AddListener(onClickCardButtonCallback);
         }
         #region 事件回调
         private void onEndEditInputField(string text)
@@ -274,6 +281,10 @@ namespace UI
         {
             onClickItemRemoveButton?.Invoke(this, _list.IndexOf(item.transform as RectTransform));
         }
+        private void onClickCardButtonCallback()
+        {
+            onClickButton?.Invoke(this);
+        }
         #endregion
         #endregion
         #region 事件
@@ -286,6 +297,7 @@ namespace UI
         public event Action<ValueInputField, int> onClickItemRemoveButton;
         #endregion
         #region 属性字段
+        public Card card => _Card;
         [SerializeField]
         Text _nameText;
         [SerializeField]
@@ -315,7 +327,9 @@ namespace UI
         [SerializeField]
         string[] _pileValues;
         [SerializeField]
-        public Card _Card;
+        Card _Card;
+        [SerializeField]
+        Button _cardButton;
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
         #endregion

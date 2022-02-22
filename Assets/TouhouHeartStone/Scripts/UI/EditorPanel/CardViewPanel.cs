@@ -295,6 +295,7 @@ namespace UI
         public event Action<string> onDeckNameInputFieldValueChanged;
         #endregion
         #region 属性字段
+        public CardPoolViewPanel cardPoolViewPanel => _cardPoolViewPanel;
         public List<RectTransform> deckCardItemList => _cardPoolCardItemList;
         [SerializeField]
         Button _returnButton;

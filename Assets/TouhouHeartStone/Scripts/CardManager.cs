@@ -15,6 +15,7 @@ using MongoDB.Bson;
 using ILogger = TouhouCardEngine.Shared.ILogger;
 using IGensoukyo;
 using System.Text.RegularExpressions;
+using Controllers;
 
 namespace Game
 {
@@ -468,6 +469,19 @@ namespace Game
                 return card;
             return defineDic.ContainsKey(id) ? defineDic[id] : null;
         }
+        public CardDefine getCardDefine(int cardPoolId, int cardId)
+        {
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                cardPool.cardDefineList.Find(d => d.id == cardId);
+            }
+            if (defineDic.ContainsKey(cardId))
+            {
+                return defineDic[cardId];
+            }
+            else
+                throw new KeyNotFoundException("不存在卡牌" + cardId);
+        }
         /// <summary>
         /// 根据条件获取卡片定义
         /// </summary>
@@ -494,14 +508,50 @@ namespace Game
         {
             if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
             {
+                //已经加载卡池
                 return cardPool.cardDefineList.ToArray();
             }
             else
+            {
                 return new CardDefine[0];
+            }
+        }
+        public async Task<CardDefine[]> getOrLoadCardDefines(int cardPoolId)
+        {
+            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
+            {
+                //已经加载卡池
+                return cardPool.cardDefineList.ToArray();
+            }
+            else if (getCardPoolPath(cardPoolId) is string path)
+            {
+                //未加载卡池但是存在地址
+                var result = await loadCardPool(path);
+                return result.cardPool.cardDefineList.ToArray();
+            }
+            else
+            {
+                return new CardDefine[0];
+            }
         }
         public CardSkinData getSkin(TouhouCardEngine.Card card)
         {
             return getSkin(card.define.id);
+        }
+        public CardSkinData getDefaultSkin(CardDefine cardDefine)
+        {
+            var skinGroup = getAllSkins(cardDefine.id).GroupBy(s => s.skinId).FirstOrDefault();
+            if (skinGroup == null)
+            {
+                //卡牌没有任何皮肤
+                throw new InvalidOperationException(cardDefine + "没有任何皮肤");
+            }
+            //获取对应语言的皮肤
+            CardSkinData skin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
+            //如果没有对应语言，就第一个
+            if (skin == null)
+                skin = skinGroup.First();
+            return skin;
         }
         /// <summary>
         /// 根据id获取卡片皮肤

@@ -122,12 +122,7 @@ namespace Controllers
             if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
                 buffDefine is GeneratedBuffDefine generatedBuffDefine)
             {
-                ActionNodeGraphInfo graphInfo = scene.editor.actionNodeGraphInfoList.Find(g => g.cardId == _cardDefine.id && g.effectIndex == index);
-                if (graphInfo == null)
-                {
-                    graphInfo = new ActionNodeGraphInfo(_cardDefine.id, index);
-                    scene.editor.actionNodeGraphInfoList.Add(graphInfo);
-                }
+                ActionNodeGraphInfo graphInfo = game.card.getOrCreateActionNodeGraphInfo(_curCardPoolId, _cardDefine.id, index);
                 await scene.effectEditor.displayEffect(_curCardPoolId, _cardDefine, generatedBuffDefine.effectList[index], graphInfo);
             }
         }

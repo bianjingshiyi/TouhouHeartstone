@@ -179,62 +179,46 @@ namespace Game
             {
                 return null;
             }
-            Sprite sprite;
+            Sprite sprite = await getSpriteFromCache(path);
+            if (sprite != null)
+            {
+                //存在缓存，直接返回缓存
+                return sprite;
+            }
             if (path.StartsWith("sa:"))
             {
-                //流文件
-                sprite = await getSpriteFromCache(path);
-                if (sprite != null)
+                //读取文件
+                byte[] bytes;
+                try
                 {
-                    //存在缓存，直接返回缓存
-                    return sprite;
-                }
-                else
-                {
-                    //读取文件
-                    byte[] bytes;
                     try
                     {
-                        try
-                        {
-                            bytes = await game.fileManager.readStreamingBinaryFile(path.Substring(3, path.Length - 3));
-                        }
-                        catch (FileNotFoundException)
-                        {
-                            //可能是后缀不对
-                            bytes = await game.fileManager.readStreamingBinaryFile(
-                                path.EndsWith(".png") ?
-                                path.Substring(3, path.Length - 3).Replace(".png", ".jpg") :
-                                path.Substring(3, path.Length - 3).Replace(".jpg", ".png"));
-                        }
-                        Texture2D texture = new Texture2D(512, 512);
-                        texture.LoadImage(bytes);
-                        sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
-                        return sprite;
+                        bytes = await game.fileManager.readStreamingBinaryFile(path.Substring(3, path.Length - 3));
                     }
-                    catch (Exception e)
+                    catch (FileNotFoundException)
                     {
-                        Debug.LogError("加载图片" + path + "失败：" + e);
+                        //可能是后缀不对
+                        bytes = await game.fileManager.readStreamingBinaryFile(
+                            path.EndsWith(".png") ?
+                            path.Substring(3, path.Length - 3).Replace(".png", ".jpg") :
+                            path.Substring(3, path.Length - 3).Replace(".jpg", ".png"));
                     }
+                    Texture2D texture = new Texture2D(512, 512);
+                    texture.LoadImage(bytes);
+                    sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("加载图片" + path + "失败：" + e);
                 }
             }
             else if (path.StartsWith("res:"))
             {
-                //资源文件
-                sprite = await getSpriteFromCache(path);
-                if (sprite != null)
+                //读取文件
+                sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
+                if (sprite == null)
                 {
-                    //存在缓存，直接返回缓存
-                    return sprite;
-                }
-                else
-                {
-                    //读取文件
-                    sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
-                    if (sprite == null)
-                    {
-                        Debug.LogError("加载图片" + path + "为空");
-                    }
+                    Debug.LogError("加载图片" + path + "为空");
                 }
             }
             else
@@ -248,16 +232,18 @@ namespace Game
                         !path.StartsWith("sa:") &&
                         !path.StartsWith("res:"))
                     {
-                        path = Path.Combine(textureDirName, path);
-                        bytes = await game.fileManager.readStreamingBinaryFile(path);
+                        //卡池在StreamingAssets中，但是卡图是相对路径
+                        //需要从StreamingAssets中读取相对路径上的图片
+                        string saPath = Path.Combine(textureDirName, path);
+                        bytes = await game.fileManager.readStreamingBinaryFile(saPath);
                     }
                     else
                     {
                         //存在卡池，要考虑一下记载这个路径的卡池的路径，综合得到绝对路径
                         //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
                         //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
-                        path = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName, path);
-                        bytes = await game.fileManager.readBinaryFile(path);
+                        string absPath = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName, path);
+                        bytes = await game.fileManager.readBinaryFile(absPath);
                     }
                 }
                 else

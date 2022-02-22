@@ -778,7 +778,7 @@ namespace Controllers
         /// 当左击动作节点
         /// </summary>
         /// <param name="actionNodeItem"></param>
-        void onLeftClickActionNode(ActionNodeItem actionNodeItem)
+        private void onLeftClickActionNode(ActionNodeItem actionNodeItem)
         {
             _curActionNode = null;
             closeMenu();
@@ -787,7 +787,7 @@ namespace Controllers
         /// 当右击动作节点
         /// </summary>
         /// <param name="actionNodeItem"></param>
-        void onRightClickActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
+        private void onRightClickActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
             //入口节点不能通过长按编辑
             if (actionNodeItem == _entryNodeItem)
@@ -806,7 +806,7 @@ namespace Controllers
         /// 当用户长按节点，展开节点菜单。
         /// </summary>
         /// <param name="actionNodeItem"></param>
-        void onLongPressActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
+        private void onLongPressActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
             //入口节点不能通过长按编辑
             if (actionNodeItem == _entryNodeItem)
@@ -841,7 +841,7 @@ namespace Controllers
         /// <param name="actionNodeItem"></param>
         /// <param name="constIndex"></param>
         /// <param name="value"></param>
-        void onActionNodeValueChange(ActionNodeItem actionNodeItem, int constIndex, object value)
+        private void onActionNodeValueChange(ActionNodeItem actionNodeItem, int constIndex, object value)
         {
             if (_targetChecker != null && actionNodeItem == _returnNodeItem)
             {
@@ -871,11 +871,20 @@ namespace Controllers
                 pushCurEditObjectToStack();
                 await openValueRefGraph(value);
             }
+            else if (actionDefine.consts[index].type == typeof(CardReference))
+            {
+                if (actionNode.consts[index] is CardReference value)
+                {
+                    //打开卡牌选择界面
+                    await _cardSelectCtrl.display(new int[] { value.cardPoolId }, value.cardId);
+                    //_ui.displayCardSelectPanel(true);
+                }
+            }
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
         /// </summary>
-        void onClickReturnButton()
+        private void onClickReturnButton()
         {
             popPrevEditObjectFromStackAndOpen();
         }
@@ -1196,7 +1205,7 @@ namespace Controllers
             }
             return actionNodeItem;
         }
-        Vector2 calcActionNodeGraphSize(ActionNode actionNode, Dictionary<ActionNode, Vector2> sizeDict)
+        private Vector2 calcActionNodeGraphSize(ActionNode actionNode, Dictionary<ActionNode, Vector2> sizeDict)
         {
             if (actionNode == null)
                 return Vector2.zero;
@@ -1350,13 +1359,29 @@ namespace Controllers
             }
             else
             {
+                ActionNodeValueInfo[] constsInfo = getActionNodeConstValueInfo(actionNode);
                 actionNodeItem = _ui.createNode(
                     posX,
                     posY,
                     getActionNodeName(actionNode),
                     getActionNodeInputInfos(actionNode),
-                    getActionNodeConstValueInfo(actionNode),
+                    constsInfo,
                     getActionNodeOutputInfos(actionNode));
+                for (int i = 0; i < constsInfo.Length; i++)
+                {
+                    if (constsInfo[i].type == ActionNodeValueType.cardReference)
+                    {
+                        CardDefine cardDefine = null;
+                        if (actionNode.consts[i] is CardReference cardReference)
+                        {
+                            game.card.getCardDefine(cardReference.cardPoolId, cardReference.cardId);
+                        }
+                        CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
+                        actionNodeItem.getConstInputField(i).card.setCard(cardDefine, cardSkin);
+                        Sprite sprite = await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolOfCard(cardDefine).cardPoolId);
+                        actionNodeItem.getConstInputField(i).card.setImage(sprite);
+                    }
+                }
             }
             _actionNodeItemList.Add(actionNodeItem);
             if (!_actionNodeList.Contains(actionNode))
@@ -2142,7 +2167,7 @@ namespace Controllers
         /// <summary>
         /// 将当前正在编辑的对象入栈
         /// </summary>
-        void pushCurEditObjectToStack()
+        private void pushCurEditObjectToStack()
         {
             if (_trigger != null)
                 _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, null, _trigger, null));
@@ -2154,11 +2179,11 @@ namespace Controllers
                 _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, _entryType, _effect, null));
             _ui.setReturnButtonActive(true);
         }
-        void popPrevEditObjectFromStackAndOpen()
+        private void popPrevEditObjectFromStackAndOpen()
         {
             display(_editObjectStack.Pop());
         }
-        string getActionNodeName(ActionNode actionNode)
+        private string getActionNodeName(ActionNode actionNode)
         {
             if (_nameTextDict.TryGetValue(actionNode.defineName, out string text))
             {
@@ -2170,7 +2195,7 @@ namespace Controllers
                 return actionNode.defineName;
             }
         }
-        string[] getActionNodeInputNames(ActionNode actionNode)
+        private string[] getActionNodeInputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -2267,7 +2292,7 @@ namespace Controllers
             return inputNameList.ToArray();
         }
 
-        ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
+        private ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
             var actionDefine = _actionDefineDict[actionNode.defineName];
             var infoArray = new ActionNodeValueInfo[actionDefine.consts.Length];
@@ -2511,6 +2536,8 @@ namespace Controllers
         public MainCtrl main { get; }
         [SerializeField]
         ActionNodeGraphPanel _ui;
+        [SerializeField]
+        CardPoolViewPanelCtrl _cardSelectCtrl;
         Dictionary<string, ActionDefine> _actionDefineDict;
         int[] _menuLayerStack = new int[0];
         List<BackgroundMenuItem> _backgroundMenuOptionList = new List<BackgroundMenuItem>();

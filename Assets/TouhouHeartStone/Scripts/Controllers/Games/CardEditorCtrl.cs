@@ -159,11 +159,7 @@ namespace Controllers
             if (skinIndex == getSkinCount())
             {
                 //新建皮肤
-                _curCardSkin = new CardSkinData();
-                _curCardSkin.id = _cardDefine.id;
-                _curCardSkin.skinId = allocSkinId();
-                _curCardSkin.skinName = "新建皮肤";
-                scene.editor.addSkin(_curCardSkin);
+                _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 updateSkinNames();
             }
             await setCurSkinIndex(skinIndex);
@@ -188,7 +184,8 @@ namespace Controllers
                 Debug.LogWarning("你不能删除卡牌的最后一个皮肤");
                 return;
             }
-            scene.editor.removeSkins(c => c.skinId == _curCardSkin.skinId);
+            game.card.removeSkin(_cardPoolId, _cardDefine.id, _curCardSkin.skinId);
+            //scene.editor.removeSkins(c => c.skinId == _curCardSkin.skinId);
             updateSkinNames();
             await setCurSkinIndex(0);
         }
@@ -200,11 +197,7 @@ namespace Controllers
             if (targetSkin == null)
             {
                 //不存在对应语言的皮肤，新建一个
-                targetSkin = new CardSkinData(_curCardSkin)
-                {
-                    language = language
-                };
-                scene.editor.addSkin(targetSkin);
+                targetSkin = game.card.createSkinForDiffLanguage(_cardPoolId, _curCardSkin, language);
             }
             _curCardSkin = targetSkin;
             _ui.setLanguage(languageIndex);
@@ -438,12 +431,7 @@ namespace Controllers
         private void onClickEditEffectButton(int index)
         {
             GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
-            ActionNodeGraphInfo graphInfo = scene.editor.actionNodeGraphInfoList.Find(g => g.cardId == _cardDefine.id && g.effectIndex == index);
-            if (graphInfo == null)
-            {
-                graphInfo = new ActionNodeGraphInfo(_cardDefine.id, index);
-                scene.editor.actionNodeGraphInfoList.Add(graphInfo);
-            }
+            ActionNodeGraphInfo graphInfo = game.card.getOrCreateActionNodeGraphInfo(_cardPoolId, _cardDefine.id, index);
             scene.effectEditor.displayEffect(_cardPoolId, _cardDefine, effect, graphInfo);
         }
         private void onClickRemoveEffectButton(int index)

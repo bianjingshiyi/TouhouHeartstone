@@ -5,14 +5,10 @@ namespace Game
     public partial class StringTable
     {
         #region 收藏
-        [TranslateMsg("浏览卡牌界面中费用升序排序选项")]
-        public const string CARDVIEW_SORT_COST = "费用升序";
-        [TranslateMsg("浏览卡牌界面中费用降序排序选项")]
-        public const string CARDVIEW_SORT_COST_DESCENDING = "费用降序";
-        [TranslateMsg("浏览卡牌界面中稀有度升序排序选项")]
-        public const string CARDVIEW_SORT_RARE = "稀有度升序";
-        [TranslateMsg("浏览卡牌界面中稀有度降序排序选项")]
-        public const string CARDVIEW_SORT_RARE_DESCENDING = "稀有度降序";
+        [TranslateMsg("浏览卡牌界面中按费用排序选项")]
+        public const string CARDVIEW_SORTTYPE_COST = "费用";
+        [TranslateMsg("浏览卡牌界面中按名称排序选项")]
+        public const string CARDVIEW_SORTTYPE_NAME = "名称";
         [TranslateMsg("浏览卡牌界面中的中立卡牌筛选选项")]
         public const string CARDVIEW_CHARACTER_NEUTRAL = "中立";
         [TranslateMsg("构筑卡牌界面中新建卡组的默认名称")]

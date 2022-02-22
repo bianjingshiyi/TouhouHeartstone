@@ -637,7 +637,6 @@ namespace UI
         {
             onChangeTriggerEventName?.Invoke(eventName);
         }
-
         private void onTriggerNodeEventIndexChanged(ActionNodeItem item, int eventIndex)
         {
             onTriggerEventTypeChanged?.Invoke(eventIndex);
@@ -812,6 +811,30 @@ namespace UI
         /// 当节点的常量的编辑按钮被点击，参数为被点击的节点和常量索引
         /// </summary>
         public event Action<ActionNodeItem, int> onClickActionNodeConstValueEditButton;
+        ///// <summary>
+        ///// 当选择卡片界面的卡片项被激活，参数为卡片的索引和矩形变换
+        ///// </summary>
+        //public event Action<int, RectTransform> onEnableCardSelectPanelCardListItem
+        //{
+        //    add { _cardSelectPanel.onEnableCardListItem += value; }
+        //    remove { _cardSelectPanel.onEnableCardListItem -= value; }
+        //}
+        ///// <summary>
+        ///// 当选择卡片界面的卡片项被禁用，参数为卡片的索引和矩形变换
+        ///// </summary>
+        //public event Action<int, RectTransform> onDisableCardSelectPanelCardListItem
+        //{
+        //    add { _cardSelectPanel.onDisableCardListItem += value; }
+        //    remove { _cardSelectPanel.onDisableCardListItem -= value; }
+        //}
+        ///// <summary>
+        ///// 当选择卡片界面的卡片项被更新，参数为卡片的索引和矩形变换
+        ///// </summary>
+        //public event Action<int, RectTransform> onUpdateCardSelectPanelCardListItem
+        //{
+        //    add { _cardSelectPanel.onUpdateCardListItem += value; }
+        //    remove { _cardSelectPanel.onUpdateCardListItem -= value; }
+        //}
         /// <summary>
         /// 当触发器节点的事件名称改变，参数为更改后的事件名称
         /// </summary>
@@ -895,6 +918,8 @@ namespace UI
         [SerializeField]
         List<RectTransform> _menuItemList = new List<RectTransform>();
         [SerializeField]
+        CardPoolViewPanelCtrl _cardSelectCtrl;
+        [SerializeField]
         ActionNodeItem _pointerOverActionNodeItem;
         [SerializeField]
         Timer _longPressTimer = new Timer() { duration = .5f };
@@ -919,8 +944,6 @@ namespace UI
             return _listColor;
         }
     }
-
-
     public struct ActionNodeValueInfo
     {
         public ActionNodeValueInfo(string name, ActionNodeValueType type, object value) : this(name, type, value, null, null)

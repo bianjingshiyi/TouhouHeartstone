@@ -14,13 +14,31 @@ namespace Game
 {
     partial class CardManager
     {
+        public ActionNodeGraphInfo getOrCreateActionNodeGraphInfo(int cardPoolId, int cardDefineId, int effectIndex)
+        {
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                ActionNodeGraphInfo info = cardPool.actionNodeGraphInfoList.Find(a => a.cardId == cardDefineId && a.effectIndex == effectIndex);
+                if (info == null)
+                {
+                    info = new ActionNodeGraphInfo(cardDefineId, effectIndex);
+                    cardPool.actionNodeGraphInfoList.Add(info);
+                }
+                return info;
+            }
+            else
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+        }
+    }
+    partial class CardManager
+    {
         #region 公有方法
         /// <summary>
         /// 读取卡池信息
         /// </summary>
         /// <param name="onCardPoolInfoRead"></param>
         /// <returns>Key为路径，Value为信息</returns>
-        public async Task<Dictionary<string, CardPoolInfo>> getCardPoolInfosAsync(Action<string, CardPoolInfo> onCardPoolInfoRead = null)
+        public async Task<Dictionary<string, CardPoolInfo>> loadCardPoolInfosAsync(Action<string, CardPoolInfo> onCardPoolInfoRead = null)
         {
             Debug.Log("开始读取卡池信息");
             _cardPoolInfoDict.Clear();
@@ -90,10 +108,31 @@ namespace Game
             }
             return fileList.ToArray();
         }
-        public void createCardPool(int cardPoolId, out CardPoolInfo cardPoolInfo, out CardPool cardPool)
+        public void createCardPool(out CardPoolInfo cardPoolInfo, out CardPool cardPool)
         {
+            int cardPoolId = 0;
+            for (int i = 1; i < 0x7FFF; i++)
+            {
+                if (game.card.isStandardCardPool(i))
+                {
+                    //不能是官方卡池ID
+                    continue;
+                }
+                foreach (var info in _cardPoolInfoDict.Values)
+                {
+                    if (info.cardPoolId == i)
+                    {
+                        //不能是已有的卡池ID
+                        continue;
+                    }
+                }
+                cardPoolId = i;
+                break;
+            }
             cardPoolInfo = new CardPoolInfo();
             cardPoolInfo.cardPoolId = cardPoolId;
+            cardPoolInfo.cardPoolName = StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME;
+            cardPoolInfo.imageResPath = null;
             cardPoolInfo.version = CARD_POOL_VERSION_0_1;
             cardPool = new CardPool();
             _cardPoolDict[cardPoolId] = cardPool;
@@ -576,7 +615,7 @@ namespace Game
         public async Task<CardDefine[]> reloadCardPoolsAndGetCardDefinesAsync(IEnumerable<int> cardPoolsId)
         {
             List<CardDefine> cardDefineList = new List<CardDefine>();
-            var cardPoolInfoDict = await getCardPoolInfosAsync();
+            var cardPoolInfoDict = await loadCardPoolInfosAsync();
             foreach (var cardPoolId in cardPoolsId)
             {
                 foreach (var pair in cardPoolInfoDict)
@@ -594,6 +633,27 @@ namespace Game
         {
             _cardPoolDict[cardPoolId].cardDefineList.Add(cardDefine);
             _cardPoolDict[cardPoolId].cardSkinList.Add(cardSkin);
+        }
+        public void createCard(int cardPoolId, out CardDefine cardDefine, out CardSkinData cardSkin)
+        {
+            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+            }
+            CardPoolInfo cardPoolInfo = getCardPoolInfo(cardPoolId);
+            int cardId = 0;
+            for (int i = 1; i < 0xFFFF; i++)
+            {
+                cardId = 1 << 31 | cardPoolInfo.cardPoolId << 16 | i;
+                if (cardPool.cardDefineList.Exists(c => c.id == cardId))
+                    continue;
+                break;
+            }
+            cardDefine = new CardDefine(cardId, DEFINE.SERVANT);
+            cardPool.cardDefineList.Add(cardDefine);
+            cardSkin = new CardSkinData();
+            cardSkin.id = cardDefine.id;
+            cardPool.cardSkinList.Add(cardSkin);
         }
         public void removeCard(CardDefine card)
         {
@@ -622,16 +682,21 @@ namespace Game
             {
                 if (cardPool.cardDefineList.Contains(card))
                 {
-                    return getCardPoolInfo(getCardPoolId(cardPool));
+                    CardPoolInfo cardPoolInfo = getCardPoolInfo(getCardPoolId(cardPool));
+                    return cardPoolInfo;
                 }
             }
             return null;
         }
-        public string getCardPoolPath(CardPoolInfo cardPool)
+        public string getCardPoolPath(CardPoolInfo cardPoolInfo)
+        {
+            return getCardPoolPath(cardPoolInfo.cardPoolId);
+        }
+        public string getCardPoolPath(int cardPoolId)
         {
             foreach (var pair in _cardPoolInfoDict)
             {
-                if (pair.Value.cardPoolId == cardPool.cardPoolId)
+                if (pair.Value.cardPoolId == cardPoolId)
                     return pair.Key;
             }
             return null;
@@ -655,6 +720,40 @@ namespace Game
                 }
             }
             return 0;
+        }
+        public CardSkinData createSkin(int cardPoolId, int cardDefineId)
+        {
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                CardSkinData skin = new CardSkinData();
+                skin.id = cardDefineId;
+                skin.skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME;
+                skin.skinId = getAllSkins(cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1; ;
+                return skin;
+            }
+            else
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+        }
+        public CardSkinData createSkinForDiffLanguage(int cardPoolId, CardSkinData skin, string language)
+        {
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                CardSkinData newSkin = new CardSkinData(skin);
+                skin.language = language;
+                cardPool.cardSkinList.Add(newSkin);
+                return newSkin;
+            }
+            else
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+        }
+        public void removeSkin(int cardPoolId, int cardDefineId, int skinId)
+        {
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                cardPool.cardSkinList.RemoveAll(s => s.id == cardDefineId && s.skinId == skinId);
+            }
+            else
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
         }
         public async Task<Sprite> loadExternalImage(string path, string dirName)
         {
@@ -802,6 +901,14 @@ namespace Game
                 {
                     skinList.Add(_skins[i]);
                 }
+            }
+            if (skinDic.TryGetValue(cardId, out CardSkinData builtinSkin))
+            {
+                skinList.Add(builtinSkin);
+            }
+            if (tempSkinDic.TryGetValue(cardId, out CardSkinData tempSkin))
+            {
+                skinList.Add(tempSkin);
             }
             foreach (var cardPool in _cardPoolDict.Values)
             {
