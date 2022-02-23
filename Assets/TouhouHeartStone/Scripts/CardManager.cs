@@ -504,6 +504,10 @@ namespace Game
                 defineDic.Values);
             return cardList.ToArray();
         }
+        public bool isBuiltinCard(CardDefine card)
+        {
+            return defineDic.ContainsKey(card.id);
+        }
         public CardDefine[] getCardDefines(int cardPoolId)
         {
             if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))

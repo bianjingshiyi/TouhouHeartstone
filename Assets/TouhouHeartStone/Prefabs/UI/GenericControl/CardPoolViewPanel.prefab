@@ -1852,6 +1852,7 @@ MonoBehaviour:
   _typeFilterDropdown: {fileID: 6981563469609148657}
   _searchInputField: {fileID: 6760345341026822194}
   _cardList: {fileID: 6760345340949209778}
+  _cardListScrollRect: {fileID: 6760345342268630742}
   _cardListLayoutGroup: {fileID: 4048199252528382122}
 --- !u!114 &1225254850772050853
 MonoBehaviour:

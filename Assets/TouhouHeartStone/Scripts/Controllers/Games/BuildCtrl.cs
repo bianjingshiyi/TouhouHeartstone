@@ -277,32 +277,26 @@ namespace Controllers
                 }
             }
         }
-        private async void onStartDragCard(CardDefine cardDefine, PointerEventData eventData)
+        private async Task<bool> onStartDragCard(CardDefine cardDefine, PointerEventData eventData)
         {
             if (_deck == null)
             {
                 //当前不在编辑卡组，禁用拖拽
-                return;
+                return false;
             }
             //记录拖拽信息
             _dragCard = cardDefine;
             _dragStartPosition = eventData.position;
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
-            //更新UI
-            CardSkinData skin = game.card.getDefaultSkin(_dragCard);
-            _ui.dragCard.setCard(_dragCard, skin);
-            Sprite image = await game.card.loadCardImage(_dragCard.id);
-            _ui.dragCard.setImage(image);
-            _ui.dragDeckListItem.updateView(skin.name, image);
-            eventData.Use();
+            return false;
         }
-        private void onDragCard(CardDefine cardDefine, PointerEventData eventData)
+        private async Task<bool> onDragCard(CardDefine cardDefine, PointerEventData eventData)
         {
             if (_deck == null)
             {
                 //当前不在编辑卡组，禁用拖拽
-                return;
+                return false;
             }
             if (!_isDraggingHorizontal && !_isDraggingVertical)
             {
@@ -319,33 +313,41 @@ namespace Controllers
                             _isDraggingHorizontal = true;
                             _ui.showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
                             //onStartDargCardListItem?.Invoke(getCardItemIndex(item.transform as RectTransform));
+                            //更新UI
+                            CardSkinData skin = game.card.getDefaultSkin(_dragCard);
+                            _ui.dragCard.setCard(_dragCard, skin);
+                            Sprite image = await game.card.loadCardImage(_dragCard.id);
+                            _ui.dragCard.setImage(image);
+                            _ui.dragDeckListItem.updateView(skin.name, image);
                         }
                     }
                     else
                     {
                         //纵向拖拽
                         _isDraggingVertical = true;
-                        //_cardListScrollRect.OnBeginDrag(eventData);
+                        return false;
                     }
                 }
+                return true;
             }
             else if (_isDraggingHorizontal)
             {
                 _ui.showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
                 _ui.moveDragCard(eventData.position);
-                eventData.Use();
+                return true;
             }
             else if (_isDraggingVertical)
             {
-                //_cardListScrollRect.OnDrag(eventData);
+                return false;
             }
+            return false;
         }
-        private async void onEndDragCard(CardDefine cardDefine, PointerEventData eventData)
+        private async Task<bool> onEndDragCard(CardDefine cardDefine, PointerEventData eventData)
         {
             if (_deck == null)
             {
                 //当前不在编辑卡组，禁用拖拽
-                return;
+                return false;
             }
             //重置状态字段
             _isDraggingHorizontal = false;
@@ -364,6 +366,7 @@ namespace Controllers
             }
             //隐藏拖拽卡牌
             _ui.hideDragCard();
+            return true;
         }
         private async void onStartDragDeckCardListItem(int index)
         {
@@ -825,7 +828,7 @@ namespace Controllers
         private bool tryAddCardToDeck(CardDefine card, out string errorTip)
         {
             //卡组数量上限
-            if (_deck.cardList.Count >= game.deck.deckMaxSize)
+            if (_deck.getCardCount() >= game.deck.deckMaxSize)
             {
                 errorTip = game.lang._(StringTable.BUILD_TIP_DECK_MAX_SIZE);
                 return false;

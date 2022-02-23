@@ -11,6 +11,10 @@ namespace UI
     public class CardPoolViewPanel : MonoBehaviour
     {
         #region 公有方法
+        public void enableCardPoolFilter(bool value)
+        {
+            _cardPoolDropdown.gameObject.SetActive(value);
+        }
         public void setCardPoolOptions(string[] options)
         {
             _cardPoolDropdown.ClearOptions();
@@ -154,6 +158,7 @@ namespace UI
         }
         #endregion
         #region 属性字段
+        public ScrollRect cardListScrollRect => _cardListScrollRect;
         [SerializeField]
         MultiSelectDropdown _cardPoolDropdown;
         [SerializeField]
@@ -168,6 +173,8 @@ namespace UI
         InputField _searchInputField;
         [SerializeField]
         GameObject _cardList;
+        [SerializeField]
+        ScrollRect _cardListScrollRect;
         [SerializeField]
         VirtualListLayoutGroup _cardListLayoutGroup;
         #endregion

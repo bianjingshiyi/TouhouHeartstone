@@ -46,9 +46,10 @@ namespace Controllers
                 }
                 //加载卡片
                 _cardDefineList = new List<CardDefine>();
+                //反射硬编码卡牌
                 _cardDefineList.AddRange(game.card.GetCardDefines(d =>
-                    d.GetType().Assembly == typeof(THHGame).Assembly
-                    && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));//反射硬编码卡牌
+                    d.GetType().Assembly == typeof(THHGame).Assembly &&
+                    d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));
                 foreach (var cardPoolInfo in _cardPoolInfoList)
                 {
                     //卡池卡牌
@@ -56,26 +57,34 @@ namespace Controllers
                     _cardDefineList.AddRange(cardDefines);
                 }
                 //过滤
+                _cardFilter = info.cardFilter;
                 _filteredCardDefineList = new List<CardDefine>(_cardDefineList);
-                _filteredCardDefineList.RemoveAll(c =>
+                if (_cardFilter == null)
                 {
-                    if (c.isToken())
+                    _filteredCardDefineList.RemoveAll(c =>
                     {
-                        //衍生物
-                        return true;
-                    }
-                    if (c.isMaster())
-                    {
-                        //角色卡
-                        return true;
-                    }
-                    if (c.isSkill())
-                    {
-                        //技能卡
-                        return true;
-                    }
-                    return false;
-                });
+                        if (c.isToken())
+                        {
+                            //衍生物
+                            return true;
+                        }
+                        if (c.isMaster())
+                        {
+                            //角色卡
+                            return true;
+                        }
+                        if (c.isSkill())
+                        {
+                            //技能卡
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+                else
+                {
+                    _filteredCardDefineList.RemoveAll(c => !_cardFilter(c));
+                }
                 List<int> characterIdList = new List<int>();
                 characterIdList.Add(CATEGORY.CHARACTER_NEUTRAL);
                 for (int i = 0; i < _cardDefineList.Count; i++)
@@ -236,12 +245,13 @@ namespace Controllers
         /// </summary>
         /// <param name="characterId"></param>
         /// <returns></returns>
-        public Task display(int[] cardPoolsId = null, int[] charactersId = null)
+        public Task display(int[] cardPoolsId = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
         {
             return display(new DisplayInfo()
             {
                 cardPoolsId = cardPoolsId,
                 charactersId = charactersId,
+                cardFilter = cardFilter
             });
         }
         public UIDisplayInfo getCurrentDisplayInfo()
@@ -252,6 +262,10 @@ namespace Controllers
         {
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
+        }
+        public void enableCardPoolFilter(bool value)
+        {
+            _ui.enableCardPoolFilter(value);
         }
         public CardDefine getCardDefineAt(int index)
         {
@@ -339,23 +353,53 @@ namespace Controllers
             CardDefine card = _filteredCardDefineList[index];
             onClickCard?.Invoke(card);
         }
-        private void onStartDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
+        private async void onStartDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
             int index = _ui.getCardItemIndex(item.transform as RectTransform);
+            if (index < 0)
+            {
+                //物体已经被销毁
+                _ui.cardListScrollRect.OnBeginDrag(eventData);
+                return;
+            }
             CardDefine card = _filteredCardDefineList[index];
-            onStartDragCard?.Invoke(card, eventData);
+            bool isEventUsed = onStartDragCard != null ? await onStartDragCard.Invoke(card, eventData) : false;
+            if (!isEventUsed)
+            {
+                _ui.cardListScrollRect.OnBeginDrag(eventData);
+            }
         }
-        private void onDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
+        private async void onDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
             int index = _ui.getCardItemIndex(item.transform as RectTransform);
+            if (index < 0)
+            {
+                //物体已经被销毁
+                _ui.cardListScrollRect.OnDrag(eventData);
+                return;
+            }
             CardDefine card = _filteredCardDefineList[index];
-            onDragCard?.Invoke(card, eventData);
+            bool isEventUsed = onDragCard != null ? await onDragCard.Invoke(card, eventData) : false;
+            if (!isEventUsed)
+            {
+                _ui.cardListScrollRect.OnDrag(eventData);
+            }
         }
-        private void onEndDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
+        private async void onEndDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
         {
             int index = _ui.getCardItemIndex(item.transform as RectTransform);
+            if (index < 0)
+            {
+                //物体已经被销毁
+                _ui.cardListScrollRect.OnEndDrag(eventData);
+                return;
+            }
             CardDefine card = _filteredCardDefineList[index];
-            onEndDragCard?.Invoke(card, eventData);
+            bool isEventUsed = onEndDragCard != null ? await onEndDragCard.Invoke(card, eventData) : false;
+            if (!isEventUsed)
+            {
+                _ui.cardListScrollRect.OnEndDrag(eventData);
+            }
         }
         #endregion
         /// <summary>
@@ -387,16 +431,26 @@ namespace Controllers
                 charactersId = charactersIdList.ToArray(),
                 costFiltersValue = _costFiltersValue,
                 typeFiltersValue = _typeFiltersValue,
-                searchFilterValue = _searchFilterString
+                searchFilterValue = _searchFilterString,
+                cardFilter = _cardFilter
             });
         }
         #endregion
         #region 事件
         public event Action<CardDefine> onClickCard;
         public event Action<int, EditorCardListItem> onUpdateCardListItem;
-        public event Action<CardDefine, PointerEventData> onStartDragCard;
-        public event Action<CardDefine, PointerEventData> onDragCard;
-        public event Action<CardDefine, PointerEventData> onEndDragCard;
+        /// <summary>
+        /// 当列表中的卡牌开始被拖拽，参数为被拖拽的卡牌和拖拽指针信息，返回值代表拖拽事件是否被使用，如果拖拽事件没有被使用那么会触发卡牌列表的滚动。
+        /// </summary>
+        public event Func<CardDefine, PointerEventData, Task<bool>> onStartDragCard;
+        /// <summary>
+        /// 当列表中的卡牌被拖拽，参数为被拖拽的卡牌和拖拽指针信息，返回值代表拖拽事件是否被使用，如果拖拽事件没有被使用那么会触发卡牌列表的滚动。
+        /// </summary>
+        public event Func<CardDefine, PointerEventData, Task<bool>> onDragCard;
+        /// <summary>
+        /// 当列表中的卡牌结束被拖拽，参数为被拖拽的卡牌和拖拽指针信息，返回值代表拖拽事件是否被使用，如果拖拽事件没有被使用那么会触发卡牌列表的滚动。
+        /// </summary>
+        public event Func<CardDefine, PointerEventData, Task<bool>> onEndDragCard;
         #endregion
         #region 属性字段
         [SerializeField]
@@ -418,6 +472,7 @@ namespace Controllers
         bool[] _typeFiltersValue;
         [SerializeField]
         string _searchFilterString;
+        Predicate<CardDefine> _cardFilter;
         readonly string[] _sortTypes = new string[]
         {
             StringTable.CARDVIEW_SORTTYPE_COST,
@@ -450,6 +505,7 @@ namespace Controllers
             public bool[] costFiltersValue = null;
             public bool[] typeFiltersValue = null;
             public string searchFilterValue = null;
+            public Predicate<CardDefine> cardFilter = null;
             public int cardId;
         }
         #endregion

@@ -420,8 +420,6 @@ namespace UI
         [SerializeField]
         float _dragThreshold = 50f;
         [SerializeField]
-        ScrollRect _cardListScrollRect;
-        [SerializeField]
         RectTransform _deckListViewportRect;
         [SerializeField]
         Text _characterNameText;

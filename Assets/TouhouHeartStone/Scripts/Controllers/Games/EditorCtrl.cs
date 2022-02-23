@@ -67,7 +67,16 @@ namespace Controllers
                 //_ui.setCardListActive(true);
                 ////+1是为了显示新建卡牌按钮
                 //_ui.updateCardListCount(_cardDefineList.Count + 1);
-                await _cardPoolViewPanelCtrl.display(cardPoolsId: new int[] { _curCardPoolInfo.cardPoolId });
+                await _cardPoolViewPanelCtrl.display(cardPoolsId: new int[] { _curCardPoolInfo.cardPoolId }, cardFilter: c =>
+                {
+                    if (game.card.isBuiltinCard(c))
+                    {
+                        //不显示内置的卡牌
+                        return false;
+                    }
+                    //显示所有卡牌，包括角色，技能和衍生物
+                    return true;
+                });
             }
         }
         //public void addSkin(CardSkinData skin)
@@ -99,6 +108,7 @@ namespace Controllers
             _ui.onClickNewCardButton += onClickNewCardButton;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCard;
+            _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
         }
         #endregion
         #region 事件回调
@@ -164,6 +174,10 @@ namespace Controllers
         //        cardListItem.switchToAddButton();
         //    }
         //}
+        private void onUpdateCardListItem(int index, EditorCardListItem item)
+        {
+            item.hideCount();
+        }
         /// <summary>
         /// 当点击新增卡池按钮，切换右侧栏到编辑卡池状态
         /// </summary>
