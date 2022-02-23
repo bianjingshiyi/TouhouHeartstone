@@ -357,6 +357,10 @@ namespace UI
             _scrollRect.horizontalNormalizedPosition = curPos.x / _scrollViewContentRectTransform.sizeDelta.x;
             _scrollRect.verticalNormalizedPosition = curPos.y / _scrollViewContentRectTransform.sizeDelta.y;
         }
+        public void displayCardSelectPanel(bool value)
+        {
+            _cardSelectPanel.SetActive(value);
+        }
         public void init(string[] languages, string[] eventTypes)
         {
             _actionNodeItemTemplate.initBuffLanguages(languages);
@@ -918,7 +922,7 @@ namespace UI
         [SerializeField]
         List<RectTransform> _menuItemList = new List<RectTransform>();
         [SerializeField]
-        CardPoolViewPanelCtrl _cardSelectCtrl;
+        GameObject _cardSelectPanel;
         [SerializeField]
         ActionNodeItem _pointerOverActionNodeItem;
         [SerializeField]

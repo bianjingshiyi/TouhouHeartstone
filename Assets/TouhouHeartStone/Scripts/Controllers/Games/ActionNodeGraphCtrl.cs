@@ -58,7 +58,9 @@ namespace Controllers
                     _ui.setReturnButtonActive(false);
                 _curCardPoolId = info.cardPoolId;
                 _cardDefine = info.cardDefine;
+                //更新UI
                 _ui.gameObject.SetActive(true);
+                _ui.displayCardSelectPanel(false);
                 if (info.editObject is TriggerGraph trigger)
                     return openTriggerGraph(trigger);
                 else if (info.editObject is TargetChecker targetChecker)
@@ -873,11 +875,42 @@ namespace Controllers
             }
             else if (actionDefine.consts[index].type == typeof(CardReference))
             {
+                _ui.displayCardSelectPanel(true);
                 if (actionNode.consts[index] is CardReference value)
                 {
                     //打开卡牌选择界面
-                    await _cardSelectCtrl.display(new int[] { value.cardPoolId }, value.cardId);
-                    //_ui.displayCardSelectPanel(true);
+                    await _cardPoolViewPanelCtrl.display(new int[] { value.cardPoolId }, value.cardId);
+                }
+                else
+                {
+                    await _cardPoolViewPanelCtrl.display();
+                }
+                _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
+
+                async void onClickCardSelectPanelCard(CardDefine cardDefine)
+                {
+                    _cardPoolViewPanelCtrl.onClickCard -= onClickCardSelectPanelCard;
+                    actionNode.consts[index] = new CardReference()
+                    {
+                        cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
+                        cardId = cardDefine.id
+                    };
+                    if (cardDefine != null)
+                    {
+                        actionNodeItem.getConstInputField(index).card.isFaceup = true;
+                        CardSkinData skin = game.card.getDefaultSkin(cardDefine);
+                        actionNodeItem.getConstInputField(index).card.setCard(cardDefine, skin);
+                        Sprite sprite = skin.image != null ? 
+                            skin.image : 
+                            await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+                        actionNodeItem.getConstInputField(index).card.setImage(sprite);
+                    }
+                    else
+                    {
+                        actionNodeItem.getConstInputField(index).card.isFaceup = false;
+                        actionNodeItem.getConstInputField(index).card.setCard(null, null);
+                    }
+                    _ui.displayCardSelectPanel(false);
                 }
             }
         }
@@ -1376,10 +1409,18 @@ namespace Controllers
                         {
                             game.card.getCardDefine(cardReference.cardPoolId, cardReference.cardId);
                         }
-                        CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
-                        actionNodeItem.getConstInputField(i).card.setCard(cardDefine, cardSkin);
-                        Sprite sprite = await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolOfCard(cardDefine).cardPoolId);
-                        actionNodeItem.getConstInputField(i).card.setImage(sprite);
+                        if (cardDefine != null)
+                        {
+                            actionNodeItem.getConstInputField(i).card.isFaceup = true;
+                            CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
+                            actionNodeItem.getConstInputField(i).card.setCard(cardDefine, cardSkin);
+                            Sprite sprite = await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolOfCard(cardDefine).cardPoolId);
+                            actionNodeItem.getConstInputField(i).card.setImage(sprite);
+                        }
+                        else
+                        {
+                            actionNodeItem.getConstInputField(i).card.isFaceup = false;
+                        }
                     }
                 }
             }
@@ -2537,7 +2578,7 @@ namespace Controllers
         [SerializeField]
         ActionNodeGraphPanel _ui;
         [SerializeField]
-        CardPoolViewPanelCtrl _cardSelectCtrl;
+        CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         Dictionary<string, ActionDefine> _actionDefineDict;
         int[] _menuLayerStack = new int[0];
         List<BackgroundMenuItem> _backgroundMenuOptionList = new List<BackgroundMenuItem>();

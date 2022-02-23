@@ -444,6 +444,14 @@ namespace Game
                 _cardPoolInfoDict[path] = cardPoolInfo;
                 _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
             }
+            //错误信息校验
+            foreach (var skin in cardPool.cardSkinList)
+            {
+                if (string.IsNullOrEmpty(skin.language))
+                {
+                    skin.language = game.langManager.getDefaultLanguage();
+                }
+            }
             return (cardPoolInfo, cardPool);
         }
         public bool tryGetCardPool(int cardPoolId, out CardPool cardPool)
