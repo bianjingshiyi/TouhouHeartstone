@@ -26,7 +26,192 @@ namespace UI
                 _nameText.text = name;
             }
             _valueInfo = info;
-            _removeItemButton.gameObject.SetActive(isListItem);
+            _isListItem = isListItem;
+            update();
+        }
+        public ValueInputField getItemAt(int index)
+        {
+            return _list[index].GetComponent<ValueInputField>();
+        }
+        public void initPileNames(string[] pileNames, string[] pileValues)
+        {
+            _pileNames = pileNames;
+            _pileValues = pileValues;
+        }
+        public void initEffectTagNames(string[] effectTagNames, string[] effectTagValues)
+        {
+            _effectTagNames = effectTagNames;
+            _effectTagValues = effectTagValues;
+        }
+        #endregion
+        #region 私有方法
+        protected void Awake()
+        {
+            _inputField.onEndEdit.AddListener(onEndEditInputField);
+            _toggle.onValueChanged.AddListener(onToggleValueChanged);
+            _dropdown.onValueChanged.AddListener(onDropdownValueChangedCallback);
+            _multiSelectDropdown.onValueChanged.AddListener(onMultiSelectDropdownValueChangedCallback);
+            _button.onClick.AddListener(onClickButtonCallback);
+            _addItemButton.onClick.AddListener(onClickAddItemButtonCallback);
+            _removeItemButton.onClick.AddListener(onClickRemoveButtonCallback);
+            _cardButton.onClick.AddListener(onClickCardButtonCallback);
+        }
+        #region 事件回调
+        private void onEndEditInputField(string text)
+        {
+            if (_valueInfo.type == ActionNodeValueType.integer)
+            {
+                if (int.TryParse(text, out int value))
+                {
+                    onValueChanged?.Invoke(this, value);
+                }
+                else
+                {
+                    //非法值
+                    _inputField.SetTextWithoutNotify("0");
+                }
+            }
+            else if (_valueInfo.type == ActionNodeValueType.real)
+            {
+                if (float.TryParse(text, out float value))
+                {
+                    onValueChanged?.Invoke(this, value);
+                }
+                else
+                {
+                    _inputField.SetTextWithoutNotify("0");
+                }
+            }
+            else if (_valueInfo.type == ActionNodeValueType.text)
+            {
+                onValueChanged?.Invoke(this, text);
+            }
+        }
+        private void onToggleValueChanged(bool value)
+        {
+            onValueChanged?.Invoke(this, value);
+        }
+        private void onDropdownValueChangedCallback(int index)
+        {
+            onValueChanged?.Invoke(this, _valueInfo.optionalValues[index]);
+        }
+        private void onMultiSelectDropdownValueChangedCallback(bool[] value)
+        {
+            if (_valueInfo.type == ActionNodeValueType.pileNameCollection)
+            {
+                if (!(_valueInfo.value is PileNameCollection pileNameCollection))
+                {
+                    pileNameCollection = new PileNameCollection();
+                }
+                bool isValueChanged = false;
+                for (int i = 0; i < value.Length; i++)
+                {
+                    if (value[i] && !pileNameCollection.Contains(_pileValues[i]))
+                    {
+                        pileNameCollection.Add(_pileValues[i]);
+                        isValueChanged = true;
+                    }
+                    else if (!value[i])
+                    {
+                        pileNameCollection.Remove(_pileValues[i]);
+                        isValueChanged = true;
+                    }
+                }
+                if (isValueChanged)
+                {
+                    onValueChanged?.Invoke(this, pileNameCollection);
+                }
+            }
+            else if (_valueInfo.type == ActionNodeValueType.effectTagCollection)
+            {
+                if (!(_valueInfo.value is EffectTagCollection effectTagCol))
+                {
+                    effectTagCol = new EffectTagCollection();
+                }
+                bool isValueChanged = false;
+                for (int i = 0; i < value.Length; i++)
+                {
+                    if (value[i] && !effectTagCol.Contains(_effectTagValues[i]))
+                    {
+                        effectTagCol.Add(_effectTagValues[i]);
+                        isValueChanged = true;
+                    }
+                    else if (!value[i])
+                    {
+                        effectTagCol.Remove(_effectTagValues[i]);
+                        isValueChanged = true;
+                    }
+                }
+                if (isValueChanged)
+                {
+                    onValueChanged?.Invoke(this, effectTagCol);
+                }
+            }
+        }
+        private void onClickButtonCallback()
+        {
+            onClickButton?.Invoke(this);
+        }
+        private void onClickItemButtonCallback(ValueInputField item)
+        {
+            onClickItemButton?.Invoke(this, _list.IndexOf(item.transform as RectTransform));
+        }
+        private void onItemValueChangedCallback(ValueInputField item, object value)
+        {
+            onItemValueChanged?.Invoke(this, _list.IndexOf(item.transform as RectTransform), value);
+        }
+        private void onClickAddItemButtonCallback()
+        {
+            if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
+            {
+                CardReference[] newValue;
+                if (_valueInfo.value is CardReference[] cardRefCollection)
+                {
+                    newValue = new CardReference[cardRefCollection.Length + 1];
+                    Array.Copy(cardRefCollection, 0, newValue, 0, cardRefCollection.Length);
+                }
+                else
+                {
+                    newValue = new CardReference[1];
+                }
+                _valueInfo.value = newValue;
+                onValueChanged?.Invoke(this, _valueInfo.value);
+                update();
+            }
+            else
+                onClickAddItemButton?.Invoke(this);
+        }
+        private void onClickRemoveButtonCallback()
+        {
+            onClickRemoveButton?.Invoke(this);
+        }
+        private void onClickItemRemoveButtonCallback(ValueInputField item)
+        {
+            int index = _list.IndexOf(item.transform as RectTransform);
+            if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
+            {
+                if (_valueInfo.value is CardReference[] cardRefCol)
+                {
+                    List<CardReference> cardRefList = new List<CardReference>(cardRefCol);
+                    cardRefList.RemoveAt(index);
+                    _valueInfo.value = cardRefList.ToArray();
+                    onValueChanged?.Invoke(this, _valueInfo.value);
+                    update();
+                }
+            }
+            else
+            {
+                onClickItemRemoveButton?.Invoke(this, index);
+            }
+        }
+        private void onClickCardButtonCallback()
+        {
+            onClickButton?.Invoke(this);
+        }
+        #endregion
+        private void update()
+        {
+            _removeItemButton.gameObject.SetActive(_isListItem);
             //输入框
             if (_valueInfo.type == ActionNodeValueType.integer)
             {
@@ -113,14 +298,42 @@ namespace UI
                     onValueChanged?.Invoke(this, _valueInfo.value);
                 }
             }
+            else if (_valueInfo.type == ActionNodeValueType.effectTagCollection)
+            {
+                _multiSelectDropdown.gameObject.SetActive(true);
+                _multiSelectDropdown.ClearOptions();
+                _multiSelectDropdown.AddOptions(new List<string>(_effectTagNames));
+                if (_valueInfo.value is EffectTagCollection effectTagCol)
+                {
+                    for (int i = 0; i < effectTagCol.Count; i++)
+                    {
+                        //剔除掉未知的值
+                        if (Array.IndexOf(_effectTagValues, effectTagCol[i]) < 0)
+                        {
+                            effectTagCol.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    bool[] boolValue = new bool[_effectTagValues.Length];
+                    for (int i = 0; i < boolValue.Length; i++)
+                    {
+                        boolValue[i] = effectTagCol.Contains(_effectTagValues[i]);
+                    }
+                    _multiSelectDropdown.SetValueWithoutNotify(boolValue);
+                }
+                else
+                {
+                    _multiSelectDropdown.SetValueWithoutNotify(new bool[_effectTagValues.Length]);
+                }
+            }
             else
             {
                 _multiSelectDropdown.gameObject.SetActive(false);
             }
             //按钮
-            if (info.type == ActionNodeValueType.actionNode ||
-                info.type == ActionNodeValueType.actionValueRef ||
-                info.type == ActionNodeValueType.trigger)
+            if (_valueInfo.type == ActionNodeValueType.actionNode ||
+                _valueInfo.type == ActionNodeValueType.actionValueRef ||
+                _valueInfo.type == ActionNodeValueType.trigger)
             {
                 _button.gameObject.SetActive(true);
             }
@@ -129,10 +342,10 @@ namespace UI
                 _button.gameObject.SetActive(false);
             }
             //列表
-            if (info.type == ActionNodeValueType.triggerCollection)
+            if (_valueInfo.type == ActionNodeValueType.triggerCollection)
             {
                 _listRoot.gameObject.SetActive(true);
-                if (info.value is TriggerCollection triggerCollection)
+                if (_valueInfo.value is TriggerCollection triggerCollection)
                 {
                     UIHelper.updateList(_listRoot, _listTemplate, _list, triggerCollection.Count, (i, itemRect) =>
                     {
@@ -162,6 +375,35 @@ namespace UI
                     onValueChanged?.Invoke(this, _valueInfo.value);
                 }
             }
+            else if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
+            {
+                _listRoot.gameObject.SetActive(true);
+                if (!(_valueInfo.value is CardReference[] cardReferenceCollection))
+                {
+                    cardReferenceCollection = null;
+                }
+                UIHelper.updateList(_listRoot, _listTemplate, _list, cardReferenceCollection != null ? cardReferenceCollection.Length : 0, (i, itemRect) =>
+                {
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    item.setValueInfo(null, new ActionNodeValueInfo()
+                    {
+                        type = ActionNodeValueType.cardReference,
+                        value = cardReferenceCollection[i]
+                    }, true);
+                }, itemRect =>
+                {
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    item.onValueChanged += onItemValueChangedCallback;
+                    item.onClickButton += onClickItemButtonCallback;
+                    item.onClickRemoveButton += onClickItemRemoveButtonCallback;
+                }, itemRect =>
+                {
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    item.onValueChanged -= onItemValueChangedCallback;
+                    item.onClickButton -= onClickItemButtonCallback;
+                    item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
+                });
+            }
             else
             {
                 _listRoot.gameObject.SetActive(false);
@@ -176,116 +418,6 @@ namespace UI
                 _Card.gameObject.SetActive(false);
             }
         }
-        public void setupPileNames(string[] pileNames, string[] pileValues)
-        {
-            _pileNames = pileNames;
-            _pileValues = pileValues;
-        }
-        #endregion
-        #region 私有方法
-        protected void Awake()
-        {
-            _inputField.onEndEdit.AddListener(onEndEditInputField);
-            _toggle.onValueChanged.AddListener(onToggleValueChanged);
-            _dropdown.onValueChanged.AddListener(onDropdownValueChangedCallback);
-            _multiSelectDropdown.onValueChanged.AddListener(onMultiSelectDropdownValueChangedCallback);
-            _button.onClick.AddListener(onClickButtonCallback);
-            _addItemButton.onClick.AddListener(onClickAddItemButtonCallback);
-            _removeItemButton.onClick.AddListener(onClickRemoveButtonCallback);
-            _cardButton.onClick.AddListener(onClickCardButtonCallback);
-        }
-        #region 事件回调
-        private void onEndEditInputField(string text)
-        {
-            if (_valueInfo.type == ActionNodeValueType.integer)
-            {
-                if (int.TryParse(text, out int value))
-                {
-                    onValueChanged?.Invoke(this, value);
-                }
-                else
-                {
-                    //非法值
-                    _inputField.SetTextWithoutNotify("0");
-                }
-            }
-            else if (_valueInfo.type == ActionNodeValueType.real)
-            {
-                if (float.TryParse(text, out float value))
-                {
-                    onValueChanged?.Invoke(this, value);
-                }
-                else
-                {
-                    _inputField.SetTextWithoutNotify("0");
-                }
-            }
-            else if (_valueInfo.type == ActionNodeValueType.text)
-            {
-                onValueChanged?.Invoke(this, text);
-            }
-        }
-        private void onToggleValueChanged(bool value)
-        {
-            onValueChanged?.Invoke(this, value);
-        }
-        private void onDropdownValueChangedCallback(int index)
-        {
-            onValueChanged?.Invoke(this, _valueInfo.optionalValues[index]);
-        }
-        private void onMultiSelectDropdownValueChangedCallback(bool[] value)
-        {
-            if (_valueInfo.value is PileNameCollection pileNameCollection)
-            {
-                bool isValueChanged = false;
-                for (int i = 0; i < value.Length; i++)
-                {
-                    if (value[i] && !pileNameCollection.Contains(_pileValues[i]))
-                    {
-                        pileNameCollection.Add(_pileValues[i]);
-                        isValueChanged = true;
-                    }
-                    else if (!value[i])
-                    {
-                        pileNameCollection.Remove(_pileValues[i]);
-                        isValueChanged = true;
-                    }
-                }
-                if (isValueChanged)
-                {
-                    onValueChanged?.Invoke(this, pileNameCollection);
-                }
-            }
-        }
-        private void onClickButtonCallback()
-        {
-            onClickButton?.Invoke(this);
-        }
-        private void onClickItemButtonCallback(ValueInputField item)
-        {
-            onClickItemButton?.Invoke(this, _list.IndexOf(item.transform as RectTransform));
-        }
-        private void onItemValueChangedCallback(ValueInputField item, object value)
-        {
-            onItemValueChanged?.Invoke(this, _list.IndexOf(item.transform as RectTransform), value);
-        }
-        private void onClickAddItemButtonCallback()
-        {
-            onClickAddItemButton?.Invoke(this);
-        }
-        private void onClickRemoveButtonCallback()
-        {
-            onClickRemoveButton?.Invoke(this);
-        }
-        private void onClickItemRemoveButtonCallback(ValueInputField item)
-        {
-            onClickItemRemoveButton?.Invoke(this, _list.IndexOf(item.transform as RectTransform));
-        }
-        private void onClickCardButtonCallback()
-        {
-            onClickButton?.Invoke(this);
-        }
-        #endregion
         #endregion
         #region 事件
         public event Action<ValueInputField, object> onValueChanged;
@@ -327,11 +459,17 @@ namespace UI
         [SerializeField]
         string[] _pileValues;
         [SerializeField]
+        string[] _effectTagNames;
+        [SerializeField]
+        string[] _effectTagValues;
+        [SerializeField]
         Card _Card;
         [SerializeField]
         Button _cardButton;
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
+        [SerializeField]
+        bool _isListItem;
         #endregion
     }
 }

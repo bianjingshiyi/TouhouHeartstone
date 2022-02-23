@@ -219,8 +219,8 @@ namespace TouhouHeartstone
                 if (arg.card.isServant() || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                 {
                     await player.tryEnterField(game, p.getHand(), arg.card, arg.position);//随从卡，将卡置入战场
-                    await card.ComeOnStage(game, p, targets);//触发战吼事件
-                                                             //await card.activeEffect(game, p, targets);//执行随从效果
+                    //await card.ComeOnStage(game, p, targets);//触发战吼事件
+                    await card.activeEffect(game, p, targets);//执行随从效果
                 }
                 else if (card.isSkill())
                 {

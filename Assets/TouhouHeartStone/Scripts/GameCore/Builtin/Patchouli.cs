@@ -1095,7 +1095,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.addKeywords(game,KEYWORD._DeathRattle);
+                await target.addKeywords(game,KEYWORD.DEATHRATTLE);
                 await target.addBuff(game, new CodeBuff(ID,new DeathRattle(ID,async (g,c,b,p)=>
                 {
                     var createToken = await target.getOwner().createToken(game,c.define,c.getOwner().getField().count);

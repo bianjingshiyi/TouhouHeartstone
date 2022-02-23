@@ -79,6 +79,17 @@ namespace TouhouHeartstone
                 return define.getProp<bool>(DEFINE.ISTOKEN);
             }
         }
+        public static void setIsToken(this CardDefine cardDefine, bool value)
+        {
+            if (cardDefine is THHCardDefine thhCardDefine)
+            {
+                thhCardDefine.isToken = value;
+            }
+            else
+            {
+                cardDefine.setProp(DEFINE.ISTOKEN, value);
+            }
+        }
         /// <summary>
         /// 卡牌Id的符号位为负表示它是外部卡牌
         /// </summary>

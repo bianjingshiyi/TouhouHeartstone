@@ -11,11 +11,15 @@ namespace UI
     public class EffectEditorPanel : MonoBehaviour
     {
         #region 公有方法
-        public void setActiveRanges(string[] activeRangeNames, string[] pileValues)
+        public void initActiveRanges(string[] activeRangeNames, string[] pileValues)
         {
             _activeRangeDropdown.ClearOptions();
             _activeRangeDropdown.AddOptions(new List<string>(activeRangeNames));
-            _effectPropListTemplate.GetComponent<ValueInputField>().setupPileNames(activeRangeNames, pileValues);
+            _effectPropListTemplate.GetComponent<ValueInputField>().initPileNames(activeRangeNames, pileValues);
+        }
+        public void initEffectTagNames(string[] effectTagNames, string[] effectTagValues)
+        {
+            _effectPropListTemplate.GetComponent<ValueInputField>().initEffectTagNames(effectTagNames, effectTagValues);
         }
         public void setActiveRange(bool[] value)
         {

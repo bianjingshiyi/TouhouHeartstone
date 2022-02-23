@@ -203,6 +203,7 @@ namespace Controllers
             _ui.onDragActionNode += onDragActionNode;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
             _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
+            _ui.onClickActionNodeConstValueItemEditButton += onClickActionNodeConstValueItemEditButton;
             //触发
             _ui.onChangeTriggerEventName += onChangeTriggerEventName;
             _ui.onTriggerEventTypeChanged += onChangeTriggerTypeIndex;
@@ -879,11 +880,19 @@ namespace Controllers
                 if (actionNode.consts[index] is CardReference value)
                 {
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(new int[] { value.cardPoolId }, value.cardId);
+                    await _cardPoolViewPanelCtrl.display(value.cardId, cardPoolsId: new int[] { value.cardPoolId }, cardFilter: c =>
+                    {
+                        //所有卡都可以选
+                        return true;
+                    });
                 }
                 else
                 {
-                    await _cardPoolViewPanelCtrl.display();
+                    await _cardPoolViewPanelCtrl.display(cardFilter: c =>
+                    {
+                        //所有卡都可以选
+                        return true;
+                    });
                 }
                 _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
@@ -900,8 +909,8 @@ namespace Controllers
                         actionNodeItem.getConstInputField(index).card.isFaceup = true;
                         CardSkinData skin = game.card.getDefaultSkin(cardDefine);
                         actionNodeItem.getConstInputField(index).card.setCard(cardDefine, skin);
-                        Sprite sprite = skin.image != null ? 
-                            skin.image : 
+                        Sprite sprite = skin.image != null ?
+                            skin.image :
                             await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
                         actionNodeItem.getConstInputField(index).card.setImage(sprite);
                     }
@@ -909,6 +918,59 @@ namespace Controllers
                     {
                         actionNodeItem.getConstInputField(index).card.isFaceup = false;
                         actionNodeItem.getConstInputField(index).card.setCard(null, null);
+                    }
+                    _ui.displayCardSelectPanel(false);
+                }
+            }
+        }
+        private async void onClickActionNodeConstValueItemEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
+        {
+            ActionNode actionNode = getActionNode(actionNodeItem);
+            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            if (actionDefine.consts[index].type == typeof(CardReference[]))
+            {
+                _ui.displayCardSelectPanel(true);
+                if (actionNode.consts[index] is CardReference[] value)
+                {
+                    //打开卡牌选择界面
+                    await _cardPoolViewPanelCtrl.display(value[itemIndex].cardId, new int[] { value[itemIndex].cardPoolId }, cardFilter: c =>
+                    {
+                        //所有卡都可以选
+                        return true;
+                    });
+                }
+                else
+                {
+                    await _cardPoolViewPanelCtrl.display(cardFilter: c =>
+                    {
+                        //所有卡都可以选
+                        return true;
+                    });
+                }
+                _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
+
+                async void onClickCardSelectPanelCard(CardDefine cardDefine)
+                {
+                    _cardPoolViewPanelCtrl.onClickCard -= onClickCardSelectPanelCard;
+                    (actionNode.consts[index] as CardReference[])[itemIndex] = new CardReference()
+                    {
+                        cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
+                        cardId = cardDefine.id
+                    };
+                    if (cardDefine != null)
+                    {
+                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.isFaceup = true;
+                        CardSkinData skin = game.card.getDefaultSkin(cardDefine);
+                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.setCard(cardDefine, skin);
+                        Sprite sprite = skin.image != null ?
+                            skin.image :
+                            await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.setImage(sprite);
+                    }
+                    else
+                    {
+                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.isFaceup = false;
+                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.setCard(null, null);
                     }
                     _ui.displayCardSelectPanel(false);
                 }
@@ -2107,40 +2169,23 @@ namespace Controllers
         {
             if (valueActionNode == actionNode)
                 return true;
-            if (actionNode.inputs == null)
+            if (actionNode == null || actionNode.inputs == null)
                 return false;
-            if (curIndex < 0 || curIndex >= actionNode.inputs.Length)
+            for (int i = 0; i < (curIndex < 0 || curIndex >= actionNode.inputs.Length ? actionNode.inputs.Length : curIndex); i++)
             {
-                for (int i = 0; i < actionNode.inputs.Length; i++)
+                if (actionNode.inputs[i] == null)
+                    continue;
+                ActionNode childActionNode;
+                if (actionNode.inputs[i].action != null)
+                    childActionNode = actionNode.inputs[i].action;
+                else
+                    childActionNode = getActionNode(actionNode.inputs[i].actionNodeId);
+                if (isActionNodeValueRefedInNode(valueActionNode, childActionNode))
                 {
-                    ActionNode childActionNode;
-                    if (actionNode.inputs[i].action != null)
-                        childActionNode = actionNode.inputs[i].action;
-                    else
-                        childActionNode = getActionNode(actionNode.inputs[i].actionNodeId);
-                    if (isActionNodeValueRefedInNode(valueActionNode, childActionNode))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                return false;
             }
-            else
-            {
-                for (int i = 0; i < curIndex; i++)
-                {
-                    ActionNode childActionNode;
-                    if (actionNode.inputs[i].action != null)
-                        childActionNode = actionNode.inputs[i].action;
-                    else
-                        childActionNode = getActionNode(actionNode.inputs[i].actionNodeId);
-                    if (isActionNodeValueRefedInNode(valueActionNode, childActionNode))
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
+            return false;
         }
         /// <summary>
         /// 判断一个节点是否在父节点和父节点之上的节点中被引用为值
@@ -2360,6 +2405,10 @@ namespace Controllers
                 else if (type == typeof(CardReference))
                 {
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReference, actionNode.consts[i]);
+                }
+                else if (type == typeof(CardReference[]))
+                {
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReferenceCollection, actionNode.consts[i]);
                 }
                 else
                     throw new NotImplementedException("没有" + type + "对应的常数类型");

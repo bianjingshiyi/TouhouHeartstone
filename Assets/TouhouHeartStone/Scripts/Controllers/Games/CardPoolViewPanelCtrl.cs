@@ -232,11 +232,13 @@ namespace Controllers
                 _ui.gameObject.SetActive(true);
             }
         }
-        public Task display(int[] cardPoolsId, int cardId)
+        public Task display(int cardId, int[] cardPoolsId = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
         {
             return display(new DisplayInfo()
             {
                 cardPoolsId = cardPoolsId,
+                charactersId = charactersId,
+                cardFilter = cardFilter,
                 cardId = cardId
             });
         }

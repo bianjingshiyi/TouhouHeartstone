@@ -161,7 +161,7 @@ namespace Tests
             Assert.AreEqual(1, you.getField().count);
             Assert.True(you.getField()[0].define is DefaultServant);
             Assert.AreEqual(1, you.getGrave().Count(c => c.define is ServantCardDefine));
-            Assert.AreEqual(0, you.getGrave().Count(c => c.getCost(game) <= 3 && c.hasKeyword(game, KEYWORD._DeathRattle)));
+            Assert.AreEqual(0, you.getGrave().Count(c => c.getCost(game) <= 3 && c.hasKeyword(game, KEYWORD.DEATHRATTLE)));
             game.Dispose();
         }
 
@@ -196,7 +196,7 @@ namespace Tests
             s.setDead(game, true);
             game.updateDeath();
             Assert.AreEqual(count + 1, you.getHand().count);
-            Assert.True(you.getHand()[count].hasKeyword(game, KEYWORD._DeathRattle));
+            Assert.True(you.getHand()[count].hasKeyword(game, KEYWORD.DEATHRATTLE));
             game.Dispose();
         }
 
@@ -353,7 +353,7 @@ namespace Tests
             //白板仍未被复活，且墓地中无亡语随从
             Assert.AreEqual(1, you.getGrave().Count(c => c.define is ServantCardDefine));
             Assert.AreEqual(0,
-                you.getGrave().Count(c => c.define is ServantCardDefine && c.hasKeyword(game, KEYWORD._DeathRattle)));
+                you.getGrave().Count(c => c.define is ServantCardDefine && c.hasKeyword(game, KEYWORD.DEATHRATTLE)));
             you.cmdTurnEnd(game);
             game.skipUntilYourTurn(you);
             //丧失妖精死亡，召唤一只怨灵

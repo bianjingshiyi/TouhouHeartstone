@@ -114,6 +114,35 @@ namespace Game
             await player.getHand().add(game, createdCard);
             return createdCard;
         }
+        /// <summary>
+        /// 对固定数量的随机敌人造成法术伤害
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="count"></param>
+        /// <param name="damage"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        public static Task<THHCard.DamageEventArg> dealSpecificSpellDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)]int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)]int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)]Card[] targets)
+        {
+            return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
+        }
+        /// <summary>
+        /// 获取敌方随从
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ENEMY_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getEnemyServants(CardEngine game, Card card)
+        {
+            return game.getOpponent(card.owner).getField();
+        }
         #endregion
 
         //  玩家的行动，比如抽一张牌，获得一张牌

@@ -35,6 +35,7 @@ namespace UI
             ActionNodeItem actionNodeItem = createNode(posX, posY);
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
+            actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
             // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
             actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
@@ -87,6 +88,7 @@ namespace UI
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
+            actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
             // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
             actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
@@ -637,6 +639,10 @@ namespace UI
         {
             onClickActionNodeConstValueEditButton?.Invoke(item, constValueIndex);
         }
+        private void onClickActionNodeItemConstValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex)
+        {
+            onClickActionNodeConstValueItemEditButton?.Invoke(item, constValueIndex, itemIndex);
+        }
         private void onTriggerNodeEventNameChanged(ActionNodeItem item, string eventName)
         {
             onChangeTriggerEventName?.Invoke(eventName);
@@ -815,6 +821,10 @@ namespace UI
         /// 当节点的常量的编辑按钮被点击，参数为被点击的节点和常量索引
         /// </summary>
         public event Action<ActionNodeItem, int> onClickActionNodeConstValueEditButton;
+        /// <summary>
+        /// 当点击节点的常量的子项的编辑按钮，参数为点击的节点，常量索引和常量子项的索引
+        /// </summary>
+        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemEditButton;
         ///// <summary>
         ///// 当选择卡片界面的卡片项被激活，参数为卡片的索引和矩形变换
         ///// </summary>
@@ -1017,7 +1027,7 @@ namespace UI
         /// <summary>
         /// 标签集合
         /// </summary>
-        tagCollection,
+        effectTagCollection,
         /// <summary>
         /// 动作节点
         /// </summary>
@@ -1037,7 +1047,11 @@ namespace UI
         /// <summary>
         /// 卡牌引用
         /// </summary>
-        cardReference
+        cardReference,
+        /// <summary>
+        /// 卡牌引用集合
+        /// </summary>
+        cardReferenceCollection,
     }
     public enum ActionNodeConnectionType
     {

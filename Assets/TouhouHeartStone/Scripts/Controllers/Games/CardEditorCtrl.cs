@@ -31,6 +31,7 @@ namespace Controllers
             updateSkinNames();
             _ui.setId(_cardDefine.id);
             _ui.setType(Array.IndexOf(_types, _cardDefine.type));
+            _ui.setIsToken(_cardDefine.isToken());
             bool[] keywordsValue = new bool[_keywords.Length];
             for (int i = 0; i < keywordsValue.Length; i++)
             {
@@ -134,6 +135,7 @@ namespace Controllers
             _ui.initKeywords(keywords);
             _ui.onChangeKeywords += onChangeKeywords;
             _ui.onChangeType += onChangeType;
+            _ui.onIsTokenToggleValueChanged += onIsTokenToggleValueChanged;
             _ui.onChangeCharacter += onChangeCharacter;
             _ui.onChangeCost += onChangeCost;
             _ui.onChangeName += onChangeName;
@@ -241,6 +243,10 @@ namespace Controllers
         {
             _cardDefine.type = _types[typeIndex];
             //_ui.setType(typeIndex);
+        }
+        private void onIsTokenToggleValueChanged(bool value)
+        {
+            _cardDefine.setIsToken(value);
         }
         /// <summary>
         /// 当用户更改卡牌的关键词

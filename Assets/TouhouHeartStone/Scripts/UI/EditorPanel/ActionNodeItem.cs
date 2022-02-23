@@ -118,11 +118,13 @@ namespace UI
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged += onConstValueChangedCallback;
                     item.onClickButton += onConstValueButtonClickCallback;
+                    item.onClickItemButton += onConstValueItemButtonClickCallback;
                 }, itemRect =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged -= onConstValueChangedCallback;
                     item.onClickButton -= onConstValueButtonClickCallback;
+                    item.onClickItemButton -= onConstValueItemButtonClickCallback;
                 });
             }
         }
@@ -370,6 +372,10 @@ namespace UI
         {
             onClickConstValueButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform));
         }
+        private void onConstValueItemButtonClickCallback(ValueInputField item, int index)
+        {
+            onClickConstValueItemButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform), index);
+        }
         private void onChangeSelectedEventIndex(int eventIndex)
         {
             onEventTypeDropdownValueChanged?.Invoke(this, eventIndex);
@@ -439,6 +445,7 @@ namespace UI
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onEndDragOutputNode;
         public event Action<ActionNodeItem, int, object> onConstValueChanged;
         public event Action<ActionNodeItem, int> onClickConstValueButton;
+        public event Action<ActionNodeItem, int, int> onClickConstValueItemButton;
         public event Action<ActionNodeItem, string> onEventNameChanged;
         public event Action<ActionNodeItem, int> onEventTypeDropdownValueChanged;
         public event Action<ActionNodeItem> onClickEditConditionButton;

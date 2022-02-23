@@ -77,7 +77,13 @@ namespace Controllers
             {
                 activeRanges[i] = game.langManager.getString(_pileOptionNameDict[_selectableRanges[i]]);
             }
-            _ui.setActiveRanges(activeRanges, _selectableRanges);
+            _ui.initActiveRanges(activeRanges, _selectableRanges);
+            string[] effectTagNames = new string[_effectTags.Length];
+            for (int i = 0; i < effectTagNames.Length; i++)
+            {
+                effectTagNames[i] = game.langManager.getString(_effectTagOptionNameDict[_effectTags[i]]);
+            }
+            _ui.initEffectTagNames(effectTagNames, _effectTags);
             _ui.onActiveRangeDropdownValueChanged += onActiveRangeDropdownValueChanged;
             _ui.onClickEditEnableActionButton += onClickEditEnableActionButton;
             _ui.onClickEditDisableActionButton += onClickEditDisableActionButton;
@@ -243,8 +249,8 @@ namespace Controllers
                 return ActionNodeValueType.text;
             else if (type == typeof(PileNameCollection))
                 return ActionNodeValueType.pileNameCollection;
-            else if (type == typeof(TagCollection))
-                return ActionNodeValueType.tagCollection;
+            else if (type == typeof(EffectTagCollection))
+                return ActionNodeValueType.effectTagCollection;
             else if (type == typeof(ActionNode))
                 return ActionNodeValueType.actionNode;
             else if (type == typeof(ActionValueRef))
@@ -255,6 +261,8 @@ namespace Controllers
                 return ActionNodeValueType.triggerCollection;
             else if (type == typeof(CardReference))
                 return ActionNodeValueType.cardReference;
+            else if (type == typeof(CardReference[]))
+                return ActionNodeValueType.cardReferenceCollection;
             else
                 throw new NotImplementedException();
         }
@@ -269,6 +277,11 @@ namespace Controllers
         CardDefine _cardDefine;
         GeneratedEffect _effect;
         string[] _selectableRanges;
+        string[] _effectTags = new string[]
+        {
+            KEYWORD.BATTLECRY,
+            KEYWORD.DEATHRATTLE
+        };
         readonly Dictionary<string, string> _pileOptionNameDict = new Dictionary<string, string>()
         {
             { PILE.FIELD, StringTable.GAME_FIELD }  ,
@@ -279,6 +292,11 @@ namespace Controllers
             { PILE.SKILL, StringTable.GAME_SKILL },
             { PILE.ITEM, StringTable.GAME_ITEM },
             { PILE.HEAD, StringTable.GAME_DELAY }
+        };
+        readonly Dictionary<string, string> _effectTagOptionNameDict = new Dictionary<string, string>()
+        {
+            { KEYWORD.BATTLECRY, StringTable.GAME_KEYWORD_BATTLECRY },
+            { KEYWORD.DEATHRATTLE, StringTable.GAME_KEYWORD_DEATHRATTLE }
         };
         #endregion
         #region 内部类

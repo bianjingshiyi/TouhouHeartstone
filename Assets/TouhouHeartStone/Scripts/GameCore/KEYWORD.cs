@@ -86,6 +86,6 @@
         /// <summary>
         /// 遗言
         /// </summary>
-        public const string _DeathRattle = "_deathRattle";
+        public const string DEATHRATTLE = "deathRattle";
     }
 }

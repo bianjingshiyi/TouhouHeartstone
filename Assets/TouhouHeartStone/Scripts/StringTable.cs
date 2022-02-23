@@ -107,6 +107,10 @@ namespace Game
         public const string GAME_KEYWORD_SECRET = "陷阱";
         [TranslateMsg("游戏中的关键词任务")]
         public const string GAME_KEYWORD_MISSION = "任务";
+        [TranslateMsg("游戏中的关键词宣言")]
+        public const string GAME_KEYWORD_BATTLECRY = "宣言";
+        [TranslateMsg("游戏中的关键词遗言")]
+        public const string GAME_KEYWORD_DEATHRATTLE = "遗言";
         #endregion
         #region 错误
         [TranslateMsg]

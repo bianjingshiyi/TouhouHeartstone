@@ -78,6 +78,10 @@ namespace UI
             _typeDropdown.SetValueWithoutNotify(typeIndex);
             _card.setTypeByName(_typeDropdown.options[typeIndex].text);
         }
+        public void setIsToken(bool value)
+        {
+            _isTokenToggle.SetIsOnWithoutNotify(value);
+        }
         /// <summary>
         /// 初始化可选的卡牌关键词
         /// </summary>
@@ -246,6 +250,8 @@ namespace UI
         {
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChanged);
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
+            _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
+            _keywordsDropdown.onValueChanged.AddListener(onKeywordsDropdownValueChanged);
             _skinDropdown.gameObject.SetActive(true);
             _skinDropdown.onValueChanged.AddListener(onSkinDropdownValueChanged);
             _changeSkinNameButton.gameObject.SetActive(true);
@@ -293,6 +299,14 @@ namespace UI
         private void onTypeDropdownValueChanged(int value)
         {
             onChangeType?.Invoke(value);
+        }
+        private void onIsTokenToggleValueChangedCallback(bool value)
+        {
+            onIsTokenToggleValueChanged?.Invoke(value);
+        }
+        private void onKeywordsDropdownValueChanged(bool[] value)
+        {
+            onChangeKeywords?.Invoke(value);
         }
         private void onCharacterDropdownValueChanged(int value)
         {
@@ -465,6 +479,7 @@ namespace UI
         /// 当更换卡牌类型，参数为更改类型索引。
         /// </summary>
         public event Action<int> onChangeType;
+        public event Action<bool> onIsTokenToggleValueChanged;
         /// <summary>
         /// 当卡牌的关键词发生改变，参数为更改后的关键词选择状态。
         /// </summary>
@@ -532,6 +547,8 @@ namespace UI
         Text _idText;
         [SerializeField]
         Dropdown _typeDropdown;
+        [SerializeField]
+        Toggle _isTokenToggle;
         [SerializeField]
         MultiSelectDropdown _keywordsDropdown;
         [SerializeField]
