@@ -15,6 +15,47 @@ namespace Game
     {
         //  把这个“玩家”逐步移到下面几个去
         #region 玩家
+        /// <summary>
+        /// 获取玩家属性
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="propName"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_PROP, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static object getPlayerProp(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)]string propName)
+        {
+            return player.getProp(propName);
+        }
+        /// <summary>
+        /// 设置玩家属性
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="propName"></param>
+        /// <param name="value"></param>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SET_PLAYER_PROP, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        public static void setPlayerProp(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_NODE_PARAM_NAME_VALUE)]object value)
+        {
+            player.setProp(propName, value);
+        }
+        /// <summary>
+        /// 获取玩家手牌
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="player"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getHandCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]Player player)
+        {
+            return player.getHand();
+        }
         #endregion
 
         //  有关全局的操作，比如说获取发现池，获取卡牌
@@ -100,7 +141,18 @@ namespace Game
             }
         }
         /// <summary>
-        /// 创建衍生卡
+        /// 获取随机卡牌
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getRandomCard(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        {
+            return cards.random(game);
+        }
+        /// <summary>
+        /// 创建衍生卡并置入手牌
         /// </summary>
         /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HAND, StringTable.EDITOR_NODE_CATEGORY_CARD)]
@@ -112,6 +164,22 @@ namespace Game
                 return null;
             Card createdCard = game.createCard(cardDefine);
             await player.getHand().add(game, createdCard);
+            return createdCard;
+        }
+        /// <summary>
+        /// 创建衍生卡并洗入牌库
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="cardDefine"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card> createTokenCardShuffleToDeck(CardEngine game, Card card, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            Player player = card.owner;
+            Card createdCard = game.createCard(cardDefine);
+            await player.getDeck().insert(game, createdCard, game.randomInt(0, player.getDeck().count));
             return createdCard;
         }
         /// <summary>

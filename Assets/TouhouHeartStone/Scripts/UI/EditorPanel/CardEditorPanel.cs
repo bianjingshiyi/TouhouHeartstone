@@ -99,6 +99,15 @@ namespace UI
         {
             _keywordsDropdown.SetValueWithoutNotify(value);
         }
+        public void initTags(string[] tagNames)
+        {
+            _noRaceTagDropdown.ClearOptions();
+            _noRaceTagDropdown.AddOptions(new List<string>(tagNames));
+        }
+        public void setTags(bool[] value)
+        {
+            _noRaceTagDropdown.SetValueWithoutNotify(value);
+        }
         /// <summary>
         /// 设置费用
         /// </summary>
@@ -174,7 +183,7 @@ namespace UI
         /// 设置卡牌的标签
         /// </summary>
         /// <param name="tag"></param>
-        public void setTag(int index)
+        public void setRace(int index)
         {
             _card.setTag(_tagDropdown.options[index].text);
             _tagDropdown.SetValueWithoutNotify(index);
@@ -252,6 +261,7 @@ namespace UI
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
             _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
             _keywordsDropdown.onValueChanged.AddListener(onKeywordsDropdownValueChanged);
+            _noRaceTagDropdown.onValueChanged.AddListener(onNoRaceTagDropdownValueChangedCallback);
             _skinDropdown.gameObject.SetActive(true);
             _skinDropdown.onValueChanged.AddListener(onSkinDropdownValueChanged);
             _changeSkinNameButton.gameObject.SetActive(true);
@@ -272,7 +282,7 @@ namespace UI
             _nameInputField.onEndEdit.AddListener(onNameInputFieldEndEdit);
             _subnameInputField.onEndEdit.AddListener(onSubNameInputFieldEndEdit);
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
-            _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChanged);
+            _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChangedCallback);
             EventTrigger trigger = _tagDropdown.gameObject.AddComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.Deselect;
@@ -282,7 +292,7 @@ namespace UI
                 {
                     return;
                 }
-                onTagDropdownValueChanged(_tagDropdown.value);
+                onTagDropdownValueChangedCallback(_tagDropdown.value);
             });
             trigger.triggers.Add(entry);
             _costInputField.onEndEdit.AddListener(onCostInputFieldEndEdit);
@@ -307,6 +317,10 @@ namespace UI
         private void onKeywordsDropdownValueChanged(bool[] value)
         {
             onChangeKeywords?.Invoke(value);
+        }
+        private void onNoRaceTagDropdownValueChangedCallback(bool[] value)
+        {
+            onTagDropdownValueChanged?.Invoke(value);
         }
         private void onCharacterDropdownValueChanged(int value)
         {
@@ -412,11 +426,11 @@ namespace UI
             _editDescButton.gameObject.SetActive(true);
             onChangeDesc?.Invoke(text);
         }
-        private void onTagDropdownValueChanged(int value)
+        private void onTagDropdownValueChangedCallback(int value)
         {
             _tagDropdown.gameObject.SetActive(false);
             _editTagButton.gameObject.SetActive(true);
-            onChangeTag?.Invoke(value);
+            onChangeRace?.Invoke(value);
         }
         private void onCostInputFieldEndEdit(string text)
         {
@@ -519,7 +533,8 @@ namespace UI
         /// <summary>
         /// 当更改卡牌标签，参数为更改后的卡牌标签。
         /// </summary>
-        public event Action<int> onChangeTag;
+        public event Action<int> onChangeRace;
+        public event Action<bool[]> onTagDropdownValueChanged;
         /// <summary>
         /// 当点击编辑效果按钮，参数为效果索引。
         /// </summary>
@@ -551,6 +566,8 @@ namespace UI
         Toggle _isTokenToggle;
         [SerializeField]
         MultiSelectDropdown _keywordsDropdown;
+        [SerializeField]
+        MultiSelectDropdown _noRaceTagDropdown;
         [SerializeField]
         Dropdown _characterDropdown;
         [SerializeField]

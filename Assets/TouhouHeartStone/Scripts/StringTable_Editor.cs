@@ -92,6 +92,12 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION = "获取牌库中满足条件的卡牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之条件")]
         public const string EDITOR_PARAM_NAME_CONDITION = "条件";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家的手牌")]
+        public const string EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS = "获取玩家的手牌";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之设置玩家属性")]
+        public const string EDITOR_NODE_NAME_SET_PLAYER_PROP = "设置玩家属性";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家属性")]
+        public const string EDITOR_NODE_NAME_GET_PLAYER_PROP = "获取玩家属性";
         #endregion
         #region 牌堆
         [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]
@@ -168,6 +174,10 @@ namespace Game
         public const string EDITOR_PARAM_NAME_DAMAGE = "伤害";
         [TranslateMsg("动作图编辑器中动作节点名称之获取敌方随从")]
         public const string EDITOR_NODE_NAME_GET_ENEMY_SERVANTS = "获取敌方随从";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取随机卡牌")]
+        public const string EDITOR_NODE_NAME_GET_RANDOM_CARD = "获取随机卡牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并洗入牌库")]
+        public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK = "创建衍生卡并洗入牌库";
         #endregion
         #region 修改器 
         [TranslateMsg("动作图编辑器中动作节点分类之修改器")]

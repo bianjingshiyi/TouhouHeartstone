@@ -38,6 +38,12 @@ namespace Controllers
                 keywordsValue[i] = _cardDefine.hasKeyword(_keywords[i]);
             }
             _ui.setKeywords(keywordsValue);
+            bool[] tagsValue = new bool[_tags.Length];
+            for (int i = 0; i < _tags.Length; i++)
+            {
+                tagsValue[i] = _cardDefine.getTags().Contains(_tags[i]);
+            }
+            _ui.setTags(tagsValue);
             string[] charactersName = new string[selectableCharacters.Length + 1];
             charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
             for (int i = 1; i < charactersName.Length; i++)
@@ -53,13 +59,13 @@ namespace Controllers
             string[] tags = _cardDefine.getProp<string[]>(DEFINE.TAGS);
             if (tags != null && tags.Length > 0)
             {
-                int index = Array.IndexOf(_tags, tags[0]);
+                int index = Array.IndexOf(_races, tags[0]);
                 if (index < 0)
                     index = 0;
-                _ui.setTag(index);
+                _ui.setRace(index);
             }
             else
-                _ui.setTag(0);
+                _ui.setRace(0);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             updateEffectList(effects);
             _ui.closeAllEdit();
@@ -114,28 +120,46 @@ namespace Controllers
             };
             _keywords = new string[]
             {
-                "taunt",
-                "charge",
-                "rush",
-                "shield",
-                "stealth",
-                "permanentStealth",
-                "drain",
-                "poisonous",
-                "elusive",
-                "freeze",
-                "unique",
-                "autocast",
-                "cantattack",
-                "windfury",
-                "immunity",
-                "secret",
-                "mission"
+                KEYWORD.TAUNT,
+                KEYWORD.CHARGE,
+                KEYWORD.RUSH,
+                KEYWORD.SHIELD,
+                KEYWORD.STEALTH,
+                KEYWORD.PERMANENTSTEALTH,
+                KEYWORD.DRAIN,
+                KEYWORD.POISONOUS,
+                KEYWORD.ELUSIVE,
+                KEYWORD.FREEZE,
+                KEYWORD.UNIQUE,
+                KEYWORD.AUTOCAST,
+                KEYWORD.CANTATTACK,
+                KEYWORD.WINDFURY,
+                KEYWORD.IMMUNITY,
+                KEYWORD.SECRET,
+                KEYWORD.MISSION
             };
             _ui.initKeywords(keywords);
             _ui.onChangeKeywords += onChangeKeywords;
             _ui.onChangeType += onChangeType;
             _ui.onIsTokenToggleValueChanged += onIsTokenToggleValueChanged;
+            string[] tagNames = new string[]
+            {
+                StringTable.GAME_TAG_METAL,
+                StringTable.GAME_TAG_WOOD,
+                StringTable.GAME_TAG_WATER,
+                StringTable.GAME_TAG_FIRE,
+                StringTable.GAME_TAG_EARTH,
+            };
+            _tags = new string[]
+            {
+                Patchouli.METAL,
+                Patchouli.WOOD,
+                Patchouli.WATER,
+                Patchouli.FIRE,
+                Patchouli.EARTH
+            };
+            _ui.initTags(tagNames);
+            _ui.onTagDropdownValueChanged += onTagDropdownValueChanged;
             _ui.onChangeCharacter += onChangeCharacter;
             _ui.onChangeCost += onChangeCost;
             _ui.onChangeName += onChangeName;
@@ -144,9 +168,9 @@ namespace Controllers
             _ui.onChangeDesc += onChangeDesc;
             _ui.onChangeAttack += onChangeAttack;
             _ui.onChangeLife += onChangeLife;
-            _tags = new string[] { string.Empty, TAG.BEAST, TAG.DEMON, TAG.ELEMENT, TAG.FAIRY, TAG.GOD, TAG.MACHINE };
-            _ui.setTags(_tags);
-            _ui.onChangeTag += onChangeTag;
+            _races = new string[] { string.Empty, TAG.BEAST, TAG.DEMON, TAG.ELEMENT, TAG.FAIRY, TAG.GOD, TAG.MACHINE };
+            _ui.setTags(_races);
+            _ui.onChangeRace += onChangeRace;
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
             _ui.setEffectTypes(game.card.getEffectNames());
@@ -247,6 +271,25 @@ namespace Controllers
         private void onIsTokenToggleValueChanged(bool value)
         {
             _cardDefine.setIsToken(value);
+        }
+        private void onTagDropdownValueChanged(bool[] value)
+        {
+            string[] tags = _cardDefine.getTags();
+            string race = tags.Length > 0 ? tags[0] : null;
+            List<string> tagList = new List<string>();
+            tagList.Add(race);
+            for (int i = 0; i < _tags.Length; i++)
+            {
+                if (value[i] && !tagList.Contains(_tags[i]))
+                {
+                    tagList.Add(_tags[i]);
+                }
+                else
+                {
+                    tagList.RemoveAll(s => s == _tags[i]);
+                }
+            }
+            _cardDefine.setTags(tagList.ToArray());
         }
         /// <summary>
         /// 当用户更改卡牌的关键词
@@ -418,18 +461,16 @@ namespace Controllers
         /// <summary>
         /// 当用户更改标签
         /// </summary>
-        void onChangeTag(int index)
+        void onChangeRace(int index)
         {
-            if (index > 0)
+            string[] value = _cardDefine.getTags();
+            if (value == null || value.Length < 1)
             {
-                _cardDefine.setProp(DEFINE.TAGS, new string[] { _tags[index] });
-                _ui.setTag(index);
+                value = new string[1];
             }
-            else
-            {
-                _cardDefine.setProp(DEFINE.TAGS, new string[0]);
-                _ui.setTag(0);
-            }
+            value[0] = index > 0 ? _races[index] : null;
+            _cardDefine.setProp(DEFINE.TAGS, value);
+            _ui.setRace(index);
         }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
@@ -565,6 +606,7 @@ namespace Controllers
         CardEditorPanel _ui;
         string[] _types;
         string[] _keywords;
+        string[] _races;
         string[] _tags;
         int _cardPoolId;
         CardDefine _cardDefine;

@@ -473,14 +473,13 @@ namespace Game
         {
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                cardPool.cardDefineList.Find(d => d.id == cardId);
+                return cardPool.cardDefineList.Find(d => d.id == cardId);
             }
             if (defineDic.ContainsKey(cardId))
             {
                 return defineDic[cardId];
             }
-            else
-                throw new KeyNotFoundException("不存在卡牌" + cardId);
+            return null;
         }
         /// <summary>
         /// 根据条件获取卡片定义

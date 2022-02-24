@@ -455,7 +455,17 @@ namespace Controllers
                     }
                     //检查类型合法性
                     Type outputType = _actionDefineDict[outputActionNode.defineName].outputs[outputIndex - outputActionNode.branches.Length].type;
-                    Type inputType = _actionDefineDict[inputActionNode.defineName].inputs[inputIndex - 1].type;
+                    ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+                    Type inputType;
+                    if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length)
+                    {
+                        //多参数
+                        inputType = inputActionDefine.inputs.Last().type;
+                    }
+                    else
+                    {
+                        inputType = inputActionDefine.inputs[inputIndex - 1].type;
+                    }
                     if (!outputType.IsAssignableFrom(inputType) && !inputType.IsAssignableFrom(outputType))
                     {
                         //相互连接的输入输出类型必须可以相互转化
@@ -464,173 +474,7 @@ namespace Controllers
                     }
                     connectNode4ValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputActionNode, inputIndex - 1);
                 }
-                ////一个节点的动作输出只可以连接一个动作输入，先自动断开和之前节点的连接
-                //if (inputIndex == 0)
-                //{
-                //    ActionNode prevOutputActionNode = null;
-                //    int prevOutputIndex = -1;
-                //    for (int i = 0; i < _actionNodeList.Count; i++)
-                //    {
-                //        if (_actionNodeList[i].branches == null)
-                //            continue;
-                //        for (int j = 0; j < _actionNodeList[i].branches.Length; j++)
-                //        {
-                //            if (_actionNodeList[i].branches[j] == inputActionNode)
-                //            {
-                //                prevOutputActionNode = _actionNodeList[i];
-                //                prevOutputIndex = j;
-                //                break;
-                //            }
-                //        }
-                //        if (prevOutputActionNode != null)
-                //        {
-                //            break;
-                //        }
-                //    }
-                //    if (prevOutputActionNode != null)
-                //    {
-                //        prevOutputActionNode.branches[prevOutputIndex] = null;
-                //        //将断开连接的节点加入离散列表
-                //        if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
-                //            graphInfo.freeActionNodeList.Add(inputActionNode);
-                //        _ui.unconnectNode(getActionNodeItem(prevOutputActionNode), prevOutputIndex, inputActionNodeItem, inputIndex);
-                //    }
-                //}
-                //if (outputActionNode.branches != null && outputIndex < outputActionNode.branches.Length)
-                //{
-                //    ActionNode prevInputActionNode = outputActionNode.branches[outputIndex];
-                //    if (prevInputActionNode != null)
-                //    {
-                //        outputActionNode.branches[outputIndex] = null;
-                //        //将断开连接的节点加入离散列表
-                //        if (!graphInfo.freeActionNodeList.Contains(prevInputActionNode))
-                //            graphInfo.freeActionNodeList.Add(prevInputActionNode);
-                //        _ui.unconnectNode(outputActionNodeItem, outputIndex, getActionNodeItem(prevInputActionNode), 0);
-                //    }
-                //}
-                ////一个值输入只能接受一个节点的值输出，自动断开之前的输出连接
-                //if (inputActionNode.inputs != null &&
-                //    inputIndex > 0 &&
-                //    inputIndex - 1 < inputActionNode.inputs.Length &&
-                //    (inputActionNode.inputs[inputIndex - 1] == null ||
-                //    (inputActionNode.inputs[inputIndex - 1].action != outputActionNode &&
-                //    inputActionNode.inputs[inputIndex - 1].actionNodeId != outputActionNode.id)))
-                //{
-                //    ActionValueRef inputValueRef = inputActionNode.inputs[inputIndex - 1];
-                //    //一个节点可能提供多个输出值，但是只有在顺序上最先引用它的节点才会保存对它的引用以便序列化，其余情况只保留id和index
-                //    inputActionNode.inputs[inputIndex - 1] = null;
-                //    if (inputValueRef != null)
-                //    {
-                //        ActionNode prevOutputActionNode = inputValueRef.action != null ? inputValueRef.action : getActionNode(inputValueRef.actionNodeId);
-                //        _ui.unconnectNode(getActionNodeItem(prevOutputActionNode), prevOutputActionNode.branches.Length + inputValueRef.index, inputActionNodeItem, inputIndex);
-                //        if (isFreeActionNode(prevOutputActionNode))
-                //        {
-                //            prevOutputActionNode.regVar = null;
-                //            if (!graphInfo.freeActionNodeList.Contains(prevOutputActionNode))
-                //                graphInfo.freeActionNodeList.Add(prevOutputActionNode);
-                //        }
-                //        else
-                //        {
-                //            //如果之前的输出节点没有变成自由节点，那要更新一下它的输出变量状态
-                //            updateRegVar(prevOutputActionNode);
-                //        }
-                //    }
-                //}
-                //ActionValueRef outputValueRef =
-                //    inputIndex < inputActionNode.branches.Length ||
-                //    inputIndex - inputActionNode.branches.Length >= inputActionNode.inputs.Length ?
-                //    null : inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
-                //if (outputValueRef != null)
-                //{
-                //    var actionNode = outputValueRef.action;
-                //    actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
-                //    var actionNodeItem = getActionNodeItem(actionNode);
-                //    _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
-                //}
-                //检查合法性
-                //if ((outputIndex < outputActionNode.branches.Length) != (inputIndex == 0))
-                //{
-                //    //值输出只能与值输入相互连接
-                //    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
-                //    return;
-                //}
-                //if (outputIndex >= outputActionNode.branches.Length && inputIndex > 0)
-                //{
-                //    //值的相互连接
-                //    var outputActionDefine = _actionDefineDict[outputActionNode.defineName];
-                //    var outputValueDefine = outputActionDefine.outputs[outputIndex - outputActionNode.branches.Length];
-                //    var inputActionDefine = _actionDefineDict[inputActionNode.defineName];
-                //    if (inputActionDefine.inputs.Last().isParams && inputIndex - 1 >= inputActionDefine.inputs.Length - 1)
-                //    {
-                //        //是允许输入多个值的参数
-                //        var inputValueDefine = inputActionDefine.inputs.Last();
-                //        if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
-                //        {
-                //            //相互连接的输入输出类型必须可以相互转化
-                //            _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
-                //            return;
-                //        }
-                //        if (inputIndex - 1 >= inputActionNode.inputs.Length)
-                //        {
-                //            //如果是赋值给最后一个空白参数，那么自动添加一个空的参数
-                //            ActionValueRef[] inputs = new ActionValueRef[inputActionNode.inputs.Length + 1];
-                //            inputActionNode.inputs.CopyTo(inputs, 0);
-                //            inputActionNode.inputs = inputs;
-                //        }
-                //        inputActionNodeItem.setInputs(getActionNodeInputNames(inputActionNode));
-                //    }
-                //    else
-                //    {
-                //        var inputValueDefine = inputActionDefine.inputs[inputIndex - 1];
-                //        if (!inputValueDefine.type.IsAssignableFrom(outputValueDefine.type) && !outputValueDefine.type.IsAssignableFrom(inputValueDefine.type))
-                //        {
-                //            //相互连接的输入输出类型必须可以相互转化
-                //            _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
-                //            return;
-                //        }
-                //    }
-                //    //一个输出值可以与多个输入相连，只有顺序上第一个输入或者动作输入才可以保持对节点本身的引用
-                //    if (!isValueRefedInParentNodes(outputActionNode, inputActionNode))
-                //    {
-                //        inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length);
-                //        //遍历子节点，使其中所有对相同值输出的引用从直接引用变为id引用
-                //        traverseActionNode(inputActionNode, false, a =>
-                //        {
-                //            if (a == inputActionNode)
-                //                return;
-                //            if (a.inputs != null && a.inputs.Length > 0)
-                //            {
-                //                for (int i = 0; i < a.inputs.Length; i++)
-                //                {
-                //                    if (a.inputs[i] == null)
-                //                        continue;
-                //                    if (a.inputs[i].action == outputActionNode)
-                //                    {
-                //                        a.inputs[i].action = null;
-                //                        a.inputs[i].actionNodeId = outputActionNode.id;
-                //                    }
-                //                }
-                //            }
-                //        });
-                //    }
-                //    else
-                //    {
-                //        inputActionNode.inputs[inputIndex - 1] = new ActionValueRef(outputActionNode.id, outputIndex - outputActionNode.branches.Length);
-                //    }
-                //    //更新输出节点的输出变量状态
-                //    updateRegVar(outputActionNode);
-                //    //输出值的节点一定不是离散节点
-                //    graphInfo.freeActionNodeList.Remove(outputActionNode);
-                //}
-                //else
-                //{
-                //    //动作的相互连接
-                //    outputActionNode.branches[outputIndex] = inputActionNode;
-                //    //后一个动作节点一定不是离散节点
-                //    graphInfo.freeActionNodeList.Remove(inputActionNode);
-                //}
             }
-            //_ui.connectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex, ActionNodeConnectionType.action);
         }
         /// <summary>
         /// 当用户断开节点连接
@@ -654,44 +498,11 @@ namespace Controllers
                     //值连接
                     unconnectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - 1);
                 }
-                //ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                //if (inputActionNode == rootActionNode)
-                //{
-                //    //断开与入口动作节点的连接
-                //    _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
-                //    rootActionNode = null;
-                //}
-                //else
-                //{
-                //    //断开与值节点的连接
-                //    ActionValueRef inputValueRef = inputIndex < inputActionNode.branches.Length ? null :
-                //        inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
-                //    if (inputValueRef != null)
-                //    {
-                //        var actionNode = inputValueRef.action;
-                //        actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
-                //        var actionNodeItem = getActionNodeItem(actionNode);
-                //        _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + inputValueRef.index, inputActionNodeItem, inputIndex);
-                //    }
-                //}
-                //输入节点一定会变得离散
-                //if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
-                //    graphInfo.freeActionNodeList.Add(inputActionNode);
             }
             else if (inputActionNodeItem == _returnNodeItem && valueRef != null)
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
                 unconnectNode4ReturnValueRef(outputActionNode, valueRef.index, 0);
-                //ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                //if (rootActionNode == outputActionNode)
-                //{
-                //    //断开与返回值节点的连接
-                //    _ui.unconnectNode(outputActionNodeItem, valueRef.index + 1, _returnNodeItem, 0);
-                //    rootActionNode = null;
-                //}
-                ////输出节点一定会变得离散
-                //if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
-                //    graphInfo.freeActionNodeList.Add(outputActionNode);
             }
             else
             {
@@ -707,74 +518,6 @@ namespace Controllers
                     //值连接
                     unconnectNode4ValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputActionNode, inputIndex - 1);
                 }
-                //ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                //ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                //if (outputIndex < outputActionNode.branches.Length)
-                //{
-                //    outputActionNode.branches[outputIndex] = null;
-                //    _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
-                //    //输入节点一定会变得离散
-                //    if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
-                //        graphInfo.freeActionNodeList.Add(inputActionNode);
-                //}
-                //else
-                //{
-                //    ActionValueRef inputActionValueRef = inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
-                //    ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
-                //    if (inputActionDefine.inputs.Last().isParams && inputIndex - inputActionNode.branches.Length >= inputActionDefine.inputs.Length - 1)
-                //    {
-                //        //如果断开的是多参数节点
-                //        List<ActionValueRef> inputList = new List<ActionValueRef>(inputActionNode.inputs);
-                //        inputList.RemoveAt(inputIndex - inputActionNode.branches.Length);
-                //        inputActionNode.inputs = inputList.ToArray();
-                //        //断开所有连接再重新连接
-                //        _ui.unconnectNodeAllInput(inputActionNodeItem);
-                //        for (int i = 0; i < inputActionNode.branches.Length; i++)
-                //        {
-                //            _ui.connectNode(getActionNodeItem(inputActionNode.branches[i]), 0, inputActionNodeItem, i, ActionNodeConnectionType.value);
-                //        }
-                //        for (int i = inputActionNode.branches.Length; i < inputList.Count; i++)
-                //        {
-                //            _ui.connectNode(getActionNodeItem(inputList[i].action), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
-                //        }
-                //    }
-                //    else
-                //    {
-                //        inputActionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
-                //        _ui.unconnectNode(outputActionNodeItem, outputIndex, inputActionNodeItem, inputIndex);
-                //    }
-                //    if (inputActionValueRef.action != null)
-                //    {
-                //        //寻找子节点中的第一个值引用，将其改为引用对象本身
-                //        traverseActionNode(inputActionNode, false, a =>
-                //        {
-                //            if (a.inputs == null)
-                //                return false;
-                //            for (int i = 0; i < a.inputs.Length; i++)
-                //            {
-                //                if (a.inputs[i] != null && a.inputs[i].actionNodeId == inputActionValueRef.action.id)
-                //                {
-                //                    a.inputs[i].action = inputActionValueRef.action;
-                //                    a.inputs[i].actionNodeId = 0;
-                //                    return true;
-                //                }
-                //            }
-                //            return false;
-                //        });
-                //    }
-                //    if (isFreeActionNode(outputActionNode))
-                //    {
-                //        outputActionNode.regVar = null;
-                //        //如果输出节点变为离散节点，将其添加进入列表
-                //        if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
-                //            graphInfo.freeActionNodeList.Add(outputActionNode);
-                //    }
-                //    else
-                //    {
-                //        //更新输出变量状态
-                //        updateRegVar(outputActionNode);
-                //    }
-                //}
             }
         }
         /// <summary>
@@ -1243,59 +986,69 @@ namespace Controllers
             actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, pos.x, pos.y);
             //为动作分支创建节点图
             float lastNodeOffset = 0;
-            for (int i = 0; i < actionNode.branches.Length; i++)
+            if (actionNode.branches != null)
             {
-                var nextActionNode = actionNode.branches[i];
-                if (nextActionNode == null)
-                    continue;
-                if (sizeDict == null)
-                    sizeDict = new Dictionary<ActionNode, Vector2>();
-                var nextActionNodeItem = await createGraph4ActionNode(nextActionNode,
-                    prevNodeItem: actionNodeItem,
-                    startPosOffset: lastNodeOffset,
-                    sizeDict: sizeDict);
-                Vector2 size = calcActionNodeGraphSize(nextActionNode, sizeDict);
-                lastNodeOffset -= size.y;
-                _ui.connectNode(actionNodeItem, i, nextActionNodeItem, 0, ActionNodeConnectionType.action);
+                for (int i = 0; i < actionNode.branches.Length; i++)
+                {
+                    if (actionNode.branches[i] == null)
+                        continue;
+                    ActionNode nextActionNode = actionNode.branches[i];
+                    if (sizeDict == null)
+                        sizeDict = new Dictionary<ActionNode, Vector2>();
+                    ActionNodeItem nextActionNodeItem = await createGraph4ActionNode(nextActionNode,
+                        prevNodeItem: actionNodeItem,
+                        startPosOffset: lastNodeOffset,
+                        sizeDict: sizeDict);
+                    Vector2 size = calcActionNodeGraphSize(nextActionNode, sizeDict);
+                    lastNodeOffset -= size.y;
+                    _ui.connectNode(actionNodeItem, i, nextActionNodeItem, 0, ActionNodeConnectionType.action);
+                }
             }
             //为输入节点创建节点图
             lastNodeOffset = 0;
-            for (int i = 0; i < actionNode.inputs.Length; i++)
+            if (actionNode.inputs != null)
             {
-                ActionValueRef valueRef = actionNode.inputs[i];
-                if (valueRef == null)
-                    continue;
-                if (sizeDict == null)
-                    sizeDict = new Dictionary<ActionNode, Vector2>();
-                if (string.IsNullOrEmpty(valueRef.eventVarName))
+                for (int i = 0; i < actionNode.inputs.Length; i++)
                 {
-                    //与普通节点连接
-                    ActionNode inputActionNode = valueRef.action != null ? valueRef.action : getActionNode(valueRef.actionNodeId);
-                    try
-                    {
-                        if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
-                        {
-                            inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
-                                nextNodeItem: actionNodeItem,
-                                startPosOffset: lastNodeOffset,
-                                sizeDict: sizeDict);
-                            Vector2 size = calcActionNodeGraphSize(inputActionNode, sizeDict);
-                            lastNodeOffset -= size.y;
-                        }
-                        //输出索引要被动作分支占用若干个空位
-                        //输入索引要被前置动作占用一个空位
-                        _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError("创建子节点" + inputActionNode + "的图像时发生异常：" + e);
+                    ActionValueRef valueRef = actionNode.inputs[i];
+                    if (valueRef == null)
                         continue;
+                    if (sizeDict == null)
+                        sizeDict = new Dictionary<ActionNode, Vector2>();
+                    if (string.IsNullOrEmpty(valueRef.eventVarName))
+                    {
+                        //与普通节点连接
+                        ActionNode inputActionNode = valueRef.action != null ? valueRef.action : getActionNode(valueRef.actionNodeId);
+                        if (inputActionNode == null)
+                        {
+                            continue;
+                        }
+                        try
+                        {
+                            if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
+                            {
+                                inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
+                                    nextNodeItem: actionNodeItem,
+                                    startPosOffset: lastNodeOffset,
+                                    sizeDict: sizeDict);
+                                Vector2 size = calcActionNodeGraphSize(inputActionNode, sizeDict);
+                                lastNodeOffset -= size.y;
+                            }
+                            //输出索引要被动作分支占用若干个空位
+                            //输入索引要被前置动作占用一个空位
+                            _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError("创建子节点" + inputActionNode + "的图像时发生异常：" + e);
+                            continue;
+                        }
                     }
-                }
-                else
-                {
-                    //与入口节点连接
-                    _ui.connectNode(_entryNodeItem, 1 + getEventVarNameIndex(valueRef.eventVarName), actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                    else
+                    {
+                        //与入口节点连接
+                        _ui.connectNode(_entryNodeItem, 1 + getEventVarNameIndex(valueRef.eventVarName), actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                    }
                 }
             }
             return actionNodeItem;
@@ -1469,14 +1222,16 @@ namespace Controllers
                         CardDefine cardDefine = null;
                         if (actionNode.consts[i] is CardReference cardReference)
                         {
-                            game.card.getCardDefine(cardReference.cardPoolId, cardReference.cardId);
+                            cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.cardId);
                         }
                         if (cardDefine != null)
                         {
                             actionNodeItem.getConstInputField(i).card.isFaceup = true;
                             CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
                             actionNodeItem.getConstInputField(i).card.setCard(cardDefine, cardSkin);
-                            Sprite sprite = await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolOfCard(cardDefine).cardPoolId);
+                            Sprite sprite = cardSkin.image != null ?
+                                cardSkin.image :
+                                await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
                             actionNodeItem.getConstInputField(i).card.setImage(sprite);
                         }
                         else
@@ -1762,6 +1517,7 @@ namespace Controllers
             //就像是在if的分支里面声明一个变量，在后续动作作用域中这个变量不一定都存在。
             //目前选择的解决方法是对于超出作用域的节点是无法通过id引用的。
             //这种解决方案会导致一个问题，那就是在ui上显示为一个的节点，实际上可能是多个不同的节点。
+            ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
             if (!isActionNodeValueRefedInPrevNodes(outputActionNode, inputActionNode, inputIndex))
             {
                 inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
@@ -1788,6 +1544,19 @@ namespace Controllers
             else
             {
                 inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode.id, outputIndex);
+            }
+            if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length - 1)
+            {
+                //是多参数
+                ActionValueRef lastValueRef = inputActionNode.inputs[inputActionNode.inputs.Length - 1];
+                if (lastValueRef.action != null || lastValueRef.actionNodeId != 0 || !string.IsNullOrEmpty(lastValueRef.eventVarName))
+                {
+                    //最后一个参数不为空，需要一个额外的空位
+                    ActionValueRef[] newInputs = new ActionValueRef[inputActionNode.inputs.Length + 1];
+                    Array.Copy(inputActionNode.inputs, 0, newInputs, 0, inputActionNode.inputs.Length);
+                    inputActionNode.inputs = newInputs;
+                    getActionNodeItem(inputActionNode).setInputs(getActionNodeInputNames(inputActionNode));
+                }
             }
             //更新输出节点的输出变量状态
             updateRegVar(outputActionNode);
@@ -1865,11 +1634,30 @@ namespace Controllers
                 _ui.unconnectNodeAllInput(inputActionNodeItem);
                 for (int i = 0; i < inputActionNode.branches.Length; i++)
                 {
+                    if (inputActionNode.branches[i] == null)
+                    {
+                        continue;
+                    }
                     _ui.connectNode(getActionNodeItem(inputActionNode.branches[i]), 0, inputActionNodeItem, i, ActionNodeConnectionType.value);
                 }
                 for (int i = inputActionNode.branches.Length; i < inputList.Count; i++)
                 {
-                    _ui.connectNode(getActionNodeItem(inputList[i].action), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
+                    if (inputList[i] == null)
+                    {
+                        continue;
+                    }
+                    if (inputList[i].action != null)
+                    {
+                        _ui.connectNode(getActionNodeItem(inputList[i].action), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
+                    }
+                    else if (inputList[i].actionNodeId != 0)
+                    {
+                        _ui.connectNode(getActionNodeItem(getActionNode(inputList[i].actionNodeId)), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
+                    }
+                    else if (!string.IsNullOrEmpty(inputList[i].eventVarName))
+                    {
+                        _ui.connectNode(_entryNodeItem, getEventVarNameIndex(inputList[i].eventVarName) + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
+                    }
                 }
             }
             else

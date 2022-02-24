@@ -53,8 +53,16 @@ namespace TouhouHeartstone
         {
             define.setProp(DEFINE.KEYWORDS, keywords);
         }
+        public static void setTags(this CardDefine define, string[] value)
+        {
+            define.setProp(DEFINE.TAGS, value);
+        }
         public static string[] getTags(this CardDefine define)
         {
+            if (define is THHCardDefine thhCardDefine)
+            {
+                return thhCardDefine.tags;
+            }
             string[] tags = define.getProp<string[]>(DEFINE.TAGS);
             if (tags == null)
                 return new string[0];

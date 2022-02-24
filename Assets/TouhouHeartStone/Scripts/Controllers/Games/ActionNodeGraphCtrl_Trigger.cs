@@ -185,6 +185,8 @@ namespace Controllers
             //创建离散节点
             for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
             {
+                if (graphInfo.freeActionNodeList[i] == null)
+                    continue;
                 await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
             }
             updateContentSize();

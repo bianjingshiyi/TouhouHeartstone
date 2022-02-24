@@ -73,6 +73,7 @@ namespace Game
         public const string GAME_CARD_PROP_MODIFY_DIV = "除以";
         [TranslateMsg("游戏中卡牌的属性修改类型之变为")]
         public const string GAME_CARD_PROP_MODIFY_SETTO = "变为";
+        #region 关键词
         [TranslateMsg("游戏中的关键词守卫")]
         public const string GAME_KEYWORD_TAUNT = "守卫";
         [TranslateMsg("游戏中的关键词冲锋")]
@@ -111,6 +112,23 @@ namespace Game
         public const string GAME_KEYWORD_BATTLECRY = "宣言";
         [TranslateMsg("游戏中的关键词遗言")]
         public const string GAME_KEYWORD_DEATHRATTLE = "遗言";
+        #endregion
+        #region 标签
+        [TranslateMsg("游戏中的法术标签火")]
+        public const string GAME_TAG_FIRE = "火";
+        [TranslateMsg("游戏中的法术标签金")]
+        public const string GAME_TAG_METAL = "金";
+        [TranslateMsg("游戏中的法术标签木")]
+        public const string GAME_TAG_WOOD = "木";
+        [TranslateMsg("游戏中的法术标签水")]
+        public const string GAME_TAG_WATER = "水";
+        [TranslateMsg("游戏中的法术标签土")]
+        public const string GAME_TAG_EARTH = "土";
+        [TranslateMsg("游戏中的法术标签日")]
+        public const string GAME_TAG_SUN = "日";
+        [TranslateMsg("游戏中的法术标签月")]
+        public const string GAME_TAG_MOON = "月";
+        #endregion
         #endregion
         #region 错误
         [TranslateMsg]
