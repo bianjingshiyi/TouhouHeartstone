@@ -705,21 +705,14 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
-                        new IOConnectInfo[]
-                        {
-                            new IOConnectInfo()
-                            {
-                                type = String.Empty,
-                                label = String.Empty
-                            }
-                        },
+                        new IOConnectInfo[0],
                         new ActionNodeValueInfo[0],
                         new IOConnectInfo[]
                         {
                             new IOConnectInfo()
                             {
-                                type = String.Empty,
-                                label = String.Empty
+                                type = string.Empty,
+                                label = string.Empty
                             }
                         });
                     var actionNodeItem = await createGraph4ActionNode(_effect.onEnableAction);
@@ -729,21 +722,14 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
-                        new IOConnectInfo[]
-                        {
-                            new IOConnectInfo()
-                            {
-                                type = String.Empty,
-                                label = String.Empty
-                            }
-                        },
+                        new IOConnectInfo[0],
                         new ActionNodeValueInfo[0],
                         new IOConnectInfo[]
                         {
                             new IOConnectInfo()
                             {
-                                type = String.Empty,
-                                label = String.Empty
+                                type = string.Empty,
+                                label = string.Empty
                             }
                         });
                 }
@@ -754,21 +740,14 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
-                        new IOConnectInfo[]
-                        {
-                            new IOConnectInfo()
-                            {
-                                type = String.Empty,
-                                label = String.Empty
-                            }
-                        },
+                        new IOConnectInfo[0],
                         new ActionNodeValueInfo[0],
                         new IOConnectInfo[]
                         {
                             new IOConnectInfo()
                             {
-                                type = String.Empty,
-                                label = String.Empty
+                                type = string.Empty,
+                                label = string.Empty
                             }
                         });
                     var actionNodeItem = await createGraph4ActionNode(_effect.onDisableAction);
@@ -778,21 +757,14 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
-                        new IOConnectInfo[]
-                        {
-                            new IOConnectInfo()
-                            {
-                                type = String.Empty,
-                                label = String.Empty
-                            }
-                        },
+                        new IOConnectInfo[0],
                         new ActionNodeValueInfo[0],
                         new IOConnectInfo[]
                         {
                             new IOConnectInfo()
                             {
-                                type = String.Empty,
-                                label = String.Empty
+                                type = string.Empty,
+                                label = string.Empty
                             }
                         });
                 }
