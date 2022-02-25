@@ -20,27 +20,25 @@ namespace Controllers
         /// 打开一个效果的生效效果动作图。
         /// </summary>
         /// <param name="effect"></param>
-        /// 
-        public void openOnEnableActionGraph(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
+        public void openOnEnableActionGraph(int cardPoolId, GeneratedEffect effect, ActionNodeGraphInfo graphInfo)
         {
-            display(new DisplayInfo(cardPoolId, cardDefine, nameof(GeneratedEffect.onEnableAction), effect, null));
+            display(new DisplayInfo(cardPoolId, nameof(GeneratedEffect.onEnableAction), effect, null, graphInfo));
         }
         /// <summary>
         /// 打开一个效果的失效效果动作图。
         /// </summary>
         /// <param name="effect"></param>
-        /// 
-        public void openOnDisableActionGraph(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
+        public void openOnDisableActionGraph(int cardPoolId, GeneratedEffect effect, ActionNodeGraphInfo graphInfo)
         {
-            display(new DisplayInfo(cardPoolId, cardDefine, nameof(GeneratedEffect.onDisableAction), effect, null));
+            display(new DisplayInfo(cardPoolId, nameof(GeneratedEffect.onDisableAction), effect, null, graphInfo));
         }
-        public void openActionGraph(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect, string entryType)
+        public void openActionGraph(int cardPoolId, GeneratedEffect effect, string entryType, ActionNodeGraphInfo graphInfo)
         {
-            display(new DisplayInfo(cardPoolId, cardDefine, entryType, effect, null));
+            display(new DisplayInfo(cardPoolId, entryType, effect, null, graphInfo));
         }
-        public Task openActionValueRefGraph(int cardPoolId, CardDefine cardDefine, ActionValueRef valueRef)
+        public Task openActionValueRefGraph(int cardPoolId, ActionValueRef valueRef, ActionNodeGraphInfo graphInfo)
         {
-            return display(new DisplayInfo(cardPoolId, cardDefine, null, valueRef, null));
+            return display(new DisplayInfo(cardPoolId, null, valueRef, null, graphInfo));
         }
         public Task display(UIDisplayInfo uiDisplayInfo)
         {
@@ -57,7 +55,7 @@ namespace Controllers
                 if (_editObjectStack.Count < 1)
                     _ui.setReturnButtonActive(false);
                 _curCardPoolId = info.cardPoolId;
-                _cardDefine = info.cardDefine;
+                _graphInfo = info.graphInfo;
                 //更新UI
                 _ui.gameObject.SetActive(true);
                 _ui.displayCardSelectPanel(false);
@@ -87,7 +85,7 @@ namespace Controllers
                 editObject = _effect;
             else
                 return null;
-            return new DisplayInfo(_curCardPoolId, _cardDefine, _entryType, editObject, _editObjectStack.Count > 0 ? _editObjectStack.ToArray() : null);
+            return new DisplayInfo(_curCardPoolId, _entryType, editObject, _editObjectStack.Count > 0 ? _editObjectStack.ToArray() : null, _graphInfo);
         }
         public Task hide()
         {
@@ -770,18 +768,18 @@ namespace Controllers
                 }
             }
             //创建离散节点
-            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
             {
-                if (graphInfo.freeActionNodeList[i] == null)
+                if (_graphInfo.freeActionNodeList[i] == null)
                     continue;
-                if (getActionNode(graphInfo.freeActionNodeList[i].id) != null)
+                if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
                 {
                     //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
-                    graphInfo.freeActionNodeList.RemoveAt(i);
+                    _graphInfo.freeActionNodeList.RemoveAt(i);
                     i--;
                     continue;
                 }
-                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+                await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
             }
             updateContentSize();
         }
@@ -807,37 +805,30 @@ namespace Controllers
                 {
                     new IOConnectInfo()
                     {
-                        type = String.Empty,
-                        label = String.Empty
+                        type = string.Empty,
+                        label = string.Empty
                     }
                 },
                 new ActionNodeValueInfo[0],
-                new IOConnectInfo[]
-                {
-                    new IOConnectInfo()
-                    {
-                        type = String.Empty,
-                        label = String.Empty
-                    }
-                });
+                new IOConnectInfo[0]);
             if (valueRef.action != null)
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
                 _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.action);
             }
             //创建离散节点
-            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
             {
-                if (graphInfo.freeActionNodeList[i] == null)
+                if (_graphInfo.freeActionNodeList[i] == null)
                     continue;
-                if (getActionNode(graphInfo.freeActionNodeList[i].id) != null)
+                if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
                 {
                     //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
-                    graphInfo.freeActionNodeList.RemoveAt(i);
+                    _graphInfo.freeActionNodeList.RemoveAt(i);
                     i--;
                     continue;
                 }
-                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+                await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
             }
             updateContentSize();
         }
@@ -857,8 +848,8 @@ namespace Controllers
                 {
                     new IOConnectInfo()
                     {
-                        type = String.Empty,
-                        label = String.Empty
+                        type = string.Empty,
+                        label = string.Empty
                     }
                 },
                 new ActionNodeValueInfo[]
@@ -876,29 +867,22 @@ namespace Controllers
                         value = _targetChecker.errorTip
                     }
                 },
-                new IOConnectInfo[]
-                {
-                    new IOConnectInfo()
-                    {
-                        type = String.Empty,
-                        label = String.Empty
-                    }
-                });
+                new IOConnectInfo[0]);
             var actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
             _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
             //创建离散节点
-            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
             {
-                if (graphInfo.freeActionNodeList[i] == null)
+                if (_graphInfo.freeActionNodeList[i] == null)
                     continue;
-                if (getActionNode(graphInfo.freeActionNodeList[i].id) != null)
+                if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
                 {
                     //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
-                    graphInfo.freeActionNodeList.RemoveAt(i);
+                    _graphInfo.freeActionNodeList.RemoveAt(i);
                     i--;
                     continue;
                 }
-                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+                await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
             }
             updateContentSize();
         }
@@ -1214,7 +1198,7 @@ namespace Controllers
             {
                 _actionNodeList.Add(actionNode);
                 actionNode.id = allocActionNodeId();
-                graphInfo.freeActionNodeList.Add(actionNode);
+                _graphInfo.freeActionNodeList.Add(actionNode);
                 setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(posX, posY));
             }
             return actionNodeItem;
@@ -1230,7 +1214,7 @@ namespace Controllers
             _actionNodeItemList.RemoveAt(actionNodeIndex);
             //从编辑器信息中删除
             removeNodeInfo(actionNode);
-            graphInfo.freeActionNodeList.Remove(actionNode);
+            _graphInfo.freeActionNodeList.Remove(actionNode);
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
             updateContentSize();
@@ -1297,7 +1281,7 @@ namespace Controllers
             //建立新的连接
             rootActionNode = inputActionNode;
             //从离散节点列表中去掉被连接的节点
-            graphInfo.freeActionNodeList.Remove(inputActionNode);
+            _graphInfo.freeActionNodeList.Remove(inputActionNode);
             //更新ui
             _ui.connectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
         }
@@ -1325,7 +1309,7 @@ namespace Controllers
                 //建立新的连接
                 rootActionNode = outputActionNode;
                 //从离散节点列表中去掉被连接的节点
-                graphInfo.freeActionNodeList.Remove(outputActionNode);
+                _graphInfo.freeActionNodeList.Remove(outputActionNode);
                 //更新ui
                 _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, 0, ActionNodeConnectionType.value);
             }
@@ -1389,7 +1373,7 @@ namespace Controllers
             //建立新的连接
             outputActionNode.branches[outputIndex] = inputActionNode;
             //从离散节点列表中去掉被连接的节点
-            graphInfo.freeActionNodeList.Remove(inputActionNode);
+            _graphInfo.freeActionNodeList.Remove(inputActionNode);
             //更新ui
             _ui.connectNode(getActionNodeItem(outputActionNode), outputIndex, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
         }
@@ -1494,7 +1478,7 @@ namespace Controllers
             //更新输出节点的输出变量状态
             updateRegVar(outputActionNode);
             //从离散节点列表中去掉被连接的节点
-            graphInfo.freeActionNodeList.Remove(outputActionNode);
+            _graphInfo.freeActionNodeList.Remove(outputActionNode);
             //更新ui
             _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.action);
         }
@@ -1506,8 +1490,8 @@ namespace Controllers
                 rootActionNode = null;
             }
             //输入节点一定会变得离散
-            if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
-                graphInfo.freeActionNodeList.Add(inputActionNode);
+            if (!_graphInfo.freeActionNodeList.Contains(inputActionNode))
+                _graphInfo.freeActionNodeList.Add(inputActionNode);
             _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0);
         }
         private void unconnectNode4ReturnValueRef(ActionNode outputActionNode, int outputIndex, int inputIndex)
@@ -1518,8 +1502,8 @@ namespace Controllers
                 rootActionNode = null;
             }
             //输出节点一定会变得离散
-            if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
-                graphInfo.freeActionNodeList.Add(outputActionNode);
+            if (!_graphInfo.freeActionNodeList.Contains(outputActionNode))
+                _graphInfo.freeActionNodeList.Add(outputActionNode);
             _ui.unconnectNode(getActionNodeItem(outputActionNode), valueRef.index + 1, _returnNodeItem, 0);
         }
         /// <summary>
@@ -1538,8 +1522,8 @@ namespace Controllers
             }
             //更新节点是否离散
             //输入节点一定会变得离散
-            if (!graphInfo.freeActionNodeList.Contains(inputActionNode))
-                graphInfo.freeActionNodeList.Add(inputActionNode);
+            if (!_graphInfo.freeActionNodeList.Contains(inputActionNode))
+                _graphInfo.freeActionNodeList.Add(inputActionNode);
             //更新ui
             _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex, getActionNodeItem(inputActionNode), 0);
         }
@@ -1624,8 +1608,8 @@ namespace Controllers
             {
                 outputActionNode.regVar = null;
                 //如果输出节点变为离散节点，将其添加进入列表
-                if (!graphInfo.freeActionNodeList.Contains(outputActionNode))
-                    graphInfo.freeActionNodeList.Add(outputActionNode);
+                if (!_graphInfo.freeActionNodeList.Contains(outputActionNode))
+                    _graphInfo.freeActionNodeList.Add(outputActionNode);
             }
             else
             {
@@ -1712,13 +1696,6 @@ namespace Controllers
         /// <returns></returns>
         private bool isFreeActionNode(ActionNode actionNode)
         {
-            //bool isFree = true;
-            //traverseActionNode(rootActionNode, true, a =>
-            //{
-            //    if (a == actionNode)
-            //        isFree = false;
-            //});
-            //return isFree;
             for (int i = 0; i < _actionNodeList.Count; i++)
             {
                 if (_actionNodeList[i] == null)
@@ -1998,13 +1975,13 @@ namespace Controllers
         private void pushCurEditObjectToStack()
         {
             if (_trigger != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, null, _trigger, null));
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, null, _trigger, null, _graphInfo));
             else if (_targetChecker != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, null, _targetChecker, null));
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, null, _targetChecker, null, _graphInfo));
             else if (_valueRef != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, null, _valueRef, null));
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, null, _valueRef, null, _graphInfo));
             else
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _cardDefine, _entryType, _effect, null));
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _effect, null, _graphInfo));
             _ui.setReturnButtonActive(true);
         }
         private void popPrevEditObjectFromStackAndOpen()
@@ -2070,7 +2047,7 @@ namespace Controllers
             //前一个动作节点
             inputNameList.Add(new IOConnectInfo()
             {
-                type = String.Empty,
+                type = string.Empty,
                 label = string.Empty
             });
             //输入
@@ -2084,7 +2061,6 @@ namespace Controllers
                     {
                         inputName = game.langManager.getString(inputName);
                     }
-                    Debug.Log("inputs1：" + inputName);
                     inputNameList.Add(new IOConnectInfo()
                     {
                         type = inputName,
@@ -2094,7 +2070,6 @@ namespace Controllers
                 else if (i < actionDefine.inputs.Length)
                 {
                     //有可能由于ActionDefine的参数数量变化导致存在的输入参数比实际的多，忽略已有的参数
-                    Debug.Log("inputs2：" + actionDefine.inputs[i].name);
                     inputNameList.Add(new IOConnectInfo()
                     {
                         type = actionDefine.inputs[i].name,
@@ -2109,8 +2084,6 @@ namespace Controllers
                 {
                     inputName = game.langManager.getString(inputName);
                 }
-
-                Debug.Log("inputs3：" + inputName);
                 inputNameList.Add(new IOConnectInfo()
                 {
                     type = inputName,
@@ -2228,19 +2201,19 @@ namespace Controllers
         }
         ActionNodeGraphNodeInfo getNodeInfo(ActionNode node)
         {
-            return graphInfo.actionInfoDict[node.id.ToString()];
+            return _graphInfo.actionInfoDict[node.id.ToString()];
         }
         void setNodeInfo(ActionNode node, ActionNodeGraphNodeInfo graphNodeInfo)
         {
-            graphInfo.actionInfoDict[node.id.ToString()] = graphNodeInfo;
+            _graphInfo.actionInfoDict[node.id.ToString()] = graphNodeInfo;
         }
         bool hasNodeInfo(ActionNode node)
         {
-            return graphInfo.actionInfoDict.ContainsKey(node.id.ToString());
+            return _graphInfo.actionInfoDict.ContainsKey(node.id.ToString());
         }
         bool removeNodeInfo(ActionNode node)
         {
-            return graphInfo.actionInfoDict.Remove(node.id.ToString());
+            return _graphInfo.actionInfoDict.Remove(node.id.ToString());
         }
         private async Task<ActionNodeItem> createActionNodeAtCurPos(string defineName, ActionDefine actionDefine)
         {
@@ -2308,34 +2281,6 @@ namespace Controllers
         }
         private void updateContentSize()
         {
-            //Rect rect = new Rect();
-            ////计算边界
-            //for (int i = 0; i < _actionNodeItemList.Count; i++)
-            //{
-            //    ActionNodeItem actionNodeItem = _actionNodeItemList[i];
-            //    Rect childRect = (actionNodeItem.transform as RectTransform).rect;
-            //    if (childRect.xMax > rect.xMax)
-            //    {
-            //        rect.xMax = childRect.xMax;
-            //    }
-            //    if (childRect.xMin < rect.xMin)
-            //    {
-            //        rect.xMin = childRect.xMin;
-            //    }
-            //    if (childRect.yMax > rect.yMax)
-            //    {
-            //        rect.yMax = childRect.yMax;
-            //    }
-            //    if (childRect.yMin < rect.yMin)
-            //    {
-            //        rect.yMin = childRect.yMin;
-            //    }
-            //}
-            ////边界不能小于滚动视图本身的大小
-            //if (rect.width < Screen.width)
-            //    rect.width = Screen.width;
-            //if (rect.height < Screen.height)
-            //    rect.height = Screen.height;
             //更新边界
             Vector2 size = new Vector2();
             for (int i = 0; i < _actionNodeItemList.Count; i++)
@@ -2377,10 +2322,7 @@ namespace Controllers
         float _curPosY;
         readonly List<ActionNode> _actionNodeList = new List<ActionNode>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
-        ActionNodeGraphInfo graphInfo
-        {
-            get { return scene.effectEditor.graphInfo; }
-        }
+        ActionNodeGraphInfo _graphInfo;
         ActionNodeItem _entryNodeItem;
         ActionNodeItem _returnNodeItem;
         ActionNode rootActionNode
@@ -2421,7 +2363,6 @@ namespace Controllers
         }
         string _entryType;
         int _curCardPoolId = 0;
-        CardDefine _cardDefine;
         GeneratedEffect _effect;
         ActionValueRef valueRef
         {
@@ -2494,19 +2435,19 @@ namespace Controllers
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
-            public DisplayInfo(int cardPoolId, CardDefine cardDefine, string entryType, object editObject, DisplayInfo[] editObjectStack)
+            public DisplayInfo(int cardPoolId, string entryType, object editObject, DisplayInfo[] editObjectStack, ActionNodeGraphInfo graphInfo)
             {
                 this.cardPoolId = cardPoolId;
-                this.cardDefine = cardDefine;
                 this.entryType = entryType;
                 this.editObject = editObject;
                 this.editObjectStack = editObjectStack;
+                this.graphInfo = graphInfo;
             }
             public int cardPoolId;
-            public CardDefine cardDefine;
             public string entryType;
             public object editObject;
             public DisplayInfo[] editObjectStack;
+            public ActionNodeGraphInfo graphInfo;
         }
         class BackgroundMenuItem
         {
@@ -2526,13 +2467,11 @@ namespace Controllers
     [Serializable]
     public class ActionNodeGraphInfo
     {
-        public ActionNodeGraphInfo(int cardId, int effectIndex)
-        {
-            this.cardId = cardId;
-            this.effectIndex = effectIndex;
-        }
         public int cardId;
+        public int buffId;
         public int effectIndex;
+        public string entryType;
+        public int triggerIndex;
         public Dictionary<string, ActionNodeGraphNodeInfo> actionInfoDict = new Dictionary<string, ActionNodeGraphNodeInfo>();
         /// <summary>
         /// 离散的，并未与根节点相连的动作节点。

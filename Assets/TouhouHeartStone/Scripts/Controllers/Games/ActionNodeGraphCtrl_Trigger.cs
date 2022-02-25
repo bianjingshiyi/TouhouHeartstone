@@ -20,9 +20,9 @@ namespace Controllers
         /// 打开一个触发器的动作节点图
         /// </summary>
         /// <param name="trigger"></param>
-        public void openTriggerGraph(int cardPoolId, CardDefine cardDefine, TriggerGraph trigger)
+        public void openTriggerGraph(int cardPoolId, TriggerGraph trigger, ActionNodeGraphInfo graphInfo)
         {
-            display(new DisplayInfo(cardPoolId, cardDefine, null, trigger, null));
+            display(new DisplayInfo(cardPoolId, null, trigger, null, graphInfo));
         }
         #endregion
         #region 私有方法
@@ -183,18 +183,18 @@ namespace Controllers
                 _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
             }
             //创建离散节点
-            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
             {
-                if (graphInfo.freeActionNodeList[i] == null)
+                if (_graphInfo.freeActionNodeList[i] == null)
                     continue;
-                if (getActionNode(graphInfo.freeActionNodeList[i].id) != null)
+                if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
                 {
                     //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
-                    graphInfo.freeActionNodeList.RemoveAt(i);
+                    _graphInfo.freeActionNodeList.RemoveAt(i);
                     i--;
                     continue;
                 }
-                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+                await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
             }
             updateContentSize();
         }

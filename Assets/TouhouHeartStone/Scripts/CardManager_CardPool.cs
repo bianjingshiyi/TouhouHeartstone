@@ -444,12 +444,21 @@ namespace Game
                 _cardPoolInfoDict[path] = cardPoolInfo;
                 _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
             }
-            //错误信息校验
+            //错误信息修复
             foreach (var skin in cardPool.cardSkinList)
             {
                 if (string.IsNullOrEmpty(skin.language))
                 {
+                    //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
                     skin.language = game.langManager.getDefaultLanguage();
+                }
+            }
+            foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
+            {
+                if (string.IsNullOrEmpty(graphInfo.entryType))
+                {
+                    //流程图信息不能没有类型，如果为空则默认为triggerList
+                    graphInfo.entryType = nameof(GeneratedEffect.triggerList);
                 }
             }
             return (cardPoolInfo, cardPool);

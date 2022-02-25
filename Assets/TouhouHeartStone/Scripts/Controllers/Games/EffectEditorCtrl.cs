@@ -15,9 +15,13 @@ namespace Controllers
     partial class EffectEditorCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 公有方法
-        public Task displayEffect(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect, ActionNodeGraphInfo graphInfo)
+        public Task display(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
         {
-            return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, cardDefine, effect, graphInfo, null));
+            return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, cardDefine, effect, null));
+        }
+        public Task display(int cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect)
+        {
+            return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, buffDefine, effect, null));
         }
         public async Task display(UIDisplayInfo displayInfo)
         {
@@ -25,8 +29,8 @@ namespace Controllers
             {
                 _cardPoolId = info.cardPoolId;
                 _cardDefine = info.cardDefine;
+                _buffDefine = info.buffDefine;
                 _effect = info.effect;
-                graphInfo = info.graphInfo;
                 _ui.gameObject.SetActive(true);
                 updatePropList();
                 //bool[] activeRangeValue = new bool[_selectableRanges.Length];
@@ -44,8 +48,16 @@ namespace Controllers
         }
         public UIDisplayInfo getCurrentDisplayInfo()
         {
-            return new DisplayInfo(_cardPoolId, _cardDefine, _effect, graphInfo,
-                scene.actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
+            if (_buffDefine != null)
+            {
+                return new DisplayInfo(_cardPoolId, _buffDefine, _effect,
+                    scene.actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
+            }
+            else
+            {
+                return new DisplayInfo(_cardPoolId, _cardDefine, _effect,
+                    scene.actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
+            }
         }
         public Task hide()
         {
@@ -112,11 +124,17 @@ namespace Controllers
         }
         private void onClickEditEnableActionButton()
         {
-            scene.actionNodeGraphCtrl.openOnEnableActionGraph(_cardPoolId, _cardDefine, _effect);
+            ActionNodeGraphInfo graphInfo = _buffDefine != null ?
+                game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), nameof(GeneratedEffect.onEnableAction), 0) :
+                game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), nameof(GeneratedEffect.onEnableAction), 0);
+            scene.actionNodeGraphCtrl.openOnEnableActionGraph(_cardPoolId, _effect, graphInfo);
         }
         private void onClickEditDisableActionButton()
         {
-            scene.actionNodeGraphCtrl.openOnDisableActionGraph(_cardPoolId, _cardDefine, _effect);
+            ActionNodeGraphInfo graphInfo = _buffDefine != null ?
+                game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), nameof(GeneratedEffect.onDisableAction), 0) :
+                game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), nameof(GeneratedEffect.onDisableAction), 0);
+            scene.actionNodeGraphCtrl.openOnDisableActionGraph(_cardPoolId, _effect, graphInfo);
         }
         private void onClickAddTriggerButton()
         {
@@ -129,7 +147,10 @@ namespace Controllers
         }
         private void onClickEditTriggerButton(int index)
         {
-            scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, _cardDefine, _effect.triggerList[index]);
+            ActionNodeGraphInfo graphInfo = _buffDefine != null ?
+                game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), null, index) :
+                game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), null, index);
+            scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, _effect.triggerList[index], graphInfo);
         }
         private void onPropValueChangedCallback(int index, object value)
         {
@@ -141,7 +162,10 @@ namespace Controllers
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
             if (propInfos[index].type == typeof(ActionNode))
             {
-                scene.actionNodeGraphCtrl.openActionGraph(_cardPoolId, _cardDefine, _effect, propInfos[index].name);
+                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
+                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
+                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
+                scene.actionNodeGraphCtrl.openActionGraph(_cardPoolId, _effect, propInfos[index].name, graphInfo);
             }
             else if (propInfos[index].type == typeof(ActionValueRef))
             {
@@ -151,7 +175,10 @@ namespace Controllers
                     valueRef = new ActionValueRef();
                     _effect.setProp(propInfos[index].name, valueRef);
                 }
-                scene.actionNodeGraphCtrl.openActionValueRefGraph(_cardPoolId, _cardDefine, valueRef);
+                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
+                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
+                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
+                scene.actionNodeGraphCtrl.openActionValueRefGraph(_cardPoolId, valueRef, graphInfo);
             }
             else if (propInfos[index].type == typeof(TriggerGraph))
             {
@@ -161,7 +188,10 @@ namespace Controllers
                     trigger = new TriggerGraph();
                     _effect.setProp(propInfos[index].name, trigger);
                 }
-                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, _cardDefine, trigger);
+                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
+                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
+                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
+                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, trigger, graphInfo);
             }
         }
         private void onPropItemValueChanged(int index, int itemIndex, object value)
@@ -174,7 +204,10 @@ namespace Controllers
             if (propInfos[index].type == typeof(TriggerCollection))
             {
                 TriggerCollection triggers = _effect.getProp<TriggerCollection>(propInfos[index].name);
-                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, _cardDefine, triggers[itemIndex]);
+                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
+                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, itemIndex) :
+                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, itemIndex);
+                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, triggers[itemIndex], graphInfo);
             }
         }
         public void onClickPropAddItemButtonCallback(int index)
@@ -268,13 +301,13 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
-        public ActionNodeGraphInfo graphInfo { get; private set; }
         [SerializeField]
         EffectEditorPanel _ui;
         [Obsolete("使用game作为替代")]
         public IAppManager app { get; }
         int _cardPoolId;
         CardDefine _cardDefine;
+        GeneratedBuffDefine _buffDefine;
         GeneratedEffect _effect;
         string[] _selectableRanges;
         string[] _effectTags = new string[]
@@ -302,18 +335,24 @@ namespace Controllers
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
-            public DisplayInfo(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect, ActionNodeGraphInfo graphInfo, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
+            public DisplayInfo(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
             {
                 this.cardPoolId = cardPoolId;
                 this.cardDefine = cardDefine;
                 this.effect = effect;
-                this.graphInfo = graphInfo;
+                this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
+            }
+            public DisplayInfo(int cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
+            {
+                this.cardPoolId = cardPoolId;
+                this.buffDefine = buffDefine;
+                this.effect = effect;
                 this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
             }
             public int cardPoolId;
             public CardDefine cardDefine;
+            public GeneratedBuffDefine buffDefine;
             public GeneratedEffect effect;
-            public ActionNodeGraphInfo graphInfo;
             public ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo;
         }
         #endregion

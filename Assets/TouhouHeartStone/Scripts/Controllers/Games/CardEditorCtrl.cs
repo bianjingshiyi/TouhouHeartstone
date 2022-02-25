@@ -453,8 +453,7 @@ namespace Controllers
         private void onClickEditEffectButton(int index)
         {
             GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
-            ActionNodeGraphInfo graphInfo = game.card.getOrCreateActionNodeGraphInfo(_cardPoolId, _cardDefine.id, index);
-            scene.effectEditor.displayEffect(_cardPoolId, _cardDefine, effect, graphInfo);
+            scene.effectEditor.display(_cardPoolId, _cardDefine, effect);
         }
         private void onClickRemoveEffectButton(int index)
         {

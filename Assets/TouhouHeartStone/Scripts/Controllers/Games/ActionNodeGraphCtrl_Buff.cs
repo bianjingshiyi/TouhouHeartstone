@@ -118,12 +118,12 @@ namespace Controllers
         }
         private async void onItemPropModifierEditEffectCallback(ActionNodeItem item, int index)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
+            ActionNode actionNode = getActionNode(item);
+            int buffDefineId = (int)actionNode.consts[0];
             if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
                 buffDefine is GeneratedBuffDefine generatedBuffDefine)
             {
-                ActionNodeGraphInfo graphInfo = game.card.getOrCreateActionNodeGraphInfo(_curCardPoolId, _cardDefine.id, index);
-                await scene.effectEditor.displayEffect(_curCardPoolId, _cardDefine, generatedBuffDefine.effectList[index], graphInfo);
+                await scene.effectEditor.display(_curCardPoolId, generatedBuffDefine, generatedBuffDefine.effectList[index]);
             }
         }
         private async void onItemBuffNameChangedCallback(ActionNodeItem item, string value)
@@ -163,35 +163,6 @@ namespace Controllers
         private async void onItemNeedSelectBuffImage(ActionNodeItem item)
         {
             Sprite sprite = await game.card.selectExternalImage();
-            //string imagePath = "";
-            //if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-            //{
-            //    //手机端
-            //    var permission = NativeGallery.GetImageFromGallery(path =>
-            //    {
-            //        imagePath = path;
-            //    });
-            //    if (permission == NativeGallery.Permission.Denied)
-            //    {
-            //        Debug.LogError("没有打开相册的权限");
-            //        // 拒绝权限后应当弹出框提示需要设置权限
-            //        NativeGallery.OpenSettings();
-            //    }
-            //}
-            //else
-            //{
-            //    //默认PC
-            //    string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
-            //    {
-            //        new ExtensionFilter("Image Files", "png","jpg")
-            //    }, false);
-            //    if (paths == null || paths.Length < 1)
-            //    {
-            //        return;
-            //    }
-            //    imagePath = paths[0];
-            //}
-
             int buffDefineId = (int)getActionNode(item).consts[0];
             if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
                 buffDefine is GeneratedBuffDefine generatedBuffDefine)
