@@ -187,6 +187,13 @@ namespace Controllers
             {
                 if (graphInfo.freeActionNodeList[i] == null)
                     continue;
+                if (getActionNode(graphInfo.freeActionNodeList[i].id) != null)
+                {
+                    //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
+                    graphInfo.freeActionNodeList.RemoveAt(i);
+                    i--;
+                    continue;
+                }
                 await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
             }
             updateContentSize();

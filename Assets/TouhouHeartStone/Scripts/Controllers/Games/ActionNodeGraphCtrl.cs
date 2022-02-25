@@ -360,34 +360,6 @@ namespace Controllers
                     }
                     connectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
                 }
-                //ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                ////入口节点更加特殊，它只有一个分支需要检查
-                //if (rootActionNode != null)
-                //{
-                //    _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(rootActionNode), 0);
-                //    rootActionNode = null;
-                //}
-                ////如果输入已经和其他节点输出连接了的话，先断开连接
-                //ActionValueRef outputValueRef = inputIndex < inputActionNode.branches.Length ? null :
-                //    inputActionNode.inputs[inputIndex - inputActionNode.branches.Length];
-                //if (outputValueRef != null)
-                //{
-                //    var actionNode = outputValueRef.action != null ? outputValueRef.action : getActionNode(outputValueRef.actionNodeId);
-                //    actionNode.inputs[inputIndex - inputActionNode.branches.Length] = null;
-                //    var actionNodeItem = getActionNodeItem(actionNode);
-                //    _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + outputValueRef.index, inputActionNodeItem, inputIndex);
-                //}
-                ////检查合法性
-                ////入口节点只有一个输出节点
-                //if (outputIndex != 0 || inputIndex != 0)
-                //{
-                //    //值输出只能与值输入相互连接
-                //    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
-                //    return;
-                //}
-                //rootActionNode = inputActionNode;
-                ////从离散节点列表中去掉被连接的节点
-                //graphInfo.freeActionNodeList.Remove(inputActionNode);
             }
             else if (inputActionNodeItem == _returnNodeItem)
             {
@@ -400,24 +372,6 @@ namespace Controllers
                     return;
                 }
                 connectNode4ReturnValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, 0);
-                //出口节点也只有一个参数
-                //if (rootActionNode != null)
-                //{
-                //    _ui.unconnectNode(getActionNodeItem(rootActionNode), valueRef.index + 1, _returnNodeItem, 0);
-                //    rootActionNode = null;
-                //}
-                ////检查合法性
-                ////输出值节点只有一个输出节点
-                //if (outputIndex == 0)
-                //{
-                //    //值输出只能与值输入相互连接
-                //    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
-                //    return;
-                //}
-                //rootActionNode = outputActionNode;
-                //valueRef.index = outputIndex - 1;
-                ////从离散节点列表中去掉被连接的节点
-                //graphInfo.freeActionNodeList.Remove(outputActionNode);
             }
             else
             {
@@ -843,6 +797,20 @@ namespace Controllers
                         });
                 }
             }
+            //创建离散节点
+            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            {
+                if (graphInfo.freeActionNodeList[i] == null)
+                    continue;
+                if (getActionNode(graphInfo.freeActionNodeList[i].id) != null)
+                {
+                    //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
+                    graphInfo.freeActionNodeList.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+            }
             updateContentSize();
         }
         /// <summary>
@@ -884,6 +852,20 @@ namespace Controllers
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
                 _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.action);
+            }
+            //创建离散节点
+            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            {
+                if (graphInfo.freeActionNodeList[i] == null)
+                    continue;
+                if (getActionNode(graphInfo.freeActionNodeList[i].id) != null)
+                {
+                    //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
+                    graphInfo.freeActionNodeList.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
             }
             updateContentSize();
         }
@@ -932,6 +914,20 @@ namespace Controllers
                 });
             var actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
             _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
+            //创建离散节点
+            for (int i = 0; i < graphInfo.freeActionNodeList.Count; i++)
+            {
+                if (graphInfo.freeActionNodeList[i] == null)
+                    continue;
+                if (getActionNode(graphInfo.freeActionNodeList[i].id) != null)
+                {
+                    //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
+                    graphInfo.freeActionNodeList.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+                await createGraph4ActionNode(graphInfo.freeActionNodeList[i]);
+            }
             updateContentSize();
         }
         /// <summary>
@@ -1256,41 +1252,6 @@ namespace Controllers
             ActionNode actionNode = _curActionNode;
             int actionNodeIndex = _actionNodeList.IndexOf(_curActionNode);
             ActionNodeItem actionNodeItem = getActionNodeItem(actionNode);
-            //断开节点和所有其他节点的连接
-            //for (int i = 0; i < _actionNodeList.Count; i++)
-            //{
-            //    //断开前一个动作
-            //    int branchNodeIndex = Array.IndexOf(_actionNodeList[i].branches, actionNode);
-            //    if (branchNodeIndex >= 0)
-            //    {
-            //        _actionNodeList[i].branches[branchNodeIndex] = null;
-            //        _ui.unconnectNode(_actionNodeItemList[i], branchNodeIndex, actionNodeItem, 0);
-            //    }
-            //    //断开输入
-            //    int inputValueRefIndex = Array.FindIndex(actionNode.inputs, v => v != null && (v.action == _actionNodeList[i] || v.actionNodeId == _actionNodeList[i].id));
-            //    if (inputValueRefIndex >= 0)
-            //    {
-            //        var inputActionNode = _actionNodeList[i];
-            //        var inputValueRef = actionNode.inputs[inputValueRefIndex];
-            //        actionNode.inputs[inputValueRefIndex] = null;
-            //        _ui.unconnectNode(_actionNodeItemList[i], inputActionNode.branches.Length + inputValueRef.index, actionNodeItem, 1 + inputValueRefIndex);
-            //    }
-            //    //断开后一个动作
-            //    branchNodeIndex = Array.IndexOf(actionNode.branches, _actionNodeList[i]);
-            //    if (branchNodeIndex >= 0)
-            //    {
-            //        actionNode.branches[branchNodeIndex] = null;
-            //        _ui.unconnectNode(actionNodeItem, branchNodeIndex, _actionNodeItemList[i], 0);
-            //    }
-            //    //断开输出
-            //    inputValueRefIndex = Array.FindIndex(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id));
-            //    if (inputValueRefIndex >= 0)
-            //    {
-            //        var inputValueRef = _actionNodeList[i].inputs[inputValueRefIndex];
-            //        _actionNodeList[i].inputs[inputValueRefIndex] = null;
-            //        _ui.unconnectNode(actionNodeItem, actionNode.branches.Length + inputValueRef.index, _actionNodeItemList[i], 1 + inputValueRefIndex);
-            //    }
-            //}
             unconnectNodeAll(actionNode);
             //从列表中移除
             _actionNodeList.RemoveAt(actionNodeIndex);
@@ -1561,7 +1522,7 @@ namespace Controllers
             //更新输出节点的输出变量状态
             updateRegVar(outputActionNode);
             //从离散节点列表中去掉被连接的节点
-            graphInfo.freeActionNodeList.Remove(inputActionNode);
+            graphInfo.freeActionNodeList.Remove(outputActionNode);
             //更新ui
             _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.action);
         }
@@ -1779,13 +1740,34 @@ namespace Controllers
         /// <returns></returns>
         private bool isFreeActionNode(ActionNode actionNode)
         {
-            bool isFree = true;
-            traverseActionNode(rootActionNode, true, a =>
+            //bool isFree = true;
+            //traverseActionNode(rootActionNode, true, a =>
+            //{
+            //    if (a == actionNode)
+            //        isFree = false;
+            //});
+            //return isFree;
+            for (int i = 0; i < _actionNodeList.Count; i++)
             {
-                if (a == actionNode)
-                    isFree = false;
-            });
-            return isFree;
+                if (_actionNodeList[i] == null)
+                    continue;
+                if (_actionNodeList[i].branches != null &&
+                    _actionNodeList[i].branches.Length > 0 &&
+                    Array.IndexOf(_actionNodeList[i].branches, actionNode) >= 0)
+                {
+                    //被其他节点作为后续节点引用，不是离散节点
+                    return false;
+                }
+                if (_actionNodeList[i].inputs != null &&
+                    _actionNodeList[i].inputs.Length > 0 &&
+                    Array.Exists(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id)))
+                {
+                    //被其他节点引用输入值，不是离散节点
+                    return false;
+                }
+            }
+            //没有被任何节点引用，是离散的
+            return true;
         }
         /// <summary>
         /// 获取当前节点的父节点。
