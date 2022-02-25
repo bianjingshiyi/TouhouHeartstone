@@ -231,33 +231,8 @@ namespace Controllers
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
             string path = _curCardSkin.imagePath;
-            Sprite image;
-            if (string.IsNullOrEmpty(path))
-            {
-                image = null;
-            }
-            else if (game.card.getCardPoolInfo(_cardPoolId) is CardPoolInfo cardPool &&
-                game.card.getCardPoolPath(cardPool) is string cardPoolPath)
-            {
-                if (cardPoolPath.StartsWith("sa:") &&
-                    !path.StartsWith("sa:") &&
-                    !path.StartsWith("res:"))
-                {
-                    image = await game.card.loadExternalImage("sa:" + Path.Combine(game.card.textureDirName, path), null);
-                }
-                else
-                {
-                    image = await game.card.loadExternalImage(path, game.card.getCardPoolPathRootDir(cardPoolPath));
-                }
-            }
-            else
-            {
-                image = await game.card.loadExternalImage(path, game.card.textureDirName);
-            }
-            if (image != null)
-            {
-                _ui.setImage(image);
-            }
+            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+            _ui.setImage(image);
         }
         /// <summary>
         /// 当用户更改类型
@@ -550,38 +525,8 @@ namespace Controllers
             _ui.setName(_curCardSkin.name);
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
-            Sprite image;
-            string path = _curCardSkin.imagePath;
-            //除了StreamingAssets以外，因为无法区分可持续化文件和工程文件必须获取完整根目录
-            if (game.card.getCardPoolInfo(_cardPoolId) is CardPoolInfo cardPool &&
-                game.card.getCardPoolPath(cardPool) is string cardPoolPath)
-            {
-                if (string.IsNullOrEmpty(path))
-                {
-                    image = null;
-                }
-                else if (cardPoolPath.StartsWith("sa:") &&
-                    !path.StartsWith("sa:") &&
-                    !path.StartsWith("res:"))
-                {
-                    //流文件
-                    image = await game.card.loadExternalImage("sa:" + Path.Combine(game.card.textureDirName, path), null);
-                }
-                else
-                {
-                    //绝对路径文件
-                    image = await game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(cardPoolPath), game.card.textureDirName));
-                }
-            }
-            else
-            {
-                //没有卡池，只能默认读
-                image = await game.card.loadExternalImage(path, game.card.textureDirName);
-            }
-            if (image != null)
-            {
-                _ui.setImage(image);
-            }
+            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+            _ui.setImage(image);
         }
         int getSkinCount()
         {

@@ -719,6 +719,7 @@ namespace Game
                 skin.id = cardDefineId;
                 skin.skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME;
                 skin.skinId = getAllSkins(cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1; ;
+                cardPool.cardSkinList.Add(skin);
                 return skin;
             }
             else
@@ -729,7 +730,7 @@ namespace Game
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 CardSkinData newSkin = new CardSkinData(skin);
-                skin.language = language;
+                newSkin.language = language;
                 cardPool.cardSkinList.Add(newSkin);
                 return newSkin;
             }

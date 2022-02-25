@@ -17,7 +17,10 @@ namespace Game
         #region 公共成员
         public string[] getLanguages()
         {
-            return langs;
+            //返回副本，避免被更改
+            string[] languages = new string[langs.Length];
+            Array.Copy(langs, 0, languages, 0, langs.Length);
+            return languages;
         }
 
         public string getDefaultLanguage()
