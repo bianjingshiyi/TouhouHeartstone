@@ -28,6 +28,7 @@ namespace Controllers
             _isDeckChanged = false;
 
             //卡牌收藏
+            _selectableMasters = game.card.getCardDefines(c => c.isMaster());
             //_sortType = 0;
             //_characterFilters = null;
             //_characterFiltersValue = null;

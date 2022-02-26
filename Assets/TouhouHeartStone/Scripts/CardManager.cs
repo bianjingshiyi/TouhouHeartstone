@@ -519,6 +519,18 @@ namespace Game
                 return new CardDefine[0];
             }
         }
+        public CardDefine[] getCardDefines(Predicate<CardDefine> filter = null)
+        {
+            List<CardDefine> cardDefineList = new List<CardDefine>();
+            //反射卡牌
+            cardDefineList.AddRange(filter == null ? defineDic.Values : defineDic.Values.Where(c => filter(c)));
+            //卡池卡牌
+            foreach (var cardPool in _cardPoolDict.Values)
+            {
+                cardDefineList.AddRange(filter == null ? cardPool.cardDefineList : cardPool.cardDefineList.Where(c => filter(c)));
+            }
+            return cardDefineList.ToArray();
+        }
         public async Task<CardDefine[]> getOrLoadCardDefines(int cardPoolId)
         {
             if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
