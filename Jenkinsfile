@@ -190,7 +190,7 @@ pipeline {
             mail bcc: '', body: "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包", cc: 'bianjingshiyi@hotmail.com', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说打包失败通知 - $BUILD_DISPLAY_NAME", to: 'jim@lotlab.org'
         }
         always {
-            node('master') {
+            node('unity') {
                 script {
                     def now = new Date()
                     def buildtime = now.format('yyyy-MM-dd HH:mm', TimeZone.getTimeZone('Asia/Shanghai'))
