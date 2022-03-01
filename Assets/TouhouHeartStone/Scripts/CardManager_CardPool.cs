@@ -434,6 +434,12 @@ namespace Game
             {
                 foreach (GeneratedEffect effect in card.getGeneratedEffects())
                 {
+                    foreach (var trigger in effect.triggerList)
+                    {
+                        if (trigger == null)
+                            continue;
+                        fixTriggerIncorrectData(trigger);
+                    }
                     effect.traverseActionNode(fixActionNodeIncorrectData);
                 }
             }
@@ -457,6 +463,12 @@ namespace Game
             {
                 foreach (var effect in buff.effectList)
                 {
+                    foreach (var trigger in effect.triggerList)
+                    {
+                        if (trigger == null)
+                            continue;
+                        fixTriggerIncorrectData(trigger);
+                    }
                     effect.traverseActionNode(fixActionNodeIncorrectData);
                 }
             }
@@ -486,6 +498,23 @@ namespace Game
                         Debug.LogError("动作节点" + actionNode.id + "的名称未知：" + actionNode.defineName);
                     }
                 }
+            }
+            void fixTriggerIncorrectData(TriggerGraph trigger)
+            {
+                //if (!string.IsNullOrEmpty(trigger.eventName) && !EventTypeInfo.isValidEventTypeName(trigger.eventName))
+                //{
+                //    //触发的事件名称可能已经过期
+                //    EventTypeInfo eventTypeInfo = EventTypeInfo.findEventTypeInfoForObsolateName(trigger.eventName);
+                //    if (eventTypeInfo != null)
+                //    {
+                //        Debug.LogWarning(trigger + "事件名称" + trigger.eventName + "已经过期，被替换为" + eventTypeInfo.eventName);
+                //        trigger.eventName = eventTypeInfo.eventName;
+                //    }
+                //    else
+                //    {
+                //        Debug.LogError(trigger + "的事件名称" + trigger.eventName + "可能已经过期且找不到可替换名称");
+                //    }
+                //}
             }
         }
         public bool tryGetCardPool(int cardPoolId, out CardPool cardPool)

@@ -234,7 +234,7 @@ namespace Controllers
             {
                 languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
             }
-            _ui.init(languages, getEventTypeNames());
+            _ui.init(languages, getEventTypeNamesForEditor());
         }
         #endregion
         #region 事件回调

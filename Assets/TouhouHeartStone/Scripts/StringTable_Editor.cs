@@ -206,6 +206,22 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_COUNT = "获取元素数量";
         #endregion
         #endregion
+        #region 事件类型
+        [TranslateMsg("编辑器中的事件类型之回合开始时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_TURN_START = "回合开始时";
+        [TranslateMsg("编辑器中的事件类型之回合开始后")]
+        public const string EDITOR_EVENT_NAME_AFTER_TURN_START = "回合开始后";
+        [TranslateMsg("编辑器中的事件类型之使用卡牌时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_USE = "使用卡牌时";
+        [TranslateMsg("编辑器中的事件类型之使用卡牌后")]
+        public const string EDITOR_EVENT_NAME_AFTER_USE = "使用卡牌后";
+        [TranslateMsg("编辑器中的事件类型之发动事件")]
+        public const string EDITOR_EVENT_NAME_ACTIVE = "发动事件";
+        [TranslateMsg("编辑器中的事件类型之回合结束时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_TURN_END = "回合结束时";
+        [TranslateMsg("编辑器中的事件类型之回合结束后")]
+        public const string EDITOR_EVENT_NAME_AFTER_TURN_END = "回合结束后";
+        #endregion
     }
 }
 

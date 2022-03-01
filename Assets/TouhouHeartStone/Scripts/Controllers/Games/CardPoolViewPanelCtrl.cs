@@ -355,6 +355,9 @@ namespace Controllers
         }
         private async void onUpdateCardListItemCallback(int index, RectTransform itemRect)
         {
+            //防止索引超界
+            if (index < 0 || index >= _filteredCardDefineList.Count)
+                return;
             EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
             CardDefine card = _filteredCardDefineList[index];
             CardSkinData skin = game.card.getDefaultSkin(card);

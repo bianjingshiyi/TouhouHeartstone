@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UI;
 using Card = TouhouCardEngine.Card;
+using Game;
+
 namespace Controllers
 {
     public class IOConnectInfo
     {
-        public string type = String.Empty;
-        public string label = String.Empty;
+        public string type = string.Empty;
+        public string label = string.Empty;
     }
     partial class ActionNodeGraphCtrl
     {
@@ -91,64 +93,7 @@ namespace Controllers
         private void loadEventTypes()
         {
             _eventTypeInfoList.Clear();
-            //通过反射加载硬编码的事件类型
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (var type in assembly.GetTypes())
-                {
-                    if (type.IsSubclassOf(typeof(EventArg))//是EventArg
-                        && !type.IsAbstract//不是抽象类
-                        )
-                    {
-                        EventArg eventArg;
-                        try
-                        {
-                            eventArg = Activator.CreateInstance(type) as EventArg;
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogWarning("无法加载事件类型" + type.FullName + "：" + e);
-                            continue;
-                        }
-                        //发生时事件
-                        _eventTypeInfoList.Add(new EventTypeInfo()
-                        {
-                            eventName = EventHelper.getNameBefore(eventArg),
-                            variableInfos = eventArg.getBeforeEventVarInfos()
-                        });
-                        //发生后事件
-                        _eventTypeInfoList.Add(new EventTypeInfo()
-                        {
-                            eventName = EventHelper.getNameAfter(eventArg),
-                            variableInfos = eventArg.getAfterEventVarInfos()
-                        });
-                    }
-                }
-            }
-            //一些无法通过反射加载的事件类型
-            _eventTypeInfoList.Add(new EventTypeInfo()
-            {
-                eventName = "ActiveEvent",
-                variableInfos = new EventVariableInfo[]
-                {
-                    new EventVariableInfo()
-                    {
-                        type = typeof(Player),
-                        name = "玩家"
-                    },
-                    new EventVariableInfo()
-                    {
-                        type = typeof(Card),
-                        name = "卡牌"
-                    },
-                    new EventVariableInfo()
-                    {
-                        type = typeof(Card),
-                        name = "目标卡牌"
-                    },
-                }
-            });
-            //以后可能有自定义的事件类型，不过先不管
+            _eventTypeInfoList.AddRange(EventTypeInfo.getOrLoadEventTypes());
         }
         /// <summary>
         /// 打开一个触发器的动作节点图
@@ -223,8 +168,8 @@ namespace Controllers
                 //动作输出
                 outputNames[0] = new IOConnectInfo()
                 {
-                    type = String.Empty,
-                    label = String.Empty
+                    type = string.Empty,
+                    label = string.Empty
                 };
                 for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
                 {
@@ -246,8 +191,8 @@ namespace Controllers
                 {
                     new IOConnectInfo()
                     {
-                        type = String.Empty,
-                        label =  String.Empty
+                        type = string.Empty,
+                        label =  string.Empty
                     }
                 }; ;
             }
@@ -329,6 +274,15 @@ namespace Controllers
             }
             return eventNames;
         }
+        private string[] getEventTypeNamesForEditor()
+        {
+            string[] eventNames = new string[_eventTypeInfoList.Count];
+            for (int i = 0; i < eventNames.Length; i++)
+            {
+                eventNames[i] = string.IsNullOrEmpty(_eventTypeInfoList[i].editorName) ? _eventTypeInfoList[i].eventName : _eventTypeInfoList[i].editorName;
+            }
+            return eventNames;
+        }
         private string[] getEventVarNames()
         {
             EventTypeInfo eventTypeInfo = _eventTypeInfoList.Find(e => e.eventName == _trigger.eventName);
@@ -373,7 +327,90 @@ namespace Controllers
     }
     class EventTypeInfo
     {
+        #region 公有方法
+        /// <summary>
+        /// 获取所有事件类型，如果未加载则进行加载
+        /// </summary>
+        public static EventTypeInfo[] getOrLoadEventTypes()
+        {
+            if (_eventTypeInfoList != null)
+                return _eventTypeInfoList.ToArray();
+            _eventTypeInfoList = new List<EventTypeInfo>();
+            //通过反射加载硬编码的事件类型
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.IsSubclassOf(typeof(EventArg))//是EventArg
+                        && !type.IsAbstract//不是抽象类
+                        )
+                    {
+                        EventArg eventArg;
+                        try
+                        {
+                            eventArg = Activator.CreateInstance(type) as EventArg;
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogWarning("无法加载事件类型" + type.FullName + "：" + e);
+                            continue;
+                        }
+                        //发生时事件
+                        _eventTypeInfoList.Add(new EventTypeInfo()
+                        {
+                            eventName = EventHelper.getNameBefore(eventArg),
+                            variableInfos = eventArg.getBeforeEventVarInfos()
+                        });
+                        //发生后事件
+                        _eventTypeInfoList.Add(new EventTypeInfo()
+                        {
+                            eventName = EventHelper.getNameAfter(eventArg),
+                            variableInfos = eventArg.getAfterEventVarInfos()
+                        });
+                    }
+                }
+            }
+            //一些无法通过反射加载的事件类型
+            _eventTypeInfoList.Add(new EventTypeInfo()
+            {
+                eventName = "ActiveEvent",
+                editorName = StringTable.EDITOR_EVENT_NAME_ACTIVE,
+                variableInfos = new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { type = typeof(Player), name = "玩家"},
+                    new EventVariableInfo() { type = typeof(Card), name = "卡牌" },
+                    new EventVariableInfo() { type = typeof(Card), name = "目标卡牌" },
+                }
+            });
+            _eventTypeInfoList.Find(e => e.eventName == "BeforeTurnStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_TURN_START;
+            _eventTypeInfoList.Find(e => e.eventName == "AfterTurnStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TURN_START;
+            _eventTypeInfoList.Find(e => e.eventName == "BeforeUseEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_USE;
+            _eventTypeInfoList.Find(e => e.eventName == "AfterUseEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_USE;
+            _eventTypeInfoList.Find(e => e.eventName == "BeforeTurnEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_TURN_END;
+            _eventTypeInfoList.Find(e => e.eventName == "AfterTurnEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TURN_END;
+            _eventTypeInfoList.Sort((a, b) => a.eventName.CompareTo(b.eventName));
+            //以后可能有自定义的事件类型，不过先不管
+            return _eventTypeInfoList.ToArray();
+        }
+        public static bool isValidEventTypeName(string eventTypeName)
+        {
+            if (_eventTypeInfoList == null)
+                getOrLoadEventTypes();
+            return _eventTypeInfoList.Find(e => e.eventName == eventTypeName) != null;
+        }
+        public static EventTypeInfo findEventTypeInfoForObsolateName(string eventTypeName)
+        {
+            if (_eventTypeInfoList == null)
+                getOrLoadEventTypes();
+            return _eventTypeInfoList.Find(e => e.obsoleteNames != null && e.obsoleteNames.Contains(eventTypeName));
+        }
+        #endregion
+        #region 属性字段
         public string eventName;
+        public string editorName;
         public EventVariableInfo[] variableInfos;
+        public string[] obsoleteNames;
+        static List<EventTypeInfo> _eventTypeInfoList = null;
+        #endregion
     }
 }

@@ -1137,6 +1137,32 @@ namespace TouhouHeartstone
                 setVar(VAR_POSITION, position);
                 setVar(VAR_TARGETS, targets);
                 setVar(VAR_COST, cost);
+                setVar(VAR_TARGET_CARD, targets != null && targets.Length > 0 ? targets[0] : null);
+            }
+            public UseEventArg() : this(null, null, 0, null, 0)
+            {
+            }
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = VAR_PLAYER, type=typeof(Player)},
+                    new EventVariableInfo(){name = VAR_CARD, type=typeof(Card)},
+                    new EventVariableInfo(){name = VAR_POSITION, type=typeof(int)},
+                    new EventVariableInfo(){name = VAR_COST, type=typeof(int)},
+                    new EventVariableInfo() { name = VAR_TARGET_CARD, type = typeof(Card) }
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = VAR_PLAYER,type=typeof(Player)},
+                    new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)},
+                    new EventVariableInfo(){name = VAR_POSITION,type=typeof(int)},
+                    new EventVariableInfo(){name = VAR_COST,type=typeof(int)},
+                    new EventVariableInfo() { name = VAR_TARGET_CARD, type = typeof(Card) }
+                };
             }
             public Player player => getVar<Player>(VAR_PLAYER);
             public Card card => getVar<Card>(VAR_CARD);
@@ -1193,34 +1219,12 @@ namespace TouhouHeartstone
                     string.Join("，", targets?.Select(c => "{card:" + c.define.id + "}"))
                 };
             }
-            public const string VAR_PLAYER = "Player";
-            public const string VAR_CARD = "Card";
-            public const string VAR_POSITION = "Position";
-            public const string VAR_COST = "Cost";
-            public const string VAR_TARGETS = "Targets";
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)},
-                    new EventVariableInfo(){name = "Cost",type=typeof(int)},
-                    new EventVariableInfo(){name = "Targets",type=typeof(Card[])}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)},
-                    new EventVariableInfo(){name = "Cost",type=typeof(int)},
-                    new EventVariableInfo(){name = "Targets",type=typeof(Card[])}
-                };
-            }
+            public const string VAR_PLAYER = "玩家";
+            public const string VAR_CARD = "卡牌";
+            public const string VAR_POSITION = "位置";
+            public const string VAR_COST = "花费";
+            public const string VAR_TARGETS = "目标";
+            public const string VAR_TARGET_CARD = "目标卡牌";
         }
 
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
