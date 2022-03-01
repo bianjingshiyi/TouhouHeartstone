@@ -223,8 +223,7 @@ namespace Controllers
         /// </summary>
         private async void onClickSaveCardPoolButton()
         {
-            //await game.card.saveCardPool(_curCardPoolInfo, _cardDefineList.ToArray(), _cardSkinList.ToArray(), actionNodeGraphInfoList.ToArray());
-            await game.card.saveCardPool(_curCardPoolInfo.cardPoolId);
+            await game.card.saveCardPool(_curCardPoolInfo);
             _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
             int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
             _cardPoolPathList[index] = _curCardPoolPath;

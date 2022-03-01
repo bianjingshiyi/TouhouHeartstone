@@ -232,34 +232,24 @@ namespace Game
             });
             Debug.Log("保存卡池" + path + "成功");
         }
-        public async Task saveCardPool(int cardPoolId)
+        /// <summary>
+        /// 保存卡池，如果卡池没有被保存过那么会被分配一个新的地址，否则会覆盖已经保存的文件。
+        /// </summary>
+        /// <param name="cardPoolInfo"></param>
+        /// <returns></returns>
+        public async Task saveCardPool(CardPoolInfo cardPoolInfo)
         {
-            if (!Application.isEditor && isStandardCardPool(cardPoolId))
+            if (!Application.isEditor && isStandardCardPool(cardPoolInfo.cardPoolId))
             {
                 //不能修改标准卡池，虽然其实玩家想改也没人能阻止就是了，最多是和别人玩会失去同步吧。
                 game.ui.dialog.ShowConfirm(StringTable.INVALID_OPERATION, StringTable.EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL, null);
                 return;
             }
-            CardPoolInfo cardPoolInfo = null;
-            foreach (var pair in _cardPoolInfoDict)
-            {
-                if (pair.Value.cardPoolId == cardPoolId)
-                {
-                    cardPoolInfo = pair.Value;
-                    break;
-                }
-            }
-            if (cardPoolInfo == null)
-            {
-                Debug.LogError("不存在卡池" + cardPoolId);
-                return;
-            }
-            CardPool cardPool = _cardPoolDict[cardPoolId];
             //如果当前的卡池没有被保存过，没有分配地址，则给它分配一个地址。
             string cardPoolPath = null;
             foreach (var pair in _cardPoolInfoDict)
             {
-                if (pair.Value.cardPoolId == cardPoolId)
+                if (pair.Value.cardPoolId == cardPoolInfo.cardPoolId)
                 {
                     cardPoolPath = pair.Key;
                     break;
@@ -271,8 +261,9 @@ namespace Game
                 cardPoolPath = allocCardPoolPath(cardPoolInfo);
                 _cardPoolInfoDict.Add(cardPoolPath, cardPoolInfo);
             }
+            CardPool cardPool = _cardPoolDict[cardPoolInfo.cardPoolId];
             //对缓存的图片进行保存
-            await saveExternalImages(cardPoolId);
+            await saveExternalImages(cardPoolInfo.cardPoolId);
             //保存文件
             string path = cardPoolPath;
             if (isStandardCardPool(cardPoolInfo))
