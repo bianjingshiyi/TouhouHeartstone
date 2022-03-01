@@ -67,7 +67,7 @@ namespace Controllers
                 //_ui.setCardListActive(true);
                 ////+1是为了显示新建卡牌按钮
                 //_ui.updateCardListCount(_cardDefineList.Count + 1);
-                await _cardPoolViewPanelCtrl.display(cardPoolsId: new int[] { _curCardPoolInfo.cardPoolId }, cardFilter: c =>
+                await _cardPoolViewPanelCtrl.display(_curCardPoolInfo, cardFilter: c =>
                 {
                     if (game.card.isBuiltinCard(c))
                     {
@@ -172,20 +172,14 @@ namespace Controllers
         /// <summary>
         /// 当点击新增卡池按钮，切换右侧栏到编辑卡池状态
         /// </summary>
-        private async void onClickAddCardPoolButton()
+        private void onClickAddCardPoolButton()
         {
             _curCardPoolPath = null;
             game.card.createCardPool(out _curCardPoolInfo, out _);
             _cardPoolInfoList.Add(_curCardPoolInfo);
             _cardPoolPathList.Add(null);
-            //_cardDefineList.Clear();
-            //_cardSkinList.Clear();
-            ////1是为了显示新建卡牌按钮
-            //_ui.setCardListActive(true);
-            //_ui.updateCardListCount(1);
-            _ui.setDeckListActive(false);
-            _ui.setEditDeckPanelActive(true);
-            await updateDeckCardListUI();
+
+            display(false, false, _cardPoolInfoList.IndexOf(_curCardPoolInfo), true);
         }
         /// <summary>
         /// 当卡牌列表被点击，打开卡牌编辑器，如果是新建卡牌则新建卡牌并打开
@@ -301,30 +295,10 @@ namespace Controllers
         /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
         private async Task readCardPoolByPathAsync(string cardPoolPath)
         {
-            //_cardDefineList.Clear();
-            //_cardSkinList.Clear();
-            //actionNodeGraphInfoList.Clear();
             if (!game.card.tryGetCardPool(cardPoolPath, out _))
             {
                 await game.card.loadCardPool(cardPoolPath);
             }
-            //_cardDefineList.AddRange(cardPool.cardDefineList);
-            //_cardSkinList.AddRange(cardPool.cardSkinList);
-            //actionNodeGraphInfoList.AddRange(cardPool.actionNodeGraphInfoList);
-            //尝试修复受损的数据
-            //for (int i = 0; i < _cardDefineList.Count; i++)
-            //{
-            //    if (_cardDefineList[i].id >= 0)
-            //    {
-            //        //重新分配丢失的卡牌Id
-            //        int id = allocCardId();
-            //        foreach (var skin in _cardSkinList.Where(s => s.id == _cardDefineList[i].id))
-            //        {
-            //            skin.id = id;
-            //        }
-            //        _cardDefineList[i].id = id;
-            //    }
-            //}
         }
         /// <summary>
         /// 读取指定id的卡池文件中的所有卡牌

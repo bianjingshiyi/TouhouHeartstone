@@ -21,15 +21,18 @@ namespace Controllers
             if (displayInfo is DisplayInfo info)
             {
                 //加载卡池
-                var result = await game.card.loadCardPoolInfosAsync();
-                _cardPoolInfoList = new List<CardPoolInfo>(result.Values);
-                _cardPoolInfoList.Sort((a, b) => a.cardPoolId - b.cardPoolId);
-                _cardPoolFilterValue = new bool[_cardPoolInfoList.Count];
-                for (int i = 0; i < _cardPoolFilterValue.Length; i++)
+                if (info.cardPoolInfos != null)
                 {
-                    _cardPoolFilterValue[i] = info.cardPoolsId == null || Array.Exists(info.cardPoolsId, cardPooId => _cardPoolInfoList[i].cardPoolId == cardPooId);
+                    _cardPoolInfoList.Clear();
+                    _cardPoolInfoList.AddRange(info.cardPoolInfos);
                 }
-                if (info.cardPoolsId != null)
+                else
+                {
+                    var result = await game.card.loadCardPoolInfosAsync();
+                    _cardPoolInfoList = new List<CardPoolInfo>(result.Values);
+                }
+                _cardPoolInfoList.Sort((a, b) => a.cardPoolId - b.cardPoolId);
+                if (info.cardPoolFiltersId != null)
                 {
                     //更改卡池过滤器的值
                     _cardPoolFilterValue = new bool[_cardPoolInfoList.Count];
@@ -37,7 +40,7 @@ namespace Controllers
                     {
                         _cardPoolFilterValue[i] =
                             game.card.isStandardCardPool(_cardPoolInfoList[i])//标准卡池一定包含
-                            || Array.Exists(info.cardPoolsId, cardPoolId => cardPoolId == _cardPoolInfoList[i].cardPoolId);
+                            || Array.Exists(info.cardPoolFiltersId, cardPoolId => cardPoolId == _cardPoolInfoList[i].cardPoolId);
                     }
                 }
                 else if (_cardPoolFilterValue == null || _cardPoolFilterValue.Length != _cardPoolInfoList.Count)
@@ -109,12 +112,12 @@ namespace Controllers
                     }
                 }
                 _characterFilters = characterIdList.ToArray();
-                if (info.charactersId != null)
+                if (info.characterFiltersId != null)
                 {
                     _characterFiltersValue = new bool[_characterFilters.Length];
                     for (int i = 0; i < _characterFiltersValue.Length; i++)
                     {
-                        _characterFiltersValue[i] = Array.Exists(info.charactersId, characterId => characterId == _characterFilters[i]);
+                        _characterFiltersValue[i] = Array.Exists(info.characterFiltersId, characterId => characterId == _characterFilters[i]);
                     }
                 }
                 else if (_characterFiltersValue == null || _characterFiltersValue.Length != _characterFilters.Length)
@@ -236,8 +239,8 @@ namespace Controllers
         {
             return display(new DisplayInfo()
             {
-                cardPoolsId = cardPoolsId,
-                charactersId = charactersId,
+                cardPoolFiltersId = cardPoolsId,
+                characterFiltersId = charactersId,
                 cardFilter = cardFilter,
                 cardId = cardId
             });
@@ -251,8 +254,21 @@ namespace Controllers
         {
             return display(new DisplayInfo()
             {
-                cardPoolsId = cardPoolsId,
-                charactersId = charactersId,
+                cardPoolFiltersId = cardPoolsId,
+                characterFiltersId = charactersId,
+                cardFilter = cardFilter
+            });
+        }
+        /// <summary>
+        /// 显示指定卡池中的卡牌
+        /// </summary>
+        /// <param name="cardPoolInfo"></param>
+        /// <returns></returns>
+        public Task display(CardPoolInfo cardPoolInfo, Predicate<CardDefine> cardFilter = null)
+        {
+            return display(new DisplayInfo()
+            {
+                cardPoolInfos = new CardPoolInfo[] { cardPoolInfo },
                 cardFilter = cardFilter
             });
         }
@@ -428,9 +444,10 @@ namespace Controllers
             }
             await display(new DisplayInfo()
             {
-                cardPoolsId = cardPoolsIdList.ToArray(),
+                cardPoolInfos = _cardPoolInfoList.ToArray(),
+                cardPoolFiltersId = cardPoolsIdList.ToArray(),
                 sortType = _sortType,
-                charactersId = charactersIdList.ToArray(),
+                characterFiltersId = charactersIdList.ToArray(),
                 costFiltersValue = _costFiltersValue,
                 typeFiltersValue = _typeFiltersValue,
                 searchFilterValue = _searchFilterString,
@@ -501,9 +518,10 @@ namespace Controllers
         #region 内部类
         class DisplayInfo : UIDisplayInfo
         {
-            public int[] cardPoolsId = null;
+            public CardPoolInfo[] cardPoolInfos = null;
+            public int[] cardPoolFiltersId = null;
             public int sortType = -1;
-            public int[] charactersId = null;
+            public int[] characterFiltersId = null;
             public bool[] costFiltersValue = null;
             public bool[] typeFiltersValue = null;
             public string searchFilterValue = null;
