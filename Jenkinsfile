@@ -8,7 +8,9 @@ import org.lotlab.pipeline.TencentCOS
 import org.lotlab.pipeline.BackblazeB2
 
 pipeline {
-    agent any
+    agent {
+        node { label 'unity' }
+    }
     options {
         timeout(time: 3, unit: 'HOURS')
         buildDiscarder logRotator(artifactDaysToKeepStr: '15', artifactNumToKeepStr: '15', daysToKeepStr: '90', numToKeepStr: '30')
