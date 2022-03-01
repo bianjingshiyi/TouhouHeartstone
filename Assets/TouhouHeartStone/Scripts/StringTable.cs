@@ -73,6 +73,12 @@ namespace Game
         public const string GAME_CARD_PROP_MODIFY_DIV = "除以";
         [TranslateMsg("游戏中卡牌的属性修改类型之变为")]
         public const string GAME_CARD_PROP_MODIFY_SETTO = "变为";
+        [TranslateMsg("游戏中卡牌的类型之仆从")]
+        public const string GAME_CARD_TYPE_SERVANT = "仆从";
+        [TranslateMsg("游戏中卡牌的类型之法术")]
+        public const string GAME_CARD_TYPE_SPELL = "法术";
+        [TranslateMsg("游戏中卡牌的类型之道具")]
+        public const string GAME_CARD_TYPE_ITEM = "道具";
         #region 关键词
         [TranslateMsg("游戏中的关键词守卫")]
         public const string GAME_KEYWORD_TAUNT = "守卫";

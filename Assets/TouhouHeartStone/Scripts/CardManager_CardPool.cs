@@ -9,6 +9,7 @@ using System.Linq;
 using UnityEngine;
 using MongoDB.Bson.Serialization;
 using TouhouHeartstone;
+using System.Reflection;
 
 namespace Game
 {
@@ -445,6 +446,19 @@ namespace Game
                 _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
             }
             //错误信息修复
+            Dictionary<string, ActionDefine> actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
+            {
+                typeof(CardEngine).Assembly,
+                typeof(HearthStoneRule).Assembly,
+                typeof(EffectEditorLibrary).Assembly
+            });
+            foreach (var card in cardPool.cardDefineList)
+            {
+                foreach (GeneratedEffect effect in card.getGeneratedEffects())
+                {
+                    effect.traverseActionNode(fixActionNodeIncorrectData);
+                }
+            }
             foreach (var skin in cardPool.cardSkinList)
             {
                 if (string.IsNullOrEmpty(skin.language))
@@ -461,7 +475,40 @@ namespace Game
                     graphInfo.entryType = nameof(GeneratedEffect.triggerList);
                 }
             }
+            foreach (var buff in cardPool.buffDefineList)
+            {
+                foreach (var effect in buff.effectList)
+                {
+                    effect.traverseActionNode(fixActionNodeIncorrectData);
+                }
+            }
             return (cardPoolInfo, cardPool);
+
+            void fixActionNodeIncorrectData(ActionNode actionNode)
+            {
+                if (!actionDefineDict.ContainsKey(actionNode.defineName))
+                {
+                    //包含不存在的动作名称，可能是名称过期了
+                    string newDefineName = null;
+                    foreach (ActionDefine actionDefine in actionDefineDict.Values)
+                    {
+                        if (actionDefine.obsoleteNames.Contains(actionNode.defineName))
+                        {
+                            newDefineName = actionDefine.defineName;
+                            break;
+                        }
+                    }
+                    if (newDefineName != null)
+                    {
+                        Debug.LogWarning("将动作节点" + actionNode.id + "过期的动作名称" + actionNode.defineName + "替换为" + newDefineName);
+                        actionNode.defineName = newDefineName;
+                    }
+                    else
+                    {
+                        Debug.LogError("动作节点" + actionNode.id + "的名称未知：" + actionNode.defineName);
+                    }
+                }
+            }
         }
         public bool tryGetCardPool(int cardPoolId, out CardPool cardPool)
         {

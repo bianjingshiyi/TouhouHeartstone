@@ -30,7 +30,7 @@ namespace Controllers
             _cardDefine = cardDefine;
             updateSkinNames();
             _ui.setId(_cardDefine.id);
-            _ui.setType(Array.IndexOf(_types, _cardDefine.type));
+            _ui.setType(Array.IndexOf(_types, _cardDefine.type), _cardDefine.type);
             _ui.setIsToken(_cardDefine.isToken());
             bool[] keywordsValue = new bool[_keywords.Length];
             for (int i = 0; i < keywordsValue.Length; i++)
@@ -87,7 +87,13 @@ namespace Controllers
                 _ui = GetComponentInChildren<CardEditorPanel>();
             }
             _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM };
-            _ui.setTypes(_types);
+            string[] typeNames = new string[]
+            {
+                StringTable.GAME_CARD_TYPE_SERVANT,
+                StringTable.GAME_CARD_TYPE_SPELL,
+                StringTable.GAME_CARD_TYPE_ITEM
+            };
+            _ui.setTypes(typeNames);
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
@@ -241,7 +247,7 @@ namespace Controllers
         private void onChangeType(int typeIndex)
         {
             _cardDefine.type = _types[typeIndex];
-            //_ui.setType(typeIndex);
+            _ui.setType(typeIndex, _types[typeIndex]);
         }
         private void onIsTokenToggleValueChanged(bool value)
         {

@@ -73,10 +73,10 @@ namespace UI
         /// 设置卡牌的卡框类型索引
         /// </summary>
         /// <param name="typeIndex"></param>
-        public void setType(int typeIndex)
+        public void setType(int typeIndex,string typeName)
         {
             _typeDropdown.SetValueWithoutNotify(typeIndex);
-            _card.setTypeByName(_typeDropdown.options[typeIndex].text);
+            _card.setTypeByName(typeName);
         }
         public void setIsToken(bool value)
         {
@@ -379,13 +379,23 @@ namespace UI
         private async void onEditImageButtonClicked()
         {
             _editImageButton.gameObject.SetActive(false);
-            Task<Sprite> task = onNeedSelectImage?.Invoke();
-            Sprite sprite = task != null ? await task : null;
-            if (sprite != null)
+            try
             {
-                _card.setImage(sprite);
+                Task<Sprite> task = onNeedSelectImage?.Invoke();
+                Sprite sprite = task != null ? await task : null;
+                if (sprite != null)
+                {
+                    _card.setImage(sprite);
+                }
             }
-            _editImageButton.gameObject.SetActive(true);
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("设置卡牌图像失败：" + e, e);
+            }
+            finally
+            {
+                _editImageButton.gameObject.SetActive(true);
+            }
         }
         private void onEditTagButtonClicked()
         {
@@ -556,6 +566,7 @@ namespace UI
         /// </summary>
         public event Action onClickDeleteCardButton;
         #endregion
+        public Card card => _card;
         [SerializeField]
         Card _card;
         [SerializeField]

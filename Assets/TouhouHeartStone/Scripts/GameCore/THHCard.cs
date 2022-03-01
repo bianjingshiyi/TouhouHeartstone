@@ -30,9 +30,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        [ActionNodeMethod("IsSpell", "Card")]
-        [return: ActionNodeParam("Value")]
-        public static bool isSpell([ActionNodeParam("Card")]this Card card)
+        public static bool isSpell(this Card card)
         {
             return card.define.type == DEFINE.SPELL;
         }

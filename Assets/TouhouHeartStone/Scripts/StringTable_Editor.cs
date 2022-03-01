@@ -121,13 +121,13 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作节点名称之移除修改器")]
         public const string EDITOR_NODE_NAME_REMOVE_MODIFIER = "移除修改器";
         [TranslateMsg("动作图编辑器中动作输出名称之移除修改器事件")]
-        public const string EDITOR_NODE_PARAM_NAME_REMOVE_MODIFIER_EVENT = "移除修改器事件";
+        public const string EDITOR_PARAM_NAME_REMOVE_MODIFIER_EVENT = "移除修改器事件";
+        [TranslateMsg("动作图编辑器中动作输出名称之属性更改事件")]
+        public const string EDITOR_PARAM_NAME_PROP_CHANGE_EVENT = "属性更改事件";
         [TranslateMsg("动作图编辑器中动作节点名称之获取属性")]
         public const string EDITOR_NODE_NAME_GET_PROPERTY = "获取属性";
         [TranslateMsg("动作图编辑器中动作输入名称之属性名称")]
         public const string EDITOR_PARAM_NAME_PROPERTY_NAME = "属性名称";
-        [TranslateMsg("动作图编辑器中动作输出名称之值")]
-        public const string EDITOR_NODE_PARAM_NAME_VALUE = "值";
         [TranslateMsg("动作图编辑器中动作节点名称之设置属性")]
         public const string EDITOR_NODE_NAME_SET_PROPERTY = "设置属性";
         [TranslateMsg("动作图编辑器中动作输入名称之值")]
@@ -178,6 +178,10 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_RANDOM_CARD = "获取随机卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并洗入牌库")]
         public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK = "创建衍生卡并洗入牌库";
+        #endregion
+        #region 增益
+        [TranslateMsg("动作图编辑器中动作节点分类之增益")]
+        public const string EDITOR_NODE_CATEGORY_BUFF = "增益";
         #endregion
         #region 修改器 
         [TranslateMsg("动作图编辑器中动作节点分类之修改器")]

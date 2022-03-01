@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
 namespace Game
@@ -39,7 +40,7 @@ namespace Game
         public static void setPlayerProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
-            [ActionNodeParam(StringTable.EDITOR_NODE_PARAM_NAME_VALUE)]object value)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]object value)
         {
             player.setProp(propName, value);
         }
@@ -182,6 +183,64 @@ namespace Game
             await player.getDeck().insert(game, createdCard, game.randomInt(0, player.getDeck().count));
             return createdCard;
         }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_THIS_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD, "ThisCard")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card thisCard(Card card)
+        {
+            return card;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PROPERTY, StringTable.EDITOR_NODE_CATEGORY_CARD, "GetProperty")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static object getProp(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
+        {
+            return card.getProp(game, propName);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SET_PROPERTY, StringTable.EDITOR_NODE_CATEGORY_CARD, "SetProperty")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
+        public static Task<IPropChangeEventArg> setProp(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
+        {
+            return card.setProp(game, propName, value);
+        }
+        /// <summary>
+        /// 获取一个独一无二的属性名。当你在一段可以重复生效的效果中为卡牌设置额外属性的时候，应该使用这个方法。
+        /// 注意，这个方法是为了避免属性名之间的冲突，在不会发生冲突的情况下，输入相同的参数仍然会让这个方法返回相同的属性名。
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="buff"></param>
+        /// <param name="eventArg"></param>
+        /// <param name="propName"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME, StringTable.EDITOR_NODE_CATEGORY_CARD, "GetUniquePropertyName")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)]
+        public static string getUniquePropName(IBuff buff, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
+        {
+            if (buff != null)
+                propName = buff.instanceID + propName;
+            return propName;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_OWNER, StringTable.EDITOR_NODE_CATEGORY_CARD, "GetOwner")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
+        public static Player getOwner([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.owner;
+        }
+        /// <summary>
+        /// 这是不是一张法术牌
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_IS_SPELL, StringTable.EDITOR_NODE_CATEGORY_CARD, "IsSpell")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool isSpell([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.define.type == DEFINE.SPELL;
+        }
         /// <summary>
         /// 对固定数量的随机敌人造成法术伤害
         /// </summary>
@@ -212,7 +271,35 @@ namespace Game
             return game.getOpponent(card.owner).getField();
         }
         #endregion
-
+        #region 增益
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE, StringTable.EDITOR_NODE_CATEGORY_BUFF, "GetBuffDefine")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]
+        public static BuffDefine getBuffDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ID, isConst: true)]int id)
+        {
+            return game.getBuffDefine(id);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_THIS_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "ThisBuff")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
+        public static Buff thisBuff(Buff buff)
+        {
+            return buff;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_ADD_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "AddBuff")]
+        public static Task addBuff(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]BuffDefine buffDefine)
+        {
+            return card.addBuff(game, new GeneratedBuff(buffDefine));
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_REMOVE_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "RemoveBuff")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_IS_BUFF_REMOVED)]
+        public static Task<bool> removeBuff(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]Buff buff)
+        {
+            return card.removeBuff(game, buff);
+        }
+        #endregion
         //  玩家的行动，比如抽一张牌，获得一张牌
         #region 行动
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
