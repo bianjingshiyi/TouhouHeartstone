@@ -139,7 +139,7 @@ pipeline {
                         fi
                     fi
                     done'''
-                    archiveArtifacts artifacts: 'Build/_artifact/*', followSymlinks: false
+                    // archiveArtifacts artifacts: 'Build/_artifact/*', followSymlinks: false
             }
         }
         stage('Upload To Tencent COS') {
