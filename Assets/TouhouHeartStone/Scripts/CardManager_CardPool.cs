@@ -273,61 +273,6 @@ namespace Game
             }
             //对缓存的图片进行保存
             await saveExternalImages(cardPoolId);
-            //foreach (var pair in _externalSpriteCacheDict)
-            //{
-            //    //获取使用这张图片的第一个皮肤
-            //    CardSkinData skin = cardPool.cardSkinList.FirstOrDefault(s => s.imagePath == pair.Key);
-            //    if (skin == null)
-            //    {
-            //        //没有皮肤使用，跳过
-            //        continue;
-            //    }
-            //    //另存为图片
-            //    if (isStandardCardPool(cardPoolInfo))
-            //    {
-            //        path = Path.Combine(cardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
-            //        if (pair.Value is Sprite sprite)
-            //        {
-            //            await game.fileManager.saveFile(Path.Combine(editorTextureDirName, path), sprite.texture.EncodeToJPG());
-            //        }
-            //        else if (pair.Value is Task<Sprite> task)
-            //        {
-            //            //保存还在加载的图片
-            //            //虽然这种情况不太可能，但是还是加上去吧
-            //            sprite = await task;
-            //            await game.fileManager.saveFile(Path.Combine(editorTextureDirName, path), sprite.texture.EncodeToJPG());
-            //        }
-            //        else
-            //        {
-            //            Debug.LogWarning("图片" + path + "为空");
-            //            continue;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        path = Path.Combine(cardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
-            //        if (pair.Value is Sprite sprite)
-            //        {
-            //            await game.fileManager.savePersistentFile(Path.Combine(textureDirName, path), sprite.texture.EncodeToJPG());
-            //        }
-            //        else if (pair.Value is Task<Sprite> task)
-            //        {
-            //            sprite = await task;
-            //            await game.fileManager.savePersistentFile(Path.Combine(textureDirName, path), sprite.texture.EncodeToJPG());
-            //        }
-            //        else
-            //        {
-            //            Debug.LogWarning("图片" + path + "为空");
-            //            continue;
-            //        }
-            //    }
-            //    Debug.Log("另存为图片" + path + "成功");
-            //    //替换所有引用这个图片的皮肤的图片地址
-            //    foreach (var otherSkin in cardPool.cardSkinList.Where(s => s.imagePath == pair.Key))
-            //    {
-            //        otherSkin.imagePath = path;
-            //    }
-            //}
             //保存文件
             string path = cardPoolPath;
             if (isStandardCardPool(cardPoolInfo))
@@ -382,7 +327,14 @@ namespace Game
                     lines = await game.fileManager.readTextFile(path, 1, 1);
                 }
                 json = lines[0];
-                cardPool = JsonHelper.fromJson<CardPool>(json);
+                try
+                {
+                    cardPool = JsonHelper.fromJson<CardPool>(json);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
+                }
                 _cardPoolInfoDict[path] = cardPoolInfo;
                 _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
             }
@@ -403,7 +355,14 @@ namespace Game
                     json = lines[0];
                     if (!string.IsNullOrEmpty(json))
                     {
-                        cardPool.cardDefineList.AddRange(JsonHelper.fromJson<CardDefine[]>(json));
+                        try
+                        {
+                            cardPool.cardDefineList.AddRange(JsonHelper.fromJson<CardDefine[]>(json));
+                        }
+                        catch (Exception e)
+                        {
+                            throw new FormatException("反序列化卡池" + path + "的卡牌失败：" + e, e);
+                        }
                     }
                 }
                 //卡牌皮肤
@@ -412,7 +371,14 @@ namespace Game
                     json = lines[1];
                     if (!string.IsNullOrEmpty(json))
                     {
-                        cardPool.cardSkinList.AddRange(JsonHelper.fromJson<CardSkinData[]>(json));
+                        try
+                        {
+                            cardPool.cardSkinList.AddRange(JsonHelper.fromJson<CardSkinData[]>(json));
+                        }
+                        catch (Exception e)
+                        {
+                            throw new FormatException("反序列化卡池" + path + "的卡牌皮肤失败：" + e, e);
+                        }
                     }
                 }
                 //编辑器信息
@@ -421,7 +387,14 @@ namespace Game
                     json = lines[2];
                     if (!string.IsNullOrEmpty(json))
                     {
-                        cardPool.actionNodeGraphInfoList.AddRange(JsonHelper.fromJson<ActionNodeGraphInfo[]>(json));
+                        try
+                        {
+                            cardPool.actionNodeGraphInfoList.AddRange(JsonHelper.fromJson<ActionNodeGraphInfo[]>(json));
+                        }
+                        catch (Exception e)
+                        {
+                            throw new FormatException("反序列化卡池" + path + "的编辑器信息失败：" + e, e);
+                        }
                     }
                 }
                 //增益
@@ -430,7 +403,14 @@ namespace Game
                     json = lines[3];
                     if (!string.IsNullOrEmpty(json))
                     {
-                        cardPool.buffDefineList.AddRange(JsonHelper.fromJson<GeneratedBuffDefine[]>(json));
+                        try
+                        {
+                            cardPool.buffDefineList.AddRange(JsonHelper.fromJson<GeneratedBuffDefine[]>(json));
+                        }
+                        catch (Exception e)
+                        {
+                            throw new FormatException("反序列化卡池" + path + "的增益失败：" + e, e);
+                        }
                     }
                 }
                 //增益皮肤
@@ -439,7 +419,14 @@ namespace Game
                     json = lines[4];
                     if (!string.IsNullOrEmpty(json))
                     {
-                        cardPool.buffSkinList.AddRange(JsonHelper.fromJson<BuffSkin[]>(json));
+                        try
+                        {
+                            cardPool.buffSkinList.AddRange(JsonHelper.fromJson<BuffSkin[]>(json));
+                        }
+                        catch (Exception e)
+                        {
+                            throw new FormatException("反序列化卡池" + path + "的增益皮肤失败：" + e, e);
+                        }
                     }
                 }
                 _cardPoolInfoDict[path] = cardPoolInfo;

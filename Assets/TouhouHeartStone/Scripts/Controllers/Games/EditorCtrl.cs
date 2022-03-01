@@ -79,14 +79,6 @@ namespace Controllers
                 });
             }
         }
-        //public void addSkin(CardSkinData skin)
-        //{
-        //    _cardSkinList.Add(skin);
-        //}
-        //public int removeSkins(Predicate<CardSkinData> filter)
-        //{
-        //    return _cardSkinList.RemoveAll(filter);
-        //}
         #endregion
         #region 私有方法
         #region 生命周期
@@ -98,7 +90,6 @@ namespace Controllers
             }
             _ui.onClickReturnButton += onClickReturnButton;
             _ui.onClickDeckListItem += onClickCardPoolListItem;
-            //_ui.onUpdateCardListItem += onUpdateCardListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeleteCardPoolButton;
             _ui.onClickDeckListAddButton += onClickAddCardPoolButton;
             _ui.onClickSaveDeckButton += onClickSaveCardPoolButton;
