@@ -564,100 +564,6 @@ namespace Game
             }
             return (defineList.ToArray(), skinList.ToArray());
         }
-        //public async Task<(CardDefine[] defines, CardSkinData[] skins, ActionNodeGraphInfo[] actionGraphInfos)> getOrLoadCardPoolContents(string path)
-        //{
-        //    string[] lines;
-        //    if (path.StartsWith("sa:"))
-        //    {
-        //        //读取StreamingAssets
-        //        lines = await game.fileManager.readStreamingTextFile(path, 0, 5);
-        //    }
-        //    else if (Path.GetFullPath(path) == path)
-        //    {
-        //        //如果是绝对路径就从绝对路径上读取，这是因为在Editor模式下无法区分可持续化文件与工程文件所以使用绝对路径
-        //        lines = await game.fileManager.readTextFile(path, 0, 5);
-        //    }
-        //    else
-        //    {
-        //        //相对路径，只能从可持续化文件中读取
-        //        lines = await game.fileManager.readPersistentTextFile(path, 0, 5);
-        //    }
-        //    if (lines != null && lines.Length > 0)
-        //    {
-        //        //卡池信息
-        //        string json = lines[0];
-        //        CardPoolInfo cardPoolInfo = JsonHelper.fromJson<CardPoolInfo>(json);
-        //        path = Path.GetFullPath(path);
-        //        _cardPoolInfoDict[path] = cardPoolInfo;
-        //        if (_externalCardDefineDict.ContainsKey(cardPoolInfo.cardPoolId))
-        //        {
-        //            //如果已经加载就不重复加载
-        //            CardDefine[] defines = _externalCardDefineDict[cardPoolInfo.cardPoolId].ToArray();
-        //            CardSkinData[] skins = _externalCardSkinDict[cardPoolInfo.cardPoolId].ToArray();
-        //            ActionNodeGraphInfo[] actionGraphInfos = _externalCardActionGraphInfoDict[cardPoolInfo.cardPoolId].ToArray();
-        //            return (defines, skins, actionGraphInfos);
-        //        }
-        //        else
-        //        {
-        //            if (cardPoolInfo.version >= CARD_POOL_VERSION_0_1)
-        //            {
-        //                //内容对象
-        //                json = lines[1];
-        //                CardPool cardPool = JsonHelper.fromJson<CardPool>(json);
-        //                _externalCardDefineDict.Add(cardPoolInfo.cardPoolId, new List<CardDefine>(cardPool.cardDefines));
-        //                _externalCardSkinDict.Add(cardPoolInfo.cardPoolId, new List<CardSkinData>(cardPool.cardSkins));
-        //                _externalCardActionGraphInfoDict.Add(cardPoolInfo.cardPoolId, new List<ActionNodeGraphInfo>(cardPool.actionNodeGraphInfos));
-        //                _externalBuffDefineDict.Add(cardPoolInfo.cardPoolId, new List<GeneratedBuffDefine>(cardPool.buffDefines));
-        //                _externalBuffSkinDict.Add(cardPoolInfo.cardPoolId, new List<BuffSkin>(cardPool.buffSkins));
-        //                return (cardPool.cardDefines, cardPool.cardSkins, cardPool.actionNodeGraphInfos);
-        //            }
-        //            else
-        //            {
-        //                //卡牌
-        //                json = lines[1];
-        //                CardDefine[] defines = JsonHelper.fromJson<CardDefine[]>(json);
-        //                _externalCardDefineDict.Add(cardPoolInfo.cardPoolId, new List<CardDefine>(defines));
-        //                //皮肤
-        //                json = lines[2];
-        //                CardSkinData[] skins = JsonHelper.fromJson<CardSkinData[]>(json);
-        //                _externalCardSkinDict.Add(cardPoolInfo.cardPoolId, new List<CardSkinData>(skins));
-        //                //编辑器信息
-        //                json = lines[3];
-        //                ActionNodeGraphInfo[] actionGraphInfos = JsonHelper.fromJson<ActionNodeGraphInfo[]>(json);
-        //                _externalCardActionGraphInfoDict.Add(cardPoolInfo.cardPoolId, new List<ActionNodeGraphInfo>(actionGraphInfos));
-        //                //增益
-        //                GeneratedBuffDefine[] buffDefines = null;
-        //                if (lines.Length > 4)
-        //                {
-        //                    json = lines[4];
-        //                    if (!string.IsNullOrEmpty(json))
-        //                    {
-        //                        try
-        //                        {
-        //                            buffDefines = JsonHelper.fromJson<GeneratedBuffDefine[]>(json);
-        //                        }
-        //                        catch (Exception e)
-        //                        {
-        //                            Debug.LogError("加载" + path + "中的增益发生异常：" + e);
-        //                        }
-        //                    }
-        //                }
-        //                if (!_externalBuffDefineDict.TryGetValue(cardPoolInfo.cardPoolId, out var buffList) || buffList == null)
-        //                {
-        //                    buffList = new List<GeneratedBuffDefine>();
-        //                    _externalBuffDefineDict[cardPoolInfo.cardPoolId] = buffList;
-        //                }
-        //                if (buffDefines != null)
-        //                {
-        //                    buffList.AddRange(buffDefines);
-        //                }
-        //                return (defines, skins, actionGraphInfos);
-        //            }
-        //        }
-        //    }
-        //    else
-        //        throw new IOException("无法读取文件" + path);
-        //}
         public async Task<CardDefine[]> reloadCardPoolsAndGetCardDefinesAsync(IEnumerable<int> cardPoolsId)
         {
             List<CardDefine> cardDefineList = new List<CardDefine>();
@@ -675,18 +581,12 @@ namespace Game
             }
             return cardDefineList.ToArray();
         }
-        public void createCard(int cardPoolId, CardDefine cardDefine, CardSkinData cardSkin)
+        public void createCard(CardPoolInfo cardPoolInfo, out CardDefine cardDefine, out CardSkinData cardSkin)
         {
-            _cardPoolDict[cardPoolId].cardDefineList.Add(cardDefine);
-            _cardPoolDict[cardPoolId].cardSkinList.Add(cardSkin);
-        }
-        public void createCard(int cardPoolId, out CardDefine cardDefine, out CardSkinData cardSkin)
-        {
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetCardPool(cardPoolInfo.cardPoolId, out CardPool cardPool))
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException("不存在卡池" + cardPoolInfo.cardPoolId);
             }
-            CardPoolInfo cardPoolInfo = getCardPoolInfo(cardPoolId);
             int cardId = 0;
             for (int i = 1; i < 0xFFFF; i++)
             {

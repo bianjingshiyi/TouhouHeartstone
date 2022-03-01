@@ -224,7 +224,7 @@ namespace Controllers
         /// </summary>
         private async void onClickNewCardButton()
         {
-            game.card.createCard(_curCardPoolInfo.cardPoolId, out CardDefine newCardDefine, out _);
+            game.card.createCard(_curCardPoolInfo, out CardDefine newCardDefine, out _);
             await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, newCardDefine, getSelectableCharacters());
         }
         /// <summary>
