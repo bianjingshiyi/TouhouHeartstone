@@ -190,36 +190,38 @@ pipeline {
             mail bcc: '', body: "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包", cc: 'bianjingshiyi@hotmail.com', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说打包失败通知 - $BUILD_DISPLAY_NAME", to: 'jim@lotlab.org'
         }
         always {
-            script {
-                def now = new Date()
-                def buildtime = now.format('yyyy-MM-dd HH:mm', TimeZone.getTimeZone('Asia/Shanghai'))
-                def logVar = [
-                    [name: 'url', value: env.DOWNLOAD_LINK?.trim()],
-                    [name: 'buildver', value: BUILD_DISPLAY_NAME],
-                    [name: 'buildnum', value: BUILD_NUMBER],
-                    [name: 'lastbuildnum', value: (BUILD_NUMBER.toInteger() - 1).toString()],
-                    [name: 'nextbuildnum', value: (BUILD_NUMBER.toInteger() + 1).toString()],
-                    [name: 'datetime', value: buildtime ],
-                    [name: 'result', value: currentBuild.result],
-                    [name: 'branch', value: env.BRANCH_NAME],
-                    [name: 'projectUrl', value: env.BUILD_URL]
-                ]
+            node('master') {
+                script {
+                    def now = new Date()
+                    def buildtime = now.format('yyyy-MM-dd HH:mm', TimeZone.getTimeZone('Asia/Shanghai'))
+                    def logVar = [
+                        [name: 'url', value: env.DOWNLOAD_LINK?.trim()],
+                        [name: 'buildver', value: BUILD_DISPLAY_NAME],
+                        [name: 'buildnum', value: BUILD_NUMBER],
+                        [name: 'lastbuildnum', value: (BUILD_NUMBER.toInteger() - 1).toString()],
+                        [name: 'nextbuildnum', value: (BUILD_NUMBER.toInteger() + 1).toString()],
+                        [name: 'datetime', value: buildtime ],
+                        [name: 'result', value: currentBuild.result],
+                        [name: 'branch', value: env.BRANCH_NAME],
+                        [name: 'projectUrl', value: env.BUILD_URL]
+                    ]
 
-                String textLog = ''
+                    String textLog = ''
 
-                if (env.GIT_COMMIT) {
-                    String textTemplate = readFile('ci/changelog.success.txt')
-                    textLog = gitChangelog extendedVariables: logVar, from: [type: 'COMMIT', value: env.GIT_PREVIOUS_SUCCESSFUL_COMMIT], returnType: 'STRING', template: textTemplate, to: [type: 'COMMIT', value: env.GIT_COMMIT]
-                } else {
-                    String textTemplateFail = readFile('ci/changelog.fail.txt')
-                    textLog = new groovy.text.SimpleTemplateEngine().createTemplate(textTemplateFail).make(logVar).toString()
+                    if (env.GIT_COMMIT) {
+                        String textTemplate = readFile('ci/changelog.success.txt')
+                        textLog = gitChangelog extendedVariables: logVar, from: [type: 'COMMIT', value: env.GIT_PREVIOUS_SUCCESSFUL_COMMIT], returnType: 'STRING', template: textTemplate, to: [type: 'COMMIT', value: env.GIT_COMMIT]
+                    } else {
+                        String textTemplateFail = readFile('ci/changelog.fail.txt')
+                        textLog = new groovy.text.SimpleTemplateEngine().createTemplate(textTemplateFail).make(logVar).toString()
+                    }
+
+                    if (textLog.length() > 1000) textLog = textLog.substring(0, 1000)
+
+                    def bot = new QQBot(this, env.QQ_BOT_HOST, 'token')
+                    bot.sendGroupMsg('1156816727', textLog)
+                    bot.sendGroupMsg('217522101', textLog)
                 }
-
-                if (textLog.length() > 1000) textLog = textLog.substring(0, 1000)
-
-                def bot = new QQBot(this, env.QQ_BOT_HOST, 'token')
-                bot.sendGroupMsg('1156816727', textLog)
-                bot.sendGroupMsg('217522101', textLog)
             }
         }
     }
