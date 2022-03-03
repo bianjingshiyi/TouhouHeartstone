@@ -161,7 +161,7 @@ pipeline {
             steps {
                 script {
                     BackblazeB2 b2 = new BackblazeB2(this, 'sample', 'backblaze-b2')
-                    b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots', '90')
+                    b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots', '15')
 
                     def files = findFiles excludes: '', glob: 'Build/_artifact/**'
                     env.DOWNLOAD_LINK = ''
