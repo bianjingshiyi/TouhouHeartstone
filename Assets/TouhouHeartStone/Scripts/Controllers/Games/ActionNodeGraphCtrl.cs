@@ -202,6 +202,7 @@ namespace Controllers
             _ui.onActionNodeValueChange += onActionNodeValueChange;
             _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
             _ui.onClickActionNodeConstValueItemEditButton += onClickActionNodeConstValueItemEditButton;
+            _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
             //触发
             _ui.onChangeTriggerEventName += onChangeTriggerEventName;
             _ui.onTriggerEventTypeChanged += onChangeTriggerTypeIndex;
@@ -229,6 +230,8 @@ namespace Controllers
             _ui.onItemBuffLanguageChanged += onItemBuffLanguageChangedCallback;
             _ui.onItemNeedSelectBuffImage += onItemNeedSelectBuffImage;
 
+            _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
+
             string[] languages = game.langManager.getLanguages();
             for (int i = 0; i < languages.Length; i++)
             {
@@ -254,7 +257,7 @@ namespace Controllers
         /// <param name="posY">y坐标</param>
         private void onLeftClickBackground(float posX, float posY)
         {
-            _curActionNode = null;
+            _curEditActionNode = null;
             closeMenu();
         }
         /// <summary>
@@ -272,7 +275,7 @@ namespace Controllers
         /// <param name="index"></param>
         private void onClickMenuItem(int index)
         {
-            if (_curActionNode != null)
+            if (_curEditActionNode != null)
             {
                 //节点菜单
                 if (index == 0)//删除
@@ -311,7 +314,7 @@ namespace Controllers
                     optionList[index].action?.Invoke();
                 }
             }
-            _curActionNode = null;
+            _curEditActionNode = null;
         }
         /// <summary>
         /// 当用户连接节点，检查一下连接的合法性，如果合法那么连接，否则提示。
@@ -478,7 +481,7 @@ namespace Controllers
         /// <param name="actionNodeItem"></param>
         private void onLeftClickActionNode(ActionNodeItem actionNodeItem)
         {
-            _curActionNode = null;
+            _curEditActionNode = null;
             closeMenu();
         }
         /// <summary>
@@ -493,7 +496,7 @@ namespace Controllers
             //出口节点也不行
             if (actionNodeItem == _returnNodeItem)
                 return;
-            _curActionNode = getActionNode(actionNodeItem);
+            _curEditActionNode = getActionNode(actionNodeItem);
             Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
             openMenu(position, new string[]
             {
@@ -512,7 +515,7 @@ namespace Controllers
             //出口节点也不行
             if (actionNodeItem == _returnNodeItem)
                 return;
-            _curActionNode = getActionNode(actionNodeItem);
+            _curEditActionNode = getActionNode(actionNodeItem);
             Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
             openMenu(position, new string[]
             {
@@ -589,33 +592,9 @@ namespace Controllers
                         return true;
                     });
                 }
-                _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
-
-                async void onClickCardSelectPanelCard(CardDefine cardDefine)
-                {
-                    _cardPoolViewPanelCtrl.onClickCard -= onClickCardSelectPanelCard;
-                    actionNode.consts[index] = new CardReference()
-                    {
-                        cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
-                        cardId = cardDefine.id
-                    };
-                    if (cardDefine != null)
-                    {
-                        actionNodeItem.getConstInputField(index).card.isFaceup = true;
-                        CardSkinData skin = game.card.getDefaultSkin(cardDefine);
-                        actionNodeItem.getConstInputField(index).card.setCard(cardDefine, skin);
-                        Sprite sprite = skin.image != null ?
-                            skin.image :
-                            await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
-                        actionNodeItem.getConstInputField(index).card.setImage(sprite);
-                    }
-                    else
-                    {
-                        actionNodeItem.getConstInputField(index).card.isFaceup = false;
-                        actionNodeItem.getConstInputField(index).card.setCard(null, null);
-                    }
-                    _ui.displayCardSelectPanel(false);
-                }
+                _curEditActionNode = actionNode;
+                _curEditActionNodeConstIndex = index;
+                _curEditActionNodeConstItemIndex = -1;
             }
         }
         private async void onClickActionNodeConstValueItemEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
@@ -642,34 +621,81 @@ namespace Controllers
                         return true;
                     });
                 }
-                _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
-
-                async void onClickCardSelectPanelCard(CardDefine cardDefine)
+                _curEditActionNode = actionNode;
+                _curEditActionNodeConstIndex = index;
+                _curEditActionNodeConstItemIndex = itemIndex;
+            }
+        }
+        async void onClickCardSelectPanelCard(CardDefine cardDefine)
+        {
+            if (_curEditActionNode == null)
+            {
+                return;
+            }
+            if (_curEditActionNodeConstItemIndex < 0)
+            {
+                _curEditActionNode.consts[_curEditActionNodeConstIndex] = new CardReference()
                 {
-                    _cardPoolViewPanelCtrl.onClickCard -= onClickCardSelectPanelCard;
-                    (actionNode.consts[index] as CardReference[])[itemIndex] = new CardReference()
-                    {
-                        cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
-                        cardId = cardDefine.id
-                    };
-                    if (cardDefine != null)
-                    {
-                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.isFaceup = true;
-                        CardSkinData skin = game.card.getDefaultSkin(cardDefine);
-                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.setCard(cardDefine, skin);
-                        Sprite sprite = skin.image != null ?
-                            skin.image :
-                            await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
-                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.setImage(sprite);
-                    }
-                    else
-                    {
-                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.isFaceup = false;
-                        actionNodeItem.getConstInputField(index).getItemAt(itemIndex).card.setCard(null, null);
-                    }
-                    _ui.displayCardSelectPanel(false);
+                    cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
+                    cardId = cardDefine.id
+                };
+            }
+            else
+            {
+                (_curEditActionNode.consts[_curEditActionNodeConstIndex] as CardReference[])[_curEditActionNodeConstItemIndex] = new CardReference()
+                {
+                    cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
+                    cardId = cardDefine.id
+                };
+            }
+            ActionNodeItem actionNodeItem = getActionNodeItem(_curEditActionNode);
+            if (cardDefine != null)
+            {
+                CardSkinData skin = game.card.getDefaultSkin(cardDefine);
+                Sprite sprite = skin.image != null ?
+                    skin.image :
+                    await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+                if (_curEditActionNodeConstItemIndex < 0)
+                {
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.isFaceup = true;
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setCard(cardDefine, skin);
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setImage(sprite);
+                }
+                else
+                {
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.isFaceup = true;
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setCard(cardDefine, skin);
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setImage(sprite);
                 }
             }
+            else
+            {
+                if (_curEditActionNodeConstItemIndex < 0)
+                {
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.isFaceup = false;
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setCard(null, null);
+                }
+                else
+                {
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.isFaceup = false;
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setCard(null, null);
+                }
+            }
+            //重置字段
+            _curEditActionNode = null;
+            _curEditActionNodeConstIndex = -1;
+            _curEditActionNodeConstItemIndex = -1;
+            //隐藏UI
+            _ui.displayCardSelectPanel(false);
+        }
+        private void onClickCancelSelectCardButton()
+        {
+            //重置字段
+            _curEditActionNode = null;
+            _curEditActionNodeConstIndex = -1;
+            _curEditActionNodeConstItemIndex = -1;
+            //隐藏UI
+            _ui.displayCardSelectPanel(false);
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
@@ -1070,7 +1096,7 @@ namespace Controllers
         {
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
             ActionNodeItem actionNodeItem;
-            if (actionDefine is MethodActionDefine methodActionDefine && methodActionDefine.methodName == "GetBuffDefine")
+            if (actionDefine is MethodActionDefine methodActionDefine && methodActionDefine.methodName == StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE)
             {
                 //如果是获取增益定义节点，那么它和普通的节点不一样，会显示增益的编辑界面。
                 //先获取节点的增益
@@ -1191,6 +1217,34 @@ namespace Controllers
                             actionNodeItem.getConstInputField(i).card.isFaceup = false;
                         }
                     }
+                    else if (constsInfo[i].type == ActionNodeValueType.cardReferenceCollection)
+                    {
+                        if (actionNode.consts[i] is CardReference[] cardRefArray)
+                        {
+                            for (int j = 0; j < cardRefArray.Length; j++)
+                            {
+                                CardDefine cardDefine = null;
+                                if (cardRefArray[j] is CardReference cardReference)
+                                {
+                                    cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.cardId);
+                                }
+                                if (cardDefine != null)
+                                {
+                                    actionNodeItem.getConstInputField(i).getItemAt(j).card.isFaceup = true;
+                                    CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
+                                    actionNodeItem.getConstInputField(i).getItemAt(j).card.setCard(cardDefine, cardSkin);
+                                    Sprite sprite = cardSkin.image != null ?
+                                        cardSkin.image :
+                                        await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+                                    actionNodeItem.getConstInputField(i).getItemAt(j).card.setImage(sprite);
+                                }
+                                else
+                                {
+                                    actionNodeItem.getConstInputField(i).getItemAt(j).card.isFaceup = false;
+                                }
+                            }
+                        }
+                    }
                 }
             }
             _actionNodeItemList.Add(actionNodeItem);
@@ -1205,8 +1259,8 @@ namespace Controllers
         }
         private void removeActionNode()
         {
-            ActionNode actionNode = _curActionNode;
-            int actionNodeIndex = _actionNodeList.IndexOf(_curActionNode);
+            ActionNode actionNode = _curEditActionNode;
+            int actionNodeIndex = _actionNodeList.IndexOf(_curEditActionNode);
             ActionNodeItem actionNodeItem = getActionNodeItem(actionNode);
             unconnectNodeAll(actionNode);
             //从列表中移除
@@ -1926,31 +1980,6 @@ namespace Controllers
                 return false;
             });
             return result;
-            //if (parentNode == null)
-            //    return false;
-            //if (parentNode == actionNode)
-            //    return true;
-            //if (parentNode.inputs != null)
-            //{
-            //    for (int i = 0; i < parentNode.inputs.Length; i++)
-            //    {
-            //        if (parentNode.inputs[i] == null)
-            //            continue;
-            //        if (prevNode != null && (parentNode.inputs[i].action == prevNode || parentNode.inputs[i].actionNodeId == prevNode.id))
-            //            continue;
-            //        if (isValueRefedInParentNodes(actionNode, parentNode.inputs[i].action != null ?
-            //            parentNode.inputs[i].action :
-            //            getActionNode(parentNode.inputs[i].actionNodeId)))
-            //        {
-            //            return true;
-            //        }
-            //    }
-            //}
-            //if (isValueRefedInParentNodes(actionNode, getPrevActionNode(parentNode), parentNode))
-            //{
-            //    return true;
-            //}
-            //return false;
         }
         private int getOutputCount(ActionNode actionNode)
         {
@@ -2376,7 +2405,18 @@ namespace Controllers
         ActionValueRef _valueRef;
         TargetChecker _targetChecker;
         TriggerGraph _trigger;
-        ActionNode _curActionNode;
+        /// <summary>
+        /// 当前正在编辑的动作节点
+        /// </summary>
+        ActionNode _curEditActionNode = null;
+        /// <summary>
+        /// 当前正在编辑的动作节点常量索引
+        /// </summary>
+        int _curEditActionNodeConstIndex = -1;
+        /// <summary>
+        /// 当前正在编辑的动作节点常量子项索引
+        /// </summary>
+        int _curEditActionNodeConstItemIndex = -1;
         readonly Stack<DisplayInfo> _editObjectStack = new Stack<DisplayInfo>();
         string[] _targetCheckerTypes = new string[]
         {

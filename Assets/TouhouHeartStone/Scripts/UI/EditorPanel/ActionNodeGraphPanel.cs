@@ -373,15 +373,6 @@ namespace UI
         #region 生命周期
         protected void Awake()
         {
-            //EventTrigger trigger = _backgroundImage.gameObject.AddComponent<EventTrigger>();
-            //EventTrigger.Entry entry = new EventTrigger.Entry();
-            //entry.eventID = EventTriggerType.PointerDown;
-            //entry.callback.AddListener(onPointerDownBackgroundImage);
-            //trigger.triggers.Add(entry);
-            //entry = new EventTrigger.Entry();
-            //entry.eventID = EventTriggerType.PointerUp;
-            //entry.callback.AddListener(onPointerUpBackgroundImage);
-            //trigger.triggers.Add(entry);
             _backgroundEventTrigger.onPointerDown += onPointerDownBackgroundImage;
             _backgroundEventTrigger.onPointerUp += onPointerUpBackgroundImage;
             if (_actionNodeItemTemplate.transform.parent == _actionNodesRoot)
@@ -398,6 +389,9 @@ namespace UI
             }
             _menuRoot.gameObject.SetActive(false);
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
+            _cancelSelectButton.onClick.AddListener(onClickCancelSelectButtonCallback);
+
+            displayCardSelectPanel(false);
         }
         protected void Update()
         {
@@ -683,6 +677,10 @@ namespace UI
         {
             onClickReturnButton?.Invoke();
         }
+        private void onClickCancelSelectButtonCallback()
+        {
+            onClickCancelSelectButton?.Invoke();
+        }
         #endregion
         /// <summary>
         /// 在指定位置创建连线
@@ -825,30 +823,6 @@ namespace UI
         /// 当点击节点的常量的子项的编辑按钮，参数为点击的节点，常量索引和常量子项的索引
         /// </summary>
         public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemEditButton;
-        ///// <summary>
-        ///// 当选择卡片界面的卡片项被激活，参数为卡片的索引和矩形变换
-        ///// </summary>
-        //public event Action<int, RectTransform> onEnableCardSelectPanelCardListItem
-        //{
-        //    add { _cardSelectPanel.onEnableCardListItem += value; }
-        //    remove { _cardSelectPanel.onEnableCardListItem -= value; }
-        //}
-        ///// <summary>
-        ///// 当选择卡片界面的卡片项被禁用，参数为卡片的索引和矩形变换
-        ///// </summary>
-        //public event Action<int, RectTransform> onDisableCardSelectPanelCardListItem
-        //{
-        //    add { _cardSelectPanel.onDisableCardListItem += value; }
-        //    remove { _cardSelectPanel.onDisableCardListItem -= value; }
-        //}
-        ///// <summary>
-        ///// 当选择卡片界面的卡片项被更新，参数为卡片的索引和矩形变换
-        ///// </summary>
-        //public event Action<int, RectTransform> onUpdateCardSelectPanelCardListItem
-        //{
-        //    add { _cardSelectPanel.onUpdateCardListItem += value; }
-        //    remove { _cardSelectPanel.onUpdateCardListItem -= value; }
-        //}
         /// <summary>
         /// 当触发器节点的事件名称改变，参数为更改后的事件名称
         /// </summary>
@@ -885,6 +859,10 @@ namespace UI
         /// 当点击返回之前编辑的动作图按钮
         /// </summary>
         public event Action onClickReturnButton;
+        /// <summary>
+        /// 当点击取消选择卡牌按钮
+        /// </summary>
+        public event Action onClickCancelSelectButton;
         #endregion
         #region 属性字段
         /// <summary>
@@ -933,6 +911,8 @@ namespace UI
         List<RectTransform> _menuItemList = new List<RectTransform>();
         [SerializeField]
         GameObject _cardSelectPanel;
+        [SerializeField]
+        Button _cancelSelectButton;
         [SerializeField]
         ActionNodeItem _pointerOverActionNodeItem;
         [SerializeField]
