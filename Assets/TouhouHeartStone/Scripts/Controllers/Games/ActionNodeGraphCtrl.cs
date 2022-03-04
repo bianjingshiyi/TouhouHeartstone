@@ -2420,8 +2420,8 @@ namespace Controllers
         readonly Stack<DisplayInfo> _editObjectStack = new Stack<DisplayInfo>();
         string[] _targetCheckerTypes = new string[]
         {
-            TARGET_TYPE_CHARACTER,
-            TARGET_TYPE_SERVANT
+            DEFINE.TARGET_TYPE_CHARACTER,
+            DEFINE.TARGET_TYPE_SERVANT
         };
         string[] _propertyTypes = new string[]
         {
@@ -2436,8 +2436,8 @@ namespace Controllers
         };
         readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
         {
-            { TARGET_TYPE_CHARACTER, StringTable.GAME_TARGET_TYPE_CHARACTER },
-            { TARGET_TYPE_SERVANT, StringTable.GAME_TARGET_TYPE_SERVANT },
+            { DEFINE.TARGET_TYPE_CHARACTER, StringTable.GAME_TARGET_TYPE_CHARACTER },
+            { DEFINE.TARGET_TYPE_SERVANT, StringTable.GAME_TARGET_TYPE_SERVANT },
             //节点名称
             { "IntegerOperation", StringTable.EDITOR_NODE_NAME_INTEGER_OPERATION },
             { "LogicOperation", StringTable.EDIOTR_NODE_NAME_LOGIC_OPERATION },
@@ -2470,8 +2470,6 @@ namespace Controllers
             { "Except", StringTable.EDITOR_NODE_NAME_EXCEPT },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT }
         };
-        public const string TARGET_TYPE_CHARACTER = "Character";
-        public const string TARGET_TYPE_SERVANT = "Servant";
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {

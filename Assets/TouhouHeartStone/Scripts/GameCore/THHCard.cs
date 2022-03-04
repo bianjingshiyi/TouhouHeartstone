@@ -832,15 +832,26 @@ namespace TouhouHeartstone
             }
             if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
             {
+                TriggerGraph activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
                 List<Card> targetList = new List<Card>();
-                foreach (Player player in game.players)
+                foreach (TargetChecker targetChecker in activeTrigger.targetCheckerList)
                 {
-                    if (card.isValidTarget(game, player.getMaster(), null, null, generatedEffect))
-                        targetList.Add(player.getMaster());
-                    foreach (Card servant in player.getField())
+                    foreach (Player player in game.players)
                     {
-                        if (card.isValidTarget(game, servant, null, null, generatedEffect))
-                            targetList.Add(servant);
+                        if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER)
+                        {
+                            if (card.isValidTarget(game, player.getMaster(), null, null, generatedEffect))
+                                targetList.Add(player.getMaster());
+                        }
+                        if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER ||
+                            targetChecker.targetType == DEFINE.TARGET_TYPE_SERVANT)
+                        {
+                            foreach (Card servant in player.getField())
+                            {
+                                if (card.isValidTarget(game, servant, null, null, generatedEffect))
+                                    targetList.Add(servant);
+                            }
+                        }
                     }
                 }
                 targets = targetList.ToArray();
@@ -867,7 +878,7 @@ namespace TouhouHeartstone
             GeneratedEffect generatedEffect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
             return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect);
         }
-        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect)
+        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect, TargetChecker targetChecker = null)
         {
             //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
@@ -880,7 +891,10 @@ namespace TouhouHeartstone
                 return false;
             if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, null, new object[] { target }))
                 return false;
-            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target }), out _))
+            HearthStoneRule.ActiveEventArg eventArg = new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target });
+            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, eventArg, out _))
+                return false;
+            if (targetChecker != null && !targetChecker.isValidTarget(game, card, null, eventArg, out _))
                 return false;
             return true;
         }
