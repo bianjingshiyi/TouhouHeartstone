@@ -606,6 +606,10 @@ namespace Controllers
                 _ui.displayCardSelectPanel(true);
                 if (actionNode.consts[index] is CardReference[] value)
                 {
+                    if (value[itemIndex] == null)
+                    {
+                        value[itemIndex] = new CardReference();
+                    }
                     //打开卡牌选择界面
                     await _cardPoolViewPanelCtrl.display(value[itemIndex].cardId, new int[] { value[itemIndex].cardPoolId }, cardFilter: c =>
                     {

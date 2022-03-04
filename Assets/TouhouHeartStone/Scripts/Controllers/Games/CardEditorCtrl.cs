@@ -340,71 +340,6 @@ namespace Controllers
                 _curCardSkin.imagePath = game.card.getSpritePath(sprite);
             }
             return sprite;
-            //TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
-            //if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-            //{
-            //    //手机端
-            //    var permission = NativeGallery.GetImageFromGallery(async path =>
-            //    {
-            //        if (path != null)
-            //        {
-            //            Sprite sprite = await game.card.getSpriteFromCache(path);
-            //            if (sprite == null)
-            //            {
-            //                Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
-            //                sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-            //                //缓存外部图片
-            //                game.card.addSpriteToCache(path, sprite);
-            //            }
-            //            //更改贴图路径为外部文件路径
-            //            _curCardSkin.imagePath = path;
-            //            tcs.SetResult(sprite);
-            //        }
-            //    });
-            //    if (permission == NativeGallery.Permission.Denied)
-            //    {
-            //        Debug.LogError("没有打开相册的权限");
-            //        // 拒绝权限后应当弹出框提示需要设置权限
-            //        NativeGallery.OpenSettings();
-            //    }
-            //}
-            //else
-            //{
-            //    //默认PC
-            //    string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
-            //    {
-            //        new ExtensionFilter("Image Files", "png","jpg")
-            //    }, false);
-            //    if (paths == null || paths.Length < 1)
-            //    {
-            //        return null;
-            //    }
-            //    string path = paths[0];
-            //    UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path);
-            //    uwr.SendWebRequest().completed += async op =>
-            //    {
-            //        if (uwr.isNetworkError || uwr.isHttpError)
-            //        {
-            //            Debug.LogError(uwr.error);
-            //        }
-            //        else
-            //        {
-            //            Sprite sprite = await game.card.getSpriteFromCache(path);
-            //            if (sprite == null)
-            //            {
-            //                Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
-            //                sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-            //                //缓存外部图片
-            //                game.card.addSpriteToCache(path, sprite);
-            //            }
-            //            //更改贴图路径为外部文件路径
-            //            _curCardSkin.imagePath = path;
-            //            tcs.SetResult(sprite);
-            //        }
-            //        uwr.Dispose();
-            //    };
-            //}
-            //return tcs.Task;
         }
         /// <summary>
         /// 当用户更改卡片描述
@@ -419,7 +354,7 @@ namespace Controllers
         /// 当用户更改攻击力
         /// </summary>
         /// <param name="attack"></param>
-        void onChangeAttack(string attack)
+        private void onChangeAttack(string attack)
         {
             if (int.TryParse(attack, out int value))
             {
@@ -431,7 +366,7 @@ namespace Controllers
         /// 当用户更改生命值
         /// </summary>
         /// <param name="life"></param>
-        void onChangeLife(string life)
+        private void onChangeLife(string life)
         {
             if (int.TryParse(life, out int value))
             {
@@ -442,7 +377,7 @@ namespace Controllers
         /// <summary>
         /// 当用户更改标签
         /// </summary>
-        void onChangeRace(int index)
+        private void onChangeRace(int index)
         {
             string[] value = _cardDefine.getTags();
             if (value == null || value.Length < 1)
@@ -540,10 +475,6 @@ namespace Controllers
         void updateEffectList(GeneratedEffect[] effects)
         {
             _ui.setEffects(game.card.getEffectNames(effects));
-        }
-        int allocSkinId()
-        {
-            return getSkins().GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1;
         }
         IEnumerable<CardSkinData> getSkins()
         {

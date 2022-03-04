@@ -40,6 +40,12 @@ namespace Game
         public const string EDITOR_DIALOG_CANNOT_DELETE_STANDARD_CARDPOOL = "你不能删除标准卡池";
         [TranslateMsg("编辑器中提示玩家不能修改官方标准卡池")]
         public const string EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL = "你不能修改标准卡池";
+        [TranslateMsg("编辑器中编辑动作的按钮提示")]
+        public const string EDITOR_BUTTON_EDIT_ACTION = "编辑动作";
+        [TranslateMsg("编辑器中编辑返回值的按钮提示")]
+        public const string EDITOR_BUTTON_EDIT_RETURN_VALUE = "编辑返回值";
+        [TranslateMsg("编辑器中编辑触发器的按钮提示")]
+        public const string EDITOR_BUTTON_EDIT_TRIGGER = "编辑触发器";
         #region 动作
         #region 内置
         [TranslateMsg("动作图编辑器中动作节点名称之整数运算")]
@@ -217,6 +223,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_AFTER_USE = "使用卡牌后";
         [TranslateMsg("编辑器中的事件类型之发动事件")]
         public const string EDITOR_EVENT_NAME_ACTIVE = "发动事件";
+        [TranslateMsg("编辑器中的事件类型之护甲改变时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_ARMOR_CHANGE = "护甲改变时";
+        [TranslateMsg("编辑器中的事件类型之护甲改变后")]
+        public const string EDITOR_EVENT_NAME_AFTER_ARMOR_CHANGE = "护甲改变后";
         [TranslateMsg("编辑器中的事件类型之回合结束时")]
         public const string EDITOR_EVENT_NAME_BEFORE_TURN_END = "回合结束时";
         [TranslateMsg("编辑器中的事件类型之回合结束后")]

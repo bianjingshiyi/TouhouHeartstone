@@ -386,6 +386,8 @@ namespace Controllers
             _eventTypeInfoList.Find(e => e.eventName == "AfterTurnStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TURN_START;
             _eventTypeInfoList.Find(e => e.eventName == "BeforeUseEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_USE;
             _eventTypeInfoList.Find(e => e.eventName == "AfterUseEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_USE;
+            _eventTypeInfoList.Find(e => e.eventName == "BeforeSetArmorEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ARMOR_CHANGE;
+            _eventTypeInfoList.Find(e => e.eventName == "AfterSetArmorEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ARMOR_CHANGE;
             _eventTypeInfoList.Find(e => e.eventName == "BeforeTurnEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_TURN_END;
             _eventTypeInfoList.Find(e => e.eventName == "AfterTurnEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TURN_END;
             _eventTypeInfoList.Sort((a, b) => a.eventName.CompareTo(b.eventName));

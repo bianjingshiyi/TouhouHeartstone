@@ -103,80 +103,6 @@ namespace UI
         }
         #endregion
         #region 事件回调
-        //protected override void onEnableCardListItem(int index, RectTransform itemRect)
-        //{
-        //    base.onEnableCardListItem(index, itemRect);
-        //    EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
-        //    item.onBeginDrag += onBeginDragCardListItemCallback;
-        //    item.onDrag += onDragCardListItemCallback;
-        //    item.onEndDrag += onEndDragCardListItemCallback;
-        //}
-        //protected override void onDisableCardListItem(int index, RectTransform itemRect)
-        //{
-        //    base.onDisableCardListItem(index, itemRect);
-        //    EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
-        //    item.onBeginDrag -= onBeginDragCardListItemCallback;
-        //    item.onDrag -= onDragCardListItemCallback;
-        //    item.onEndDrag -= onEndDragCardListItemCallback;
-        //}
-        //private void onBeginDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
-        //{
-        //    _dragStartPosition = eventData.position;
-        //    _isDraggingHorizontal = false;
-        //    _isDraggingVertical = false;
-        //    eventData.Use();
-        //}
-        //private void onDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
-        //{
-        //    if (!_isDraggingHorizontal && !_isDraggingVertical)
-        //    {
-        //        var delta = _dragStartPosition - eventData.position;
-        //        if (delta.magnitude > 0)
-        //        {
-        //            if (Math.Abs(delta.x) > Math.Abs(delta.y))
-        //            {
-        //                if (_enableDrag && Math.Abs(delta.x) > _dragThreshold)
-        //                {
-        //                    _isDraggingHorizontal = true;
-        //                    showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
-        //                    onStartDargCardListItem?.Invoke(getCardItemIndex(item.transform as RectTransform));
-        //                }
-        //            }
-        //            else
-        //            {
-        //                _isDraggingVertical = true;
-        //                _cardListScrollRect.OnBeginDrag(eventData);
-        //            }
-        //        }
-        //    }
-        //    else if (_isDraggingHorizontal)
-        //    {
-        //        _dragCard.rectTransform.position = eventData.position;
-        //        _dragDeckListItem.transform.position = eventData.position;
-        //        showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
-        //    }
-        //    else if (_isDraggingVertical)
-        //    {
-        //        _cardListScrollRect.OnDrag(eventData);
-        //    }
-        //    eventData.Use();
-        //}
-        //private void onEndDragCardListItemCallback(EditorCardListItem item, PointerEventData eventData)
-        //{
-        //    if (_isDraggingHorizontal)
-        //    {
-        //        // 结束拖拽
-        //        hideDragCard();
-        //        onEndDragCardListItem?.Invoke(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
-        //        _isDraggingHorizontal = false;
-        //    }
-        //    else if (_isDraggingVertical)
-        //    {
-        //        _cardListScrollRect.OnEndDrag(eventData);
-        //        _isDraggingVertical = false;
-        //    }
-        //    eventData.Use();
-        //}
         protected override void onDeckCardListItemEnable(RectTransform itemRect)
         {
             base.onDeckCardListItemEnable(itemRect);
@@ -239,8 +165,6 @@ namespace UI
                 onEndDragDeckCardListItem?.Invoke(isPositionOverDeckCardList(position));
             }
             eventData.Use();
-            //gameObject.SetActive(true);
-            //GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
         }
         private void onClickExportDeckButtonCallback()
         {
@@ -291,67 +215,9 @@ namespace UI
         public event Action onClickUploadDeckButton;
         #endregion
         /// <summary>
-        /// 当前正在编辑的卡组ID
-        /// </summary>
-        int currentDeckID = 0;
-        /// <summary>
-        /// 当前正在编辑的卡组的Master卡的ID
-        /// </summary>
-        int currentEditingDeckMasterID = 0;
-        /// <summary>
         /// 当前正在编辑的卡组的卡片
         /// </summary>
         List<int> currentDeckCards { get; set; } = new List<int>();
-        /// <summary>
-        /// 当前卡组是否修改
-        /// </summary>
-        bool deckChanged { get; set; } = false;
-        [TranslateMsg]
-        const string PILE_NOT_SAVE = "卡组尚未保存，退出后现有变更将丢失。\n是否退出？";
-        [TranslateMsg]
-        const string CARD_NOT_EXISTS = "ID为{0}的卡不存在";
-        [TranslateMsg]
-        const string PILE_CODE_INCOMPLETE = "卡组代码不完整";
-        [TranslateMsg]
-        const string PILE_CODE_CORRUPTED = "卡组数据已损坏";
-        [TranslateMsg]
-        const string PILE_IMPORT_ERROR = "导入错误\n{0}";
-        [TranslateMsg]
-        const string PILE_UPLOAD_WARN_MSG = "卡组数据上传功能将会覆盖您在云端的数据，是否上传？";
-        [TranslateMsg]
-        const string PILE_UPLOAD_NO_LOGIN = "游客无法使用此功能。";
-        [TranslateMsg]
-        const string PILE_DOWNLOAD_WARN_MSG = "卡组数据下载功能将会从云端同步你的卡组数据并与本地数据合并，可能会覆盖本地的某些卡组，是否下载？";
-        [TranslateMsg]
-        const string PILE_UPLOAD_SUCCES = "卡组上传完毕";
-        [TranslateMsg]
-        const string PILE_DOWNLOAD_SUCCES = "卡组下载完毕";
-        BuildCardViewData[] displayedCardList = new BuildCardViewData[0];
-        ///// <summary>
-        ///// 所有可用的卡
-        ///// </summary>
-        //CardDefine[] avaliableCards { get; set; } = null;
-
-        /// <summary>
-        /// 切换模式
-        /// </summary>
-        /// <param name="deckMode">卡组列表模式</param>
-        void uiModeSwitch(bool deckMode)
-        {
-            DeckListViewImage.gameObject.SetActive(deckMode);
-            DeckCardViewImage.gameObject.SetActive(!deckMode);
-
-            _enableDrag = !deckMode;
-
-            // 退出组卡时清理
-            if (deckMode)
-            {
-                currentDeckCards.Clear();
-            }
-
-            //updateCardRemainText();
-            deckChanged = false;
-        }
         /// <summary>
         /// 当松开拖拽构筑牌库中的卡牌
         /// </summary>
@@ -381,12 +247,6 @@ namespace UI
                 //onDeckCardChange();
             }
         }
-
-
-
-        [TranslateMsg]
-        const string DRAG_INSTEAD_CLICK = "请将卡片拖拽到卡组列表中组卡";
-
         public void onClickHandCard()
         {
             //if (_enableDrag)
@@ -438,8 +298,6 @@ namespace UI
         Vector2 _dragStartPosition;
         [SerializeField]
         bool _isDraggingHorizontal = false;
-        [SerializeField]
-        bool _isDraggingVertical = false;
         [SerializeField]
         GameObject _editCardListRightPanel;
         [SerializeField]

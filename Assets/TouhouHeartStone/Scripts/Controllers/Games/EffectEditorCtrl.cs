@@ -33,13 +33,6 @@ namespace Controllers
                 _effect = info.effect;
                 _ui.gameObject.SetActive(true);
                 updatePropList();
-                //bool[] activeRangeValue = new bool[_selectableRanges.Length];
-                //for (int i = 0; i < activeRangeValue.Length; i++)
-                //{
-                //    activeRangeValue[i] = _effect.pileList.Contains(_selectableRanges[i]);
-                //}
-                //_ui.setActiveRange(activeRangeValue);
-                //updateTriggerList();
                 if (info.actionNodeGraphDisplayInfo != null)
                     await scene.actionNodeGraphCtrl.display(info.actionNodeGraphDisplayInfo);
                 else
@@ -269,6 +262,32 @@ namespace Controllers
                 };
             }
             _ui.updatePropList(valueInfos);
+            for (int i = 0; i < valueInfos.Length; i++)
+            {
+                ValueInputField item = _ui.getPropItemAt(i);
+                if (valueInfos[i].type == ActionNodeValueType.actionNode)
+                {
+                    item.setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_ACTION));
+                }
+                else if (valueInfos[i].type == ActionNodeValueType.actionValueRef)
+                {
+                    item.setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_RETURN_VALUE));
+                }
+                else if (valueInfos[i].type == ActionNodeValueType.trigger)
+                {
+                    item.setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_TRIGGER));
+                }
+                else if (valueInfos[i].type == ActionNodeValueType.triggerCollection)
+                {
+                    if (valueInfos[i].value is TriggerCollection triggerCol)
+                    {
+                        for (int j = 0; j < triggerCol.Count; j++)
+                        {
+                            item.getItemAt(j).setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_TRIGGER));
+                        }
+                    }
+                }
+            }
         }
         private ActionNodeValueType getValueTypeByType(Type type)
         {

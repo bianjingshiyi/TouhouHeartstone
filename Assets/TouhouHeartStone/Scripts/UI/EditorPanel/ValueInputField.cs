@@ -29,6 +29,10 @@ namespace UI
             _isListItem = isListItem;
             update();
         }
+        public void setButtonText(string text)
+        {
+            _buttonText.text = text;
+        }
         public ValueInputField getItemAt(int index)
         {
             return _list[index].GetComponent<ValueInputField>();

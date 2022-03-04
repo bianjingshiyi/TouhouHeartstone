@@ -139,29 +139,6 @@ namespace Controllers
                 });
             }
         }
-        /// <summary>
-        /// 当卡牌列表需要更新显示，更新对应物体的显示
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="item"></param>
-        //private async void onUpdateCardListItem(int index, RectTransform item)
-        //{
-        //    EditorCardListItem cardListItem = item.GetComponentInChildren<EditorCardListItem>();
-        //    if (index < _cardDefineList.Count)
-        //    {
-        //        //显示卡牌
-        //        CardDefine cardDefine = _cardDefineList[index];
-        //        CardSkinData cardSkin = getCardSkinData(cardDefine);
-        //        cardListItem.card.setCard(cardDefine, cardSkin);
-        //        cardListItem.switchToCard();
-        //        cardListItem.card.setImage(await loadExternalImage(cardSkin.imagePath));
-        //    }
-        //    else
-        //    {
-        //        //新建卡牌按钮
-        //        cardListItem.switchToAddButton();
-        //    }
-        //}
         private void onUpdateCardListItem(int index, EditorCardListItem item)
         {
             item.hideCount();
@@ -353,40 +330,6 @@ namespace Controllers
                 viewData[i].count = 0;
             }
             _ui.updateDeckCardList(viewData);
-        }
-        private Task<Sprite> loadExternalImage(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return Task.FromResult<Sprite>(null);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(_curCardPoolPath))
-                {
-                    if (string.IsNullOrEmpty(path))
-                    {
-                        return Task.FromResult<Sprite>(null);
-                    }
-                    else if (_curCardPoolPath.StartsWith("sa:") &&
-                        !path.StartsWith("sa:") &&
-                        !path.StartsWith("res:"))
-                    {
-                        //StreamingAssets不需要区分根目录
-                        return game.card.loadExternalImage("sa:" + Path.Combine(game.card.textureDirName, path), null);
-                    }
-                    else
-                    {
-                        //因为在Editor下无法区分可持续化文件和工程文件，这里必须获取卡池目录的完整根目录
-                        return game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(_curCardPoolPath), game.card.textureDirName));
-                    }
-                }
-                else
-                {
-                    //没有卡池信息
-                    return game.card.loadExternalImage(path, game.card.textureDirName);
-                }
-            }
         }
         #endregion
         [SerializeField]
