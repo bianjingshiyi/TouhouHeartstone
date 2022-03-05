@@ -925,6 +925,7 @@ namespace Game
         public string editorCardPoolDirName => _editorCardPoolDirName;
         public string editorTextureDirName => _editorTextureDirName;
         public string cardPoolFilePostfix => _cardPoolFilePostfix;
+        public int[] standardCardPoolsId => _standardCardPoolsId;
         /// <summary>
         /// 键为文件地址，值为卡池信息
         /// </summary>
@@ -933,12 +934,6 @@ namespace Game
         /// 键为卡池Id，值为卡池
         /// </summary>
         Dictionary<int, CardPool> _cardPoolDict = new Dictionary<int, CardPool>();
-        //Dictionary<int, List<CardDefine>> _externalCardDefineDict = new Dictionary<int, List<CardDefine>>();
-        /// <summary>
-        /// 用于存储外部皮肤信息的字典，Key为卡池Id，值为卡池包含皮肤列表
-        /// </summary>
-        //Dictionary<int, List<CardSkinData>> _externalCardSkinDict = new Dictionary<int, List<CardSkinData>>();
-        //Dictionary<int, List<ActionNodeGraphInfo>> _externalCardActionGraphInfoDict = new Dictionary<int, List<ActionNodeGraphInfo>>();
         [Header("卡池")]
         [SerializeField]
         bool _enableStreamingAssetsInEditor = false;

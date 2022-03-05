@@ -28,6 +28,7 @@ namespace UI
         {
             _sortDropdown.ClearOptions();
             _sortDropdown.AddOptions(new List<string>(sortTypes));
+            _sortDropdown.template.setHeight(120);
         }
         public void setSortType(int index)
         {

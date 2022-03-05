@@ -197,6 +197,7 @@ namespace Controllers
                     });
                 }
                 //更新UI
+                _ui.gameObject.SetActive(true);
                 string[] cardPoolNames = new string[_cardPoolInfoList.Count];
                 for (int i = 0; i < cardPoolNames.Length; i++)
                 {
@@ -228,11 +229,13 @@ namespace Controllers
                 }
                 _ui.setCharacterFilters(characterNameList.ToArray());
                 _ui.setCharacterFilter(_characterFiltersValue);
+                _ui.setSortTypes(_sortTypes);
+                _ui.setCostFilters(_costFilters);
                 _ui.setCostFilter(_costFiltersValue);
+                _ui.setTypeFilters(_typeFilters);
                 _ui.setTypeFilter(_typeFiltersValue);
                 _ui.setSearchInputField(_searchFilterString);
                 _ui.updateCardListCount(_filteredCardDefineList.Count);
-                _ui.gameObject.SetActive(true);
             }
         }
         public Task display(int cardId, int[] cardPoolsId = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
@@ -298,9 +301,6 @@ namespace Controllers
         #region 生命周期
         protected void Awake()
         {
-            _ui.setSortTypes(_sortTypes);
-            _ui.setCostFilters(_costFilters);
-            _ui.setTypeFilters(_typeFilters);
             _ui.onEnableCardListItem += onEnableCardListItemCallback;
             _ui.onDisableCardListItem += onDisableCardListItemCallback;
             _ui.onUpdateCardListItem += onUpdateCardListItemCallback;

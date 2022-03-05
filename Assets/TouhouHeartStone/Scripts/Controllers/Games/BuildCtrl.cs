@@ -27,47 +27,15 @@ namespace Controllers
             _deck = null;
             _isDeckChanged = false;
 
-            //卡牌收藏
             _selectableMasters = game.card.getCardDefines(c => c.isMaster());
-            //_sortType = 0;
-            //_characterFilters = null;
-            //_characterFiltersValue = null;
-            //_costFiltersValue = new bool[GameUIHelper.cardPoolViewPanel_CostFilters.Length];
-            //_typeFiltersValue = new bool[GameUIHelper.cardPoolViewPanel_TypeFilters.Length];
 
-            //await loadCardListThenFilterAndSort();
-            //_characterFiltersValue = new bool[_characterFilters.Length];
-
-            _ui.gameObject.SetActive(true);
             //UI更新
-            //string[] cardPoolNames = new string[_cardPoolList.Count];
-            //for (int i = 0; i < cardPoolNames.Length; i++)
-            //{
-            //    cardPoolNames[i] = _cardPoolList[i].info.cardPoolName;
-            //}
-            //bool[] cardPoolValues = new bool[_cardPoolList.Count];
-            //for (int i = 0; i < cardPoolValues.Length; i++)
-            //{
-            //    cardPoolValues[i] = _cardPoolList[i].isEnabled;
-            //}
-            //_ui.setCardPoolOptions(cardPoolNames);
-            //_ui.setCardPoolValue(cardPoolValues);
-            //_ui.setSortType(_sortType);
-            //_ui.setCharacterFilters(_characterFilters.Select(id =>
-            //{
-            //    if (id == CATEGORY.CHARACTER_NEUTRAL)
-            //        return "中立";
-            //    return game.card.getSkin(id).name;
-            //}).ToArray());
-            //_ui.setCharacterFilter(_characterFiltersValue);
-            //_ui.setCostFilter(_costFiltersValue);
-            //_ui.setTypeFilter(_typeFiltersValue);
-            //_ui.setCardListActive(true);
-            //_ui.updateCardListCount(_cardDefineList.Count);
+            _ui.gameObject.SetActive(true);
             _ui.setEnableDrag(false);
             //右侧栏
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
+            await _cardPoolViewPanelCtrl.display(cardPoolsId: game.card.standardCardPoolsId);
             await updateDeckListUI();
         }
         /// <summary>
@@ -989,16 +957,6 @@ namespace Controllers
         BuildCardPanel _ui;
         [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
-        //[SerializeField]
-        //int _sortType;
-        //[SerializeField]
-        //int[] _characterFilters;
-        //[SerializeField]
-        //bool[] _characterFiltersValue;
-        //[SerializeField]
-        //bool[] _costFiltersValue;
-        //[SerializeField]
-        //bool[] _typeFiltersValue;
         [SerializeField]
         float _dragThreshold = 50f;
         [SerializeField]
