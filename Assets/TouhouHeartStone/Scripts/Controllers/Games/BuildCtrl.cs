@@ -49,44 +49,12 @@ namespace Controllers
 
             //切换角色筛选
             await _cardPoolViewPanelCtrl.display(charactersId: new int[] { deck.masterId });
-            //int index = Array.IndexOf(_characterFilters, deck.masterId);
-            //_characterFiltersValue = new bool[_characterFilters.Length];
-            //_characterFiltersValue[index] = true;
-            //await loadCardListThenFilterAndSort();
-            ////剔除卡组中无法识别的卡牌
-            //for (int i = 0; i < deck.cardList.Count; i++)
-            //{
-            //    if (game.card.GetCardDefine(deck.cardList[i].id) == null)
-            //    {
-            //        Debug.LogWarning("卡组中存在未知卡牌" + deck.cardList[i]);
-            //        deck.cardList.RemoveAt(i);
-            //        i--;
-            //    }
-            //}
-
-            //_ui.setCharacterFilter(_characterFiltersValue);
-
-            // 皮肤
             CardSkinData masterSkin = game.card.getSkin(deck.masterId);
+
+            // 更新UI
             _ui.gameObject.SetActive(true);
             _ui.updateCurCardPoolInfo(deck.name, await loadDeckImage(deck));
             _ui.setCharacterName(masterSkin.name);
-
-            // 更新UI
-            //string[] cardPoolNames = new string[_cardPoolList.Count];
-            //for (int i = 0; i < cardPoolNames.Length; i++)
-            //{
-            //    cardPoolNames[i] = _cardPoolList[i].info.cardPoolName;
-            //}
-            //bool[] cardPoolValues = new bool[_cardPoolList.Count];
-            //for (int i = 0; i < cardPoolValues.Length; i++)
-            //{
-            //    cardPoolValues[i] = _cardPoolList[i].isEnabled;
-            //}
-            //_ui.setCardPoolOptions(cardPoolNames);
-            //_ui.setCardPoolValue(cardPoolValues);
-            //_ui.setCardListActive(true);
-            //_ui.updateCardListCount(_cardDefineList.Count);
             _ui.setDeckListActive(false);
             _ui.setEditCardListActive(true);
             _ui.setEnableDrag(true);

@@ -458,7 +458,7 @@ namespace TouhouHeartstone
             if (define == null)
                 throw new ArgumentNullException(nameof(define));
             if (player.getField().count >= player.getField().maxCount)
-                return null;
+                return Task.FromResult<HearthStoneRule.CreateTokenEventArg>(null);
             if (position < 0)
                 position = player.getField().count;
             HearthStoneRule.CreateTokenEventArg eventArg = new HearthStoneRule.CreateTokenEventArg() { player = player, define = define, position = position };

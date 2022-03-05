@@ -204,6 +204,10 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_RANDOM_CARD = "获取随机卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并洗入牌库")]
         public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK = "创建衍生卡并洗入牌库";
+        [TranslateMsg("动作图编辑器中动作节点名称之禁锢")]
+        public const string EDITOR_NODE_NAME_FREEZE = "禁锢";
+        [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并置入战场")]
+        public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD = "创建衍生卡并置入战场";
         #endregion
         #region 增益
         [TranslateMsg("动作图编辑器中动作节点分类之增益")]

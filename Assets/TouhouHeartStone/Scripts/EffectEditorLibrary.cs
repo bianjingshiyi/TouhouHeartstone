@@ -159,6 +159,22 @@ namespace Game
             return cards.random(game);
         }
         /// <summary>
+        /// 创建衍生物并置入战场
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="cardDefine"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card> createTokenCardToField(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            Player player = card.getOwner();
+            var createTokenEvent = await player.createToken(game, cardDefine);
+            return createTokenEvent?.card;
+        }
+        /// <summary>
         /// 创建衍生卡并置入手牌
         /// </summary>
         /// <returns></returns>
@@ -283,6 +299,12 @@ namespace Game
         public static Card[] getEnemyServants(CardEngine game, Card card)
         {
             return game.getOpponent(card.owner).getField();
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FREEZE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
+        public static Task<IPropChangeEventArg> freeze(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.setFreeze(game, true);
         }
         #endregion
         #region 增益

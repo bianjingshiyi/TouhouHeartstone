@@ -400,14 +400,14 @@ namespace TouhouHeartstone
         }
         public static bool isFreeze(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.FREEZE);
+            return card.hasKeyword(game, KEYWORD.FREEZED);
         }
         public static Task<IPropChangeEventArg> setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
-                return card.addKeywords(game, KEYWORD.FREEZE);
+                return card.addKeywords(game, KEYWORD.FREEZED);
             else
-                return card.removeKeywords(game, KEYWORD.FREEZE);
+                return card.removeKeywords(game, KEYWORD.FREEZED);
         }
         public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {

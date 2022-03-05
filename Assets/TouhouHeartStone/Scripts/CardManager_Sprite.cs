@@ -59,7 +59,7 @@ namespace Game
                 }, false);
                 if (paths == null || paths.Length < 1)
                 {
-                    return null;
+                    return Task.FromResult<Sprite>(null);
                 }
                 string path = paths[0];
                 UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path);

@@ -135,7 +135,7 @@ namespace Controllers
                 KEYWORD.DRAIN,
                 KEYWORD.POISONOUS,
                 KEYWORD.ELUSIVE,
-                KEYWORD.FREEZE,
+                KEYWORD.FREEZED,
                 KEYWORD.UNIQUE,
                 KEYWORD.AUTOCAST,
                 KEYWORD.CANTATTACK,
