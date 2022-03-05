@@ -8,6 +8,22 @@ namespace Game
         public const string EDITOR_NEW_CARDPOOL_DEFAULT_NAME = "新建卡池";
         [TranslateMsg("编辑器中新建皮肤的默认名称")]
         public const string EDITOR_NEW_SKIN_DEFAULT_NAME = "新建皮肤";
+        [TranslateMsg("编辑器中效果的属性名称之生效区域")]
+        public const string EDITOR_EFFECT_PROP_NAME_PILE_LIST = "生效区域";
+        [TranslateMsg("编辑器中效果的属性名称之生效动作")]
+        public const string EDITOR_EFFECT_PROP_NAME_ON_ENABLE_ACTION = "生效动作";
+        [TranslateMsg("编辑器中效果的属性名称之失效动作")]
+        public const string EDITOR_EFFECT_PROP_NAME_ON_DISABLE_ACTION = "失效动作";
+        [TranslateMsg("编辑器中效果的属性名称之触发器列表")]
+        public const string EDITOR_EFFECT_PROP_NAME_TRIGGER_LIST = "触发器列表";
+        [TranslateMsg("编辑器中效果的属性名称之标签列表")]
+        public const string EDITOR_EFFECT_PROP_NAME_TAG_LIST = "标签列表";
+        [TranslateMsg("编辑器中效果的属性名称之作用区域")]
+        public const string EDITOR_EFFECT_PROP_NAME_RANGE_LIST = "作用区域";
+        [TranslateMsg("编辑器中效果的属性名称之作用条件")]
+        public const string EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION = "作用条件";
+        [TranslateMsg("编辑器中效果的属性名称之增益定义")]
+        public const string EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE = "增益定义";
         [TranslateMsg("编辑器中效果类型名称之通用效果")]
         public const string EDITOR_EFFECT_NAME_NORMAL_EFFECT = "通用效果";
         [TranslateMsg("编辑器中效果类型名称之光环效果")]

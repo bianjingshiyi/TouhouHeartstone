@@ -256,7 +256,8 @@ namespace Controllers
             {
                 valueInfos[i] = new ActionNodeValueInfo()
                 {
-                    name = propInfos[i].name,
+                    //翻译属性名称
+                    name = _propNameDict.ContainsKey(propInfos[i].name) ? game.langManager.getString(_propNameDict[propInfos[i].name]) : propInfos[i].name,
                     type = getValueTypeByType(propInfos[i].type),
                     value = _effect.getProp(propInfos[i].name)
                 };
@@ -333,6 +334,17 @@ namespace Controllers
         {
             KEYWORD.BATTLECRY,
             KEYWORD.DEATHRATTLE
+        };
+        readonly Dictionary<string, string> _propNameDict = new Dictionary<string, string>()
+        {
+            { nameof(GeneratedEffect.pileList), StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST },
+            { nameof(GeneratedEffect.onEnableAction), StringTable.EDITOR_EFFECT_PROP_NAME_ON_ENABLE_ACTION },
+            { nameof(GeneratedEffect.onDisableAction), StringTable.EDITOR_EFFECT_PROP_NAME_ON_DISABLE_ACTION },
+            { nameof(GeneratedEffect.triggerList), StringTable.EDITOR_EFFECT_PROP_NAME_TRIGGER_LIST },
+            { nameof(GeneratedEffect.tagList), StringTable.EDITOR_EFFECT_PROP_NAME_TAG_LIST },
+            { nameof(GeneratedHalo.rangeList), StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST },
+            { nameof(GeneratedHalo.affectCondition), StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
+            { nameof(GeneratedHalo.getHaloBuffDefine), StringTable.EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE }
         };
         readonly Dictionary<string, string> _pileOptionNameDict = new Dictionary<string, string>()
         {
