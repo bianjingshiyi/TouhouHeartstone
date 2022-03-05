@@ -120,6 +120,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_SET_PLAYER_PROP = "设置玩家属性";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家属性")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_PROP = "获取玩家属性";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家英雄")]
+        public const string EDITOR_NODE_NAME_GET_MASTER = "获取玩家英雄";
         #endregion
         #region 牌堆
         [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]
@@ -194,6 +196,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_DAMAGE_EVENT = "伤害事件";
         [TranslateMsg("动作图编辑器中动作节点参数名称之伤害")]
         public const string EDITOR_PARAM_NAME_DAMAGE = "伤害";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之基础伤害")]
+        public const string EDITOR_PARAM_NAME_BASE_DAMAGE = "基础伤害";
         [TranslateMsg("动作图编辑器中动作节点名称之获取敌方随从")]
         public const string EDITOR_NODE_NAME_GET_ENEMY_SERVANTS = "获取敌方随从";
         [TranslateMsg("动作图编辑器中动作节点名称之获取随机卡牌")]

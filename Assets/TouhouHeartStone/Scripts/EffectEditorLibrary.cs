@@ -12,7 +12,7 @@ namespace Game
         Servant,
         Item
     }
-    public class EffectEditorLibrary
+    public static class EffectEditorLibrary
     {
         //  把这个“玩家”逐步移到下面几个去
         #region 玩家
@@ -43,6 +43,12 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]object value)
         {
             player.setProp(propName, value);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_MASTER, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "GetMaster")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getMaster([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player.getMaster();
         }
         /// <summary>
         /// 获取玩家手牌
@@ -229,6 +235,14 @@ namespace Game
         public static Player getOwner([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             return card.owner;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "GetSpellDamage")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
+        public static int getSpellDamage(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BASE_DAMAGE)] int baseDamage)
+        {
+            return player.getSpellDamage(game, baseDamage);
         }
         /// <summary>
         /// 这是不是一张法术牌

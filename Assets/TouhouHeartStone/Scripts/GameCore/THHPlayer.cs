@@ -519,10 +519,8 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-        #region 动作定义
-        [ActionNodeMethod("GetSpellDamage", "Player")]
-        [return: ActionNodeParam("Damage")]
-        public static int getSpellDamage([ActionNodeParam("Player")] this Player player, CardEngine game, [ActionNodeParam("BaseDamage")] int baseDamage)
+        public static Card getMaster(this Player player) => player.getPile(PILE.MASTER)[0];
+        public static int getSpellDamage(this Player player, CardEngine game, int baseDamage)
         {
             int result = baseDamage;
             foreach (var card in player.getField())
@@ -531,9 +529,6 @@ namespace TouhouHeartstone
             }
             return result;
         }
-        [ActionNodeMethod("GetMaster", "Player")]
-        public static Card getMaster([ActionNodeParam("Player")]this Player player) => player.getPile(PILE.MASTER)[0];
-        #endregion
         public static async Task<Card> shuffleCardToDeck(this Player player, CardEngine game, CardDefine define)
         {
             Card card = game.createCard(define);
