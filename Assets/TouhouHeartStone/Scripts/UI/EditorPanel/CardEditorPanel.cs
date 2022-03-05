@@ -361,6 +361,11 @@ namespace UI
             _nameInputField.gameObject.SetActive(true);
             _nameInputField.SetTextWithoutNotify(_card.getName());
             _nameInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.nameText.gameObject.SetActive(false);
+            _card.servantCardFace.nameText.gameObject.SetActive(false);
+            _card.servantCardFace.nameText.gameObject.SetActive(false);
         }
         private void onEditSubnameButtonClicked()
         {
@@ -368,6 +373,9 @@ namespace UI
             _subnameInputField.gameObject.SetActive(true);
             _subnameInputField.SetTextWithoutNotify(_card.getSubname());
             _subnameInputField.Select();
+
+            // Hide background text
+            _card.servantCardFace.subNameText.gameObject.SetActive(false);
         }
         private void onEditDescButtonClicked()
         {
@@ -375,6 +383,11 @@ namespace UI
             _descInputField.gameObject.SetActive(true);
             _descInputField.SetTextWithoutNotify(_card.getDesc());
             _descInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.descText.gameObject.SetActive(false);
+            _card.servantCardFace.descText.gameObject.SetActive(false);
+            _card.spellCardFace.descText.gameObject.SetActive(false);
         }
         private async void onEditImageButtonClicked()
         {
@@ -407,34 +420,63 @@ namespace UI
         {
             _editCostButton.gameObject.SetActive(false);
             _costInputField.gameObject.SetActive(true);
+            _costInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.costPropNumber.text.gameObject.SetActive(false);
+            _card.servantCardFace.costPropNumber.text.gameObject.SetActive(false);
+            _card.spellCardFace.costPropNumber.text.gameObject.SetActive(false);
         }
         private void onEditAttackButtonClicked()
         {
             _editAttackButton.gameObject.SetActive(false);
             _attackInputField.gameObject.SetActive(true);
+            _attackInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.attackPropNumber.text.gameObject.SetActive(false);
+            _card.servantCardFace.attackPropNumber.text.gameObject.SetActive(false);
         }
         private void onEditLifeButtonClicked()
         {
             _editLifeButton.gameObject.SetActive(false);
             _lifeInputField.gameObject.SetActive(true);
+            _lifeInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.lifePropNumber.text.gameObject.SetActive(false);
+            _card.servantCardFace.lifePropNumber.text.gameObject.SetActive(false);
         }
         private void onNameInputFieldEndEdit(string text)
         {
             _nameInputField.gameObject.SetActive(false);
             _editNameButton.gameObject.SetActive(true);
             onChangeName?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.nameText.gameObject.SetActive(true);
+            _card.servantCardFace.nameText.gameObject.SetActive(true);
+            _card.spellCardFace.nameText.gameObject.SetActive(true);
         }
         private void onSubNameInputFieldEndEdit(string text)
         {
             _subnameInputField.gameObject.SetActive(false);
             _editSubnameButton.gameObject.SetActive(true);
             onChangeSubName?.Invoke(text);
+
+            // Show background text
+            _card.servantCardFace.subNameText.gameObject.SetActive(true);
         }
         private void onDescInputFieldEndEdit(string text)
         {
             _descInputField.gameObject.SetActive(false);
             _editDescButton.gameObject.SetActive(true);
             onChangeDesc?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.descText.gameObject.SetActive(true);
+            _card.servantCardFace.descText.gameObject.SetActive(true);
+            _card.spellCardFace.descText.gameObject.SetActive(true);
         }
         private void onTagDropdownValueChangedCallback(int value)
         {
@@ -447,18 +489,31 @@ namespace UI
             _costInputField.gameObject.SetActive(false);
             _editCostButton.gameObject.SetActive(true);
             onChangeCost?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.costPropNumber.text.gameObject.SetActive(true);
+            _card.servantCardFace.costPropNumber.text.gameObject.SetActive(true);
+            _card.spellCardFace.costPropNumber.text.gameObject.SetActive(true);
         }
         private void onAttackInputFieldEndEdit(string text)
         {
             _attackInputField.gameObject.SetActive(false);
             _editAttackButton.gameObject.SetActive(true);
             onChangeAttack?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.attackPropNumber.text.gameObject.SetActive(true);
+            _card.servantCardFace.attackPropNumber.text.gameObject.SetActive(true);
         }
         private void onLifeInputFieldEndEdit(string text)
         {
             _lifeInputField.gameObject.SetActive(false);
             _editLifeButton.gameObject.SetActive(true);
             onChangeLife?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.lifePropNumber.text.gameObject.SetActive(true);
+            _card.servantCardFace.lifePropNumber.text.gameObject.SetActive(true);
         }
         private void onClickEffectListItemEditButton(int index)
         {
