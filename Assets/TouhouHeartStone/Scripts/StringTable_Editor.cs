@@ -208,6 +208,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_FREEZE = "禁锢";
         [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并置入战场")]
         public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD = "创建衍生卡并置入战场";
+        [TranslateMsg("动作图编辑器中动作节点名称之对目标造成固定法术伤害")]
+        public const string EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS = "对目标造成固定法术伤害";
         #endregion
         #region 增益
         [TranslateMsg("动作图编辑器中动作节点分类之增益")]

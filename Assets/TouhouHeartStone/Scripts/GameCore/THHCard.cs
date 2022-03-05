@@ -834,22 +834,25 @@ namespace TouhouHeartstone
             {
                 TriggerGraph activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
                 List<Card> targetList = new List<Card>();
-                foreach (TargetChecker targetChecker in activeTrigger.targetCheckerList)
+                if (activeTrigger.targetCheckerList != null)
                 {
-                    foreach (Player player in game.players)
+                    foreach (TargetChecker targetChecker in activeTrigger.targetCheckerList)
                     {
-                        if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER)
+                        foreach (Player player in game.players)
                         {
-                            if (card.isValidTarget(game, player.getMaster(), null, null, generatedEffect))
-                                targetList.Add(player.getMaster());
-                        }
-                        if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER ||
-                            targetChecker.targetType == DEFINE.TARGET_TYPE_SERVANT)
-                        {
-                            foreach (Card servant in player.getField())
+                            if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER)
                             {
-                                if (card.isValidTarget(game, servant, null, null, generatedEffect))
-                                    targetList.Add(servant);
+                                if (card.isValidTarget(game, player.getMaster(), null, null, generatedEffect))
+                                    targetList.Add(player.getMaster());
+                            }
+                            if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER ||
+                                targetChecker.targetType == DEFINE.TARGET_TYPE_SERVANT)
+                            {
+                                foreach (Card servant in player.getField())
+                                {
+                                    if (card.isValidTarget(game, servant, null, null, generatedEffect))
+                                        targetList.Add(servant);
+                                }
                             }
                         }
                     }

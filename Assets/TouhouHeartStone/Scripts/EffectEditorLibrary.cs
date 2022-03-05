@@ -271,6 +271,14 @@ namespace Game
         {
             return card.define.type == DEFINE.SPELL;
         }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        public static Task<THHCard.DamageEventArg> dealSpecificSpellDamageToTargets(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)]int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)]Card[] targets)
+        {
+            return targets.damage(game, card, card.owner.getSpellDamage(game, damage));
+        }
         /// <summary>
         /// 对固定数量的随机敌人造成法术伤害
         /// </summary>

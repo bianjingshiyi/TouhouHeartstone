@@ -353,7 +353,7 @@ namespace Controllers
                     }
                     Type outputType = getEventVarInfo(outputIndex - 1).type;
                     Type inputType = _actionDefineDict[inputActionNode.defineName].inputs[inputIndex - inputActionNode.branches.Length].type;
-                    if (!outputType.IsAssignableFrom(inputType) && !inputType.IsAssignableFrom(outputType))
+                    if (!isValidTypeForConnection(outputType, inputType))
                     {
                         //相互连接的输入输出类型必须可以相互转化
                         _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
@@ -408,20 +408,20 @@ namespace Controllers
                         _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
                         return;
                     }
-                    //检查类型合法性
+                    //检查类型合法性，获取输入输出类型
                     Type outputType = _actionDefineDict[outputActionNode.defineName].outputs[outputIndex - outputActionNode.branches.Length].type;
                     ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
                     Type inputType;
                     if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length)
                     {
-                        //多参数
+                        //多参数，获取最后一个参数类型
                         inputType = inputActionDefine.inputs.Last().type;
                     }
                     else
                     {
                         inputType = inputActionDefine.inputs[inputIndex - 1].type;
                     }
-                    if (!outputType.IsAssignableFrom(inputType) && !inputType.IsAssignableFrom(outputType))
+                    if (!isValidTypeForConnection(outputType, inputType))
                     {
                         //相互连接的输入输出类型必须可以相互转化
                         _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
@@ -1595,7 +1595,6 @@ namespace Controllers
         private void unconnectNode4ValueRef(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
             ActionNodeItem inputActionNodeItem = getActionNodeItem(inputActionNode);
-            ActionNodeItem outputActionNodeItem = getActionNodeItem(outputActionNode);
             ActionValueRef inputActionValueRef = inputActionNode.inputs[inputIndex];
             //断开之前的节点连接
             ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
@@ -1640,7 +1639,10 @@ namespace Controllers
                 //不是端参数，直接断开
                 inputActionNode.inputs[inputIndex] = null;
                 //更新ui
-                _ui.unconnectNode(outputActionNodeItem, outputActionNode.branches.Length + outputIndex, inputActionNodeItem, inputActionNode.branches.Length + inputIndex);
+                if (tryGetActionNodeItem(outputActionNode, out ActionNodeItem outputActionNodeItem))
+                {
+                    _ui.unconnectNode(outputActionNodeItem, outputActionNode.branches.Length + outputIndex, inputActionNodeItem, inputActionNode.branches.Length + inputIndex);
+                }
             }
             if (inputActionValueRef.action != null)
             {
@@ -1746,6 +1748,26 @@ namespace Controllers
                     }
                 }
             }
+        }
+        private bool isValidTypeForConnection(Type outputType, Type inputType)
+        {
+
+            //类型之间可以相互转化
+            if (outputType.IsAssignableFrom(inputType) || inputType.IsAssignableFrom(outputType))
+            {
+                return true;
+            }
+            //在包装成数组之后可以相互转化
+            if (inputType.IsArray && (outputType.IsAssignableFrom(inputType.GetElementType()) || inputType.GetElementType().IsAssignableFrom(outputType)))
+            {
+                return true;
+            }
+            //在拆包成对象之后可以相互转化
+            if (outputType.IsArray && (outputType.GetElementType().IsAssignableFrom(inputType) || inputType.IsAssignableFrom(outputType.GetElementType())))
+            {
+                return true;
+            }
+            return false;
         }
         /// <summary>
         /// 判断一个节点是否是离散的节点，实际上不影响游戏但是可能对没有完成的编辑工作有用所以保存在编辑器里

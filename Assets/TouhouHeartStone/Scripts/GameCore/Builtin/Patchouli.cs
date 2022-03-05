@@ -206,75 +206,75 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            if (game.getBuffDefine(haloBuffDefine.id) == null)
-                game.rule.addBuffDefine(haloBuffDefine);
-            if (game.getBuffDefine(buffDefine.id) == null)
-                game.rule.addBuffDefine(buffDefine);
-            await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(game.getBuffDefine(haloBuffDefine.id)));
-            //await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
-            //    new Halo(new CodeBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
-            //    {
-            //        return c1.isSpell();
-            //    }),
-            //    new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PileFlag.master, (g, c, b, a) =>
-            //    {
-            //        return a.player == card.getOwner() && a.card.isSpell();
-            //    }, ID),
-            //    new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.master, (g2, c2, b2, a2) =>
-            //    {
-            //        return a2.player == card.getOwner();
-            //    }, ID)));
+            //if (game.getBuffDefine(haloBuffDefine.id) == null)
+            //    game.rule.addBuffDefine(haloBuffDefine);
+            //if (game.getBuffDefine(buffDefine.id) == null)
+            //    game.rule.addBuffDefine(buffDefine);
+            //await card.getOwner().getMaster().addBuff(game, new GeneratedBuff(game.getBuffDefine(haloBuffDefine.id)));
+            await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
+                new Halo(new CodeBuff(ID, new CostModifier(-5)), PileFlag.self | PileFlag.hand, PileFlag.self | PileFlag.master, (g1, c1) =>
+                {
+                    return c1.isSpell();
+                }),
+                new RemoveBuffBefore<HearthStoneRule.UseEventArg>(PileFlag.master, (g, c, b, a) =>
+                {
+                    return a.player == card.getOwner() && a.card.isSpell();
+                }, ID),
+                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.master, (g2, c2, b2, a2) =>
+                {
+                    return a2.player == card.getOwner();
+                }, ID)));
         }
-        static GeneratedBuffDefine haloBuffDefine = new GeneratedBuffDefine(ID << 1, null, new GeneratedEffect[]
-        {
-            new GeneratedHalo(ID<<1+1,new string[]{ PILE.MASTER },new string[]{ PILE.HAND }, new ActionValueRef(new ActionNode("IsSpell",new ActionValueRef[]
-            {
-                new ActionValueRef(new ActionNode("ThisCard"))
-            }))),
-            new GeneratedEffect(new string[] { DEFINE.MASTER },
-                new TriggerGraph(
-                    "BeforeUseEvent",
-                    new ActionValueRef(new ActionNode("LogicOperation", new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("Compare",new ActionValueRef[]
-                        {
-                            new ActionValueRef(new ActionNode("GetVariable", "Player")),
-                            new ActionValueRef(new ActionNode("GetOwner",new ActionValueRef[]
-                            {
-                                new ActionValueRef(new ActionNode("ThisCard"))
-                            }))
-                        },new object[]{ CompareOperator.equals })),
-                        new ActionValueRef(new ActionNode("IsSpell", new ActionValueRef[]
-                        {
-                            new ActionValueRef(new ActionNode("GetVariable", "Card"))
-                        }))
-                    },  new object[]{ LogicOperator.and })),
-                    new ActionNode("RemoveBuff", new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("ThisCard")),
-                        new ActionValueRef(new ActionNode("ThisBuff"))
-                    }))),
-            new GeneratedEffect(new string[] { DEFINE.MASTER },
-                new TriggerGraph(
-                    "BeforeTurnEndEvent",
-                    new ActionValueRef(new ActionNode("Compare",new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("GetVariable", "Player")),
-                        new ActionValueRef(new ActionNode("GetOwner",new ActionValueRef[]
-                        {
-                            new ActionValueRef(new ActionNode("ThisCard"))
-                        }))
-                    },new object[]{ CompareOperator.equals })),
-                    new ActionNode("RemoveBuff", new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("ThisCard")),
-                        new ActionValueRef(new ActionNode("ThisBuff"))
-                    }))),
-        });
-        static GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(ID << 1 + 1, new PropModifier[]
-        {
-            new CostModifier(-5)
-        });
+        //static GeneratedBuffDefine haloBuffDefine = new GeneratedBuffDefine(ID << 1, null, new GeneratedEffect[]
+        //{
+        //    new GeneratedHalo(ID<<1+1,new string[]{ PILE.MASTER },new string[]{ PILE.HAND }, new ActionValueRef(new ActionNode("IsSpell",new ActionValueRef[]
+        //    {
+        //        new ActionValueRef(new ActionNode("ThisCard"))
+        //    }))),
+        //    new GeneratedEffect(new string[] { DEFINE.MASTER },
+        //        new TriggerGraph(
+        //            "BeforeUseEvent",
+        //            new ActionValueRef(new ActionNode("LogicOperation", new ActionValueRef[]
+        //            {
+        //                new ActionValueRef(new ActionNode("Compare",new ActionValueRef[]
+        //                {
+        //                    new ActionValueRef(new ActionNode("GetVariable", "Player")),
+        //                    new ActionValueRef(new ActionNode("GetOwner",new ActionValueRef[]
+        //                    {
+        //                        new ActionValueRef(new ActionNode("ThisCard"))
+        //                    }))
+        //                },new object[]{ CompareOperator.equals })),
+        //                new ActionValueRef(new ActionNode("IsSpell", new ActionValueRef[]
+        //                {
+        //                    new ActionValueRef(new ActionNode("GetVariable", "Card"))
+        //                }))
+        //            },  new object[]{ LogicOperator.and })),
+        //            new ActionNode("RemoveBuff", new ActionValueRef[]
+        //            {
+        //                new ActionValueRef(new ActionNode("ThisCard")),
+        //                new ActionValueRef(new ActionNode("ThisBuff"))
+        //            }))),
+        //    new GeneratedEffect(new string[] { DEFINE.MASTER },
+        //        new TriggerGraph(
+        //            "BeforeTurnEndEvent",
+        //            new ActionValueRef(new ActionNode("Compare",new ActionValueRef[]
+        //            {
+        //                new ActionValueRef(new ActionNode("GetVariable", "Player")),
+        //                new ActionValueRef(new ActionNode("GetOwner",new ActionValueRef[]
+        //                {
+        //                    new ActionValueRef(new ActionNode("ThisCard"))
+        //                }))
+        //            },new object[]{ CompareOperator.equals })),
+        //            new ActionNode("RemoveBuff", new ActionValueRef[]
+        //            {
+        //                new ActionValueRef(new ActionNode("ThisCard")),
+        //                new ActionValueRef(new ActionNode("ThisBuff"))
+        //            }))),
+        //});
+        //static GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(ID << 1 + 1, new PropModifier[]
+        //{
+        //    new CostModifier(-5)
+        //});
     }
     /// <summary>
     /// 777 机械帕秋莉 如果你在本回合中使用过法术牌，花费-2

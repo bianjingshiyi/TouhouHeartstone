@@ -120,7 +120,7 @@ namespace Controllers
                 _trigger.eventName = eventNames[triggerIndex];
             }
             //创建入口节点
-            _entryNodeItem = _ui.createTriggerNode(0, 0, getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
+            _entryNodeItem = _ui.createTriggerNode(0, 0, game.langManager.getString(StringTable.EDITOR_NODE_NAME_TRIGGER), getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
             _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
             if (trigger.action != null)
             {

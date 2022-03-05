@@ -7,6 +7,7 @@ using MongoDB.Bson.Serialization;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using BJSYGameCore;
+using System;
 
 namespace Tests
 {
@@ -51,6 +52,13 @@ namespace Tests
         {
             var res = Resources.LoadAll<StreamingAssetsInfo>("");
             Assert.NotNull(res);
+        }
+        [Test]
+        public void getArrayTypeInfoTest()
+        {
+            Type type = typeof(int[]);
+            Debug.Log("IsArray:" + type.IsArray);
+            Debug.Log("ElementType:" + type.GetElementType().FullName);
         }
         public static string GetWildcardRegexString(string wildcardStr)
         {

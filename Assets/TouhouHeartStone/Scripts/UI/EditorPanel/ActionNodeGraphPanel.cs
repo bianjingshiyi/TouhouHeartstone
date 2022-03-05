@@ -59,13 +59,14 @@ namespace UI
         /// <param name="eventName"></param>
         /// <param name="targetCheckerCount"></param>
         /// <returns></returns>
-        public ActionNodeItem createTriggerNode(float posX, float posY, string[] targetCheckerTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        public ActionNodeItem createTriggerNode(float posX, float posY, string nodeName, string[] targetCheckerTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
             ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
             _actionNodeItemList.Add(actionNodeItem);
             actionNodeItem.gameObject.SetActive(true);
             RectTransform itemRect = actionNodeItem.transform as RectTransform;
             itemRect.anchoredPosition = new Vector2(posX, posY);
+            actionNodeItem.setName(nodeName);
             actionNodeItem.switchToTriggerNode();
             actionNodeItem.setTrigger(targetCheckerTypes, eventIndex, targetCheckers);
             string[] outputNames = new string[]

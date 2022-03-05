@@ -458,6 +458,10 @@ namespace Game
                     //流程图信息不能没有类型，如果为空则默认为triggerList
                     graphInfo.entryType = nameof(GeneratedEffect.triggerList);
                 }
+                foreach (var actionNode in graphInfo.freeActionNodeList)
+                {
+                    actionNode.traverse(fixActionNodeIncorrectData);
+                }
             }
             foreach (var buff in cardPool.buffDefineList)
             {
