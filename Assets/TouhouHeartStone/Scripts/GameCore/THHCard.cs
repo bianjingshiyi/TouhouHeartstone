@@ -834,7 +834,7 @@ namespace TouhouHeartstone
             {
                 TriggerGraph activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
                 List<Card> targetList = new List<Card>();
-                if (activeTrigger.targetCheckerList != null)
+                if (activeTrigger != null && activeTrigger.targetCheckerList != null)
                 {
                     foreach (TargetChecker targetChecker in activeTrigger.targetCheckerList)
                     {

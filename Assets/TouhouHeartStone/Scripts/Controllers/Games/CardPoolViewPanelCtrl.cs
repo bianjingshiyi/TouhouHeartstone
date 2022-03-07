@@ -43,11 +43,14 @@ namespace Controllers
                             Array.Exists(info.cardPoolFiltersId, cardPoolId => cardPoolId == _cardPoolInfoList[i].cardPoolId);
                     }
                 }
-                else if (_cardPoolFilterValue == null || _cardPoolFilterValue.Length != _cardPoolInfoList.Count)
+                else if (_cardPoolFilterValue == null || _cardPoolFilterValue.Length != _cardPoolInfoList.Count + 1)
                 {
                     _cardPoolFilterValue = new bool[_cardPoolInfoList.Count + 1];
                 }
-                _cardPoolFilterValue[_cardPoolFilterValue.Length - 1] = !info.hideBuiltinCards;
+                if (info.hideBuiltinCards != null)
+                {
+                    _cardPoolFilterValue[_cardPoolFilterValue.Length - 1] = !info.hideBuiltinCards.Value;
+                }
                 //加载卡片
                 _cardDefineList = new List<CardDefine>();
                 if (_cardPoolFilterValue[_cardPoolFilterValue.Length - 1])
@@ -533,7 +536,7 @@ namespace Controllers
         class DisplayInfo : UIDisplayInfo
         {
             public CardPoolInfo[] cardPoolInfos = null;
-            public bool hideBuiltinCards = false;
+            public bool? hideBuiltinCards = false;
             public int[] cardPoolFiltersId = null;
             public int sortType = -1;
             public int[] characterFiltersId = null;
