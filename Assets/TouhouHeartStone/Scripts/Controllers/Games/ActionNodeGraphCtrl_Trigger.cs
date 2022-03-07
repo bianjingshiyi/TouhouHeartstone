@@ -390,6 +390,8 @@ namespace Controllers
             _eventTypeInfoList.Find(e => e.eventName == "AfterSetArmorEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ARMOR_CHANGE;
             _eventTypeInfoList.Find(e => e.eventName == "BeforeTurnEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_TURN_END;
             _eventTypeInfoList.Find(e => e.eventName == "AfterTurnEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TURN_END;
+            _eventTypeInfoList.Find(e => e.eventName == "BeforeSilenceEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SILENCE;
+            _eventTypeInfoList.Find(e => e.eventName == "AfterSilenceEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SILENCE;
             _eventTypeInfoList.Sort((a, b) => a.eventName.CompareTo(b.eventName));
             //以后可能有自定义的事件类型，不过先不管
             return _eventTypeInfoList.ToArray();

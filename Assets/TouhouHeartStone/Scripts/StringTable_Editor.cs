@@ -257,6 +257,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_TURN_END = "回合结束时";
         [TranslateMsg("编辑器中的事件类型之回合结束后")]
         public const string EDITOR_EVENT_NAME_AFTER_TURN_END = "回合结束后";
+        [TranslateMsg("编辑器中的事件类型之沉默时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_SILENCE = "沉默时";
+        [TranslateMsg("编辑器中的事件类型之沉默后")]
+        public const string EDITOR_EVENT_NAME_AFTER_SILENCE = "沉默后";
         #endregion
     }
 }

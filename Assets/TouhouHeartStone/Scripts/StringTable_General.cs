@@ -31,6 +31,8 @@ namespace Game
         public const string LANGUAGE_EN_US = "英文";
         [TranslateMsg("语言选项，日文")]
         public const string LANGUAGE_JA = "日文";
+        [TranslateMsg("内置卡池的卡池名称")]
+        public const string CARDPOOL_NAME_BUILTIN = "内置卡池";
         #endregion
     }
 }

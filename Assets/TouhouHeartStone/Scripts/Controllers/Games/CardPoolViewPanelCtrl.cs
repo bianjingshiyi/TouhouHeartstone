@@ -35,28 +35,36 @@ namespace Controllers
                 if (info.cardPoolFiltersId != null)
                 {
                     //更改卡池过滤器的值
-                    _cardPoolFilterValue = new bool[_cardPoolInfoList.Count];
-                    for (int i = 0; i < _cardPoolFilterValue.Length; i++)
+                    _cardPoolFilterValue = new bool[_cardPoolInfoList.Count + 1];
+                    for (int i = 0; i < _cardPoolInfoList.Count; i++)
                     {
                         _cardPoolFilterValue[i] =
-                            game.card.isStandardCardPool(_cardPoolInfoList[i])//标准卡池一定包含
-                            || Array.Exists(info.cardPoolFiltersId, cardPoolId => cardPoolId == _cardPoolInfoList[i].cardPoolId);
+                            //game.card.isStandardCardPool(_cardPoolInfoList[i]) || //标准卡池一定包含
+                            Array.Exists(info.cardPoolFiltersId, cardPoolId => cardPoolId == _cardPoolInfoList[i].cardPoolId);
                     }
                 }
                 else if (_cardPoolFilterValue == null || _cardPoolFilterValue.Length != _cardPoolInfoList.Count)
                 {
-                    _cardPoolFilterValue = new bool[_cardPoolInfoList.Count];
+                    _cardPoolFilterValue = new bool[_cardPoolInfoList.Count + 1];
                 }
+                _cardPoolFilterValue[_cardPoolFilterValue.Length - 1] = !info.hideBuiltinCards;
                 //加载卡片
                 _cardDefineList = new List<CardDefine>();
-                //反射硬编码卡牌
-                _cardDefineList.AddRange(game.card.GetCardDefines(d =>
-                    d.GetType().Assembly == typeof(THHGame).Assembly &&
-                    d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));
-                foreach (var cardPoolInfo in _cardPoolInfoList)
+                if (_cardPoolFilterValue[_cardPoolFilterValue.Length - 1])
+                {
+                    //反射硬编码卡牌
+                    _cardDefineList.AddRange(game.card.GetCardDefines(d =>
+                        d.GetType().Assembly == typeof(THHGame).Assembly &&
+                        d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));
+                }
+                for (int i = 0; i < _cardPoolInfoList.Count; i++)
                 {
                     //卡池卡牌
-                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(cardPoolInfo.cardPoolId);
+                    if (!_cardPoolFilterValue[i])
+                    {
+                        continue;
+                    }
+                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].cardPoolId);
                     _cardDefineList.AddRange(cardDefines);
                 }
                 //过滤
@@ -198,11 +206,12 @@ namespace Controllers
                 }
                 //更新UI
                 _ui.gameObject.SetActive(true);
-                string[] cardPoolNames = new string[_cardPoolInfoList.Count];
-                for (int i = 0; i < cardPoolNames.Length; i++)
+                string[] cardPoolNames = new string[_cardPoolInfoList.Count + 1];
+                for (int i = 0; i < _cardPoolInfoList.Count; i++)
                 {
                     cardPoolNames[i] = _cardPoolInfoList[i].cardPoolName;
                 }
+                cardPoolNames[cardPoolNames.Length - 1] = game.langManager.getString(StringTable.CARDPOOL_NAME_BUILTIN);
                 _ui.setCardPoolOptions(cardPoolNames);
                 _ui.setCardPoolValues(_cardPoolFilterValue);
                 _ui.setSortType(_sortType);
@@ -272,6 +281,7 @@ namespace Controllers
             return display(new DisplayInfo()
             {
                 cardPoolInfos = new CardPoolInfo[] { cardPoolInfo },
+                cardPoolFiltersId = new int[] { cardPoolInfo.cardPoolId },
                 cardFilter = cardFilter
             });
         }
@@ -430,7 +440,7 @@ namespace Controllers
         private async Task displayForApplyFilters()
         {
             List<int> cardPoolsIdList = new List<int>();
-            for (int i = 0; i < _cardPoolFilterValue.Length; i++)
+            for (int i = 0; i < _cardPoolInfoList.Count; i++)
             {
                 if (_cardPoolFilterValue[i])
                 {
@@ -448,6 +458,7 @@ namespace Controllers
             await display(new DisplayInfo()
             {
                 cardPoolInfos = _cardPoolInfoList.ToArray(),
+                hideBuiltinCards = !_cardPoolFilterValue[_cardPoolFilterValue.Length - 1],
                 cardPoolFiltersId = cardPoolsIdList.ToArray(),
                 sortType = _sortType,
                 characterFiltersId = charactersIdList.ToArray(),
@@ -522,6 +533,7 @@ namespace Controllers
         class DisplayInfo : UIDisplayInfo
         {
             public CardPoolInfo[] cardPoolInfos = null;
+            public bool hideBuiltinCards = false;
             public int[] cardPoolFiltersId = null;
             public int sortType = -1;
             public int[] characterFiltersId = null;
