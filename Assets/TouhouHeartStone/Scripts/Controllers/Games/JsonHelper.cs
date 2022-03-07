@@ -14,6 +14,7 @@ namespace Controllers
         public static void init()
         {
             ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
+            BsonClassMap.RegisterClassMap<CardReference>();
         }
         public static string toJson(this object obj)
         {

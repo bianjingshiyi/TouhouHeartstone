@@ -536,7 +536,7 @@ namespace Controllers
         class DisplayInfo : UIDisplayInfo
         {
             public CardPoolInfo[] cardPoolInfos = null;
-            public bool? hideBuiltinCards = false;
+            public bool? hideBuiltinCards = null;
             public int[] cardPoolFiltersId = null;
             public int sortType = -1;
             public int[] characterFiltersId = null;
