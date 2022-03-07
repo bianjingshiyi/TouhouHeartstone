@@ -519,6 +519,14 @@ namespace Game
                 //        Debug.LogError(trigger + "的事件名称" + trigger.eventName + "可能已经过期且找不到可替换名称");
                 //    }
                 //}
+                foreach (var targetChecker in trigger.targetCheckerList)
+                {
+                    if (string.IsNullOrEmpty(targetChecker.targetType))
+                    {
+                        //目标的类型不能为空，如果为空则默认为仆从
+                        targetChecker.targetType = DEFINE.TARGET_TYPE_SERVANT;
+                    }
+                }
             }
         }
         public bool tryGetCardPool(int cardPoolId, out CardPool cardPool)

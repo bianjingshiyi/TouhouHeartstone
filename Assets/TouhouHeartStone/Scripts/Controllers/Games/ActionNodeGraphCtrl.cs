@@ -898,8 +898,11 @@ namespace Controllers
                     }
                 },
                 new IOConnectInfo[0]);
-            var actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
-            _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
+            if (targetChecker.condition != null && targetChecker.condition.action != null)
+            {
+                ActionNodeItem actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
+                _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
+            }
             //创建离散节点
             for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
             {
@@ -1135,43 +1138,6 @@ namespace Controllers
                     }
                 }
                 BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
-                ActionNodePropertyModifierViewData[] propModifiersViewData = new ActionNodePropertyModifierViewData[generatedBuffDefine.propModifierList.Count];
-                for (int i = 0; i < generatedBuffDefine.propModifierList.Count; i++)
-                {
-                    PropModifier propModifier = generatedBuffDefine.propModifierList[i];
-                    ActionNodePropertyModifierViewData propModifierViewData = new ActionNodePropertyModifierViewData();
-                    propModifiersViewData[i] = propModifierViewData;
-                    if (propModifier is CostModifier costModifier)
-                    {
-                        propModifierViewData.propertyTypeIndex = 0;
-                        if (costModifier.isSet)
-                            propModifierViewData.modifyTypeIndex = 1;
-                        else
-                            propModifierViewData.modifyTypeIndex = 0;
-                        propModifierViewData.valueType = ActionNodeValueType.integer;
-                        propModifierViewData.value = costModifier.value;
-                    }
-                    else if (propModifier is AttackModifier attackModifier)
-                    {
-                        propModifierViewData.propertyTypeIndex = 1;
-                        if (attackModifier.isSet)
-                            propModifierViewData.modifyTypeIndex = 1;
-                        else
-                            propModifierViewData.modifyTypeIndex = 0;
-                        propModifierViewData.valueType = ActionNodeValueType.integer;
-                        propModifierViewData.value = attackModifier.value;
-                    }
-                    else if (propModifier is LifeModifier lifeModifier)
-                    {
-                        propModifierViewData.propertyTypeIndex = 2;
-                        if (lifeModifier.isSet)
-                            propModifierViewData.modifyTypeIndex = 1;
-                        else
-                            propModifierViewData.modifyTypeIndex = 0;
-                        propModifierViewData.valueType = ActionNodeValueType.integer;
-                        propModifierViewData.value = lifeModifier.value;
-                    }
-                }
                 actionNodeItem = _ui.createNodeForBuff(posX, posY, new ActionNodeBuffViewData()
                 {
                     buffNames = buffDefines.Select(b => b.ToString()).ToArray(),
@@ -1181,8 +1147,8 @@ namespace Controllers
                     buffDesc = buffSkin.desc,
                     buffImage = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId),
                     propertyTypes = _propertyTypes.Select(s => game.langManager.getString(s)).ToArray(),
-                    modifyTypes = _modifyTypes,
-                    propModifiersViewData = propModifiersViewData,
+                    modifyTypes = _modifyTypes.Select(s => game.langManager.getString(s)).ToArray(),
+                    propModifiersViewData = getBuffDefinePropModifiersViewData(generatedBuffDefine),
                     effectTypeNames = game.card.getEffectNames(),
                     effectNames = game.card.getEffectNames(generatedBuffDefine.effectList.ToArray())
                 }, getActionNodeOutputNames(actionNode));
@@ -2453,7 +2419,8 @@ namespace Controllers
         {
             StringTable.GAME_CARD_PROP_NAME_COST,
             StringTable.GAME_CARD_PROP_NAME_ATTACK,
-            StringTable.GAME_CARD_PROP_NAME_LIFE
+            StringTable.GAME_CARD_PROP_NAME_LIFE,
+            StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE
         };
         string[] _modifyTypes = new string[]
         {

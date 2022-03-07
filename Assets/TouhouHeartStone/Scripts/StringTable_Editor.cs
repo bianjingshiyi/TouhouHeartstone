@@ -200,6 +200,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_BASE_DAMAGE = "基础伤害";
         [TranslateMsg("动作图编辑器中动作节点名称之获取敌方随从")]
         public const string EDITOR_NODE_NAME_GET_ENEMY_SERVANTS = "获取敌方随从";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取友方角色")]
+        public const string EDITOR_NODE_NAME_GET_FRIEND_CHARACTERS = "获取友方角色";
         [TranslateMsg("动作图编辑器中动作节点名称之获取随机卡牌")]
         public const string EDITOR_NODE_NAME_GET_RANDOM_CARD = "获取随机卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并洗入牌库")]

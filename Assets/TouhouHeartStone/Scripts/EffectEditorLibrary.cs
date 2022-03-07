@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -308,6 +309,17 @@ namespace Game
         {
             return game.getOpponent(card.owner).getField();
         }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_FRIEND_CHARACTERS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getFriendCharacters(Card card)
+        {
+            Card master = card.owner.getMaster();
+            Card[] servants = card.owner.getField();
+            Card[] characters = new Card[servants.Length + 1];
+            characters[0] = master;
+            Array.Copy(servants, 0, characters, 1, servants.Length);
+            return characters;
+        }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FREEZE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static Task<IPropChangeEventArg> freeze(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -329,11 +341,14 @@ namespace Game
             return buff;
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_ADD_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "AddBuff")]
-        public static Task addBuff(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card card,
+        public static async Task addBuff(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]BuffDefine buffDefine)
         {
-            return card.addBuff(game, new GeneratedBuff(buffDefine));
+            foreach (var card in cards)
+            {
+                await card.addBuff(game, new GeneratedBuff(buffDefine));
+            }
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_REMOVE_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "RemoveBuff")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_IS_BUFF_REMOVED)]

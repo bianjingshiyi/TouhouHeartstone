@@ -7,6 +7,7 @@ using UnityEngine;
 using UI;
 using Card = TouhouCardEngine.Card;
 using Game;
+using TouhouHeartstone;
 
 namespace Controllers
 {
@@ -149,6 +150,11 @@ namespace Controllers
             for (int i = 0; i < targetCheckers.Length; i++)
             {
                 targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, _trigger.targetCheckerList[i].targetType);
+                if (targetCheckers[i].typeIndex < 0)
+                {
+                    _trigger.targetCheckerList[i].targetType = DEFINE.TARGET_TYPE_SERVANT;
+                    targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, DEFINE.TARGET_TYPE_SERVANT);
+                }
                 targetCheckers[i].name = "目标" + (i + 1);
                 targetCheckers[i].errorTip = _trigger.targetCheckerList[i].errorTip;
             }

@@ -179,6 +179,19 @@ namespace Controllers
             BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
             item.setBuffValues(game.card.getBuffDefineNames(buffDefines));
             item.setBuffValue(Array.IndexOf(buffDefines, buffDefine));
+            ActionNodePropertyModifierViewData[] propModifiersViewData = getBuffDefinePropModifiersViewData(buffDefine);
+            item.updatePropModifierList(propModifiersViewData);
+            item.updateEffectList(game.card.getEffectNames(), game.card.getEffectNames(buffDefine.effectList.ToArray()));
+            if (buffSkin != null)
+            {
+                int languageIndex = Array.IndexOf(game.langManager.getLanguages(), buffSkin.language);
+                item.setBuffLanguage(languageIndex);
+                Sprite sprite = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId);
+                item.setBuffSkin(buffSkin.name, buffSkin.desc, sprite);
+            }
+        }
+        private ActionNodePropertyModifierViewData[] getBuffDefinePropModifiersViewData(GeneratedBuffDefine buffDefine)
+        {
             ActionNodePropertyModifierViewData[] propModifiersViewData = new ActionNodePropertyModifierViewData[buffDefine.propModifierList.Count];
             for (int i = 0; i < buffDefine.propModifierList.Count; i++)
             {
@@ -215,34 +228,39 @@ namespace Controllers
                     propModifierViewData.valueType = ActionNodeValueType.integer;
                     propModifierViewData.value = lifeModifier.value;
                 }
+                else if (propModifier is DamageReduceModifier damageReduceModifier)
+                {
+                    propModifierViewData.propertyTypeIndex = 3;
+                    if (damageReduceModifier.isSet)
+                        propModifierViewData.modifyTypeIndex = 1;
+                    else
+                        propModifierViewData.modifyTypeIndex = 0;
+                    propModifierViewData.valueType = ActionNodeValueType.integer;
+                    propModifierViewData.value = damageReduceModifier.value;
+                }
             }
-            item.updatePropModifierList(propModifiersViewData);
-            item.updateEffectList(game.card.getEffectNames(), game.card.getEffectNames(buffDefine.effectList.ToArray()));
-            if (buffSkin != null)
-            {
-                int languageIndex = Array.IndexOf(game.langManager.getLanguages(), buffSkin.language);
-                item.setBuffLanguage(languageIndex);
-                Sprite sprite = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId);
-                item.setBuffSkin(buffSkin.name, buffSkin.desc, sprite);
-            }
+
+            return propModifiersViewData;
         }
         private PropModifier getPropertyModifierByIndex(int index)
         {
+            if (index == 3)
+                return new DamageReduceModifier(0);
             if (index == 2)
                 return new LifeModifier(0);
-            else if (index == 1)
+            if (index == 1)
                 return new AttackModifier(0);
-            else
-                return new CostModifier(0);
+            return new CostModifier(0);
         }
         private int getPropertyModifierIndex(PropModifier propModifier)
         {
+            if (propModifier is DamageReduceModifier)
+                return 3;
             if (propModifier is LifeModifier)
                 return 2;
-            else if (propModifier is AttackModifier)
+            if (propModifier is AttackModifier)
                 return 1;
-            else
-                return 0;
+            return 0;
         }
         private int getModifyTypeIndex(PropModifier propModifier)
         {
