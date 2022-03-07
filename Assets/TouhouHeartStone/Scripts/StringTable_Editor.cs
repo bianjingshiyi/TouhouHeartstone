@@ -102,6 +102,10 @@ namespace Game
         public const string EDITOR_NODE_NAME_DRAW_TARGET_CARD = "抽目标卡牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之玩家")]
         public const string EDITOR_PARAM_NAME_PLAYER = "玩家";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之对手玩家")]
+        public const string EDITOR_PARAM_NAME_OPPONENT_PLAYER = "对手玩家";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之牌堆")]
+        public const string EDITOR_PARAM_NAME_PILE = "牌堆";
         [TranslateMsg("动作图编辑器中动作节点参数名称之抽牌事件")]
         public const string EDITOR_PARAM_NAME_DRAW_EVENT = "抽牌事件";
         [TranslateMsg("动作图编辑器中动作节点参数名称之爆牌事件")]
@@ -112,16 +116,22 @@ namespace Game
         public const string EDITOR_PARAM_NAME_COUNT = "数量";
         [TranslateMsg("动作图编辑器中动作节点名称之获取牌库中满足条件的卡牌")]
         public const string EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION = "获取牌库中满足条件的卡牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取牌堆中的牌")]
+        public const string EDITOR_NODE_NAME_GET_CARDS_IN_PILE = "获取牌堆中的牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之条件")]
         public const string EDITOR_PARAM_NAME_CONDITION = "条件";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家的手牌")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS = "获取玩家的手牌";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家的墓地中的卡牌")]
+        public const string EDITOR_NODE_NAME_GET_PLAYER_GRAVE_CARDS = "获取玩家的墓地卡牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之设置玩家属性")]
         public const string EDITOR_NODE_NAME_SET_PLAYER_PROP = "设置玩家属性";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家属性")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_PROP = "获取玩家属性";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家英雄")]
         public const string EDITOR_NODE_NAME_GET_MASTER = "获取玩家英雄";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家对手")]
+        public const string EDITOR_NODE_NAME_GET_PLAYER_OPPONENT = "获取玩家对手";
         #endregion
         #region 牌堆
         [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]
@@ -148,6 +158,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_REMOVE_MODIFIER_EVENT = "移除修改器事件";
         [TranslateMsg("动作图编辑器中动作输出名称之属性更改事件")]
         public const string EDITOR_PARAM_NAME_PROP_CHANGE_EVENT = "属性更改事件";
+        [TranslateMsg("动作图编辑器中动作输出名称之沉默事件")]
+        public const string EDITOR_PARAM_NAME_SILENCE_EVENT = "沉默事件";
         [TranslateMsg("动作图编辑器中动作节点名称之获取属性")]
         public const string EDITOR_NODE_NAME_GET_PROPERTY = "获取属性";
         [TranslateMsg("动作图编辑器中动作输入名称之属性名称")]
@@ -208,10 +220,16 @@ namespace Game
         public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK = "创建衍生卡并洗入牌库";
         [TranslateMsg("动作图编辑器中动作节点名称之禁锢")]
         public const string EDITOR_NODE_NAME_FREEZE = "禁锢";
+        [TranslateMsg("动作图编辑器中动作节点名称之沉默")]
+        public const string EDITOR_NODE_NAME_SILENCE = "沉默";
         [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并置入战场")]
         public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD = "创建衍生卡并置入战场";
         [TranslateMsg("动作图编辑器中动作节点名称之对目标造成固定法术伤害")]
         public const string EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS = "对目标造成固定法术伤害";
+        [TranslateMsg("动作图编辑器中动作节点名称之消灭")]
+        public const string EDITOR_NODE_NAME_DESTROY = "消灭";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之死亡事件")]
+        public const string EDITOR_PARAM_NAME_DEATH_EVENT = "死亡事件";
         #endregion
         #region 增益
         [TranslateMsg("动作图编辑器中动作节点分类之增益")]

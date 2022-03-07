@@ -586,7 +586,7 @@ namespace Controllers
                 }
                 else
                 {
-                    await _cardPoolViewPanelCtrl.display(cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(cardPoolsId: new int[] { _curCardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -619,7 +619,7 @@ namespace Controllers
                 }
                 else
                 {
-                    await _cardPoolViewPanelCtrl.display(cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(cardPoolsId: new int[] { _curCardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;

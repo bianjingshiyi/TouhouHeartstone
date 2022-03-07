@@ -174,7 +174,26 @@ namespace Controllers
             _ui.onChangeDesc += onChangeDesc;
             _ui.onChangeAttack += onChangeAttack;
             _ui.onChangeLife += onChangeLife;
-            _races = new string[] { string.Empty, TAG.BEAST, TAG.DEMON, TAG.ELEMENT, TAG.FAIRY, TAG.GOD, TAG.MACHINE };
+            _races = new string[]
+            {
+                null,
+                TAG.BEAST,
+                TAG.DEMON,
+                TAG.ELEMENT,
+                TAG.FAIRY,
+                TAG.GOD,
+                TAG.MACHINE
+            };
+            string[] racesName = new string[]
+            {
+                string.Empty,
+                game.langManager.getString(StringTable.GAME_RACE_BEAST),
+                game.langManager.getString(StringTable.GAME_RACE_DEMON),
+                game.langManager.getString(StringTable.GAME_RACE_ELEMENT),
+                game.langManager.getString(StringTable.GAME_RACE_FAIRY),
+                game.langManager.getString(StringTable.GAME_RACE_GOD),
+                game.langManager.getString(StringTable.GAME_RACE_MACHINE)
+            };
             _ui.setTags(_races);
             _ui.onChangeRace += onChangeRace;
             _ui.onClickEditEffectButton += onClickEditEffectButton;
@@ -385,7 +404,7 @@ namespace Controllers
                 value = new string[1];
             }
             value[0] = index > 0 ? _races[index] : null;
-            _cardDefine.setProp(DEFINE.TAGS, value);
+            _cardDefine.setTags(value);
             _ui.setRace(index);
         }
         /// <summary>

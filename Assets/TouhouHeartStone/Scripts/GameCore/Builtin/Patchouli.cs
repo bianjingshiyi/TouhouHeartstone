@@ -577,10 +577,11 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            var discovered = await card.getOwner().searchPile(game, card.getOwner().getGrave().Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
-            if (!card.getOwner().getHand().isFull)
+            Player player = card.getOwner();
+            var discovered = await player.searchPile(game, player.getGrave().Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
+            if (!player.getHand().isFull)
             {
-                await card.getOwner().getGrave().moveTo(game, discovered.choose, card.getOwner().getHand());
+                await player.getGrave().moveTo(game, discovered.choose, player.getHand());
                 await discovered.choose.addBuff(game, new CodeBuff(ID, new CostModifier(-3)));
             }
         }
@@ -612,7 +613,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await game.getOpponent(card.owner as Player).getMaster().damage(game, card, 15);
+            await game.getOpponent(card.owner as Player).getMaster().damage(game, card, card.owner.getSpellDamage(game, 15));
         }
     }
     /// <summary>

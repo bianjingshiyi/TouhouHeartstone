@@ -120,6 +120,18 @@ namespace Game
         public const string GAME_KEYWORD_BATTLECRY = "宣言";
         [TranslateMsg("游戏中的关键词遗言")]
         public const string GAME_KEYWORD_DEATHRATTLE = "遗言";
+        [TranslateMsg("游戏中的种族野兽")]
+        public const string GAME_RACE_BEAST = "野兽";
+        [TranslateMsg("游戏中的种族恶魔")]
+        public const string GAME_RACE_DEMON = "恶魔";
+        [TranslateMsg("游戏中的种族元素")]
+        public const string GAME_RACE_ELEMENT = "元素";
+        [TranslateMsg("游戏中的种族妖精")]
+        public const string GAME_RACE_FAIRY = "妖精";
+        [TranslateMsg("游戏中的种族神明")]
+        public const string GAME_RACE_GOD = "神明";
+        [TranslateMsg("游戏中的种族机械")]
+        public const string GAME_RACE_MACHINE = "机械";
         #endregion
         #region 标签
         [TranslateMsg("游戏中的法术标签火")]
