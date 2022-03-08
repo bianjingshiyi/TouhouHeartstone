@@ -291,6 +291,11 @@ namespace Game
         /// <returns></returns>
         public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> loadCardPool(string path)
         {
+            //初始化JSON
+            if (!JsonHelper.isInited)
+            {
+                JsonHelper.init();
+            }
             string[] lines;
             if (path.StartsWith("sa:"))
             {

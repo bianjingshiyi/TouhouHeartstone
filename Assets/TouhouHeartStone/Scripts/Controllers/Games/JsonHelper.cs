@@ -15,6 +15,7 @@ namespace Controllers
         {
             ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
             BsonClassMap.RegisterClassMap<CardReference>();
+            isInited = true;
         }
         public static string toJson(this object obj)
         {
@@ -28,6 +29,7 @@ namespace Controllers
         {
             new CustomClassMapConvention()
         };
+        public static bool isInited { get; private set; } = false;
     }
     /// <summary>
     /// 自定义类映射规则
