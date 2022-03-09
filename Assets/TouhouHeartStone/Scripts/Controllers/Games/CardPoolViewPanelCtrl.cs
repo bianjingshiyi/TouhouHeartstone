@@ -244,7 +244,13 @@ namespace Controllers
                 _ui.setSortTypes(_sortTypes);
                 _ui.setCostFilters(_costFilters);
                 _ui.setCostFilter(_costFiltersValue);
-                _ui.setTypeFilters(_typeFilters);
+                string[] typesName = new string[]
+                {
+                    game.langManager.getString(StringTable.GAME_CARD_TYPE_SERVANT),
+                    game.langManager.getString(StringTable.GAME_CARD_TYPE_SPELL),
+                    game.langManager.getString(StringTable.GAME_CARD_TYPE_ITEM)
+                };
+                _ui.setTypeFilters(typesName);
                 _ui.setTypeFilter(_typeFiltersValue);
                 _ui.setSearchInputField(_searchFilterString);
                 _ui.updateCardListCount(_filteredCardDefineList.Count);
@@ -296,6 +302,11 @@ namespace Controllers
         {
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
+        }
+        public void displayCount(bool value)
+        {
+            _hideCount = !value;
+            display();
         }
         public void enableCardPoolFilter(bool value)
         {
@@ -372,6 +383,10 @@ namespace Controllers
             if (index < 0 || index >= _filteredCardDefineList.Count)
                 return;
             EditorCardListItem item = itemRect.GetComponent<EditorCardListItem>();
+            if (_hideCount)
+            {
+                item.hideCount();
+            }
             CardDefine card = _filteredCardDefineList[index];
             CardSkinData skin = game.card.getDefaultSkin(card);
             item.card.setCard(card, skin);
@@ -494,6 +509,8 @@ namespace Controllers
         List<CardPoolInfo> _cardPoolInfoList = new List<CardPoolInfo>();
         List<CardDefine> _cardDefineList = new List<CardDefine>();
         List<CardDefine> _filteredCardDefineList = new List<CardDefine>();
+        [SerializeField]
+        bool _hideCount = false;
         [SerializeField]
         bool[] _cardPoolFilterValue;
         [SerializeField]

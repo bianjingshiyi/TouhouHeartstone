@@ -394,7 +394,8 @@ namespace Controllers
                     name = deckName,
                     masterId = master,
                 };
-                copiedDeck.addCards(cards);
+                //添加卡牌，跳过第一个角色卡
+                copiedDeck.addCards(cards.Skip(1));
 
                 // 进入编辑模式
                 display(copiedDeck);
@@ -415,7 +416,7 @@ namespace Controllers
         private void onExportDeckClick()
         {
             // 卡组保存
-            if (_deck.cardList.Count < game.deck.deckMaxSize)
+            if (_deck.getCardCount() < game.deck.deckMaxSize)
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_NOT_COMPLETE_EXPORT), () =>
                 {
