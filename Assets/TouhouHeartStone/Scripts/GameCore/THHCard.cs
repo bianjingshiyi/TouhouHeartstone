@@ -1872,16 +1872,16 @@ namespace TouhouHeartstone
         /// <param name="card"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static Task<MissionCompleteArg> MissionComplete(this Card card, IGame game)
+        public static Task<MissionCompleteEventArg> MissionComplete(this Card card, IGame game)
         {
-            return game.triggers.doEvent(new MissionCompleteArg() { card = card }, async arg =>
+            return game.triggers.doEvent(new MissionCompleteEventArg() { card = card }, async arg =>
             {
                 game.logger.log("任务完成 : " + card);
                 Player player = arg.card.getOwner();
                 await player.getHead().moveTo(game, arg.card, player.getGrave());
             });
         }
-        public class MissionCompleteArg : EventArg, IDescribableEventArg
+        public class MissionCompleteEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
@@ -1944,13 +1944,13 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="targets">登场效果目标，可以为null</param>
         /// <returns></returns>
-        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, CardEngine game, Player player, Card[] targets)
+        public static async Task<ComeOnStageEventArg> ComeOnStage(this Card card, CardEngine game, Player player, Card[] targets)
         {
 
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)
             {
-                var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card, player = player, targets = targets }, async arg =>
+                var eventArg = await game.triggers.doEvent(new ComeOnStageEventArg() { card = card, player = player, targets = targets }, async arg =>
                 {
                     await card.activeEffect(game, player, targets);//执行随从效果
                     if (targets != null &&
@@ -1967,7 +1967,7 @@ namespace TouhouHeartstone
             }
             return null;
         }
-        public class ComeOnStageArg : EventArg, IDescribableEventArg
+        public class ComeOnStageEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
             public Player player;
