@@ -463,7 +463,7 @@ namespace Game
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public CardDefine GetCardDefine(int id)
+        public CardDefine getCardDefine(int id)
         {
             if (tryGetCardDefine(id, out CardDefine card))
                 return card;

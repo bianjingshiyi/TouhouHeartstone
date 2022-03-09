@@ -817,7 +817,7 @@ namespace Game
                 {
                     return Task.FromResult<Sprite>(null);
                 }
-                else if (getCardPoolOfCard(GetCardDefine(cardId)) is CardPoolInfo cardPool &&
+                else if (getCardPoolOfCard(getCardDefine(cardId)) is CardPoolInfo cardPool &&
                     game.card.getCardPoolPath(cardPool) is string cardPoolPath)
                 {
                     if (cardPoolPath.StartsWith("sa:") &&

@@ -230,7 +230,7 @@ namespace Controllers
                     }
                     else
                     {
-                        characterNames[i] = game.card.getDefaultSkin(game.card.GetCardDefine(_characterFilters[i])).name;
+                        characterNames[i] = game.card.getDefaultSkin(game.card.getCardDefine(_characterFilters[i])).name;
                     }
                 }
                 List<string> characterNameList = new List<string>();
