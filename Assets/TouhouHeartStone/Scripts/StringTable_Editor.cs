@@ -281,6 +281,106 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_SILENCE = "沉默时";
         [TranslateMsg("编辑器中的事件类型之沉默后")]
         public const string EDITOR_EVENT_NAME_AFTER_SILENCE = "沉默后";
+        [TranslateMsg("编辑器中的事件类型之攻击时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_ATTACK = "攻击时";
+        [TranslateMsg("编辑器中的事件类型之攻击后")]
+        public const string EDITOR_EVENT_NAME_AFTER_ATTACK = "攻击后";
+        [TranslateMsg("编辑器中的事件类型之伤害时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_DAMAGE = "伤害时";
+        [TranslateMsg("编辑器中的事件类型之伤害后")]
+        public const string EDITOR_EVENT_NAME_AFTER_DAMAGE = "伤害后";
+        [TranslateMsg("编辑器中的事件类型之攻击时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_HEAL = "治疗时";
+        [TranslateMsg("编辑器中的事件类型之攻击后")]
+        public const string EDITOR_EVENT_NAME_AFTER_HEAL = "治疗后";
+        [TranslateMsg("编辑器中的事件类型之死亡时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_DEATH = "死亡时";
+        [TranslateMsg("编辑器中的事件类型之死亡后")]
+        public const string EDITOR_EVENT_NAME_AFTER_DEATH = "死亡后";
+        [TranslateMsg("编辑器中的事件类型之奥秘触发时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_SECRETRIGGER = "奥秘触发时";
+        [TranslateMsg("编辑器中的事件类型之奥秘触发后")]
+        public const string EDITOR_EVENT_NAME_AFTER_SECRETRIGGER = "奥秘触发后";
+        [TranslateMsg("编辑器中的事件类型之任务完成时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_MISSIONCOMPLETE = "任务完成时";
+        [TranslateMsg("编辑器中的事件类型之任务完成后")]
+        public const string EDITOR_EVENT_NAME_AFTER_MISSIONCOMPLETE = "任务完成后";
+        [TranslateMsg("编辑器中的事件类型之宣言时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_COMEONSTAGE = "宣言时";
+        [TranslateMsg("编辑器中的事件类型之宣言后")]
+        public const string EDITOR_EVENT_NAME_AFTER_COMEONSTAGE = "宣言后";
+        [TranslateMsg("编辑器中的事件类型之初始化时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_INIT = "初始化时";
+        [TranslateMsg("编辑器中的事件类型之初始化后")]
+        public const string EDITOR_EVENT_NAME_AFTER_INIT = "初始化后";
+        [TranslateMsg("编辑器中的事件类型之起始时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_START = "起始时";
+        [TranslateMsg("编辑器中的事件类型之起始后")]
+        public const string EDITOR_EVENT_NAME_AFTER_START = "起始后";
+        [TranslateMsg("编辑器中的事件类型之回合结束时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_TURNEND = "回合结束时";
+        [TranslateMsg("编辑器中的事件类型之回合结束后")]
+        public const string EDITOR_EVENT_NAME_AFTER_TURNEND = "回合结束后";
+        [TranslateMsg("编辑器中的事件类型之游戏结束时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_GAMEEND = "游戏结束时";
+        [TranslateMsg("编辑器中的事件类型之游戏结束后")]
+        public const string EDITOR_EVENT_NAME_AFTER_GAMEEND = "游戏结束后";
+        [TranslateMsg("编辑器中的事件类型之初始取代时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_INITREPLACE = "初始取代结束时";
+        [TranslateMsg("编辑器中的事件类型之初始取代后")]
+        public const string EDITOR_EVENT_NAME_AFTER_INITREPLACE = "初始取代结束后";
+        [TranslateMsg("编辑器中的事件类型之设置最大灵力时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_SETMAXGEM = "设置最大灵力时";
+        [TranslateMsg("编辑器中的事件类型之设置最大灵力后")]
+        public const string EDITOR_EVENT_NAME_AFTER_SETMAXGEM = "设置最大灵力后";
+        [TranslateMsg("编辑器中的事件类型之爆牌时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_BURN = "爆牌时";
+        [TranslateMsg("编辑器中的事件类型之爆牌后")]
+        public const string EDITOR_EVENT_NAME_AFTER_BURN = "爆牌后";
+        [TranslateMsg("编辑器中的事件类型之选择一项时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_CHOOSEONE = "选择一项时";
+        [TranslateMsg("编辑器中的事件类型之选择一项后")]
+        public const string EDITOR_EVENT_NAME_AFTER_CHOOSEONE = "选择一项后";
+        [TranslateMsg("编辑器中的事件类型之复生时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_REBORN = "复生时";
+        [TranslateMsg("编辑器中的事件类型之复生后")]
+        public const string EDITOR_EVENT_NAME_AFTER_REBORN = "复生后";
+        [TranslateMsg("编辑器中的事件类型之进入战场时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_ENTERFIELD = "进入战场时";
+        [TranslateMsg("编辑器中的事件类型之进入战场后")]
+        public const string EDITOR_EVENT_NAME_AFTER_ENTERFIELD = "进入战场后";
+        [TranslateMsg("编辑器中的事件类型之揭示时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_REVEAL = "揭示时";
+        [TranslateMsg("编辑器中的事件类型之揭示后")]
+        public const string EDITOR_EVENT_NAME_AFTER_REVEAL = "揭示后";
+        [TranslateMsg("编辑器中的事件类型之抽卡时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_DRAW = "抽卡时";
+        [TranslateMsg("编辑器中的事件类型之抽卡后")]
+        public const string EDITOR_EVENT_NAME_AFTER_DRAW = "抽卡后";
+        [TranslateMsg("编辑器中的事件类型之疲劳时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_FATIGUE = "疲劳时";
+        [TranslateMsg("编辑器中的事件类型之疲劳后")]
+        public const string EDITOR_EVENT_NAME_AFTER_FATIGUE = "疲劳后";
+        [TranslateMsg("编辑器中的事件类型之检视时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_SEARCHPILE = "检视时";
+        [TranslateMsg("编辑器中的事件类型之检视后")]
+        public const string EDITOR_EVENT_NAME_AFTER_SEARCHPILE = "检视后";
+        [TranslateMsg("编辑器中的事件类型之激活时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_ACTIVE = "激活时";
+        [TranslateMsg("编辑器中的事件类型之激活后")]
+        public const string EDITOR_EVENT_NAME_AFTER_ACTIVE = "激活后";
+        [TranslateMsg("编辑器中的事件类型之弃牌时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_DISCARD = "弃牌时";
+        [TranslateMsg("编辑器中的事件类型之弃牌后")]
+        public const string EDITOR_EVENT_NAME_AFTER_DISCARD = "弃牌后";
+        [TranslateMsg("编辑器中的事件类型之设置灵力时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_SETGEM = "设置灵力时";
+        [TranslateMsg("编辑器中的事件类型之设置灵力后")]
+        public const string EDITOR_EVENT_NAME_AFTER_SETGEM = "设置灵力后";
+        [TranslateMsg("编辑器中的事件类型之召唤时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_CREATETOKEN = "召唤时";
+        [TranslateMsg("编辑器中的事件类型之召唤后")]
+        public const string EDITOR_EVENT_NAME_AFTER_CREATETOKEN = "召唤后";
         #endregion
     }
 }
