@@ -220,7 +220,6 @@ namespace Controllers
                 cardPoolNames[cardPoolNames.Length - 1] = game.langManager.getString(StringTable.CARDPOOL_NAME_BUILTIN);
                 _ui.setCardPoolOptions(cardPoolNames);
                 _ui.setCardPoolValues(_cardPoolFilterValue);
-                _ui.setSortType(_sortType);
                 string[] characterNames = new string[_characterFilters.Length];
                 for (int i = 0; i < characterNames.Length; i++)
                 {
@@ -245,6 +244,7 @@ namespace Controllers
                 _ui.setCharacterFilters(characterNameList.ToArray());
                 _ui.setCharacterFilter(_characterFiltersValue);
                 _ui.setSortTypes(_sortTypes);
+                _ui.setSortType(_sortType);
                 _ui.setCostFilters(_costFilters);
                 _ui.setCostFilter(_costFiltersValue);
                 string[] typesName = new string[]
