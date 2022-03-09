@@ -69,12 +69,16 @@ namespace UI
         {
             LoadingImg.SetActive(value);
         }
-        public void showMessage(string msg)
+        public void showErrorTip(string msg)
         {
             HintMessageText.text = msg;
             HintMessageText.gameObject.SetActive(false);
             HintMessageText.gameObject.SetActive(true);
             HintMessageText.gameObject.GetComponent<SEPlayer>()?.Play();
+        }
+        public void showErrorTip(bool value)
+        {
+            HintMessageText.gameObject.SetActive(value);
         }
         /// <summary>
         /// 判断坐标是否位于卡组卡牌列表区域中

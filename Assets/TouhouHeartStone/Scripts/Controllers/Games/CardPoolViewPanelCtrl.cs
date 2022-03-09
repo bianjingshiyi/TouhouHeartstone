@@ -71,7 +71,10 @@ namespace Controllers
                     _cardDefineList.AddRange(cardDefines);
                 }
                 //过滤
-                _cardFilter = info.cardFilter;
+                if (info.cardFilter != null)
+                {
+                    _cardFilter = info.cardFilter;
+                }
                 _filteredCardDefineList = new List<CardDefine>(_cardDefineList);
                 if (_cardFilter == null)
                 {

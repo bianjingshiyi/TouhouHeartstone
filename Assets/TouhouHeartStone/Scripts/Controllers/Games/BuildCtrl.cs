@@ -31,6 +31,7 @@ namespace Controllers
 
             //UI更新
             _ui.gameObject.SetActive(true);
+            _ui.showErrorTip(false);
             _ui.setEnableDrag(false);
             //右侧栏
             _ui.setDeckListActive(true);
@@ -53,6 +54,7 @@ namespace Controllers
 
             // 更新UI
             _ui.gameObject.SetActive(true);
+            _ui.showErrorTip(false);
             _ui.updateCurCardPoolInfo(deck.name, await loadDeckImage(deck));
             _ui.setCharacterName(masterSkin.name);
             _ui.setDeckListActive(false);
@@ -74,16 +76,8 @@ namespace Controllers
                 _ui = GetComponent<BuildCardPanel>();
             }
             _ui.onClickReturnButton += onReturnButtonClick;
-            //_ui.onUpdateCardListItem += onUpdateCardListItem;
-            //_ui.onStartDargCardListItem += onStartDragCardListItem;
             _ui.onStartDragDeckCardListItem += onStartDragDeckCardListItem;
-            //_ui.onEndDragCardListItem += onEndDragCardListItem;
             _ui.onEndDragDeckCardListItem += onEndDragDeckCardListItem;
-            //_ui.onCardPoolValuesChanged += onCardPoolValuesChanged;
-            //_ui.onSortTypeValueChanged += onSortTypeValueChanged;
-            //_ui.onCharacterFilterValueChanged += onCharacterFiltersValueChanged;
-            //_ui.onCostFilterValueChanged += onCostFiltersValueChanged;
-            //_ui.onTypeFilterValueChanged += onTypeFilterValueChanged;
             _ui.onClickDeckListItem += onClickDeckListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeckListItemDeleteButton;
             _ui.onDeckListItemNameValueChanged += onDeckListItemNameValueChanged;
@@ -232,7 +226,7 @@ namespace Controllers
                     await updateDeckCardListUI();
                 }
                 else
-                    _ui.showMessage(errorTip);
+                    _ui.showErrorTip(errorTip);
             }
             //隐藏拖拽卡牌
             _ui.hideDragCard();
@@ -271,7 +265,7 @@ namespace Controllers
                 await updateDeckCardListUI();
             }
             else
-                _ui.showMessage(errorTip);
+                _ui.showErrorTip(errorTip);
         }
         private void onClickDeckListItem(int index)
         {
@@ -531,24 +525,6 @@ namespace Controllers
             {
                 return game.card.loadExternalImage(skin.imagePath, game.card.textureDirName);
             }
-        }
-        /// <summary>
-        /// 判断是不是可用的角色
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        private bool isAvailableCharacter(CardDefine c)
-        {
-            if (c.id == 0)
-                return false;
-            if (c.GetType().Assembly != typeof(THHGame).Assembly)
-                return false;
-            if (c is MasterCardDefine master)
-                return true;
-            else if (c.type == DEFINE.MASTER)
-                return true;
-            else
-                return false;
         }
         private bool tryAddCardToDeck(CardDefine card, out string errorTip)
         {
