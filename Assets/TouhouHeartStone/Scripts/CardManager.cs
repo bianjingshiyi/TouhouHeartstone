@@ -555,11 +555,15 @@ namespace Game
         }
         public CardSkinData getDefaultSkin(CardDefine cardDefine)
         {
-            var skinGroup = getAllSkins(cardDefine.id).GroupBy(s => s.skinId).FirstOrDefault();
+            return getDefaultSkin(cardDefine.id);
+        }
+        public CardSkinData getDefaultSkin(int id)
+        {
+            var skinGroup = getAllSkins(id).GroupBy(s => s.skinId).FirstOrDefault();
             if (skinGroup == null)
             {
                 //卡牌没有任何皮肤
-                throw new InvalidOperationException(cardDefine + "没有任何皮肤");
+                throw new InvalidOperationException("卡牌" + id + "没有任何皮肤");
             }
             //获取对应语言的皮肤
             CardSkinData skin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());

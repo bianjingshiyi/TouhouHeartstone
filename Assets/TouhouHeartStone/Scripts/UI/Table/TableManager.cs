@@ -317,7 +317,7 @@ namespace Game
             if (anim != null)
                 addAnim(anim);
         }
-        void onEventAfterHandler(IEventArg arg)
+        private void onEventAfterHandler(IEventArg arg)
         {
             eventCache.cache(onEventAfter, arg);
         }

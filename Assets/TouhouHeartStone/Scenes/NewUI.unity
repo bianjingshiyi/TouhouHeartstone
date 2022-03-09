@@ -11544,6 +11544,11 @@ PrefabInstance:
       propertyPath: _scene
       value: 
       objectReference: {fileID: 59033839}
+    - target: {fileID: 4661567537565162968, guid: e5eda7d1e4b5e7d41be47236088eba8c,
+        type: 3}
+      propertyPath: _disableStandardCardPool
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5038327496900915014, guid: e5eda7d1e4b5e7d41be47236088eba8c,
         type: 3}
       propertyPath: comment

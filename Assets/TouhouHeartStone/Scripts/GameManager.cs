@@ -20,6 +20,8 @@ using NitoriNetwork.Common;
 using MukioI18n;
 using MongoDB.Bson;
 using Deck = TouhouHeartstone.Deck;
+using Controllers;
+
 namespace Game
 {
     public partial class GameManager : Manager
@@ -609,21 +611,25 @@ namespace Game
                 _replaySystem.replay.ToJson());
         }
         #region Events
-        void onLogListItemEnter(LogListItem item)
+        private async void onLogListItemEnter(LogListItem item)
         {
             var arg = item.getProp<IEventArg>("event");
             if (arg is IDescribableEventArg describable)
             {
                 ui.LogScrollView.LogInfoHorizantal.display();
                 string info = lang._(describable.localizeTemplateString(game, localPlayer), describable.localizeStringArgs(game, localPlayer));
-                info = Regex.Replace(info, @"{card:(?<id>\d+)}", m => int.TryParse(m.Groups["id"].Value, out var id) ?
-                    getManager<CardManager>().getSkin(id).name : "未知卡牌");
+                info = Regex.Replace(info, @"{card:(?<id>-?\d+)}", m => int.TryParse(m.Groups["id"].Value, out var id) ?
+                    getManager<CardManager>().getDefaultSkin(id).name : "未知卡牌");
                 ui.LogScrollView.LogInfoHorizantal.Text.text = info;
                 if (describable.getCard(game, localPlayer) != null)
                 {
                     ui.LogScrollView.LogInfoHorizantal.InfoCard.display();
-                    ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setCard(describable.getCard(game, localPlayer).define as CardDefine,
-                        getManager<CardManager>().getSkin(describable.getCard(game, localPlayer) as Card));
+                    CardSkinData skin = main.card.getDefaultSkin((describable.getCard(game, localPlayer) as Card).define);
+                    CardDefine card = describable.getCard(game, localPlayer).define as CardDefine;
+                    ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setCard(card, skin);
+                    Sprite sprite = skin.image != null ? skin.image :
+                        await main.card.loadImage(skin.imagePath, main.card.getCardPoolOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+                    ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setImage(sprite);
                 }
                 else
                     ui.LogScrollView.LogInfoHorizantal.InfoCard.hide();
@@ -633,7 +639,12 @@ namespace Game
                     foreach (var target in describable.getTargets(game, localPlayer))
                     {
                         var targetItem = ui.LogScrollView.LogInfoHorizantal.TargetGridList.addItem();
-                        targetItem.Card.setCard(target.define as CardDefine, getManager<CardManager>().getSkin(target as Card));
+                        CardDefine card = target.define as CardDefine;
+                        CardSkinData skin = main.card.getDefaultSkin((target as Card).define);
+                        targetItem.Card.setCard(card, skin);
+                        Sprite sprite = skin.image != null ? skin.image :
+                            await main.card.loadImage(skin.imagePath, main.card.getCardPoolOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+                        targetItem.Card.setImage(sprite);
                     }
                     ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);
                 }
@@ -658,6 +669,7 @@ namespace Game
 #endif
         }
         #region 属性字段
+        public MainManager main => getManager<MainManager>();
         #endregion
     }
     public enum GameMode
