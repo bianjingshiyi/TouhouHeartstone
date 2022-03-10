@@ -253,7 +253,9 @@ namespace Controllers
             _isDraggingVertical = false;
             //隐藏拖拽卡牌
             _ui.hideDragCard();
-            return true;
+            //不管做什么都必须return false以保证ScrollView的释放事件被触发
+            //否则会导致ScrollView不能正确回弹
+            return false;
         }
         private async void onStartDragDeckCardListItem(int index)
         {
