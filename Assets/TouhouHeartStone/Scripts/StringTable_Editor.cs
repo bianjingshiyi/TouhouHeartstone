@@ -132,6 +132,18 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_MASTER = "获取玩家英雄";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家对手")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_OPPONENT = "获取玩家对手";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之手牌")]
+        public const string EDITOR_PARAM_NAME_HANDS = "手牌";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之初始灵力值")]
+        public const string EDITOR_PARAM_NAME_INIT_GEM = "初始灵力值";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之替换的卡牌")]
+        public const string EDITOR_PARAM_NAME_REPLACED_CARDS = "替换的卡牌";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之选项")]
+        public const string EDITOR_PARAM_NAME_OPTIONS = "选项";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之所选选项")]
+        public const string EDITOR_PARAM_NAME_SELECTED_OPTION = "所选选项";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之所选卡牌")]
+        public const string EDITOR_PARAM_NAME_SELECTED_CARD = "所选卡牌";
         #endregion
         #region 牌堆
         [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]
@@ -313,10 +325,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_INIT = "初始化时";
         [TranslateMsg("编辑器中的事件类型之初始化后")]
         public const string EDITOR_EVENT_NAME_AFTER_INIT = "初始化后";
-        [TranslateMsg("编辑器中的事件类型之起始时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_START = "起始时";
-        [TranslateMsg("编辑器中的事件类型之起始后")]
-        public const string EDITOR_EVENT_NAME_AFTER_START = "起始后";
+        [TranslateMsg("编辑器中的事件类型之对战开始时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_START = "对战开始时";
+        [TranslateMsg("编辑器中的事件类型之对战开始后")]
+        public const string EDITOR_EVENT_NAME_AFTER_START = "对战开始后";
         [TranslateMsg("编辑器中的事件类型之回合结束时")]
         public const string EDITOR_EVENT_NAME_BEFORE_TURNEND = "回合结束时";
         [TranslateMsg("编辑器中的事件类型之回合结束后")]
@@ -325,10 +337,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_GAMEEND = "游戏结束时";
         [TranslateMsg("编辑器中的事件类型之游戏结束后")]
         public const string EDITOR_EVENT_NAME_AFTER_GAMEEND = "游戏结束后";
-        [TranslateMsg("编辑器中的事件类型之初始取代时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_INITREPLACE = "初始取代结束时";
-        [TranslateMsg("编辑器中的事件类型之初始取代后")]
-        public const string EDITOR_EVENT_NAME_AFTER_INITREPLACE = "初始取代结束后";
+        [TranslateMsg("编辑器中的事件类型之初始手牌替换时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_INITREPLACE = "初始手牌替换时";
+        [TranslateMsg("编辑器中的事件类型之初始手牌替换后")]
+        public const string EDITOR_EVENT_NAME_AFTER_INITREPLACE = "初始手牌替换后";
         [TranslateMsg("编辑器中的事件类型之设置最大灵力时")]
         public const string EDITOR_EVENT_NAME_BEFORE_SETMAXGEM = "设置最大灵力时";
         [TranslateMsg("编辑器中的事件类型之设置最大灵力后")]
@@ -345,10 +357,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_REBORN = "复生时";
         [TranslateMsg("编辑器中的事件类型之复生后")]
         public const string EDITOR_EVENT_NAME_AFTER_REBORN = "复生后";
-        [TranslateMsg("编辑器中的事件类型之进入战场时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_ENTERFIELD = "进入战场时";
-        [TranslateMsg("编辑器中的事件类型之进入战场后")]
-        public const string EDITOR_EVENT_NAME_AFTER_ENTERFIELD = "进入战场后";
+        [TranslateMsg("编辑器中的事件类型之入场时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_ENTERFIELD = "入场时";
+        [TranslateMsg("编辑器中的事件类型之入场后")]
+        public const string EDITOR_EVENT_NAME_AFTER_ENTERFIELD = "入场后";
         [TranslateMsg("编辑器中的事件类型之揭示时")]
         public const string EDITOR_EVENT_NAME_BEFORE_REVEAL = "揭示时";
         [TranslateMsg("编辑器中的事件类型之揭示后")]
@@ -377,10 +389,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_SETGEM = "设置灵力时";
         [TranslateMsg("编辑器中的事件类型之设置灵力后")]
         public const string EDITOR_EVENT_NAME_AFTER_SETGEM = "设置灵力后";
-        [TranslateMsg("编辑器中的事件类型之召唤时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_CREATETOKEN = "召唤时";
-        [TranslateMsg("编辑器中的事件类型之召唤后")]
-        public const string EDITOR_EVENT_NAME_AFTER_CREATETOKEN = "召唤后";
+        [TranslateMsg("编辑器中的事件类型之召唤衍生物时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_CREATETOKEN = "召唤衍生物时";
+        [TranslateMsg("编辑器中的事件类型之召唤衍生物后")]
+        public const string EDITOR_EVENT_NAME_AFTER_CREATETOKEN = "召唤衍生物后";
         [TranslateMsg("编辑器中的事件类型之添加修改器时")]
         public const string EDITOR_EVENT_NAME_BEFORE_ADDMODI = "添加修改器时";
         [TranslateMsg("编辑器中的事件类型之添加修改器后")]
@@ -413,10 +425,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_DISCOVER = "发现时";
         [TranslateMsg("编辑器中的事件类型之发现后")]
         public const string EDITOR_EVENT_NAME_AFTER_DISCOVER = "发现后";
-        [TranslateMsg("编辑器中的事件类型之抉择时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_SELECT = "抉择时";
-        [TranslateMsg("编辑器中的事件类型之抉择后")]
-        public const string EDITOR_EVENT_NAME_AFTER_SELECT = "抉择后";
+        [TranslateMsg("编辑器中的事件类型之选择时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_SELECT = "选择时";
+        [TranslateMsg("编辑器中的事件类型之选择后")]
+        public const string EDITOR_EVENT_NAME_AFTER_SELECT = "选择后";
         [TranslateMsg("编辑器中的事件类型之元素融合时")]
         public const string EDITOR_EVENT_NAME_BEFORE_ELEMENT = "元素融合时";
         [TranslateMsg("编辑器中的事件类型之元素融合后")]
