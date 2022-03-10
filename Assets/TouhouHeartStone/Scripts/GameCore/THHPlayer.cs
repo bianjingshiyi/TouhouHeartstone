@@ -623,7 +623,7 @@ namespace TouhouHeartstone
                     if (cards.count > 0)
                     {
                         show = cards.random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                             return Task.CompletedTask;
@@ -632,7 +632,7 @@ namespace TouhouHeartstone
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
                             return Task.CompletedTask;
@@ -643,7 +643,7 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isSpell()) > 0)
                     {
                         show = cards.Where(c => c.isSpell()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                             return Task.CompletedTask;
@@ -653,7 +653,7 @@ namespace TouhouHeartstone
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
                             return Task.CompletedTask;
@@ -664,7 +664,7 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isServant()) > 0)
                     {
                         show = cards.Where(c => c.isServant()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                             return Task.CompletedTask;
@@ -674,7 +674,7 @@ namespace TouhouHeartstone
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
                             return Task.CompletedTask;
@@ -685,7 +685,7 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isItem()) > 0)
                     {
                         show = cards.Where(c => c.isItem()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
                             return Task.CompletedTask;
@@ -695,7 +695,7 @@ namespace TouhouHeartstone
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
                             return Task.CompletedTask;

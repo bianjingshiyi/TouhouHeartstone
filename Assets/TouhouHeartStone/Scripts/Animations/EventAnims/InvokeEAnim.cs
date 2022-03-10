@@ -5,7 +5,7 @@ using TouhouHeartstone.Builtin;
 using UDeck = UI.Deck;
 namespace Game
 {
-    class InvokeEAnim : EventAnimation<Sanae.RevealDuelArg>
+    class InvokeEAnim : EventAnimation<Sanae.RevealDuelEventArg>
     {
         Card _cardSelf;
         Card _cardOppo;
@@ -18,7 +18,7 @@ namespace Game
         AnimAnim _flipBackOppo;
         TableAnimation _moveBackSelf;
         TableAnimation _moveBackOppo;
-        public override bool update(TableManager table, Sanae.RevealDuelArg eventArg, float time)
+        public override bool update(TableManager table, Sanae.RevealDuelEventArg eventArg, float time)
         {
             if (eventArg.youCard == null && eventArg.oppoCard == null)
                 return true;

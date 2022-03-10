@@ -398,7 +398,7 @@ namespace Game
                 case THHCard.SilenceEventArg _:
                 case THHCard.DeathEventArg _:
                 case THHPlayer.DiscoverEventArg _:
-                case Sanae.RevealDuelArg _:
+                case Sanae.RevealDuelEventArg _:
                 case THHCard.SecretTriggerEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
@@ -567,7 +567,7 @@ namespace Game
                 case THHPlayer.DiscoverEventArg discover:
                     item.Text.text = lang._(GAME_MANAGER_DISCOVER);
                     break;
-                case Sanae.RevealDuelArg revealDuel:
+                case Sanae.RevealDuelEventArg revealDuel:
                     item.Text.text = lang._(GAME_MANAGER_REVEAL_DUEL);
                     item.BorderImage.sprite = revealDuel.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;

@@ -61,7 +61,7 @@ namespace TouhouHeartstone.Builtin
         }
 
 
-        public static async Task<ElementMixArg> tryMix(CardEngine game, Card card)
+        public static async Task<ElementMixEventArg> tryMix(CardEngine game, Card card)
         {
             Player player = card.getOwner();
             var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0);
@@ -69,7 +69,7 @@ namespace TouhouHeartstone.Builtin
             {
                 return null;
             }
-            var eventArg = await game.triggers.doEvent(new ElementMixArg()
+            var eventArg = await game.triggers.doEvent(new ElementMixEventArg()
             {
                 player = player,
             }, async args =>
@@ -85,7 +85,7 @@ namespace TouhouHeartstone.Builtin
         }
 
 
-        public class ElementMixArg : EventArg, IDescribableEventArg
+        public class ElementMixEventArg : EventArg, IDescribableEventArg
         {
             public Player player;
             public CardDefine define1;

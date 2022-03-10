@@ -38,9 +38,9 @@ namespace TouhouHeartstone.Builtin
         /// <param name="game"></param>
         /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
         /// <returns></returns>
-        public static Task<RevealDuelArg> revealDuel(Player player, CardEngine game, int define = 0)
+        public static Task<RevealDuelEventArg> revealDuel(Player player, CardEngine game, int define = 0)
         {
-            return game.triggers.doEvent(new RevealDuelArg() {player = player}, async arg =>
+            return game.triggers.doEvent(new RevealDuelEventArg() {player = player}, async arg =>
             {
                 Player oppo = game.getOpponent(player);
                 arg.youCard = await player.Reveal(game, player.getDeck(), define);
@@ -61,7 +61,7 @@ namespace TouhouHeartstone.Builtin
             });
         }
 
-        public class RevealDuelArg : EventArg, IDescribableEventArg
+        public class RevealDuelEventArg : EventArg, IDescribableEventArg
         {
             /// <summary>
             /// 对决发起方
@@ -459,7 +459,7 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID, async (game, card, p) =>
             {
                 int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                    .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                    .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
 
                 await game.getAllServants().damage(game, card, count);
                 await game.updateDeath();
@@ -501,12 +501,12 @@ namespace TouhouHeartstone.Builtin
                 new EventTriggeredModifierFixer<int>.ModifierFixer<HearthStoneRule.TurnEndEventArg>(
                     (game, card, buff, arg) => card.getOwner() == arg.player,
                     (game, card, buff, arg) => 0, null,false),
-                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
+                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
                     (game, card, buff, arg) => card.getOwner() == arg.player,
                     (game, card, buff, arg) =>
                     {
                         return game.triggers.getRecordedEvents().skipUntilLast(a => a is HearthStoneRule.TurnStartEventArg)
-                            .Any(a => a is Sanae.RevealDuelArg)
+                            .Any(a => a is Sanae.RevealDuelEventArg)
                             ? -4
                             : 0;
                     })),
@@ -562,7 +562,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
             Card card1 = game.createCard<GodMiracleOfRain>();
             Card card2 = game.createCard<GodMiracleOfOnbashira>();
             Card card3 = game.createCard<GodMiracleOfWar>();
@@ -773,12 +773,12 @@ namespace TouhouHeartstone.Builtin
                 }
             }),
             new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), null,
-                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
+                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
                     (game, card, buff, arg) => card.owner == arg.player,
                     (game, card, buff, arg) =>
                     {
                         int v = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                            .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                            .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
                         return -v;
                     }))
         };
@@ -965,12 +965,12 @@ namespace TouhouHeartstone.Builtin
             
             new NoTargetEffect(effect),
             new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), null,
-                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelArg>(
+                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
                     (game, card, buff, arg) => card.owner == arg.player,
                     (game, card, buff, arg) =>
                     {
                         int v = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                            .OfType<Sanae.RevealDuelArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                            .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
                         return -v;
                     }))
         };

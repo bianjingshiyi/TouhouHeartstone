@@ -1349,7 +1349,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public class RevealArg : EventArg, IDescribableEventArg
+        public class RevealEventArg : EventArg, IDescribableEventArg
         {
             public Player player;
             public Card card; //被揭示的牌
