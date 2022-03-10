@@ -274,11 +274,12 @@ namespace Controllers
         /// </summary>
         /// <param name="characterId"></param>
         /// <returns></returns>
-        public Task display(int[] cardPoolsId = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
+        public Task display(int[] cardPoolsId = null, bool? hideBuiltinCards = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
         {
             return display(new DisplayInfo()
             {
                 cardPoolFiltersId = cardPoolsId,
+                hideBuiltinCards = hideBuiltinCards,
                 characterFiltersId = charactersId,
                 cardFilter = cardFilter
             });

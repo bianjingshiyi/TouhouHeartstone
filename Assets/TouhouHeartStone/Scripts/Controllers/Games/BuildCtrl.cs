@@ -36,7 +36,7 @@ namespace Controllers
             //右侧栏
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
-            await _cardPoolViewPanelCtrl.display(cardFilter: cardFilter);
+            await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, cardFilter: cardFilter);
             await updateDeckListUI();
         }
         /// <summary>
@@ -49,7 +49,7 @@ namespace Controllers
             _isDeckChanged = false;
 
             //切换角色筛选
-            await _cardPoolViewPanelCtrl.display(charactersId: new int[] { deck.masterId }, cardFilter: cardFilter);
+            await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, charactersId: new int[] { deck.masterId }, cardFilter: cardFilter);
             CardSkinData masterSkin = game.card.getSkin(deck.masterId);
 
             // 更新UI
@@ -216,6 +216,16 @@ namespace Controllers
             if (_deck == null)
             {
                 //当前不在编辑卡组，禁用拖拽
+                return false;
+            }
+            if (_isDraggingVertical)
+            {
+                //横向拖拽
+                //重置状态字段
+                _dragCard = null;
+                _dragStartPosition = Vector2.zero;
+                _isDraggingHorizontal = false;
+                _isDraggingVertical = false;
                 return false;
             }
             if (_dragCard == null)
