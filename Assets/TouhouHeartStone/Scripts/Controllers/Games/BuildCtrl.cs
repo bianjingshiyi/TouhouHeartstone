@@ -233,15 +233,13 @@ namespace Controllers
                 //判断是否在拖拽卡牌，避免事件错误发生
                 return false;
             }
+            bool needUpdateUI = false;
             //执行操作
             if (_ui.isPositionOverDeckCardList(eventData.position))
             {
                 if (tryAddCardToDeck(_dragCard, out string errorTip))
                 {
-                    //更新可用信息
-                    await _cardPoolViewPanelCtrl.display();
-                    //更新UI
-                    await updateDeckCardListUI();
+                    needUpdateUI = true;
                 }
                 else
                     _ui.showErrorTip(errorTip);
@@ -253,6 +251,13 @@ namespace Controllers
             _isDraggingVertical = false;
             //隐藏拖拽卡牌
             _ui.hideDragCard();
+            if (needUpdateUI)
+            {
+                //更新可用信息
+                await _cardPoolViewPanelCtrl.display();
+                //更新UI
+                await updateDeckCardListUI();
+            }
             //不管做什么都必须return false以保证ScrollView的释放事件被触发
             //否则会导致ScrollView不能正确回弹
             return false;

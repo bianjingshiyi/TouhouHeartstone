@@ -164,6 +164,7 @@ namespace UI
             if (_isDraggingHorizontal)
             {
                 //结束拖拽
+                _isDraggingHorizontal = false;
                 hideDragCard();
                 Vector2 position = eventData.position;
                 onEndDragDeckCardListItem?.Invoke(isPositionOverDeckCardList(position));
