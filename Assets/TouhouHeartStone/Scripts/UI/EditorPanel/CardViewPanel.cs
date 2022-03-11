@@ -76,7 +76,7 @@ namespace UI
                 (i, item) =>
                 {
                     item.GetComponent<CardViewDeckCardListItem>().updateView(viewData[i].name, viewData[i].image, viewData[i].count);
-                }, onDeckCardListItemEnable, onDeckCardListItemDisable);
+                }, onDeckCardListItemEnable, onDeckCardListItemDisable, dontDestroy: true);
         }
         /// <summary>
         /// 设置卡牌列表数量（会引发卡牌列表刷新事件）

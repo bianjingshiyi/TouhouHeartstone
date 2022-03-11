@@ -44,7 +44,6 @@ namespace UI
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
-            Debug.Log("卡组卡牌拖拽事件触发");
             onDrag?.Invoke(this, eventData);
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)

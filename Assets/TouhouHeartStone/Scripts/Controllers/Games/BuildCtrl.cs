@@ -274,8 +274,8 @@ namespace Controllers
                 _deck.cardList.RemoveAt(index);
             //刷新卡池显示
             await _cardPoolViewPanelCtrl.display();
-            //刷新卡组显示
-            await updateDeckCardListUI();
+            //这里本来应该刷新卡组显示，但是因为列表物体销毁会导致拖拽事件不再触发，所以移动到停止拖拽
+            //await updateDeckCardListUI();
             //刷新拖拽卡牌显示
             CardSkinData skin = game.card.getDefaultSkin(_dragCard);
             Sprite image = await game.card.loadCardImage(_dragCard.id);
@@ -285,17 +285,18 @@ namespace Controllers
         }
         private async void onEndDragDeckCardListItem(bool isOverDeckCardList)
         {
-            if (!isOverDeckCardList)
-                return;
-            if (tryAddCardToDeck(_dragCard, out string errorTip))
+            if (isOverDeckCardList)
             {
-                // 更新可用信息
-                await _cardPoolViewPanelCtrl.display();
-                // 更新UI
-                await updateDeckCardListUI();
+                if (tryAddCardToDeck(_dragCard, out string errorTip))
+                {
+                    // 更新可用信息
+                    await _cardPoolViewPanelCtrl.display();
+                }
+                else
+                    _ui.showErrorTip(errorTip);
             }
-            else
-                _ui.showErrorTip(errorTip);
+            // 更新UI
+            await updateDeckCardListUI();
         }
         private void onClickDeckListItem(int index)
         {
