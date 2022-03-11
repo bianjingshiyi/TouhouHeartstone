@@ -354,7 +354,7 @@ namespace Controllers
         private void onSaveDeckClick()
         {
             // 卡组保存
-            if (_deck.cardList.Sum(i => i.count) < game.deck.deckMaxSize)
+            if (_deck.cardList.Sum(i => i.count) < game.deck.deckValidSize)
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_NOT_COMPLETE), () =>
                 {
@@ -441,7 +441,7 @@ namespace Controllers
         private void onExportDeckClick()
         {
             // 卡组保存
-            if (_deck.getCardCount() < game.deck.deckMaxSize)
+            if (_deck.getCardCount() < game.deck.deckValidSize)
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_NOT_COMPLETE_EXPORT), () =>
                 {
@@ -560,7 +560,7 @@ namespace Controllers
         private bool tryAddCardToDeck(CardDefine card, out string errorTip)
         {
             //卡组数量上限
-            if (_deck.getCardCount() >= game.deck.deckMaxSize)
+            if (_deck.getCardCount() >= game.deck.deckValidSize)
             {
                 errorTip = game.lang._(StringTable.BUILD_TIP_DECK_MAX_SIZE);
                 return false;
@@ -702,7 +702,7 @@ namespace Controllers
         }
         private async Task updateDeckCardListUI()
         {
-            _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckMaxSize);
+            _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckValidSize);
             var cards = _deck.cardList.OrderBy(e => game.card.getCardDefine(e.id) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
             (string name, Sprite image, int count)[] deckCardsViewData = new (string name, Sprite image, int count)[cards.Length];
             for (int i = 0; i < cards.Length; i++)

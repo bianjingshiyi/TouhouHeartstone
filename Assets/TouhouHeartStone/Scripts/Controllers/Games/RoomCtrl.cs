@@ -137,6 +137,9 @@ namespace Controllers
             updatePlayerListUI();
             updateStartAndReadyButton();
         }
+        /// <summary>
+        /// 当点击选择卡组按钮
+        /// </summary>
         private async void onClickSelectDeckButton()
         {
             _selectDeckPlayerId = scene.game.network.logic.localPlayer.id;
@@ -293,7 +296,7 @@ namespace Controllers
             {
                 viewData[i].name = deckList[i].name;
                 viewData[i].image = await game.card.loadCardImage(deckList[i].masterId);
-                viewData[i].isWarning = game.deck.isValidDeck(deckList[i]);
+                viewData[i].isWarning = _isLocalGame ? game.deck.isValidDeck(deckList[i]) : game.deck.isValidDeckForOnlineGame(deckList[i]);
             }
             _ui.displayDeckSelectPanel(viewData);
         }
