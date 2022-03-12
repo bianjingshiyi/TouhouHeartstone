@@ -19,6 +19,10 @@ namespace Controllers
             {
                 _build = TransformHelper.findComponentInScene<BuildCtrl>(gameObject.scene);
             }
+            if (_pveRoom == null)
+            {
+                _pveRoom = TransformHelper.findComponentInScene<PVERoomCtrl>(gameObject.scene);
+            }
             if (_editor == null)
             {
                 _editor = TransformHelper.findComponentInScene<EditorCtrl>(gameObject.scene);
@@ -38,6 +42,7 @@ namespace Controllers
             _menu.gameObject.SetActive(true);
             _room.gameObject.SetActive(false);
             _build.gameObject.SetActive(false);
+            _pveRoom.gameObject.SetActive(false);
             _editor.gameObject.SetActive(false);
             _cardEditor.gameObject.SetActive(false);
             _effectEditor.gameObject.SetActive(false);
@@ -46,6 +51,7 @@ namespace Controllers
         public MainMenuCtrl menu => _menu;
         public RoomCtrl room => _room;
         public BuildCtrl build => _build;
+        public PVERoomCtrl pveRoom => _pveRoom;
         public EditorCtrl editor => _editor;
         public CardEditorCtrl cardEditor => _cardEditor;
         public EffectEditorCtrl effectEditor => _effectEditor;
@@ -56,6 +62,8 @@ namespace Controllers
         RoomCtrl _room;
         [SerializeField]
         BuildCtrl _build;
+        [SerializeField]
+        PVERoomCtrl _pveRoom; // 待手动关联UI
         [SerializeField]
         EditorCtrl _editor;
         [SerializeField]

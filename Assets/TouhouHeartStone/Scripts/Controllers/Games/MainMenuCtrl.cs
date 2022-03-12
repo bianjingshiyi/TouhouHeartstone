@@ -57,20 +57,25 @@ namespace Controllers
             scene.build.display();
         }
 
+        /// <summary>
+        /// 进入PVE模式界面
+        /// </summary>
         private async void onEntryPVEMode()
         {
-            await scene.game.network.logic.CreateLocalRoom();
-            RoomData currentRoomData = scene.game.network.logic.CurrentRoom;
-            currentRoomData.maxPlayerCount = 2; // 炉石两个人
-            
-            HearthstoneOption option = new HearthstoneOption();
-            var rand = new byte[4];
-            System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
-            option.randomSeed = BitConverter.ToInt32(rand, 0);
-            currentRoomData.setOption(option);
-            
-            hide();
-            scene.room.display(currentRoomData, true);
+            // await scene.game.network.logic.CreateLocalRoom();
+            // RoomData currentRoomData = scene.game.network.logic.CurrentRoom;
+            // currentRoomData.maxPlayerCount = 2; // 炉石两个人
+            //
+            // HearthstoneOption option = new HearthstoneOption();
+            // var rand = new byte[4];
+            // System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
+            // option.randomSeed = BitConverter.ToInt32(rand, 0);
+            // currentRoomData.setOption(option);
+            //
+            // hide();
+            // scene.room.display(currentRoomData, true);
+            _ui.gameObject.SetActive(false);
+            scene.pveRoom.display();
         }
         
         private void onEditorButtonClick()
