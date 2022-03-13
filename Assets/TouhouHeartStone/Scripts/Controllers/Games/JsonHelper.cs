@@ -13,17 +13,22 @@ namespace Controllers
     {
         public static void init()
         {
-            ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => typeof(CardReference).IsAssignableFrom(t));
             BsonClassMap.RegisterClassMap<CardReference>();
             isInited = true;
         }
         public static string toJson(this object obj)
         {
-            return obj.ToJson();
+            ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
+            string json = obj.ToJson();
+            ConventionRegistry.Remove(nameof(CustomClassMapConvention));
+            return json;
         }
         public static T fromJson<T>(string json)
         {
-            return BsonSerializer.Deserialize<T>(json);
+            ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
+            T obj = BsonSerializer.Deserialize<T>(json);
+            ConventionRegistry.Remove(nameof(CustomClassMapConvention));
+            return obj;
         }
         static ConventionPack conventions = new ConventionPack()
         {

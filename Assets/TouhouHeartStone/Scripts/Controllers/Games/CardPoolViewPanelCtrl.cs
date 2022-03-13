@@ -307,10 +307,9 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
         }
-        public void displayCount(bool value)
+        public void enableCount(bool value)
         {
             _hideCount = !value;
-            display();
         }
         public void enableCardPoolFilter(bool value)
         {

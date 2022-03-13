@@ -230,7 +230,7 @@ namespace Controllers
             _ui.onItemBuffLanguageChanged += onItemBuffLanguageChangedCallback;
             _ui.onItemNeedSelectBuffImage += onItemNeedSelectBuffImage;
 
-            _cardPoolViewPanelCtrl.displayCount(false);
+            _cardPoolViewPanelCtrl.enableCount(false);
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
             string[] languages = game.langManager.getLanguages();
