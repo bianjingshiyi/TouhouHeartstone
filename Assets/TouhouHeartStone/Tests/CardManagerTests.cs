@@ -80,7 +80,7 @@ namespace Tests
             Assert.IsNull(task.Exception);
 
             // 一定会有的卡
-            var cd = cm.GetCardDefine(ExistsCardID);
+            var cd = cm.getCardDefine(ExistsCardID);
             Assert.NotNull(cd);
             Assert.AreEqual(cd.id, ExistsCardID);
 
@@ -99,7 +99,7 @@ namespace Tests
             var cm = task.Result;
 
             // 一定会有的卡
-            var cd = cm.GetCardDefine(ExistsCardID);
+            var cd = cm.getCardDefine(ExistsCardID);
             Assert.NotNull(cd);
             Assert.AreEqual(cd.id, ExistsCardID);
         }

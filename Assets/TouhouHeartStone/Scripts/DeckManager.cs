@@ -140,6 +140,8 @@ namespace Game
         {
             ClearDeck(id);
             db.Execute($@"DELETE FROM {tableDeck} WHERE deckID = ?", null, args: id); // 然后清理卡组定义
+            //清理运行时卡组
+            _deckList.RemoveAll(d => d.id == id);
         }
 
         /// <summary>
@@ -148,7 +150,8 @@ namespace Game
         /// <param name="id"></param>
         public void ClearDeck(long id)
         {
-            db.Execute($@"DELETE FROM {tableCards} WHERE deckID = ?", null, args: id); // 先清理卡定义
+            // 先清理卡定义
+            db.Execute($@"DELETE FROM {tableCards} WHERE deckID = ?", null, args: id);
         }
 
         /// <summary>
@@ -229,7 +232,8 @@ namespace Game
                     cmd.ExecuteNonQuery();
                 }
             }
-            return db.GetLastInsertID(tableCards);
+            long insertId = db.GetLastInsertID(tableCards);
+            return insertId;
         }
 
         /// <summary>

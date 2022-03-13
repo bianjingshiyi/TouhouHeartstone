@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UI
 {
@@ -11,7 +12,8 @@ namespace UI
             node.switchToBuffNode();
             node.setBuffValues(viewData.buffNames);
             node.setBuffValue(viewData.buffIndex);
-            node.setBuffId(viewData.buffId.ToString());
+            node.setBuffLanguage(viewData.buffLanguageIndex);
+            node.setBuffSkin(viewData.buffName, viewData.buffDesc, viewData.buffImage);
             node.setupPropModifierTemplate(viewData.propertyTypes, viewData.modifyTypes);
             node.updatePropModifierList(viewData.propModifiersViewData);
             node.updateEffectList(viewData.effectTypeNames, viewData.effectNames);
@@ -27,6 +29,10 @@ namespace UI
             node.onPropModifierAddEffect += onItemPropModifierAddEffectCallback;
             node.onPropModifierRemoveEffect += onItemPropModifierRemoveEffectCallback;
             node.onPropModifierEditEffect += onItemPropModifierEditEffectCallback;
+            node.onBuffNameChanged += onItemBuffNameChangedCallback;
+            node.onBuffDescChanged += onItemBuffDescChangedCallback;
+            node.onBuffLanguageChanged += onItemBuffLanguageChangedCallback;
+            node.onNeedSelectBuffImage += onItemNeedSelectBuffImageCallback;
             return node;
         }
         #endregion
@@ -75,6 +81,22 @@ namespace UI
         {
             onItemPropModifierEditEffect?.Invoke(item, index);
         }
+        private void onItemBuffNameChangedCallback(ActionNodeItem item, string value)
+        {
+            onItemBuffNameChanged?.Invoke(item, value);
+        }
+        private void onItemBuffDescChangedCallback(ActionNodeItem item, string value)
+        {
+            onItemBuffDescChanged?.Invoke(item, value);
+        }
+        private void onItemBuffLanguageChangedCallback(ActionNodeItem item, int value)
+        {
+            onItemBuffLanguageChanged?.Invoke(item, value);
+        }
+        private void onItemNeedSelectBuffImageCallback(ActionNodeItem item)
+        {
+            onItemNeedSelectBuffImage?.Invoke(item);
+        }
         #endregion
         #region 事件
         public event Action<ActionNodeItem, int> onItemBuffChanged;
@@ -88,13 +110,21 @@ namespace UI
         public event Action<ActionNodeItem, int> onItemPropModifierAddEffect;
         public event Action<ActionNodeItem, int> onItemPropModifierRemoveEffect;
         public event Action<ActionNodeItem, int> onItemPropModifierEditEffect;
+        public event Action<ActionNodeItem, string> onItemBuffNameChanged;
+        public event Action<ActionNodeItem, string> onItemBuffDescChanged;
+        public event Action<ActionNodeItem, int> onItemBuffLanguageChanged;
+        public event Action<ActionNodeItem> onItemNeedSelectBuffImage;
+
         #endregion
     }
     public class ActionNodeBuffViewData
     {
         public string[] buffNames;
         public int buffIndex;
-        public int buffId;
+        public int buffLanguageIndex;
+        public string buffName;
+        public string buffDesc;
+        public Sprite buffImage;
         public string[] propertyTypes;
         public string[] modifyTypes;
         public ActionNodePropertyModifierViewData[] propModifiersViewData;

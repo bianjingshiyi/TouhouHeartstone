@@ -8,7 +8,9 @@ import org.lotlab.pipeline.TencentCOS
 import org.lotlab.pipeline.BackblazeB2
 
 pipeline {
-    agent any
+    agent {
+        node { label 'unity' }
+    }
     options {
         timeout(time: 3, unit: 'HOURS')
         buildDiscarder logRotator(artifactDaysToKeepStr: '15', artifactNumToKeepStr: '15', daysToKeepStr: '90', numToKeepStr: '30')
@@ -137,7 +139,7 @@ pipeline {
                         fi
                     fi
                     done'''
-                    archiveArtifacts artifacts: 'Build/_artifact/*', followSymlinks: false
+                    // archiveArtifacts artifacts: 'Build/_artifact/*', followSymlinks: false
             }
         }
         stage('Upload To Tencent COS') {
@@ -159,7 +161,7 @@ pipeline {
             steps {
                 script {
                     BackblazeB2 b2 = new BackblazeB2(this, 'sample', 'backblaze-b2')
-                    b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots', '7')
+                    b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots', '15')
 
                     def files = findFiles excludes: '', glob: 'Build/_artifact/**'
                     env.DOWNLOAD_LINK = ''

@@ -30,7 +30,20 @@ namespace Controllers
             _cardDefine = cardDefine;
             updateSkinNames();
             _ui.setId(_cardDefine.id);
-            _ui.setType(Array.IndexOf(_types, _cardDefine.type));
+            _ui.setType(Array.IndexOf(_types, _cardDefine.type), _cardDefine.type);
+            _ui.setIsToken(_cardDefine.isToken());
+            bool[] keywordsValue = new bool[_keywords.Length];
+            for (int i = 0; i < keywordsValue.Length; i++)
+            {
+                keywordsValue[i] = _cardDefine.hasKeyword(_keywords[i]);
+            }
+            _ui.setKeywords(keywordsValue);
+            bool[] tagsValue = new bool[_tags.Length];
+            for (int i = 0; i < _tags.Length; i++)
+            {
+                tagsValue[i] = _cardDefine.getTags().Contains(_tags[i]);
+            }
+            _ui.setTags(tagsValue);
             string[] charactersName = new string[selectableCharacters.Length + 1];
             charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
             for (int i = 1; i < charactersName.Length; i++)
@@ -46,13 +59,13 @@ namespace Controllers
             string[] tags = _cardDefine.getProp<string[]>(DEFINE.TAGS);
             if (tags != null && tags.Length > 0)
             {
-                int index = Array.IndexOf(_tags, tags[0]);
+                int index = Array.IndexOf(_races, tags[0]);
                 if (index < 0)
                     index = 0;
-                _ui.setTag(index);
+                _ui.setRace(index);
             }
             else
-                _ui.setTag(0);
+                _ui.setRace(0);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             updateEffectList(effects);
             _ui.closeAllEdit();
@@ -74,12 +87,85 @@ namespace Controllers
                 _ui = GetComponentInChildren<CardEditorPanel>();
             }
             _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM };
-            _ui.setTypes(_types);
+            string[] typeNames = new string[]
+            {
+                StringTable.GAME_CARD_TYPE_SERVANT,
+                StringTable.GAME_CARD_TYPE_SPELL,
+                StringTable.GAME_CARD_TYPE_ITEM
+            };
+            _ui.setTypes(typeNames);
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
+            string[] languages = game.langManager.getLanguages();
+            for (int i = 0; i < languages.Length; i++)
+            {
+                languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
+            }
+            _ui.setLanguages(languages);
             _ui.onChangeLanguage += onChangeLanguage;
+            string[] keywords = new string[]
+            {
+                "守卫",
+                "先攻",
+                "速攻",
+                "护盾",
+                "隐形",
+                "永久隐形",
+                "吸血",
+                "致命",
+                "魔免",
+                "禁锢",
+                "唯一",
+                "自动施放",
+                "无法攻击",
+                "双击",
+                "无敌",
+                "陷阱",
+                "任务"
+            };
+            _keywords = new string[]
+            {
+                KEYWORD.TAUNT,
+                KEYWORD.CHARGE,
+                KEYWORD.RUSH,
+                KEYWORD.SHIELD,
+                KEYWORD.STEALTH,
+                KEYWORD.PERMANENTSTEALTH,
+                KEYWORD.DRAIN,
+                KEYWORD.POISONOUS,
+                KEYWORD.ELUSIVE,
+                KEYWORD.FREEZED,
+                KEYWORD.UNIQUE,
+                KEYWORD.AUTOCAST,
+                KEYWORD.CANTATTACK,
+                KEYWORD.WINDFURY,
+                KEYWORD.IMMUNITY,
+                KEYWORD.SECRET,
+                KEYWORD.MISSION
+            };
+            _ui.initKeywords(keywords);
+            _ui.onChangeKeywords += onChangeKeywords;
             _ui.onChangeType += onChangeType;
+            _ui.onIsTokenToggleValueChanged += onIsTokenToggleValueChanged;
+            string[] tagNames = new string[]
+            {
+                StringTable.GAME_TAG_METAL,
+                StringTable.GAME_TAG_WOOD,
+                StringTable.GAME_TAG_WATER,
+                StringTable.GAME_TAG_FIRE,
+                StringTable.GAME_TAG_EARTH,
+            };
+            _tags = new string[]
+            {
+                Patchouli.METAL,
+                Patchouli.WOOD,
+                Patchouli.WATER,
+                Patchouli.FIRE,
+                Patchouli.EARTH
+            };
+            _ui.initTags(tagNames);
+            _ui.onTagDropdownValueChanged += onTagDropdownValueChanged;
             _ui.onChangeCharacter += onChangeCharacter;
             _ui.onChangeCost += onChangeCost;
             _ui.onChangeName += onChangeName;
@@ -88,9 +174,28 @@ namespace Controllers
             _ui.onChangeDesc += onChangeDesc;
             _ui.onChangeAttack += onChangeAttack;
             _ui.onChangeLife += onChangeLife;
-            _tags = new string[] { string.Empty, TAG.BEAST, TAG.DEMON, TAG.ELEMENT, TAG.FAIRY, TAG.GOD, TAG.MACHINE };
-            _ui.setTags(_tags);
-            _ui.onChangeTag += onChangeTag;
+            _races = new string[]
+            {
+                null,
+                TAG.BEAST,
+                TAG.DEMON,
+                TAG.ELEMENT,
+                TAG.FAIRY,
+                TAG.GOD,
+                TAG.MACHINE
+            };
+            string[] racesName = new string[]
+            {
+                string.Empty,
+                game.langManager.getString(StringTable.GAME_RACE_BEAST),
+                game.langManager.getString(StringTable.GAME_RACE_DEMON),
+                game.langManager.getString(StringTable.GAME_RACE_ELEMENT),
+                game.langManager.getString(StringTable.GAME_RACE_FAIRY),
+                game.langManager.getString(StringTable.GAME_RACE_GOD),
+                game.langManager.getString(StringTable.GAME_RACE_MACHINE)
+            };
+            _ui.setTags(_races);
+            _ui.onChangeRace += onChangeRace;
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
             _ui.setEffectTypes(game.card.getEffectNames());
@@ -99,72 +204,13 @@ namespace Controllers
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
         }
         #endregion
-        #endregion
-
-        private void updateSkinNames()
-        {
-            _ui.setSkinNames(getSkins().GroupBy(s => s.skinId)
-                .Select(g => g.FirstOrDefault(s => s.language == game.langManager.getLanguage()) is CardSkinData s2 ? s2.skinName : g.First().skinName)
-                .ToArray());
-        }
-        private async Task setCurSkinIndex(int skinIndex)
-        {
-            var skinGroup = getSkins().GroupBy(s => s.skinId).ElementAt(skinIndex);
-            //获取对应语言的皮肤
-            _curCardSkin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
-            //如果没有对应语言，就第一个
-            if (_curCardSkin == null)
-                _curCardSkin = skinGroup.First();
-            _ui.setSkin(skinIndex);
-            _ui.setLanguage(Array.IndexOf(game.langManager.getLanguages(), _curCardSkin.language));
-            _ui.setName(_curCardSkin.name);
-            _ui.setSubName(_curCardSkin.subname);
-            _ui.setDesc(_curCardSkin.desc);
-            Sprite image = null;
-            string path = _curCardSkin.imagePath;
-            //除了StreamingAssets以外，因为无法区分可持续化文件和工程文件必须获取完整根目录
-            if (game.card.getCardPool(_cardPoolId) is CardPoolInfo cardPool &&
-                game.card.getCardPoolPath(cardPool) is string cardPoolPath &&
-                !cardPoolPath.StartsWith("sa:"))
-            {
-                image = await game.card.loadExternalImage(path, Path.Combine(game.card.getCardPoolPathRootDir(cardPoolPath), game.card.textureDirName));
-            }
-            else
-            {
-                image = await game.card.loadExternalImage(path, null);
-            }
-            if (image != null)
-            {
-                _ui.setImage(image);
-            }
-        }
-        int getSkinCount()
-        {
-            return getSkins().GroupBy(s => s.skinId).Count();
-        }
-        void updateEffectList(GeneratedEffect[] effects)
-        {
-            _ui.setEffects(game.card.getEffectNames(effects));
-        }
-        int allocSkinId()
-        {
-            return getSkins().GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1;
-        }
-        IEnumerable<CardSkinData> getSkins()
-        {
-            return game.card.getAllSkins(_cardDefine.id);
-        }
-        #region UI回调
+        #region 事件回调
         private async void onChangeSkin(int skinIndex)
         {
             if (skinIndex == getSkinCount())
             {
                 //新建皮肤
-                _curCardSkin = new CardSkinData();
-                _curCardSkin.id = _cardDefine.id;
-                _curCardSkin.skinId = allocSkinId();
-                _curCardSkin.skinName = "新建皮肤";
-                scene.editor.addSkin(_curCardSkin);
+                _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 updateSkinNames();
             }
             await setCurSkinIndex(skinIndex);
@@ -189,11 +235,12 @@ namespace Controllers
                 Debug.LogWarning("你不能删除卡牌的最后一个皮肤");
                 return;
             }
-            scene.editor.removeSkins(c => c.skinId == _curCardSkin.skinId);
+            game.card.removeSkin(_cardPoolId, _cardDefine.id, _curCardSkin.skinId);
+            //scene.editor.removeSkins(c => c.skinId == _curCardSkin.skinId);
             updateSkinNames();
             await setCurSkinIndex(0);
         }
-        async void onChangeLanguage(int languageIndex)
+        private async void onChangeLanguage(int languageIndex)
         {
             string language = game.langManager.getLanguages()[languageIndex];
             var skinGroup = getSkins().GroupBy(s => s.skinId).First(g => g.Key == _curCardSkin.skinId);
@@ -201,32 +248,64 @@ namespace Controllers
             if (targetSkin == null)
             {
                 //不存在对应语言的皮肤，新建一个
-                targetSkin = new CardSkinData(_curCardSkin)
-                {
-                    language = language
-                };
-                scene.editor.addSkin(targetSkin);
+                targetSkin = game.card.createSkinForDiffLanguage(_cardPoolId, _curCardSkin, language);
             }
             _curCardSkin = targetSkin;
             _ui.setLanguage(languageIndex);
             _ui.setName(_curCardSkin.name);
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
-            Sprite image = await game.card.loadExternalImage(_curCardSkin.imagePath,
-                game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(game.card.getCardPool(_cardPoolId))));
-            if (image != null)
-            {
-                _ui.setImage(image);
-            }
+            string path = _curCardSkin.imagePath;
+            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+            _ui.setImage(image);
         }
         /// <summary>
         /// 当用户更改类型
         /// </summary>
         /// <param name="typeIndex"></param>
-        void onChangeType(int typeIndex)
+        private void onChangeType(int typeIndex)
         {
             _cardDefine.type = _types[typeIndex];
-            //_ui.setType(typeIndex);
+            _ui.setType(typeIndex, _types[typeIndex]);
+        }
+        private void onIsTokenToggleValueChanged(bool value)
+        {
+            _cardDefine.setIsToken(value);
+        }
+        private void onTagDropdownValueChanged(bool[] value)
+        {
+            string[] tags = _cardDefine.getTags();
+            string race = tags.Length > 0 ? tags[0] : null;
+            List<string> tagList = new List<string>();
+            tagList.Add(race);
+            for (int i = 0; i < _tags.Length; i++)
+            {
+                if (value[i] && !tagList.Contains(_tags[i]))
+                {
+                    tagList.Add(_tags[i]);
+                }
+                else
+                {
+                    tagList.RemoveAll(s => s == _tags[i]);
+                }
+            }
+            _cardDefine.setTags(tagList.ToArray());
+        }
+        /// <summary>
+        /// 当用户更改卡牌的关键词
+        /// </summary>
+        /// <param name="value"></param>
+        private void onChangeKeywords(bool[] value)
+        {
+            List<string> keywordList = new List<string>();
+            for (int i = 0; i < _keywords.Length; i++)
+            {
+                if (value[i])
+                {
+                    keywordList.Add(_keywords[i]);
+                }
+            }
+            _cardDefine.setKeywords(keywordList.ToArray());
         }
         private void onChangeCharacter(int characterIndex)
         {
@@ -272,73 +351,14 @@ namespace Controllers
         /// <summary>
         /// 当需要用户选择图片，根据平台不同调用不同的插件方法，返回选择的贴图。新建的贴图需要缓存在内存中。
         /// </summary>
-        Task<Sprite> onNeedSelectImage()
+        async Task<Sprite> onNeedSelectImage()
         {
-            TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
-            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            Sprite sprite = await game.card.selectExternalImage();
+            if (sprite != null)
             {
-                //手机端
-                var permission = NativeGallery.GetImageFromGallery(async path =>
-                {
-                    if (path != null)
-                    {
-                        Sprite sprite = await game.card.getSpriteFromCache(path);
-                        if (sprite == null)
-                        {
-                            Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
-                            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-                            //缓存外部图片
-                            game.card.addSpriteToCache(path, sprite);
-                        }
-                        //更改贴图路径为外部文件路径
-                        _curCardSkin.imagePath = path;
-                        tcs.SetResult(sprite);
-                    }
-                });
-                if (permission == NativeGallery.Permission.Denied)
-                {
-                    Debug.LogError("没有打开相册的权限");
-                    // 拒绝权限后应当弹出框提示需要设置权限
-                    NativeGallery.OpenSettings();
-                }
+                _curCardSkin.imagePath = game.card.getSpritePath(sprite);
             }
-            else
-            {
-                //默认PC
-                string[] paths = StandaloneFileBrowser.OpenFilePanel("", "", new ExtensionFilter[]
-                {
-                    new ExtensionFilter("Image Files", "png","jpg")
-                }, false);
-                if (paths == null || paths.Length < 1)
-                {
-                    return null;
-                }
-                string path = paths[0];
-                UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path);
-                uwr.SendWebRequest().completed += async op =>
-                {
-                    if (uwr.isNetworkError || uwr.isHttpError)
-                    {
-                        Debug.LogError(uwr.error);
-                    }
-                    else
-                    {
-                        Sprite sprite = await game.card.getSpriteFromCache(path);
-                        if (sprite == null)
-                        {
-                            Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
-                            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-                            //缓存外部图片
-                            game.card.addSpriteToCache(path, sprite);
-                        }
-                        //更改贴图路径为外部文件路径
-                        _curCardSkin.imagePath = path;
-                        tcs.SetResult(sprite);
-                    }
-                    uwr.Dispose();
-                };
-            }
-            return tcs.Task;
+            return sprite;
         }
         /// <summary>
         /// 当用户更改卡片描述
@@ -353,7 +373,7 @@ namespace Controllers
         /// 当用户更改攻击力
         /// </summary>
         /// <param name="attack"></param>
-        void onChangeAttack(string attack)
+        private void onChangeAttack(string attack)
         {
             if (int.TryParse(attack, out int value))
             {
@@ -365,7 +385,7 @@ namespace Controllers
         /// 当用户更改生命值
         /// </summary>
         /// <param name="life"></param>
-        void onChangeLife(string life)
+        private void onChangeLife(string life)
         {
             if (int.TryParse(life, out int value))
             {
@@ -376,18 +396,16 @@ namespace Controllers
         /// <summary>
         /// 当用户更改标签
         /// </summary>
-        void onChangeTag(int index)
+        private void onChangeRace(int index)
         {
-            if (index > 0)
+            string[] value = _cardDefine.getTags();
+            if (value == null || value.Length < 1)
             {
-                _cardDefine.setProp(DEFINE.TAGS, new string[] { _tags[index] });
-                _ui.setTag(index);
+                value = new string[1];
             }
-            else
-            {
-                _cardDefine.setProp(DEFINE.TAGS, new string[0]);
-                _ui.setTag(0);
-            }
+            value[0] = index > 0 ? _races[index] : null;
+            _cardDefine.setTags(value);
+            _ui.setRace(index);
         }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
@@ -395,13 +413,7 @@ namespace Controllers
         private void onClickEditEffectButton(int index)
         {
             GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
-            ActionNodeGraphInfo graphInfo = scene.editor.actionNodeGraphInfoList.Find(g => g.cardId == _cardDefine.id && g.effectIndex == index);
-            if (graphInfo == null)
-            {
-                graphInfo = new ActionNodeGraphInfo(_cardDefine.id, index);
-                scene.editor.actionNodeGraphInfoList.Add(graphInfo);
-            }
-            scene.effectEditor.displayEffect(_cardPoolId, _cardDefine, effect, graphInfo);
+            scene.effectEditor.display(_cardPoolId, _cardDefine, effect);
         }
         private void onClickRemoveEffectButton(int index)
         {
@@ -445,18 +457,56 @@ namespace Controllers
         private void onClickDeleteCardButton()
         {
             //删除当前卡牌
-            game.card.removeExternalCard(_cardDefine);
+            game.card.removeCard(_cardDefine);
             //返回上个界面
             gameObject.SetActive(false);
             scene.editor.display(false, false, -1, true);
         }
         #endregion
+        #endregion
+
+        private void updateSkinNames()
+        {
+            _ui.setSkinNames(getSkins().GroupBy(s => s.skinId)
+                .Select(g => g.FirstOrDefault(s => s.language == game.langManager.getLanguage()) is CardSkinData s2 ? s2.skinName : g.First().skinName)
+                .ToArray());
+        }
+        private async Task setCurSkinIndex(int skinIndex)
+        {
+            var skinGroup = getSkins().GroupBy(s => s.skinId).ElementAt(skinIndex);
+            //获取对应语言的皮肤
+            _curCardSkin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
+            //如果没有对应语言，就第一个
+            if (_curCardSkin == null)
+                _curCardSkin = skinGroup.First();
+            _ui.setSkin(skinIndex);
+            _ui.setLanguage(Array.IndexOf(game.langManager.getLanguages(), _curCardSkin.language));
+            _ui.setName(_curCardSkin.name);
+            _ui.setSubName(_curCardSkin.subname);
+            _ui.setDesc(_curCardSkin.desc);
+            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+            _ui.setImage(image);
+        }
+        int getSkinCount()
+        {
+            return getSkins().GroupBy(s => s.skinId).Count();
+        }
+        void updateEffectList(GeneratedEffect[] effects)
+        {
+            _ui.setEffects(game.card.getEffectNames(effects));
+        }
+        IEnumerable<CardSkinData> getSkins()
+        {
+            return game.card.getAllSkins(_cardDefine.id);
+        }
         [Obsolete]
         public IAppManager app { get; }
         [Obsolete]
         public MainCtrl main { get; }
         CardEditorPanel _ui;
         string[] _types;
+        string[] _keywords;
+        string[] _races;
         string[] _tags;
         int _cardPoolId;
         CardDefine _cardDefine;

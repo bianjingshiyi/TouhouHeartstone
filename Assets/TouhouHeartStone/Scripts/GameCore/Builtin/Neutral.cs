@@ -97,7 +97,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.DEATHRATTLE };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -686,7 +686,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD._DeathRattle };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.DEATHRATTLE };
         public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
 
         private IEffect[] effects1 = new IEffect[]
@@ -1374,7 +1374,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD._DeathRattle };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.DEATHRATTLE };
         public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
 
         private IEffect[] effects1 = new IEffect[]
@@ -1686,7 +1686,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 7;
         public override int life { get; set; } = 3;
 
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD._DeathRattle };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.DEATHRATTLE };
 
         private IEffect[] effects1 = new IEffect[]
         {

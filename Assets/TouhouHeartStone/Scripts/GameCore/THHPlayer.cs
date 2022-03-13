@@ -142,7 +142,7 @@ namespace TouhouHeartstone
                 {
                     Player p = arg.player;
                     card = arg.card;
-                    if (card.define is SpellCardDefine spell && card.define.hasKeyword(KEYWORD.AUTOCAST))
+                    if (card.isSpell() && card.define.hasKeyword(KEYWORD.AUTOCAST))
                     {
                         await p.getDeck().moveTo(game, card, p.getWarp());
                         game.logger.logTrace("debug");
@@ -201,7 +201,7 @@ namespace TouhouHeartstone
             if (!card.isUsable(game, player, out _))
                 //卡牌不可用
                 return false;
-            if (targets.Any(t => t is Card targetCard && targetCard.isElusive(game) && (card.define is SkillCardDefine || card.define is SpellCardDefine)))
+            if (targets.Any(t => t is Card targetCard && targetCard.isElusive(game) && card.isSpell()))
                 //目标是魔免
                 return false;
             if (card.isSkill())
@@ -219,8 +219,8 @@ namespace TouhouHeartstone
                 if (arg.card.isServant() || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
                 {
                     await player.tryEnterField(game, p.getHand(), arg.card, arg.position);//随从卡，将卡置入战场
-                    await card.ComeOnStage(game, p, targets);//触发战吼事件
-                                                             //await card.activeEffect(game, p, targets);//执行随从效果
+                    //await card.ComeOnStage(game, p, targets);//触发战吼事件
+                    await card.activeEffect(game, p, targets);//执行随从效果
                 }
                 else if (card.isSkill())
                 {
@@ -275,18 +275,47 @@ namespace TouhouHeartstone
 
         public class SelectEventArg : EventArg
         {
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { name = "玩家", type = typeof(Player) },
+                    new EventVariableInfo() { name = "选项", type = typeof(int[]) }
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { name = "玩家", type = typeof(Player) },
+                    new EventVariableInfo() { name = "选项", type = typeof(int[]) },
+                    new EventVariableInfo() { name = "所选选项", type = typeof(int) }
+                };
+            }
             /// <summary>
             /// 进行选择的玩家
             /// </summary>
-            public Player player;
-            /// <summary>
-            /// 玩家的选择
-            /// </summary>
-            public int selected;
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
             /// <summary>
             /// 提供的选择
             /// </summary>
-            public int[] options;
+            public int[] options
+            {
+                get { return getVar<int[]>("选项"); }
+                set { setVar("选项", value); }
+            }
+            /// <summary>
+            /// 玩家的选择
+            /// </summary>
+            public int selected
+            {
+                get { return getVar<int>("所选选项"); }
+                set { setVar("所选选项", value); }
+            }
         }
 
         /// <summary>
@@ -323,23 +352,23 @@ namespace TouhouHeartstone
 
         public class DiscoverEventArg : EventArg, IDescribableEventArg
         {
-            /// <summary>
-            /// 发现的玩家
-            /// </summary>
-            public Player player;
-
-            /// <summary>
-            /// 发现的卡
-            /// </summary>
-            public Card discovered;
-            /// <summary>
-            /// 提供的选择
-            /// </summary>
-            public CardDefine[] defines;
-            /// <summary>
-            /// 结果是否向对手展示
-            /// </summary>
-            public bool isShow;
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { name = "玩家", type = typeof(Player) },
+                    new EventVariableInfo() { name = "卡牌定义", type = typeof(CardDefine[]) }
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { name = "玩家", type = typeof(Player) },
+                    new EventVariableInfo() { name = "卡牌定义", type = typeof(CardDefine[]) },
+                    new EventVariableInfo() { name = "所选卡牌", type = typeof(Card) }
+                };
+            }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return viewer == player ? discovered : null;
@@ -348,19 +377,15 @@ namespace TouhouHeartstone
             {
                 return (game as CardEngine).createCards(defines);
             }
-
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
                 return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
-
             [MukioI18n.TranslateMsg("{0}玩家，{1}卡")]
             const string TEMPLATE_SELF = "{0} 发现 {1}";
-
             [MukioI18n.TranslateMsg("{0} 玩家")]
             const string TEMPLATE_OTHER = "{0} 发现了一张牌";
-
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 if (!isCanceled)
@@ -379,6 +404,34 @@ namespace TouhouHeartstone
                     discovered.getFormatString()
                 };
             }
+            /// <summary>
+            /// 发现的玩家
+            /// </summary>
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            /// <summary>
+            /// 发现的卡
+            /// </summary>
+            public Card discovered
+            {
+                get { return getVar<Card>("所选卡牌"); }
+                set { setVar("所选卡牌", value); }
+            }
+            /// <summary>
+            /// 提供的选择
+            /// </summary>
+            public CardDefine[] defines
+            {
+                get { return getVar<CardDefine[]>("卡牌定义"); }
+                set { setVar("卡牌定义", value); }
+            }
+            /// <summary>
+            /// 结果是否向对手展示
+            /// </summary>
+            public bool isShow;
         }
 
         public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player, CardEngine game, IEnumerable<CardDefine> options, bool isShow = true, string title = "选择一项")
@@ -431,12 +484,10 @@ namespace TouhouHeartstone
                     game.logger.logTrace(player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
                 else
                     game.logger.logTrace(player + "将" + arg.card + "置入战场，位于" + arg.position);
-                if (card.define is ServantCardDefine servant)//设置随从状态
-                {
-                    await card.setDead(game, false);
-                    await card.setCurrentLife(game, card.getLife(game));
-                    await card.setReady(game, false);
-                }
+                //设置随从状态
+                await card.setDead(game, false);
+                await card.setCurrentLife(game, card.getLife(game));
+                await card.setReady(game, false);
                 if (from != null)
                     await from.moveTo(game, arg.card, player.getField(), arg.position);//从某pile召唤随从
                 else
@@ -460,7 +511,7 @@ namespace TouhouHeartstone
             if (define == null)
                 throw new ArgumentNullException(nameof(define));
             if (player.getField().count >= player.getField().maxCount)
-                return null;
+                return Task.FromResult<HearthStoneRule.CreateTokenEventArg>(null);
             if (position < 0)
                 position = player.getField().count;
             HearthStoneRule.CreateTokenEventArg eventArg = new HearthStoneRule.CreateTokenEventArg() { player = player, define = define, position = position };
@@ -521,10 +572,8 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-        #region 动作定义
-        [ActionNodeMethod("GetSpellDamage", "Player")]
-        [return: ActionNodeParam("Damage")]
-        public static int getSpellDamage([ActionNodeParam("Player")] this Player player, CardEngine game, [ActionNodeParam("BaseDamage")] int baseDamage)
+        public static Card getMaster(this Player player) => player.getPile(PILE.MASTER)[0];
+        public static int getSpellDamage(this Player player, CardEngine game, int baseDamage)
         {
             int result = baseDamage;
             foreach (var card in player.getField())
@@ -533,9 +582,6 @@ namespace TouhouHeartstone
             }
             return result;
         }
-        [ActionNodeMethod("GetMaster", "Player")]
-        public static Card getMaster([ActionNodeParam("Player")]this Player player) => player.getPile(PILE.MASTER)[0];
-        #endregion
         public static async Task<Card> shuffleCardToDeck(this Player player, CardEngine game, CardDefine define)
         {
             Card card = game.createCard(define);
@@ -630,17 +676,19 @@ namespace TouhouHeartstone
                     if (cards.count > 0)
                     {
                         show = cards.random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
@@ -648,18 +696,20 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isSpell()) > 0)
                     {
                         show = cards.Where(c => c.isSpell()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
+                            return Task.CompletedTask;
                         });
                         return show;
 
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
@@ -667,18 +717,20 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isServant()) > 0)
                     {
                         show = cards.Where(c => c.isServant()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
+                            return Task.CompletedTask;
                         });
                         return show;
 
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
@@ -686,18 +738,20 @@ namespace TouhouHeartstone
                     if (cards.Count(c => c.isItem()) > 0)
                     {
                         show = cards.Where(c => c.isItem()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = show }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
                         {
                             game.logger.logTrace("揭示了{card:" + show.define.id + "}");
+                            return Task.CompletedTask;
                         });
                         return show;
 
                     }
                     else
                     {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealArg() { player = player, card = null }, async arg =>
+                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
                         {
                             game.logger.logTrace("揭示了null");
+                            return Task.CompletedTask;
                         });
                         return show;
                     }
@@ -723,21 +777,19 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static List<Card> getNormalRandomPool(this Player player, isInRange isInRange, CardEngine game, int count = 3, bool isFull = false)
         {
-
-
             int MasterID = player.getMaster().id;
             List<Card> cards = new List<Card>();
-            IEnumerable<THHCardDefine> defines;
+            IEnumerable<CardDefine> defines;
             if (isFull)
             {
-                defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(CATEGORY.CHARACTER_ALL))
-                    .Where(define => !define.isToken && isInRange(game, define)).randomTake(game, count).ToArray();
+                defines = game.getDefinesOf(CATEGORY.CHARACTER_ALL)
+                    .Where(define => !define.isToken() && isInRange(game, define)).randomTake(game, count).ToArray();
                 return game.createCards(defines.ToArray()).ToList();
             }
             else
             {
-                defines = ((IEnumerable<THHCardDefine>)game.getDefinesOf(new int[] { MasterID, CATEGORY.CHARACTER_NEUTRAL }))
-                    .Where(define => !define.isToken && isInRange(game, define)).randomTake(game, count).ToArray();
+                defines = game.getDefinesOf(new int[] { MasterID, CATEGORY.CHARACTER_NEUTRAL })
+                    .Where(define => !define.isToken() && isInRange(game, define)).randomTake(game, count).ToArray();
                 return game.createCards(defines.ToArray()).ToList();
             }
         }
@@ -801,8 +853,6 @@ namespace TouhouHeartstone
     {
         public class SetGemEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public int value;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return null;
@@ -835,30 +885,32 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Value",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "值",type=typeof(int)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Value",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "值",type=typeof(int)}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public int value
+            {
+                get { return getVar<int>("值"); }
+                set { setVar("值", value); }
             }
         }
 
         public class DrawEventArg : EventArg, IDescribableEventArg
         {
-            /// <summary>
-            /// 抽卡的玩家
-            /// </summary>
-            public Player player;
-            /// <summary>
-            /// 抽到的卡
-            /// </summary>
-            public Card card;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return viewer == player ? card : null;
@@ -902,24 +954,37 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
                 };
+            }
+            /// <summary>
+            /// 抽卡的玩家
+            /// </summary>
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            /// <summary>
+            /// 抽到的卡
+            /// </summary>
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
             }
         }
 
         public class FatigueEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return null;
@@ -951,15 +1016,20 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
             }
         }
 
@@ -1011,30 +1081,27 @@ namespace TouhouHeartstone
                 };
             }
 
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Options",type=typeof(IEnumerable<CardDefine>)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Options",type=typeof(IEnumerable<CardDefine>)},
-                    new EventVariableInfo(){name = "Choose",type=typeof(Card)}
-                };
-            }
+            //public override EventVariableInfo[] getBeforeEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo(){name = "Player",type=typeof(Player)},
+            //        new EventVariableInfo(){name = "Options",type=typeof(IEnumerable<CardDefine>)}
+            //    };
+            //}
+            //public override EventVariableInfo[] getAfterEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo(){name = "Player",type=typeof(Player)},
+            //        new EventVariableInfo(){name = "Options",type=typeof(IEnumerable<CardDefine>)},
+            //        new EventVariableInfo(){name = "Choose",type=typeof(Card)}
+            //    };
+            //}
         }
 
         public class ActiveEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public Card card;
-            public object[] targets;
             public override EventVariableInfo[] getBeforeEventVarInfos()
             {
                 return new EventVariableInfo[]
@@ -1060,7 +1127,7 @@ namespace TouhouHeartstone
                 this.targets = targets;
                 setVar("玩家", player);
                 setVar("卡牌", card);
-                setVar("目标卡牌", targets[0]);
+                setVar("目标卡牌", targets != null && targets.Length > 0 ? targets[0] : null);
                 setVar("Targets", targets);
             }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
@@ -1106,15 +1173,13 @@ namespace TouhouHeartstone
                     return (Card)eventArg.targets[0];
                 throw new NotImplementedException();
             }
+            public Player player;
+            public Card card;
+            public object[] targets;
         }
 
         public class CreateTokenEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public CardDefine define;
-            public int position;
-            public Card card;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -1149,29 +1214,45 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "TokenDefine",type=typeof(CardDefine)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌定义",type=typeof(CardDefine)},
+                    new EventVariableInfo(){name = "位置",type=typeof(int)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "TokenDefine",type=typeof(CardDefine)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌定义",type=typeof(CardDefine)},
+                    new EventVariableInfo(){name = "位置",type=typeof(int)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public CardDefine define
+            {
+                get { return getVar<CardDefine>("卡牌定义"); }
+                set { setVar("卡牌定义", value); }
+            }
+            public int position
+            {
+                get { return getVar<int>("位置"); }
+                set { setVar("位置", value); }
+            }
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
             }
         }
 
         public class DiscardEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public Card[] cards;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return null;
@@ -1206,20 +1287,28 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Cards",type=typeof(Card[])}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card[])}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Cards",type=typeof(Card[])}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card[])}
                 };
             }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public Card[] cards
+            {
+                get { return getVar<Card[]>("卡牌"); }
+                set { setVar("卡牌", value); }
+            }
         }
-
-
     }
 }

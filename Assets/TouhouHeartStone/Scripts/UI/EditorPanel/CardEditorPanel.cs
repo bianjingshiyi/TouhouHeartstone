@@ -73,10 +73,40 @@ namespace UI
         /// 设置卡牌的卡框类型索引
         /// </summary>
         /// <param name="typeIndex"></param>
-        public void setType(int typeIndex)
+        public void setType(int typeIndex,string typeName)
         {
             _typeDropdown.SetValueWithoutNotify(typeIndex);
-            _card.setTypeByName(_typeDropdown.options[typeIndex].text);
+            _card.setTypeByName(typeName);
+        }
+        public void setIsToken(bool value)
+        {
+            _isTokenToggle.SetIsOnWithoutNotify(value);
+        }
+        /// <summary>
+        /// 初始化可选的卡牌关键词
+        /// </summary>
+        /// <param name="keywords"></param>
+        public void initKeywords(string[] keywords)
+        {
+            _keywordsDropdown.ClearOptions();
+            _keywordsDropdown.AddOptions(new List<string>(keywords));
+        }
+        /// <summary>
+        /// 设置卡牌关键词的选择状态
+        /// </summary>
+        /// <param name="value"></param>
+        public void setKeywords(bool[] value)
+        {
+            _keywordsDropdown.SetValueWithoutNotify(value);
+        }
+        public void initTags(string[] tagNames)
+        {
+            _noRaceTagDropdown.ClearOptions();
+            _noRaceTagDropdown.AddOptions(new List<string>(tagNames));
+        }
+        public void setTags(bool[] value)
+        {
+            _noRaceTagDropdown.SetValueWithoutNotify(value);
         }
         /// <summary>
         /// 设置费用
@@ -153,7 +183,7 @@ namespace UI
         /// 设置卡牌的标签
         /// </summary>
         /// <param name="tag"></param>
-        public void setTag(int index)
+        public void setRace(int index)
         {
             _card.setTag(_tagDropdown.options[index].text);
             _tagDropdown.SetValueWithoutNotify(index);
@@ -229,6 +259,9 @@ namespace UI
         {
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChanged);
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
+            _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
+            _keywordsDropdown.onValueChanged.AddListener(onKeywordsDropdownValueChanged);
+            _noRaceTagDropdown.onValueChanged.AddListener(onNoRaceTagDropdownValueChangedCallback);
             _skinDropdown.gameObject.SetActive(true);
             _skinDropdown.onValueChanged.AddListener(onSkinDropdownValueChanged);
             _changeSkinNameButton.gameObject.SetActive(true);
@@ -249,7 +282,7 @@ namespace UI
             _nameInputField.onEndEdit.AddListener(onNameInputFieldEndEdit);
             _subnameInputField.onEndEdit.AddListener(onSubNameInputFieldEndEdit);
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
-            _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChanged);
+            _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChangedCallback);
             EventTrigger trigger = _tagDropdown.gameObject.AddComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.Deselect;
@@ -259,7 +292,7 @@ namespace UI
                 {
                     return;
                 }
-                onTagDropdownValueChanged(_tagDropdown.value);
+                onTagDropdownValueChangedCallback(_tagDropdown.value);
             });
             trigger.triggers.Add(entry);
             _costInputField.onEndEdit.AddListener(onCostInputFieldEndEdit);
@@ -276,6 +309,18 @@ namespace UI
         private void onTypeDropdownValueChanged(int value)
         {
             onChangeType?.Invoke(value);
+        }
+        private void onIsTokenToggleValueChangedCallback(bool value)
+        {
+            onIsTokenToggleValueChanged?.Invoke(value);
+        }
+        private void onKeywordsDropdownValueChanged(bool[] value)
+        {
+            onChangeKeywords?.Invoke(value);
+        }
+        private void onNoRaceTagDropdownValueChangedCallback(bool[] value)
+        {
+            onTagDropdownValueChanged?.Invoke(value);
         }
         private void onCharacterDropdownValueChanged(int value)
         {
@@ -316,6 +361,11 @@ namespace UI
             _nameInputField.gameObject.SetActive(true);
             _nameInputField.SetTextWithoutNotify(_card.getName());
             _nameInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.nameText.gameObject.SetActive(false);
+            _card.servantCardFace.nameText.gameObject.SetActive(false);
+            _card.servantCardFace.nameText.gameObject.SetActive(false);
         }
         private void onEditSubnameButtonClicked()
         {
@@ -323,6 +373,9 @@ namespace UI
             _subnameInputField.gameObject.SetActive(true);
             _subnameInputField.SetTextWithoutNotify(_card.getSubname());
             _subnameInputField.Select();
+
+            // Hide background text
+            _card.servantCardFace.subNameText.gameObject.SetActive(false);
         }
         private void onEditDescButtonClicked()
         {
@@ -330,17 +383,32 @@ namespace UI
             _descInputField.gameObject.SetActive(true);
             _descInputField.SetTextWithoutNotify(_card.getDesc());
             _descInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.descText.gameObject.SetActive(false);
+            _card.servantCardFace.descText.gameObject.SetActive(false);
+            _card.spellCardFace.descText.gameObject.SetActive(false);
         }
         private async void onEditImageButtonClicked()
         {
             _editImageButton.gameObject.SetActive(false);
-            Task<Sprite> task = onNeedSelectImage?.Invoke();
-            Sprite sprite = task != null ? await task : null;
-            if (sprite != null)
+            try
             {
-                _card.setImage(sprite);
+                Task<Sprite> task = onNeedSelectImage?.Invoke();
+                Sprite sprite = task != null ? await task : null;
+                if (sprite != null)
+                {
+                    _card.setImage(sprite);
+                }
             }
-            _editImageButton.gameObject.SetActive(true);
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("设置卡牌图像失败：" + e, e);
+            }
+            finally
+            {
+                _editImageButton.gameObject.SetActive(true);
+            }
         }
         private void onEditTagButtonClicked()
         {
@@ -352,58 +420,100 @@ namespace UI
         {
             _editCostButton.gameObject.SetActive(false);
             _costInputField.gameObject.SetActive(true);
+            _costInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.costPropNumber.text.gameObject.SetActive(false);
+            _card.servantCardFace.costPropNumber.text.gameObject.SetActive(false);
+            _card.spellCardFace.costPropNumber.text.gameObject.SetActive(false);
         }
         private void onEditAttackButtonClicked()
         {
             _editAttackButton.gameObject.SetActive(false);
             _attackInputField.gameObject.SetActive(true);
+            _attackInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.attackPropNumber.text.gameObject.SetActive(false);
+            _card.servantCardFace.attackPropNumber.text.gameObject.SetActive(false);
         }
         private void onEditLifeButtonClicked()
         {
             _editLifeButton.gameObject.SetActive(false);
             _lifeInputField.gameObject.SetActive(true);
+            _lifeInputField.Select();
+
+            // Hide background text
+            _card.itemCardFace.lifePropNumber.text.gameObject.SetActive(false);
+            _card.servantCardFace.lifePropNumber.text.gameObject.SetActive(false);
         }
         private void onNameInputFieldEndEdit(string text)
         {
             _nameInputField.gameObject.SetActive(false);
             _editNameButton.gameObject.SetActive(true);
             onChangeName?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.nameText.gameObject.SetActive(true);
+            _card.servantCardFace.nameText.gameObject.SetActive(true);
+            _card.spellCardFace.nameText.gameObject.SetActive(true);
         }
         private void onSubNameInputFieldEndEdit(string text)
         {
             _subnameInputField.gameObject.SetActive(false);
             _editSubnameButton.gameObject.SetActive(true);
             onChangeSubName?.Invoke(text);
+
+            // Show background text
+            _card.servantCardFace.subNameText.gameObject.SetActive(true);
         }
         private void onDescInputFieldEndEdit(string text)
         {
             _descInputField.gameObject.SetActive(false);
             _editDescButton.gameObject.SetActive(true);
             onChangeDesc?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.descText.gameObject.SetActive(true);
+            _card.servantCardFace.descText.gameObject.SetActive(true);
+            _card.spellCardFace.descText.gameObject.SetActive(true);
         }
-        private void onTagDropdownValueChanged(int value)
+        private void onTagDropdownValueChangedCallback(int value)
         {
             _tagDropdown.gameObject.SetActive(false);
             _editTagButton.gameObject.SetActive(true);
-            onChangeTag?.Invoke(value);
+            onChangeRace?.Invoke(value);
         }
         private void onCostInputFieldEndEdit(string text)
         {
             _costInputField.gameObject.SetActive(false);
             _editCostButton.gameObject.SetActive(true);
             onChangeCost?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.costPropNumber.text.gameObject.SetActive(true);
+            _card.servantCardFace.costPropNumber.text.gameObject.SetActive(true);
+            _card.spellCardFace.costPropNumber.text.gameObject.SetActive(true);
         }
         private void onAttackInputFieldEndEdit(string text)
         {
             _attackInputField.gameObject.SetActive(false);
             _editAttackButton.gameObject.SetActive(true);
             onChangeAttack?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.attackPropNumber.text.gameObject.SetActive(true);
+            _card.servantCardFace.attackPropNumber.text.gameObject.SetActive(true);
         }
         private void onLifeInputFieldEndEdit(string text)
         {
             _lifeInputField.gameObject.SetActive(false);
             _editLifeButton.gameObject.SetActive(true);
             onChangeLife?.Invoke(text);
+
+            // Show background text
+            _card.itemCardFace.lifePropNumber.text.gameObject.SetActive(true);
+            _card.servantCardFace.lifePropNumber.text.gameObject.SetActive(true);
         }
         private void onClickEffectListItemEditButton(int index)
         {
@@ -448,6 +558,11 @@ namespace UI
         /// 当更换卡牌类型，参数为更改类型索引。
         /// </summary>
         public event Action<int> onChangeType;
+        public event Action<bool> onIsTokenToggleValueChanged;
+        /// <summary>
+        /// 当卡牌的关键词发生改变，参数为更改后的关键词选择状态。
+        /// </summary>
+        public event Action<bool[]> onChangeKeywords;
         /// <summary>
         /// 当更换所属角色，参数为更换角色索引。
         /// </summary>
@@ -483,7 +598,8 @@ namespace UI
         /// <summary>
         /// 当更改卡牌标签，参数为更改后的卡牌标签。
         /// </summary>
-        public event Action<int> onChangeTag;
+        public event Action<int> onChangeRace;
+        public event Action<bool[]> onTagDropdownValueChanged;
         /// <summary>
         /// 当点击编辑效果按钮，参数为效果索引。
         /// </summary>
@@ -505,12 +621,19 @@ namespace UI
         /// </summary>
         public event Action onClickDeleteCardButton;
         #endregion
+        public Card card => _card;
         [SerializeField]
         Card _card;
         [SerializeField]
         Text _idText;
         [SerializeField]
         Dropdown _typeDropdown;
+        [SerializeField]
+        Toggle _isTokenToggle;
+        [SerializeField]
+        MultiSelectDropdown _keywordsDropdown;
+        [SerializeField]
+        MultiSelectDropdown _noRaceTagDropdown;
         [SerializeField]
         Dropdown _characterDropdown;
         [SerializeField]

@@ -39,9 +39,9 @@
         /// </summary>
         public const string ELUSIVE = "elusive";
         /// <summary>
-        /// 冰冻
+        /// 被冰冻的
         /// </summary>
-        public const string FREEZE = "freeze";
+        public const string FREEZED = "freezed";
         /// <summary>
         /// 唯一
         /// </summary>
@@ -86,6 +86,6 @@
         /// <summary>
         /// 遗言
         /// </summary>
-        public const string _DeathRattle = "_deathRattle";
+        public const string DEATHRATTLE = "deathRattle";
     }
 }

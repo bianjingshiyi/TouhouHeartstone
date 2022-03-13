@@ -163,6 +163,8 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            //初始化序列化设置
+            JsonHelper.init();
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             Main main = ui.getObject<Main>();
             main.MainMenu.lANButton.onClick.set(() =>
@@ -432,6 +434,7 @@ namespace Game
         public IResourceManager resourceManager => getManager<ResourceManager>();
         public CardManager card => getManager<CardManager>();
         public DeckManager deck => getManager<DeckManager>();
+        public TriggerManager triggers => this.findInstance<TriggerManager>();
         [SerializeField]
         MainSceneCtrl _mainSceneCtrl;
         MainCtrl _mainCtrl;

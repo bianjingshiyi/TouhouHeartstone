@@ -642,7 +642,7 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
-            await game.triggers.doEvent(new HearthStoneRule.TurnStartEventArg() { player = player }, async arg =>
+            await game.triggers.doEvent(new TurnStartEventArg() { player = player }, async arg =>
             {
                 game.logger.logTrace(arg.player + "的回合开始");
                 //玩家的最大能量加1但是不超过10，充满玩家的能量。
@@ -725,36 +725,36 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
-            await game.triggers.doEvent(new HearthStoneRule.TurnEndEventArg() { player = player }, arg =>
-              {
-                  game.logger.logTrace("Debug", getCurrentPlayer(game) + "回合结束");
+            await game.triggers.doEvent(new TurnEndEventArg() { player = player }, arg =>
+            {
+                game.logger.logTrace("Debug", getCurrentPlayer(game) + "回合结束");
 
-                  List<Card> AllCharactor = new List<Card>();
-                  AllCharactor.Add(player.getMaster());
-                  AllCharactor.AddRange(player.getField());
-                  foreach (Card chara in AllCharactor)
-                  {
-                      if (chara.isFreeze(game))
-                      {
-                          //chara.setAttackTimes(chara.getAttackTimes(this) + 1);
-                          if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
-                                chara.define is ServantCardDefine && chara.isReady(game))
-                          {
-                              game.logger.logTrace("被冻结的随从解除冰冻");
-                              chara.setFreeze(game, false);
-                          }
-                          else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
-                                   chara.define is MasterCardDefine)
-                          {
-                              game.logger.logTrace("被冻结的英雄解除冰冻");
-                              chara.setFreeze(game, false);
-                          }
-                      }
-                  }
+                List<Card> AllCharactor = new List<Card>();
+                AllCharactor.Add(player.getMaster());
+                AllCharactor.AddRange(player.getField());
+                foreach (Card chara in AllCharactor)
+                {
+                    if (chara.isFreeze(game))
+                    {
+                        //chara.setAttackTimes(chara.getAttackTimes(this) + 1);
+                        if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
+                            chara.define is ServantCardDefine && chara.isReady(game))
+                        {
+                            game.logger.logTrace("被冻结的随从解除冰冻");
+                            chara.setFreeze(game, false);
+                        }
+                        else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
+                                chara.define is MasterCardDefine)
+                        {
+                            game.logger.logTrace("被冻结的英雄解除冰冻");
+                            chara.setFreeze(game, false);
+                        }
+                    }
+                }
 
-                  game.answers.cancel(game.answers.getRequests(player.id));
-                  return Task.CompletedTask;
-              });
+                game.answers.cancel(game.answers.getRequests(player.id));
+                return Task.CompletedTask;
+            });
             game.time.cancel(getTurnTimer(game));
             setTurnTimer(game, null);
         }
@@ -862,62 +862,67 @@ namespace TouhouHeartstone
                 public int gem;
                 public Card[] hands;
             }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Hands",type=typeof(Card[])},
-                    new EventVariableInfo(){name = "InitedGem",type=typeof(int)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Hands",type=typeof(Card[])},
-                    new EventVariableInfo(){name = "InitedGem",type=typeof(int)}
-                };
-            }
+            //public override EventVariableInfo[] getBeforeEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo() { name = "手牌", type = typeof(Card[]) },
+            //        new EventVariableInfo() { name = "初始灵力值", type = typeof(int) }
+            //    };
+            //}
+            //public override EventVariableInfo[] getAfterEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo() { name = "手牌", type = typeof(Card[]) },
+            //        new EventVariableInfo() { name = "初始灵力值", type = typeof(int) }
+            //    };
+            //}
         }
 
         public class TurnStartEventArg : EventArg
         {
-            public Player player;
-
             public override EventVariableInfo[] getBeforeEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
             }
         }
 
         public class TurnEndEventArg : EventArg
         {
-            public Player player;
-
             public override EventVariableInfo[] getBeforeEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                    new EventVariableInfo() { name = "玩家", type = typeof(Player) }
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)}
+                    new EventVariableInfo() { name = "玩家", type = typeof(Player) }
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
             }
         }
 
@@ -928,35 +933,43 @@ namespace TouhouHeartstone
 
         public class InitReplaceEventArg : EventArg
         {
-            public Player player;
-            public Card[] cards;
-            public Card[] replacedCards;
-
             public override EventVariableInfo[] getBeforeEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Cards",type=typeof(Card[])},
-                    new EventVariableInfo(){name = "ReplacedCards",type=typeof(Card[])}
+                    new EventVariableInfo() { name = "玩家", type = typeof(Player) },
+                    new EventVariableInfo() { name = "卡牌", type = typeof(Card[]) },
+                    new EventVariableInfo() { name = "替换的卡牌", type = typeof(Card[]) }
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Cards",type=typeof(Card[])},
-                    new EventVariableInfo(){name = "ReplacedCards",type=typeof(Card[])}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card[])},
+                    new EventVariableInfo(){name = "替换的卡牌",type=typeof(Card[])}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public Card[] cards
+            {
+                get { return getVar<Card[]>("卡牌"); }
+                set { setVar("卡牌", value); }
+            }
+            public Card[] replacedCards
+            {
+                get { return getVar<Card[]>("替换的卡牌"); }
+                set { setVar("替换的卡牌", value); }
             }
         }
 
         public class SetMaxGemEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public int value;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return null;
@@ -994,25 +1007,32 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Value",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "值",type=typeof(int)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Value",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "值",type=typeof(int)}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public int value
+            {
+                get { return getVar<int>("值"); }
+                set { setVar("值", value); }
             }
         }
 
         public class BurnEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public Card card;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -1046,17 +1066,27 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
             }
         }
 
@@ -1137,6 +1167,32 @@ namespace TouhouHeartstone
                 setVar(VAR_POSITION, position);
                 setVar(VAR_TARGETS, targets);
                 setVar(VAR_COST, cost);
+                setVar(VAR_TARGET_CARD, targets != null && targets.Length > 0 ? targets[0] : null);
+            }
+            public UseEventArg() : this(null, null, 0, null, 0)
+            {
+            }
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = VAR_PLAYER, type=typeof(Player)},
+                    new EventVariableInfo(){name = VAR_CARD, type=typeof(Card)},
+                    new EventVariableInfo(){name = VAR_POSITION, type=typeof(int)},
+                    new EventVariableInfo(){name = VAR_COST, type=typeof(int)},
+                    new EventVariableInfo() { name = VAR_TARGET_CARD, type = typeof(Card) }
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = VAR_PLAYER,type=typeof(Player)},
+                    new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)},
+                    new EventVariableInfo(){name = VAR_POSITION,type=typeof(int)},
+                    new EventVariableInfo(){name = VAR_COST,type=typeof(int)},
+                    new EventVariableInfo() { name = VAR_TARGET_CARD, type = typeof(Card) }
+                };
             }
             public Player player => getVar<Player>(VAR_PLAYER);
             public Card card => getVar<Card>(VAR_CARD);
@@ -1193,45 +1249,16 @@ namespace TouhouHeartstone
                     string.Join("，", targets?.Select(c => "{card:" + c.define.id + "}"))
                 };
             }
-            public const string VAR_PLAYER = "Player";
-            public const string VAR_CARD = "Card";
-            public const string VAR_POSITION = "Position";
-            public const string VAR_COST = "Cost";
-            public const string VAR_TARGETS = "Targets";
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)},
-                    new EventVariableInfo(){name = "Cost",type=typeof(int)},
-                    new EventVariableInfo(){name = "Targets",type=typeof(Card[])}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)},
-                    new EventVariableInfo(){name = "Cost",type=typeof(int)},
-                    new EventVariableInfo(){name = "Targets",type=typeof(Card[])}
-                };
-            }
+            public const string VAR_PLAYER = "玩家";
+            public const string VAR_CARD = "卡牌";
+            public const string VAR_POSITION = "位置";
+            public const string VAR_COST = "花费";
+            public const string VAR_TARGETS = "目标";
+            public const string VAR_TARGET_CARD = "目标卡牌";
         }
 
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public Pile from;
-            public Card card;
-            public int position;
-            public int attack;
-            public int life;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -1270,28 +1297,42 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "位置",type=typeof(int)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "位置",type=typeof(int)}
                 };
             }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public Pile from;
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
+            }
+            public int position
+            {
+                get { return getVar<int>("位置"); }
+                set { setVar("位置", value); }
+            }
+            public int attack;
+            public int life;
         }
 
         public class RebornEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public int position;
-            public Card card;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -1329,27 +1370,39 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "位置",type=typeof(int)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "位置",type=typeof(int)}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public int position
+            {
+                get { return getVar<int>("位置"); }
+                set { setVar("位置", value); }
+            }
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
             }
         }
 
-        public class RevealArg : EventArg, IDescribableEventArg
+        public class RevealEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public Card card; //被揭示的牌
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -1389,17 +1442,30 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Player",type=typeof(Player)},
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
                 };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            /// <summary>
+            /// 被揭示的牌
+            /// </summary>
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
             }
         }
     }

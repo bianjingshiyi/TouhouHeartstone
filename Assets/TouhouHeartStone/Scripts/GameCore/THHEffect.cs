@@ -810,7 +810,7 @@ namespace TouhouHeartstone
             new EffectPropertyInfo(typeof(PileNameCollection),nameof(rangeList)),
             new EffectPropertyInfo(typeof(ActionValueRef),nameof(affectCondition)),
             new EffectPropertyInfo(typeof(ActionValueRef),nameof(getHaloBuffDefine)),
-            new EffectPropertyInfo(typeof(TagCollection),nameof(tagList))
+            new EffectPropertyInfo(typeof(EffectTagCollection),nameof(tagList))
         };
         #endregion
     }

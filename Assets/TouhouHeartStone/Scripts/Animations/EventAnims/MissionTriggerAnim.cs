@@ -6,10 +6,10 @@ using UI;
 using UnityEngine;
 using Game;
 
-public class MissionTriggerAnim : EventAnimation<THHCard.MissionCompleteArg>
+public class MissionTriggerAnim : EventAnimation<THHCard.MissionCompleteEventArg>
 {
     AnimAnim _anim;
-    public override bool update(TableManager table, THHCard.MissionCompleteArg eventArg, float time)
+    public override bool update(TableManager table, THHCard.MissionCompleteEventArg eventArg, float time)
     {
         if (table.tryGetSecret(eventArg.card, out var secret))
         {

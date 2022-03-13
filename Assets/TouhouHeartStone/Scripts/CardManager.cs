@@ -15,6 +15,7 @@ using MongoDB.Bson;
 using ILogger = TouhouCardEngine.Shared.ILogger;
 using IGensoukyo;
 using System.Text.RegularExpressions;
+using Controllers;
 
 namespace Game
 {
@@ -462,11 +463,23 @@ namespace Game
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public CardDefine GetCardDefine(int id)
+        public CardDefine getCardDefine(int id)
         {
-            if (tryGetExternalCardDefine(id, out CardDefine card))
+            if (tryGetCardDefine(id, out CardDefine card))
                 return card;
             return defineDic.ContainsKey(id) ? defineDic[id] : null;
+        }
+        public CardDefine getCardDefine(int cardPoolId, int cardId)
+        {
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                return cardPool.cardDefineList.Find(d => d.id == cardId);
+            }
+            if (defineDic.ContainsKey(cardId))
+            {
+                return defineDic[cardId];
+            }
+            return null;
         }
         /// <summary>
         /// 根据条件获取卡片定义
@@ -478,11 +491,11 @@ namespace Game
             List<CardDefine> cardList = new List<CardDefine>();
             if (includeExternalCard)
             {
-                foreach (var externalCardList in _externalCardDefineDict.Values)
+                foreach (var cardPool in _cardPoolDict.Values)
                 {
                     cardList.AddRange(filter != null ?
-                        externalCardList.Where(c => filter.Invoke(c)) :
-                        externalCardList);
+                        cardPool.cardDefineList.Where(c => filter.Invoke(c)) :
+                        cardPool.cardDefineList);
                 }
             }
             cardList.AddRange(filter != null ?
@@ -490,18 +503,74 @@ namespace Game
                 defineDic.Values);
             return cardList.ToArray();
         }
+        public bool isBuiltinCard(CardDefine card)
+        {
+            return defineDic.ContainsKey(card.id);
+        }
         public CardDefine[] getCardDefines(int cardPoolId)
         {
-            if (_externalCardDefineDict.TryGetValue(cardPoolId, out var cardDefineList))
+            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
             {
-                return cardDefineList.ToArray();
+                //已经加载卡池
+                return cardPool.cardDefineList.ToArray();
             }
             else
+            {
                 return new CardDefine[0];
+            }
+        }
+        public CardDefine[] getCardDefines(Predicate<CardDefine> filter = null)
+        {
+            List<CardDefine> cardDefineList = new List<CardDefine>();
+            //反射卡牌
+            cardDefineList.AddRange(filter == null ? defineDic.Values : defineDic.Values.Where(c => filter(c)));
+            //卡池卡牌
+            foreach (var cardPool in _cardPoolDict.Values)
+            {
+                cardDefineList.AddRange(filter == null ? cardPool.cardDefineList : cardPool.cardDefineList.Where(c => filter(c)));
+            }
+            return cardDefineList.ToArray();
+        }
+        public async Task<CardDefine[]> getOrLoadCardDefines(int cardPoolId)
+        {
+            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
+            {
+                //已经加载卡池
+                return cardPool.cardDefineList.ToArray();
+            }
+            else if (getCardPoolPath(cardPoolId) is string path)
+            {
+                //未加载卡池但是存在地址
+                var result = await loadCardPool(path);
+                return result.cardPool.cardDefineList.ToArray();
+            }
+            else
+            {
+                return new CardDefine[0];
+            }
         }
         public CardSkinData getSkin(TouhouCardEngine.Card card)
         {
             return getSkin(card.define.id);
+        }
+        public CardSkinData getDefaultSkin(CardDefine cardDefine)
+        {
+            return getDefaultSkin(cardDefine.id);
+        }
+        public CardSkinData getDefaultSkin(int id)
+        {
+            var skinGroup = getAllSkins(id).GroupBy(s => s.skinId).FirstOrDefault();
+            if (skinGroup == null)
+            {
+                //卡牌没有任何皮肤
+                throw new InvalidOperationException("卡牌" + id + "没有任何皮肤");
+            }
+            //获取对应语言的皮肤
+            CardSkinData skin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
+            //如果没有对应语言，就第一个
+            if (skin == null)
+                skin = skinGroup.First();
+            return skin;
         }
         /// <summary>
         /// 根据id获取卡片皮肤
@@ -510,7 +579,7 @@ namespace Game
         /// <returns></returns>
         public CardSkinData getSkin(int id)
         {
-            if (tryGetExternalSkin(id, out CardSkinData skin))
+            if (tryGetCardSkin(id, out CardSkinData skin))
                 return skin;
             if (tempSkinDic.ContainsKey(id))
                 return tempSkinDic[id];

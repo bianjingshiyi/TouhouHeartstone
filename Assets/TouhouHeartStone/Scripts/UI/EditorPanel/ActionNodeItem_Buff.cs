@@ -26,9 +26,34 @@ namespace UI
         {
             _buffDropdown.SetValueWithoutNotify(index);
         }
-        public void setBuffId(string text)
+        /// <summary>
+        /// 设置皮肤语言索引
+        /// </summary>
+        /// <param name="languageIndex"></param>
+        public void setBuffLanguage(int languageIndex)
         {
-            _buffIdText.text = text;
+            _buffLanguageDropdown.SetValueWithoutNotify(languageIndex);
+        }
+        /// <summary>
+        /// 设置皮肤有哪些语言可选
+        /// </summary>
+        /// <param name="languages"></param>
+        public void initBuffLanguages(string[] languages)
+        {
+            _buffLanguageDropdown.ClearOptions();
+            _buffLanguageDropdown.AddOptions(new List<string>(languages));
+        }
+        /// <summary>
+        /// 设置增益皮肤
+        /// </summary>
+        /// <param name="buffName"></param>
+        /// <param name="buffDesc"></param>
+        /// <param name="buffImage"></param>
+        public void setBuffSkin(string buffName, string buffDesc, Sprite buffImage)
+        {
+            _buffNameInputField.SetTextWithoutNotify(buffName);
+            _buffDescInputField.SetTextWithoutNotify(buffDesc);
+            _buffImage.sprite = buffImage;
         }
         public void setupPropModifierTemplate(string[] propTypes, string[] modifyTypes)
         {
@@ -68,6 +93,21 @@ namespace UI
         }
         #endregion
         #region 私有方法
+        private void onAwake_Buff()
+        {
+            _buffDropdown.onValueChanged.AddListener(onBuffDropdownValueChanged);
+            _newBuffButton.onClick.AddListener(onClickNewBuffButtonCallback);
+            _deleteBuffButton.onClick.AddListener(onClickDeleteBuffButtonCallback);
+            _buffLanguageDropdown.onValueChanged.AddListener(onBuffLanguageDropdownValueChanged);
+            _buffNameInputField.onEndEdit.AddListener(onBuffNameInputFieldEndEdit);
+            _buffDescInputField.onEndEdit.AddListener(onBuffDescInputFieldEndEdit);
+            _buffImageButton.onClick.AddListener(onClickBuffImage);
+        }
+        #region 事件回调
+        private void onBuffDropdownValueChanged(int value)
+        {
+            onBuffChanged?.Invoke(this, value);
+        }
         private void onClickNewBuffButtonCallback()
         {
             onClickNewBuffButton?.Invoke(this);
@@ -75,6 +115,22 @@ namespace UI
         private void onClickDeleteBuffButtonCallback()
         {
             onClickDeleteBuffButton?.Invoke(this);
+        }
+        private void onBuffLanguageDropdownValueChanged(int value)
+        {
+            onBuffLanguageChanged?.Invoke(this, value);
+        }
+        private void onBuffNameInputFieldEndEdit(string value)
+        {
+            onBuffNameChanged?.Invoke(this, value);
+        }
+        private void onBuffDescInputFieldEndEdit(string value)
+        {
+            onBuffDescChanged?.Invoke(this, value);
+        }
+        private void onClickBuffImage()
+        {
+            onNeedSelectBuffImage?.Invoke(this);
         }
         private void onClickAddPropModifierButtonCallback()
         {
@@ -109,10 +165,15 @@ namespace UI
             onPropModifierEditEffect?.Invoke(this, index);
         }
         #endregion
+        #endregion
         #region 事件
         public event Action<ActionNodeItem, int> onBuffChanged;
         public event Action<ActionNodeItem> onClickNewBuffButton;
         public event Action<ActionNodeItem> onClickDeleteBuffButton;
+        public event Action<ActionNodeItem, int> onBuffLanguageChanged;
+        public event Action<ActionNodeItem, string> onBuffNameChanged;
+        public event Action<ActionNodeItem, string> onBuffDescChanged;
+        public event Action<ActionNodeItem> onNeedSelectBuffImage;
         public event Action<ActionNodeItem> onClickAddPropModifierButton;
         public event Action<ActionNodeItem, int> onClickRemovePropModifierButton;
         public event Action<ActionNodeItem, int, int> onPropModifierPropertyTypeChanged;
@@ -132,7 +193,15 @@ namespace UI
         [SerializeField]
         Button _deleteBuffButton;
         [SerializeField]
-        Text _buffIdText;
+        Dropdown _buffLanguageDropdown;
+        [SerializeField]
+        Image _buffImage;
+        [SerializeField]
+        Button _buffImageButton;
+        [SerializeField]
+        InputField _buffNameInputField;
+        [SerializeField]
+        InputField _buffDescInputField;
         [SerializeField]
         RectTransform _propModifierRoot;
         [SerializeField]

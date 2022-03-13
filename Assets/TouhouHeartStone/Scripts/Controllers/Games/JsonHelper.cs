@@ -11,6 +11,11 @@ namespace Controllers
 {
     public static class JsonHelper
     {
+        public static void init()
+        {
+            BsonClassMap.RegisterClassMap<CardReference>();
+            isInited = true;
+        }
         public static string toJson(this object obj)
         {
             ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
@@ -20,17 +25,20 @@ namespace Controllers
         }
         public static T fromJson<T>(string json)
         {
-            return BsonSerializer.Deserialize<T>(json);
+            ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
+            T obj = BsonSerializer.Deserialize<T>(json);
+            ConventionRegistry.Remove(nameof(CustomClassMapConvention));
+            return obj;
         }
         static ConventionPack conventions = new ConventionPack()
         {
             new CustomClassMapConvention()
         };
+        public static bool isInited { get; private set; } = false;
     }
     /// <summary>
     /// 自定义类映射规则
     /// 只映射字段，忽略属性
-    /// 
     /// </summary>
     public class CustomClassMapConvention : IClassMapConvention
     {
@@ -53,8 +61,17 @@ namespace Controllers
                     //忽略所有带有忽略特性的字段
                     BsonMemberMap memberMap = classMap.MapMember(fieldInfo);
                     //如果为null或者默认值则忽略
-                    memberMap.SetIgnoreIfDefault(true);
-                    memberMap.SetIgnoreIfNull(true);
+                    if (fieldInfo.FieldType.IsValueType)
+                    {
+                        //值类型的默认值可以直接创建
+                        memberMap.SetDefaultValue(Activator.CreateInstance(fieldInfo.FieldType));
+                        memberMap.SetIgnoreIfDefault(true);
+                    }
+                    else
+                    {
+                        //引用类型的默认值为null
+                        memberMap.SetIgnoreIfNull(true);
+                    }
                 }
                 classMap = classMap.BaseClassMap;
             }

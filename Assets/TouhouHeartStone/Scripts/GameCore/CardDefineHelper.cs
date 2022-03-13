@@ -42,7 +42,6 @@ namespace TouhouHeartstone
         {
             return card.getProp<int>(DEFINE.LIFE);
         }
-
         public static bool hasKeyword(this CardDefine define, string keyword)
         {
             string[] keywords = define.getProp<string[]>(DEFINE.KEYWORDS);
@@ -50,8 +49,20 @@ namespace TouhouHeartstone
                 return false;
             return keywords.Contains(keyword);
         }
+        public static void setKeywords(this CardDefine define, string[] keywords)
+        {
+            define.setProp(DEFINE.KEYWORDS, keywords);
+        }
+        public static void setTags(this CardDefine define, string[] value)
+        {
+            define.setProp(DEFINE.TAGS, value);
+        }
         public static string[] getTags(this CardDefine define)
         {
+            if (define is THHCardDefine thhCardDefine)
+            {
+                return thhCardDefine.tags;
+            }
             string[] tags = define.getProp<string[]>(DEFINE.TAGS);
             if (tags == null)
                 return new string[0];
@@ -74,6 +85,17 @@ namespace TouhouHeartstone
             else
             {
                 return define.getProp<bool>(DEFINE.ISTOKEN);
+            }
+        }
+        public static void setIsToken(this CardDefine cardDefine, bool value)
+        {
+            if (cardDefine is THHCardDefine thhCardDefine)
+            {
+                thhCardDefine.isToken = value;
+            }
+            else
+            {
+                cardDefine.setProp(DEFINE.ISTOKEN, value);
             }
         }
         /// <summary>

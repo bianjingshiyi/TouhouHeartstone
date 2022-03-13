@@ -30,9 +30,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        [ActionNodeMethod("IsSpell", "Card")]
-        [return: ActionNodeParam("Value")]
-        public static bool isSpell([ActionNodeParam("Card")]this Card card)
+        public static bool isSpell(this Card card)
         {
             return card.define.type == DEFINE.SPELL;
         }
@@ -144,8 +142,6 @@ namespace TouhouHeartstone
         [Obsolete]
         public class SetArmorEventArg : EventArg, IDescribableEventArg
         {
-            public Card card;
-            public int value;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -173,6 +169,16 @@ namespace TouhouHeartstone
                     card.getFormatString(),
                     value
                 };
+            }
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
+            }
+            public int value
+            {
+                get { return getVar<int>("值"); }
+                set { setVar("值", value); }
             }
         }
         public static int getCurrentLife(this Card card, IGame game)
@@ -402,14 +408,14 @@ namespace TouhouHeartstone
         }
         public static bool isFreeze(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.FREEZE);
+            return card.hasKeyword(game, KEYWORD.FREEZED);
         }
         public static Task<IPropChangeEventArg> setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
-                return card.addKeywords(game, KEYWORD.FREEZE);
+                return card.addKeywords(game, KEYWORD.FREEZED);
             else
-                return card.removeKeywords(game, KEYWORD.FREEZE);
+                return card.removeKeywords(game, KEYWORD.FREEZED);
         }
         public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {
@@ -552,8 +558,6 @@ namespace TouhouHeartstone
         }
         public class SilenceEventArg : EventArg, IDescribableEventArg
         {
-            public Card[] cards;
-
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return cards.Length < 2 ? cards[0] : null;
@@ -585,15 +589,20 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Cards",type=typeof(Card[])}
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card[])}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Cards",type=typeof(Card[])}
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card[])}
                 };
+            }
+            public Card[] cards
+            {
+                get { return getVar<Card[]>("卡牌"); }
+                set { setVar("卡牌", value); }
             }
         }
         public static Task<SilenceEventArg> silence(this Card card, CardEngine game)
@@ -834,15 +843,29 @@ namespace TouhouHeartstone
             }
             if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
             {
+                TriggerGraph activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
                 List<Card> targetList = new List<Card>();
-                foreach (Player player in game.players)
+                if (activeTrigger != null && activeTrigger.targetCheckerList != null)
                 {
-                    if (card.isValidTarget(game, player.getMaster(), null, null, generatedEffect))
-                        targetList.Add(player.getMaster());
-                    foreach (Card servant in player.getField())
+                    foreach (TargetChecker targetChecker in activeTrigger.targetCheckerList)
                     {
-                        if (card.isValidTarget(game, servant, null, null, generatedEffect))
-                            targetList.Add(servant);
+                        foreach (Player player in game.players)
+                        {
+                            if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER)
+                            {
+                                if (card.isValidTarget(game, player.getMaster(), null, null, generatedEffect))
+                                    targetList.Add(player.getMaster());
+                            }
+                            if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER ||
+                                targetChecker.targetType == DEFINE.TARGET_TYPE_SERVANT)
+                            {
+                                foreach (Card servant in player.getField())
+                                {
+                                    if (card.isValidTarget(game, servant, null, null, generatedEffect))
+                                        targetList.Add(servant);
+                                }
+                            }
+                        }
                     }
                 }
                 targets = targetList.ToArray();
@@ -869,7 +892,7 @@ namespace TouhouHeartstone
             GeneratedEffect generatedEffect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
             return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect);
         }
-        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect)
+        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect, TargetChecker targetChecker = null)
         {
             //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
@@ -882,7 +905,10 @@ namespace TouhouHeartstone
                 return false;
             if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, null, new object[] { target }))
                 return false;
-            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target }), out _))
+            HearthStoneRule.ActiveEventArg eventArg = new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target });
+            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, eventArg, out _))
+                return false;
+            if (targetChecker != null && !targetChecker.isValidTarget(game, card, null, eventArg, out _))
                 return false;
             return true;
         }
@@ -1069,8 +1095,6 @@ namespace TouhouHeartstone
         }
         public class AttackEventArg : EventArg, IDescribableEventArg
         {
-            public Card card;
-            public Card target;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -1103,20 +1127,28 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Target",type=typeof(Card)}
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "目标卡牌",type=typeof(Card)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Target",type=typeof(Card)}
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "目标卡牌",type=typeof(Card)}
                 };
             }
-
-
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
+            }
+            public Card target
+            {
+                get { return getVar<Card>("目标卡牌"); }
+                set { setVar("目标卡牌", value); }
+            }
         }
         public static int getSkillId(this CardDefine cardDefine)
         {
@@ -1336,25 +1368,25 @@ namespace TouhouHeartstone
                 }
             }
 
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "BaseValue",type=typeof(int)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "BaseValue",type=typeof(int)},
-                    new EventVariableInfo(){name = "DamagedValue",type=typeof(int)},
-                    new EventVariableInfo(){name = "CurrentArmor",type=typeof(int)},
-                    new EventVariableInfo(){name = "CurrentLife",type=typeof(int)}
-                };
-            }
+            //public override EventVariableInfo[] getBeforeEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
+            //        new EventVariableInfo(){name = "BaseValue",type=typeof(int)}
+            //    };
+            //}
+            //public override EventVariableInfo[] getAfterEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
+            //        new EventVariableInfo(){name = "BaseValue",type=typeof(int)},
+            //        new EventVariableInfo(){name = "DamagedValue",type=typeof(int)},
+            //        new EventVariableInfo(){name = "CurrentArmor",type=typeof(int)},
+            //        new EventVariableInfo(){name = "CurrentLife",type=typeof(int)}
+            //    };
+            //}
 
         }
 
@@ -1456,24 +1488,24 @@ namespace TouhouHeartstone
                 public int healedValue;
             }
 
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "BaseValue",type=typeof(int)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "BaseValue",type=typeof(int)},
-                    new EventVariableInfo(){name = "HealedValue",type=typeof(int)},
-                    new EventVariableInfo(){name = "CurrentLife",type=typeof(int)}
-                };
-            }
+            //public override EventVariableInfo[] getBeforeEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
+            //        new EventVariableInfo(){name = "BaseValue",type=typeof(int)}
+            //    };
+            //}
+            //public override EventVariableInfo[] getAfterEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
+            //        new EventVariableInfo(){name = "BaseValue",type=typeof(int)},
+            //        new EventVariableInfo(){name = "HealedValue",type=typeof(int)},
+            //        new EventVariableInfo(){name = "CurrentLife",type=typeof(int)}
+            //    };
+            //}
         }
         public static Task die(this Card card, CardEngine game)
         {
@@ -1572,22 +1604,22 @@ namespace TouhouHeartstone
                 };
             }
 
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)},
-                    new EventVariableInfo(){name = "Index",type=typeof(int)}
-                };
-            }
+            //public override EventVariableInfo[] getBeforeEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
+            //        new EventVariableInfo(){name = "Index",type=typeof(int)}
+            //    };
+            //}
+            //public override EventVariableInfo[] getAfterEventVarInfos()
+            //{
+            //    return new EventVariableInfo[]
+            //    {
+            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
+            //        new EventVariableInfo(){name = "Index",type=typeof(int)}
+            //    };
+            //}
         }
         public static Card[] getNearbyCards(this Card card)
         {
@@ -1809,7 +1841,6 @@ namespace TouhouHeartstone
         }
         public class SecretTriggerEventArg : EventArg, IDescribableEventArg
         {
-            public Card card;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
@@ -1839,15 +1870,20 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = "Card",type=typeof(Card)}
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
                 };
+            }
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
             }
         }
 
@@ -1857,16 +1893,16 @@ namespace TouhouHeartstone
         /// <param name="card"></param>
         /// <param name="game"></param>
         /// <returns></returns>
-        public static Task<MissionCompleteArg> MissionComplete(this Card card, IGame game)
+        public static Task<MissionCompleteEventArg> MissionComplete(this Card card, IGame game)
         {
-            return game.triggers.doEvent(new MissionCompleteArg() { card = card }, async arg =>
+            return game.triggers.doEvent(new MissionCompleteEventArg() { card = card }, async arg =>
             {
                 game.logger.log("任务完成 : " + card);
                 Player player = arg.card.getOwner();
                 await player.getHead().moveTo(game, arg.card, player.getGrave());
             });
         }
-        public class MissionCompleteArg : EventArg, IDescribableEventArg
+        public class MissionCompleteEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
@@ -1929,13 +1965,13 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         /// <param name="targets">登场效果目标，可以为null</param>
         /// <returns></returns>
-        public static async Task<ComeOnStageArg> ComeOnStage(this Card card, CardEngine game, Player player, Card[] targets)
+        public static async Task<ComeOnStageEventArg> ComeOnStage(this Card card, CardEngine game, Player player, Card[] targets)
         {
 
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)
             {
-                var eventArg = await game.triggers.doEvent(new ComeOnStageArg() { card = card, player = player, targets = targets }, async arg =>
+                var eventArg = await game.triggers.doEvent(new ComeOnStageEventArg() { card = card, player = player, targets = targets }, async arg =>
                 {
                     await card.activeEffect(game, player, targets);//执行随从效果
                     if (targets != null &&
@@ -1952,7 +1988,7 @@ namespace TouhouHeartstone
             }
             return null;
         }
-        public class ComeOnStageArg : EventArg, IDescribableEventArg
+        public class ComeOnStageEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
             public Player player;

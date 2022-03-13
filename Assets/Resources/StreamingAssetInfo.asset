@@ -17,7 +17,6 @@ MonoBehaviour:
   - AssetBundles/AssetBundles.manifest
   - AssetBundles/test.picture
   - AssetBundles/test.picture.manifest
-  - "CardPools/\u65B0\u5EFA\u5361\u7EC4.ddcp"
   - "CardPools/\u7ECF\u5178\u5361\u6C60.ddcp"
   - Cards/Cards.xls
   - Cards/Cards.xls.dataset
@@ -243,11 +242,56 @@ MonoBehaviour:
   - Cards/Textures/Youmu/TwoHundredYojanaOneSlash.png
   - Cards/Textures/Youmu/WheelOfPainOfTheLivingAndDead.png
   - Cards/Textures/Youmu/YoukaiSmith.png
+  - i18n/.git
+  - i18n/skin/Cards.en_US.po
+  - i18n/skin/Cards.ja.mo
+  - i18n/skin/Cards.ja.po
+  - i18n/skin/Cards.pot
+  - i18n/skin/Neutral.en_US.po
+  - i18n/skin/Neutral.ja.po
+  - i18n/skin/Neutral.pot
+  - i18n/skin/Patchouli.en_US.po
+  - i18n/skin/Patchouli.ja.po
+  - i18n/skin/Patchouli.pot
+  - i18n/skin/Reisen.en_US.po
+  - i18n/skin/Reisen.ja.po
+  - i18n/skin/Reisen.pot
+  - i18n/skin/Sanae.en_US.po
+  - i18n/skin/Sanae.ja.po
+  - i18n/skin/Sanae.pot
+  - i18n/skin/Youmu.en_US.po
+  - i18n/skin/Youmu.ja.po
+  - i18n/skin/Youmu.pot
+  - i18n/ui/en_US.mo
+  - i18n/ui/en_US.po
+  - i18n/ui/ja.mo
+  - i18n/ui/ja.po
+  - i18n/ui/zmcs.pot
   - Textures/DrBoom.png
   - Textures/FlameFairy.png
   - Textures/LostSpecter.png
   - Textures/LuckyCoin.png
   - Textures/MissingSpecter.png
+  - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418105/0/Image.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418106/0/Image.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418107/0/Image.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418108/0/Image.jpg"
   - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418109/0/Image.jpg"
   - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418110/0/Image.jpg"
   - "Textures/\u7ECF\u5178\u5361\u6C60/-2147418111/0/Image.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Buff1/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Buff2/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Buff5/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418103/0/Image_.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418103/0/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418104/0/Image_.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418104/0/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418105/0/Image_.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418105/0/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418106/0/Image_.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418106/0/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418107/0/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418108/0/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418109/0/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418110/0/Image_zh-Hans.jpg"
+  - "Textures/\u7ECF\u5178\u5361\u6C60/Card-2147418111/0/Image_zh-Hans.jpg"

@@ -11,6 +11,7 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Deck = TouhouHeartstone.Deck;
 namespace Controllers
 {
@@ -26,36 +27,16 @@ namespace Controllers
             _deck = null;
             _isDeckChanged = false;
 
-            //卡牌收藏
-            _sortType = 0;
-            _characterFilters = null;
-            _characterFiltersValue = null;
-            _costFiltersValue = new bool[_costFilters.Length];
-            _typeFiltersValue = new bool[_typeFilters.Length];
+            _selectableMasters = game.card.getCardDefines(c => c.isMaster());
 
-            await loadCardListThenFilterAndSort();
-            _characterFiltersValue = new bool[_characterFilters.Length];
-
-            _ui.gameObject.SetActive(true);
             //UI更新
-            _ui.setSortType(_sortType);
-            _ui.setCharacterFilters(_characterFilters.Select(id =>
-            {
-                if (id == CATEGORY.CHARACTER_NEUTRAL)
-                    return "中立";
-                return game.card.getSkin(id).name;
-            }).ToArray());
-            _ui.setCharacterFilter(_characterFiltersValue);
-            _ui.setCostFilter(_costFiltersValue);
-            _ui.setTypeFilter(_typeFiltersValue);
-            _ui.switchRightPanelModeButtonGroup(true);
-            _ui.setCardListActive(true);
-            _ui.updateCardListCount(_cardDefineList.Count);
+            _ui.gameObject.SetActive(true);
+            _ui.showErrorTip(false);
             _ui.setEnableDrag(false);
             //右侧栏
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
-            _ui.setRightFilterDetialPanelActive(false);
+            await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, cardFilter: cardFilter);
             await updateDeckListUI();
         }
         /// <summary>
@@ -68,33 +49,14 @@ namespace Controllers
             _isDeckChanged = false;
 
             //切换角色筛选
-            int index = Array.IndexOf(_characterFilters, deck.masterId);
-            _characterFiltersValue = new bool[_characterFilters.Length];
-            _characterFiltersValue[index] = true;
-            await loadCardListThenFilterAndSort();
-            //剔除卡组中无法识别的卡牌
-            for (int i = 0; i < deck.cardList.Count; i++)
-            {
-                if (game.card.GetCardDefine(deck.cardList[i].id) == null)
-                {
-                    Debug.LogWarning("卡组中存在未知卡牌" + deck.cardList[i]);
-                    deck.cardList.RemoveAt(i);
-                    i--;
-                }
-            }
-
-            _ui.setCharacterFilter(_characterFiltersValue);
-
-            // 皮肤
+            await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, charactersId: new int[] { deck.masterId }, cardFilter: cardFilter);
             CardSkinData masterSkin = game.card.getSkin(deck.masterId);
-            _ui.gameObject.SetActive(true);
-            _ui.updateCurCardPoolInfo(deck.name, await loadDeckImage(deck));
-            _ui.setCharacterName(masterSkin.name);
 
             // 更新UI
-            _ui.switchRightPanelModeButtonGroup(true);
-            _ui.setCardListActive(true);
-            _ui.updateCardListCount(_cardDefineList.Count);
+            _ui.gameObject.SetActive(true);
+            _ui.showErrorTip(false);
+            _ui.updateCurCardPoolInfo(deck.name, await loadDeckImage(deck));
+            _ui.setCharacterName(masterSkin.name);
             _ui.setDeckListActive(false);
             _ui.setEditCardListActive(true);
             _ui.setEnableDrag(true);
@@ -102,7 +64,6 @@ namespace Controllers
             //右侧栏
             _ui.setDeckListActive(false);
             _ui.setEditDeckPanelActive(true);
-            _ui.setRightFilterDetialPanelActive(false);
             await updateDeckCardListUI();
         }
         #endregion
@@ -115,21 +76,8 @@ namespace Controllers
                 _ui = GetComponent<BuildCardPanel>();
             }
             _ui.onClickReturnButton += onReturnButtonClick;
-            _ui.onUpdateCardListItem += onUpdateCardListItem;
-            _ui.onStartDargCardListItem += onStartDragCardListItem;
             _ui.onStartDragDeckCardListItem += onStartDragDeckCardListItem;
-            _ui.onEndDragCardListItem += onEndDragCardListItem;
             _ui.onEndDragDeckCardListItem += onEndDragDeckCardListItem;
-            _ui.setSortTypes(_sortTypes);
-            _ui.onSortTypeValueChanged += onSortTypeValueChanged;
-            _ui.onCharacterFilterValueChanged += onCharacterFiltersValueChanged;
-            _ui.setCostFilters(_costFilters);
-            _ui.onCostFilterValueChanged += onCostFiltersValueChanged;
-            _ui.setTypeFilters(_typeFilters);
-            _ui.onTypeFilterValueChanged += onTypeFilterValueChanged;
-            _ui.onSwitchRightToFilterDetailButtonClick += onSwitchRightToFilterDetailButtonClick;
-            _ui.onSwitchRightToDeckButtonClick += onSwitchRightToDeckButtonClick;
-            _ui.onFilterDetailCardPoolItemToggleValueChanged += onFilterDetailCardPoolItemToggleValueChanged;
             _ui.onClickDeckListItem += onClickDeckListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeckListItemDeleteButton;
             _ui.onDeckListItemNameValueChanged += onDeckListItemNameValueChanged;
@@ -142,6 +90,11 @@ namespace Controllers
             _ui.onClickUploadDeckButton += onUploadDeckClick;
             _ui.onClickDownloadDeckButton += onDownloadDeckClick;
             _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
+
+            _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
+            _cardPoolViewPanelCtrl.onStartDragCard += onStartDragCard;
+            _cardPoolViewPanelCtrl.onDragCard += onDragCard;
+            _cardPoolViewPanelCtrl.onEndDragCard += onEndDragCard;
         }
         #endregion
         #region 事件回调
@@ -166,80 +119,165 @@ namespace Controllers
         /// </summary>
         /// <param name="index"></param>
         /// <param name="itemRect"></param>
-        private async void onUpdateCardListItem(int index, RectTransform itemRect)
+        private void onUpdateCardListItem(int index, EditorCardListItem item)
         {
-            EditorCardListItem item = itemRect.GetComponentInChildren<EditorCardListItem>();
-            if (index < _cardDefineList.Count)
+            if (_deck == null)
             {
-                //显示卡牌
-                CardDefine cardDefine = _cardDefineList[index];
-                //显示可用数量
-                item.switchToCard();
-                CardSkinData cardSkin = getCardSkinData(cardDefine);
-                item.card.setCard(cardDefine, cardSkin);
-                if (cardSkin != null && cardSkin.image == null)
+                item.hideCount();
+            }
+            else
+            {
+                CardDefine card = _cardPoolViewPanelCtrl.getCardDefineAt(index);
+                index = _deck.cardList.FindIndex(e => e.id == card.id);
+                if (index >= 0)
                 {
-                    Sprite sprite = cardSkin.imagePath.StartsWith("sa:") || cardSkin.imagePath.StartsWith("res:") ?
-                        await game.card.loadExternalImage(cardSkin.imagePath, null) :
-                        await game.card.loadExternalImage(cardSkin.imagePath,
-                            Path.Combine(game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(game.card.getCardPoolOfCard(cardDefine))), game.card.textureDirName));
-                    item.card.setImage(sprite);
-                }
-                if (_deck == null)
-                {
-                    item.hideCount();
+                    int max = card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2;
+                    int current = _deck.cardList[index].count;
+                    item.showCount(current, max);
                 }
                 else
                 {
-                    index = _deck.cardList.FindIndex(e => e.id == cardDefine.id);
-                    if (index >= 0)
-                    {
-                        int max = cardDefine.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2;
-                        int current = _deck.cardList[index].count;
-                        item.showCount(current, max);
-                    }
-                    else
-                    {
-                        item.hideCount();
-                    }
+                    item.hideCount();
                 }
             }
         }
-        private async void onStartDragCardListItem(int index)
+        private Task<bool> onStartDragCard(CardDefine cardDefine, PointerEventData eventData)
         {
-            _dragCard = _cardDefineList[index];
-            CardSkinData skin = getCardSkinData(_dragCard);
-            Sprite image = await game.card.loadCardImage(_dragCard.id);
-            _ui.dragCard.setCard(_dragCard, skin);
-            _ui.dragCard.setImage(image);
-            _ui.dragDeckListItem.updateView(skin.name, image);
-        }
-        private async void onEndDragCardListItem(bool isOverDeckCardList)
-        {
-            if (!isOverDeckCardList)
-                return;
-            if (tryAddCardToDeck(_dragCard, out string errorTip))
+            if (_deck == null)
             {
-                // 更新可用信息
-                _ui.updateCardListCount(_cardDefineList.Count);
-                // 更新UI
+                //当前不在编辑卡组，禁用拖拽
+                return Task.FromResult(false);
+            }
+            //记录拖拽信息
+            _dragCard = cardDefine;
+            _dragStartPosition = eventData.position;
+            _isDraggingHorizontal = false;
+            _isDraggingVertical = false;
+            return Task.FromResult(false);
+        }
+        private async Task<bool> onDragCard(CardDefine cardDefine, PointerEventData eventData)
+        {
+            if (_deck == null)
+            {
+                //当前不在编辑卡组，禁用拖拽
+                return false;
+            }
+            if (_dragCard == null)
+            {
+                //判断是否在拖拽卡牌，避免事件错误发生
+                return false;
+            }
+            if (!_isDraggingHorizontal && !_isDraggingVertical)
+            {
+                //还没有进入拖拽状态
+                var delta = _dragStartPosition - eventData.position;
+                if (delta.magnitude > 0)
+                {
+                    if (Math.Abs(delta.x) > Math.Abs(delta.y))
+                    {
+                        //横向拖拽
+                        if (Math.Abs(delta.x) > _dragThreshold)
+                        {
+                            //横向拖拽并且大于阈值，设置卡牌显示
+                            _isDraggingHorizontal = true;
+                            _ui.showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
+                            //onStartDargCardListItem?.Invoke(getCardItemIndex(item.transform as RectTransform));
+                            //更新UI
+                            CardSkinData skin = game.card.getDefaultSkin(_dragCard);
+                            _ui.dragCard.setCard(_dragCard, skin);
+                            Sprite image = await game.card.loadCardImage(_dragCard.id);
+                            _ui.dragCard.setImage(image);
+                            _ui.dragDeckListItem.updateView(skin.name, image);
+                        }
+                    }
+                    else
+                    {
+                        //纵向拖拽
+                        _isDraggingVertical = true;
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else if (_isDraggingHorizontal)
+            {
+                _ui.showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
+                _ui.moveDragCard(eventData.position);
+                return true;
+            }
+            else if (_isDraggingVertical)
+            {
+                return false;
+            }
+            return false;
+        }
+        private async Task<bool> onEndDragCard(CardDefine cardDefine, PointerEventData eventData)
+        {
+            if (_deck == null)
+            {
+                //当前不在编辑卡组，禁用拖拽
+                return false;
+            }
+            if (_isDraggingVertical)
+            {
+                //横向拖拽
+                //重置状态字段
+                _dragCard = null;
+                _dragStartPosition = Vector2.zero;
+                _isDraggingHorizontal = false;
+                _isDraggingVertical = false;
+                return false;
+            }
+            if (_dragCard == null)
+            {
+                //判断是否在拖拽卡牌，避免事件错误发生
+                return false;
+            }
+            bool needUpdateUI = false;
+            //执行操作
+            if (_ui.isPositionOverDeckCardList(eventData.position))
+            {
+                if (tryAddCardToDeck(_dragCard, out string errorTip))
+                {
+                    needUpdateUI = true;
+                }
+                else
+                    _ui.showErrorTip(errorTip);
+            }
+            //重置状态字段
+            _dragCard = null;
+            _dragStartPosition = Vector2.zero;
+            _isDraggingHorizontal = false;
+            _isDraggingVertical = false;
+            //隐藏拖拽卡牌
+            _ui.hideDragCard();
+            if (needUpdateUI)
+            {
+                //更新可用信息
+                await _cardPoolViewPanelCtrl.display();
+                //更新UI
                 await updateDeckCardListUI();
             }
-            else
-                _ui.showMessage(errorTip);
+            //不管做什么都必须return false以保证ScrollView的释放事件被触发
+            //否则会导致ScrollView不能正确回弹
+            return false;
         }
         private async void onStartDragDeckCardListItem(int index)
         {
-            var cards = _deck.cardList.OrderBy(e => game.card.GetCardDefine(e.id).getCost()).ToArray();
-            _dragCard = game.card.GetCardDefine(cards[index].id);
+            //获取拖拽卡牌
+            var cards = _deck.cardList.OrderBy(e => game.card.getCardDefine(e.id).getCost()).ToArray();
+            _dragCard = game.card.getCardDefine(cards[index].id);
             index = _deck.cardList.IndexOf(cards[index]);
             //从卡组中删除一张卡牌
             _deck.cardList[index].count--;
             if (_deck.cardList[index].count <= 0)
                 _deck.cardList.RemoveAt(index);
-            _ui.updateCardListCount(_cardDefineList.Count);
-            await updateDeckCardListUI();
-            CardSkinData skin = getCardSkinData(_dragCard);
+            //刷新卡池显示
+            await _cardPoolViewPanelCtrl.display();
+            //这里本来应该刷新卡组显示，但是因为列表物体销毁会导致拖拽事件不再触发，所以移动到停止拖拽
+            //await updateDeckCardListUI();
+            //刷新拖拽卡牌显示
+            CardSkinData skin = game.card.getDefaultSkin(_dragCard);
             Sprite image = await game.card.loadCardImage(_dragCard.id);
             _ui.dragCard.setCard(_dragCard, skin);
             _ui.dragCard.setImage(image);
@@ -247,75 +285,18 @@ namespace Controllers
         }
         private async void onEndDragDeckCardListItem(bool isOverDeckCardList)
         {
-            if (!isOverDeckCardList)
-                return;
-            if (tryAddCardToDeck(_dragCard, out string errorTip))
+            if (isOverDeckCardList)
             {
-                // 更新可用信息
-                _ui.updateCardListCount(_cardDefineList.Count);
-                // 更新UI
-                await updateDeckCardListUI();
+                if (tryAddCardToDeck(_dragCard, out string errorTip))
+                {
+                    // 更新可用信息
+                    await _cardPoolViewPanelCtrl.display();
+                }
+                else
+                    _ui.showErrorTip(errorTip);
             }
-            else
-                _ui.showMessage(errorTip);
-        }
-        private async void onSortTypeValueChanged(int index)
-        {
-            _sortType = index;
-            await loadCardListThenFilterAndSort();
-            _ui.updateCardListCount(_cardDefineList.Count);
-        }
-        private async void onCharacterFiltersValueChanged(bool[] value)
-        {
-            _characterFiltersValue = value;
-            await loadCardListThenFilterAndSort();
-            _ui.updateCardListCount(_cardDefineList.Count);
-        }
-        private async void onCostFiltersValueChanged(bool[] value)
-        {
-            _costFiltersValue = value;
-            await loadCardListThenFilterAndSort();
-            _ui.updateCardListCount(_cardDefineList.Count);
-        }
-        private async void onTypeFilterValueChanged(bool[] value)
-        {
-            _typeFiltersValue = value;
-            await loadCardListThenFilterAndSort();
-            _ui.updateCardListCount(_cardDefineList.Count);
-        }
-        /// <summary>
-        /// 当玩家点击切换右侧栏到编辑扩展牌库模式
-        /// </summary>
-        private void onSwitchRightToFilterDetailButtonClick()
-        {
-            (string name, bool value)[] viewData = new (string name, bool value)[_cardPoolList.Count];
-            for (int i = 0; i < viewData.Length; i++)
-            {
-                viewData[i].name = _cardPoolList[i].info.cardPoolName;
-                viewData[i].value = _cardPoolList[i].isEnabled;
-            }
-            _ui.updateFilterDetailCardPoolList(viewData);
-            _ui.switchRightPanelModeButtonGroup(false);
-            _ui.setDeckListActive(false);
-            _ui.setEditDeckPanelActive(false);
-            _ui.setRightFilterDetialPanelActive(true);
-        }
-        private async void onSwitchRightToDeckButtonClick()
-        {
-            _ui.switchRightPanelModeButtonGroup(true);
-            _ui.setRightFilterDetialPanelActive(false);
-            _ui.setDeckListActive(_deck == null);
-            _ui.setEditDeckPanelActive(_deck != null);
+            // 更新UI
             await updateDeckCardListUI();
-        }
-        private async void onFilterDetailCardPoolItemToggleValueChanged(int index, bool value)
-        {
-            //保存当前引用的卡池文件状态
-            _cardPoolList[index].isEnabled = value;
-            //应用筛选条件
-            await loadCardListThenFilterAndSort();
-            //更新卡牌列表
-            _ui.updateCardListCount(_cardDefineList.Count);
         }
         private void onClickDeckListItem(int index)
         {
@@ -324,7 +305,6 @@ namespace Controllers
         private async void onClickDeckListItemDeleteButton(int index)
         {
             game.deck.RemoveDeck(deckList[index].id);
-            deckList.RemoveAt(index);
             await updateDeckListUI();
         }
         /// <summary>
@@ -335,7 +315,7 @@ namespace Controllers
             (string name, Sprite image)[] viewData = new (string name, Sprite image)[_selectableMasters.Length];
             for (int i = 0; i < viewData.Length; i++)
             {
-                CardSkinData skin = getCardSkinData(_selectableMasters[i]);
+                CardSkinData skin = game.card.getDefaultSkin(_selectableMasters[i]);
                 viewData[i].name = skin.name;
                 viewData[i].image = await game.card.loadCardImage(_selectableMasters[i].id);
             }
@@ -351,7 +331,7 @@ namespace Controllers
             _ui.hideMasterSelectPanel();
             Deck newDeck = new Deck()
             {
-                id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
+                //id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
                 name = StringTable.BUILD_NEW_DECK_DEFAULT_NAME,
                 masterId = _selectableMasters[index].id
             };
@@ -365,7 +345,7 @@ namespace Controllers
         private async void onDeckListItemNameValueChanged(int index, string name)
         {
             deckList[index].name = name;
-            game.deck.RenameDeck(deckList[index].id, name);
+            //game.deck.RenameDeck(deckList[index].id, name);
             await updateDeckListUI();
         }
         /// <summary>
@@ -374,7 +354,7 @@ namespace Controllers
         private void onSaveDeckClick()
         {
             // 卡组保存
-            if (_deck.cardList.Sum(i => i.count) < game.deck.deckMaxSize)
+            if (_deck.cardList.Sum(i => i.count) < game.deck.deckValidSize)
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_NOT_COMPLETE), () =>
                 {
@@ -426,7 +406,7 @@ namespace Controllers
                 for (int i = 0; i < cards.Length; i++)
                 {
                     var card = cards[i];
-                    if (game.card.GetCardDefine(card) == null)
+                    if (game.card.getCardDefine(card) == null)
                     {
                         game.ui.dialog.ShowConfirm(game.lang._(StringTable.ERROR), game.lang._(StringTable.ERROR_CARD_WITH_ID_NOT_EXISTS, card), null);
                         return;
@@ -439,7 +419,8 @@ namespace Controllers
                     name = deckName,
                     masterId = master,
                 };
-                copiedDeck.addCards(cards);
+                //添加卡牌，跳过第一个角色卡
+                copiedDeck.addCards(cards.Skip(1));
 
                 // 进入编辑模式
                 display(copiedDeck);
@@ -460,7 +441,7 @@ namespace Controllers
         private void onExportDeckClick()
         {
             // 卡组保存
-            if (_deck.cardList.Count < game.deck.deckMaxSize)
+            if (_deck.getCardCount() < game.deck.deckValidSize)
             {
                 game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_NOT_COMPLETE_EXPORT), () =>
                 {
@@ -536,129 +517,30 @@ namespace Controllers
             _deck.name = value;
         }
         #endregion
-        private async Task loadCardListThenFilterAndSort()
+        private bool cardFilter(CardDefine c)
         {
-            _cardDefineList.Clear();
-            _cardSkinList.Clear();
-            //筛选
-            //内部卡池
-            CardDefine[] cardDefines = game.card.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
-            && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null);
-            _cardDefineList.AddRange(cardDefines);
-            for (int i = 0; i < _cardDefineList.Count; i++)
+            if (_disableStandardCardPool &&
+                game.card.getCardPoolOfCard(c) is CardPoolInfo cardPoolInfo &&
+                game.card.isStandardCardPool(cardPoolInfo))
             {
-                if (game.card.tryGetSkin(_cardDefineList[i].id, out CardSkinData skin))
-                    _cardSkinList.Add(skin);
+                return false;
             }
-            //外部卡池
-            var cardPools = await game.card.getCardPoolInfosAsync();
-            foreach (var pair in cardPools)
+            if (c.isToken())
             {
-                int index = _cardPoolList.FindIndex(item => item.path == pair.Key);
-                if (index < 0)
-                {
-                    _cardPoolList.Add(new CardPoolRuntimeData(pair.Key, pair.Value, false));
-                }
-                else
-                {
-                    _cardPoolList[index] = new CardPoolRuntimeData(pair.Key, pair.Value, _cardPoolList[index].isEnabled);
-                }
+                //衍生物
+                return false;
             }
-            List<string> pathList = new List<string>();
-            for (int i = 0; i < _cardPoolList.Count; i++)
+            if (c.isMaster())
             {
-                //分析一下当前卡组是否有卡牌使用到了外部卡池
-                if (isDeckContainsExternalCard(_cardPoolList[i].info.cardPoolId))
-                {
-                    //如果包含，那这个卡池一定被激活
-                    _cardPoolList[i].isEnabled = true;
-                }
-                if (_cardPoolList[i].isEnabled)
-                    pathList.Add(_cardPoolList[i].path);
+                //角色卡
+                return false;
             }
-            var cards = await game.card.getExternalCardDefinesAsync(pathList.ToArray());
-            _cardDefineList.AddRange(cards.defines);
-            _cardSkinList.AddRange(cards.skins);
-            //不显示衍生物
-            _cardDefineList.RemoveAll(c => c.isToken());
-            //不显示技能
-            _cardDefineList.RemoveAll(c => c.type == DEFINE.SKILL);
-            //重设角色筛选选项
-            _characterFilters = new int[] { CATEGORY.CHARACTER_NEUTRAL }.Concat(_cardDefineList.Where(c => c.type == DEFINE.MASTER).Select(c => c.id)).ToArray();
-            //重置可选英雄
-            _selectableMasters = _cardDefineList.Where(c => isAvailableCharacter(c)).ToArray();
-            //不显示英雄
-            _cardDefineList.RemoveAll(c => c.type == DEFINE.MASTER);
-            //角色
-            if (_characterFilters != null && _characterFilters.Length > 0 &&
-                _characterFiltersValue != null && _characterFilters.Length == _characterFiltersValue.Length && _characterFiltersValue.Any(b => b))
+            if (c.isSkill())
             {
-                _cardDefineList.RemoveAll(c =>
-                {
-                    int index = Array.IndexOf(_characterFilters, c.getCharacterID());
-                    if (index < 0)
-                        return true;
-                    else
-                        return !_characterFiltersValue[index];
-                });
+                //技能卡
+                return false;
             }
-            //费用
-            if (_costFiltersValue != null && _costFiltersValue.Length == _costFilters.Length && _costFiltersValue.Any(b => b))
-            {
-                _cardDefineList.RemoveAll(c =>
-                {
-                    int cost = c.getCost();
-                    if (cost >= 7)
-                    {
-                        return !_costFiltersValue[7];
-                    }
-                    else if (cost <= 0)
-                    {
-                        return !_costFiltersValue[0];
-                    }
-                    else
-                    {
-                        return !_costFiltersValue[cost];
-                    }
-                });
-            }
-            //类型
-            if (_typeFiltersValue != null && _typeFiltersValue.Length == _typeFilters.Length && _typeFiltersValue.Any(b => b))
-            {
-                _cardDefineList.RemoveAll(c =>
-                {
-                    int index = Array.IndexOf(_typeFilters, c.type);
-                    if (index < 0)
-                        return true;
-                    else
-                        return !_typeFiltersValue[index];
-                });
-            }
-
-            //排序
-            if (_sortType == 0)
-            {
-                //费用
-                _cardDefineList = _cardDefineList.OrderBy(c => c.getCost()).ToList();
-            }
-            else if (_sortType == 1)
-            {
-                //名称
-                _cardDefineList = _cardDefineList.OrderBy(c => game.card.getSkin(c.id).name).ToList();
-            }
-        }
-        /// <summary>
-        /// 获取卡牌定义对应的皮肤数据
-        /// </summary>
-        /// <param name="cardDefine"></param>
-        /// <returns></returns>
-        private CardSkinData getCardSkinData(CardDefine cardDefine)
-        {
-            var cardSkinGroup = _cardSkinList.Where(s => s.id == cardDefine.id);
-            CardSkinData cardSkin = cardSkinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
-            if (cardSkin == null)
-                cardSkin = cardSkinGroup.FirstOrDefault();
-            return cardSkin;
+            return true;
         }
         /// <summary>
         /// 获取卡组的封面贴图
@@ -672,31 +554,13 @@ namespace Controllers
                 return Task.FromResult(skin.image);
             else
             {
-                return game.card.loadExternalImage(skin.imagePath, null);
+                return game.card.loadExternalImage(skin.imagePath, game.card.textureDirName);
             }
-        }
-        /// <summary>
-        /// 判断是不是可用的角色
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        private bool isAvailableCharacter(CardDefine c)
-        {
-            if (c.id == 0)
-                return false;
-            if (c.GetType().Assembly != typeof(THHGame).Assembly)
-                return false;
-            if (c is MasterCardDefine master)
-                return true;
-            else if (c.type == DEFINE.MASTER)
-                return true;
-            else
-                return false;
         }
         private bool tryAddCardToDeck(CardDefine card, out string errorTip)
         {
             //卡组数量上限
-            if (_deck.cardList.Count >= game.deck.deckMaxSize)
+            if (_deck.getCardCount() >= game.deck.deckValidSize)
             {
                 errorTip = game.lang._(StringTable.BUILD_TIP_DECK_MAX_SIZE);
                 return false;
@@ -727,10 +591,19 @@ namespace Controllers
         /// </summary>
         private void saveDeck()
         {
-            game.deck.ClearDeck(_deck.id);
-            foreach (var card in _deck.toIdArray(includeMasterCard: false))
+            if (game.deck.HasDeck(_deck.id))
             {
-                game.deck.AddCard(_deck.id, card);
+                game.deck.RenameDeck(_deck.id, _deck.name);
+                game.deck.ClearDeck(_deck.id);
+            }
+            else
+            {
+                _deck.id = (int)game.deck.CreateDeck(_deck.name, _deck.masterId);
+                deckList.Add(_deck);
+            }
+            foreach (var cardId in _deck.toIdArray(includeMasterCard: false))
+            {
+                game.deck.AddCard(_deck.id, cardId);
             }
             _isDeckChanged = false;
         }
@@ -829,16 +702,20 @@ namespace Controllers
         }
         private async Task updateDeckCardListUI()
         {
-            _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckMaxSize);
-            var cards = _deck.cardList.OrderBy(e => game.card.GetCardDefine(e.id).getCost()).ToArray();
-            (string name, Sprite image, int count)[] deckCardList = new (string name, Sprite image, int count)[_deck.cardList.Count];
-            for (int i = 0; i < deckCardList.Length; i++)
+            _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckValidSize);
+            var cards = _deck.cardList.OrderBy(e => game.card.getCardDefine(e.id) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
+            (string name, Sprite image, int count)[] deckCardsViewData = new (string name, Sprite image, int count)[cards.Length];
+            for (int i = 0; i < cards.Length; i++)
             {
-                deckCardList[i].name = game.card.getSkin(cards[i].id).name;
-                deckCardList[i].image = await game.card.loadCardImage(cards[i].id);
-                deckCardList[i].count = cards[i].count;
+                CardDefine cardDefine = game.card.getCardDefine(cards[i].id);
+                CardSkinData skin = cardDefine != null ? game.card.getDefaultSkin(cardDefine) : null;
+                deckCardsViewData[i].name = skin != null ? skin.name : game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
+                deckCardsViewData[i].image = skin != null ? skin.image != null ?
+                    skin.image :
+                    await game.card.loadImage(skin.imagePath, cardDefine != null && game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0) : null;
+                deckCardsViewData[i].count = cards[i].count;
             }
-            _ui.updateDeckCardList(deckCardList);
+            _ui.updateDeckCardList(deckCardsViewData);
         }
         #endregion
         #region 属性字段
@@ -846,48 +723,26 @@ namespace Controllers
         [SerializeField]
         BuildCardPanel _ui;
         [SerializeField]
-        int _sortType;
+        CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
-        int[] _characterFilters;
+        bool _disableStandardCardPool;
         [SerializeField]
-        bool[] _characterFiltersValue;
-        [SerializeField]
-        bool[] _costFiltersValue;
-        [SerializeField]
-        bool[] _typeFiltersValue;
+        float _dragThreshold = 50f;
         [SerializeField]
         Deck _deck;
         [SerializeField]
         bool _isDeckChanged = false;
         [SerializeField]
-        CardDefine[] _selectableMasters;
+        Vector2 _dragStartPosition;
         [SerializeField]
+        bool _isDraggingHorizontal = false;
+        [SerializeField]
+        bool _isDraggingVertical = false;
+        CardDefine[] _selectableMasters;
         CardDefine _dragCard;
-        List<CardPoolRuntimeData> _cardPoolList = new List<CardPoolRuntimeData>();
-        List<CardDefine> _cardDefineList = new List<CardDefine>();
-        List<CardSkinData> _cardSkinList = new List<CardSkinData>();
-        readonly string[] _sortTypes = new string[]
-        {
-            "费用",
-            "名称"
-        };
-        readonly string[] _costFilters = new string[]
-        {
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7+"
-        };
-        readonly string[] _typeFilters = new string[]
-        {
-            DEFINE.SERVANT,
-            DEFINE.SPELL,
-            DEFINE.ITEM
-        };
+        //List<CardPoolRuntimeData> _cardPoolList = new List<CardPoolRuntimeData>();
+        //List<CardDefine> _cardDefineList = new List<CardDefine>();
+        //List<CardSkinData> _cardSkinList = new List<CardSkinData>();
         const string exportStringHeader = "# 醉梦传说卡组";
         [TranslateMsg]
         const string PILE_EXPORTED = "卡组已导出到剪贴板";

@@ -21,32 +21,23 @@ namespace Controllers
         {
             //显示界面
             gameObject.SetActive(true);
-            //切换编辑模式
+            //切换模式
             if (switchToView)
             {
                 //牌库浏览模式
-                _ui.setCardListActive(false);
-                _ui.setDeckListActive(true);
-                _ui.setEditDeckPanelActive(false);
                 if (reloadCardPoolInfos)
                 {
                     //重新加载所有牌库信息
                     await getCardPoolsInfoAsync();
                 }
+                _ui.setDeckListActive(true);
+                _ui.setEditDeckPanelActive(false);
+                await _cardPoolViewPanelCtrl.hide();
                 await updateDeckListUI();
-                _ui.setSortType((int)_sortType);
-                //TODO:角色过滤器
-                _ui.setCharacterFilters(new string[]
-                {
-                    game.langManager.getString(StringTable.CARDVIEW_CHARACTER_NEUTRAL)
-                });
             }
             else
             {
                 //牌库编辑模式
-                _ui.setCardListActive(true);
-                _ui.setDeckListActive(false);
-                _ui.setEditDeckPanelActive(true);
                 //设置当前牌库
                 if (0 <= cardPoolIndex && cardPoolIndex < _cardPoolInfoList.Count)
                 {
@@ -54,30 +45,36 @@ namespace Controllers
                     _curCardPoolInfo = _cardPoolInfoList[cardPoolIndex];
                 }
                 //更新牌库信息
-                Sprite image = await loadExternalImage(_curCardPoolInfo.imageResPath);
-                _ui.updateCurCardPoolInfo(_curCardPoolInfo.cardPoolName, image);
+                Sprite image = await game.card.loadImage(_curCardPoolInfo.imageResPath, _curCardPoolInfo.cardPoolId);
                 //显示卡牌列表
                 if (reloadCardPool)
                 {
                     //重新加载牌库中的所有卡牌和皮肤
-                    await readCardPoolAsync(_curCardPoolPath);
+                    if (string.IsNullOrEmpty(_curCardPoolPath))
+                    {
+                        await readCardPoolByIdAsync(_curCardPoolInfo.cardPoolId);
+                    }
+                    else
+                    {
+                        await readCardPoolByPathAsync(_curCardPoolPath);
+                    }
                 }
+                //更新UI
+                _ui.setDeckListActive(false);
+                _ui.setEditDeckPanelActive(true);
+                _ui.updateCurCardPoolInfo(_curCardPoolInfo.cardPoolName, image);
                 await updateDeckCardListUI();
-                //+1是为了显示新建卡牌按钮
-                _ui.updateCardListCount(_cardDefineList.Count + 1);
+                await _cardPoolViewPanelCtrl.display(_curCardPoolInfo, cardFilter: c =>
+                {
+                    if (game.card.isBuiltinCard(c))
+                    {
+                        //不显示内置的卡牌
+                        return false;
+                    }
+                    //显示所有卡牌，包括角色，技能和衍生物
+                    return true;
+                });
             }
-        }
-        public void addSkin(CardSkinData skin)
-        {
-            _cardSkinList.Add(skin);
-        }
-        public IEnumerable<CardSkinData> getAllSkins()
-        {
-            return _cardSkinList;
-        }
-        public int removeSkins(Predicate<CardSkinData> filter)
-        {
-            return _cardSkinList.RemoveAll(filter);
         }
         #endregion
         #region 私有方法
@@ -90,22 +87,16 @@ namespace Controllers
             }
             _ui.onClickReturnButton += onClickReturnButton;
             _ui.onClickDeckListItem += onClickCardPoolListItem;
-            _ui.onUpdateCardListItem += onUpdateCardListItem;
-            _ui.onClickCardListItem += onClickCardListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeleteCardPoolButton;
             _ui.onClickDeckListAddButton += onClickAddCardPoolButton;
             _ui.onClickSaveDeckButton += onClickSaveCardPoolButton;
             _ui.onClickReturnToCardPoolViewButton += onClickReturnToCardPoolViewButton;
             _ui.onClickDeleteCurCardPoolButton += onClickDeleteCurCardPoolButton;
-            _ui.setSortTypes(new string[]
-            {
-                game.langManager.getString(StringTable.CARDVIEW_SORT_COST),
-                game.langManager.getString(StringTable.CARDVIEW_SORT_COST_DESCENDING),
-                game.langManager.getString(StringTable.CARDVIEW_SORT_RARE),
-                game.langManager.getString(StringTable.CARDVIEW_SORT_RARE_DESCENDING)
-            });
-            _ui.onChangeSortTypeValue += onChangeSortTypeValue;
             _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
+            _ui.onClickNewCardButton += onClickNewCardButton;
+
+            _cardPoolViewPanelCtrl.onClickCard += onClickCard;
+            _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
         }
         #endregion
         #region 事件回调
@@ -148,87 +139,44 @@ namespace Controllers
                 });
             }
         }
-        /// <summary>
-        /// 当卡牌列表需要更新显示，更新对应物体的显示
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="item"></param>
-        private async void onUpdateCardListItem(int index, RectTransform item)
+        private void onUpdateCardListItem(int index, EditorCardListItem item)
         {
-            EditorCardListItem cardListItem = item.GetComponentInChildren<EditorCardListItem>();
-            if (index < _cardDefineList.Count)
-            {
-                //显示卡牌
-                CardDefine cardDefine = _cardDefineList[index];
-                CardSkinData cardSkin = getCardSkinData(cardDefine);
-                cardListItem.card.setCard(cardDefine, cardSkin);
-                cardListItem.switchToCard();
-                cardListItem.card.setImage(await loadExternalImage(cardSkin.imagePath));
-            }
-            else
-            {
-                //新建卡牌按钮
-                cardListItem.switchToAddButton();
-            }
+            item.hideCount();
         }
         /// <summary>
         /// 当点击新增卡池按钮，切换右侧栏到编辑卡池状态
         /// </summary>
-        async void onClickAddCardPoolButton()
+        private void onClickAddCardPoolButton()
         {
-            _ui.setCardListActive(true);
-            _ui.setDeckListActive(false);
-            _ui.setEditDeckPanelActive(true);
             _curCardPoolPath = null;
-            _curCardPoolInfo = new CardPoolInfo()
-            {
-                cardPoolId = allocCardPoolId()
-            };
+            game.card.createCardPool(out _curCardPoolInfo, out _);
             _cardPoolInfoList.Add(_curCardPoolInfo);
             _cardPoolPathList.Add(null);
-            game.card.addExternalCardPool(_curCardPoolInfo.cardPoolId);
-            _curCardPoolInfo.cardPoolName = "新建卡组";
-            _curCardPoolInfo.imageResPath = null;
-            _cardDefineList.Clear();
-            _cardSkinList.Clear();
-            //_ui.updateDeckCardList(new (string name, Sprite image, int count)[0]);
-            //1是为了显示新建卡牌按钮
-            _ui.updateCardListCount(1);
-            await updateDeckCardListUI();
+
+            display(false, false, _cardPoolInfoList.IndexOf(_curCardPoolInfo), true);
         }
         /// <summary>
         /// 当卡牌列表被点击，打开卡牌编辑器，如果是新建卡牌则新建卡牌并打开
         /// </summary>
         /// <param name="index"></param>
-        private async void onClickCardListItem(int index)
+        private async void onClickCard(CardDefine cardDefine)
         {
-            if (index < _cardDefineList.Count)
-            {
-                CardDefine cardDefine = _cardDefineList[index];
-                await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, cardDefine, getSelectableCharacters());
-            }
-            else
-            {
-                //新建卡牌
-                CardDefine newCardDefine = new CardDefine(allocCardId(), DEFINE.SERVANT);
-                _cardDefineList.Add(newCardDefine);
-                CardSkinData newCardSkin = new CardSkinData();
-                newCardSkin.id = newCardDefine.id;
-                _cardSkinList.Add(newCardSkin);
-                game.card.addExternalCard(_curCardPoolInfo.cardPoolId, newCardDefine, newCardSkin);
-                await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, newCardDefine, getSelectableCharacters());
-            }
+            await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, cardDefine, getSelectableCharacters());
         }
-        private void onChangeSortTypeValue(int index)
+        /// <summary>
+        /// 当点击新建卡牌按钮
+        /// </summary>
+        private async void onClickNewCardButton()
         {
-            _sortType = (CardSortType)index;
+            game.card.createCard(_curCardPoolInfo, out CardDefine newCardDefine, out _);
+            await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, newCardDefine, getSelectableCharacters());
         }
         /// <summary>
         /// 当点击保存按钮，保存当前编辑的卡池
         /// </summary>
         private async void onClickSaveCardPoolButton()
         {
-            await game.card.saveCardPool(_curCardPoolInfo, _cardDefineList.ToArray(), _cardSkinList.ToArray(), actionNodeGraphInfoList.ToArray());
+            await game.card.saveCardPool(_curCardPoolInfo);
             _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
             int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
             _cardPoolPathList[index] = _curCardPoolPath;
@@ -278,7 +226,7 @@ namespace Controllers
         {
             _cardPoolPathList.Clear();
             _cardPoolInfoList.Clear();
-            var result = await game.card.getCardPoolInfosAsync();
+            var result = await game.card.loadCardPoolInfosAsync();
             foreach (var pair in result)
             {
                 CardPoolInfo cardPool = pair.Value;
@@ -292,57 +240,39 @@ namespace Controllers
                 _cardPoolInfoList.Add(cardPool);
             }
             //尝试修复没有Id的卡池
-            for (int i = 0; i < _cardPoolInfoList.Count; i++)
-            {
-                if (_cardPoolInfoList[i].cardPoolId == 0)
-                    _cardPoolInfoList[i].cardPoolId = allocCardPoolId();
-            }
+            //for (int i = 0; i < _cardPoolInfoList.Count; i++)
+            //{
+            //    if (_cardPoolInfoList[i].cardPoolId == 0)
+            //        _cardPoolInfoList[i].cardPoolId = allocCardPoolId();
+            //}
         }
         /// <summary>
-        /// 读取卡池文件中的所有卡牌
+        /// 读取指定路径上的卡池文件中的所有卡牌
         /// </summary>
-        /// <param name="cardPoolPath">卡池文件相对路径</param>
+        /// <param name="cardPoolId">卡池文件相对路径</param>
         /// <returns></returns>
         /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
-        private async Task readCardPoolAsync(string cardPoolPath)
+        private async Task readCardPoolByPathAsync(string cardPoolPath)
         {
-            _cardDefineList.Clear();
-            _cardSkinList.Clear();
-            actionNodeGraphInfoList.Clear();
-            if (!string.IsNullOrEmpty(cardPoolPath))
+            if (!game.card.tryGetCardPool(cardPoolPath, out _))
             {
-                var (defines, skins, actionGraphInfos) = await game.card.getExternalCardDefinesAsync(cardPoolPath);
-                _cardDefineList.AddRange(defines);
-                _cardSkinList.AddRange(skins);
-                actionNodeGraphInfoList.AddRange(actionGraphInfos);
-                //尝试修复受损的数据
-                for (int i = 0; i < _cardDefineList.Count; i++)
-                {
-                    if (_cardDefineList[i].id >= 0)
-                    {
-                        //重新分配丢失的卡牌Id
-                        int id = allocCardId();
-                        foreach (var skin in _cardSkinList.Where(s => s.id == _cardDefineList[i].id))
-                        {
-                            skin.id = id;
-                        }
-                        _cardDefineList[i].id = id;
-                    }
-                }
+                await game.card.loadCardPool(cardPoolPath);
             }
         }
         /// <summary>
-        /// 获取卡牌定义对应的皮肤数据
+        /// 读取指定id的卡池文件中的所有卡牌
         /// </summary>
-        /// <param name="cardDefine"></param>
+        /// <param name="cardPoolId">卡池id</param>
         /// <returns></returns>
-        private CardSkinData getCardSkinData(CardDefine cardDefine)
+        /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
+        private async Task readCardPoolByIdAsync(int cardPoolId)
         {
-            var cardSkinGroup = _cardSkinList.GroupBy(s => s.id).First(g => g.Key == cardDefine.id);
-            CardSkinData cardSkin = cardSkinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
-            if (cardSkin == null)
-                cardSkin = cardSkinGroup.FirstOrDefault();
-            return cardSkin;
+            if (!game.card.tryGetCardPool(cardPoolId, out _))
+            {
+                CardPoolInfo cardPoolInfo = game.card.getCardPoolInfo(cardPoolId);
+                string cardPoolPath = game.card.getCardPoolPath(cardPoolInfo);
+                await game.card.loadCardPool(cardPoolPath);
+            }
         }
         /// <summary>
         /// 清空字段并切换到浏览状态
@@ -351,13 +281,10 @@ namespace Controllers
         {
             _curCardPoolPath = null;
             _curCardPoolInfo = null;
-            _cardDefineList.Clear();
-            _cardSkinList.Clear();
-            actionNodeGraphInfoList.Clear();
-            _ui.setCardListActive(false);
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
             await updateDeckListUI();
+            await _cardPoolViewPanelCtrl.hide();
         }
 
         private int allocCardPoolId()
@@ -371,22 +298,10 @@ namespace Controllers
             }
             throw new OverflowException("卡池数量已达上限");
         }
-        private int allocCardId()
-        {
-            for (int i = 1; i < 0xFFFF; i++)
-            {
-                int cardId = 1 << 31 | _curCardPoolInfo.cardPoolId << 16 | i;
-                if (_cardDefineList.Exists(c => c.id == cardId))
-                    continue;
-                return cardId;
-            }
-            throw new OverflowException("卡牌数量已达上限");
-        }
         private CardDefine[] getSelectableCharacters()
         {
             List<CardDefine> cardList = new List<CardDefine>();
             cardList.AddRange(game.card.GetCardDefines(c => c.isMaster(), true));
-            cardList.AddRange(_cardDefineList.Where(c => c.isMaster()));
             return cardList.ToArray();
         }
         /// <summary>
@@ -399,101 +314,31 @@ namespace Controllers
             for (int i = 0; i < viewData.Length; i++)
             {
                 viewData[i].name = _cardPoolInfoList[i].cardPoolName;
-                viewData[i].image = await loadExternalImage(_cardPoolInfoList[i].imageResPath);
+                viewData[i].image = await game.card.loadImage(_cardPoolInfoList[i].imageResPath, _cardPoolInfoList[i].cardPoolId);
             }
             _ui.updateDeckList(viewData);
         }
         private async Task updateDeckCardListUI()
         {
-            (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[_cardDefineList.Count];
+            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.cardPoolId);
+            (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[cardDefines.Length];
             for (int i = 0; i < viewData.Length; i++)
             {
-                CardSkinData skin = getCardSkinData(_cardDefineList[i]);
+                CardSkinData skin = game.card.getDefaultSkin(cardDefines[i]);
                 viewData[i].name = skin.name;
-                viewData[i].image = await loadExternalImage(skin.imagePath);
+                viewData[i].image = await game.card.loadImage(skin.imagePath, _curCardPoolInfo.cardPoolId);
                 viewData[i].count = 0;
             }
             _ui.updateDeckCardList(viewData);
         }
-        private Task<Sprite> loadExternalImage(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return Task.FromResult<Sprite>(null);
-            }
-            else
-            {
-                //#if UNITY_EDITOR
-                //                if (game.card.isStandardCardPool(_curCardPoolInfo) &&
-                //                    !(path.StartsWith("res:") || path.StartsWith("sa:")))//这些图片不是在Resources或者StreamingAssets中
-                //                {
-                //                    DirectoryInfo dirInfo = Directory.GetParent(_curCardPoolPath);
-                //                    while (dirInfo.Name != game.card.cardPoolDirName)
-                //                    {
-                //                        dirInfo = dirInfo.Parent;
-                //                    }
-                //                    dirInfo = dirInfo.Parent;
-                //                    string fullPath = Path.Combine(dirInfo.FullName, path);
-                //                    if (game.fileManager.isFileExist(fullPath))
-                //                        path = fullPath;
-                //                    else
-                //                        path = Path.GetFullPath(path);
-                //                }
-                //#endif
-                if (_curCardPoolPath.StartsWith("sa:"))
-                {
-                    //StreamingAssets不需要区分根目录
-                    if (!path.StartsWith("sa:"))
-                        path = "sa:" + Path.Combine(game.card.textureDirName, path);
-                    return game.card.loadExternalImage(path, null);
-                }
-                else
-                {
-                    //因为在Editor下无法区分可持续化文件和工程文件，这里必须获取卡池目录的完整根目录
-                    string dirName = Path.Combine(game.card.getCardPoolPathRootDir(game.card.getCardPoolPath(_curCardPoolInfo)), game.card.textureDirName);
-                    return game.card.loadExternalImage(path, dirName);
-                }
-            }
-        }
         #endregion
-        public List<ActionNodeGraphInfo> actionNodeGraphInfoList { get; } = new List<ActionNodeGraphInfo>();
         [SerializeField]
         private EditorPanel _ui;
+        [SerializeField]
+        private CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         List<string> _cardPoolPathList = new List<string>();
         List<CardPoolInfo> _cardPoolInfoList = new List<CardPoolInfo>();
         string _curCardPoolPath;
         CardPoolInfo _curCardPoolInfo;
-        readonly List<CardDefine> _cardDefineList = new List<CardDefine>();
-        readonly List<CardSkinData> _cardSkinList = new List<CardSkinData>();
-        CardSortType _sortType;
-        /// <summary>
-        /// 卡牌排序类型
-        /// </summary>
-        enum CardSortType
-        {
-            /// <summary>
-            /// 费用升序
-            /// </summary>
-            cost,
-            /// <summary>
-            /// 降序
-            /// </summary>
-            costDescending,
-            /// <summary>
-            /// 稀有度升序
-            /// </summary>
-            rare,
-            /// <summary>
-            /// 稀有度降序
-            /// </summary>
-            rareDescending
-        }
-    }
-    [Serializable]
-    public class CardPoolInfo
-    {
-        public int cardPoolId;
-        public string cardPoolName;
-        public string imageResPath;
     }
 }

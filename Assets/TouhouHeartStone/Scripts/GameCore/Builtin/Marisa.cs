@@ -8,7 +8,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = 0x00200000 | CATEGORY.MASTER | 0x000;
         public override int id { get; set; } = ID;
         public override int life { get; set; } = 30;
-        public override int skillID { get; set; } = StartdustBullet.ID;
+        public override int skillID { get; set; } = StardustBullet.ID;
 
         private IEffect[] effects1 = new Effect[0];
 
@@ -22,7 +22,7 @@ namespace TouhouHeartstone.Builtin
             effects1 = value;
         }
     }
-    public class StartdustBullet : SkillCardDefine
+    public class StardustBullet : SkillCardDefine
     {
         public const int ID = Marisa.ID | CATEGORY.SKILL | 0x000;
         public override int id { get; set; } = ID;

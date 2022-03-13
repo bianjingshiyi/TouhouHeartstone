@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using BJSYGameCore.UI;
 using UnityEngine.UI;
 using BJSYGameCore;
+using Controllers;
 using Timer = BJSYGameCore.Timer;
 namespace UI
 {
@@ -28,13 +29,15 @@ namespace UI
         /// <param name="nodeName"></param>
         /// <param name="outputNames"></param>
         /// <returns></returns>
-        public ActionNodeItem createNode(float posX, float posY, string nodeName, string[] inputNames, ActionNodeValueInfo[] constsInfo, string[] outputNames)
+        public ActionNodeItem createNode(float posX, float posY, string nodeName, IOConnectInfo[] inputNames, ActionNodeValueInfo[] constsInfo, IOConnectInfo[] outputNames)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
-            actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
+            actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
+            // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
+            actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
@@ -43,9 +46,9 @@ namespace UI
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.switchToActionNode();
             actionNodeItem.setName(nodeName);
-            actionNodeItem.setInputs(inputNames);
+            actionNodeItem.setInputs(inputNames, _listColor);
             actionNodeItem.setConsts(constsInfo);
-            actionNodeItem.setOutputs(outputNames);
+            actionNodeItem.setOutputs(outputNames, _listColor);
             return actionNodeItem;
         }
         /// <summary>
@@ -56,20 +59,23 @@ namespace UI
         /// <param name="eventName"></param>
         /// <param name="targetCheckerCount"></param>
         /// <returns></returns>
-        public ActionNodeItem createTriggerNode(float posX, float posY, string[] targetCheckerTypes, string eventName, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        public ActionNodeItem createTriggerNode(float posX, float posY, string nodeName, string[] targetCheckerTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
             ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
             _actionNodeItemList.Add(actionNodeItem);
             actionNodeItem.gameObject.SetActive(true);
             RectTransform itemRect = actionNodeItem.transform as RectTransform;
             itemRect.anchoredPosition = new Vector2(posX, posY);
+            actionNodeItem.setName(nodeName);
             actionNodeItem.switchToTriggerNode();
-            actionNodeItem.setTrigger(targetCheckerTypes, eventName, targetCheckers);
+            actionNodeItem.setTrigger(targetCheckerTypes, eventIndex, targetCheckers);
             string[] outputNames = new string[]
             {
                 string.Empty
             };
+            //onSelectedEventIndex
             actionNodeItem.setOutputs(outputNames);
+
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;
@@ -83,7 +89,9 @@ namespace UI
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
-            actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
+            actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
+            // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
+            actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
@@ -93,13 +101,25 @@ namespace UI
             return actionNodeItem;
         }
         /// <summary>
+        /// 在指定位置上创建一个触发器节点
+        /// </summary>
+        /// <param name="posX"></param>
+        /// <param name="posY"></param>
+        /// <param name="eventTypeIndex"></param>
+        /// <param name="targetCheckers"></param>
+        /// <returns></returns>
+        public ActionNodeItem createTriggerNode(float posX, float posY, int eventTypeIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        {
+            throw new NotImplementedException();
+        }
+        /// <summary>
         /// 将节点的指定输出连接到目标节点的输入上
         /// </summary>
         /// <param name="node"></param>
         /// <param name="outputIndex"></param>
         /// <param name="targetNode"></param>
         /// <param name="inputIndex"></param>
-        public void connectNode(ActionNodeItem node, int outputIndex, ActionNodeItem targetNode, int inputIndex)
+        public void connectNodeWithOutColor(ActionNodeItem node, int outputIndex, ActionNodeItem targetNode, int inputIndex, ActionNodeConnectionType connectionType)
         {
             if (node == targetNode)
                 throw new ArgumentException("一个节点不能连接自己");
@@ -113,6 +133,43 @@ namespace UI
             Vector2 to = targetNode.getInputWorldPosition(inputIndex);
             to = _actionNodeLineRoot.InverseTransformPoint(to);
             ActionNodeGraphLine line = createLine(from, to);
+            _connectionList.Add(new ActionNodeConnectionData()
+            {
+                outputNode = node,
+                outputIndex = outputIndex,
+                inputNode = targetNode,
+                inputIndex = inputIndex,
+                line = line
+            });
+        }
+
+        /// <summary>
+        /// 将节点的指定输出连接到目标节点的输入上
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="outputIndex"></param>
+        /// <param name="targetNode"></param>
+        /// <param name="inputIndex"></param>
+        public void connectNode(ActionNodeItem node, int outputIndex, ActionNodeItem targetNode, int inputIndex, ActionNodeConnectionType connectionType)
+        {
+            if (node == targetNode)
+                throw new ArgumentException("一个节点不能连接自己");
+            if (_connectionList.Exists(c => c.outputNode == node && c.outputIndex == outputIndex && c.inputNode == targetNode && c.inputIndex == inputIndex))
+            {
+                //已经存在连接
+                return;
+            }
+
+            var output = node.getOutput(outputIndex);
+            Vector2 from = output.getNodeWorldPosition();
+            from = _actionNodeLineRoot.InverseTransformPoint(from);
+
+            var input = targetNode.getInput(inputIndex);
+            Vector2 to = input.getNodeWorldPosition();
+            to = _actionNodeLineRoot.InverseTransformPoint(to);
+
+            ActionNodeGraphLine line = createLine(from, to, output.GetColor());
+
             _connectionList.Add(new ActionNodeConnectionData()
             {
                 outputNode = node,
@@ -167,7 +224,10 @@ namespace UI
         /// <param name="graphPosition">动作图坐标系坐标</param>
         public void moveActionNodeTo(ActionNodeItem item, Vector2 graphPosition)
         {
+            //设置节点位置
             item.transform.localPosition = graphPosition + _dragItemPositionOffset;
+            //设置背景大小
+            //刷新连线位置
             for (int i = 0; i < _connectionList.Count; i++)
             {
                 if (_connectionList[i].outputNode == _dragItem || _connectionList[i].inputNode == _dragItem)
@@ -189,6 +249,7 @@ namespace UI
             //销毁节点UI
             _actionNodeItemList.Remove(node);
             Destroy(node.gameObject);
+            //设置背景大小
             //销毁所有连线UI
             for (int i = 0; i < _connectionList.Count; i++)
             {
@@ -279,20 +340,42 @@ namespace UI
         {
             return _actionNodesRoot.InverseTransformPoint(worldPosition);
         }
+        public void setScrollViewContentSize(Vector2 size)
+        {
+            //内容大小不能小于滚动视图本身大小
+            if (size.x < (_scrollRect.transform as RectTransform).rect.size.x)
+            {
+                size.x = (_scrollRect.transform as RectTransform).rect.size.x;
+            }
+            if (size.y < (_scrollRect.transform as RectTransform).rect.size.y)
+            {
+                size.y = (_scrollRect.transform as RectTransform).rect.size.y;
+            }
+            //获取当前视图位置
+            Vector2 curPos = new Vector2(_scrollRect.horizontalNormalizedPosition * _scrollViewContentRectTransform.sizeDelta.x,
+                _scrollRect.verticalNormalizedPosition * _scrollViewContentRectTransform.sizeDelta.y);
+            //设置内容大小
+            _scrollViewContentRectTransform.sizeDelta = size;
+            //换算位置保持当前位置不变
+            _scrollRect.horizontalNormalizedPosition = curPos.x / _scrollViewContentRectTransform.sizeDelta.x;
+            _scrollRect.verticalNormalizedPosition = curPos.y / _scrollViewContentRectTransform.sizeDelta.y;
+        }
+        public void displayCardSelectPanel(bool value)
+        {
+            _cardSelectPanel.SetActive(value);
+        }
+        public void init(string[] languages, string[] eventTypes)
+        {
+            _actionNodeItemTemplate.initBuffLanguages(languages);
+            _actionNodeItemTemplate.initEventTypes(eventTypes);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
         protected void Awake()
         {
-            EventTrigger trigger = _backgroundImage.gameObject.AddComponent<EventTrigger>();
-            EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerDown;
-            entry.callback.AddListener(onPointerDownBackgroundImage);
-            trigger.triggers.Add(entry);
-            entry = new EventTrigger.Entry();
-            entry.eventID = EventTriggerType.PointerUp;
-            entry.callback.AddListener(onPointerUpBackgroundImage);
-            trigger.triggers.Add(entry);
+            _backgroundEventTrigger.onPointerDown += onPointerDownBackgroundImage;
+            _backgroundEventTrigger.onPointerUp += onPointerUpBackgroundImage;
             if (_actionNodeItemTemplate.transform.parent == _actionNodesRoot)
             {
                 _actionNodeItemTemplate.gameObject.SetActive(false);
@@ -307,6 +390,9 @@ namespace UI
             }
             _menuRoot.gameObject.SetActive(false);
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
+            _cancelSelectButton.onClick.AddListener(onClickCancelSelectButtonCallback);
+
+            displayCardSelectPanel(false);
         }
         protected void Update()
         {
@@ -322,11 +408,11 @@ namespace UI
         }
         #endregion
         #region 事件回调
-        private void onPointerDownBackgroundImage(BaseEventData eventData)
+        private void onPointerDownBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
             _longPressTimer.start();
         }
-        private void onPointerUpBackgroundImage(BaseEventData eventData)
+        private void onPointerUpBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
             Vector2 screenPosition = eventData.currentInputModule.input.mousePosition;
             Vector2 localPoistion = _backgroundImage.transform.InverseTransformPoint(screenPosition);
@@ -361,7 +447,7 @@ namespace UI
                 from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
                 Vector2 to = eventData.currentInputModule.input.mousePosition;
                 to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-                _dragLine = createLine(from, to);
+                _dragLine = createLine(from, to, input.GetColor());
             }
             else
             {
@@ -433,7 +519,7 @@ namespace UI
                 from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
                 Vector2 to = eventData.currentInputModule.input.mousePosition;
                 to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-                _dragLine = createLine(from, to);
+                _dragLine = createLine(from, to, output.GetColor());
             }
             else
             {
@@ -507,7 +593,14 @@ namespace UI
                 }
                 else
                 {
-                    onClickActionNode?.Invoke(item);
+                    if ((eventData as PointerEventData).button == PointerEventData.InputButton.Right)
+                    {
+                        onRightClickActionNode?.Invoke(item, eventData.position);
+                    }
+                    else
+                    {
+                        onLeftClickActionNode?.Invoke(item);
+                    }
                 }
             }
         }
@@ -541,9 +634,17 @@ namespace UI
         {
             onClickActionNodeConstValueEditButton?.Invoke(item, constValueIndex);
         }
+        private void onClickActionNodeItemConstValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex)
+        {
+            onClickActionNodeConstValueItemEditButton?.Invoke(item, constValueIndex, itemIndex);
+        }
         private void onTriggerNodeEventNameChanged(ActionNodeItem item, string eventName)
         {
             onChangeTriggerEventName?.Invoke(eventName);
+        }
+        private void onTriggerNodeEventIndexChanged(ActionNodeItem item, int eventIndex)
+        {
+            onTriggerEventTypeChanged?.Invoke(eventIndex);
         }
         private void onClickTriggerNodeEditConditionButton(ActionNodeItem item)
         {
@@ -577,6 +678,10 @@ namespace UI
         {
             onClickReturnButton?.Invoke();
         }
+        private void onClickCancelSelectButtonCallback()
+        {
+            onClickCancelSelectButton?.Invoke();
+        }
         #endregion
         /// <summary>
         /// 在指定位置创建连线
@@ -591,6 +696,52 @@ namespace UI
             line.setPosition(from, to);
             return line;
         }
+
+
+        /// <summary>
+        /// 在指定位置创建连线
+        /// </summary>
+        /// <param name="from">相对于连线根节点的局部坐标</param>
+        /// <param name="to">相对于连线根节点的局部坐标</param>
+        /// <returns></returns>
+        private ActionNodeGraphLine createLine(Vector2 from, Vector2 to, int colorIndex)
+        {
+            ActionNodeGraphLine line = Instantiate(_actionNodeLineTemplate, _actionNodeLineRoot);
+            line.gameObject.SetActive(true);
+            line.setPosition(from, to);
+            line.SetColor(GetCurrentColor(colorIndex));
+            return line;
+        }
+
+        /// <summary>
+        /// 在指定位置创建连线
+        /// </summary>
+        /// <param name="from">相对于连线根节点的局部坐标</param>
+        /// <param name="to">相对于连线根节点的局部坐标</param>
+        /// <returns></returns>
+        private ActionNodeGraphLine createLine(Vector2 from, Vector2 to, Color color)
+        {
+            ActionNodeGraphLine line = Instantiate(_actionNodeLineTemplate, _actionNodeLineRoot);
+            line.gameObject.SetActive(true);
+            line.setPosition(from, to);
+            line.SetColor(color);
+            return line;
+        }
+
+
+        public Color GetCurrentColor(int colorIndex)
+        {
+            if (_listColor.Count < colorIndex)
+            {
+                //容错
+                return Color.white;
+            }
+            else
+            {
+                return _listColor[colorIndex];
+            }
+        }
+
         /// <summary>
         /// 创建一个不确定类型的节点，必须在之后对其进行初始化。
         /// </summary>
@@ -603,7 +754,9 @@ namespace UI
             _actionNodeItemList.Add(actionNodeItem);
             actionNodeItem.gameObject.SetActive(true);
             RectTransform itemRect = actionNodeItem.transform as RectTransform;
+            //设置当前节点的位置
             itemRect.anchoredPosition = new Vector2(posX, posY);
+            //调整当前背景大小
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;
@@ -644,9 +797,13 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, int, ActionNodeItem, int> onUnconnectNodes;
         /// <summary>
-        /// 当点击节点，参数为点击的节点
+        /// 当左节点，参数为点击的节点
         /// </summary>
-        public event Action<ActionNodeItem> onClickActionNode;
+        public event Action<ActionNodeItem> onLeftClickActionNode;
+        /// <summary>
+        /// 当右节点，参数为点击的节点和鼠标位置
+        /// </summary>
+        public event Action<ActionNodeItem, Vector2> onRightClickActionNode;
         /// <summary>
         /// 当拖拽节点，参数为拖拽的节点和图坐标位置
         /// </summary>
@@ -664,9 +821,17 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, int> onClickActionNodeConstValueEditButton;
         /// <summary>
+        /// 当点击节点的常量的子项的编辑按钮，参数为点击的节点，常量索引和常量子项的索引
+        /// </summary>
+        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemEditButton;
+        /// <summary>
         /// 当触发器节点的事件名称改变，参数为更改后的事件名称
         /// </summary>
         public event Action<string> onChangeTriggerEventName;
+        /// <summary>
+        /// 当触发器节点的事件名称改变，参数为更改后的事件名称的索引ID
+        /// </summary>
+        public event Action<int> onTriggerEventTypeChanged;
         /// <summary>
         /// 当点击触发器节点的编辑条件按钮
         /// </summary>
@@ -695,6 +860,10 @@ namespace UI
         /// 当点击返回之前编辑的动作图按钮
         /// </summary>
         public event Action onClickReturnButton;
+        /// <summary>
+        /// 当点击取消选择卡牌按钮
+        /// </summary>
+        public event Action onClickCancelSelectButton;
         #endregion
         #region 属性字段
         /// <summary>
@@ -705,14 +874,22 @@ namespace UI
         /// 自动生成位置的高度间隔
         /// </summary>
         public float autoPosSpacingHeight => _autoPosSpacingHeight;
+
+        [Header("模板属性和UI控件")]
         [SerializeField]
         float _autoPosSpacingWidth = 600;
         [SerializeField]
         float _autoPosSpacingHeight = 300;
         [SerializeField]
+        ScrollRect _scrollRect;
+        [SerializeField]
+        RectTransform _scrollViewContentRectTransform;
+        [SerializeField]
         Button _returnButton;
         [SerializeField]
         Image _backgroundImage;
+        [SerializeField]
+        EventTriggerWithoutUseEvent _backgroundEventTrigger;
         [SerializeField]
         ActionNodeItem _actionNodeItemTemplate;
         [SerializeField]
@@ -734,6 +911,10 @@ namespace UI
         [SerializeField]
         List<RectTransform> _menuItemList = new List<RectTransform>();
         [SerializeField]
+        GameObject _cardSelectPanel;
+        [SerializeField]
+        Button _cancelSelectButton;
+        [SerializeField]
         ActionNodeItem _pointerOverActionNodeItem;
         [SerializeField]
         Timer _longPressTimer = new Timer() { duration = .5f };
@@ -743,14 +924,51 @@ namespace UI
         Vector2 _dragItemPositionOffset;
         [SerializeField]
         ActionNodeGraphLine _dragLine;
+
+        [Header("编辑器线条属性")]
+        [SerializeField]
+        List<Color> _listColor;
         #endregion
+
+        /// <summary>
+        /// 获取类型颜色组
+        /// </summary>
+        /// <returns></returns>
+        public List<Color> GetTypeListColor()
+        {
+            return _listColor;
+        }
     }
     public struct ActionNodeValueInfo
     {
+        public ActionNodeValueInfo(string name, ActionNodeValueType type, object value) : this(name, type, value, null, null)
+        {
+        }
+        public ActionNodeValueInfo(string name, ActionNodeValueType type, object value, Type enumType)
+        {
+            this.name = name;
+            this.type = type;
+            this.value = value;
+            optionalValues = Enum.GetValues(enumType).Cast<object>().ToArray();
+            optionalNames = new string[optionalValues.Length];
+            for (int i = 0; i < optionalNames.Length; i++)
+            {
+                optionalNames[i] = Enum.GetName(enumType, optionalValues[i]);
+            }
+        }
+        public ActionNodeValueInfo(string name, ActionNodeValueType type, object value, string[] optionalNames, object[] optionalValues)
+        {
+            this.name = name;
+            this.type = type;
+            this.value = value;
+            this.optionalNames = optionalNames;
+            this.optionalValues = optionalValues;
+        }
         public string name;
         public ActionNodeValueType type;
         public object value;
-        public Type enumType;
+        public string[] optionalNames;
+        public object[] optionalValues;
     }
     [Serializable]
     struct ActionNodeConnectionData
@@ -790,7 +1008,7 @@ namespace UI
         /// <summary>
         /// 标签集合
         /// </summary>
-        tagCollection,
+        effectTagCollection,
         /// <summary>
         /// 动作节点
         /// </summary>
@@ -807,5 +1025,18 @@ namespace UI
         /// 触发器集合
         /// </summary>
         triggerCollection,
+        /// <summary>
+        /// 卡牌引用
+        /// </summary>
+        cardReference,
+        /// <summary>
+        /// 卡牌引用集合
+        /// </summary>
+        cardReferenceCollection,
+    }
+    public enum ActionNodeConnectionType
+    {
+        action,
+        value
     }
 }

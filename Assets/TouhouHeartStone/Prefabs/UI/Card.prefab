@@ -395,7 +395,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3639996476798694622
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1057,6 +1057,46 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3639996476798694622}
     m_Modifications:
+    - target: {fileID: 720214584917069548, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 720214584917069548, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 720214584917069548, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1364081687959062794, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_text
+      value: "\u5361\u724C\u526F\u540D"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3065482826224795074, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_text
+      value: "\u5361\u724C\u63CF\u8FF0"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3065482826224795074, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4539823722233294992, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_text
+      value: "\u5361\u724C\u540D\u79F0"
+      objectReference: {fileID: 0}
+    - target: {fileID: 4539823722233294992, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 56.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4574603629638151253, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
         type: 3}
       propertyPath: m_Pivot.x

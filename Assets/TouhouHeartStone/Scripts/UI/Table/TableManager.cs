@@ -317,7 +317,7 @@ namespace Game
             if (anim != null)
                 addAnim(anim);
         }
-        void onEventAfterHandler(IEventArg arg)
+        private void onEventAfterHandler(IEventArg arg)
         {
             eventCache.cache(onEventAfter, arg);
         }
@@ -492,7 +492,7 @@ namespace Game
                 master.ShieldImage.display();
             else
                 master.ShieldImage.hide();
-            if (card.hasKeyword(game, KEYWORD.FREEZE))
+            if (card.hasKeyword(game, KEYWORD.FREEZED))
             {
                 master.onShackleTrue.invokeBeforeAnim();
                 master.onShackleTrue.invokeAfterAnim();
@@ -1311,7 +1311,7 @@ namespace Game
                 servant.onLifeStealFalse.invokeBeforeAnim();
                 servant.onLifeStealFalse.invokeAfterAnim();
             }
-            if (card.hasKeyword(game, KEYWORD.FREEZE))
+            if (card.hasKeyword(game, KEYWORD.FREEZED))
             {
                 servant.onShackleTrue.invokeBeforeAnim();
                 servant.onShackleTrue.invokeAfterAnim();

@@ -16,7 +16,7 @@ namespace TouhouHeartstone
         /// </summary>
         public virtual bool isToken { get; set; } = false;
         public virtual bool isActive { get; set; } = false;
-        public virtual int cost { get; set; } = int.MaxValue;
+        public virtual int cost { get; set; } = 0;
         public virtual int attack { get; set; } = 0;
         public virtual int life { get; set; } = 0;
         public virtual int spellDamage { get; set; } = 0;

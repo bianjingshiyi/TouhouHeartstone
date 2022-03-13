@@ -75,6 +75,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _item: {fileID: 2325721234200374321}
+  defaultImg: {fileID: 0}
   items: []
   _html: 
 --- !u!114 &6476664052579761548

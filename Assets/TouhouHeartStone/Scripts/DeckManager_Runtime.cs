@@ -33,11 +33,34 @@ namespace Game
         /// <returns></returns>
         public bool isValidDeck(Deck deck)
         {
-            return deck.cardList.Sum(i => i.count) < deckMaxSize;
+            //检查数量是否合法，合法数量是可编辑的数量加上一张角色卡
+            if (deck.getCardCount() != deckValidSize + 1)
+            {
+                return false;
+            }
+            return true;
+        }
+        /// <summary>
+        /// 卡组是否能用于线上对战
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        public bool isValidDeckForOnlineGame(Deck deck)
+        {
+            //检查是否使用了不合法的卡牌
+            MainManager game = getManager<MainManager>();
+            for (int i = 0; i < deck.cardList.Count; i++)
+            {
+                if (!game.card.isBuiltinCard(game.card.getCardDefine(deck.cardList[i].id)))
+                {
+                    return false;
+                }
+            }
+            return isValidDeck(deck);
         }
         #endregion
         #region 属性字段
-        public int deckMaxSize => _deckMaxSize;
+        public int deckValidSize => _deckMaxSize;
         List<Deck> _deckList;
         [SerializeField]
         int _deckMaxSize = 30;

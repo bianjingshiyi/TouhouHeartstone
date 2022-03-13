@@ -10,35 +10,27 @@ namespace UI
 {
     class EditorPanel : CardViewPanel
     {
-        #region 公有方法
-        /// <summary>
-        /// 设置排序类型选项
-        /// </summary>
-        /// <param name="sortTypes"></param>
-        public void setSortTypes(string[] sortTypes)
+        #region 私有方法
+        #region 生命周期
+        protected override void Awake()
         {
+            base.Awake();
+            _newCardButton.onClick.AddListener(onClickNewCardButtonCallback);
         }
-        /// <summary>
-        /// 设置排序类型的值
-        /// </summary>
-        /// <param name="index"></param>
-        public void setSortType(int index)
+        #endregion
+        #region 事件回调
+        private void onClickNewCardButtonCallback()
         {
+            onClickNewCardButton?.Invoke();
         }
-        /// <summary>
-        /// 设置角色过滤器的选项
-        /// </summary>
-        /// <param name="filterNames"></param>
-        public void setCharacterFilters(string[] filterNames)
-        {
-        }
-        /// <summary>
-        /// 设置角色过滤器的值
-        /// </summary>
-        /// <param name="index"></param>
-        public void setCharaterFilter(int index)
-        {
-        }
+        #endregion
+        #endregion
+        #region 事件
+        public event Action onClickNewCardButton;
+        #endregion
+        #region 属性字段
+        [SerializeField]
+        Button _newCardButton;
         #endregion
     }
 }
