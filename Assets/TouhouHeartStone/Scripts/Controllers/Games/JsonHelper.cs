@@ -13,7 +13,7 @@ namespace Controllers
     {
         public static void init()
         {
-            ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
+            ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => typeof(CardReference).IsAssignableFrom(t));
             BsonClassMap.RegisterClassMap<CardReference>();
             isInited = true;
         }
