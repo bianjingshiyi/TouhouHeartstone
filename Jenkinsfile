@@ -117,7 +117,7 @@ pipeline {
             steps {
                 sh label: 'Compress package', script: '''#!/bin/bash
                     RELEASE_FOLDER=_artifact
-                    PREFIX="醉梦传说_Rev_${BUILD_NUMBER}_"
+                    PREFIX="醉梦传说_${BRANCH_NAME}_Rev_${BUILD_NUMBER}_"
 
                     cd Build
                     if [ -d $RELEASE_FOLDER ]; then
