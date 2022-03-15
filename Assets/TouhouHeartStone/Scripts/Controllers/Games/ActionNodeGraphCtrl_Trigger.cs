@@ -131,19 +131,19 @@ namespace Controllers
                 getTranslatedTargetCheckerTypes(),
                 triggerIndex,
                 getTriggerTargetCheckerViewData());
+            if (_entryType == nameof(GeneratedBattlecry.activeTrigger))
+            {
+                //战吼类型节点图隐藏事件类型
+                _entryNodeItem.displayEventType(false);
+            }
+            else
+            {
+                _entryNodeItem.displayEventType(true);
+            }
             _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
             if (trigger.action != null)
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(trigger.action);
-                if (_entryType == nameof(GeneratedBattlecry.activeTrigger))
-                {
-                    //战吼类型节点图隐藏事件类型
-                    actionNodeItem.displayEventType(false);
-                }
-                else
-                {
-                    actionNodeItem.displayEventType(true);
-                }
                 _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
             }
             //创建离散节点

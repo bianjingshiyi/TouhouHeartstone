@@ -24,6 +24,8 @@ namespace Game
         public const string EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION = "作用条件";
         [TranslateMsg("编辑器中效果的属性名称之增益定义")]
         public const string EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE = "增益定义";
+        [TranslateMsg("编辑器中效果的属性名称之生效触发器")]
+        public const string EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER = "生效触发";
         [TranslateMsg("编辑器中效果类型名称之通用效果")]
         public const string EDITOR_EFFECT_NAME_NORMAL_EFFECT = "通用效果";
         [TranslateMsg("编辑器中效果类型名称之光环效果")]

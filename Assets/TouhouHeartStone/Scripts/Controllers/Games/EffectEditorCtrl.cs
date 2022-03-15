@@ -89,12 +89,6 @@ namespace Controllers
                 effectTagNames[i] = game.langManager.getString(_effectTagOptionNameDict[_effectTags[i]]);
             }
             _ui.initEffectTagNames(effectTagNames, _effectTags);
-            //_ui.onActiveRangeDropdownValueChanged += onActiveRangeDropdownValueChanged;
-            //_ui.onClickEditEnableActionButton += onClickEditEnableActionButton;
-            //_ui.onClickEditDisableActionButton += onClickEditDisableActionButton;
-            //_ui.onClickAddTriggerButton += onClickAddTriggerButton;
-            //_ui.onClickRemoveTriggerButton += onClickRemoveTriggerButton;
-            //_ui.onClickEditTriggerButton += onClickEditTriggerButton;
             _ui.onPropValueChanged += onPropValueChangedCallback;
             _ui.onClickPropButton += onClickPropButtonCallback;
             _ui.onPropItemValueChanged += onPropItemValueChanged;
@@ -105,46 +99,6 @@ namespace Controllers
         }
         #endregion
         #region 事件回调
-        private void onActiveRangeDropdownValueChanged(bool[] values)
-        {
-            for (int i = 0; i < _selectableRanges.Length; i++)
-            {
-                if (values[i] && !_effect.pileList.Contains(_selectableRanges[i]))
-                    _effect.pileList.Add(_selectableRanges[i]);
-                else
-                    _effect.pileList.Remove(_selectableRanges[i]);
-            }
-        }
-        private void onClickEditEnableActionButton()
-        {
-            ActionNodeGraphInfo graphInfo = _buffDefine != null ?
-                game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), nameof(GeneratedEffect.onEnableAction), 0) :
-                game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), nameof(GeneratedEffect.onEnableAction), 0);
-            scene.actionNodeGraphCtrl.openOnEnableActionGraph(_cardPoolId, _effect, graphInfo);
-        }
-        private void onClickEditDisableActionButton()
-        {
-            ActionNodeGraphInfo graphInfo = _buffDefine != null ?
-                game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), nameof(GeneratedEffect.onDisableAction), 0) :
-                game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), nameof(GeneratedEffect.onDisableAction), 0);
-            scene.actionNodeGraphCtrl.openOnDisableActionGraph(_cardPoolId, _effect, graphInfo);
-        }
-        private void onClickAddTriggerButton()
-        {
-            _effect.triggerList.Add(new TriggerGraph());
-            updateTriggerList();
-        }
-        private void onClickRemoveTriggerButton(int index)
-        {
-            _effect.triggerList.RemoveAt(index);
-        }
-        private void onClickEditTriggerButton(int index)
-        {
-            ActionNodeGraphInfo graphInfo = _buffDefine != null ?
-                game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), null, index) :
-                game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), null, index);
-            scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, null, _effect.triggerList[index], graphInfo);
-        }
         private void onPropValueChangedCallback(int index, object value)
         {
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
@@ -236,15 +190,6 @@ namespace Controllers
             });
         }
         #endregion
-        private void updateTriggerList()
-        {
-            string[] triggerNames = new string[_effect.triggerList.Count];
-            for (int i = 0; i < triggerNames.Length; i++)
-            {
-                triggerNames[i] = "触发器" + (i + 1);
-            }
-            _ui.updateTriggerList(triggerNames);
-        }
         /// <summary>
         /// 更新属性信息UI
         /// </summary>
@@ -344,7 +289,8 @@ namespace Controllers
             { nameof(GeneratedEffect.tagList), StringTable.EDITOR_EFFECT_PROP_NAME_TAG_LIST },
             { nameof(GeneratedHalo.rangeList), StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST },
             { nameof(GeneratedHalo.affectCondition), StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
-            { nameof(GeneratedHalo.getHaloBuffDefine), StringTable.EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE }
+            { nameof(GeneratedHalo.getHaloBuffDefine), StringTable.EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE },
+            { nameof(GeneratedBattlecry.activeTrigger), StringTable.EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER }
         };
         readonly Dictionary<string, string> _pileOptionNameDict = new Dictionary<string, string>()
         {

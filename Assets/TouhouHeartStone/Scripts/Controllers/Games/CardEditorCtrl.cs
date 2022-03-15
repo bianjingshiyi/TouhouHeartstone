@@ -433,17 +433,9 @@ namespace Controllers
         /// <summary>
         /// 当点击添加效果按钮，为卡牌定义添加一个新的空效果，并刷新效果列表。
         /// </summary>
-        void onClickAddEffectMenu(int index)
+        private void onClickAddEffectMenu(int index)
         {
-            GeneratedEffect[] effects;
-            if (index == 1)
-            {
-                effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(new GeneratedHalo()).ToArray();
-            }
-            else
-            {
-                effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(new GeneratedEffect()).ToArray();
-            }
+            GeneratedEffect[] effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(game.card.createEffectByIndex(index)).ToArray();
             _cardDefine.setEffects(effects);
             updateEffectList(effects);
         }
