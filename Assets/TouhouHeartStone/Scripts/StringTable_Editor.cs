@@ -28,6 +28,8 @@ namespace Game
         public const string EDITOR_EFFECT_NAME_NORMAL_EFFECT = "通用效果";
         [TranslateMsg("编辑器中效果类型名称之光环效果")]
         public const string EDITOR_EFFECT_NAME_HALO_EFFECT = "光环效果";
+        [TranslateMsg("编辑器中效果类型名称之宣言效果")]
+        public const string EDITOR_EFFECT_NAME_BATTLECRY_EFFECT = "宣言效果";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中常量分类的名字")]
         public const string EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST = "Const";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中的返回上一层选项")]

@@ -32,6 +32,10 @@ namespace UI
         {
             _nameText.text = name;
         }
+        public void displayEventType(bool value)
+        {
+            _eventTypeDropdown.transform.parent.gameObject.SetActive(value);
+        }
         public void setInputs(string[] inputNames)
         {
             if (inputNames == null || inputNames.Length < 1)
@@ -60,7 +64,6 @@ namespace UI
                 });
             }
         }
-
         public void setInputs(IOConnectInfo[] inputNamesInfos, List<Color> listColor)
         {
             if (inputNamesInfos == null || inputNamesInfos.Length < 1)
@@ -492,8 +495,6 @@ namespace UI
         List<RectTransform> _outputList = new List<RectTransform>();
         [SerializeField]
         RectTransform _triggerFieldsRoot;
-        [SerializeField]
-        InputField _eventNameInputField;
         [SerializeField]
         Dropdown _eventTypeDropdown;
         [SerializeField]

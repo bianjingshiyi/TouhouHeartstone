@@ -18,14 +18,19 @@ namespace Controllers
     }
     partial class ActionNodeGraphCtrl
     {
+        #region 私有方法
+        #endregion
+    }
+    partial class ActionNodeGraphCtrl
+    {
         #region 公有方法
         /// <summary>
         /// 打开一个触发器的动作节点图
         /// </summary>
         /// <param name="trigger"></param>
-        public void openTriggerGraph(int cardPoolId, TriggerGraph trigger, ActionNodeGraphInfo graphInfo)
+        public void openTriggerGraph(int cardPoolId, string entryType, TriggerGraph trigger, ActionNodeGraphInfo graphInfo)
         {
-            display(new DisplayInfo(cardPoolId, null, trigger, null, graphInfo));
+            display(new DisplayInfo(cardPoolId, entryType, trigger, null, graphInfo));
         }
         #endregion
         #region 私有方法
@@ -100,11 +105,11 @@ namespace Controllers
         /// 打开一个触发器的动作节点图
         /// </summary>
         /// <param name="trigger"></param>
-        private async Task openTriggerGraph(TriggerGraph trigger)
+        private async Task openTriggerGraph(TriggerGraph trigger, string entryType)
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
-            _entryType = null;
+            _entryType = entryType;
             _effect = null;
             _valueRef = null;
             _targetChecker = null;
@@ -121,11 +126,24 @@ namespace Controllers
                 _trigger.eventName = eventNames[triggerIndex];
             }
             //创建入口节点
-            _entryNodeItem = _ui.createTriggerNode(0, 0, game.langManager.getString(StringTable.EDITOR_NODE_NAME_TRIGGER), getTranslatedTargetCheckerTypes(), triggerIndex, getTriggerTargetCheckerViewData());
+            _entryNodeItem = _ui.createTriggerNode(0, 0,
+                game.langManager.getString(StringTable.EDITOR_NODE_NAME_TRIGGER),
+                getTranslatedTargetCheckerTypes(),
+                triggerIndex,
+                getTriggerTargetCheckerViewData());
             _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
             if (trigger.action != null)
             {
-                var actionNodeItem = await createGraph4ActionNode(trigger.action);
+                ActionNodeItem actionNodeItem = await createGraph4ActionNode(trigger.action);
+                if (_entryType == nameof(GeneratedBattlecry.activeTrigger))
+                {
+                    //战吼类型节点图隐藏事件类型
+                    actionNodeItem.displayEventType(false);
+                }
+                else
+                {
+                    actionNodeItem.displayEventType(true);
+                }
                 _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
             }
             //创建离散节点

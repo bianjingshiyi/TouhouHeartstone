@@ -60,7 +60,7 @@ namespace Controllers
                 _ui.gameObject.SetActive(true);
                 _ui.displayCardSelectPanel(false);
                 if (info.editObject is TriggerGraph trigger)
-                    return openTriggerGraph(trigger);
+                    return openTriggerGraph(trigger, info.entryType);
                 else if (info.editObject is TargetChecker targetChecker)
                     return openTargetCheckerGraph(targetChecker);
                 else if (info.editObject is ActionValueRef valueRef)
@@ -1997,11 +1997,11 @@ namespace Controllers
         private void pushCurEditObjectToStack()
         {
             if (_trigger != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, null, _trigger, null, _graphInfo));
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _trigger, null, _graphInfo));
             else if (_targetChecker != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, null, _targetChecker, null, _graphInfo));
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _targetChecker, null, _graphInfo));
             else if (_valueRef != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, null, _valueRef, null, _graphInfo));
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _valueRef, null, _graphInfo));
             else
                 _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _effect, null, _graphInfo));
             _ui.setReturnButtonActive(true);

@@ -25,7 +25,9 @@ namespace Game
             for (int i = 0; i < effectNames.Length; i++)
             {
                 string effectName;
-                if (effects[i] is GeneratedHalo)
+                if (effects[i] is GeneratedBattlecry)
+                    effectName = _effectTypes[2];
+                else if (effects[i] is GeneratedHalo)
                     effectName = _effectTypes[1];
                 else
                     effectName = _effectTypes[0];
@@ -35,14 +37,18 @@ namespace Game
         }
         public GeneratedEffect createEffectByIndex(int index)
         {
-            if (index == 1)
+            if (index == 2)
+                return new GeneratedBattlecry();
+            else if (index == 1)
                 return new GeneratedHalo();
             else
                 return new GeneratedEffect();
         }
         public int getEffectTypeIndex(GeneratedEffect effect)
         {
-            if (effect is GeneratedHalo)
+            if (effect is GeneratedBattlecry)
+                return 2;
+            else if (effect is GeneratedHalo)
                 return 1;
             else
                 return 0;
@@ -52,7 +58,8 @@ namespace Game
         readonly string[] _effectTypes = new string[]
         {
             StringTable.EDITOR_EFFECT_NAME_NORMAL_EFFECT,
-            StringTable.EDITOR_EFFECT_NAME_HALO_EFFECT
+            StringTable.EDITOR_EFFECT_NAME_HALO_EFFECT,
+            StringTable.EDITOR_EFFECT_NAME_BATTLECRY_EFFECT
         };
         #endregion
     }

@@ -89,12 +89,12 @@ namespace Controllers
                 effectTagNames[i] = game.langManager.getString(_effectTagOptionNameDict[_effectTags[i]]);
             }
             _ui.initEffectTagNames(effectTagNames, _effectTags);
-            _ui.onActiveRangeDropdownValueChanged += onActiveRangeDropdownValueChanged;
-            _ui.onClickEditEnableActionButton += onClickEditEnableActionButton;
-            _ui.onClickEditDisableActionButton += onClickEditDisableActionButton;
-            _ui.onClickAddTriggerButton += onClickAddTriggerButton;
-            _ui.onClickRemoveTriggerButton += onClickRemoveTriggerButton;
-            _ui.onClickEditTriggerButton += onClickEditTriggerButton;
+            //_ui.onActiveRangeDropdownValueChanged += onActiveRangeDropdownValueChanged;
+            //_ui.onClickEditEnableActionButton += onClickEditEnableActionButton;
+            //_ui.onClickEditDisableActionButton += onClickEditDisableActionButton;
+            //_ui.onClickAddTriggerButton += onClickAddTriggerButton;
+            //_ui.onClickRemoveTriggerButton += onClickRemoveTriggerButton;
+            //_ui.onClickEditTriggerButton += onClickEditTriggerButton;
             _ui.onPropValueChanged += onPropValueChangedCallback;
             _ui.onClickPropButton += onClickPropButtonCallback;
             _ui.onPropItemValueChanged += onPropItemValueChanged;
@@ -143,7 +143,7 @@ namespace Controllers
             ActionNodeGraphInfo graphInfo = _buffDefine != null ?
                 game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), null, index) :
                 game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), null, index);
-            scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, _effect.triggerList[index], graphInfo);
+            scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, null, _effect.triggerList[index], graphInfo);
         }
         private void onPropValueChangedCallback(int index, object value)
         {
@@ -184,14 +184,14 @@ namespace Controllers
                 ActionNodeGraphInfo graphInfo = _buffDefine != null ?
                     game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
                     game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
-                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, trigger, graphInfo);
+                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, propInfos[index].name, trigger, graphInfo);
             }
         }
         private void onPropItemValueChanged(int index, int itemIndex, object value)
         {
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
         }
-        public void onClickPropItemButtonCallback(int index, int itemIndex)
+        private void onClickPropItemButtonCallback(int index, int itemIndex)
         {
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
             if (propInfos[index].type == typeof(TriggerCollection))
@@ -200,10 +200,10 @@ namespace Controllers
                 ActionNodeGraphInfo graphInfo = _buffDefine != null ?
                     game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, itemIndex) :
                     game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, itemIndex);
-                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, triggers[itemIndex], graphInfo);
+                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, null, triggers[itemIndex], graphInfo);
             }
         }
-        public void onClickPropAddItemButtonCallback(int index)
+        private void onClickPropAddItemButtonCallback(int index)
         {
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
             if (propInfos[index].type == typeof(TriggerCollection))
@@ -218,7 +218,7 @@ namespace Controllers
             }
             updatePropList();
         }
-        public void onClickPropItemRemoveButtonCallback(int index, int itemIndex)
+        private void onClickPropItemRemoveButtonCallback(int index, int itemIndex)
         {
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
             if (propInfos[index].type == typeof(TriggerCollection))

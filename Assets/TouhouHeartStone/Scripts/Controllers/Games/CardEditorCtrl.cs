@@ -487,15 +487,15 @@ namespace Controllers
             Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
             _ui.setImage(image);
         }
-        int getSkinCount()
+        private int getSkinCount()
         {
             return getSkins().GroupBy(s => s.skinId).Count();
         }
-        void updateEffectList(GeneratedEffect[] effects)
+        private void updateEffectList(GeneratedEffect[] effects)
         {
             _ui.setEffects(game.card.getEffectNames(effects));
         }
-        IEnumerable<CardSkinData> getSkins()
+        private IEnumerable<CardSkinData> getSkins()
         {
             return game.card.getAllSkins(_cardDefine.id);
         }

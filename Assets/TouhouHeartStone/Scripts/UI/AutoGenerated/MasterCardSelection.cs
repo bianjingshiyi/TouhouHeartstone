@@ -20,7 +20,7 @@ namespace UI
         protected override void Awake()
         {
             base.Awake();
-            this.autoBind();
+            //this.autoBind();
             this.onAwake();
         }
         public void autoBind()

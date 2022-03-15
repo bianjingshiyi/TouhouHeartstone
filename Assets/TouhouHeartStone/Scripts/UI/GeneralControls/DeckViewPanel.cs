@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BJSYGameCore.UI;
+using System;
 using UnityEngine;
 namespace UI
 {
@@ -7,6 +8,7 @@ namespace UI
         #region 公有方法
         public void update((string name, Sprite image, bool isWarning)[] viewData)
         {
+            //UIHelper.updateList();
             throw new NotImplementedException();
         }
         #endregion
