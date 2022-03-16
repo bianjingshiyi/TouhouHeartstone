@@ -36,7 +36,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.000019073486}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8052677054577372075
@@ -195,6 +195,7 @@ GameObject:
   - component: {fileID: 7396907801770622770}
   - component: {fileID: 1706764851115740534}
   - component: {fileID: 775567380424037018}
+  - component: {fileID: 905374973231289039}
   m_Layer: 5
   m_Name: DeckViewPanel
   m_TagString: Untagged
@@ -290,6 +291,21 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &905374973231289039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6495680407679440029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a86a5a498bbda940b218e5db86fdeea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deckListRoot: {fileID: 2152008786962599814}
+  _deckListItemTemplate: {fileID: 3201278290829966181}
+  _deckItemList: []
 --- !u!1001 &219816496703663936
 PrefabInstance:
   m_ObjectHideFlags: 0
