@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace UI
 {
-    class DeckViewPanel : MonoBehaviour
+    public class DeckViewPanel : MonoBehaviour
     {
         #region 公有方法
 
@@ -17,18 +17,16 @@ namespace UI
                 DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
                 deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
                 deckListItem.setWarning(deckViewData[i].isWarning);
+                deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
+                deckListItem.SetSelectable(!deckViewData[i].isWarning);
             }, item =>
             {
                 DeckListItem deckListItem = item.GetComponent<DeckListItem>();
                 deckListItem.onClick += onClickDeckListItemCallback;
-                deckListItem.onClickDeleteButton += onClickDeckListItemDeleteButtonCallback;
-                deckListItem.onNameInputFieldValueChanged += onDeckListItemNameInputFieldValueChanged;
             }, item =>
             {
                 DeckListItem deckListItem = item.GetComponent<DeckListItem>();
                 deckListItem.onClick -= onClickDeckListItemCallback;
-                deckListItem.onClickDeleteButton -= onClickDeckListItemDeleteButtonCallback;
-                deckListItem.onNameInputFieldValueChanged -= onDeckListItemNameInputFieldValueChanged;
             });
         }
 
@@ -54,14 +52,6 @@ namespace UI
         {
             onClickDeckListItem?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
         }
-        private void onClickDeckListItemDeleteButtonCallback(DeckListItem item)
-        {
-            onClickDeckListItemDeleteButton?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
-        }
-        private void onDeckListItemNameInputFieldValueChanged(DeckListItem item, string value)
-        {
-            onDeckListItemNameValueChanged?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform), value);
-        }
         #endregion
         
         #endregion
@@ -72,15 +62,6 @@ namespace UI
         /// 当点击右侧卡组列表项，参数为索引
         /// </summary>
         public event Action<int> onClickDeckListItem;
-        /// <summary>
-        /// 当点击右侧卡组列表项的删除按钮，参数为列表索引
-        /// </summary>
-        public event Action<int> onClickDeckListItemDeleteButton;
-        /// <summary>
-        /// 当重命名右侧卡组列表项的名字，参数为列表索引和名字的值
-        /// </summary>
-        public event Action<int, string> onDeckListItemNameValueChanged;
-
         #endregion
 
         #region 属性字段

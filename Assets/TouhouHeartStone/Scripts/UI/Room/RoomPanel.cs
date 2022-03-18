@@ -384,7 +384,8 @@ namespace UI
         public void displayDeckSelectPanel((string name, Sprite image, bool isWarning)[] viewData)
         {
             DeckPanelMasterCardSelection.display();
-            DeckPanelMasterCardSelection.updateItemList(viewData);
+            DeckViewPanel.update(viewData);
+            //DeckPanelMasterCardSelection.updateItemList(viewData);
         }
         public void hideDeckSelectPanel()
         {
@@ -438,7 +439,8 @@ namespace UI
             }
             _addAIPlayerButton.onClick.AddListener(onClickAddAIPlayerButtonCallback);
             _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
-            DeckPanelMasterCardSelection.onClickItem += onClickDeckSelectItemCallback;
+            //DeckPanelMasterCardSelection.onClickItem += onClickDeckSelectItemCallback;
+            DeckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
             //_randomSeedInputField.onValueChanged.AddListener(onRandomSeedInputFieldValueChangedCallback);
             _randomSeedInputField.onEndEdit.AddListener(onRandomSeedInputFieldValueChangedCallback);
             _shuffleToggle.onValueChanged.AddListener(onShuffleToggleValueChangedCallback);

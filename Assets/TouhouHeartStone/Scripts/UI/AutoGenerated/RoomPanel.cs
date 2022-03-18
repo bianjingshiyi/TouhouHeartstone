@@ -278,6 +278,22 @@ namespace UI
                 return this._DeckViewMasterCardSelection;
             }
         }
+
+        [SerializeField]
+        private DeckViewPanel _DeckViewPanel;
+
+        public DeckViewPanel DeckViewPanel
+        {
+            get
+            {
+                if ((this._DeckViewPanel == null))
+                {
+                    this._DeckViewPanel = this.transform.Find("Container").Find("DeckPanel").GetComponentsInChildren<DeckViewPanel>()[0];
+                }
+                return this._DeckViewPanel;
+            }
+        }
+
         partial void onAwake();
     }
 }

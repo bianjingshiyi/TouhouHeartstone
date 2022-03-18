@@ -63,6 +63,7 @@ namespace UI
                 c.onClick += onClickItemCallback;
             }
         }
+        [Obsolete("此方法已弃用，请使用\"UI.DeckViewPanel.update()\"")]
         public void updateItemList((string name, Sprite image, bool isWarning)[] viewData)
         {
             MasterCardList.clearItems();
@@ -84,6 +85,7 @@ namespace UI
         }
 
         public event Action<int> OnSelect;
+        [Obsolete("此事件已弃用，请使用\"UI.DeckViewPanel.onClickDeckListItem\"")]
         public event Action<int> onClickItem;
         public void ClearEvents()
         {
