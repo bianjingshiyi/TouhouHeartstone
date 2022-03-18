@@ -42,7 +42,10 @@ namespace Controllers
             _menu.gameObject.SetActive(true);
             _room.gameObject.SetActive(false);
             _build.gameObject.SetActive(false);
-            _pveRoom.gameObject.SetActive(false);
+            if (_pveRoom != null)
+            {
+                _pveRoom.gameObject.SetActive(false);
+            }
             _editor.gameObject.SetActive(false);
             _cardEditor.gameObject.SetActive(false);
             _effectEditor.gameObject.SetActive(false);

@@ -363,6 +363,19 @@ namespace Controllers
                     connectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
                 }
             }
+            else if (inputActionNodeItem == _entryNodeItem)
+            {
+                //与触发器的条件节点相连
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                //检查连接合法性
+                if (outputIndex < outputActionNode.branches.Length)
+                {
+                    //值输出只能与值输入相互连接
+                    _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+                    return;
+                }
+                connectNode4TriggerCondition(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
+            }
             else if (inputActionNodeItem == _returnNodeItem)
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
@@ -454,6 +467,11 @@ namespace Controllers
                     //值连接
                     unconnectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - 1);
                 }
+            }
+            else if (inputActionNodeItem == _entryNodeItem)
+            {
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                unconnectNode4TriggerCondition(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
             }
             else if (inputActionNodeItem == _returnNodeItem && valueRef != null)
             {
@@ -1959,21 +1977,21 @@ namespace Controllers
         /// <param name="actionNode">要检查的节点</param>
         /// <param name="parentNode">父节点，检查的节点包括该节点</param>
         /// <returns></returns>
-        private bool isValueRefedInParentNodes(ActionNode actionNode, ActionNode parentNode)
-        {
-            bool result = false;
-            traverseActionNode(rootActionNode, true, a =>
-            {
-                if (a == actionNode)
-                {
-                    result = true;
-                }
-                if (a == parentNode)
-                    return true;
-                return false;
-            });
-            return result;
-        }
+        //private bool isValueRefedInParentNodes(ActionNode actionNode, ActionNode parentNode)
+        //{
+        //    bool result = false;
+        //    traverseActionNode(rootActionNode, true, a =>
+        //    {
+        //        if (a == actionNode)
+        //        {
+        //            result = true;
+        //        }
+        //        if (a == parentNode)
+        //            return true;
+        //        return false;
+        //    });
+        //    return result;
+        //}
         private int getOutputCount(ActionNode actionNode)
         {
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -2059,9 +2077,7 @@ namespace Controllers
             }
             return inputNameList.ToArray();
         }
-
-
-        IOConnectInfo[] getActionNodeInputInfos(ActionNode actionNode)
+        private IOConnectInfo[] getActionNodeInputInfos(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -2152,7 +2168,7 @@ namespace Controllers
             }
             return infoArray;
         }
-        string[] getActionNodeOutputNames(ActionNode actionNode)
+        private string[] getActionNodeOutputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -2185,13 +2201,13 @@ namespace Controllers
                     //TODO:下一个动作节点不知道该叫啥，就先不给名字好了
                     outputNames[i] = new IOConnectInfo()
                     {
-                        type = String.Empty,
-                        label = String.Empty
+                        type = string.Empty,
+                        label = string.Empty
                     };
                 }
                 else
                 {
-                    Debug.Log("output：" + actionDefine.outputs[i - actionNode.branches.Length].name);
+                    //Debug.Log("output：" + actionDefine.outputs[i - actionNode.branches.Length].name);
                     outputNames[i] = new IOConnectInfo()
                     {
                         type = actionDefine.outputs[i - actionNode.branches.Length].name,

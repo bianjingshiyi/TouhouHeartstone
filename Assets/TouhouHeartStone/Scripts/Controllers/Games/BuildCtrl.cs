@@ -554,7 +554,10 @@ namespace Controllers
                 return Task.FromResult(skin.image);
             else
             {
-                return game.card.loadExternalImage(skin.imagePath, game.card.textureDirName);
+                return game.card.loadImage(skin.imagePath,
+                    game.card.getCardDefine(deck.masterId) is CardDefine cardDefine &&
+                    game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ?
+                    cardPoolInfo.cardPoolId : 0);
             }
         }
         private bool tryAddCardToDeck(CardDefine card, out string errorTip)

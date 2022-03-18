@@ -38,6 +38,7 @@ namespace Controllers
         private void onChangeTriggerTypeIndex(int typeIndex)
         {
             _trigger.eventName = getEventTypeNameByIndex(typeIndex);
+            //TODO:切换事件要断开所有事件变量引用连接
             _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
         }
         /// <summary>
@@ -140,10 +141,36 @@ namespace Controllers
             {
                 _entryNodeItem.displayEventType(true);
             }
+            _entryNodeItem.setInputs(getTriggerInputNames(), _ui.GetTypeListColor());
             _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
-            if (trigger.action != null)
+            //创建触发条件节点
+            if (_trigger.condition != null && _trigger.condition.action != null)
             {
-                ActionNodeItem actionNodeItem = await createGraph4ActionNode(trigger.action);
+                ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.condition.action);
+                _ui.connectNode(actionNodeItem, _trigger.condition.action.branches.Length + _trigger.condition.index, _entryNodeItem, 0, ActionNodeConnectionType.value);
+            }
+            //创建目标条件节点
+            if (_trigger.targetCheckerList != null && _trigger.targetCheckerList.Count > 0)
+            {
+                for (int i = 0; i < _trigger.targetCheckerList.Count; i++)
+                {
+                    if (_trigger.targetCheckerList[i] == null ||
+                        _trigger.targetCheckerList[i].condition == null ||
+                        _trigger.targetCheckerList[i].condition.action == null)
+                        continue;
+                    ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.targetCheckerList[i].condition.action);
+                    _ui.connectNode(
+                        actionNodeItem,
+                        _trigger.targetCheckerList[i].condition.action.branches.Length + _trigger.targetCheckerList[i].condition.index,
+                        _entryNodeItem,
+                        1 + i,
+                        ActionNodeConnectionType.value);
+                }
+            }
+            //创建动作节点
+            if (_trigger.action != null)
+            {
+                ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.action);
                 _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
             }
             //创建离散节点
@@ -177,6 +204,24 @@ namespace Controllers
                 targetCheckers[i].errorTip = _trigger.targetCheckerList[i].errorTip;
             }
             return targetCheckers;
+        }
+        private IOConnectInfo[] getTriggerInputNames()
+        {
+            IOConnectInfo[] inputs = new IOConnectInfo[1 + _trigger.targetCheckerList.Count];
+            inputs[0] = new IOConnectInfo()
+            {
+                type = "Func<bool>",
+                label = game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TRIGGER_CONDITION)
+            };
+            for (int i = 0; i < _trigger.targetCheckerList.Count; i++)
+            {
+                inputs[1 + i] = new IOConnectInfo()
+                {
+                    type = "Func<Card, bool>",
+                    label = string.Format(game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TARGET_CONDITION), 1 + i)
+                };
+            }
+            return inputs;
         }
         /// <summary>
         /// 获取当前触发器的输出值的名称。
@@ -263,6 +308,99 @@ namespace Controllers
             inputActionNode.inputs[inputIndex] = new ActionValueRef(curEventVarNames[outputIndex]);
             //更新ui
             _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.value);
+        }
+        private void connectNode4TriggerCondition(ActionNode outputActionNode, int outputIndex, int inputIndex)
+        {
+            if (inputIndex == 0)
+            {
+                //触发条件
+                //判断是否已经相连
+                if (_trigger.condition != null &&
+                    _trigger.condition.action != null)
+                {
+                    if (_trigger.condition.action == outputActionNode &&
+                        _trigger.condition.index == outputIndex)
+                    {
+                        //已经相连，什么也不做
+                        return;
+                    }
+                    else
+                    {
+                        //与其他节点相连，先断开连接
+                        ActionNode prevActionNode = _trigger.condition.action;
+                        unconnectNode4TriggerCondition(prevActionNode, prevActionNode.branches.Length + _trigger.condition.index, 0);
+                    }
+                }
+                //建立新的连接
+                _trigger.condition = new ActionValueRef(outputActionNode, outputIndex);
+                //更新UI
+                _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, 0, ActionNodeConnectionType.value);
+            }
+            else if (inputIndex > 0)
+            {
+                //目标条件
+                int targetCheckerIndex = inputIndex - 1;
+                //判断是否已经相连
+                if (_trigger.targetCheckerList != null &&
+                    targetCheckerIndex < _trigger.targetCheckerList.Count &&
+                    _trigger.targetCheckerList[targetCheckerIndex] != null &&
+                    _trigger.targetCheckerList[targetCheckerIndex].condition != null &&
+                    _trigger.targetCheckerList[targetCheckerIndex].condition.action != null)
+                {
+                    if (_trigger.targetCheckerList[targetCheckerIndex].condition.action == outputActionNode &&
+                        _trigger.targetCheckerList[targetCheckerIndex].condition.index == outputIndex)
+                    {
+                        //已经连接，什么都不做
+                        return;
+                    }
+                    else
+                    {
+                        //与其他节点连接，断开连接
+                        unconnectNode4TriggerCondition(outputActionNode, outputIndex, inputIndex);
+                    }
+                }
+                //建立新的连接
+                _trigger.targetCheckerList[targetCheckerIndex].condition = new ActionValueRef(outputActionNode, outputIndex);
+                //更新UI
+                _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex, ActionNodeConnectionType.value);
+            }
+        }
+        private void unconnectNode4TriggerCondition(ActionNode outputActionNode, int outputIndex, int inputIndex)
+        {
+            if (inputIndex == 0)
+            {
+                //触发条件
+                //判断是否已经相连
+                if (_trigger.condition != null &&
+                    _trigger.condition.action == outputActionNode &&
+                    _trigger.condition.index == inputIndex)
+                {
+                    //相连，断开连接
+                    _trigger.condition.action = null;
+                    _trigger.condition.index = 0;
+                    //更新ui
+                    _ui.unconnectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex);
+                }
+            }
+            else if (inputIndex > 0)
+            {
+                //目标条件
+                //判断是否已经相连
+                int targetCheckerIndex = inputIndex - 1;
+                if (_trigger.targetCheckerList != null &&
+                    targetCheckerIndex < _trigger.targetCheckerList.Count &&
+                    _trigger.targetCheckerList[targetCheckerIndex] != null &&
+                    _trigger.targetCheckerList[targetCheckerIndex].condition != null &&
+                    _trigger.targetCheckerList[targetCheckerIndex].condition.action == outputActionNode &&
+                    _trigger.targetCheckerList[targetCheckerIndex].condition.index == outputIndex)
+                {
+                    //相连，断开连接
+                    _trigger.targetCheckerList[targetCheckerIndex].condition.action = null;
+                    _trigger.targetCheckerList[targetCheckerIndex].condition.index = 0;
+                    //更新UI
+                    _ui.unconnectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex);
+                }
+            }
         }
         private void unconnectNode4TriggerEventVarRef(int outputIndex, ActionNode inputActionNode, int inputIndex)
         {

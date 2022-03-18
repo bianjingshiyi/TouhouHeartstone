@@ -124,6 +124,10 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_CARDS_IN_PILE = "获取牌堆中的牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之条件")]
         public const string EDITOR_PARAM_NAME_CONDITION = "条件";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之触发条件")]
+        public const string EDITOR_PARAM_NAME_TRIGGER_CONDITION = "触发条件";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之目标{0}条件")]
+        public const string EDITOR_PARAM_NAME_TARGET_CONDITION = "目标{0}条件";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家的手牌")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS = "获取玩家的手牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家的墓地中的卡牌")]
@@ -196,6 +200,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_IS_SPELL = "是否为法术牌";
         [TranslateMsg("动作图编辑器中动作节点名称之移除增益")]
         public const string EDITOR_NODE_NAME_REMOVE_BUFF = "移除增益";
+        [TranslateMsg("动作图编辑器中动作节点名称之是否具有增益")]
+        public const string EDITOR_NODE_NAME_HAS_BUFF = "是否具有增益";
         [TranslateMsg("动作图编辑器中动作参数名称之增益是否移除")]
         public const string EDITOR_PARAM_NAME_IS_BUFF_REMOVED = "增益是否移除";
         [TranslateMsg("动作图编辑器中动作节点名称之该增益")]

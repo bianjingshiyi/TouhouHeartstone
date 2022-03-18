@@ -404,6 +404,14 @@ namespace Game
         {
             return card.removeBuff(game, buff);
         }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HAS_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool hasBuff(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]BuffDefine buffDefine)
+        {
+            return card.hasBuff(buffDefine);
+        }
         #endregion
         //  玩家的行动，比如抽一张牌，获得一张牌
         #region 行动
