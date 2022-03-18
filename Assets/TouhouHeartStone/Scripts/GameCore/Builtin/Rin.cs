@@ -424,13 +424,12 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            var choice = await card.getOwner().searchPile(game, card.getOwner().getGrave(), title: "复活吧我的勇士");
+            var choice = await card.getOwner().searchPile(game, card.getOwner().getGrave().Where(c => c.define.isServant() && c.define.getEffects().OfType<DeathRattle>().Count() > 0), title: "复活吧我的勇士");
             if (choice != null)
             {
                 choice.choose.graveToHand(game);
                 choice.choose.triggerDeathRattles(game);
             }
-            
         }
     }
 
@@ -539,7 +538,7 @@ namespace TouhouHeartstone.Builtin
                 var reborn = await card.getOwner().reborn(game, card.getOwner().getGrave().Where(c => c.hasDeathRattle(game) && c.isServant()).random(game));
                 if (reborn != null)
                 {
-                    await reborn.card.addBuff(game, new CodeBuff(ID, 
+                    await reborn.card.addBuff(game, new CodeBuff(ID,
                         new THHEffectAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.field, (g, c, a) =>
                     {
                         return a.player == c.getOwner() && c.pile.name == PILE.FIELD;
@@ -617,7 +616,7 @@ namespace TouhouHeartstone.Builtin
         {
             for (int i = 0; i < 3; i++)
             {
-                if(game.getOpponent(card.getOwner()).getGrave().Any(c => c.isServant()))
+                if (game.getOpponent(card.getOwner()).getGrave().Any(c => c.isServant()))
                 {
                     await game.getOpponent(card.getOwner()).getGrave().moveTo(game, game.getOpponent(card.getOwner()).getGrave().Where(c => c.isServant()).Last(), card.getOwner().getGrave());
                 }
