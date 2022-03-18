@@ -308,17 +308,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 6635775829071118646}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbe15db3f9d940fdbcd2e55af81bc580, type: 3}
+  m_Script: {fileID: 11500000, guid: 7d86d16fd2f2a0d44b22bc47be3b0456, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _scene: {fileID: 0}
-  _ui: {fileID: 8829363909235060947}
-  _isDisplay: 0
-  _selectedDeck:
-    id: 0
-    name: 
-    masterId: 0
-    cardList: []
+  _deckViewItem: {fileID: 0}
+  _startButton: {fileID: 5605926650651278126}
+  _readyButton: {fileID: 0}
+  _cancleReadyButton: {fileID: 0}
+  _quitButton: {fileID: 5605926650474560713}
 --- !u!114 &8829363909235060947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,14 +325,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6635775829071118646}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2be0287cdbe847b6a191964db4f45d75, type: 3}
+  m_Script: {fileID: 11500000, guid: 364a888ef9f60e542b0abc3a9f0ab9b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _deckViewItem: {fileID: 0}
-  _startButton: {fileID: 5605926650651278126}
-  _readyButton: {fileID: 0}
-  _cancleReadyButton: {fileID: 0}
-  _quitButton: {fileID: 5605926650474560713}
+  _scene: {fileID: 0}
+  _ui: {fileID: 0}
+  _isDisplay: 0
+  _selectedDeck:
+    id: 0
+    name: 
+    masterId: 0
+    cardList: []
 --- !u!114 &437342161115043993
 MonoBehaviour:
   m_ObjectHideFlags: 0
