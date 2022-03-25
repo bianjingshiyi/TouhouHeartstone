@@ -157,6 +157,7 @@ namespace UI
             _deckNameInputField.onEndEdit.AddListener(onEndEditDeckNameInputFieldCallback);
             _cardPoolViewPanel.onEnableCardListItem += onEnableCardListItem;
             _cardPoolViewPanel.onDisableCardListItem += onDisableCardListItem;
+            _deckList.GetComponent<DeckViewPanel>()?.showAddButton();
         }
         #endregion
         #region 事件回调
