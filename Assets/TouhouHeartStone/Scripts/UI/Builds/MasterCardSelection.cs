@@ -14,10 +14,11 @@ namespace UI
 
         partial void onAwake()
         {
-            asButton.onClick.AddListener(hide);
+            //asButton.onClick.AddListener(hide);
             CloseButtonBlack.asButton.onClick.AddListener(hide);
         }
 
+        [Obsolete("",true)]
         public void SetItems(IEnumerable<DeckDefine> decks, Action<DeckDefine, DeckListItem> action = null)
         {
             MasterCardList.clearItems();
@@ -35,6 +36,7 @@ namespace UI
             }
         }
 
+        [Obsolete("",true)]
         public void SetItems(IEnumerable<int> cards)
         {
             MasterCardList.clearItems();
@@ -50,6 +52,8 @@ namespace UI
                 };
             }
         }
+        
+        //TODO:彻底弃用MasterCardSelection，BuildCardPanel中仍使用“updateItemList((string name, Sprite image)[] viewData)”方法
         public void updateItemList((string name, Sprite image)[] viewData)
         {
             MasterCardList.clearItems();
@@ -63,6 +67,8 @@ namespace UI
                 c.onClick += onClickItemCallback;
             }
         }
+        
+        
         [Obsolete("此方法已弃用，请使用\"UI.DeckViewPanel.update()\"")]
         public void updateItemList((string name, Sprite image, bool isWarning)[] viewData)
         {
@@ -79,14 +85,17 @@ namespace UI
                 c.onClick += onClickItemCallback;
             }
         }
+        [Obsolete("",true)]
         public void SetItems(IEnumerable<CardDefine> cards)
         {
             SetItems(cards.Select(c => c.id));
         }
 
+        [Obsolete("",true)]
         public event Action<int> OnSelect;
         [Obsolete("此事件已弃用，请使用\"UI.DeckViewPanel.onClickDeckListItem\"")]
         public event Action<int> onClickItem;
+        [Obsolete("",true)]
         public void ClearEvents()
         {
             OnSelect = null;

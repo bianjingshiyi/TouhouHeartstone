@@ -41,8 +41,8 @@ namespace UI
             this._QuitButtonButtonBlack = this.transform.Find("Container").Find("QuitButton").GetComponent<ButtonBlack>();
             this._StartButtonButtonBlack = this.transform.Find("Container").Find("StartButton").GetComponent<ButtonBlack>();
             this._DeckSelectionDeckListItem = this.transform.Find("Container").Find("DeckSelection").GetComponent<DeckListItem>();
-            this._DeckPanelMasterCardSelection = this.transform.Find("Container").Find("DeckPanel").GetComponent<MasterCardSelection>();
-            this._DeckViewMasterCardSelection = this.transform.Find("Container").Find("DeckView").GetComponent<MasterCardSelection>();
+            //this._DeckPanelMasterCardSelection = this.transform.Find("Container").Find("DeckPanel").GetComponent<MasterCardSelection>();
+            //this._DeckViewMasterCardSelection = this.transform.Find("Container").Find("DeckView").GetComponent<MasterCardSelection>();
         }
         [SerializeField()]
         private Image _ContainerImage;
@@ -250,47 +250,6 @@ namespace UI
                     this._DeckSelectionDeckListItem = this.transform.Find("Container").Find("DeckSelection").GetComponent<DeckListItem>();
                 }
                 return this._DeckSelectionDeckListItem;
-            }
-        }
-        [SerializeField()]
-        private MasterCardSelection _DeckPanelMasterCardSelection;
-        public MasterCardSelection DeckPanelMasterCardSelection
-        {
-            get
-            {
-                if ((this._DeckPanelMasterCardSelection == null))
-                {
-                    this._DeckPanelMasterCardSelection = this.transform.Find("Container").Find("DeckPanel").GetComponent<MasterCardSelection>();
-                }
-                return this._DeckPanelMasterCardSelection;
-            }
-        }
-        [SerializeField()]
-        private MasterCardSelection _DeckViewMasterCardSelection;
-        public MasterCardSelection DeckViewMasterCardSelection
-        {
-            get
-            {
-                if ((this._DeckViewMasterCardSelection == null))
-                {
-                    this._DeckViewMasterCardSelection = this.transform.Find("Container").Find("DeckView").GetComponent<MasterCardSelection>();
-                }
-                return this._DeckViewMasterCardSelection;
-            }
-        }
-
-        [SerializeField]
-        private DeckViewPanel _DeckViewPanel;
-
-        public DeckViewPanel DeckViewPanel
-        {
-            get
-            {
-                if ((this._DeckViewPanel == null))
-                {
-                    this._DeckViewPanel = this.transform.Find("Container").Find("DeckPanel").GetComponentsInChildren<DeckViewPanel>()[0];
-                }
-                return this._DeckViewPanel;
             }
         }
 

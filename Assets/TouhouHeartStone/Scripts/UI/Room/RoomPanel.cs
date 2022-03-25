@@ -288,8 +288,8 @@ namespace UI
         /// <param name="cards"></param>
         void viewDeck(int[] cards)
         {
-            DeckViewMasterCardSelection.SetItems(cards);
-            DeckViewMasterCardSelection.display();
+            _cardViewPanel.setItems(cardManager,cards);
+            _cardPanel.SetActive(true);
         }
         #region 公有方法
         public void updatePlayerList((string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[] viewData)
@@ -383,13 +383,13 @@ namespace UI
         }
         public void displayDeckSelectPanel((string name, Sprite image, bool isWarning)[] viewData)
         {
-            DeckPanelMasterCardSelection.display();
-            DeckViewPanel.update(viewData);
+            _deckViewPanel.update(viewData);
+            _deckPanel.SetActive(true);
             //DeckPanelMasterCardSelection.updateItemList(viewData);
         }
         public void hideDeckSelectPanel()
         {
-            DeckPanelMasterCardSelection.hide();
+            _deckPanel.SetActive(false);
         }
         public void displayStartButton(bool value)
         {
@@ -412,6 +412,8 @@ namespace UI
         #region 生命周期
         partial void onAwake()
         {
+            _closeDeckPanelButton.asButton.onClick.AddListener(onClickCloseDeckPanelButtonCallback);
+            _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
             StartButtonButtonBlack.asButton.setSelectable(false);
             DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
             DeckSelectionDeckListItem.onDeckSelect += (_) =>
@@ -431,8 +433,8 @@ namespace UI
             };
             initEvents();
 
-            DeckPanelMasterCardSelection.hide();
-            DeckViewMasterCardSelection.hide();
+            _deckPanel.SetActive(false);
+            _cardPanel.SetActive(false);
             if (_playerTemplate.transform.parent == _playerRoot)
             {
                 _playerTemplate.gameObject.SetActive(false);
@@ -440,7 +442,7 @@ namespace UI
             _addAIPlayerButton.onClick.AddListener(onClickAddAIPlayerButtonCallback);
             _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
             //DeckPanelMasterCardSelection.onClickItem += onClickDeckSelectItemCallback;
-            DeckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
+            _deckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
             //_randomSeedInputField.onValueChanged.AddListener(onRandomSeedInputFieldValueChangedCallback);
             _randomSeedInputField.onEndEdit.AddListener(onRandomSeedInputFieldValueChangedCallback);
             _shuffleToggle.onValueChanged.AddListener(onShuffleToggleValueChangedCallback);
@@ -519,9 +521,20 @@ namespace UI
         {
             onClickCancleReadyButton?.Invoke();
         }
+
         private void onClickQuitButtonCallback()
         {
             onClickQuitButton?.Invoke();
+        }
+
+        private void onClickCloseDeckPanelButtonCallback()
+        {
+            _deckPanel.SetActive(false);
+        }
+
+        private void onClickCloseCardPanelButtonCallback()
+        {
+            _cardPanel.SetActive(false);
         }
         #endregion
         #endregion
@@ -592,26 +605,42 @@ namespace UI
         Button _cancleReadyButton;
         [SerializeField]
         Button _quitButton;
+        
+        
+        [Header("ViewPanels")]
+        [SerializeField]
+        private GameObject _deckPanel;
+        [SerializeField]
+        private DeckViewPanel _deckViewPanel;
+        [SerializeField]
+        private ButtonBlack _closeDeckPanelButton;
+        [SerializeField]
+        private GameObject _cardPanel;
+        [SerializeField]
+        private DeckViewPanel _cardViewPanel;
+        [SerializeField]
+        private ButtonBlack _closeCardPanelButton;
+        
         #endregion
         void showDeckSelectionPanel(Action<int> onDeckSelect)
         {
             var decks = deckManager.GetDecks();
-            DeckPanelMasterCardSelection.SetItems(decks, (def, item) =>
+            _deckViewPanel.setItems(cardManager,decks, (def, item) =>
             {
                 // 只有30张卡的卡组才能选择
                 bool isFinish = deckManager.GetDeckCards(def.ID).Count >= 30;
                 item.SetSelectable(isFinish);
                 item.setWarning(!isFinish);
             });
-            DeckPanelMasterCardSelection.display();
-            DeckPanelMasterCardSelection.ClearEvents();
+            _deckPanel.SetActive(true);
+            _deckViewPanel.clearEvents();
 
-            DeckPanelMasterCardSelection.OnSelect += onSelectCallback;
+            _deckViewPanel.onSelect += onSelectCallback;
             void onSelectCallback(int id)
             {
-                DeckPanelMasterCardSelection.hide();
+                _deckPanel.SetActive(false);
                 onDeckSelect(id);
-                DeckPanelMasterCardSelection.OnSelect -= onSelectCallback;
+                _deckViewPanel.onSelect -= onSelectCallback;
             }
         }
 
