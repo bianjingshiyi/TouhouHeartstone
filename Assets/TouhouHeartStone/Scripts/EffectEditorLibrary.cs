@@ -80,6 +80,28 @@ namespace Game
         {
             return player.getGrave();
         }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_DECK_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getPlayerDeckCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player.getDeck();
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        public static Task drawTargetCard(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card targetCard,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BURN_EVENT)] out HearthStoneRule.BurnEventArg burnEvent)
+        {
+            return card.owner.draw(game, targetCard, out drawEvent, out burnEvent);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Task<Card> selectOneFromManyCards(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count)
+        {
+            return game.askSelect(card.owner, cards, count);
+        }
         #endregion
 
         //  有关全局的操作，比如说获取发现池，获取卡牌
@@ -118,6 +140,25 @@ namespace Game
                 if (result)
                 {
                     cardList.Add(deck[i]);
+                }
+            }
+            return cardList.ToArray();
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getCardsWithCondition(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)]ActionNode condition,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_FILTERING_CARD, isOut: true)]Card filteringCard)
+        {
+            List<Card> cardList = new List<Card>();
+            for (int i = 0; i < cards.Length; i++)
+            {
+                scope.localVarDict[scope.getLocalVarName(0)] = cards[i];
+                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: scope).Result;
+                if (result)
+                {
+                    cardList.Add(cards[i]);
                 }
             }
             return cardList.ToArray();
@@ -415,15 +456,6 @@ namespace Game
         #endregion
         //  玩家的行动，比如抽一张牌，获得一张牌
         #region 行动
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
-        public static Task drawTargetCard(CardEngine game, Card card,
-        [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card targetCard,
-        [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent,
-        [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BURN_EVENT)] out HearthStoneRule.BurnEventArg burnEvent)
-        {
-            return card.owner.draw(game, targetCard, out drawEvent, out burnEvent);
-        }
-
         /// <summary>
         /// 简单抽牌
         /// 抽牌行动的简单实现，抽一张牌
@@ -439,16 +471,6 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent)
         {
             return player.draw(game, out drawEvent);
-        }
-
-
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Task<Card> selectOneFromManyCards(CardEngine game, Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count)
-        {
-            return game.askSelect(card.owner, cards, count);
         }
         #endregion
 

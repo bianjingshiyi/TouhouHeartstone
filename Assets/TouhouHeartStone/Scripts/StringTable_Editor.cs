@@ -120,10 +120,14 @@ namespace Game
         public const string EDITOR_PARAM_NAME_COUNT = "数量";
         [TranslateMsg("动作图编辑器中动作节点名称之获取牌库中满足条件的卡牌")]
         public const string EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION = "获取牌库中满足条件的卡牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之过滤满足条件的卡牌")]
+        public const string EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION = "过滤满足条件的卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之获取牌堆中的牌")]
         public const string EDITOR_NODE_NAME_GET_CARDS_IN_PILE = "获取牌堆中的牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之条件")]
         public const string EDITOR_PARAM_NAME_CONDITION = "条件";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之被过滤的卡牌")]
+        public const string EDITOR_PARAM_NAME_FILTERING_CARD = "被过滤的卡牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之触发条件")]
         public const string EDITOR_PARAM_NAME_TRIGGER_CONDITION = "触发条件";
         [TranslateMsg("动作图编辑器中动作节点参数名称之目标{0}条件")]
@@ -132,6 +136,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS = "获取玩家的手牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家的墓地中的卡牌")]
         public const string EDITOR_NODE_NAME_GET_PLAYER_GRAVE_CARDS = "获取玩家的墓地卡牌";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家的牌库中的卡牌")]
+        public const string EDITOR_NODE_NAME_GET_PLAYER_DECK_CARDS = "获取玩家牌库中的卡牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之设置玩家属性")]
         public const string EDITOR_NODE_NAME_SET_PLAYER_PROP = "设置玩家属性";
         [TranslateMsg("动作图编辑器中动作节点参数名称之获取玩家属性")]

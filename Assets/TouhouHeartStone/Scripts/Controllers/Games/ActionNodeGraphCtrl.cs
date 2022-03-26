@@ -391,16 +391,18 @@ namespace Controllers
             else
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                ActionDefine outputActionDefine = _actionDefineDict[outputActionNode.defineName];
+                int outputBranchesCount = getBranchesCount(outputActionDefine);
                 ActionNode inputActionNode = getActionNode(inputActionNodeItem);
                 if (inputIndex == 0)
                 {
                     //动作连接
                     if (outputActionNode.branches == null)
                     {
-                        outputActionNode.branches = new ActionNode[1];
+                        outputActionNode.branches = new ActionNode[outputBranchesCount];
                     }
                     //检查合法性
-                    if (outputIndex >= outputActionNode.branches.Length)
+                    if (outputIndex >= outputBranchesCount)
                     {
                         //值输出只能与值输入相互连接
                         _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
@@ -413,17 +415,17 @@ namespace Controllers
                     //值连接
                     if (outputActionNode.branches == null)
                     {
-                        outputActionNode.branches = new ActionNode[1];
+                        outputActionNode.branches = new ActionNode[outputBranchesCount];
                     }
                     //检查合法性
-                    if (outputIndex < outputActionNode.branches.Length)
+                    if (outputIndex < outputBranchesCount)
                     {
                         //值输出只能与值输入相互连接
                         _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
                         return;
                     }
                     //检查类型合法性，获取输入输出类型
-                    Type outputType = _actionDefineDict[outputActionNode.defineName].outputs[outputIndex - outputActionNode.branches.Length].type;
+                    Type outputType = outputActionDefine.getValueOutputAt(outputIndex - outputBranchesCount).type;
                     ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
                     Type inputType;
                     if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length)
@@ -441,7 +443,7 @@ namespace Controllers
                         _ui.showErrorTip(game.langManager.getString(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
                         return;
                     }
-                    connectNode4ValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputActionNode, inputIndex - 1);
+                    connectNode4ValueRef(outputActionNode, outputIndex - outputBranchesCount, inputActionNode, inputIndex - 1);
                 }
             }
         }
@@ -1736,7 +1738,11 @@ namespace Controllers
         }
         private bool isValidTypeForConnection(Type outputType, Type inputType)
         {
-
+            //如果输入类型是ActionValueRef，那么无论输出类型是什么都可以，至少暂时还不方便做ActionValueRef的类型检查
+            if (inputType == typeof(ActionValueRef))
+            {
+                return true;
+            }
             //类型之间可以相互转化
             if (outputType.IsAssignableFrom(inputType) || inputType.IsAssignableFrom(outputType))
             {
@@ -1997,6 +2003,18 @@ namespace Controllers
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
             return actionDefine.outputs.Length;
         }
+        private int getBranchesCount(ActionDefine actionDefine)
+        {
+            int count = 1;//每个动作至少具有一个动作输出
+            for (int i = 0; i < actionDefine.outputs.Length; i++)
+            {
+                if (actionDefine.outputs[i].type == typeof(ActionNode))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
         private void updateRegVar(ActionNode actionNode)
         {
             int outputCount = getOutputCount(actionNode);
@@ -2085,7 +2103,7 @@ namespace Controllers
             //前一个动作节点
             inputNameList.Add(new IOConnectInfo()
             {
-                type = string.Empty,
+                type = nameof(ActionNode),
                 label = string.Empty
             });
             //输入
@@ -2187,35 +2205,36 @@ namespace Controllers
             }
             return outputNames;
         }
-
-        IOConnectInfo[] getActionNodeOutputInfos(ActionNode actionNode)
+        private IOConnectInfo[] getActionNodeOutputInfos(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
-
-            IOConnectInfo[] outputNames = new IOConnectInfo[actionDefine.outputs.Length + actionNode.branches.Length];
-            for (int i = 0; i < outputNames.Length; i++)
+            List<IOConnectInfo> outputList = new List<IOConnectInfo>()
             {
-                if (i < actionNode.branches.Length)
+                new IOConnectInfo() { type = nameof(ActionNode), label = string.Empty }
+            };
+            for (int i = 0; i < actionDefine.outputs.Length; i++)
+            {
+                if (actionDefine.outputs[i].type == typeof(ActionNode))
                 {
-                    //TODO:下一个动作节点不知道该叫啥，就先不给名字好了
-                    outputNames[i] = new IOConnectInfo()
+                    //动作分支节点
+                    outputList.Add(new IOConnectInfo()
                     {
-                        type = string.Empty,
-                        label = string.Empty
-                    };
+                        type = nameof(ActionNode),
+                        label = actionDefine.outputs[i].name
+                    });
                 }
                 else
                 {
-                    //Debug.Log("output：" + actionDefine.outputs[i - actionNode.branches.Length].name);
-                    outputNames[i] = new IOConnectInfo()
+                    //输出值节点
+                    outputList.Add(new IOConnectInfo()
                     {
-                        type = actionDefine.outputs[i - actionNode.branches.Length].name,
-                        label = actionDefine.outputs[i - actionNode.branches.Length].name
-                    };
+                        type = actionDefine.outputs[i].type.Name,
+                        label = actionDefine.outputs[i].name
+                    });
                 }
             }
-            return outputNames;
+            return outputList.ToArray();
         }
         /// <summary>
         /// 为动作节点分配id，
