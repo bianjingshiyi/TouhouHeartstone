@@ -288,7 +288,13 @@ namespace UI
         /// <param name="cards"></param>
         void viewDeck(int[] cards)
         {
-            _cardViewPanel.setItems(cardManager,cards);
+            //_cardViewPanel.setItems(cardManager,cards);
+            var viewData = cards.Select(i =>
+            {
+                var skin = cardManager.getSkin(i);
+                return (skin?.name,skin?.image);
+            }).ToArray();
+            _cardViewPanel.update(viewData);
             _cardPanel.SetActive(true);
         }
         #region 公有方法
@@ -416,7 +422,7 @@ namespace UI
             _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
             StartButtonButtonBlack.asButton.setSelectable(false);
             DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
-            DeckSelectionDeckListItem.onDeckSelect += (_) =>
+            DeckSelectionDeckListItem.onClick += (_) =>
             {
                 if (this.findInstance<Controllers.MainSceneCtrl>().room.isDisplay)
                     return;
@@ -625,22 +631,22 @@ namespace UI
         void showDeckSelectionPanel(Action<int> onDeckSelect)
         {
             var decks = deckManager.GetDecks();
-            _deckViewPanel.setItems(cardManager,decks, (def, item) =>
+            var viewData = decks.Select((define =>
             {
                 // 只有30张卡的卡组才能选择
-                bool isFinish = deckManager.GetDeckCards(def.ID).Count >= 30;
-                item.SetSelectable(isFinish);
-                item.setWarning(!isFinish);
-            });
+                return (define.Name, cardManager.getSkin(define.MasterID).image,(deckManager.GetDeckCards(define.ID).Count >= 30));
+            })).ToArray();
+            _deckViewPanel.update(viewData);
             _deckPanel.SetActive(true);
-            _deckViewPanel.clearEvents();
 
-            _deckViewPanel.onSelect += onSelectCallback;
+            _deckViewPanel.onClickDeckListItem -= onSelectCallback;
+
+            _deckViewPanel.onClickDeckListItem += onSelectCallback;
             void onSelectCallback(int id)
             {
                 _deckPanel.SetActive(false);
                 onDeckSelect(id);
-                _deckViewPanel.onSelect -= onSelectCallback;
+                _deckViewPanel.onClickDeckListItem -= onSelectCallback;
             }
         }
 
