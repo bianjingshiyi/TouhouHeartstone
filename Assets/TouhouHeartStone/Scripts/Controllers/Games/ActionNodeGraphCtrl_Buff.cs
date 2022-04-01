@@ -5,6 +5,7 @@ using System;
 using UnityEngine;
 using System.Threading.Tasks;
 using SFB;
+using Game;
 
 namespace Controllers
 {
@@ -31,7 +32,7 @@ namespace Controllers
             {
                 GeneratedBuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
                 buffDefine = buffDefines[buffDefines.Length - 1];
-                await updateBuffActionNode(item, buffDefine as GeneratedBuffDefine, getOrCreateBuffSkin(buffDefine as GeneratedBuffDefine));
+                await updateBuffActionNode(item, buffDefine, getOrCreateBuffSkin(buffDefine));
             }
         }
         private async void onClickItemAddPropModifierButtonCallback(ActionNodeItem item)
@@ -67,7 +68,7 @@ namespace Controllers
                 buffDefine is GeneratedBuffDefine generatedBuffDefine &&
                 propTypeIndex != getPropertyModifierIndex(generatedBuffDefine.propModifierList[index]))
             {
-                generatedBuffDefine.propModifierList[index] = getPropertyModifierByIndex(propTypeIndex);
+                generatedBuffDefine.propModifierList[index] = createPropertyModifierByIndex(propTypeIndex);
                 await updateBuffActionNode(item, generatedBuffDefine, null);
             }
         }
@@ -89,9 +90,16 @@ namespace Controllers
                 buffDefine is GeneratedBuffDefine generatedBuffDefine)
             {
                 PropModifier propModifier = generatedBuffDefine.propModifierList[index];
-                if (propModifier is IntPropModifier intPropModifier)
+                if (propModifier.relatedPropName != null)
                 {
-                    intPropModifier.value = (int)value;
+                    propModifier.relatedPropName = (string)value;
+                }
+                else
+                {
+                    if (propModifier is IntPropModifier intPropModifier)
+                    {
+                        intPropModifier.value = (int)value;
+                    }
                 }
                 await updateBuffActionNode(item, generatedBuffDefine, null);
             }
@@ -198,51 +206,14 @@ namespace Controllers
                 PropModifier propModifier = buffDefine.propModifierList[i];
                 ActionNodePropertyModifierViewData propModifierViewData = new ActionNodePropertyModifierViewData();
                 propModifiersViewData[i] = propModifierViewData;
-                if (propModifier is CostModifier costModifier)
-                {
-                    propModifierViewData.propertyTypeIndex = 0;
-                    if (costModifier.isSet)
-                        propModifierViewData.modifyTypeIndex = 1;
-                    else
-                        propModifierViewData.modifyTypeIndex = 0;
-                    propModifierViewData.valueType = ActionNodeValueType.integer;
-                    propModifierViewData.value = costModifier.value;
-                }
-                else if (propModifier is AttackModifier attackModifier)
-                {
-                    propModifierViewData.propertyTypeIndex = 1;
-                    if (attackModifier.isSet)
-                        propModifierViewData.modifyTypeIndex = 1;
-                    else
-                        propModifierViewData.modifyTypeIndex = 0;
-                    propModifierViewData.valueType = ActionNodeValueType.integer;
-                    propModifierViewData.value = attackModifier.value;
-                }
-                else if (propModifier is LifeModifier lifeModifier)
-                {
-                    propModifierViewData.propertyTypeIndex = 2;
-                    if (lifeModifier.isSet)
-                        propModifierViewData.modifyTypeIndex = 1;
-                    else
-                        propModifierViewData.modifyTypeIndex = 0;
-                    propModifierViewData.valueType = ActionNodeValueType.integer;
-                    propModifierViewData.value = lifeModifier.value;
-                }
-                else if (propModifier is DamageReduceModifier damageReduceModifier)
-                {
-                    propModifierViewData.propertyTypeIndex = 3;
-                    if (damageReduceModifier.isSet)
-                        propModifierViewData.modifyTypeIndex = 1;
-                    else
-                        propModifierViewData.modifyTypeIndex = 0;
-                    propModifierViewData.valueType = ActionNodeValueType.integer;
-                    propModifierViewData.value = damageReduceModifier.value;
-                }
+                propModifierViewData.propertyTypeIndex = getPropertyModifierIndex(propModifier);
+                propModifierViewData.modifyTypeIndex = getModifyTypeIndex(propModifier);
+                propModifierViewData.valueType = getPropModifierValueType(propModifier);
+                propModifierViewData.value = propModifier.relatedPropName != null ? propModifier.relatedPropName : propModifier.getValue();
             }
-
             return propModifiersViewData;
         }
-        private PropModifier getPropertyModifierByIndex(int index)
+        private PropModifier createPropertyModifierByIndex(int index)
         {
             if (index == 3)
                 return new DamageReduceModifier(0);
@@ -264,21 +235,62 @@ namespace Controllers
         }
         private int getModifyTypeIndex(PropModifier propModifier)
         {
-            if (propModifier is IntPropModifier intPropModifier && intPropModifier.isSet)
+            if (propModifier is IntPropModifier intPropModifier)
             {
-                return 1;
+                if (propModifier.relatedPropName != null && intPropModifier.isSet)
+                    return 3;
+                else if (propModifier.relatedPropName != null)
+                    return 2;
+                else if (intPropModifier.isSet)
+                    return 1;
+                else
+                    return 0;
             }
-            else
-                return 0;
+            throw new NotImplementedException();
         }
         private void setModifyTypeByIndex(PropModifier propModifier, int index)
         {
             if (propModifier is IntPropModifier intPropModifier)
             {
-                if (index == 1)
+                if (index == 3)
+                {
+                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
                     intPropModifier.isSet = true;
-                else
+                }
+                else if (index == 2)
+                {
+                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
                     intPropModifier.isSet = false;
+                }
+                else if (index == 1)
+                {
+                    propModifier.relatedPropName = null;
+                    intPropModifier.isSet = true;
+                }
+                else
+                {
+                    propModifier.relatedPropName = null;
+                    intPropModifier.isSet = false;
+                }
+            }
+        }
+        private ActionNodeValueType getPropModifierValueType(PropModifier propModifier)
+        {
+            if (propModifier.relatedPropName != null)
+            {
+                return ActionNodeValueType.text;
+            }
+            else
+            {
+                if (propModifier is CostModifier)
+                    return ActionNodeValueType.integer;
+                else if (propModifier is AttackModifier)
+                    return ActionNodeValueType.integer;
+                else if (propModifier is LifeModifier)
+                    return ActionNodeValueType.integer;
+                else if (propModifier is DamageReduceModifier)
+                    return ActionNodeValueType.integer;
+                throw new NotImplementedException();
             }
         }
         private BuffSkin getOrCreateBuffSkin(GeneratedBuffDefine buffDefine)

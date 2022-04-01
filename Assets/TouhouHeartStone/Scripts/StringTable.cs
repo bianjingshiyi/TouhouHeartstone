@@ -75,6 +75,10 @@ namespace Game
         public const string GAME_CARD_PROP_MODIFY_DIV = "除以";
         [TranslateMsg("游戏中卡牌的属性修改类型之变为")]
         public const string GAME_CARD_PROP_MODIFY_SETTO = "变为";
+        [TranslateMsg("游戏中卡牌的属性修改类型之增加属性")]
+        public const string GAME_CARD_PROP_MODIFY_ADD_PROP = "增加属性";
+        [TranslateMsg("游戏中卡牌的属性修改类型之变为属性")]
+        public const string GAME_CARD_PROP_MODIFY_SETTO_PROP = "变为属性";
         [TranslateMsg("游戏中卡牌的类型之仆从")]
         public const string GAME_CARD_TYPE_SERVANT = "仆从";
         [TranslateMsg("游戏中卡牌的类型之法术")]

@@ -5,16 +5,21 @@ namespace TouhouHeartstone
 {
     public class LifeModifier : IntPropModifier
     {
-        public LifeModifier(int value) : base(nameof(ServantCardDefine.life), value)
+        #region 公有方法
+        #region 构造方法
+        public LifeModifier(int value) : base(DEFINE.LIFE, value)
         {
         }
-        public LifeModifier(int value, bool isSet) : base(nameof(ServantCardDefine.life), value, isSet)
+        public LifeModifier(int value, bool isSet) : base(DEFINE.LIFE, value, isSet)
         {
         }
-        LifeModifier(LifeModifier origin) : base(origin)
+        public LifeModifier(string relatedPropName, bool isSet) : base(DEFINE.LIFE, relatedPropName, isSet)
         {
-
         }
+        protected LifeModifier(LifeModifier origin) : base(origin)
+        {
+        }
+        #endregion
         public override async Task<IPropChangeEventArg> setValue(IGame game, Card card, int value)
         {
             bool resetCurrentLife = card.getCurrentLife(game) >= card.getLife(game);
@@ -53,11 +58,10 @@ namespace TouhouHeartstone
         public override Task afterAdd(IGame game, Card card)
         {
             if (isSet)
-                return card.setCurrentLife(game, (value));
+                return card.setCurrentLife(game, value);
             else
                 return card.setCurrentLife(game, card.getCurrentLife(game) + value);
         }
-        bool resetCurrentLife { get; set; } = false;
         public override Task beforeRemove(IGame game, Card card)
         {
             resetCurrentLife = card.getCurrentLife(game) >= card.getLife(game);
@@ -72,7 +76,9 @@ namespace TouhouHeartstone
                 return card.setCurrentLife(game, life);
             }
             else if (card.getCurrentLife(game) > life)
+            {
                 return card.setCurrentLife(game, life);
+            }
             else
             {
                 game?.logger?.log("由于" + card + "受伤了，在移除" + this + "之后生命值仍为" + card.getCurrentLife(game));
@@ -83,5 +89,9 @@ namespace TouhouHeartstone
         {
             return new LifeModifier(this);
         }
+        #endregion
+        #region 属性字段
+        bool resetCurrentLife { get; set; } = false;
+        #endregion
     }
 }

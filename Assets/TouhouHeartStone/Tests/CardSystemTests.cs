@@ -10,6 +10,7 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System.Collections.Generic;
 using BJSYGameCore;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -174,6 +175,25 @@ namespace Tests
             card.removeBuff(game, buff);
             Assert.AreEqual(5, card.getLife(game));
             Assert.AreEqual(1, card.getCurrentLife(game));
+        }
+        /// <summary>
+        /// 当属性修正器与Buff属性关联时，如果Buff属性发生改变，那么会改变获取的属性修正值。
+        /// </summary>
+        [Test]
+        public async void changeBuffPropModifierValueByRelatedPropNameTest()
+        {
+            CardEngine game = new CardEngine()
+            {
+                logger = new UnityLogger()
+            };
+            CardDefine cardDefine = new TestServant();
+            Card card = new Card(0, cardDefine);
+            await card.setCurrentLife(game, cardDefine.getLife());
+            Buff buff = new TestBuff(new LifeModifier("Value", false));
+            await card.addBuff(game, buff);
+            Assert.AreEqual(card.getLife(game), cardDefine.getLife());
+            await buff.setProp(game, "Value", 3);
+            Assert.AreEqual(card.getLife(game), cardDefine.getLife() + 3);
         }
         [Test]
         public void mountainGaintTest()

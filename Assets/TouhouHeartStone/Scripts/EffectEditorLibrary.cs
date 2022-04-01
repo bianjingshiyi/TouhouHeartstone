@@ -26,8 +26,8 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_PROP, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getPlayerProp(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)]string propName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName)
         {
             return player.getProp(propName);
         }
@@ -39,9 +39,9 @@ namespace Game
         /// <param name="value"></param>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SET_PLAYER_PROP, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         public static void setPlayerProp(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]object value)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             player.setProp(propName, value);
         }
@@ -66,7 +66,7 @@ namespace Game
         /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Card[] getHandCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]Player player)
+        public static Card[] getHandCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
             return player.getHand();
         }
@@ -76,7 +76,7 @@ namespace Game
         /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_GRAVE_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Card[] getPlayerGraveCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]Player player)
+        public static Card[] getPlayerGraveCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
             return player.getGrave();
         }
@@ -123,7 +123,7 @@ namespace Game
         /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_PILE, StringTable.EDITOR_NODE_CATEGORY_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Card[] getCardsInPile([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]Pile pile)
+        public static Card[] getCardsInPile([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] Pile pile)
         {
             return pile;
         }
@@ -147,9 +147,9 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getCardsWithCondition(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)]ActionNode condition,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_FILTERING_CARD, isOut: true)]Card filteringCard)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_FILTERING_CARD, isOut: true)] Card filteringCard)
         {
             List<Card> cardList = new List<Card>();
             for (int i = 0; i < cards.Length; i++)
@@ -162,6 +162,12 @@ namespace Game
                 }
             }
             return cardList.ToArray();
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_COUNT, StringTable.EDITOR_NODE_CATEGORY_PILE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)]
+        public static int getCardsCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        {
+            return cards.Length;
         }
         #endregion
 
@@ -343,8 +349,8 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg> dealSpecificSpellDamageToTargets(CardEngine game, Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)]int damage,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)]Card[] targets)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
             return targets.damage(game, card, card.owner.getSpellDamage(game, damage));
         }
@@ -359,9 +365,9 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg> dealSpecificSpellDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)]int count,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)]int damage,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)]Card[] targets)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
             return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
         }
@@ -417,7 +423,7 @@ namespace Game
         #region 增益
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE, StringTable.EDITOR_NODE_CATEGORY_BUFF, "GetBuffDefine")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]
-        public static BuffDefine getBuffDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ID, isConst: true)]int id)
+        public static BuffDefine getBuffDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ID, isConst: true)] int id)
         {
             return game.getBuffDefine(id);
         }
@@ -428,30 +434,46 @@ namespace Game
             return buff;
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_ADD_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "AddBuff")]
-        public static async Task addBuff(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]BuffDefine buffDefine)
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
+        public static async Task<Buff[]> addBuff(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)] BuffDefine buffDefine)
         {
+            List<Buff> buffList = new List<Buff>();
             foreach (var card in cards)
             {
-                await card.addBuff(game, new GeneratedBuff(buffDefine));
+                Buff buff = new GeneratedBuff(buffDefine);
+                buffList.Add(buff);
+                await card.addBuff(game, buff);
             }
+            return buffList.ToArray();
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_REMOVE_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "RemoveBuff")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_IS_BUFF_REMOVED)]
         public static Task<bool> removeBuff(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]Buff buff)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
         {
             return card.removeBuff(game, buff);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HAS_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool hasBuff(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]BuffDefine buffDefine)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)] BuffDefine buffDefine)
         {
             return card.hasBuff(buffDefine);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SET_BUFF_PROP, StringTable.EDITOR_NODE_CATEGORY_BUFF)]
+        public static async Task setBuffProp(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff[] buffs,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
+        {
+            for (int i = 0; i < buffs.Length; i++)
+            {
+                await buffs[i].setProp(game, propName, value);
+            }
         }
         #endregion
         //  玩家的行动，比如抽一张牌，获得一张牌

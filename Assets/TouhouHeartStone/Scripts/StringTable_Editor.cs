@@ -66,6 +66,8 @@ namespace Game
         public const string EDITOR_BUTTON_EDIT_RETURN_VALUE = "编辑返回值";
         [TranslateMsg("编辑器中编辑触发器的按钮提示")]
         public const string EDITOR_BUTTON_EDIT_TRIGGER = "编辑触发器";
+        [TranslateMsg("编辑器的动作流程图中的增益节点的属性修整器关联属性默认名称")]
+        public const string EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT = "属性名称";
         #region 动作
         #region 内置
         [TranslateMsg("动作图编辑器中动作节点名称之整数运算")]
@@ -122,6 +124,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION = "获取牌库中满足条件的卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之过滤满足条件的卡牌")]
         public const string EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION = "过滤满足条件的卡牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取卡牌数量")]
+        public const string EDITOR_NODE_NAME_GET_CARDS_COUNT = "获取卡牌数量";
         [TranslateMsg("动作图编辑器中动作节点名称之获取牌堆中的牌")]
         public const string EDITOR_NODE_NAME_GET_CARDS_IN_PILE = "获取牌堆中的牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之条件")]
@@ -208,6 +212,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_REMOVE_BUFF = "移除增益";
         [TranslateMsg("动作图编辑器中动作节点名称之是否具有增益")]
         public const string EDITOR_NODE_NAME_HAS_BUFF = "是否具有增益";
+        [TranslateMsg("动作图编辑器中动作节点名称之设置增益属性")]
+        public const string EDITOR_NODE_NAME_SET_BUFF_PROP = "设置增益属性";
         [TranslateMsg("动作图编辑器中动作参数名称之增益是否移除")]
         public const string EDITOR_PARAM_NAME_IS_BUFF_REMOVED = "增益是否移除";
         [TranslateMsg("动作图编辑器中动作节点名称之该增益")]

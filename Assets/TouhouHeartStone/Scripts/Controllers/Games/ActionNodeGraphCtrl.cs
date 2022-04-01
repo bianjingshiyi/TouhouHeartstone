@@ -1149,7 +1149,7 @@ namespace Controllers
                 else
                 {
                     //获取到了增益id，并且确实存在对应的增益
-                    generatedBuffDefine = buffDefine as GeneratedBuffDefine;
+                    generatedBuffDefine = buffDefine;
                     //获取增益对应的皮肤
                     buffSkin = game.card.getBuffSkin(generatedBuffDefine);
                     if (buffSkin == null)
@@ -2461,7 +2461,9 @@ namespace Controllers
         string[] _modifyTypes = new string[]
         {
             StringTable.GAME_CARD_PROP_MODIFY_ADD,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO,
+            StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
         };
         readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
         {
