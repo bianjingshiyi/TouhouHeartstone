@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace UI
 {
+    [Obsolete("已弃用！",true)]
     partial class MasterCardSelection
     {
         CardManager cardManager => this.findInstance<CardManager>();

@@ -50,7 +50,7 @@ namespace UI
             //this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
             this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
             this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
-            this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
+            //this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
             this._HintMessageText = this.transform.Find("HintMessage").GetComponent<Text>();
             this._UIDialog = this.transform.Find("UIDialog")?.GetComponent<UIDialog>();
         }
@@ -364,19 +364,6 @@ namespace UI
                     this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
                 }
                 return this._DragCard;
-            }
-        }
-        [SerializeField()]
-        private MasterCardSelection _MasterCardSelection;
-        public MasterCardSelection MasterCardSelection
-        {
-            get
-            {
-                if ((this._MasterCardSelection == null))
-                {
-                    this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
-                }
-                return this._MasterCardSelection;
             }
         }
         [SerializeField()]

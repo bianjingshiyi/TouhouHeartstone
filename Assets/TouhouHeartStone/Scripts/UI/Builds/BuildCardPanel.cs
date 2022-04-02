@@ -58,12 +58,12 @@ namespace UI
         }
         public void showMasterSelectPanel((string name, Sprite image)[] viewData)
         {
-            _masterSelectionPanel.updateItemList(viewData);
-            _masterSelectionPanel.gameObject.SetActive(true);
+            _masterSelectionPanel.SetActive(true);
+            _masterSelectionDeckViewPanel.update(viewData);
         }
         public void hideMasterSelectPanel()
         {
-            _masterSelectionPanel.gameObject.SetActive(false);
+            _masterSelectionPanel.SetActive(false);
         }
         public void setLoadingUIActive(bool value)
         {
@@ -210,8 +210,8 @@ namespace UI
         public event Action<bool[]> onTypeFilterValueChanged;
         public event Action<int> onClickMasterSelectPanelItem
         {
-            add { _masterSelectionPanel.onClickItem += value; }
-            remove { _masterSelectionPanel.onClickItem -= value; }
+            add { _masterSelectionDeckViewPanel.onClickDeckListItem += value; }
+            remove { _masterSelectionDeckViewPanel.onClickDeckListItem -= value; }
         }
         public event Action onClickExportDeckButton;
         public event Action onClickExitEditButton;
@@ -306,7 +306,9 @@ namespace UI
         [SerializeField]
         GameObject _editCardListRightPanel;
         [SerializeField]
-        MasterCardSelection _masterSelectionPanel;
+        GameObject _masterSelectionPanel;
+        [SerializeField] 
+        DeckViewPanel _masterSelectionDeckViewPanel;
         [SerializeField]
         Button _exitEditButton;
         [SerializeField]
