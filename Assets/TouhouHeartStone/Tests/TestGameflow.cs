@@ -7,6 +7,7 @@ using BJSYGameCore;
 using NitoriNetwork.Common;
 using System.Reflection;
 using Game;
+using System.Threading.Tasks;
 
 namespace Tests
 {
@@ -46,7 +47,17 @@ namespace Tests
             you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
             oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
         }
-
+        public static async Task<(CardEngine game, Player you, Player oppo)> createGameWithEditorCards(HearthstoneOption option,
+            int yourMaster, KeyValuePair<int, int>[] yourDeck,
+            int oppoMaster, KeyValuePair<int, int>[] oppoDeck)
+        {
+            CardEngine game = await initGameWithoutPlayers(null, option, true);
+            IEnumerable<CardDefine> yourTrueDeck = createDeck(game, yourDeck);
+            IEnumerable<CardDefine> oppoTrueDeck = createDeck(game, oppoDeck);
+            Player you = game.createPlayer(1, "玩家1", game.getDefine(yourMaster), yourTrueDeck);
+            Player oppo = game.createPlayer(2, "玩家2", game.getDefine(oppoMaster), oppoTrueDeck);
+            return (game, you, oppo);
+        }
         /// <summary>
         /// 使用模板分别填充你和对手的牌库
         /// </summary>
@@ -147,7 +158,40 @@ namespace Tests
             };
             game.answers.game = game;
             (game.triggers as TriggerManager).logger = game.logger;
-            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly }, new HearthStoneRule(CardHelper.getCardDefines(logger), null), option, new RoomPlayerInfo[0]).Wait();
+            CardDefine[] cardDefines = CardHelper.getCardDefines(logger);
+            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly }, new HearthStoneRule(cardDefines, null), option, new RoomPlayerInfo[0]).Wait();
+            return game;
+        }
+        public static async Task<CardEngine> initGameWithoutPlayers(string name, HearthstoneOption option, bool withEditorCards)
+        {
+            TaskExceptionHandler.register();
+            ULogger logger = new ULogger(name) { blackList = new List<string>() { "Load" } };
+            CardEngine game = new CardEngine()
+            {
+                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
+                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
+                time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
+                logger = logger
+            };
+            game.answers.game = game;
+            (game.triggers as TriggerManager).logger = game.logger;
+            CardDefine[] cardDefines = CardHelper.getCardDefines(logger);
+            BuffDefine[] buffDefines = new BuffDefine[0];
+            if (withEditorCards)
+            {
+                MainManager main = new GameObject(nameof(MainManager)).AddComponent<MainManager>();
+                main.enabled = false;
+                CardManager cardManager = new GameObject(nameof(CardManager)).AddComponent<CardManager>();
+                cardManager.game = main;
+                var result = await cardManager.loadCardPoolInfosAsync();
+                foreach (var pair in result)
+                {
+                    await cardManager.loadCardPool(pair.Key);
+                    cardDefines = cardDefines.Concat(cardManager.getCardDefines(pair.Value.cardPoolId)).ToArray();
+                    buffDefines = buffDefines.Concat(cardManager.getBuffDefines(pair.Value.cardPoolId)).ToArray();
+                }
+            }
+            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly }, new HearthStoneRule(cardDefines, buffDefines), option, new RoomPlayerInfo[0]).Wait();
             return game;
         }
         public static CardEngine initSyncStandardGame(int[] playersId = null, IEnumerable<CardDefine> cardDefines = null)

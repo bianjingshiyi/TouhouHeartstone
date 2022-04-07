@@ -25,10 +25,10 @@ namespace TouhouHeartstone
         /// <param name="master"></param>
         /// <param name="deck">注意，牌库的第一张是牌库的底端</param>
         /// <returns></returns>
-        public static Player createPlayer(this CardEngine game, int id, string name, MasterCardDefine master,
+        public static Player createPlayer(this CardEngine game, int id, string name, CardDefine master,
             IEnumerable<CardDefine> deck)
         {
-            return game.getRule().createPlayer(game, id, name, master.id, deck.Select(d => d.id).ToArray()) as Player;
+            return game.getRule().createPlayer(game, id, name, master.id, deck.Select(d => d.id).ToArray());
         }
 
         public static Player getPlayer(this CardEngine game, int id)

@@ -1271,7 +1271,7 @@ namespace Controllers
         }
         private bool tryGetActionNodeItem(ActionNode actionNode, out ActionNodeItem actionNodeItem)
         {
-            int index = _actionNodeList.IndexOf(actionNode);
+            int index = _actionNodeList.FindIndex(a => a.id == actionNode.id);
             if (index < 0 || index >= _actionNodeItemList.Count)
             {
                 actionNodeItem = null;
@@ -1480,6 +1480,7 @@ namespace Controllers
             //目前选择的解决方法是对于超出作用域的节点是无法通过id引用的。
             //这种解决方案会导致一个问题，那就是在ui上显示为一个的节点，实际上可能是多个不同的节点。
             ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+            ActionDefine outputActionDefine = _actionDefineDict[outputActionNode.defineName];
             if (!isActionNodeValueRefedInPrevNodes(outputActionNode, inputActionNode, inputIndex))
             {
                 inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
@@ -1525,7 +1526,7 @@ namespace Controllers
             //从离散节点列表中去掉被连接的节点
             _graphInfo.freeActionNodeList.Remove(outputActionNode);
             //更新ui
-            _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.action);
+            _ui.connectNode(getActionNodeItem(outputActionNode), getBranchesCount(outputActionDefine) + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex, ActionNodeConnectionType.action);
         }
         private void unconnectNode4RootAction(ActionNode inputActionNode)
         {
@@ -1864,21 +1865,41 @@ namespace Controllers
                 }
             }
         }
-        private int getValueRefCount(ActionNode actionNode, int outputIndex)
+        private int getActionNodeRefCount(ActionNode actionNode, int outputIndex)
         {
             int count = 0;
+            //节点是根节点
+            if (rootActionNode == actionNode)
+            {
+                count++;
+            }
             for (int i = 0; i < _actionNodeList.Count; i++)
             {
-                if (_actionNodeList[i].inputs == null || _actionNodeList[i].inputs.Length < 1)
-                    continue;
-                for (int j = 0; j < _actionNodeList[i].inputs.Length; j++)
+                if (_actionNodeList[i].branches != null && _actionNodeList[i].branches.Length > 0)
                 {
-                    if (_actionNodeList[i].inputs[j] == null)
-                        continue;
-                    if ((_actionNodeList[i].inputs[j].action == actionNode || _actionNodeList[i].inputs[j].actionNodeId == actionNode.id) &&
-                        _actionNodeList[i].inputs[j].index == outputIndex)
+                    for (int j = 0; j < _actionNodeList[i].branches.Length; j++)
                     {
-                        count++;
+                        if (_actionNodeList[i].branches[j] == null)
+                            continue;
+                        //节点本身作为动作分支被引用
+                        if (_actionNodeList[i].branches[j] == actionNode)
+                        {
+                            count++;
+                        }
+                    }
+                }
+                if (_actionNodeList[i].inputs != null && _actionNodeList[i].inputs.Length > 0)
+                {
+                    for (int j = 0; j < _actionNodeList[i].inputs.Length; j++)
+                    {
+                        if (_actionNodeList[i].inputs[j] == null)
+                            continue;
+                        //节点的输出值被引用
+                        if ((_actionNodeList[i].inputs[j].action == actionNode || _actionNodeList[i].inputs[j].actionNodeId == actionNode.id) &&
+                            _actionNodeList[i].inputs[j].index == outputIndex)
+                        {
+                            count++;
+                        }
                     }
                 }
             }
@@ -1937,6 +1958,7 @@ namespace Controllers
             {
                 return true;
             }
+            //没有父节点，则不可能已经被引用
             if (!tryGetPrevActionNode(curActionNode, out curActionNode, out _))
             {
                 return false;
@@ -1944,10 +1966,12 @@ namespace Controllers
             //判断父节点
             while (curActionNode != null)
             {
+                //判断是否在父节点中被引用
                 if (isActionNodeValueRefedInNode(valueActionNode, curActionNode))
                 {
                     return true;
                 }
+                //尝试获取下一个父节点
                 if (!tryGetPrevActionNode(curActionNode, out curActionNode, out _))
                 {
                     return false;
@@ -1957,6 +1981,7 @@ namespace Controllers
         }
         private bool isActionNodeValueRefedInNode(ActionNode valueActionNode, ActionNode actionNode, int curIndex = -1)
         {
+            //检查该节点是否是目标节点
             if (valueActionNode == actionNode)
                 return true;
             if (actionNode == null || actionNode.inputs == null)
@@ -1970,6 +1995,7 @@ namespace Controllers
                     childActionNode = actionNode.inputs[i].action;
                 else
                     childActionNode = getActionNode(actionNode.inputs[i].actionNodeId);
+                //递归检查输入节点是否是目标节点
                 if (isActionNodeValueRefedInNode(valueActionNode, childActionNode))
                 {
                     return true;
@@ -2015,6 +2041,10 @@ namespace Controllers
             }
             return count;
         }
+        /// <summary>
+        /// 更新动作节点的变量注册状态
+        /// </summary>
+        /// <param name="actionNode"></param>
         private void updateRegVar(ActionNode actionNode)
         {
             int outputCount = getOutputCount(actionNode);
@@ -2024,7 +2054,8 @@ namespace Controllers
             }
             for (int i = 0; i < actionNode.regVar.Length; i++)
             {
-                actionNode.regVar[i] = getValueRefCount(actionNode, i) > 1;
+                //如果节点本身或者节点的输出值被重复引用了，那必然要注册变量。
+                actionNode.regVar[i] = getActionNodeRefCount(actionNode, i) > 1;
             }
         }
         /// <summary>
@@ -2364,6 +2395,7 @@ namespace Controllers
             _ui.setScrollViewContentSize(size * 2);
         }
         #endregion
+        #region 属性字段
         [Obsolete]
         public IAppManager app { get; }
         [Obsolete]
@@ -2501,6 +2533,7 @@ namespace Controllers
             { "Except", StringTable.EDITOR_NODE_NAME_EXCEPT },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT }
         };
+        #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {

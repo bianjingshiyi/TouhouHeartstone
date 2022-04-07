@@ -1056,7 +1056,7 @@ namespace TouhouHeartstone
                     await card.addModifier(game, modifier);
                 }
 
-                await modifier.setValue(game, card, buff, pair.fixer(game, card, buff, default));
+                await modifier.setValue(game, card, pair.fixer(game, card, buff, default));
             }
 
             //注册当事件发生后的触发器，比如山岭巨人会注册“当卡牌移动”（手牌数量变动也属于卡牌移动的一种）事件，
@@ -1082,7 +1082,7 @@ namespace TouhouHeartstone
                             await card.addModifier(game, m);
                         }
 
-                        await m.setValue(game, card, buff, pair.fixer(game, card, buff, arg));
+                        await m.setValue(game, card, pair.fixer(game, card, buff, arg));
                     }
                 });
                 await card.setProp(game, getTriggerName(buff), trigger);
@@ -1263,7 +1263,7 @@ namespace TouhouHeartstone
                     var modifier = card.getProp<PropModifier<Prop>>(game, getModifierName(game, card, buff, identifier));
                     if (modifier != null)
                     {
-                        return modifier.setValue(game, card, buff, fixer(game, card, buff, arg));
+                        return modifier.setValue(game, card, fixer(game, card, buff, arg));
                     }
                     return Task.CompletedTask;
                 })

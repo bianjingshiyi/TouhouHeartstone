@@ -665,6 +665,7 @@ namespace Game
         public MainManager game
         {
             get { return _game; }
+            set { _game = value; }
         }
         [SerializeField]
         MainManager _game;

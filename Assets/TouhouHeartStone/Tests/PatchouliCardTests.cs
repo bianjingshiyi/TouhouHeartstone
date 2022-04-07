@@ -6,8 +6,8 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UnityEngine;
-using UnityEngine.TestTools;
 using System;
+using BJSYGameCore;
 
 namespace Tests
 {
@@ -44,7 +44,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo, Patchouli.ID);
             game.skipUntilCanUse<SummerFire>(you);
             you.cmdUse(game, you.getSkill(), 0, oppo.getMaster());
-            Assert.AreEqual(oppo.getMaster().getLife(game)-1, oppo.getMaster().getCurrentLife(game));
+            Assert.AreEqual(oppo.getMaster().getLife(game) - 1, oppo.getMaster().getCurrentLife(game));
             game.Dispose();
         }
 
@@ -58,7 +58,7 @@ namespace Tests
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<BestMagic>().cost);
             you.cmdUse(game, you.getHand().getCard<BestMagic>());//使用秘藏魔法
             Assert.True(you.getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 0));//火球术费用-5
-            you.cmdUse(game, you.getHand().getCard<FireBall>(),0,you.getMaster());
+            you.cmdUse(game, you.getHand().getCard<FireBall>(), 0, you.getMaster());
             Assert.True(you.getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));
             you.cmdTurnEnd(game);
             //Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//回合结束，效果消失
@@ -74,7 +74,7 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<FireBall>().cost);
             Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));
-            you.cmdUse(game, you.getHand().getCard<FireBall>(),0,you.getMaster());//使用法术牌
+            you.cmdUse(game, you.getHand().getCard<FireBall>(), 0, you.getMaster());//使用法术牌
             Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 5));//费用-2
             you.cmdTurnEnd(game);
             Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));//只能在当前回合生效

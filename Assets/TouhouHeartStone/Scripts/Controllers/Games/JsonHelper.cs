@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Conventions;
@@ -16,10 +17,11 @@ namespace Controllers
             BsonClassMap.RegisterClassMap<CardReference>();
             isInited = true;
         }
-        public static string toJson(this object obj)
+        public static string toJson(this object obj, bool readFriendly = false)
         {
             ConventionRegistry.Register(nameof(CustomClassMapConvention), conventions, t => true);
-            string json = obj.ToJson();
+            JsonWriterSettings setting = readFriendly ? readFriendlyWriterSettings : null;
+            string json = obj.ToJson(setting);
             ConventionRegistry.Remove(nameof(CustomClassMapConvention));
             return json;
         }
@@ -35,6 +37,10 @@ namespace Controllers
             new CustomClassMapConvention()
         };
         public static bool isInited { get; private set; } = false;
+        public static JsonWriterSettings readFriendlyWriterSettings = new JsonWriterSettings()
+        {
+            Indent = true
+        };
     }
     /// <summary>
     /// 自定义类映射规则

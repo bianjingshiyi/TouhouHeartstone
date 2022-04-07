@@ -166,43 +166,51 @@ namespace Game
             //初始化序列化设置
             JsonHelper.init();
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-            Main main = ui.getObject<Main>();
-            main.MainMenu.lANButton.onClick.set(() =>
+            if (ui != null)
             {
-                main.display(main.NetworkingPage);
-                network.displayPanelForLAN();
-            });
-            main.MainMenu.serverButton.onClick.set(() =>
-            {
-                if (network.logic.Logined)
+                Main main = ui.getObject<Main>();
+                main.MainMenu.lANButton.onClick.set(() =>
                 {
                     main.display(main.NetworkingPage);
-                    network.displayPanelForLobby();
-                }
-                else
+                    network.displayPanelForLAN();
+                });
+                main.MainMenu.serverButton.onClick.set(() =>
                 {
-                    main.MainMenu.registerPanel.hide();
-                    main.MainMenu.loginPanel.display();
-                }
-            });
-            main.display(main.Loading);
-            _mainCtrl = new MainCtrl(this);
-            _mainCtrl.onAwake();
+                    if (network.logic.Logined)
+                    {
+                        main.display(main.NetworkingPage);
+                        network.displayPanelForLobby();
+                    }
+                    else
+                    {
+                        main.MainMenu.registerPanel.hide();
+                        main.MainMenu.loginPanel.display();
+                    }
+                });
+                main.display(main.Loading);
+            }
+            //_mainCtrl = new MainCtrl(this);
+            //_mainCtrl.onAwake();
         }
         protected async void Start()
         {
             StageLogger logger = new StageLogger(new int[] { 1, 2, 50 });
             logger.OnStageChange += (progress, text) =>
             {
+                if (mainUI == null)
+                    return;
                 mainUI.Loading.LoggerText.text = text;
                 mainUI.Loading.ProgressBarSlider.value = progress;
             };
-            _mainCtrl.onStart();
+            //_mainCtrl.onStart();
             if (_mainSceneCtrl == null)
             {
                 _mainSceneCtrl = TransformHelper.findComponentInAllScenes<MainSceneCtrl>();
             }
-            _mainSceneCtrl.menu.hide();
+            if (_mainSceneCtrl != null)
+            {
+                _mainSceneCtrl.menu.hide();
+            }
             //加载内置卡片数据
             _loadCardTask = card.loadBuiltinCards(
                 new System.Reflection.Assembly[] { typeof(THHGame).Assembly },
@@ -227,7 +235,10 @@ namespace Game
             //}
             if (_loadCardTask != null)
                 await _loadCardTask;
-            _mainSceneCtrl.menu.display();
+            if (_mainSceneCtrl != null)
+            {
+                _mainSceneCtrl.menu.display();
+            }
         }
         protected void Update()
         {
@@ -437,7 +448,7 @@ namespace Game
         public TriggerManager triggers => this.findInstance<TriggerManager>();
         [SerializeField]
         MainSceneCtrl _mainSceneCtrl;
-        MainCtrl _mainCtrl;
+        //MainCtrl _mainCtrl;
         [SerializeField]
         UnityEvent onLoadingFinish;
         Main mainUI => ui.getObject<Main>();

@@ -116,121 +116,9 @@ namespace Game
             cardPoolInfo.cardPoolId = cardPoolId;
             cardPoolInfo.cardPoolName = StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME;
             cardPoolInfo.imageResPath = null;
-            cardPoolInfo.version = CARD_POOL_VERSION_0_1;
+            cardPoolInfo.version = CARD_POOL_VERSION_0_2;
             cardPool = new CardPool();
             _cardPoolDict[cardPoolId] = cardPool;
-        }
-        public async Task saveCardPool(CardPoolInfo cardPoolInfo, CardDefine[] cardDefines, CardSkinData[] cardSkins, ActionNodeGraphInfo[] actionNodeGraphInfos)
-        {
-            if (!Application.isEditor && isStandardCardPool(cardPoolInfo))
-            {
-                //不能修改标准卡池，虽然其实玩家想改也没人能阻止就是了，最多是和别人玩会失去同步吧。
-                game.ui.dialog.ShowConfirm(StringTable.INVALID_OPERATION, StringTable.EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL, null);
-                return;
-            }
-            //如果当前的卡池没有被保存过，没有分配地址，则给它分配一个地址。
-            string cardPoolPath = null;
-            foreach (var pair in _cardPoolInfoDict)
-            {
-                if (pair.Value == cardPoolInfo)
-                {
-                    cardPoolPath = pair.Key;
-                    break;
-                }
-            }
-            if (cardPoolPath == null)
-            {
-                //没有指定地址
-                cardPoolPath = allocCardPoolPath(cardPoolInfo);
-                _cardPoolInfoDict.Add(cardPoolPath, cardPoolInfo);
-            }
-            //对缓存的图片进行保存
-            await saveExternalImages(cardPoolInfo.cardPoolId);
-            //foreach (var pair in _externalSpriteCacheDict)
-            //{
-            //    //获取使用这张图片的第一个皮肤
-            //    CardSkinData skin = cardSkins.FirstOrDefault(s => s.imagePath == pair.Key);
-            //    if (skin == null)
-            //    {
-            //        //没有皮肤使用，跳过
-            //        continue;
-            //    }
-            //    //另存为图片
-            //    if (isStandardCardPool(cardPoolInfo))
-            //    {
-            //        path = Path.Combine(cardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
-            //        if (pair.Value is Sprite sprite)
-            //        {
-            //            await game.fileManager.saveFile(Path.Combine(editorTextureDirName, path), sprite.texture.EncodeToJPG());
-            //        }
-            //        else if (pair.Value is Task<Sprite> task)
-            //        {
-            //            sprite = await task;
-            //            await game.fileManager.saveFile(Path.Combine(editorTextureDirName, path), sprite.texture.EncodeToJPG());
-            //        }
-            //        else
-            //        {
-            //            Debug.LogWarning("图片" + path + "为空");
-            //            continue;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        path = Path.Combine(cardPoolInfo.cardPoolName, skin.id.ToString(), skin.skinId.ToString(), "Image.jpg");
-            //        if (pair.Value is Sprite sprite)
-            //        {
-            //            await game.fileManager.savePersistentFile(Path.Combine(textureDirName, path), sprite.texture.EncodeToJPG());
-            //        }
-            //        else if (pair.Value is Task<Sprite> task)
-            //        {
-            //            sprite = await task;
-            //            await game.fileManager.savePersistentFile(Path.Combine(textureDirName, path), sprite.texture.EncodeToJPG());
-            //        }
-            //        else
-            //        {
-            //            Debug.LogWarning("图片" + path + "为空");
-            //            continue;
-            //        }
-            //    }
-            //    Debug.Log("另存为图片" + path + "成功");
-            //    //替换所有引用这个图片的皮肤的图片地址
-            //    foreach (var otherSkin in cardSkins.Where(s => s.imagePath == pair.Key))
-            //    {
-            //        otherSkin.imagePath = path;
-            //    }
-            //}
-            //保存文件
-            string path = cardPoolPath;
-            if (isStandardCardPool(cardPoolInfo))
-            {
-                //官方卡池只能保存到指定路径下面，也就是工程文件
-                path = Path.Combine(editorCardPoolDirName, cardPoolInfo.cardPoolName + '.' + cardPoolFilePostfix);
-            }
-            else if (path.StartsWith("sa:"))
-            {
-                //如果是StreamingAssets，那要转存成可持续化文件
-                path = path.Substring(3, path.Length - 3);
-            }
-            //#if UNITY_EDITOR
-            //            if (game.card.isStandardCardPool(_curCardPoolInfo) &&
-            //                path.StartsWith(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName)))
-            //            {
-            //                path = path.Replace(Path.Combine(Application.persistentDataPath, game.card.cardPoolDirName), game.card.editorCardPoolDirName);
-            //            }
-            //#endif
-            cardPoolInfo.version = CARD_POOL_VERSION_0_1;
-            CardPool cardPool = new CardPool();
-            cardPool.cardDefineList.AddRange(cardDefines);
-            cardPool.cardSkinList.AddRange(cardSkins);
-            cardPool.actionNodeGraphInfoList.AddRange(actionNodeGraphInfos);
-            cardPool.buffDefineList.AddRange(getBuffDefines(cardPoolInfo.cardPoolId));
-            cardPool.buffSkinList.AddRange(getBuffSkins(cardPoolInfo.cardPoolId));
-            await game.fileManager.saveFile(path, new string[]
-            {
-                cardPoolInfo.toJson(),//文件头信息
-                cardPool.toJson()//内容对象
-            });
-            Debug.Log("保存卡池" + path + "成功");
         }
         /// <summary>
         /// 保存卡池，如果卡池没有被保存过那么会被分配一个新的地址，否则会覆盖已经保存的文件。
@@ -276,11 +164,11 @@ namespace Game
                 //如果是StreamingAssets，那要转存成可持续化文件
                 path = path.Substring(3, path.Length - 3);
             }
-            cardPoolInfo.version = CARD_POOL_VERSION_0_1;
+            cardPoolInfo.version = CARD_POOL_VERSION_0_2;
             await game.fileManager.saveFile(path, new string[]
             {
                 cardPoolInfo.toJson(),//文件头信息
-                cardPool.toJson()//内容对象
+                cardPool.toJson(true)//内容对象
             });
             Debug.Log("保存卡池" + path + "成功");
         }
@@ -312,7 +200,28 @@ namespace Game
             string json = lines[0];
             CardPoolInfo cardPoolInfo = JsonHelper.fromJson<CardPoolInfo>(json);
             CardPool cardPool;
-            if (cardPoolInfo.version >= CARD_POOL_VERSION_0_1)
+            if (cardPoolInfo.version >= CARD_POOL_VERSION_0_2)
+            {
+                if (path.StartsWith("sa:"))
+                {
+                    json = await game.fileManager.readStreamingTextFileToEnd(path, 1);
+                }
+                else
+                {
+                    json = await game.fileManager.readTextFileToEnd(path, 1);
+                }
+                try
+                {
+                    cardPool = JsonHelper.fromJson<CardPool>(json);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
+                }
+                _cardPoolInfoDict[path] = cardPoolInfo;
+                _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
+            }
+            else if (cardPoolInfo.version == CARD_POOL_VERSION_0_1)
             {
                 if (path.StartsWith("sa:"))
                 {
@@ -969,6 +878,7 @@ namespace Game
         {
             1
         };
+        const float CARD_POOL_VERSION_0_2 = 0.2f;
         const float CARD_POOL_VERSION_0_1 = 0.1f;
         #endregion
     }
