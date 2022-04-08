@@ -549,7 +549,12 @@ namespace Controllers
         /// <returns></returns>
         private Task<Sprite> loadDeckImage(Deck deck)
         {
-            CardSkinData skin = game.card.getSkin(deck.masterId);
+            CardSkinData skin = game.card.getDefaultSkin(deck.masterId);
+            if (skin == null)
+            {
+                Debug.LogError("不存在卡组角色" + deck.masterId + "的对应皮肤");
+                return Task.FromResult<Sprite>(null);
+            }
             if (skin.image != null)
                 return Task.FromResult(skin.image);
             else
