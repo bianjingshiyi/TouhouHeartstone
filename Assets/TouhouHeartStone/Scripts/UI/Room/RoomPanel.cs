@@ -56,7 +56,7 @@ namespace UI
                         showDeckSelectionPanel((deckID) =>
                         {
                             var deck = deckManager.GetDeck(deckID);
-                            var skin = cardManager.getSkin(deck.MasterID);
+                            var skin = cardManager.getCardSkin(deck.MasterID);
 
                             var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
                             list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
@@ -291,7 +291,7 @@ namespace UI
             //_cardViewPanel.setItems(cardManager,cards);
             var viewData = cards.Select(i =>
             {
-                var skin = cardManager.getSkin(i);
+                var skin = cardManager.getCardSkin(i);
                 return (skin?.name,skin?.image);
             }).ToArray();
             _cardViewPanel.update(viewData);
@@ -429,7 +429,7 @@ namespace UI
                 showDeckSelectionPanel((deckID) =>
                 {
                     var deck = deckManager.GetDeck(deckID);
-                    var skin = cardManager.getSkin(deck.MasterID);
+                    var skin = cardManager.getCardSkin(deck.MasterID);
                     DeckSelectionDeckListItem.SetContent(deckID, deck.Name, skin.image);
 
                     var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
@@ -634,7 +634,7 @@ namespace UI
             var viewData = decks.Select((define =>
             {
                 // 只有30张卡的卡组才能选择
-                return (define.Name, cardManager.getSkin(define.MasterID).image,(deckManager.GetDeckCards(define.ID).Count >= 30));
+                return (define.Name, cardManager.getCardSkin(define.MasterID).image,(deckManager.GetDeckCards(define.ID).Count >= 30));
             })).ToArray();
             _deckViewPanel.update(viewData);
             _deckPanel.SetActive(true);
@@ -754,7 +754,7 @@ namespace UI
             bool exists = info.tryGetProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY, out deck);
 
             CheckIconImage.gameObject.SetActive(info.ready);
-            CharacterText.text = exists ? this.findInstance<CardManager>().getSkin(deck[0]).name : "";
+            CharacterText.text = exists ? this.findInstance<CardManager>().getCardSkin(deck[0]).name : "";
         }
 
         RoomPlayerData playerData;
@@ -770,7 +770,7 @@ namespace UI
             int[] deck = data.getDeck()?.toIdArray(true);
 
             CheckIconImage.gameObject.SetActive(data.getReady());
-            CharacterText.text = deck != null ? this.findInstance<CardManager>().getSkin(deck[0]).name : "";
+            CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0]).name : "";
         }
 
         /// <summary>

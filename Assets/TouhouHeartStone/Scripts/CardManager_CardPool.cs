@@ -716,7 +716,7 @@ namespace Game
         }
         public Task<Sprite> loadCardImage(int cardId)
         {
-            CardSkinData skin = getSkin(cardId);
+            CardSkinData skin = getCardSkin(cardId);
             if (skin.image != null)
                 return Task.FromResult(skin.image);
             else
@@ -760,15 +760,37 @@ namespace Game
             dirInfo = dirInfo.Parent;
             return dirInfo.FullName;
         }
-
         public bool tryGetCardSkin(int cardId, out CardSkinData skin)
         {
             skin = null;
             foreach (var cardPool in _cardPoolDict.Values)
             {
-                skin = cardPool.cardSkinList.Find(s => s.id == cardId);
+                //查找所有皮肤
+                var skinGroups = cardPool.cardSkinList.Where(s => s.id == cardId).GroupBy(s => s.skinId).OrderBy(g => g.Key);
+                if (skinGroups.Count() < 1)
+                    continue;
+                var firstSkinGroup = skinGroups.First();
+                //如果存在语言相同的皮肤，则返回
+                skin = firstSkinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
                 if (skin != null)
                     return true;
+                //如果存在默认语言的皮肤，则返回
+                skin = firstSkinGroup.FirstOrDefault(s => s.language == game.langManager.getDefaultLanguage());
+                if (skin != null)
+                    return true;
+                //都没有，随便返回第一个
+                skin = firstSkinGroup.First();
+                return true;
+            }
+            if (tempSkinDic.ContainsKey(cardId))
+            {
+                skin = tempSkinDic[cardId];
+                return true;
+            }
+            if (skinDic.ContainsKey(cardId))
+            {
+                skin = skinDic[cardId];
+                return true;
             }
             return false;
         }

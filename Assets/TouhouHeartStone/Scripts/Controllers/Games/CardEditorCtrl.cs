@@ -48,7 +48,7 @@ namespace Controllers
             charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
             for (int i = 1; i < charactersName.Length; i++)
             {
-                charactersName[i] = game.card.getSkin(selectableCharacters[i - 1].id).name;
+                charactersName[i] = game.card.getCardSkin(selectableCharacters[i - 1].id).name;
             }
             _ui.setSelectableCharacters(charactersName);
             //中立为0，有角色则为index+1

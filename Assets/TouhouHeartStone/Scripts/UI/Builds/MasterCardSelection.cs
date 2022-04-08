@@ -26,7 +26,7 @@ namespace UI
             foreach (var deck in decks)
             {
                 var c = MasterCardList.addItem();
-                var skin = cardManager.getSkin(deck.MasterID);
+                var skin = cardManager.getCardSkin(deck.MasterID);
                 c.SetContent((int)deck.ID, deck.Name, skin?.image);
                 c.SetMode(DeckListItem.Mode.DeckSelect);
                 c.onDeckSelect += (id) =>
@@ -44,7 +44,7 @@ namespace UI
             foreach (var card in cards)
             {
                 var c = MasterCardList.addItem();
-                var skin = cardManager.getSkin(card);
+                var skin = cardManager.getCardSkin(card);
                 c.SetContent(card, skin?.name, skin?.image);
                 c.SetMode(DeckListItem.Mode.DeckSelect);
                 c.onDeckSelect += (id) =>

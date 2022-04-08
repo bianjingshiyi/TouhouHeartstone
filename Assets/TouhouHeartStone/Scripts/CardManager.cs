@@ -549,10 +549,6 @@ namespace Game
                 return new CardDefine[0];
             }
         }
-        public CardSkinData getSkin(TouhouCardEngine.Card card)
-        {
-            return getSkin(card.define.id);
-        }
         public CardSkinData getDefaultSkin(CardDefine cardDefine)
         {
             return getDefaultSkin(cardDefine.id);
@@ -577,33 +573,11 @@ namespace Game
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public CardSkinData getSkin(int id)
+        public CardSkinData getCardSkin(int cardId)
         {
-            if (tryGetCardSkin(id, out CardSkinData skin))
+            if (tryGetCardSkin(cardId, out CardSkinData skin))
                 return skin;
-            if (tempSkinDic.ContainsKey(id))
-                return tempSkinDic[id];
-            if (skinDic.ContainsKey(id))
-                return skinDic[id];
             return null;
-        }
-        public bool tryGetSkin(int id, out CardSkinData skin)
-        {
-            if (tempSkinDic.ContainsKey(id))
-            {
-                skin = tempSkinDic[id];
-                return true;
-            }
-            else if (skinDic.ContainsKey(id))
-            {
-                skin = skinDic[id];
-                return true;
-            }
-            else
-            {
-                skin = null;
-                return false;
-            }
         }
         Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();
         /// <summary>

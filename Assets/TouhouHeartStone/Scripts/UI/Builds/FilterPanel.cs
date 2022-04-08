@@ -110,7 +110,7 @@ namespace UI
             for (int i = 0; i < allCharacters.Length; i++)
             {
                 var id = allCharacters[i];
-                var name = id == CATEGORY.CHARACTER_NEUTRAL ? langManager._(CHARACTER_NEUTRAL) : cardManager.getSkin(id)?.name;
+                var name = id == CATEGORY.CHARACTER_NEUTRAL ? langManager._(CHARACTER_NEUTRAL) : cardManager.getCardSkin(id)?.name;
                 DropdownCharacterDropdownLight.asDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(name));
             }
         }

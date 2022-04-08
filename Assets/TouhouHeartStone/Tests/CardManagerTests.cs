@@ -142,7 +142,7 @@ namespace Tests
             var cm = task.Result;
 
             cm.AddCardSkinTemp(new UI.CardSkinData { id = NonExistsCardID });
-            var skin = cm.getSkin(NonExistsCardID);
+            var skin = cm.getCardSkin(NonExistsCardID);
             Assert.NotNull(skin);
             Assert.AreEqual(skin.id, NonExistsCardID);
         }

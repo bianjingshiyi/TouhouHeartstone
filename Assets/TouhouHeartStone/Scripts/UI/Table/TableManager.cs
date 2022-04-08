@@ -1830,7 +1830,7 @@ namespace Game
         #region Skin
         public CardSkinData getSkin(Card card)
         {
-            CardSkinData skin = getManager<CardManager>().getSkin(card.define.id);
+            CardSkinData skin = getManager<CardManager>().getCardSkin(card.define.id);
             if (skin != null)
                 return skin;
             else
@@ -1847,7 +1847,7 @@ namespace Game
         }
         public CardSkinData getSkin(CardDefine define)
         {
-            CardSkinData skin = getManager<CardManager>().getSkin(define.id);
+            CardSkinData skin = getManager<CardManager>().getCardSkin(define.id);
             if (skin != null)
                 return skin;
             else

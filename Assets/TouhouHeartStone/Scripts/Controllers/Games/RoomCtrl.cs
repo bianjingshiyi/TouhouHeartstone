@@ -269,7 +269,7 @@ namespace Controllers
                 {
                     viewData[i].characterName = string.Empty;
                 }
-                else if (game.card.tryGetSkin(deck.masterId, out CardSkinData skin))
+                else if (game.card.tryGetCardSkin(deck.masterId, out CardSkinData skin))
                 {
                     viewData[i].characterName = skin.name;
                 }

@@ -50,7 +50,7 @@ namespace Controllers
 
             //切换角色筛选
             await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, charactersId: new int[] { deck.masterId }, cardFilter: cardFilter);
-            CardSkinData masterSkin = game.card.getSkin(deck.masterId);
+            CardSkinData masterSkin = game.card.getCardSkin(deck.masterId);
 
             // 更新UI
             _ui.gameObject.SetActive(true);
@@ -549,8 +549,7 @@ namespace Controllers
         /// <returns></returns>
         private Task<Sprite> loadDeckImage(Deck deck)
         {
-            CardSkinData skin = game.card.getDefaultSkin(deck.masterId);
-            if (skin == null)
+            if (!game.card.tryGetCardSkin(deck.masterId, out CardSkinData skin))
             {
                 Debug.LogError("不存在卡组角色" + deck.masterId + "的对应皮肤");
                 return Task.FromResult<Sprite>(null);
@@ -681,18 +680,18 @@ namespace Controllers
                 }
             }
         }
-        private bool isDeckContainsExternalCard(int cardPoolId)
-        {
-            if (_deck == null)
-                return false;
-            for (int i = 0; i < _deck.cardList.Count; i++)
-            {
-                int cardId = _deck.cardList[i].id;
-                if (CardDefineHelper.isExternalCard(cardId) && CardDefineHelper.getCardPoolId(cardId) == cardPoolId)
-                    return true;
-            }
-            return false;
-        }
+        //private bool isDeckContainsExternalCard(int cardPoolId)
+        //{
+        //    if (_deck == null)
+        //        return false;
+        //    for (int i = 0; i < _deck.cardList.Count; i++)
+        //    {
+        //        int cardId = _deck.cardList[i].id;
+        //        if (CardDefineHelper.isExternalCard(cardId) && CardDefineHelper.getCardPoolId(cardId) == cardPoolId)
+        //            return true;
+        //    }
+        //    return false;
+        //}
         /// <summary>
         /// 更新卡组列表UI
         /// </summary>
