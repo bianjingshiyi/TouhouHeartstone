@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
+
 namespace TouhouHeartstone
 {
     public class GeneratedCardDefine : CardDefine
@@ -11,27 +11,6 @@ namespace TouhouHeartstone
         public GeneratedCardDefine(int id, string type, Dictionary<string, object> props, GeneratedEffect[] effects) : base(id, type, props, effects)
         {
         }
-        // public override void setProp<T>(string propName, T value)
-        // {
-        //     if (propName == nameof(CardDefine.id))
-        //         id = (int)(object)value;
-        //     dicProp[propName] = value;
-        // }
-        // public override T getProp<T>(string propName)
-        // {
-        //     if (dicProp.ContainsKey(propName) && dicProp[propName] is T)
-        //         return (T)dicProp[propName];
-        //     else
-        //         return default;
-        // }
-        // public string[] getPropNames()
-        // {
-        //     return dicProp.Keys.ToArray();
-        // }
-        // public bool hasProp(string propName)
-        // {
-        //     return dicProp.ContainsKey(propName);
-        // }
         public override void merge(CardDefine newVersion)
         {
             if (newVersion.type != type)

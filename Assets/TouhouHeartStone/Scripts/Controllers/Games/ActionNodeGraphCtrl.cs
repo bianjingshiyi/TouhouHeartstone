@@ -108,87 +108,6 @@ namespace Controllers
                 typeof(HearthStoneRule).Assembly,
                 typeof(EffectEditorLibrary).Assembly
             });
-            //生成节点菜单
-            _backgroundMenuOptionList = new List<BackgroundMenuItem>();
-            foreach (var pair in _actionDefineDict)
-            {
-                string defineName = pair.Key;
-                ActionDefine actionDefine = pair.Value;
-                BackgroundMenuItem menuItem;
-                BackgroundMenuItem menuCategory;
-                if (actionDefine is MethodActionDefine method)
-                {
-                    //反射方法的选项要带上它的分类
-                    if (string.IsNullOrEmpty(method.category))
-                    {
-                        menuItem = new BackgroundMenuItem(_nameTextDict.TryGetValue(method.methodName, out string text) ?
-                            game.langManager.getString(text) :
-                            method.methodName);
-                        menuItem.action = onMenuClick_CreateNode;
-                        _backgroundMenuOptionList.Add(menuItem);
-                    }
-                    else
-                    {
-                        menuCategory = _backgroundMenuOptionList.FirstOrDefault(e => e.title ==
-                           (_nameTextDict.TryGetValue(method.category, out string categoryText) ?
-                                game.langManager.getString(categoryText) :
-                                method.category));
-                        if (menuCategory == null)
-                        {
-                            menuCategory = new BackgroundMenuItem(_nameTextDict.TryGetValue(method.category, out string categoryText) ?
-                            game.langManager.getString(categoryText) :
-                            method.category);
-                            menuCategory.action = onMenuClick_EnterSubMenu;
-                            _backgroundMenuOptionList.Add(menuCategory);
-                        }
-                        if (menuCategory.childList == null)
-                            menuCategory.childList = new List<BackgroundMenuItem>();
-                        menuItem = new BackgroundMenuItem(_nameTextDict.TryGetValue(method.methodName, out string text) ?
-                            game.langManager.getString(text) :
-                            method.methodName);
-                        menuItem.action = onMenuClick_CreateNode;
-                        menuCategory.childList.Add(menuItem);
-                    }
-                }
-                else
-                {
-                    if (defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST))
-                    {
-                        //常量
-                        menuCategory = _backgroundMenuOptionList.FirstOrDefault(e => e.title == game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST));
-                        if (menuCategory == null)
-                        {
-                            menuCategory = new BackgroundMenuItem(game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST));
-                            menuCategory.action = onMenuClick_EnterSubMenu;
-                            _backgroundMenuOptionList.Add(menuCategory);
-                        }
-                        if (menuCategory.childList == null)
-                            menuCategory.childList = new List<BackgroundMenuItem>();
-                        menuItem = new BackgroundMenuItem(_nameTextDict.TryGetValue(defineName.Substring(0, defineName.Length - 5), out string text) ?
-                            game.langManager.getString(text) :
-                            defineName.Substring(0, defineName.Length - 5));
-                        menuItem.action = onMenuClick_CreateNode;
-                        menuCategory.childList.Add(menuItem);
-                    }
-                    else
-                    {
-                        menuItem = new BackgroundMenuItem(_nameTextDict.TryGetValue(defineName, out string text) ?
-                            game.langManager.getString(text) :
-                            defineName);
-                        menuItem.action = onMenuClick_CreateNode;
-                        _backgroundMenuOptionList.Add(menuItem);
-                    }
-                }
-                async void onMenuClick_CreateNode()
-                {
-                    closeMenu();
-                    await createActionNodeAtCurPos(defineName, actionDefine);
-                }
-                void onMenuClick_EnterSubMenu()
-                {
-                    enterSubMenu(new int[] { _backgroundMenuOptionList.IndexOf(menuCategory) });
-                }
-            }
             _ui.onLeftClickBackground += onLeftClickBackground;
             _ui.onRightClickBackground += onRightClickBackground;
             _ui.onLongPressBackground += onLongPressBackground;
@@ -249,7 +168,7 @@ namespace Controllers
         /// <param name="posY"></param>
         private void onLongPressBackground(float posX, float posY)
         {
-            openMenu(posX, posY, _backgroundMenuOptionList.Select(menuItem => menuItem.title + (menuItem.childList != null ? " >" : "")).ToArray());
+            openMenu(posX, posY, getActionDefineGroups().Select(g => g.Key + (g.Count() > 1 ? " >" : "")).ToArray());
         }
         /// <summary>
         /// 当用户左击背景，隐藏菜单。
@@ -268,13 +187,13 @@ namespace Controllers
         /// <param name="posY"></param>
         private void onRightClickBackground(float posX, float posY)
         {
-            openMenu(posX, posY, _backgroundMenuOptionList.Select(menuItem => menuItem.title + (menuItem.childList != null ? " >" : "")).ToArray());
+            openMenu(posX, posY, getActionDefineGroups().Select(g => g.Key + (g.Count() > 1 ? ">" : "")).ToArray());
         }
         /// <summary>
         /// 当用户点击菜单项，视具体点击的项目决定干什么
         /// </summary>
         /// <param name="index"></param>
-        private void onClickMenuItem(int index)
+        private async void onClickMenuItem(int index)
         {
             if (_curEditActionNode != null)
             {
@@ -288,31 +207,49 @@ namespace Controllers
             else
             {
                 //背景菜单
-                List<BackgroundMenuItem> optionList = _backgroundMenuOptionList;
-                bool isSubMenu = false;
-                if (_menuLayerStack != null)
+                var categroyGroups = getActionDefineGroups();
+                if (_curCategroy == null)
                 {
-                    for (int i = 0; i < _menuLayerStack.Length; i++)
+                    ActionDefine[] actions = categroyGroups[index].ToArray();
+                    if (actions.Length == 1)
                     {
-                        isSubMenu = true;
-                        optionList = optionList[_menuLayerStack[i]].childList;
-                    }
-                }
-                if (isSubMenu)
-                {
-                    if (index == 0)
-                    {
-                        //返回上一层
-                        enterSubMenu(_menuLayerStack.Take(_menuLayerStack.Length - 1).ToArray());
+                        //直接创建节点
+                        closeMenu();
+                        await createActionNodeAtCurPos(actions[0]);
                     }
                     else
                     {
-                        optionList[index - 1].action?.Invoke();
+                        //打开子菜单
+                        _curCategroy = categroyGroups[index].Key;
+                        string[] options = new string[actions.Length + 1];
+                        options[0] = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN) + " <";
+                        Array.Copy(actions.Select(a =>
+                        {
+                            string name = a.defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST) ?
+                                a.defineName.Substring(0, a.defineName.Length - 5) : a.defineName;
+                            if (_nameTextDict.ContainsKey(name))
+                                name = _nameTextDict[name];
+                            return game.langManager.getString(name);
+                        }).ToArray(), 0, options, 1, actions.Length);
+                        _ui.updateMenu(options);
                     }
                 }
                 else
                 {
-                    optionList[index].action?.Invoke();
+                    if (index == 0)
+                    {
+                        //返回上一层
+                        _curCategroy = null;
+                        _ui.updateMenu(categroyGroups.Select(g => g.Key + (g.Count() > 0 ? " >" : "")).ToArray());
+                    }
+                    else
+                    {
+                        //创建节点
+                        ActionDefine[] actions = Array.Find(categroyGroups, g => g.Key == _curCategroy).ToArray();
+                        _curCategroy = null;
+                        closeMenu();
+                        await createActionNodeAtCurPos(actions[index - 1]);
+                    }
                 }
             }
             _curEditActionNode = null;
@@ -2077,6 +2014,33 @@ namespace Controllers
         {
             display(_editObjectStack.Pop());
         }
+        private IGrouping<string, ActionDefine>[] getActionDefineGroups()
+        {
+            return _actionDefineDict.GroupBy(p =>
+            {
+                ActionDefine actionDefine = p.Value;
+                string name;
+                if (actionDefine is MethodActionDefine methodActionDefine)
+                {
+                    if (string.IsNullOrEmpty(methodActionDefine.category))
+                        name = methodActionDefine.defineName;
+                    else
+                        name = methodActionDefine.category;
+                }
+                else if (actionDefine.defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST))
+                {
+                    //以Const结尾的类型是常量
+                    name = StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST;
+                }
+                else
+                {
+                    name = actionDefine.defineName;
+                }
+                if (_nameTextDict.ContainsKey(name))
+                    name = _nameTextDict[name];
+                return game.langManager.getString(name);
+            }, p => p.Value).OrderBy(g => g.Count() > 1).ThenBy(g => g.Key).ToArray();
+        }
         private string getActionNodeName(ActionNode actionNode)
         {
             if (_nameTextDict.TryGetValue(actionNode.defineName, out string text))
@@ -2303,34 +2267,19 @@ namespace Controllers
         {
             return _graphInfo.actionInfoDict.Remove(node.id.ToString());
         }
-        private async Task<ActionNodeItem> createActionNodeAtCurPos(string defineName, ActionDefine actionDefine)
+        private async Task<ActionNodeItem> createActionNodeAtCurPos(ActionDefine actionDefine)
         {
-            var actionNode = new ActionNode(defineName,
+            var actionNode = new ActionNode(0, actionDefine.defineName,
                 new ActionValueRef[actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams ? actionDefine.inputs.Length - 1 : actionDefine.inputs.Length],
                 new object[actionDefine.consts.Length],
-                new ActionNode[1]);
+                null, new ActionNode[actionDefine.getActionOutputs().Length + 1]);
+            _actionNodeList.Add(actionNode);
+            actionNode.id = allocActionNodeId();
+            _graphInfo.freeActionNodeList.Add(actionNode);
+            setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(_curPosX, _curPosY));
             ActionNodeItem actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, _curPosX, _curPosY);
             updateContentSize();
             return actionNodeItem;
-        }
-        private void enterSubMenu(int[] index)
-        {
-            List<BackgroundMenuItem> optionList = _backgroundMenuOptionList;
-            for (int i = 0; i < index.Length; i++)
-            {
-                optionList = optionList[index[i]].childList;
-            }
-            List<string> titleList = new List<string>();
-            if (index.Length > 0)
-            {
-                titleList.Add(game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN + " <"));
-            }
-            for (int i = 0; i < optionList.Count; i++)
-            {
-                titleList.Add(optionList[i].childList != null ? optionList[i].title + " >" : optionList[i].title);
-            }
-            _menuLayerStack = index;
-            _ui.updateMenu(titleList.ToArray());
         }
         /// <summary>
         /// 在对应位置打开菜单
@@ -2355,7 +2304,7 @@ namespace Controllers
         }
         private void closeMenu()
         {
-            _menuLayerStack = null;
+            _curCategroy = null;
             _ui.closeMenu();
         }
         private string[] getTranslatedTargetCheckerTypes()
@@ -2405,8 +2354,7 @@ namespace Controllers
         [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         Dictionary<string, ActionDefine> _actionDefineDict;
-        int[] _menuLayerStack = new int[0];
-        List<BackgroundMenuItem> _backgroundMenuOptionList = new List<BackgroundMenuItem>();
+        string _curCategroy = null;
         float _curPosX;
         float _curPosY;
         readonly List<ActionNode> _actionNodeList = new List<ActionNode>();

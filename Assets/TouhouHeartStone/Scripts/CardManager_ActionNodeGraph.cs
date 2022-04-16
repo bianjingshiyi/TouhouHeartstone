@@ -1,6 +1,5 @@
 ﻿using Controllers;
 using System.Collections.Generic;
-
 namespace Game
 {
     partial class CardManager

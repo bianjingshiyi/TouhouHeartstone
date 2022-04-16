@@ -12,31 +12,31 @@ PluginImporter:
   validateReferences: 1
   platformData:
   - first:
-      '': Linux
+      : Linux
     second:
       enabled: 0
       settings:
         CPU: x86
   - first:
-      '': OSXIntel
+      : OSXIntel
     second:
       enabled: 0
       settings:
         CPU: AnyCPU
   - first:
-      '': OSXIntel64
+      : OSXIntel64
     second:
       enabled: 0
       settings:
         CPU: AnyCPU
   - first:
-      '': SamsungTV
+      : SamsungTV
     second:
       enabled: 1
       settings:
         STV_MODEL: STANDARD_13
   - first:
-      '': Tizen
+      : Tizen
     second:
       enabled: 1
       settings: {}

@@ -400,7 +400,7 @@ namespace Game
                     string newDefineName = null;
                     foreach (ActionDefine actionDefine in actionDefineDict.Values)
                     {
-                        if (actionDefine.obsoleteNames.Contains(actionNode.defineName))
+                        if (actionDefine.obsoleteNames != null && actionDefine.obsoleteNames.Contains(actionNode.defineName))
                         {
                             newDefineName = actionDefine.defineName;
                             break;

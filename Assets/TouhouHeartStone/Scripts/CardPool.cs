@@ -13,5 +13,6 @@ namespace Game
         public List<ActionNodeGraphInfo> actionNodeGraphInfoList = new List<ActionNodeGraphInfo>();
         public List<GeneratedBuffDefine> buffDefineList = new List<GeneratedBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
+        public List<SerializableActionDefine> actionDefineList = new List<SerializableActionDefine>();
     }
 }
