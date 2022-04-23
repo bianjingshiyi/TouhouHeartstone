@@ -11,46 +11,116 @@ namespace UI
     public class EffectEditorPanel : MonoBehaviour
     {
         #region 公有方法
+        /// <summary>
+        /// 切换到效果编辑模式
+        /// </summary>
+        public void switchToEffect()
+        {
+            _effectRoot.SetActive(true);
+            _actionDefineRoot.SetActive(false);
+        }
+        /// <summary>
+        /// 切换到自定义动作编辑模式
+        /// </summary>
+        public void switchToActionDefine()
+        {
+            _effectRoot.SetActive(false);
+            _actionDefineRoot.SetActive(true);
+        }
+        /// <summary>
+        /// 设置名字输入框的字符串
+        /// </summary>
+        /// <param name="name"></param>
+        public void setActionDefineName(string name)
+        {
+            _nameInputField.SetTextWithoutNotify(name);
+        }
+        public void initValueDefineTypes(string[] variableTypes, string[] constTypes)
+        {
+            _inputTemplate.GetComponent<EffectEditorValueDefineItem>().initTypeDropdown(variableTypes);
+            _constTemplate.GetComponent<EffectEditorValueDefineItem>().initTypeDropdown(constTypes);
+            _outputListTemplate.GetComponent<EffectEditorValueDefineItem>().initTypeDropdown(variableTypes);
+        }
+        public void updateInputList((int typeIndex, string name, bool isArray, bool isParams)[] viewData)
+        {
+            UIHelper.updateList(_inputListRoot, _inputTemplate, _inputList, viewData.Length, (i, itemRect) =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.setType(viewData[i].typeIndex);
+                item.setName(viewData[i].name);
+                item.setIsArray(viewData[i].isArray);
+                item.setIsParams(viewData[i].isParams);
+            }, itemRect =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.onTypeDropdownValueChanged += onInputListItemTypeDropdownValueChangedCallback;
+                item.onNameInputFieldValueChanged += onInputListItemNameInputFieldValueChangedCallback;
+                item.onIsArrayToggleValueChanged += onInputListItemIsArrayToggleValueChangedCallback;
+                item.onIsParamsToggleValueChanged += onInputListItemIsParamsToggleValueChangedCallback;
+                item.onDeleteButtonClicked += onInputListItemDeleteButtonClickedCallback;
+            }, itemRect =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.onTypeDropdownValueChanged -= onInputListItemTypeDropdownValueChangedCallback;
+                item.onNameInputFieldValueChanged -= onInputListItemNameInputFieldValueChangedCallback;
+                item.onIsArrayToggleValueChanged -= onInputListItemIsArrayToggleValueChangedCallback;
+                item.onIsParamsToggleValueChanged -= onInputListItemIsParamsToggleValueChangedCallback;
+                item.onDeleteButtonClicked -= onInputListItemDeleteButtonClickedCallback;
+            });
+        }
+        public void updateConstList((int typeIndex, string name)[] viewData)
+        {
+            UIHelper.updateList(_constListRoot, _constTemplate, _constList, viewData.Length, (i, itemRect) =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.setType(viewData[i].typeIndex);
+                item.setName(viewData[i].name);
+            }, itemRect =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.onTypeDropdownValueChanged += onConstListItemTypeDropdownValueChangedCallback;
+                item.onNameInputFieldValueChanged += onConstListItemNameInputFieldValueChangedCallback;
+                item.onDeleteButtonClicked += onConstListItemDeleteButtonClickedCallback;
+            },
+            itemRect =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.onTypeDropdownValueChanged -= onConstListItemTypeDropdownValueChangedCallback;
+                item.onNameInputFieldValueChanged -= onConstListItemNameInputFieldValueChangedCallback;
+                item.onDeleteButtonClicked -= onConstListItemDeleteButtonClickedCallback;
+            });
+        }
+        public void updateOutputList((int typeIndex, string name, bool isArray)[] viewData)
+        {
+            UIHelper.updateList(_outputListRoot, _outputListTemplate, _outputList, viewData.Length, (i, itemRect) =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.setType(viewData[i].typeIndex);
+                item.setName(viewData[i].name);
+                item.setIsArray(viewData[i].isArray);
+            }, itemRect =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.onTypeDropdownValueChanged += onOutputListItemTypeDropdownValueChangedCallback;
+                item.onNameInputFieldValueChanged += onOutputListItemNameInputFieldValueChangedCallback;
+                item.onIsArrayToggleValueChanged += onOutputListItemIsArrayToggleValueChangedCallback;
+                item.onDeleteButtonClicked += onOutputListItemDeleteButtonClickedCallback;
+            }, itemRect =>
+            {
+                EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();
+                item.onTypeDropdownValueChanged -= onOutputListItemTypeDropdownValueChangedCallback;
+                item.onNameInputFieldValueChanged -= onOutputListItemNameInputFieldValueChangedCallback;
+                item.onIsArrayToggleValueChanged -= onOutputListItemIsArrayToggleValueChangedCallback;
+                item.onDeleteButtonClicked -= onOutputListItemDeleteButtonClickedCallback;
+            });
+        }
         public void initActiveRanges(string[] activeRangeNames, string[] pileValues)
         {
-            _activeRangeDropdown.ClearOptions();
-            _activeRangeDropdown.AddOptions(new List<string>(activeRangeNames));
             _effectPropListTemplate.GetComponent<ValueInputField>().initPileNames(activeRangeNames, pileValues);
         }
         public void initEffectTagNames(string[] effectTagNames, string[] effectTagValues)
         {
             _effectPropListTemplate.GetComponent<ValueInputField>().initEffectTagNames(effectTagNames, effectTagValues);
-        }
-        public void setActiveRange(bool[] value)
-        {
-            _activeRangeDropdown.value = value;
-        }
-        public void updateTriggerList(string[] triggerNames)
-        {
-            if (triggerNames == null || triggerNames.Length < 1)
-            {
-                _triggerListRoot.gameObject.SetActive(false);
-            }
-            else
-            {
-                _triggerListRoot.gameObject.SetActive(true);
-                UIHelper.updateList(_triggerListRoot, _triggerListItemTemplate, _triggerItemList, triggerNames.Length, (i, itemRect) =>
-                {
-                    EditTriggerListItem item = itemRect.GetComponent<EditTriggerListItem>();
-                    item.updateView(triggerNames[i]);
-                }, itemRect =>
-                {
-                    EditTriggerListItem item = itemRect.GetComponent<EditTriggerListItem>();
-                    item.onClickEditButton += onClickTriggerListItemEditButton;
-                    item.onClickRemoveButton += onClickTriggerListItemRemoveButton;
-                }, itemRect =>
-                {
-                    EditTriggerListItem item = itemRect.GetComponent<EditTriggerListItem>();
-                    item.onClickEditButton -= onClickTriggerListItemEditButton;
-                    item.onClickRemoveButton -= onClickTriggerListItemRemoveButton;
-                });
-                LayoutRebuilder.ForceRebuildLayoutImmediate(_triggerListRoot);
-            }
         }
         public void updatePropList(ActionNodeValueInfo[] valueInfos)
         {
@@ -87,42 +157,30 @@ namespace UI
         #region 生命周期
         protected void Awake()
         {
-            _activeRangeDropdown.onValueChanged.AddListener(onActiveRangeDropdownValueChangedCallback);
-            _editEnableActionButton.onClick.AddListener(onClickEditEnableActionButtonCallback);
-            _editDisableActionButton.onClick.AddListener(onClickEditDisableActionButtonCallback);
-            _addTriggerButton.onClick.AddListener(onClickAddTriggerButtonCallback);
-            if (_triggerListItemTemplate.transform.parent == _triggerListRoot)
+            _nameInputField.onEndEdit.AddListener(onEndEditActionDefineNameInputFieldCallback);
+            if (_inputTemplate.transform.parent == _inputListRoot)
             {
-                _triggerListItemTemplate.gameObject.SetActive(false);
+                _inputTemplate.gameObject.SetActive(false);
+            }
+            _addInputButton.onClick.AddListener(onAddInputButtonClickCallback);
+            if (_constTemplate.transform.parent == _constListRoot)
+            {
+                _constTemplate.gameObject.SetActive(false);
+            }
+            _addConstButton.onClick.AddListener(onAddConstButtonClickCallback);
+            if (_outputListTemplate.transform.parent == _outputListRoot)
+            {
+                _outputListTemplate.gameObject.SetActive(false);
+            }
+            _addOutputButton.onClick.AddListener(onAddOutputButtonClickCallback);
+            if (_effectPropListTemplate.transform.parent == _effectPropListRoot)
+            {
+                _effectPropListTemplate.gameObject.SetActive(false);
             }
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
         }
         #endregion
         #region 事件回调
-        private void onActiveRangeDropdownValueChangedCallback(bool[] value)
-        {
-            onActiveRangeDropdownValueChanged?.Invoke(value);
-        }
-        private void onClickEditEnableActionButtonCallback()
-        {
-            onClickEditEnableActionButton?.Invoke();
-        }
-        private void onClickEditDisableActionButtonCallback()
-        {
-            onClickEditDisableActionButton?.Invoke();
-        }
-        private void onClickAddTriggerButtonCallback()
-        {
-            onClickAddTriggerButton?.Invoke();
-        }
-        private void onClickTriggerListItemEditButton(EditTriggerListItem item)
-        {
-            onClickEditTriggerButton?.Invoke(_triggerItemList.IndexOf(item.transform as RectTransform));
-        }
-        private void onClickTriggerListItemRemoveButton(EditTriggerListItem item)
-        {
-            onClickRemoveTriggerButton?.Invoke(_triggerItemList.IndexOf(item.transform as RectTransform));
-        }
         private void onPropValueChangedCallback(ValueInputField item, object value)
         {
             onPropValueChanged?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform), value);
@@ -135,17 +193,81 @@ namespace UI
         {
             onPropItemValueChanged?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform), itemIndex, value);
         }
-        public void onClickPropItemButtonCallback(ValueInputField item, int index)
+        private void onClickPropItemButtonCallback(ValueInputField item, int index)
         {
             onClickPropItemButton?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform), index);
         }
-        public void onClickPropAddItemButtonCallback(ValueInputField item)
+        private void onClickPropAddItemButtonCallback(ValueInputField item)
         {
             onClickPropAddItemButton?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform));
         }
-        public void onClickPropItemRemoveButtonCallback(ValueInputField item, int index)
+        private void onClickPropItemRemoveButtonCallback(ValueInputField item, int index)
         {
             onClickPropItemRemoveButton?.Invoke(_effectPropList.IndexOf(item.transform as RectTransform), index);
+        }
+        private void onEndEditActionDefineNameInputFieldCallback(string value)
+        {
+            onActionDefineNameInputFieldValueChanged?.Invoke(value);
+        }
+        private void onInputListItemTypeDropdownValueChangedCallback(EffectEditorValueDefineItem item, int typeIndex)
+        {
+            onInputListItemTypeChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), typeIndex);
+        }
+        private void onInputListItemNameInputFieldValueChangedCallback(EffectEditorValueDefineItem item, string name)
+        {
+            onInputListItemNameChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), name);
+        }
+        private void onInputListItemIsArrayToggleValueChangedCallback(EffectEditorValueDefineItem item, bool value)
+        {
+            onInputListItemIsArrayValueChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), value);
+        }
+        private void onInputListItemIsParamsToggleValueChangedCallback(EffectEditorValueDefineItem item, bool value)
+        {
+            onInputListItemIsParamsValueChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), value);
+        }
+        private void onInputListItemDeleteButtonClickedCallback(EffectEditorValueDefineItem item)
+        {
+            onInputListItemDeleteButtonClicked?.Invoke(_inputList.IndexOf(item.transform as RectTransform));
+        }
+        private void onAddInputButtonClickCallback()
+        {
+            onClickAddInputButton?.Invoke();
+        }
+        private void onConstListItemTypeDropdownValueChangedCallback(EffectEditorValueDefineItem item, int typeIndex)
+        {
+            onConstListItemTypeChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), typeIndex);
+        }
+        private void onConstListItemNameInputFieldValueChangedCallback(EffectEditorValueDefineItem item, string name)
+        {
+            onConstListItemNameChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), name);
+        }
+        private void onConstListItemDeleteButtonClickedCallback(EffectEditorValueDefineItem item)
+        {
+            onConstListItemDeleteButtonClicked?.Invoke(_constList.IndexOf(item.transform as RectTransform));
+        }
+        private void onAddConstButtonClickCallback()
+        {
+            onClickAddConstButton?.Invoke();
+        }
+        private void onOutputListItemTypeDropdownValueChangedCallback(EffectEditorValueDefineItem item, int typeIndex)
+        {
+            onOutputListItemTypeChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), typeIndex);
+        }
+        private void onOutputListItemNameInputFieldValueChangedCallback(EffectEditorValueDefineItem item, string name)
+        {
+            onOutputListItemNameChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), name);
+        }
+        private void onOutputListItemIsArrayToggleValueChangedCallback(EffectEditorValueDefineItem item, bool value)
+        {
+            onOutputListItemIsArrayValueChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), value);
+        }
+        private void onOutputListItemDeleteButtonClickedCallback(EffectEditorValueDefineItem item)
+        {
+            onOutputListItemDeleteButtonClicked?.Invoke(_inputList.IndexOf(item.transform as RectTransform));
+        }
+        private void onAddOutputButtonClickCallback()
+        {
+            onClickAddOutputButton?.Invoke();
         }
         private void onClickReturnButtonCallback()
         {
@@ -154,30 +276,6 @@ namespace UI
         #endregion
         #endregion
         #region 事件
-        /// <summary>
-        /// 当点击编辑生效范围按钮
-        /// </summary>
-        public event Action<bool[]> onActiveRangeDropdownValueChanged;
-        /// <summary>
-        /// 当点击编辑激活动作按钮
-        /// </summary>
-        public event Action onClickEditEnableActionButton;
-        /// <summary>
-        /// 当点击禁用激活动作按钮
-        /// </summary>
-        public event Action onClickEditDisableActionButton;
-        /// <summary>
-        /// 当点击添加触发器按钮
-        /// </summary>
-        public event Action onClickAddTriggerButton;
-        /// <summary>
-        /// 当点击移除触发器按钮，参数为移除的触发器索引。
-        /// </summary>
-        public event Action<int> onClickRemoveTriggerButton;
-        /// <summary>
-        /// 当点击编辑触发器按钮，参数为编辑的触发器索引。
-        /// </summary>
-        public event Action<int> onClickEditTriggerButton;
         /// <summary>
         /// 当属性列表项值发生改变，参数为发生改变的项目索引和改变值
         /// </summary>
@@ -203,31 +301,66 @@ namespace UI
         /// </summary>
         public event Action<int, int> onClickPropItemRemoveButton;
         /// <summary>
+        /// 当更改名字输入栏的值，参数为更改的字符串
+        /// </summary>
+        public event Action<string> onActionDefineNameInputFieldValueChanged;
+        public event Action<int, int> onInputListItemTypeChanged;
+        public event Action<int, string> onInputListItemNameChanged;
+        public event Action<int, bool> onInputListItemIsArrayValueChanged;
+        public event Action<int, bool> onInputListItemIsParamsValueChanged;
+        public event Action<int> onInputListItemDeleteButtonClicked;
+        public event Action onClickAddInputButton;
+        public event Action<int, int> onConstListItemTypeChanged;
+        public event Action<int, string> onConstListItemNameChanged;
+        public event Action<int> onConstListItemDeleteButtonClicked;
+        public event Action onClickAddConstButton;
+        public event Action<int, int> onOutputListItemTypeChanged;
+        public event Action<int, string> onOutputListItemNameChanged;
+        public event Action<int, bool> onOutputListItemIsArrayValueChanged;
+        public event Action<int> onOutputListItemDeleteButtonClicked;
+        public event Action onClickAddOutputButton;
+        /// <summary>
         /// 当点击返回按钮
         /// </summary>
         public event Action onClickReturnButton;
         #endregion
         #region 属性字段
         [SerializeField]
-        MultiSelectDropdown _activeRangeDropdown;
-        [SerializeField]
-        Button _editEnableActionButton;
-        [SerializeField]
-        Button _editDisableActionButton;
-        [SerializeField]
-        Button _addTriggerButton;
-        [SerializeField]
-        RectTransform _triggerListRoot;
-        [SerializeField]
-        RectTransform _triggerListItemTemplate;
-        [SerializeField]
-        List<RectTransform> _triggerItemList;
+        GameObject _effectRoot;
         [SerializeField]
         RectTransform _effectPropListRoot;
         [SerializeField]
         RectTransform _effectPropListTemplate;
         [SerializeField]
         List<RectTransform> _effectPropList = new List<RectTransform>();
+        [SerializeField]
+        GameObject _actionDefineRoot;
+        [SerializeField]
+        InputField _nameInputField;
+        [SerializeField]
+        RectTransform _inputListRoot;
+        [SerializeField]
+        RectTransform _inputTemplate;
+        [SerializeField]
+        List<RectTransform> _inputList = new List<RectTransform>();
+        [SerializeField]
+        Button _addInputButton;
+        [SerializeField]
+        RectTransform _constListRoot;
+        [SerializeField]
+        RectTransform _constTemplate;
+        [SerializeField]
+        List<RectTransform> _constList = new List<RectTransform>();
+        [SerializeField]
+        Button _addConstButton;
+        [SerializeField]
+        RectTransform _outputListRoot;
+        [SerializeField]
+        RectTransform _outputListTemplate;
+        [SerializeField]
+        List<RectTransform> _outputList = new List<RectTransform>();
+        [SerializeField]
+        Button _addOutputButton;
         [SerializeField]
         Button _returnButton;
         #endregion

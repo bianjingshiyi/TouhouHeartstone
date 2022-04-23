@@ -168,7 +168,7 @@ namespace Controllers
         /// <param name="posY"></param>
         private void onLongPressBackground(float posX, float posY)
         {
-            openMenu(posX, posY, getActionDefineGroups().Select(g => g.Key + (g.Count() > 1 ? " >" : "")).ToArray());
+            openMenuForCategory(posX, posY);
         }
         /// <summary>
         /// 当用户左击背景，隐藏菜单。
@@ -187,7 +187,7 @@ namespace Controllers
         /// <param name="posY"></param>
         private void onRightClickBackground(float posX, float posY)
         {
-            openMenu(posX, posY, getActionDefineGroups().Select(g => g.Key + (g.Count() > 1 ? ">" : "")).ToArray());
+            openMenuForCategory(posX, posY);
         }
         /// <summary>
         /// 当用户点击菜单项，视具体点击的项目决定干什么
@@ -207,31 +207,38 @@ namespace Controllers
             else
             {
                 //背景菜单
-                var categroyGroups = getActionDefineGroups();
                 if (_curCategroy == null)
                 {
-                    ActionDefine[] actions = categroyGroups[index].ToArray();
-                    if (actions.Length == 1)
+                    var categroyGroups = getActionDefineGroups();
+                    if (index < categroyGroups.Length)
                     {
-                        //直接创建节点
-                        closeMenu();
-                        await createActionNodeAtCurPos(actions[0]);
+                        ActionDefine[] actions = categroyGroups[index].ToArray();
+                        if (actions.Length == 1)
+                        {
+                            //直接创建节点
+                            closeMenu();
+                            await createActionNodeAtCurPos(actions[0]);
+                        }
+                        else
+                        {
+                            //打开子菜单
+                            _curCategroy = categroyGroups[index].Key;
+                            string[] options = new string[actions.Length + 1];
+                            options[0] = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN) + " <";
+                            Array.Copy(actions.Select(a =>
+                            {
+                                string name = a.defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST) ?
+                                    a.defineName.Substring(0, a.defineName.Length - 5) : a.defineName;
+                                if (_nameTextDict.ContainsKey(name))
+                                    name = _nameTextDict[name];
+                                return game.langManager.getString(name);
+                            }).ToArray(), 0, options, 1, actions.Length);
+                            _ui.updateMenu(options);
+                        }
                     }
                     else
                     {
-                        //打开子菜单
-                        _curCategroy = categroyGroups[index].Key;
-                        string[] options = new string[actions.Length + 1];
-                        options[0] = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN) + " <";
-                        Array.Copy(actions.Select(a =>
-                        {
-                            string name = a.defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST) ?
-                                a.defineName.Substring(0, a.defineName.Length - 5) : a.defineName;
-                            if (_nameTextDict.ContainsKey(name))
-                                name = _nameTextDict[name];
-                            return game.langManager.getString(name);
-                        }).ToArray(), 0, options, 1, actions.Length);
-                        _ui.updateMenu(options);
+                        //新建自定义动作
                     }
                 }
                 else
@@ -240,11 +247,12 @@ namespace Controllers
                     {
                         //返回上一层
                         _curCategroy = null;
-                        _ui.updateMenu(categroyGroups.Select(g => g.Key + (g.Count() > 0 ? " >" : "")).ToArray());
+                        updateMenuForCategory();
                     }
                     else
                     {
                         //创建节点
+                        var categroyGroups = getActionDefineGroups();
                         ActionDefine[] actions = Array.Find(categroyGroups, g => g.Key == _curCategroy).ToArray();
                         _curCategroy = null;
                         closeMenu();
@@ -2292,6 +2300,22 @@ namespace Controllers
             _curPosX = posX;
             _curPosY = posY;
             _ui.openMenu(posX, posY, options);
+        }
+        private void openMenuForCategory(float posX, float posY)
+        {
+            string[] categoryNames = getActionDefineGroups().Select(g => g.Key + (g.Count() > 1 ? " >" : "")).ToArray();
+            string[] options = new string[categoryNames.Length + 1];
+            Array.Copy(categoryNames, 0, options, 0, categoryNames.Length);
+            options[options.Length - 1] = StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION;
+            openMenu(posX, posY, options);
+        }
+        private void updateMenuForCategory()
+        {
+            string[] categoryNames = getActionDefineGroups().Select(g => g.Key + (g.Count() > 1 ? " >" : "")).ToArray();
+            string[] options = new string[categoryNames.Length + 1];
+            Array.Copy(categoryNames, 0, options, 0, categoryNames.Length);
+            options[options.Length - 1] = StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION;
+            _ui.updateMenu(options);
         }
         /// <summary>
         /// 在对应位置打开菜单

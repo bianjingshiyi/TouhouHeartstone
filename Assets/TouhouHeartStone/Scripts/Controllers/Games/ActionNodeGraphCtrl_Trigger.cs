@@ -18,7 +18,88 @@ namespace Controllers
     }
     partial class ActionNodeGraphCtrl
     {
+        #region 公有方法
+
+        #endregion
         #region 私有方法
+        //private void openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
+        //{
+        //    _actionNodeList.Clear();
+        //    _actionNodeItemList.Clear();
+        //    _entryType = null;
+        //    _effect = null;
+        //    _valueRef = null;
+        //    _targetChecker = null;
+        //    _trigger = null;
+        //    _generatedActionDefine = generatedActionDefine;
+        //    //显示UI
+        //    _ui.clearGraph();
+        //    //创建入口节点
+        //    _entryNodeItem = _ui.createTriggerNode(0, 0,
+        //        game.langManager.getString(StringTable.EDITOR_NODE_NAME_TRIGGER),
+        //        getTranslatedTargetCheckerTypes(),
+        //        triggerIndex,
+        //        getTriggerTargetCheckerViewData());
+        //    if (_entryType == nameof(GeneratedBattlecry.activeTrigger))
+        //    {
+        //        //战吼类型节点图隐藏事件类型
+        //        _entryNodeItem.displayEventType(false);
+        //    }
+        //    else
+        //    {
+        //        _entryNodeItem.displayEventType(true);
+        //    }
+        //    _entryNodeItem.setInputs(getTriggerInputNames(), _ui.GetTypeListColor());
+        //    _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
+        //    //创建触发条件节点
+        //    if (_trigger.condition != null && _trigger.condition.action != null)
+        //    {
+        //        ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.condition.action);
+        //        _ui.connectNode(actionNodeItem, _trigger.condition.action.branches.Length + _trigger.condition.index, _entryNodeItem, 0, ActionNodeConnectionType.value);
+        //    }
+        //    //创建目标条件节点
+        //    if (_trigger.targetCheckerList != null && _trigger.targetCheckerList.Count > 0)
+        //    {
+        //        for (int i = 0; i < _trigger.targetCheckerList.Count; i++)
+        //        {
+        //            if (_trigger.targetCheckerList[i] == null ||
+        //                _trigger.targetCheckerList[i].condition == null ||
+        //                _trigger.targetCheckerList[i].condition.action == null)
+        //                continue;
+        //            ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.targetCheckerList[i].condition.action);
+        //            _ui.connectNode(
+        //                actionNodeItem,
+        //                _trigger.targetCheckerList[i].condition.action.branches.Length + _trigger.targetCheckerList[i].condition.index,
+        //                _entryNodeItem,
+        //                1 + i,
+        //                ActionNodeConnectionType.value);
+        //        }
+        //    }
+        //    //创建动作节点
+        //    if (_trigger.action != null)
+        //    {
+        //        ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.action);
+        //        _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
+        //    }
+        //    //创建离散节点
+        //    for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
+        //    {
+        //        if (_graphInfo.freeActionNodeList[i] == null)
+        //            continue;
+        //        if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
+        //        {
+        //            //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
+        //            _graphInfo.freeActionNodeList.RemoveAt(i);
+        //            i--;
+        //            continue;
+        //        }
+        //        await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
+        //    }
+        //    updateContentSize();
+        //}
+        #endregion
+        #region 属性字段
+        private GeneratedActionDefine _generatedActionDefine;
         #endregion
     }
     partial class ActionNodeGraphCtrl

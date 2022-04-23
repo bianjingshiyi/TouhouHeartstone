@@ -23,6 +23,10 @@ namespace Controllers
         {
             return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, buffDefine, effect, null));
         }
+        public Task display(int cardPoolId, GeneratedActionDefine actionDefine)
+        {
+            return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, actionDefine, null));
+        }
         public async Task display(UIDisplayInfo displayInfo)
         {
             if (displayInfo is DisplayInfo info)
@@ -31,8 +35,18 @@ namespace Controllers
                 _cardDefine = info.cardDefine;
                 _buffDefine = info.buffDefine;
                 _effect = info.effect;
+                _generatedActionDefine = info.generatedActionDefine;
                 _ui.gameObject.SetActive(true);
-                updatePropList();
+                if (_generatedActionDefine == null)
+                {
+                    //更新效果属性
+                    updateEffectPropList();
+                }
+                else
+                {
+                    //更新自定义动作属性
+
+                }
                 if (info.actionNodeGraphDisplayInfo != null)
                     await scene.actionNodeGraphCtrl.display(info.actionNodeGraphDisplayInfo);
                 else
@@ -170,7 +184,7 @@ namespace Controllers
                 }
                 triggers.Add(new TriggerGraph());
             }
-            updatePropList();
+            updateEffectPropList();
         }
         private void onClickPropItemRemoveButtonCallback(int index, int itemIndex)
         {
@@ -180,7 +194,7 @@ namespace Controllers
                 TriggerCollection triggers = _effect.getProp<TriggerCollection>(propInfos[index].name);
                 triggers.RemoveAt(itemIndex);
             }
-            updatePropList();
+            updateEffectPropList();
         }
         private async void onClickReturnButton()
         {
@@ -193,7 +207,7 @@ namespace Controllers
         /// <summary>
         /// 更新属性信息UI
         /// </summary>
-        private void updatePropList()
+        private void updateEffectPropList()
         {
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
             ActionNodeValueInfo[] valueInfos = new ActionNodeValueInfo[propInfos.Length];
@@ -264,6 +278,23 @@ namespace Controllers
             else
                 throw new NotImplementedException();
         }
+        //private void updateActionDefinePropList()
+        //{
+        //    //显示自定义动作属性
+        //    _ui.switchToActionDefine();
+        //    //更新名称
+        //    _ui.setActionDefineName(_generatedActionDefine.defineName);
+        //    //更新输入
+        //    (string name, int typeIndex, bool isParams)[] inputViewData =
+        //        new (string name, int typeIndex, bool isParams)[_generatedActionDefine.inputs.Length];
+        //    for (int i = 0; i < _generatedActionDefine.inputs.Length; i++)
+        //    {
+        //        ValueDefine valueDefine = _generatedActionDefine.inputs[i];
+        //        inputViewData[i] = (valueDefine.name, getValueTypeByType(valueDefine.type), valueDefine.isParams);
+        //    }
+        //    _ui.updateInputList();
+        //    //更新输出
+        //}
         #endregion
         #region 属性字段
         [SerializeField]
@@ -274,6 +305,7 @@ namespace Controllers
         CardDefine _cardDefine;
         GeneratedBuffDefine _buffDefine;
         GeneratedEffect _effect;
+        GeneratedActionDefine _generatedActionDefine;
         string[] _selectableRanges;
         string[] _effectTags = new string[]
         {
@@ -326,10 +358,17 @@ namespace Controllers
                 this.effect = effect;
                 this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
             }
+            public DisplayInfo(int cardPoolId, GeneratedActionDefine generatedActionDefine, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
+            {
+                this.cardPoolId = cardPoolId;
+                this.generatedActionDefine = generatedActionDefine;
+                this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
+            }
             public int cardPoolId;
             public CardDefine cardDefine;
             public GeneratedBuffDefine buffDefine;
             public GeneratedEffect effect;
+            public GeneratedActionDefine generatedActionDefine;
             public ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo;
         }
         #endregion
