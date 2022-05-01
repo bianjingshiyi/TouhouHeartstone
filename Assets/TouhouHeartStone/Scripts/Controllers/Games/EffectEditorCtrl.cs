@@ -112,6 +112,29 @@ namespace Controllers
 
             _ui.initValueDefineTypes(getEditorVarTypeNames(), getEditorConstTypeNames());
             _ui.onActionDefineNameInputFieldValueChanged += onActionDefineNameInputFieldValueChanged;
+            
+            _ui.onClickAddInputButton += onAddInputButtonClicked;
+            _ui.onInputListItemDeleteButtonClicked += onInputListItemDeleteButtonClicked;
+            _ui.onInputListItemTypeChanged += onInputListItemTypeChanged;
+            _ui.onInputListItemNameChanged += onInputListItemNameChanged;
+            _ui.onInputListItemIsArrayValueChanged += onInputListItemIsArrayValueChanged;
+            _ui.onInputListItemIsParamsValueChanged += onInputListItemIsParamsValueChanged;
+            
+            _ui.onClickAddConstButton += onAddConstButtonClicked;
+            _ui.onConstListItemDeleteButtonClicked += onConstListItemDeleteButtonClicked;
+            _ui.onConstListItemTypeChanged += onConstListItemTypeChanged;
+            _ui.onConstListItemNameChanged += onConstListItemNameChanged;
+            _ui.onConstListItemIsArrayValueChanged += onConstListItemIsArrayValueChanged;
+            _ui.onConstListItemIsParamsValueChanged += onConstListItemIsParamsValueChanged;
+            
+            _ui.onClickAddOutputButton += onAddOutputButtonClicked;
+            _ui.onOutputListItemDeleteButtonClicked += onOutputListItemDeleteButtonClicked;
+            _ui.onOutputListItemTypeChanged += onOutputListItemTypeChanged;
+            _ui.onOutputListItemNameChanged += onOutputListItemNameChanged;
+            _ui.onOutputListItemIsArrayValueChanged += onOutputListItemIsArrayValueChanged;
+            _ui.onOutputListItemIsParamsValueChanged += onOutputListItemIsParamsValueChanged;
+            
+            _ui.onActionDefineNameInputFieldValueChanged += onActionDefineNameInputFieldValueChanged;
             _ui.onClickAddInputButton += onAddInputButtonClicked;
             _ui.onInputListItemDeleteButtonClicked += onInputListItemDeleteButtonClicked;
             _ui.onInputListItemTypeChanged += onInputListItemTypeChanged;
@@ -244,6 +267,78 @@ namespace Controllers
         private void onInputListItemIsParamsValueChanged(int index, bool value)
         {
             _generatedActionDefine.inputList[index].isParams = value;
+            updateActionDefinePropList();
+        }
+        private void onAddConstButtonClicked()
+        {
+            _generatedActionDefine.constList.Add(new ValueDefine(
+                typeof(int),
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT),
+                false,
+                false));
+            updateActionDefinePropList();
+        }
+        private void onConstListItemDeleteButtonClicked(int index)
+        {
+            _generatedActionDefine.constList.RemoveAt(index);
+            updateActionDefinePropList();
+        }
+        private void onConstListItemTypeChanged(int index, int typeIndex)
+        {
+            bool isArray = _generatedActionDefine.constList[index].type.IsArray;
+            _generatedActionDefine.constList[index].type = isArray ? getEditorConstTypeAt(typeIndex).MakeArrayType() : getEditorConstTypeAt(typeIndex);
+            updateActionDefinePropList();
+        }
+        private void onConstListItemNameChanged(int index, string name)
+        {
+            _generatedActionDefine.constList[index].name = name;
+            updateActionDefinePropList();
+        }
+        private void onConstListItemIsArrayValueChanged(int index, bool value)
+        {
+            Type type = _generatedActionDefine.constList[index].type;
+            _generatedActionDefine.constList[index].type = value ? type.MakeArrayType() : type.GetElementType();
+            updateActionDefinePropList();
+        }
+        private void onConstListItemIsParamsValueChanged(int index, bool value)
+        {
+            _generatedActionDefine.constList[index].isParams = value;
+            updateActionDefinePropList();
+        }
+        private void onAddOutputButtonClicked()
+        {
+            _generatedActionDefine.outputList.Add(new ValueDefine(
+                typeof(int),
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT),
+                false,
+                false));
+            updateActionDefinePropList();
+        }
+        private void onOutputListItemDeleteButtonClicked(int index)
+        {
+            _generatedActionDefine.outputList.RemoveAt(index);
+            updateActionDefinePropList();
+        }
+        private void onOutputListItemTypeChanged(int index, int typeIndex)
+        {
+            bool isArray = _generatedActionDefine.outputList[index].type.IsArray;
+            _generatedActionDefine.outputList[index].type = isArray ? getEditorVarTypeAt(typeIndex).MakeArrayType() : getEditorVarTypeAt(typeIndex);
+            updateActionDefinePropList();
+        }
+        private void onOutputListItemNameChanged(int index, string name)
+        {
+            _generatedActionDefine.outputList[index].name = name;
+            updateActionDefinePropList();
+        }
+        private void onOutputListItemIsArrayValueChanged(int index, bool value)
+        {
+            Type type = _generatedActionDefine.outputList[index].type;
+            _generatedActionDefine.outputList[index].type = value ? type.MakeArrayType() : type.GetElementType();
+            updateActionDefinePropList();
+        }
+        private void onOutputListItemIsParamsValueChanged(int index, bool value)
+        {
+            _generatedActionDefine.outputList[index].isParams = value;
             updateActionDefinePropList();
         }
         private async void onClickReturnButton()

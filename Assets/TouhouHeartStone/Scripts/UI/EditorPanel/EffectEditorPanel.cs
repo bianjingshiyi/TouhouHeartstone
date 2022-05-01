@@ -312,11 +312,14 @@ namespace UI
         public event Action onClickAddInputButton;
         public event Action<int, int> onConstListItemTypeChanged;
         public event Action<int, string> onConstListItemNameChanged;
+        public event Action<int, bool> onConstListItemIsArrayValueChanged;
+        public event Action<int, bool> onConstListItemIsParamsValueChanged;
         public event Action<int> onConstListItemDeleteButtonClicked;
         public event Action onClickAddConstButton;
         public event Action<int, int> onOutputListItemTypeChanged;
         public event Action<int, string> onOutputListItemNameChanged;
         public event Action<int, bool> onOutputListItemIsArrayValueChanged;
+        public event Action<int, bool> onOutputListItemIsParamsValueChanged;
         public event Action<int> onOutputListItemDeleteButtonClicked;
         public event Action onClickAddOutputButton;
         /// <summary>
