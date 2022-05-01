@@ -22,11 +22,17 @@ namespace UI
         }
         public void setIsArray(bool value)
         {
-            _isArrayToggle.SetIsOnWithoutNotify(value);
+            if (_isArrayToggle != null)
+            {
+                _isArrayToggle.SetIsOnWithoutNotify(value);
+            }
         }
         public void setIsParams(bool value)
         {
-            _isParamsToggle.SetIsOnWithoutNotify(value);
+            if (_isParamsToggle != null)
+            {
+                _isParamsToggle.SetIsOnWithoutNotify(value);
+            }
         }
         #endregion
         #region 私有方法
@@ -35,8 +41,14 @@ namespace UI
         {
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChangedCallback);
             _nameInputField.onValueChanged.AddListener(onNameInputFieldValueChangedCallback);
-            _isArrayToggle.onValueChanged.AddListener(onIsArrayToggleValueChangedCallback);
-            _isParamsToggle.onValueChanged.AddListener(onIsParamsToggleValueChangedCallback);
+            if (_isArrayToggle != null)
+            {
+                _isArrayToggle.onValueChanged.AddListener(onIsArrayToggleValueChangedCallback);
+            }
+            if (_isParamsToggle != null)
+            {
+                _isParamsToggle.onValueChanged.AddListener(onIsParamsToggleValueChangedCallback);
+            }
             _deleteButton.onClick.AddListener(onDeleteButtonClickedCallback);
         }
         #endregion

@@ -45,7 +45,7 @@ namespace Controllers
                 else
                 {
                     //更新自定义动作属性
-
+                    updateActionDefinePropList();
                 }
                 if (info.actionNodeGraphDisplayInfo != null)
                     await scene.actionNodeGraphCtrl.display(info.actionNodeGraphDisplayInfo);
@@ -109,6 +109,16 @@ namespace Controllers
             _ui.onClickPropItemButton += onClickPropItemButtonCallback;
             _ui.onClickPropAddItemButton += onClickPropAddItemButtonCallback;
             _ui.onClickPropItemRemoveButton += onClickPropItemRemoveButtonCallback;
+
+            _ui.initValueDefineTypes(getEditorVarTypeNames(), getEditorConstTypeNames());
+            _ui.onActionDefineNameInputFieldValueChanged += onActionDefineNameInputFieldValueChanged;
+            _ui.onClickAddInputButton += onAddInputButtonClicked;
+            _ui.onInputListItemDeleteButtonClicked += onInputListItemDeleteButtonClicked;
+            _ui.onInputListItemTypeChanged += onInputListItemTypeChanged;
+            _ui.onInputListItemNameChanged += onInputListItemNameChanged;
+            _ui.onInputListItemIsArrayValueChanged += onInputListItemIsArrayValueChanged;
+            _ui.onInputListItemIsParamsValueChanged += onInputListItemIsParamsValueChanged;
+
             _ui.onClickReturnButton += onClickReturnButton;
         }
         #endregion
@@ -196,6 +206,46 @@ namespace Controllers
             }
             updateEffectPropList();
         }
+        private void onActionDefineNameInputFieldValueChanged(string value)
+        {
+            _generatedActionDefine.defineName = value;
+        }
+        private void onAddInputButtonClicked()
+        {
+            _generatedActionDefine.inputList.Add(new ValueDefine(
+                typeof(int),
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT),
+                false,
+                false));
+            updateActionDefinePropList();
+        }
+        private void onInputListItemDeleteButtonClicked(int index)
+        {
+            _generatedActionDefine.inputList.RemoveAt(index);
+            updateActionDefinePropList();
+        }
+        private void onInputListItemTypeChanged(int index, int typeIndex)
+        {
+            bool isArray = _generatedActionDefine.inputList[index].type.IsArray;
+            _generatedActionDefine.inputList[index].type = isArray ? getEditorVarTypeAt(typeIndex).MakeArrayType() : getEditorVarTypeAt(typeIndex);
+            updateActionDefinePropList();
+        }
+        private void onInputListItemNameChanged(int index, string name)
+        {
+            _generatedActionDefine.inputList[index].name = name;
+            updateActionDefinePropList();
+        }
+        private void onInputListItemIsArrayValueChanged(int index, bool value)
+        {
+            Type type = _generatedActionDefine.inputList[index].type;
+            _generatedActionDefine.inputList[index].type = value ? type.MakeArrayType() : type.GetElementType();
+            updateActionDefinePropList();
+        }
+        private void onInputListItemIsParamsValueChanged(int index, bool value)
+        {
+            _generatedActionDefine.inputList[index].isParams = value;
+            updateActionDefinePropList();
+        }
         private async void onClickReturnButton()
         {
             await game.ui.returnPrevUI(() =>
@@ -278,23 +328,116 @@ namespace Controllers
             else
                 throw new NotImplementedException();
         }
-        //private void updateActionDefinePropList()
-        //{
-        //    //显示自定义动作属性
-        //    _ui.switchToActionDefine();
-        //    //更新名称
-        //    _ui.setActionDefineName(_generatedActionDefine.defineName);
-        //    //更新输入
-        //    (string name, int typeIndex, bool isParams)[] inputViewData =
-        //        new (string name, int typeIndex, bool isParams)[_generatedActionDefine.inputs.Length];
-        //    for (int i = 0; i < _generatedActionDefine.inputs.Length; i++)
-        //    {
-        //        ValueDefine valueDefine = _generatedActionDefine.inputs[i];
-        //        inputViewData[i] = (valueDefine.name, getValueTypeByType(valueDefine.type), valueDefine.isParams);
-        //    }
-        //    _ui.updateInputList();
-        //    //更新输出
-        //}
+        private void updateActionDefinePropList()
+        {
+            //显示自定义动作属性
+            _ui.switchToActionDefine();
+            //更新名称
+            _ui.setActionDefineName(_generatedActionDefine.defineName);
+            //更新输入
+            (int typeIndex, string name, bool isArray, bool isParams)[] inputViewData =
+                new (int typeIndex, string name, bool isArray, bool isParams)[_generatedActionDefine.inputs.Length];
+            for (int i = 0; i < _generatedActionDefine.inputs.Length; i++)
+            {
+                ValueDefine valueDefine = _generatedActionDefine.inputs[i];
+                inputViewData[i] = (getEditorVarTypeIndex(valueDefine.type), valueDefine.name, valueDefine.type.IsArray, valueDefine.isParams);
+            }
+            _ui.updateInputList(inputViewData);
+            //更新常量
+            (int typeIndex, string name)[] constViewData = new (int typeIndex, string name)[_generatedActionDefine.consts.Length];
+            for (int i = 0; i < _generatedActionDefine.consts.Length; i++)
+            {
+                ValueDefine valueDefine = _generatedActionDefine.consts[i];
+                constViewData[i] = (getEditorConstTypeIndex(valueDefine.type), valueDefine.name);
+            }
+            _ui.updateConstList(constViewData);
+            //更新输出
+            (int typeIndex, string name, bool isArray)[] outputViewData = new (int typeIndex, string name, bool isArray)[_generatedActionDefine.outputs.Length];
+            for (int i = 0; i < _generatedActionDefine.outputs.Length; i++)
+            {
+                ValueDefine valueDefine = _generatedActionDefine.outputs[i];
+                outputViewData[i] = (getEditorVarTypeIndex(valueDefine.type), valueDefine.name, valueDefine.type.IsArray);
+            }
+            _ui.updateOutputList(outputViewData);
+        }
+        private int getEditorVarTypeIndex(Type type)
+        {
+            int index = -1;
+            for (int i = 0; i < _editorTypeInfos.Length; i++)
+            {
+                if (_editorTypeInfos[i].isVarType)
+                    index++;
+                if (_editorTypeInfos[i].type == type)
+                    return index;
+            }
+            return index;
+        }
+        private int getEditorConstTypeIndex(Type type)
+        {
+            int index = -1;
+            for (int i = 0; i < _editorTypeInfos.Length; i++)
+            {
+                if (_editorTypeInfos[i].isConstType)
+                    index++;
+                if (_editorTypeInfos[i].type == type)
+                    return index;
+            }
+            return index;
+        }
+        private Type getEditorVarTypeAt(int index)
+        {
+            int count = 0;
+            for (int i = 0; i < _editorTypeInfos.Length; i++)
+            {
+                if (_editorTypeInfos[i].isVarType)
+                {
+                    if (count == index)
+                        return _editorTypeInfos[i].type;
+                    else
+                        count++;
+                }
+            }
+            throw new IndexOutOfRangeException("无法找到索引" + index + "对应变量类型");
+        }
+        private Type getEditorConstTypeAt(int index)
+        {
+            int count = 0;
+            for (int i = 0; i < _editorTypeInfos.Length; i++)
+            {
+                if (_editorTypeInfos[i].isConstType)
+                {
+                    if (count == index)
+                        return _editorTypeInfos[i].type;
+                    else
+                        count++;
+                }
+            }
+            throw new IndexOutOfRangeException("无法找到索引" + index + "对应常量类型");
+        }
+        private string[] getEditorVarTypeNames()
+        {
+            List<string> nameList = new List<string>();
+            for (int i = 0; i < _editorTypeInfos.Length; i++)
+            {
+                if (_editorTypeInfos[i].isVarType)
+                {
+                    nameList.Add(game.langManager.getString(_editorTypeInfos[i].typeName));
+                }
+            }
+            return nameList.ToArray();
+        }
+        private string[] getEditorConstTypeNames()
+        {
+            List<string> nameList = new List<string>();
+            for (int i = 0; i < _editorTypeInfos.Length; i++)
+            {
+                if (_editorTypeInfos[i].isConstType)
+                {
+                    nameList.Add(game.langManager.getString(_editorTypeInfos[i].typeName));
+                }
+            }
+            return nameList.ToArray();
+        }
         #endregion
         #region 属性字段
         [SerializeField]
@@ -307,7 +450,7 @@ namespace Controllers
         GeneratedEffect _effect;
         GeneratedActionDefine _generatedActionDefine;
         string[] _selectableRanges;
-        string[] _effectTags = new string[]
+        readonly string[] _effectTags = new string[]
         {
             KEYWORD.BATTLECRY,
             KEYWORD.DEATHRATTLE
@@ -340,6 +483,39 @@ namespace Controllers
             { KEYWORD.BATTLECRY, StringTable.GAME_KEYWORD_BATTLECRY },
             { KEYWORD.DEATHRATTLE, StringTable.GAME_KEYWORD_DEATHRATTLE }
         };
+        readonly EditorTypeInfo[] _editorTypeInfos = new EditorTypeInfo[]
+        {
+            #region 基础类型
+            new EditorTypeInfo() { type = typeof(object), typeName = StringTable.EDITOR_TYPE_NAME_OBJECT, isVarType = true },
+            new EditorTypeInfo() { type = typeof(int), typeName = StringTable.EDITOR_TYPE_NAME_INT, isVarType = true, isConstType = true },
+            new EditorTypeInfo() { type = typeof(float), typeName = StringTable.EDITOR_TYPE_NAME_FLOAT, isVarType = true, isConstType = true },
+            new EditorTypeInfo() { type = typeof(bool), typeName = StringTable.EDITOR_TYPE_NAME_BOOL, isVarType = true, isConstType = true },
+            new EditorTypeInfo() { type = typeof(char), typeName = StringTable.EDITOR_TYPE_NAME_CHAR, isVarType = true, isConstType = true },
+            new EditorTypeInfo() { type = typeof(string), typeName = StringTable.EDITOR_TYPE_NAME_STRING, isVarType = true, isConstType = true },
+            #endregion
+            #region 引擎类型
+            new EditorTypeInfo() { type = typeof(Rule), typeName = StringTable.EDITOR_TYPE_NAME_RULE, isVarType = true },
+            new EditorTypeInfo() { type = typeof(CardEngine), typeName = StringTable.EDITOR_TYPE_NAME_CARD_ENGINE, isVarType = true },
+            new EditorTypeInfo() { type = typeof(Player), typeName = StringTable.EDITOR_TYPE_NAME_PLAYER, isVarType = true },
+            new EditorTypeInfo() { type = typeof(Pile), typeName = StringTable.EDITOR_TYPE_NAME_PILE, isVarType = true },
+            new EditorTypeInfo() { type = typeof(PileNameCollection), typeName = StringTable.EDITOR_TYPE_NAME_PILE_NAME_COLLECTION, isConstType = true },
+            new EditorTypeInfo() { type = typeof(CardDefine), typeName = StringTable.EDITOR_TYPE_NAME_CARD_DEFINE, isVarType = true },
+            new EditorTypeInfo() { type = typeof(CardReference), typeName = StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE, isConstType = true },
+            new EditorTypeInfo() { type = typeof(TouhouCardEngine.Card), typeName = StringTable.EDITOR_TYPE_NAME_CARD, isVarType = true },
+            new EditorTypeInfo() { type = typeof(BuffDefine), typeName = StringTable.EDITOR_TYPE_NAME_BUFF_DEFINE, isVarType = true },
+            new EditorTypeInfo() { type = typeof(Buff), typeName = StringTable.EDITOR_TYPE_NAME_BUFF, isVarType = true },
+            new EditorTypeInfo() { type = typeof(Effect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, isVarType = true },
+            new EditorTypeInfo() { type = typeof(EffectTagCollection), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION, isConstType = true },
+            new EditorTypeInfo() { type = typeof(EventArg), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_ARG, isVarType = true },
+            new EditorTypeInfo() { type = typeof(PropModifier), typeName = StringTable.EDITOR_TYPE_NAME_PROP_MODIFIER, isVarType = true },
+            new EditorTypeInfo() { type = typeof(TriggerGraph), typeName = StringTable.EDITOR_TYPE_NAME_TRIGGER_GRAPH, isVarType = true },
+            //typeof(TriggerCollection),
+            new EditorTypeInfo() { type = typeof(TargetChecker), typeName = StringTable.EDITOR_TYPE_NAME_TARGET_CHECKER, isVarType = true },
+            new EditorTypeInfo() { type = typeof(ActionValueRef), typeName = StringTable.EDITOR_TYPE_NAME_ACTION_VALUE_REF, isVarType = true, isConstType = true },
+            new EditorTypeInfo() { type = typeof(ActionDefine), typeName = StringTable.EDITOR_TYPE_NAME_ACTION_DEFINE, isVarType = true },
+            new EditorTypeInfo() { type = typeof(ActionNode), typeName = StringTable.EDITOR_TYPE_NAME_ACTION_NODE, isVarType = true, isConstType = true },
+            #endregion
+        };
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
@@ -370,6 +546,13 @@ namespace Controllers
             public GeneratedEffect effect;
             public GeneratedActionDefine generatedActionDefine;
             public ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo;
+        }
+        class EditorTypeInfo
+        {
+            public Type type;
+            public string typeName;
+            public bool isVarType;
+            public bool isConstType;
         }
         #endregion
     }

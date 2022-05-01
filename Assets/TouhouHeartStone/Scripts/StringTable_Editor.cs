@@ -70,6 +70,8 @@ namespace Game
         public const string EDITOR_BUTTON_EDIT_TRIGGER = "编辑触发器";
         [TranslateMsg("编辑器的动作流程图中的增益节点的属性修整器关联属性默认名称")]
         public const string EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT = "属性名称";
+        [TranslateMsg("编辑器的自定义动作编辑界面中新增一个变量的默认名称")]
+        public const string EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT = "变量";
         #region 动作
         #region 内置
         [TranslateMsg("动作图编辑器中动作节点名称之整数运算")]
@@ -457,6 +459,58 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_ELEMENT = "元素融合时";
         [TranslateMsg("编辑器中的事件类型之元素融合后")]
         public const string EDITOR_EVENT_NAME_AFTER_ELEMENT = "元素融合后";
+        #endregion
+        #region 类型
+        [TranslateMsg("编辑器中的任意类型的名称")]
+        public const string EDITOR_TYPE_NAME_OBJECT = "任意类型";
+        [TranslateMsg("编辑器中的整数的名称")]
+        public const string EDITOR_TYPE_NAME_INT = "整数";
+        [TranslateMsg("编辑器中的实数的名称")]
+        public const string EDITOR_TYPE_NAME_FLOAT = "实数";
+        [TranslateMsg("编辑器中的真值的名称")]
+        public const string EDITOR_TYPE_NAME_BOOL = "真值";
+        [TranslateMsg("编辑器中的字符的名称")]
+        public const string EDITOR_TYPE_NAME_CHAR = "字符";
+        [TranslateMsg("编辑器中的文本的名称")]
+        public const string EDITOR_TYPE_NAME_STRING = "文本";
+        [TranslateMsg("编辑器中的规则的名称")]
+        public const string EDITOR_TYPE_NAME_RULE = "规则";
+        [TranslateMsg("编辑器中的游戏的名称")]
+        public const string EDITOR_TYPE_NAME_CARD_ENGINE = "游戏";
+        [TranslateMsg("编辑器中的玩家的名称")]
+        public const string EDITOR_TYPE_NAME_PLAYER = "玩家";
+        [TranslateMsg("编辑器中的牌堆的名称")]
+        public const string EDITOR_TYPE_NAME_PILE = "牌堆";
+        [TranslateMsg("编辑器中的牌堆范围的名称")]
+        public const string EDITOR_TYPE_NAME_PILE_NAME_COLLECTION = "牌堆范围";
+        [TranslateMsg("编辑器中的卡牌定义的名称")]
+        public const string EDITOR_TYPE_NAME_CARD_DEFINE = "卡牌定义";
+        [TranslateMsg("编辑器中的卡牌定义引用的名称")]
+        public const string EDITOR_TYPE_NAME_CARD_REFERENCE = "卡牌定义引用";
+        [TranslateMsg("编辑器中的卡牌的名称")]
+        public const string EDITOR_TYPE_NAME_CARD = "卡牌";
+        [TranslateMsg("编辑器中的增益定义的名称")]
+        public const string EDITOR_TYPE_NAME_BUFF_DEFINE = "增益定义";
+        [TranslateMsg("编辑器中的增益的名称")]
+        public const string EDITOR_TYPE_NAME_BUFF = "增益";
+        [TranslateMsg("编辑器中的效果的名称")]
+        public const string EDITOR_TYPE_NAME_EFFECT = "效果";
+        [TranslateMsg("编辑器中的效果标签的名称")]
+        public const string EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION = "效果标签";
+        [TranslateMsg("编辑器中的事件的名称")]
+        public const string EDITOR_TYPE_NAME_EVENT_ARG = "事件";
+        [TranslateMsg("编辑器中的属性修改器的名称")]
+        public const string EDITOR_TYPE_NAME_PROP_MODIFIER = "属性修改器";
+        [TranslateMsg("编辑器中的触发器的名称")]
+        public const string EDITOR_TYPE_NAME_TRIGGER_GRAPH = "触发器";
+        [TranslateMsg("编辑器中的目标检测器的名称")]
+        public const string EDITOR_TYPE_NAME_TARGET_CHECKER = "目标检测器";
+        [TranslateMsg("编辑器中的动作值的名称")]
+        public const string EDITOR_TYPE_NAME_ACTION_VALUE_REF = "动作值";
+        [TranslateMsg("编辑器中的动作定义的名称")]
+        public const string EDITOR_TYPE_NAME_ACTION_DEFINE = "动作定义";
+        [TranslateMsg("编辑器中的动作的名称")]
+        public const string EDITOR_TYPE_NAME_ACTION_NODE = "动作";
         #endregion
     }
 }
