@@ -27,16 +27,18 @@ namespace UI
         /// 在指定位置上创建一个具有指定名称，输入，常量值和输出的节点。
         /// </summary>
         /// <param name="nodeName"></param>
-        /// <param name="outputNames"></param>
+        /// <param name="outputViewData"></param>
         /// <returns></returns>
-        public ActionNodeItem createNode(float posX, float posY, string nodeName, IOConnectInfo[] inputNames, ActionNodeValueInfo[] constsInfo, IOConnectInfo[] outputNames)
+        public ActionNodeItem createNode(float posX, float posY, string nodeName,
+            (string name, Color color)[] inputViewData,
+            ActionNodeValueInfo[] constsInfo,
+            (string name, Color color)[] outputViewData)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
-            // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
             actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
@@ -46,9 +48,9 @@ namespace UI
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.switchToActionNode();
             actionNodeItem.setName(nodeName);
-            actionNodeItem.setInputs(inputNames, _listColor);
+            actionNodeItem.setInputs(inputViewData);
             actionNodeItem.setConsts(constsInfo);
-            actionNodeItem.setOutputs(outputNames, _listColor);
+            actionNodeItem.setOutputs(outputViewData);
             return actionNodeItem;
         }
         /// <summary>
@@ -73,7 +75,6 @@ namespace UI
             {
                 string.Empty
             };
-            //onSelectedEventIndex
             actionNodeItem.setOutputs(outputNames);
 
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
@@ -90,7 +91,6 @@ namespace UI
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
-            // actionNodeItem.onEventNameChanged += onTriggerNodeEventNameChanged;
             actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
@@ -101,16 +101,27 @@ namespace UI
             return actionNodeItem;
         }
         /// <summary>
-        /// 在指定位置上创建一个触发器节点
+        /// 在指定位置上创建一个具有指定名称的节点。
         /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        /// <param name="eventTypeIndex"></param>
-        /// <param name="targetCheckers"></param>
+        /// <param name="nodeName"></param>
         /// <returns></returns>
-        public ActionNodeItem createTriggerNode(float posX, float posY, int eventTypeIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        public ActionNodeItem createNode(float posX, float posY, string nodeName)
         {
-            throw new NotImplementedException();
+            //当对应名称数组长度为0的时候，直接隐藏列表根节点。
+            ActionNodeItem actionNodeItem = createNode(posX, posY);
+            actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
+            actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
+            actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
+            actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
+            actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
+            actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
+            actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
+            actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
+            actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
+            actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
+            actionNodeItem.switchToActionNode();
+            actionNodeItem.setName(nodeName);
+            return actionNodeItem;
         }
         /// <summary>
         /// 将节点的指定输出连接到目标节点的输入上

@@ -16,7 +16,7 @@ namespace UI
         /// 设置节点颜色
         /// </summary>
         /// <param name="color"></param>
-        public void SetColor(Color color)
+        public void setColor(Color color)
         {
             Image image = _nodeRect.gameObject.GetComponent<Image>();
             if (image != null)

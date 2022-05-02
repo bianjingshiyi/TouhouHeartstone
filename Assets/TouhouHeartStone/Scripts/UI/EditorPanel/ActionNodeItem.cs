@@ -36,51 +36,20 @@ namespace UI
         {
             _eventTypeDropdown.transform.parent.gameObject.SetActive(value);
         }
-        public void setInputs(string[] inputNames)
+        public void setInputs((string name, Color color)[] inputViewData)
         {
-            if (inputNames == null || inputNames.Length < 1)
+            if (inputViewData == null || inputViewData.Length < 1)
             {
                 _inputRoot.gameObject.SetActive(false);
             }
             else
             {
                 _inputRoot.gameObject.SetActive(true);
-                UIHelper.updateList(_inputRoot, _inputTemplate, _inputList, inputNames.Length, (i, itemRect) =>
+                UIHelper.updateList(_inputRoot, _inputTemplate, _inputList, inputViewData.Length, (i, itemRect) =>
                 {
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
-                    item.setName(inputNames[i]);
-                }, itemRect =>
-                {
-                    ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
-                    item.onBeginDragNode += onBeginDragInputNodeCallback;
-                    item.onDragNode += onDragInputNodeCallback;
-                    item.onEndDragNode += onEndDragInputNodeCallback;
-                }, itemRect =>
-                {
-                    ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
-                    item.onBeginDragNode -= onBeginDragInputNodeCallback;
-                    item.onDragNode -= onDragInputNodeCallback;
-                    item.onEndDragNode -= onEndDragInputNodeCallback;
-                });
-            }
-        }
-        public void setInputs(IOConnectInfo[] inputNamesInfos, List<Color> listColor)
-        {
-            if (inputNamesInfos == null || inputNamesInfos.Length < 1)
-            {
-                _inputRoot.gameObject.SetActive(false);
-            }
-            else
-            {
-                _inputRoot.gameObject.SetActive(true);
-                UIHelper.updateList(_inputRoot, _inputTemplate, _inputList, inputNamesInfos.Length, (i, itemRect) =>
-                {
-                    ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
-                    item.setName(inputNamesInfos[i].label);
-                    var index = GetTypeIndex(inputNamesInfos[i].type);
-                    if (index >= listColor.Count) index = 0;
-                    //Debug.Log("type:" + outputInfos[i].type + listColor[index]);
-                    item.SetColor(listColor[index]);
+                    item.setName(inputViewData[i].name);
+                    item.setColor(inputViewData[i].color);
                 }, itemRect =>
                 {
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
@@ -185,23 +154,20 @@ namespace UI
         /// </summary>
         /// <param name="outputInfos"></param>
         /// <param name="listColor">传入的颜色列表</param>
-        public void setOutputs(IOConnectInfo[] outputInfos, List<Color> listColor)
+        public void setOutputs((string name, Color color)[] viewData)
         {
-            if (outputInfos == null || outputInfos.Length < 1)
+            if (viewData == null || viewData.Length < 1)
             {
                 _outputRoot.gameObject.SetActive(false);
             }
             else
             {
                 _outputRoot.gameObject.SetActive(true);
-                UIHelper.updateList(_outputRoot, _outputTemplate, _outputList, outputInfos.Length, (i, itemRect) =>
+                UIHelper.updateList(_outputRoot, _outputTemplate, _outputList, viewData.Length, (i, itemRect) =>
                 {
                     ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();
-                    item.setName(outputInfos[i].label);
-                    var index = GetTypeIndex(outputInfos[i].type);
-                    if (index >= listColor.Count) index = 0;
-                    //Debug.Log("type:" + outputInfos[i].type + listColor[index]);
-                    item.SetColor(listColor[index]);
+                    item.setName(viewData[i].name);
+                    item.setColor(viewData[i].color);
                 }, itemRect =>
                 {
                     ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();

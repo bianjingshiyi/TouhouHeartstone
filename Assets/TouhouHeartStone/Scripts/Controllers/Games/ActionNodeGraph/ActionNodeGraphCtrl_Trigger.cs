@@ -11,97 +11,6 @@ using TouhouHeartstone;
 
 namespace Controllers
 {
-    public class IOConnectInfo
-    {
-        public string type = string.Empty;
-        public string label = string.Empty;
-    }
-    partial class ActionNodeGraphCtrl
-    {
-        #region 公有方法
-
-        #endregion
-        #region 私有方法
-        //private void openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
-        //{
-        //    _actionNodeList.Clear();
-        //    _actionNodeItemList.Clear();
-        //    _entryType = null;
-        //    _effect = null;
-        //    _valueRef = null;
-        //    _targetChecker = null;
-        //    _trigger = null;
-        //    _generatedActionDefine = generatedActionDefine;
-        //    //显示UI
-        //    _ui.clearGraph();
-        //    //创建入口节点
-        //    _entryNodeItem = _ui.createTriggerNode(0, 0,
-        //        game.langManager.getString(StringTable.EDITOR_NODE_NAME_TRIGGER),
-        //        getTranslatedTargetCheckerTypes(),
-        //        triggerIndex,
-        //        getTriggerTargetCheckerViewData());
-        //    if (_entryType == nameof(GeneratedBattlecry.activeTrigger))
-        //    {
-        //        //战吼类型节点图隐藏事件类型
-        //        _entryNodeItem.displayEventType(false);
-        //    }
-        //    else
-        //    {
-        //        _entryNodeItem.displayEventType(true);
-        //    }
-        //    _entryNodeItem.setInputs(getTriggerInputNames(), _ui.GetTypeListColor());
-        //    _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
-        //    //创建触发条件节点
-        //    if (_trigger.condition != null && _trigger.condition.action != null)
-        //    {
-        //        ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.condition.action);
-        //        _ui.connectNode(actionNodeItem, _trigger.condition.action.branches.Length + _trigger.condition.index, _entryNodeItem, 0, ActionNodeConnectionType.value);
-        //    }
-        //    //创建目标条件节点
-        //    if (_trigger.targetCheckerList != null && _trigger.targetCheckerList.Count > 0)
-        //    {
-        //        for (int i = 0; i < _trigger.targetCheckerList.Count; i++)
-        //        {
-        //            if (_trigger.targetCheckerList[i] == null ||
-        //                _trigger.targetCheckerList[i].condition == null ||
-        //                _trigger.targetCheckerList[i].condition.action == null)
-        //                continue;
-        //            ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.targetCheckerList[i].condition.action);
-        //            _ui.connectNode(
-        //                actionNodeItem,
-        //                _trigger.targetCheckerList[i].condition.action.branches.Length + _trigger.targetCheckerList[i].condition.index,
-        //                _entryNodeItem,
-        //                1 + i,
-        //                ActionNodeConnectionType.value);
-        //        }
-        //    }
-        //    //创建动作节点
-        //    if (_trigger.action != null)
-        //    {
-        //        ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.action);
-        //        _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
-        //    }
-        //    //创建离散节点
-        //    for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
-        //    {
-        //        if (_graphInfo.freeActionNodeList[i] == null)
-        //            continue;
-        //        if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
-        //        {
-        //            //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
-        //            _graphInfo.freeActionNodeList.RemoveAt(i);
-        //            i--;
-        //            continue;
-        //        }
-        //        await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
-        //    }
-        //    updateContentSize();
-        //}
-        #endregion
-        #region 属性字段
-        private GeneratedActionDefine _generatedActionDefine;
-        #endregion
-    }
     partial class ActionNodeGraphCtrl
     {
         #region 公有方法
@@ -120,7 +29,7 @@ namespace Controllers
         {
             _trigger.eventName = getEventTypeNameByIndex(typeIndex);
             //TODO:切换事件要断开所有事件变量引用连接
-            _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
+            _entryNodeItem.setOutputs(getTriggerOutputViewData());
         }
         /// <summary>
         /// 当用户更改触发器的事件名称，将事件名称改为更改值
@@ -222,8 +131,8 @@ namespace Controllers
             {
                 _entryNodeItem.displayEventType(true);
             }
-            _entryNodeItem.setInputs(getTriggerInputNames(), _ui.GetTypeListColor());
-            _entryNodeItem.setOutputs(getTriggerOutputNames(), _ui.GetTypeListColor());
+            _entryNodeItem.setInputs(getTriggerInputViewData());
+            _entryNodeItem.setOutputs(getTriggerOutputViewData());
             //创建触发条件节点
             if (_trigger.condition != null && _trigger.condition.action != null)
             {
@@ -286,21 +195,17 @@ namespace Controllers
             }
             return targetCheckers;
         }
-        private IOConnectInfo[] getTriggerInputNames()
+        private (string name, Color color)[] getTriggerInputViewData()
         {
-            IOConnectInfo[] inputs = new IOConnectInfo[1 + _trigger.targetCheckerList.Count];
-            inputs[0] = new IOConnectInfo()
-            {
-                type = "Func<bool>",
-                label = game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TRIGGER_CONDITION)
-            };
+            (string name, Color color)[] inputs = new (string name, Color color)[1 + _trigger.targetCheckerList.Count];
+            inputs[0] = (
+                game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TRIGGER_CONDITION),
+                game.editor.getColorByTypeName(typeof(ActionValueRef).Name));
             for (int i = 0; i < _trigger.targetCheckerList.Count; i++)
             {
-                inputs[1 + i] = new IOConnectInfo()
-                {
-                    type = "Func<Card, bool>",
-                    label = string.Format(game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TARGET_CONDITION), 1 + i)
-                };
+                inputs[1 + i] = (
+                    string.Format(game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TARGET_CONDITION), 1 + i),
+                    game.editor.getColorByTypeName(typeof(ActionValueRef).Name));
             }
             return inputs;
         }
@@ -308,43 +213,31 @@ namespace Controllers
         /// 获取当前触发器的输出值的名称。
         /// </summary>
         /// <returns></returns>
-        private IOConnectInfo[] getTriggerOutputNames()
+        private (string name, Color color)[] getTriggerOutputViewData()
         {
             int typeIndex = getEventTypeIndex(_trigger.eventName);
             EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
             if (eventTypeInfo.variableInfos != null)
             {
-                IOConnectInfo[] outputNames = new IOConnectInfo[eventTypeInfo.variableInfos.Length + 1];
+                (string name, Color color)[] viewData = new (string name, Color color)[eventTypeInfo.variableInfos.Length + 1];
                 //动作输出
-                outputNames[0] = new IOConnectInfo()
-                {
-                    type = string.Empty,
-                    label = string.Empty
-                };
+                viewData[0] = (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)));
                 for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
                 {
-                    //这里加入了类型，这块有些凌乱，我暂时就用string来处理type
-                    outputNames[i + 1] = new IOConnectInfo()
-                    {
-                        type = eventTypeInfo.variableInfos[i].name,
-                        //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
-                        //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
-                        label = game.langManager.getString(eventTypeInfo.variableInfos[i].name)
-                    };
+                    //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
+                    //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
+                    viewData[i + 1] = (game.langManager.getString(eventTypeInfo.variableInfos[i].name),
+                        game.editor.getColorByTypeName(eventTypeInfo.variableInfos[i].type.Name));
                 }
-                return outputNames;
+                return viewData;
             }
             else
             {
                 //只有一个动作输出
-                return new IOConnectInfo[]
+                return new (string name, Color color)[]
                 {
-                    new IOConnectInfo()
-                    {
-                        type = string.Empty,
-                        label =  string.Empty
-                    }
-                }; ;
+                    (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
+                };
             }
         }
         /// <summary>

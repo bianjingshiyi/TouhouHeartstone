@@ -17,21 +17,12 @@ namespace Controllers
     {
         #region 公有方法
         /// <summary>
-        /// 打开一个效果的生效效果动作图。
+        /// 打开一个效果的某个动作图
         /// </summary>
+        /// <param name="cardPoolId"></param>
         /// <param name="effect"></param>
-        public void openOnEnableActionGraph(int cardPoolId, GeneratedEffect effect, ActionNodeGraphInfo graphInfo)
-        {
-            display(new DisplayInfo(cardPoolId, nameof(GeneratedEffect.onEnableAction), effect, null, graphInfo));
-        }
-        /// <summary>
-        /// 打开一个效果的失效效果动作图。
-        /// </summary>
-        /// <param name="effect"></param>
-        public void openOnDisableActionGraph(int cardPoolId, GeneratedEffect effect, ActionNodeGraphInfo graphInfo)
-        {
-            display(new DisplayInfo(cardPoolId, nameof(GeneratedEffect.onDisableAction), effect, null, graphInfo));
-        }
+        /// <param name="entryType"></param>
+        /// <param name="graphInfo"></param>
         public void openActionGraph(int cardPoolId, GeneratedEffect effect, string entryType, ActionNodeGraphInfo graphInfo)
         {
             display(new DisplayInfo(cardPoolId, entryType, effect, null, graphInfo));
@@ -59,7 +50,9 @@ namespace Controllers
                 //更新UI
                 _ui.gameObject.SetActive(true);
                 _ui.displayCardSelectPanel(false);
-                if (info.editObject is TriggerGraph trigger)
+                if (info.editObject is SerializableActionDefine actionDefine)
+                    return openGeneratedActionDefine(actionDefine);
+                else if (info.editObject is TriggerGraph trigger)
                     return openTriggerGraph(trigger, info.entryType);
                 else if (info.editObject is TargetChecker targetChecker)
                     return openTargetCheckerGraph(targetChecker);
@@ -239,6 +232,10 @@ namespace Controllers
                     else
                     {
                         //新建自定义动作
+                        SerializableActionDefine actionDefine = game.card.createActionDefine(
+                            _curCardPoolId,
+                            game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT));
+                        scene.effectEditor.display(_curCardPoolId, actionDefine);
                     }
                 }
                 else
@@ -699,15 +696,11 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
-                        new IOConnectInfo[0],
+                        new (string name, Color color)[0],
                         new ActionNodeValueInfo[0],
-                        new IOConnectInfo[]
+                        new (string name, Color color)[]
                         {
-                            new IOConnectInfo()
-                            {
-                                type = string.Empty,
-                                label = string.Empty
-                            }
+                            (string.Empty,game.editor.getColorByTypeName(nameof(ActionNode)))
                         });
                     var actionNodeItem = await createGraph4ActionNode(_effect.onEnableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
@@ -716,15 +709,11 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE),
-                        new IOConnectInfo[0],
+                        new (string name, Color color)[0],
                         new ActionNodeValueInfo[0],
-                        new IOConnectInfo[]
+                        new (string name, Color color)[]
                         {
-                            new IOConnectInfo()
-                            {
-                                type = string.Empty,
-                                label = string.Empty
-                            }
+                            (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
                         });
                 }
             }
@@ -734,15 +723,11 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
-                        new IOConnectInfo[0],
+                        new (string name, Color color)[0],
                         new ActionNodeValueInfo[0],
-                        new IOConnectInfo[]
+                        new (string name, Color color)[]
                         {
-                            new IOConnectInfo()
-                            {
-                                type = string.Empty,
-                                label = string.Empty
-                            }
+                            (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
                         });
                     var actionNodeItem = await createGraph4ActionNode(_effect.onDisableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
@@ -751,15 +736,11 @@ namespace Controllers
                 {
                     _entryNodeItem = _ui.createNode(0, 0,
                         game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE),
-                        new IOConnectInfo[0],
+                        new (string name, Color color)[0],
                         new ActionNodeValueInfo[0],
-                        new IOConnectInfo[]
+                        new (string name, Color color)[]
                         {
-                            new IOConnectInfo()
-                            {
-                                type = string.Empty,
-                                label = string.Empty
-                            }
+                            (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
                         });
                 }
             }
@@ -797,16 +778,12 @@ namespace Controllers
             _trigger = null;
             _returnNodeItem = _ui.createNode(0, 0,
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
-                new IOConnectInfo[]
+                new (string name, Color color)[]
                 {
-                    new IOConnectInfo()
-                    {
-                        type = string.Empty,
-                        label = string.Empty
-                    }
+                    (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByTypeName(typeof(object).Name))
                 },
                 new ActionNodeValueInfo[0],
-                new IOConnectInfo[0]);
+                new (string name, Color color)[0]);
             if (valueRef.action != null)
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
@@ -840,13 +817,9 @@ namespace Controllers
             _trigger = null;
             _returnNodeItem = _ui.createNode(0, 0,
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
-                new IOConnectInfo[]
+                new (string name, Color color)[]
                 {
-                    new IOConnectInfo()
-                    {
-                        type = string.Empty,
-                        label = string.Empty
-                    }
+                    (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByTypeName(typeof(bool).Name))
                 },
                 new ActionNodeValueInfo[]
                 {
@@ -863,7 +836,7 @@ namespace Controllers
                         value = _targetChecker.errorTip
                     }
                 },
-                new IOConnectInfo[0]);
+                new (string name, Color color)[0]);
             if (targetChecker.condition != null && targetChecker.condition.action != null)
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
@@ -1126,9 +1099,9 @@ namespace Controllers
                     posX,
                     posY,
                     getActionNodeName(actionNode),
-                    getActionNodeInputInfos(actionNode),
+                    getActionNodeInputViewData(actionNode),
                     constsInfo,
-                    getActionNodeOutputInfos(actionNode));
+                    getActionNodeOutputViewData(actionNode));
                 for (int i = 0; i < constsInfo.Length; i++)
                 {
                     if (constsInfo[i].type == ActionNodeValueType.cardReference)
@@ -1463,7 +1436,7 @@ namespace Controllers
                     ActionValueRef[] newInputs = new ActionValueRef[inputActionNode.inputs.Length + 1];
                     Array.Copy(inputActionNode.inputs, 0, newInputs, 0, inputActionNode.inputs.Length);
                     inputActionNode.inputs = newInputs;
-                    getActionNodeItem(inputActionNode).setInputs(getActionNodeInputNames(inputActionNode));
+                    getActionNodeItem(inputActionNode).setInputs(getActionNodeInputViewData(inputActionNode));
                 }
             }
             //更新输出节点的输出变量状态
@@ -1948,27 +1921,6 @@ namespace Controllers
             }
             return false;
         }
-        /// <summary>
-        /// 判断一个节点是否在父节点和父节点之上的节点中被引用为值
-        /// </summary>
-        /// <param name="actionNode">要检查的节点</param>
-        /// <param name="parentNode">父节点，检查的节点包括该节点</param>
-        /// <returns></returns>
-        //private bool isValueRefedInParentNodes(ActionNode actionNode, ActionNode parentNode)
-        //{
-        //    bool result = false;
-        //    traverseActionNode(rootActionNode, true, a =>
-        //    {
-        //        if (a == actionNode)
-        //        {
-        //            result = true;
-        //        }
-        //        if (a == parentNode)
-        //            return true;
-        //        return false;
-        //    });
-        //    return result;
-        //}
         private int getOutputCount(ActionNode actionNode)
         {
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
@@ -2061,6 +2013,32 @@ namespace Controllers
                 return actionNode.defineName;
             }
         }
+        private (string name, Color color)[] getActionNodeInputViewData(ActionNode actionNode)
+        {
+            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            List<(string name, Color color)> viewDataList = new List<(string name, Color color)>();
+            for (int i = 0; i < actionDefine.inputs.Length; i++)
+            {
+                viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByTypeName(actionDefine.inputs[i].type.Name)));
+                if (i == actionDefine.inputs.Length - 1 && actionDefine.inputs[i].isParams)
+                {
+                    //变长参数，要多已有参数的连接点和一个空的连接点
+                    if (actionNode.inputs != null && actionNode.inputs.Length > actionDefine.inputs.Length)
+                    {
+                        for (int j = actionDefine.inputs.Length; j < actionNode.inputs.Length; j++)
+                        {
+                            //跳过空的，这可能有风险，但是先看看会有什么效果吧
+                            if (actionNode.inputs[i] == null)
+                                continue;
+                            viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByTypeName(actionDefine.inputs[i].type.Name)));
+                        }
+                    }
+                    viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByTypeName(actionDefine.inputs[i].type.Name)));
+                }
+            }
+            return viewDataList.ToArray();
+        }
+
         private string[] getActionNodeInputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
@@ -2098,60 +2076,6 @@ namespace Controllers
             }
             return inputNameList.ToArray();
         }
-        private IOConnectInfo[] getActionNodeInputInfos(ActionNode actionNode)
-        {
-            //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
-            List<IOConnectInfo> inputNameList = new List<IOConnectInfo>();
-            //前一个动作节点
-            inputNameList.Add(new IOConnectInfo()
-            {
-                type = nameof(ActionNode),
-                label = string.Empty
-            });
-            //输入
-            string inputName;
-            for (int i = 0; i < actionNode.inputs.Length; i++)
-            {
-                if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams && i >= actionDefine.inputs.Length - 1)
-                {
-                    inputName = actionDefine.inputs.Last().name;
-                    if (_nameTextDict.TryGetValue(inputName, out inputName))
-                    {
-                        inputName = game.langManager.getString(inputName);
-                    }
-                    inputNameList.Add(new IOConnectInfo()
-                    {
-                        type = inputName,
-                        label = inputName + (i - actionDefine.inputs.Length + 2)
-                    });
-                }
-                else if (i < actionDefine.inputs.Length)
-                {
-                    //有可能由于ActionDefine的参数数量变化导致存在的输入参数比实际的多，忽略已有的参数
-                    inputNameList.Add(new IOConnectInfo()
-                    {
-                        type = actionDefine.inputs[i].name,
-                        label = actionDefine.inputs[i].name
-                    });
-                }
-            }
-            if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams)
-            {
-                inputName = actionDefine.inputs.Last().name;
-                if (_nameTextDict.TryGetValue(inputName, out inputName))
-                {
-                    inputName = game.langManager.getString(inputName);
-                }
-                inputNameList.Add(new IOConnectInfo()
-                {
-                    type = inputName,
-                    label = inputName + (actionNode.inputs.Length - actionDefine.inputs.Length + 2)
-                });
-            }
-            return inputNameList.ToArray();
-        }
-
         private ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
             var actionDefine = _actionDefineDict[actionNode.defineName];
@@ -2208,33 +2132,25 @@ namespace Controllers
             }
             return outputNames;
         }
-        private IOConnectInfo[] getActionNodeOutputInfos(ActionNode actionNode)
+        private (string name, Color color)[] getActionNodeOutputViewData(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
             ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
-            List<IOConnectInfo> outputList = new List<IOConnectInfo>()
+            List<(string name, Color color)> outputList = new List<(string name, Color color)>()
             {
-                new IOConnectInfo() { type = nameof(ActionNode), label = string.Empty }
+                (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
             };
             for (int i = 0; i < actionDefine.outputs.Length; i++)
             {
                 if (actionDefine.outputs[i].type == typeof(ActionNode))
                 {
                     //动作分支节点
-                    outputList.Add(new IOConnectInfo()
-                    {
-                        type = nameof(ActionNode),
-                        label = actionDefine.outputs[i].name
-                    });
+                    outputList.Add((actionDefine.outputs[i].name, game.editor.getColorByTypeName(nameof(ActionNode))));
                 }
                 else
                 {
                     //输出值节点
-                    outputList.Add(new IOConnectInfo()
-                    {
-                        type = actionDefine.outputs[i].type.Name,
-                        label = actionDefine.outputs[i].name
-                    });
+                    outputList.Add((actionDefine.outputs[i].name, game.editor.getColorByTypeName(actionDefine.outputs[i].type.Name)));
                 }
             }
             return outputList.ToArray();
@@ -2523,44 +2439,6 @@ namespace Controllers
             public DisplayInfo[] editObjectStack;
             public ActionNodeGraphInfo graphInfo;
         }
-        class BackgroundMenuItem
-        {
-            public BackgroundMenuItem(string title)
-            {
-                this.title = title;
-            }
-            public string title;
-            public Action action;
-            public List<BackgroundMenuItem> childList;
-        }
         #endregion
-    }
-    /// <summary>
-    /// 动作节点图的编辑器信息，保存了每个效果的所有动作节点信息。
-    /// </summary>
-    [Serializable]
-    public class ActionNodeGraphInfo
-    {
-        public int cardId;
-        public int buffId;
-        public int effectIndex;
-        public string entryType;
-        public int triggerIndex;
-        public Dictionary<string, ActionNodeGraphNodeInfo> actionInfoDict = new Dictionary<string, ActionNodeGraphNodeInfo>();
-        /// <summary>
-        /// 离散的，并未与根节点相连的动作节点。
-        /// </summary>
-        public List<ActionNode> freeActionNodeList = new List<ActionNode>();
-    }
-    [Serializable]
-    public class ActionNodeGraphNodeInfo
-    {
-        public ActionNodeGraphNodeInfo(float posX, float posY)
-        {
-            this.posX = posX;
-            this.posY = posY;
-        }
-        public float posX;
-        public float posY;
     }
 }

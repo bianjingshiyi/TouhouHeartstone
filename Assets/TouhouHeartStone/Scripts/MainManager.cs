@@ -446,6 +446,9 @@ namespace Game
         public CardManager card => getManager<CardManager>();
         public DeckManager deck => getManager<DeckManager>();
         public TriggerManager triggers => this.findInstance<TriggerManager>();
+        public EditorManager editor => _editor;
+        [SerializeField]
+        EditorManager _editor;
         [SerializeField]
         MainSceneCtrl _mainSceneCtrl;
         //MainCtrl _mainCtrl;

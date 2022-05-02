@@ -42,8 +42,12 @@ namespace Game
         public const string EDITOR_NODE_NAME_ONENABLE = "生效";
         [TranslateMsg("编辑器中失效动作节点的名字")]
         public const string EDITOR_NODE_NAME_ONDISABLE = "失效";
+        [TranslateMsg("编辑器中动作节点图里输入节点的名字")]
+        public const string EDITOR_NODE_NAME_INPUT = "输入节点";
         [TranslateMsg("编辑器中动作节点图里输出节点的名字")]
         public const string EDITOR_NODE_NAME_OUTPUT = "输出节点";
+        [TranslateMsg("编辑器中动作节点图里参数返回的名字")]
+        public const string EDITOR_PARAM_NAME_RETURN = "返回";
         [TranslateMsg("编辑器中动作节点图里触发器节点的名字")]
         public const string EDITOR_NODE_NAME_TRIGGER = "触发器";
         [TranslateMsg("编辑器中目标检查器节点中目标类型编辑框的标注名称")]
@@ -70,8 +74,12 @@ namespace Game
         public const string EDITOR_BUTTON_EDIT_TRIGGER = "编辑触发器";
         [TranslateMsg("编辑器的动作流程图中的增益节点的属性修整器关联属性默认名称")]
         public const string EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT = "属性名称";
+        [TranslateMsg("编辑器的自定义动作编辑界面中新增一个自定义动作的默认名称")]
+        public const string EDITOR_ACTION_DEFINE_NAME_DEFAULT = "自定义动作";
         [TranslateMsg("编辑器的自定义动作编辑界面中新增一个变量的默认名称")]
         public const string EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT = "变量";
+        [TranslateMsg("编辑器的自定义动作编辑界面中新增一个常量的默认名称")]
+        public const string EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT = "常量";
         #region 动作
         #region 内置
         [TranslateMsg("动作图编辑器中动作节点名称之整数运算")]
