@@ -15,6 +15,7 @@ namespace Controllers
         public int effectIndex;
         public string entryType;
         public int triggerIndex;
+        public int actionDefineId;
         public Dictionary<string, ActionNodeGraphNodeInfo> actionInfoDict = new Dictionary<string, ActionNodeGraphNodeInfo>();
         /// <summary>
         /// 离散的，并未与根节点相连的动作节点。

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UI;
 using Game;
+using System;
 
 namespace Controllers
 {
@@ -34,12 +35,17 @@ namespace Controllers
             //创建入口节点
             _entryNodeItem = _ui.createNode(0, 0, game.langManager.getString(StringTable.EDITOR_NODE_NAME_INPUT));
             //设置参数
-            (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.inputList.Count + 1];
+            (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.inputList.Count + _generatedActionDefine.constList.Count + 1];
             viewData[0] = (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)));
             for (int i = 0; i < _generatedActionDefine.inputList.Count; i++)
             {
                 viewData[i + 1] = (_generatedActionDefine.inputList[i].name,
                     game.editor.getColorByTypeName(_generatedActionDefine.inputList[i].typeName));
+            }
+            for (int i = 0; i < _generatedActionDefine.constList.Count; i++)
+            {
+                viewData[i + _generatedActionDefine.inputList.Count + 1] = (_generatedActionDefine.constList[i].name,
+                    game.editor.getColorByTypeName(_generatedActionDefine.constList[i].typeName));
             }
             _entryNodeItem.setOutputs(viewData);
             //创建出口节点
@@ -95,20 +101,7 @@ namespace Controllers
                 else
                 {
                     //相连的是其他输入节点，断开连接
-                    if (inputActionNode.inputs[inputIndex].action != null)
-                    {
-                        //直接与节点值连接
-                        unconnectNode4ValueRef(inputActionNode.inputs[inputIndex].action, inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
-                    }
-                    else if (inputActionNode.inputs[inputIndex].actionNodeId != 0)
-                    {
-                        //间接与节点值连接
-                        unconnectNode4ValueRef(getActionNode(inputActionNode.inputs[inputIndex].actionNodeId), inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
-                    }
-                    else if (!string.IsNullOrEmpty(inputActionNode.inputs[inputIndex].eventVarName))
-                    {
-                        unconnectNode4TriggerEventVarRef(getEventVarNameIndex(inputActionNode.inputs[inputIndex].eventVarName), inputActionNode, inputIndex);
-                    }
+                    unconnectNode4AnyType(outputIndex, inputActionNode, inputIndex);
                 }
             }
             //建立新的连接
@@ -131,6 +124,14 @@ namespace Controllers
                     _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex);
                 }
             }
+        }
+        private Type getActionDefineInputTypeAt(int index)
+        {
+            if (index < _generatedActionDefine.inputList.Count)
+            {
+                return game.editor.getTypeByName(_generatedActionDefine.inputList[index].typeName);
+            }
+            return game.editor.getTypeByName(_generatedActionDefine.constList[index - _generatedActionDefine.inputList.Count].typeName);
         }
         #endregion
         #region 属性字段

@@ -25,7 +25,14 @@ namespace Controllers
         }
         public Task display(int cardPoolId, SerializableActionDefine actionDefine)
         {
-            return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, actionDefine, null));
+            return game.ui.displayUIWithReturn(this,
+                new DisplayInfo(cardPoolId, actionDefine,
+                    new ActionNodeGraphCtrl.DisplayInfo(
+                        cardPoolId,
+                        null,
+                        actionDefine,
+                        null,
+                        game.card.getOrCreateActionDefineActionNodeGraphInfo(cardPoolId, actionDefine.id))));
         }
         public async Task display(UIDisplayInfo displayInfo)
         {

@@ -262,20 +262,7 @@ namespace Controllers
                 else
                 {
                     //相连的是其他输入节点，断开连接
-                    if (inputActionNode.inputs[inputIndex].action != null)
-                    {
-                        //直接与节点值连接
-                        unconnectNode4ValueRef(inputActionNode.inputs[inputIndex].action, inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
-                    }
-                    else if (inputActionNode.inputs[inputIndex].actionNodeId != 0)
-                    {
-                        //间接与节点值连接
-                        unconnectNode4ValueRef(getActionNode(inputActionNode.inputs[inputIndex].actionNodeId), inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
-                    }
-                    else if (!string.IsNullOrEmpty(inputActionNode.inputs[inputIndex].eventVarName))
-                    {
-                        unconnectNode4TriggerEventVarRef(getEventVarNameIndex(inputActionNode.inputs[inputIndex].eventVarName), inputActionNode, inputIndex);
-                    }
+                    unconnectNode4AnyType(outputIndex, inputActionNode, inputIndex);
                 }
             }
             //建立新的连接

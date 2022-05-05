@@ -54,5 +54,23 @@ namespace Game
             else
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
         }
+        public ActionNodeGraphInfo getOrCreateActionDefineActionNodeGraphInfo(int cardPoolId, int actionDefineId)
+        {
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                ActionNodeGraphInfo info = cardPool.actionNodeGraphInfoList.Find(a => a.actionDefineId == actionDefineId);
+                if (info == null)
+                {
+                    info = new ActionNodeGraphInfo()
+                    {
+                        actionDefineId = actionDefineId
+                    };
+                    cardPool.actionNodeGraphInfoList.Add(info);
+                }
+                return info;
+            }
+            else
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+        }
     }
 }
