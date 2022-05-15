@@ -25,7 +25,8 @@ namespace UI
             contentText.text = content;
 
             confirmButton.onClick.RemoveAllListeners();
-            confirmButton.onClick.AddListener(() => {
+            confirmButton.onClick.AddListener(() =>
+            {
                 gameObject.SetActive(false);
                 onConfirm?.Invoke();
             });
@@ -34,7 +35,8 @@ namespace UI
             cancleButton.gameObject.SetActive(true);
 
             cancleButton.onClick.RemoveAllListeners();
-            cancleButton.onClick.AddListener(() => { 
+            cancleButton.onClick.AddListener(() =>
+            {
                 gameObject.SetActive(false);
                 onCancle?.Invoke();
             });
@@ -48,13 +50,14 @@ namespace UI
         /// <param name="title"></param>
         /// <param name="content"></param>
         /// <param name="onConfirm"></param>
-        public void ShowConfirm(string title, string content, Action onConfirm)
+        public void ShowConfirm(string title, string content, Action onConfirm = null)
         {
             titleText.text = title;
             contentText.text = content;
 
             confirmButton.onClick.RemoveAllListeners();
-            confirmButton.onClick.AddListener(() => {
+            confirmButton.onClick.AddListener(() =>
+            {
                 gameObject.SetActive(false);
                 onConfirm?.Invoke();
             });
@@ -79,12 +82,13 @@ namespace UI
                 if (btnList.Count <= i)
                 {
                     btnList.Add(Instantiate<Button>(templateButton, buttonsRectTransform));
-                } 
+                }
 
                 var btn = btnList[i];
                 int index = i;
                 btn.onClick.RemoveAllListeners();
-                btn.onClick.AddListener(() => {
+                btn.onClick.AddListener(() =>
+                {
                     gameObject.SetActive(false);
                     onSelectOption?.Invoke(index);
                 });

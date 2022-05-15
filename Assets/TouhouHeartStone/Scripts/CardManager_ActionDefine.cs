@@ -5,7 +5,8 @@ namespace Game
 {
     partial class CardManager
     {
-        public SerializableActionDefine createActionDefine(int cardPoolId, string name)
+        #region 公有方法
+        public GeneratedActionDefine createActionDefine(int cardPoolId, string name)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -27,32 +28,79 @@ namespace Game
                 name = name
             };
             cardPool.actionDefineList.Add(actionDefine);
-            return actionDefine;
+            GeneratedActionDefine generatedActionDefine = new GeneratedActionDefine(actionDefine, game.editor.getTypeByName);
+            _seriGeneActDefDict.Add(actionDefine, generatedActionDefine);
+            return generatedActionDefine;
         }
-        public bool removeActionDefine(int cardPoolId, SerializableActionDefine actionDefine)
+        public bool removeActionDefine(int cardPoolId, GeneratedActionDefine actionDefine)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
-            return cardPool.actionDefineList.Remove(actionDefine);
+            SerializableActionDefine serializableActionDefine = null;
+            foreach (var pair in _seriGeneActDefDict)
+            {
+                if (pair.Value == actionDefine)
+                {
+                    serializableActionDefine = pair.Key;
+                    break;
+                }
+            }
+            if (serializableActionDefine == null)
+                return false;
+            _seriGeneActDefDict.Remove(serializableActionDefine);
+            return cardPool.actionDefineList.Remove(serializableActionDefine);
         }
-        public bool getActionDefine(int cardPoolId, int id, out SerializableActionDefine actionDefine)
+        public bool getActionDefine(int cardPoolId, int id, out GeneratedActionDefine actionDefine)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
-            actionDefine = cardPool.actionDefineList.Find(a => a.id == id);
-            return actionDefine != null;
+            SerializableActionDefine serializableActionDefine = cardPool.actionDefineList.Find(a => a.id == id);
+            if (serializableActionDefine == null)
+            {
+                actionDefine = null;
+                return false;
+            }
+            actionDefine = _seriGeneActDefDict[serializableActionDefine];
+            if (actionDefine == null)
+            {
+                actionDefine = new GeneratedActionDefine(serializableActionDefine, game.editor.getTypeByName);
+                _seriGeneActDefDict.Add(serializableActionDefine, actionDefine);
+            }
+            return true;
         }
-        public SerializableActionDefine[] getActionDefines(int cardPoolId)
+        public GeneratedActionDefine[] getActionDefines(int cardPoolId)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
-            return cardPool.actionDefineList.ToArray();
+            return cardPool.actionDefineList.ConvertAll(s =>
+            {
+                if (!_seriGeneActDefDict.TryGetValue(s, out GeneratedActionDefine actionDefine))
+                {
+                    actionDefine = new GeneratedActionDefine(s, game.editor.getTypeByName);
+                    _seriGeneActDefDict.Add(s, actionDefine);
+                }
+                return actionDefine;
+            }).ToArray();
         }
+        public SerializableActionDefine getSerializableActionDefine(GeneratedActionDefine actionDefine)
+        {
+            foreach (var pair in _seriGeneActDefDict)
+            {
+                if (pair.Value == actionDefine)
+                    return pair.Key;
+            }
+            return null;
+        }
+        #endregion
+        #region 属性字段
+        Dictionary<SerializableActionDefine, GeneratedActionDefine> _seriGeneActDefDict =
+            new Dictionary<SerializableActionDefine, GeneratedActionDefine>();
+        #endregion
     }
 }

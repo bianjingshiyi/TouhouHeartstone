@@ -262,7 +262,7 @@ namespace Controllers
                 else
                 {
                     //相连的是其他输入节点，断开连接
-                    unconnectNode4AnyType(outputIndex, inputActionNode, inputIndex);
+                    unconnectNode4AnyType(null, outputIndex, inputActionNode, inputIndex);
                 }
             }
             //建立新的连接

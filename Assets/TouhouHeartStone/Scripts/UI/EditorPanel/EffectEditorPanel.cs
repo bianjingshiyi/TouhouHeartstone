@@ -35,8 +35,10 @@ namespace UI
         {
             _nameInputField.SetTextWithoutNotify(name);
         }
-        public void initValueDefineTypes(string[] variableTypes, string[] constTypes)
+        public void initActionDefineViewData(string[] categories, string[] variableTypes, string[] constTypes)
         {
+            _categoryDropdown.ClearOptions();
+            _categoryDropdown.AddOptions(new List<string>(categories));
             _inputTemplate.GetComponent<EffectEditorValueDefineItem>().initTypeDropdown(variableTypes);
             _constTemplate.GetComponent<EffectEditorValueDefineItem>().initTypeDropdown(constTypes);
             _outputListTemplate.GetComponent<EffectEditorValueDefineItem>().initTypeDropdown(variableTypes);
@@ -158,6 +160,7 @@ namespace UI
         protected void Awake()
         {
             _nameInputField.onEndEdit.AddListener(onEndEditActionDefineNameInputFieldCallback);
+            _categoryDropdown.onValueChanged.AddListener(onActionDefineCategoryDropdownValueChangedCallback);
             if (_inputTemplate.transform.parent == _inputListRoot)
             {
                 _inputTemplate.gameObject.SetActive(false);
@@ -209,6 +212,10 @@ namespace UI
         {
             onActionDefineNameInputFieldValueChanged?.Invoke(value);
         }
+        private void onActionDefineCategoryDropdownValueChangedCallback(int index)
+        {
+            onActionDefineCategoryDropdownValueChanged?.Invoke(index);
+        }
         private void onInputListItemTypeDropdownValueChangedCallback(EffectEditorValueDefineItem item, int typeIndex)
         {
             onInputListItemTypeChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), typeIndex);
@@ -251,19 +258,19 @@ namespace UI
         }
         private void onOutputListItemTypeDropdownValueChangedCallback(EffectEditorValueDefineItem item, int typeIndex)
         {
-            onOutputListItemTypeChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), typeIndex);
+            onOutputListItemTypeChanged?.Invoke(_outputList.IndexOf(item.transform as RectTransform), typeIndex);
         }
         private void onOutputListItemNameInputFieldValueChangedCallback(EffectEditorValueDefineItem item, string name)
         {
-            onOutputListItemNameChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), name);
+            onOutputListItemNameChanged?.Invoke(_outputList.IndexOf(item.transform as RectTransform), name);
         }
         private void onOutputListItemIsArrayToggleValueChangedCallback(EffectEditorValueDefineItem item, bool value)
         {
-            onOutputListItemIsArrayValueChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), value);
+            onOutputListItemIsArrayValueChanged?.Invoke(_outputList.IndexOf(item.transform as RectTransform), value);
         }
         private void onOutputListItemDeleteButtonClickedCallback(EffectEditorValueDefineItem item)
         {
-            onOutputListItemDeleteButtonClicked?.Invoke(_inputList.IndexOf(item.transform as RectTransform));
+            onOutputListItemDeleteButtonClicked?.Invoke(_outputList.IndexOf(item.transform as RectTransform));
         }
         private void onAddOutputButtonClickCallback()
         {
@@ -304,6 +311,7 @@ namespace UI
         /// 当更改名字输入栏的值，参数为更改的字符串
         /// </summary>
         public event Action<string> onActionDefineNameInputFieldValueChanged;
+        public event Action<int> onActionDefineCategoryDropdownValueChanged;
         public event Action<int, int> onInputListItemTypeChanged;
         public event Action<int, string> onInputListItemNameChanged;
         public event Action<int, bool> onInputListItemIsArrayValueChanged;
@@ -340,6 +348,8 @@ namespace UI
         GameObject _actionDefineRoot;
         [SerializeField]
         InputField _nameInputField;
+        [SerializeField]
+        Dropdown _categoryDropdown;
         [SerializeField]
         RectTransform _inputListRoot;
         [SerializeField]

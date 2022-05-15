@@ -18,6 +18,11 @@ namespace Controllers
         {
             display(new DisplayInfo(cardPoolId, null, actionDefine, null, graphInfo));
         }
+        public void updateActionDefineEntryAndReturnNodes()
+        {
+            updateActionDefineEntryNode();
+            updateActionDefineReturnNodes();
+        }
         #endregion
         #region 私有方法
         private async Task openGeneratedActionDefine(SerializableActionDefine generatedActionDefine)
@@ -35,29 +40,11 @@ namespace Controllers
             //创建入口节点
             _entryNodeItem = _ui.createNode(0, 0, game.langManager.getString(StringTable.EDITOR_NODE_NAME_INPUT));
             //设置参数
-            (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.inputList.Count + _generatedActionDefine.constList.Count + 1];
-            viewData[0] = (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)));
-            for (int i = 0; i < _generatedActionDefine.inputList.Count; i++)
-            {
-                viewData[i + 1] = (_generatedActionDefine.inputList[i].name,
-                    game.editor.getColorByTypeName(_generatedActionDefine.inputList[i].typeName));
-            }
-            for (int i = 0; i < _generatedActionDefine.constList.Count; i++)
-            {
-                viewData[i + _generatedActionDefine.inputList.Count + 1] = (_generatedActionDefine.constList[i].name,
-                    game.editor.getColorByTypeName(_generatedActionDefine.constList[i].typeName));
-            }
-            _entryNodeItem.setOutputs(viewData);
+            updateActionDefineEntryNode();
             //创建出口节点
             _returnNodeItem = _ui.createNode(500, 0, game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT));
             //设置返回
-            viewData = new (string name, Color color)[_generatedActionDefine.outputList.Count];
-            for (int i = 0; i < _generatedActionDefine.outputList.Count; i++)
-            {
-                viewData[i] = (_generatedActionDefine.outputList[i].name,
-                    game.editor.getColorByTypeName(_generatedActionDefine.outputList[i].typeName));
-            }
-            _returnNodeItem.setInputs(viewData);
+            updateActionDefineReturnNodes();
             //创建动作节点
             if (_generatedActionDefine.action != null)
             {
@@ -80,6 +67,35 @@ namespace Controllers
             }
             updateContentSize();
         }
+
+        private void updateActionDefineReturnNodes()
+        {
+            (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.outputList.Count];
+            for (int i = 0; i < _generatedActionDefine.outputList.Count; i++)
+            {
+                viewData[i] = (_generatedActionDefine.outputList[i].name,
+                    game.editor.getColorByTypeName(_generatedActionDefine.outputList[i].typeName));
+            }
+            _returnNodeItem.setInputs(viewData);
+        }
+
+        private void updateActionDefineEntryNode()
+        {
+            (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.inputList.Count + _generatedActionDefine.constList.Count + 1];
+            viewData[0] = (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)));
+            for (int i = 0; i < _generatedActionDefine.inputList.Count; i++)
+            {
+                viewData[i + 1] = (_generatedActionDefine.inputList[i].name,
+                    game.editor.getColorByTypeName(_generatedActionDefine.inputList[i].typeName));
+            }
+            for (int i = 0; i < _generatedActionDefine.constList.Count; i++)
+            {
+                viewData[i + _generatedActionDefine.inputList.Count + 1] = (_generatedActionDefine.constList[i].name,
+                    game.editor.getColorByTypeName(_generatedActionDefine.constList[i].typeName));
+            }
+            _entryNodeItem.setOutputs(viewData);
+        }
+
         /// <summary>
         /// 将输入节点的输出值连接到输入上
         /// </summary>
@@ -101,13 +117,56 @@ namespace Controllers
                 else
                 {
                     //相连的是其他输入节点，断开连接
-                    unconnectNode4AnyType(outputIndex, inputActionNode, inputIndex);
+                    unconnectNode4AnyType(null, inputActionNode.inputs[inputIndex].argIndex, inputActionNode, inputIndex);
                 }
             }
             //建立新的连接
             inputActionNode.inputs[inputIndex] = new ActionValueRef(outputIndex);
             //更新ui
             _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.value);
+        }
+        private void connectNode4ActionDefineArgToReturn(int outputIndex, int inputIndex)
+        {
+            //判断是否已经相连
+            int index = _generatedActionDefine.returnList.FindIndex(r =>
+                r != null &&
+                r.returnIndex == inputIndex);
+            if (index >= 0)
+            {
+                if (_generatedActionDefine.returnList[index].valueRef != null &&
+                    _generatedActionDefine.returnList[index].valueRef.argIndex == outputIndex)
+                {
+                    //已经相连，什么也不做
+                    return;
+                }
+                else
+                {
+                    //相连的是其他输入节点，断开连接
+                    unconnectNode4AnyType(null, _generatedActionDefine.returnList[index].valueRef.argIndex, null, inputIndex);
+                }
+            }
+            //建立新的连接
+            _generatedActionDefine.returnList.Add(new ReturnValueRef(outputIndex, inputIndex));
+            //更新ui
+            _ui.connectNode(_entryNodeItem, 1 + outputIndex, _returnNodeItem, inputIndex, ActionNodeConnectionType.value);
+        }
+        private void unconnectNode4ActionDefineArgToReturn(int outputIndex, int inputIndex)
+        {
+            //判断是否已经相连
+            int index = _generatedActionDefine.returnList.FindIndex(r =>
+                r != null &&
+                r.returnIndex == inputIndex);
+            if (index >= 0)
+            {
+                if (_generatedActionDefine.returnList[index].valueRef != null &&
+                    _generatedActionDefine.returnList[index].valueRef.argIndex == outputIndex)
+                {
+                    //相连，断开连接
+                    _generatedActionDefine.returnList.RemoveAt(index);
+                    //更新ui
+                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, _returnNodeItem, inputIndex);
+                }
+            }
         }
         private void unconnectNode4ActionDefineArg(int outputIndex, ActionNode inputActionNode, int inputIndex)
         {

@@ -117,8 +117,12 @@ namespace Controllers
             _ui.onClickPropAddItemButton += onClickPropAddItemButtonCallback;
             _ui.onClickPropItemRemoveButton += onClickPropItemRemoveButtonCallback;
 
-            _ui.initValueDefineTypes(game.editor.getEditorVarTypeNames(), game.editor.getEditorConstTypeNames());
+            _ui.initActionDefineViewData(
+                Array.ConvertAll(_categories, c => game.langManager.getString(c)),
+                game.editor.getEditorVarTypeNames(),
+                game.editor.getEditorConstTypeNames());
             _ui.onActionDefineNameInputFieldValueChanged += onActionDefineNameInputFieldValueChanged;
+            _ui.onActionDefineCategoryDropdownValueChanged += onActionDefineCategoryDropdownValueChanged;
 
             _ui.onClickAddInputButton += onAddInputButtonClicked;
             _ui.onInputListItemDeleteButtonClicked += onInputListItemDeleteButtonClicked;
@@ -230,7 +234,23 @@ namespace Controllers
         }
         private void onActionDefineNameInputFieldValueChanged(string value)
         {
-            _actionDefine.name = value;
+            if (!scene.actionNodeGraphCtrl.isActionDefineNameExist(value))
+            {
+                _actionDefine.name = value;
+            }
+            else
+            {
+                //重名
+                game.ui.dialog.ShowConfirm(
+                    game.langManager.getString(StringTable.ERROR),
+                    game.langManager.getString(StringTable.EDITOR_ERROR_ACTION_DEFINE_NAME_ALREADY_EXIST));
+                _actionDefine.name = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT);
+                _ui.setActionDefineName(_actionDefine.name);
+            }
+        }
+        private void onActionDefineCategoryDropdownValueChanged(int index)
+        {
+            _actionDefine.category = _categories[index];
         }
         private void onAddInputButtonClicked()
         {
@@ -242,28 +262,34 @@ namespace Controllers
                 isParams = false
             });
             updateActionDefinePropList();
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemDeleteButtonClicked(int index)
         {
             _actionDefine.inputList.RemoveAt(index);
             updateActionDefinePropList();
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemTypeChanged(int index, int typeIndex)
         {
             _actionDefine.inputList[index].typeName = game.editor.getEditorVarTypeAt(typeIndex).Name;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemNameChanged(int index, string name)
         {
             _actionDefine.inputList[index].name = name;
             updateActionDefinePropList();
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemIsArrayValueChanged(int index, bool value)
         {
             _actionDefine.inputList[index].isArray = value;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemIsParamsValueChanged(int index, bool value)
         {
             _actionDefine.inputList[index].isParams = value;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onAddConstButtonClicked()
         {
@@ -275,28 +301,34 @@ namespace Controllers
                 isParams = false
             });
             updateActionDefinePropList();
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemDeleteButtonClicked(int index)
         {
             _actionDefine.constList.RemoveAt(index);
             updateActionDefinePropList();
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemTypeChanged(int index, int typeIndex)
         {
             _actionDefine.constList[index].typeName = game.editor.getEditorConstTypeAt(typeIndex).Name;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemNameChanged(int index, string name)
         {
             _actionDefine.constList[index].name = name;
             updateActionDefinePropList();
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemIsArrayValueChanged(int index, bool value)
         {
             _actionDefine.constList[index].isArray = value;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemIsParamsValueChanged(int index, bool value)
         {
             _actionDefine.constList[index].isParams = value;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onAddOutputButtonClicked()
         {
@@ -308,27 +340,33 @@ namespace Controllers
                 isParams = false
             });
             updateActionDefinePropList();
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemDeleteButtonClicked(int index)
         {
             _actionDefine.outputList.RemoveAt(index);
             updateActionDefinePropList();
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemTypeChanged(int index, int typeIndex)
         {
             _actionDefine.outputList[index].typeName = game.editor.getEditorVarTypeAt(typeIndex).Name;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemNameChanged(int index, string name)
         {
             _actionDefine.outputList[index].name = name;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemIsArrayValueChanged(int index, bool value)
         {
             _actionDefine.outputList[index].isArray = value;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemIsParamsValueChanged(int index, bool value)
         {
             _actionDefine.outputList[index].isParams = value;
+            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private async void onClickReturnButton()
         {
@@ -489,6 +527,17 @@ namespace Controllers
         {
             { KEYWORD.BATTLECRY, StringTable.GAME_KEYWORD_BATTLECRY },
             { KEYWORD.DEATHRATTLE, StringTable.GAME_KEYWORD_DEATHRATTLE }
+        };
+        readonly string[] _categories = new string[]
+        {
+            StringTable.EDITOR_NODE_CATEGORY_GAME,
+            StringTable.EDITOR_NODE_CATEGORY_PLAYER,
+            StringTable.EDITOR_NODE_CATEGORY_PILE,
+            StringTable.EDITOR_NODE_CATEGORY_CARD,
+            StringTable.EDITOR_NODE_CATEGORY_BUFF,
+            StringTable.EDITOR_NODE_CATEGORY_MODIFIER,
+            StringTable.EDITOR_NODE_CATEGORY_EVENT,
+            StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION
         };
         #endregion
         #region 内部类

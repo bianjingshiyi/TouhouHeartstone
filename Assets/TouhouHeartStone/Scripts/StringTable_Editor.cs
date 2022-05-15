@@ -58,6 +58,8 @@ namespace Game
         public const string EDITOR_ERROR_INVALID_TYPE_CONNECT = "相互连接的输入输出类型必须可以相互转化";
         [TranslateMsg("编辑器错误提示")]
         public const string EDITOR_ERROR_OUTPUT_CONNECT_INPUT = "值输出只能与值输入相互连接";
+        [TranslateMsg("编辑器错误提示")]
+        public const string EDITOR_ERROR_ACTION_DEFINE_NAME_ALREADY_EXIST = "已存在具有相同名称的动作定义";
         [TranslateMsg("编辑器中编辑效果按钮显示文字，参数为效果名称")]
         public const string EDITOR_EDIT_EFFECT = "编辑{0}";
         [TranslateMsg("编辑器中询问玩家是否要删除卡池")]
