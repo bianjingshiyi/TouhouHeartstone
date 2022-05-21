@@ -406,7 +406,7 @@ namespace Game
 
             void fixActionNodeIncorrectData(ActionNode actionNode)
             {
-                if (!actionDefineDict.ContainsKey(actionNode.defineName))
+                if (!actionDefineDict.ContainsKey(actionNode.defineName) && !cardPool.actionDefineList.Exists(a => a.name == actionNode.defineName))
                 {
                     //包含不存在的动作名称，可能是名称过期了
                     string newDefineName = null;

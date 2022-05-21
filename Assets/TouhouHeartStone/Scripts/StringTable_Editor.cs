@@ -54,6 +54,8 @@ namespace Game
         public const string EDITOR_VALUE_NAME_TARGET_TYPE = "目标类型";
         [TranslateMsg("编辑器中目标检查器节点中错误提示编辑框的标注名称")]
         public const string EDITOR_VALUE_NAME_INVALID_MSG = "错误提示";
+        [TranslateMsg("编辑器中当玩家删除一个动作的时候发出的警告")]
+        public const string EDITOR_WARNING_DELETE_ACTION_DFINE = "删除一个动作定义会导致所有使用到它的卡牌效果无效，确定要这么做吗？";
         [TranslateMsg("编辑器错误提示")]
         public const string EDITOR_ERROR_INVALID_TYPE_CONNECT = "相互连接的输入输出类型必须可以相互转化";
         [TranslateMsg("编辑器错误提示")]
@@ -82,6 +84,8 @@ namespace Game
         public const string EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT = "变量";
         [TranslateMsg("编辑器的自定义动作编辑界面中新增一个常量的默认名称")]
         public const string EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT = "常量";
+        [TranslateMsg("动作图编辑器中未知的动作节点名称")]
+        public const string EDITOR_NODE_NAME_UNKNOW = "未知节点";
         #region 动作
         #region 内置
         [TranslateMsg("动作图编辑器中动作节点名称之整数运算")]

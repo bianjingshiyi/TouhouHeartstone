@@ -11,6 +11,8 @@ namespace Game
         public const string YES = "是";
         [TranslateMsg("所有按钮通用的否")]
         public const string NO = "否";
+        [TranslateMsg("所有提示通用的警告")]
+        public const string WARNING = "警告";
         [TranslateMsg("所有提示通用的错误")]
         public const string ERROR = "错误";
         [TranslateMsg("所有玩家非法操作的提示")]
@@ -25,6 +27,8 @@ namespace Game
         public const string HINT_SELECT_A_CARD = "选择一张卡牌";
         [TranslateMsg("所有按钮通用的删除")]
         public const string DELETE = "删除";
+        [TranslateMsg("所有按钮通用的编辑")]
+        public const string EDIT = "编辑";
         [TranslateMsg("语言选项，简体中文")]
         public const string LANGUAGE_ZH_HANS = "简体中文";
         [TranslateMsg("语言选项，英文")]

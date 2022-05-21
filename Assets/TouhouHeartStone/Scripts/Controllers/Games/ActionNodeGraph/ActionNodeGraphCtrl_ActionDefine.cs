@@ -4,6 +4,10 @@ using UnityEngine;
 using UI;
 using Game;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
+using TouhouHeartstone;
+using System.Linq;
 
 namespace Controllers
 {
@@ -25,6 +29,18 @@ namespace Controllers
         }
         #endregion
         #region 私有方法
+        #region 生命周期
+        private void onAwake_ActionDefine()
+        {
+            //内置动作定义
+            _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
+            {
+                typeof(CardEngine).Assembly,
+                typeof(HearthStoneRule).Assembly,
+                typeof(EffectEditorLibrary).Assembly
+            });
+        }
+        #endregion
         private async Task openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
         {
             _actionNodeList.Clear();
@@ -51,6 +67,30 @@ namespace Controllers
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(_generatedActionDefine.action);
                 _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
             }
+            //连接返回节点
+            for (int i = 0; i < _generatedActionDefine.returnValueRefList.Count; i++)
+            {
+                ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList[i];
+                ActionNodeItem outputActionNodeItem;
+                int outputIndex;
+                if (returnValueRef.valueRef.action != null)
+                {
+                    outputActionNodeItem = getActionNodeItem(returnValueRef.valueRef.action);
+                    outputIndex = getBranchesCount(getActionDefine(returnValueRef.valueRef.action.defineName)) + returnValueRef.valueRef.index;
+                }
+                else if (returnValueRef.valueRef.actionNodeId != 0)
+                {
+                    ActionNode actionNode = getActionNode(returnValueRef.valueRef.actionNodeId);
+                    outputActionNodeItem = getActionNodeItem(actionNode);
+                    outputIndex = getBranchesCount(getActionDefine(actionNode.defineName)) + returnValueRef.valueRef.index;
+                }
+                else
+                {
+                    outputActionNodeItem = _entryNodeItem;
+                    outputIndex = 1 + returnValueRef.valueRef.argIndex;
+                }
+                _ui.connectNode(outputActionNodeItem, outputIndex, _returnNodeItem, returnValueRef.returnIndex, ActionNodeConnectionType.value);
+            }
             //创建离散节点
             for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
             {
@@ -67,7 +107,6 @@ namespace Controllers
             }
             updateContentSize();
         }
-
         private void updateActionDefineReturnNodes()
         {
             (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.outputList.Count];
@@ -190,8 +229,35 @@ namespace Controllers
                 return _generatedActionDefine.inputList[index].type;
             return _generatedActionDefine.constList[index - _generatedActionDefine.inputList.Count].type;
         }
+        private ActionDefine getActionDefine(string name)
+        {
+            //内置
+            if (_actionDefineDict.TryGetValue(name, out ActionDefine actionDefine))
+            {
+                return actionDefine;
+            }
+            //自定义
+            if (game.card.getActionDefine(_curCardPoolId, name, out GeneratedActionDefine generatedActionDefine))
+            {
+                return generatedActionDefine;
+            }
+            return null;
+        }
+        private ActionDefine[] getAllActionDefines()
+        {
+            //内置
+            List<ActionDefine> actionDefineList = new List<ActionDefine>();
+            foreach (var pair in _actionDefineDict)
+            {
+                actionDefineList.Add(pair.Value);
+            }
+            //自定义
+            actionDefineList.AddRange(game.card.getActionDefines(_curCardPoolId));
+            return actionDefineList.ToArray();
+        }
         #endregion
         #region 属性字段
+        Dictionary<string, ActionDefine> _actionDefineDict;
         private GeneratedActionDefine _generatedActionDefine;
         #endregion
     }

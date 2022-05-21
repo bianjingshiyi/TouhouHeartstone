@@ -145,6 +145,8 @@ namespace Controllers
             _ui.onOutputListItemIsArrayValueChanged += onOutputListItemIsArrayValueChanged;
             _ui.onOutputListItemIsParamsValueChanged += onOutputListItemIsParamsValueChanged;
 
+            _ui.onDeleteActionDefineButtonClicked += onDeleteActionDefineButtonClickedCallback;
+
             _ui.onClickReturnButton += onClickReturnButton;
         }
         #endregion
@@ -370,6 +372,23 @@ namespace Controllers
         {
             _actionDefine.outputList[index].isParams = value;
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+        }
+        private void onDeleteActionDefineButtonClickedCallback()
+        {
+            //询问玩家
+            game.ui.dialog.ShowQuestion(
+               game.langManager.getString(StringTable.WARNING),
+               game.langManager.getString(StringTable.EDITOR_WARNING_DELETE_ACTION_DFINE),
+               async () =>
+               {
+                   //删除动作定义
+                   game.card.removeActionDefine(_cardPoolId, _actionDefine);
+                   //退出当前界面
+                   await game.ui.returnPrevUI(() =>
+                   {
+                       _ui.gameObject.SetActive(false);
+                   });
+               });
         }
         private async void onClickReturnButton()
         {

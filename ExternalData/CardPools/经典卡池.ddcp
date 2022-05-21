@@ -31,10 +31,12 @@
                             "inputs" : [{
                                 "eventVarName" : "卡牌"
                               }],
-                            "consts" : []
+                            "consts" : [],
+                            "regVar" : []
                           }
                         }],
-                      "consts" : []
+                      "consts" : [],
+                      "regVar" : []
                     }
                   }, {
                     "action" : {
@@ -42,10 +44,12 @@
                       "defineName" : "获取增益定义",
                       "branches" : [null],
                       "inputs" : [],
-                      "consts" : [1]
+                      "consts" : [1],
+                      "regVar" : []
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -79,7 +83,8 @@
                 "inputs" : [{
                     "eventVarName" : "目标卡牌"
                   }],
-                "consts" : [7]
+                "consts" : [7],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -117,7 +122,8 @@
                                 "inputs" : [{
                                     "actionNodeId" : 6
                                   }],
-                                "consts" : []
+                                "consts" : [],
+                                "regVar" : []
                               }],
                             "inputs" : [{
                                 "action" : {
@@ -140,7 +146,8 @@
                       "regVar" : [false]
                     }
                   }, null],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -179,10 +186,12 @@
                       "defineName" : "获取增益定义",
                       "branches" : [null],
                       "inputs" : [],
-                      "consts" : [4]
+                      "consts" : [4],
+                      "regVar" : []
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -218,7 +227,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : [3]
+                "consts" : [3],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -263,7 +273,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -303,7 +314,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -368,7 +380,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : ["battleCry"],
@@ -405,7 +418,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : [1, 2]
+                "consts" : [1, 2],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -447,7 +461,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -504,7 +519,8 @@
                                       "regVar" : [false]
                                     }
                                   }],
-                                "consts" : []
+                                "consts" : [],
+                                "regVar" : []
                               }],
                             "inputs" : [{
                                 "action" : {
@@ -555,7 +571,8 @@
                               "regVar" : [false]
                             }
                           }],
-                        "consts" : ["哮喘"]
+                        "consts" : ["哮喘"],
+                        "regVar" : []
                       }],
                     "inputs" : [{
                         "action" : {
@@ -571,7 +588,8 @@
                           "regVar" : [false]
                         }
                       }],
-                    "consts" : []
+                    "consts" : [],
+                    "regVar" : []
                   }],
                 "inputs" : [{
                     "action" : {
@@ -603,7 +621,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -645,7 +664,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -678,7 +698,8 @@
                 "inputs" : [{
                     "eventVarName" : "目标卡牌"
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -718,7 +739,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -798,7 +820,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -849,7 +872,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -893,7 +917,8 @@
                 "defineName" : "从一定数量的卡牌中选择一张",
                 "branches" : [null],
                 "inputs" : [null],
-                "consts" : [3]
+                "consts" : [3],
+                "regVar" : []
               }
             }],
           "tagList" : ["battleCry"],
@@ -941,7 +966,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : [15]
+                "consts" : [15],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -975,7 +1001,8 @@
                     "inputs" : [{
                         "actionNodeId" : 1
                       }],
-                    "consts" : []
+                    "consts" : [],
+                    "regVar" : []
                   }],
                 "inputs" : [{
                     "action" : {
@@ -987,7 +1014,8 @@
                       "regVar" : [true]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -1088,7 +1116,8 @@
                         "regVar" : [false]
                       }
                     }, null],
-                  "consts" : [1]
+                  "consts" : [1],
+                  "regVar" : []
                 }
               },
               "targetCheckerList" : [],
@@ -1115,7 +1144,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -1166,7 +1196,8 @@
                                     "inputs" : [{
                                         "actionNodeId" : 5
                                       }],
-                                    "consts" : []
+                                    "consts" : [],
+                                    "regVar" : []
                                   }],
                                 "inputs" : [{
                                     "action" : {
@@ -1189,7 +1220,8 @@
                           "regVar" : [false]
                         }
                       }],
-                    "consts" : ["x"]
+                    "consts" : ["x"],
+                    "regVar" : []
                   }],
                 "inputs" : [{
                     "eventVarName" : "卡牌"
@@ -1238,7 +1270,8 @@
                                   "inputs" : [{
                                       "actionNodeId" : 5
                                     }],
-                                  "consts" : []
+                                  "consts" : [],
+                                  "regVar" : []
                                 }],
                               "inputs" : [{
                                   "action" : {
@@ -1261,7 +1294,8 @@
                         "regVar" : [false]
                       }
                     }],
-                  "consts" : ["x"]
+                  "consts" : ["x"],
+                  "regVar" : []
                 }],
               "inputs" : [{
                   "eventVarName" : "卡牌"
@@ -1766,11 +1800,21 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 480.78125,
-          "posY" : 163.3553466796875
+          "posX" : 674.3626708984375,
+          "posY" : 163.10198974609375
+        },
+        "2" : {
+          "posX" : 254.7347412109375,
+          "posY" : -274.9183349609375
         }
       },
-      "freeActionNodeList" : []
+      "freeActionNodeList" : [{
+          "_id" : 2,
+          "defineName" : "元素融为一体",
+          "branches" : [null],
+          "inputs" : [null],
+          "consts" : []
+        }]
     }, {
       "cardId" : -2147418098,
       "entryType" : "triggerList",
@@ -2000,6 +2044,10 @@
         }
       },
       "freeActionNodeList" : []
+    }, {
+      "actionDefineId" : 1,
+      "actionInfoDict" : { },
+      "freeActionNodeList" : []
     }],
   "buffDefineList" : [{
       "_id" : 1,
@@ -2017,7 +2065,8 @@
                 "defineName" : "获取增益定义",
                 "branches" : [null],
                 "inputs" : [],
-                "consts" : [2]
+                "consts" : [2],
+                "regVar" : []
               }
             },
             "affectCondition" : {
@@ -2032,10 +2081,12 @@
                       "defineName" : "这张卡牌",
                       "branches" : [null],
                       "inputs" : [],
-                      "consts" : []
+                      "consts" : [],
+                      "regVar" : []
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             },
             "rangeList" : {
@@ -2063,7 +2114,8 @@
                               "defineName" : "GetVariable",
                               "branches" : [null],
                               "inputs" : [],
-                              "consts" : ["Player"]
+                              "consts" : ["Player"],
+                              "regVar" : []
                             }
                           }, {
                             "action" : {
@@ -2076,13 +2128,16 @@
                                     "defineName" : "GetVariable",
                                     "branches" : [null],
                                     "inputs" : [],
-                                    "consts" : ["Card"]
+                                    "consts" : ["Card"],
+                                    "regVar" : []
                                   }
                                 }],
-                              "consts" : []
+                              "consts" : [],
+                              "regVar" : []
                             }
                           }],
-                        "consts" : [null]
+                        "consts" : [null],
+                        "regVar" : []
                       }
                     }, {
                       "action" : {
@@ -2095,13 +2150,16 @@
                               "defineName" : "GetVariable",
                               "branches" : [null],
                               "inputs" : [],
-                              "consts" : ["Card"]
+                              "consts" : ["Card"],
+                              "regVar" : []
                             }
                           }],
-                        "consts" : []
+                        "consts" : [],
+                        "regVar" : []
                       }
                     }],
-                  "consts" : [1]
+                  "consts" : [1],
+                  "regVar" : []
                 }
               },
               "targetCheckerList" : [],
@@ -2115,7 +2173,8 @@
                       "defineName" : "这张卡牌",
                       "branches" : [null],
                       "inputs" : [],
-                      "consts" : []
+                      "consts" : [],
+                      "regVar" : []
                     }
                   }, {
                     "action" : {
@@ -2123,10 +2182,12 @@
                       "defineName" : "该增益",
                       "branches" : [null],
                       "inputs" : [],
-                      "consts" : []
+                      "consts" : [],
+                      "regVar" : []
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -2146,7 +2207,8 @@
                         "defineName" : "GetVariable",
                         "branches" : [null],
                         "inputs" : [],
-                        "consts" : ["Player"]
+                        "consts" : ["Player"],
+                        "regVar" : []
                       }
                     }, {
                       "action" : {
@@ -2159,13 +2221,16 @@
                               "defineName" : "GetVariable",
                               "branches" : [null],
                               "inputs" : [],
-                              "consts" : ["Card"]
+                              "consts" : ["Card"],
+                              "regVar" : []
                             }
                           }],
-                        "consts" : []
+                        "consts" : [],
+                        "regVar" : []
                       }
                     }],
-                  "consts" : [null]
+                  "consts" : [null],
+                  "regVar" : []
                 }
               },
               "targetCheckerList" : [],
@@ -2179,7 +2244,8 @@
                       "defineName" : "这张卡牌",
                       "branches" : [null],
                       "inputs" : [],
-                      "consts" : []
+                      "consts" : [],
+                      "regVar" : []
                     }
                   }, {
                     "action" : {
@@ -2187,10 +2253,12 @@
                       "defineName" : "该增益",
                       "branches" : [null],
                       "inputs" : [],
-                      "consts" : []
+                      "consts" : [],
+                      "regVar" : []
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -2291,7 +2359,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -2347,7 +2416,8 @@
                       "regVar" : [false]
                     }
                   }],
-                "consts" : []
+                "consts" : [],
+                "regVar" : []
               }
             }],
           "tagList" : [],
@@ -2426,5 +2496,21 @@
       "name" : "保卫图书馆",
       "desc" : "增加生命值",
       "imagePath" : "经典卡池\\Buff11\\Image_zh-Hans.jpg"
+    }],
+  "actionDefineList" : [{
+      "_id" : 1,
+      "name" : "元素融为一体",
+      "inputList" : [{
+          "typeName" : "System.Int32",
+          "name" : "变量1"
+        }],
+      "constList" : [],
+      "outputList" : [{
+          "typeName" : "System.Int32",
+          "name" : "变量1"
+        }],
+      "returnList" : [{
+          "valueRef" : { }
+        }]
     }]
 }

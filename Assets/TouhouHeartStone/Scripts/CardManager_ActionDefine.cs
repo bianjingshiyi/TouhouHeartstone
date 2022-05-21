@@ -35,11 +35,11 @@ namespace Game
             }
             return false;
         }
-        public bool getActionDefine(int cardPoolId, int id, out GeneratedActionDefine actionDefine)
+        public bool getActionDefine(int cardPoolId, string name, out GeneratedActionDefine actionDefine)
         {
             if (_runtimeGenActDefDict.TryGetValue(cardPoolId, out var actDefList))
             {
-                actionDefine = actDefList.Find(g => g.id == id);
+                actionDefine = actDefList.Find(g => g.defineName == name);
                 return actionDefine != null;
             }
             actionDefine = null;

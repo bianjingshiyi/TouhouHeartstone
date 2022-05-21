@@ -180,6 +180,7 @@ namespace UI
             {
                 _effectPropListTemplate.gameObject.SetActive(false);
             }
+            _deleteActionDefineButton.onClick.AddListener(onDeleteActionDefineButtonClickedCallback);
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
         }
         #endregion
@@ -276,6 +277,10 @@ namespace UI
         {
             onClickAddOutputButton?.Invoke();
         }
+        private void onDeleteActionDefineButtonClickedCallback()
+        {
+            onDeleteActionDefineButtonClicked?.Invoke();
+        }
         private void onClickReturnButtonCallback()
         {
             onClickReturnButton?.Invoke();
@@ -330,6 +335,7 @@ namespace UI
         public event Action<int, bool> onOutputListItemIsParamsValueChanged;
         public event Action<int> onOutputListItemDeleteButtonClicked;
         public event Action onClickAddOutputButton;
+        public event Action onDeleteActionDefineButtonClicked;
         /// <summary>
         /// 当点击返回按钮
         /// </summary>
@@ -374,6 +380,8 @@ namespace UI
         List<RectTransform> _outputList = new List<RectTransform>();
         [SerializeField]
         Button _addOutputButton;
+        [SerializeField]
+        Button _deleteActionDefineButton;
         [SerializeField]
         Button _returnButton;
         #endregion

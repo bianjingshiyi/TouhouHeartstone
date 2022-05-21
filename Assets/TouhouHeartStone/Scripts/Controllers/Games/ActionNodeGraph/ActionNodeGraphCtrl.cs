@@ -85,13 +85,9 @@ namespace Controllers
             gameObject.SetActive(false);
             return Task.CompletedTask;
         }
-        public void addActionDefine(string name, ActionDefine actionDefine)
-        {
-            _actionDefineDict.Add(name, actionDefine);
-        }
         public bool isActionDefineNameExist(string name)
         {
-            return _actionDefineDict.ContainsKey(name);
+            return getActionDefine(name) != null;
         }
         #endregion
         #region 私有方法
@@ -103,12 +99,7 @@ namespace Controllers
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
             loadEventTypes();
-            _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
-            {
-                typeof(CardEngine).Assembly,
-                typeof(HearthStoneRule).Assembly,
-                typeof(EffectEditorLibrary).Assembly
-            });
+            onAwake_ActionDefine();
             _ui.onLeftClickBackground += onLeftClickBackground;
             _ui.onRightClickBackground += onRightClickBackground;
             _ui.onLongPressBackground += onLongPressBackground;
@@ -203,6 +194,18 @@ namespace Controllers
                 {
                     removeActionNode();
                 }
+                else if (index == 1)//编辑
+                {
+                    GeneratedActionDefine generatedActionDefine = getActionDefine(_curEditActionNode.defineName) as GeneratedActionDefine;
+                    await game.ui.displayUIWithReturn(scene.effectEditor, new EffectEditorCtrl.DisplayInfo(
+                        _curCardPoolId,
+                        generatedActionDefine,
+                        new DisplayInfo(
+                            _curCardPoolId,
+                            null,
+                            generatedActionDefine,
+                            null, game.card.getOrCreateActionDefineActionNodeGraphInfo(_curCardPoolId, generatedActionDefine.id))));
+                }
                 closeMenu();
             }
             else
@@ -258,10 +261,9 @@ namespace Controllers
                     else
                     {
                         //创建节点
-                        closeMenu();
                         var categroyGroups = getActionDefineGroups();
                         ActionDefine[] actions = Array.Find(categroyGroups, g => g.Key == _curCategroy).ToArray();
-                        _curCategroy = null;
+                        closeMenu();
                         await createActionNodeAtCurPos(actions[index - 1]);
                     }
                 }
@@ -328,7 +330,7 @@ namespace Controllers
                                 return;
                             }
                             Type outputType = getEventVarInfo(outputIndex - 1).type;
-                            Type inputType = _actionDefineDict[inputActionNode.defineName].inputs[inputIndex - inputActionNode.branches.Length].type;
+                            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - inputActionNode.branches.Length].type;
                             if (!isValidTypeForConnection(outputType, inputType))
                             {
                                 //相互连接的输入输出类型必须可以相互转化
@@ -348,7 +350,7 @@ namespace Controllers
                                 return;
                             }
                             Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
-                            Type inputType = _actionDefineDict[inputActionNode.defineName].inputs[inputIndex - inputActionNode.branches.Length].type;
+                            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - inputActionNode.branches.Length].type;
                             if (!isValidTypeForConnection(outputType, inputType))
                             {
                                 //相互连接的输入输出类型必须可以相互转化
@@ -388,7 +390,7 @@ namespace Controllers
             else
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                ActionDefine outputActionDefine = _actionDefineDict[outputActionNode.defineName];
+                ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
                 int outputBranchesCount = getBranchesCount(outputActionDefine);
                 ActionNode inputActionNode = getActionNode(inputActionNodeItem);
                 if (inputIndex == 0)
@@ -423,7 +425,7 @@ namespace Controllers
                     }
                     //检查类型合法性，获取输入输出类型
                     Type outputType = outputActionDefine.getValueOutputAt(outputIndex - outputBranchesCount).type;
-                    ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+                    ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
                     Type inputType;
                     if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length)
                     {
@@ -523,10 +525,15 @@ namespace Controllers
                 return;
             _curEditActionNode = getActionNode(actionNodeItem);
             Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
-            openMenu(position, new string[]
+            List<string> optionList = new List<string>()
             {
-                game.langManager.getString(StringTable.DELETE),//删除
-            });
+                game.langManager.getString(StringTable.DELETE)//删除
+            };
+            if (getActionDefine(_curEditActionNode.defineName) is GeneratedActionDefine)
+            {
+                optionList.Add(game.langManager.getString(StringTable.EDIT));//编辑
+            }
+            openMenu(position, optionList.ToArray());
         }
         /// <summary>
         /// 当用户长按节点，展开节点菜单。
@@ -585,7 +592,7 @@ namespace Controllers
         private async void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
         {
             ActionNode actionNode = getActionNode(actionNodeItem);
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             if (actionDefine.consts[index].type == typeof(ActionValueRef))
             {
                 ActionValueRef value = actionNode.consts[index] as ActionValueRef;
@@ -625,7 +632,7 @@ namespace Controllers
         private async void onClickActionNodeConstValueItemEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
             ActionNode actionNode = getActionNode(actionNodeItem);
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             if (actionDefine.consts[index].type == typeof(CardReference[]))
             {
                 _ui.displayCardSelectPanel(true);
@@ -1102,7 +1109,7 @@ namespace Controllers
         /// <returns>动作节点对应的UI组件</returns>
         private async Task<ActionNodeItem> createNodeUI4ActionNodeAt(ActionNode actionNode, float posX, float posY)
         {
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             ActionNodeItem actionNodeItem;
             if (actionDefine is MethodActionDefine methodActionDefine && methodActionDefine.methodName == StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE)
             {
@@ -1154,7 +1161,7 @@ namespace Controllers
                     effectNames = game.card.getEffectNames(generatedBuffDefine.effectList.ToArray())
                 }, getActionNodeOutputNames(actionNode));
             }
-            else
+            else if (actionDefine != null)
             {
                 ActionNodeValueInfo[] constsInfo = getActionNodeConstValueInfo(actionNode);
                 actionNodeItem = _ui.createNode(
@@ -1217,6 +1224,15 @@ namespace Controllers
                         }
                     }
                 }
+            }
+            else
+            {
+                actionNodeItem = _ui.createNode(
+                    posX,
+                    posY,
+                    game.langManager.getString(StringTable.EDITOR_NODE_NAME_UNKNOW));
+                actionNodeItem.setInputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode))) });
+                actionNodeItem.setOutputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode))) });
             }
             _actionNodeItemList.Add(actionNodeItem);
             if (!_actionNodeList.Contains(actionNode))
@@ -1476,8 +1492,8 @@ namespace Controllers
             //就像是在if的分支里面声明一个变量，在后续动作作用域中这个变量不一定都存在。
             //目前选择的解决方法是对于超出作用域的节点是无法通过id引用的。
             //这种解决方案会导致一个问题，那就是在ui上显示为一个的节点，实际上可能是多个不同的节点。
-            ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
-            ActionDefine outputActionDefine = _actionDefineDict[outputActionNode.defineName];
+            ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
+            ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
             if (!isActionNodeValueRefedInPrevNodes(outputActionNode, inputActionNode, inputIndex))
             {
                 inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
@@ -1605,7 +1621,7 @@ namespace Controllers
             ActionNodeItem inputActionNodeItem = getActionNodeItem(inputActionNode);
             ActionValueRef inputActionValueRef = inputActionNode.inputs[inputIndex];
             //断开之前的节点连接
-            ActionDefine inputActionDefine = _actionDefineDict[inputActionNode.defineName];
+            ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
             if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length - 1)
             {
                 //如果断开的是多参数节点
@@ -2061,7 +2077,7 @@ namespace Controllers
         }
         private int getOutputCount(ActionNode actionNode)
         {
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             return actionDefine.outputs.Length;
         }
         private int getBranchesCount(ActionDefine actionDefine)
@@ -2114,9 +2130,8 @@ namespace Controllers
         }
         private IGrouping<string, ActionDefine>[] getActionDefineGroups()
         {
-            return _actionDefineDict.GroupBy(p =>
+            return getAllActionDefines().GroupBy(actionDefine =>
             {
-                ActionDefine actionDefine = p.Value;
                 string name;
                 if (actionDefine is MethodActionDefine methodActionDefine)
                 {
@@ -2124,6 +2139,13 @@ namespace Controllers
                         name = methodActionDefine.defineName;
                     else
                         name = methodActionDefine.category;
+                }
+                else if (actionDefine is GeneratedActionDefine generatedActionDefine)
+                {
+                    if (string.IsNullOrEmpty(generatedActionDefine.category))
+                        name = generatedActionDefine.defineName;
+                    else
+                        name = generatedActionDefine.category;
                 }
                 else if (actionDefine.defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST))
                 {
@@ -2137,7 +2159,7 @@ namespace Controllers
                 if (_nameTextDict.ContainsKey(name))
                     name = _nameTextDict[name];
                 return game.langManager.getString(name);
-            }, p => p.Value).OrderBy(g => g.Count() > 1).ThenBy(g => g.Key).ToArray();
+            }, a => a).OrderBy(g => g.Count() > 1).ThenBy(g => g.Key).ToArray();
         }
         private string getActionNodeName(ActionNode actionNode)
         {
@@ -2153,7 +2175,7 @@ namespace Controllers
         }
         private (string name, Color color)[] getActionNodeInputViewData(ActionNode actionNode)
         {
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             List<(string name, Color color)> viewDataList = new List<(string name, Color color)>();
             //动作输入
             viewDataList.Add((string.Empty, game.editor.getColorByTypeName(nameof(ActionNode))));
@@ -2183,7 +2205,7 @@ namespace Controllers
         private string[] getActionNodeInputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             List<string> inputNameList = new List<string>();
             //前一个动作节点
             inputNameList.Add(string.Empty);
@@ -2219,7 +2241,7 @@ namespace Controllers
         }
         private ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
-            var actionDefine = _actionDefineDict[actionNode.defineName];
+            var actionDefine = getActionDefine(actionNode.defineName);
             var infoArray = new ActionNodeValueInfo[actionDefine.consts.Length];
             for (int i = 0; i < infoArray.Length; i++)
             {
@@ -2257,7 +2279,7 @@ namespace Controllers
         private string[] getActionNodeOutputNames(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             string[] outputNames = new string[actionDefine.outputs.Length + actionNode.branches.Length];
             for (int i = 0; i < outputNames.Length; i++)
             {
@@ -2276,7 +2298,7 @@ namespace Controllers
         private (string name, Color color)[] getActionNodeOutputViewData(ActionNode actionNode)
         {
             //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
-            ActionDefine actionDefine = _actionDefineDict[actionNode.defineName];
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             List<(string name, Color color)> outputList = new List<(string name, Color color)>()
             {
                 (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
@@ -2434,7 +2456,6 @@ namespace Controllers
         ActionNodeGraphPanel _ui;
         [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
-        Dictionary<string, ActionDefine> _actionDefineDict;
         string _curCategroy = null;
         float _curPosX;
         float _curPosY;
