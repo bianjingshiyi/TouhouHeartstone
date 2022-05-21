@@ -16,7 +16,7 @@ namespace Game
             {
                 if (_editorTypeInfos[i].isVarType)
                     index++;
-                if (_editorTypeInfos[i].type.Name == typeName)
+                if (_editorTypeInfos[i].type.Name == typeName || _editorTypeInfos[i].type.FullName == typeName)
                     return index;
             }
             return index;
@@ -28,7 +28,7 @@ namespace Game
             {
                 if (_editorTypeInfos[i].isConstType)
                     index++;
-                if (_editorTypeInfos[i].type.Name == typeName)
+                if (_editorTypeInfos[i].type.Name == typeName || _editorTypeInfos[i].type.FullName == typeName)
                     return index;
             }
             return index;
@@ -91,7 +91,7 @@ namespace Game
         {
             for (int i = 0; i < _editorTypeInfos.Length; i++)
             {
-                if (_editorTypeInfos[i].type.Name == typeName)
+                if (_editorTypeInfos[i].type.Name == typeName || _editorTypeInfos[i].type.FullName == typeName)
                 {
                     return _editorTypeInfos[i].color;
                 }
@@ -102,7 +102,7 @@ namespace Game
         {
             for (int i = 0; i < _editorTypeInfos.Length; i++)
             {
-                if (_editorTypeInfos[i].type.Name == name)
+                if (_editorTypeInfos[i].type.Name == name || _editorTypeInfos[i].type.FullName == name)
                 {
                     return _editorTypeInfos[i].type;
                 }

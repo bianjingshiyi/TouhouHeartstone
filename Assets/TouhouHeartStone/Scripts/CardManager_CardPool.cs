@@ -150,6 +150,11 @@ namespace Game
                 _cardPoolInfoDict.Add(cardPoolPath, cardPoolInfo);
             }
             CardPool cardPool = _cardPoolDict[cardPoolInfo.cardPoolId];
+            //对缓存的动作定义进行保存
+            if (_runtimeGenActDefDict.TryGetValue(cardPoolInfo.cardPoolId, out var actionDefineList))
+            {
+                cardPool.actionDefineList = actionDefineList.ConvertAll(g => new SerializableActionDefine(g));
+            }
             //对缓存的图片进行保存
             await saveExternalImages(cardPoolInfo.cardPoolId);
             //保存文件
@@ -220,6 +225,13 @@ namespace Game
                 }
                 _cardPoolInfoDict[path] = cardPoolInfo;
                 _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
+                if (!_runtimeGenActDefDict.TryGetValue(cardPoolInfo.cardPoolId, out var actionDefineList))
+                {
+                    actionDefineList = new List<GeneratedActionDefine>();
+                    _runtimeGenActDefDict.Add(cardPoolInfo.cardPoolId, actionDefineList);
+                }
+                actionDefineList.Clear();
+                actionDefineList.AddRange(cardPool.actionDefineList.ConvertAll(s => new GeneratedActionDefine(s, game.editor.getTypeByName)));
             }
             else if (cardPoolInfo.version == CARD_POOL_VERSION_0_1)
             {

@@ -23,7 +23,7 @@ namespace Controllers
         {
             return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, buffDefine, effect, null));
         }
-        public Task display(int cardPoolId, SerializableActionDefine actionDefine)
+        public Task display(int cardPoolId, GeneratedActionDefine actionDefine)
         {
             return game.ui.displayUIWithReturn(this,
                 new DisplayInfo(cardPoolId, actionDefine,
@@ -236,7 +236,7 @@ namespace Controllers
         {
             if (!scene.actionNodeGraphCtrl.isActionDefineNameExist(value))
             {
-                _actionDefine.name = value;
+                _actionDefine.defineName = value;
             }
             else
             {
@@ -244,8 +244,8 @@ namespace Controllers
                 game.ui.dialog.ShowConfirm(
                     game.langManager.getString(StringTable.ERROR),
                     game.langManager.getString(StringTable.EDITOR_ERROR_ACTION_DEFINE_NAME_ALREADY_EXIST));
-                _actionDefine.name = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT);
-                _ui.setActionDefineName(_actionDefine.name);
+                _actionDefine.defineName = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT);
+                _ui.setActionDefineName(_actionDefine.defineName);
             }
         }
         private void onActionDefineCategoryDropdownValueChanged(int index)
@@ -254,13 +254,11 @@ namespace Controllers
         }
         private void onAddInputButtonClicked()
         {
-            _actionDefine.inputList.Add(new SerializableValueDefine()
-            {
-                typeName = typeof(int).Name,
-                name = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.inputList.Count + 1),
-                isArray = false,
-                isParams = false
-            });
+            _actionDefine.inputList.Add(new ValueDefine(
+                typeof(int),
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.inputList.Count + 1),
+                false,
+                false));
             updateActionDefinePropList();
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
@@ -272,7 +270,7 @@ namespace Controllers
         }
         private void onInputListItemTypeChanged(int index, int typeIndex)
         {
-            _actionDefine.inputList[index].typeName = game.editor.getEditorVarTypeAt(typeIndex).Name;
+            _actionDefine.inputList[index].type = game.editor.getEditorVarTypeAt(typeIndex);
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemNameChanged(int index, string name)
@@ -283,7 +281,10 @@ namespace Controllers
         }
         private void onInputListItemIsArrayValueChanged(int index, bool value)
         {
-            _actionDefine.inputList[index].isArray = value;
+            if (value)
+                _actionDefine.inputList[index].type = _actionDefine.inputList[index].type.MakeArrayType();
+            else
+                _actionDefine.inputList[index].type = _actionDefine.inputList[index].type.GetElementType();
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemIsParamsValueChanged(int index, bool value)
@@ -293,13 +294,11 @@ namespace Controllers
         }
         private void onAddConstButtonClicked()
         {
-            _actionDefine.constList.Add(new SerializableValueDefine()
-            {
-                typeName = typeof(int).Name,
-                name = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT) + (_actionDefine.constList.Count + 1),
-                isArray = false,
-                isParams = false
-            });
+            _actionDefine.constList.Add(new ValueDefine(
+                typeof(int),
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT) + (_actionDefine.constList.Count + 1),
+                false,
+                false));
             updateActionDefinePropList();
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
@@ -311,7 +310,7 @@ namespace Controllers
         }
         private void onConstListItemTypeChanged(int index, int typeIndex)
         {
-            _actionDefine.constList[index].typeName = game.editor.getEditorConstTypeAt(typeIndex).Name;
+            _actionDefine.constList[index].type = game.editor.getEditorConstTypeAt(typeIndex);
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemNameChanged(int index, string name)
@@ -322,7 +321,10 @@ namespace Controllers
         }
         private void onConstListItemIsArrayValueChanged(int index, bool value)
         {
-            _actionDefine.constList[index].isArray = value;
+            if (value)
+                _actionDefine.constList[index].type = _actionDefine.constList[index].type.MakeArrayType();
+            else
+                _actionDefine.constList[index].type = _actionDefine.constList[index].type.GetElementType();
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemIsParamsValueChanged(int index, bool value)
@@ -332,13 +334,11 @@ namespace Controllers
         }
         private void onAddOutputButtonClicked()
         {
-            _actionDefine.outputList.Add(new SerializableValueDefine()
-            {
-                typeName = typeof(int).Name,
-                name = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.outputList.Count + 1),
-                isArray = false,
-                isParams = false
-            });
+            _actionDefine.outputList.Add(new ValueDefine(
+                typeof(int),
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.outputList.Count + 1),
+                false,
+                false));
             updateActionDefinePropList();
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
@@ -350,7 +350,7 @@ namespace Controllers
         }
         private void onOutputListItemTypeChanged(int index, int typeIndex)
         {
-            _actionDefine.outputList[index].typeName = game.editor.getEditorVarTypeAt(typeIndex).Name;
+            _actionDefine.outputList[index].type = game.editor.getEditorVarTypeAt(typeIndex);
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemNameChanged(int index, string name)
@@ -360,7 +360,10 @@ namespace Controllers
         }
         private void onOutputListItemIsArrayValueChanged(int index, bool value)
         {
-            _actionDefine.outputList[index].isArray = value;
+            if (value)
+                _actionDefine.outputList[index].type = _actionDefine.outputList[index].type.MakeArrayType();
+            else
+                _actionDefine.outputList[index].type = _actionDefine.outputList[index].type.GetElementType();
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemIsParamsValueChanged(int index, bool value)
@@ -456,30 +459,30 @@ namespace Controllers
             //显示自定义动作属性
             _ui.switchToActionDefine();
             //更新名称
-            _ui.setActionDefineName(_actionDefine.name);
+            _ui.setActionDefineName(_actionDefine.defineName);
             //更新输入
             (int typeIndex, string name, bool isArray, bool isParams)[] inputViewData =
                 new (int typeIndex, string name, bool isArray, bool isParams)[_actionDefine.inputList.Count];
             for (int i = 0; i < _actionDefine.inputList.Count; i++)
             {
-                SerializableValueDefine valueDefine = _actionDefine.inputList[i];
-                inputViewData[i] = (game.editor.getEditorVarTypeNameIndex(valueDefine.typeName), valueDefine.name, valueDefine.isArray, valueDefine.isParams);
+                ValueDefine valueDefine = _actionDefine.inputList[i];
+                inputViewData[i] = (game.editor.getEditorVarTypeNameIndex(valueDefine.type.Name), valueDefine.name, valueDefine.type.IsArray, valueDefine.isParams);
             }
             _ui.updateInputList(inputViewData);
             //更新常量
             (int typeIndex, string name)[] constViewData = new (int typeIndex, string name)[_actionDefine.constList.Count];
             for (int i = 0; i < _actionDefine.constList.Count; i++)
             {
-                SerializableValueDefine valueDefine = _actionDefine.constList[i];
-                constViewData[i] = (game.editor.getEditorConstTypeNameIndex(valueDefine.typeName), valueDefine.name);
+                ValueDefine valueDefine = _actionDefine.constList[i];
+                constViewData[i] = (game.editor.getEditorConstTypeNameIndex(valueDefine.type.Name), valueDefine.name);
             }
             _ui.updateConstList(constViewData);
             //更新输出
             (int typeIndex, string name, bool isArray)[] outputViewData = new (int typeIndex, string name, bool isArray)[_actionDefine.outputList.Count];
             for (int i = 0; i < _actionDefine.outputList.Count; i++)
             {
-                SerializableValueDefine valueDefine = _actionDefine.outputList[i];
-                outputViewData[i] = (game.editor.getEditorVarTypeNameIndex(valueDefine.typeName), valueDefine.name, valueDefine.isArray);
+                ValueDefine valueDefine = _actionDefine.outputList[i];
+                outputViewData[i] = (game.editor.getEditorVarTypeNameIndex(valueDefine.type.Name), valueDefine.name, valueDefine.type.IsArray);
             }
             _ui.updateOutputList(outputViewData);
         }
@@ -493,7 +496,7 @@ namespace Controllers
         CardDefine _cardDefine;
         GeneratedBuffDefine _buffDefine;
         GeneratedEffect _effect;
-        SerializableActionDefine _actionDefine;
+        GeneratedActionDefine _actionDefine;
         string[] _selectableRanges;
         readonly string[] _effectTags = new string[]
         {
@@ -557,7 +560,7 @@ namespace Controllers
                 this.effect = effect;
                 this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
             }
-            public DisplayInfo(int cardPoolId, SerializableActionDefine actionDefine, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
+            public DisplayInfo(int cardPoolId, GeneratedActionDefine actionDefine, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
             {
                 this.cardPoolId = cardPoolId;
                 this.actionDefine = actionDefine;
@@ -567,7 +570,7 @@ namespace Controllers
             public CardDefine cardDefine;
             public GeneratedBuffDefine buffDefine;
             public GeneratedEffect effect;
-            public SerializableActionDefine actionDefine;
+            public GeneratedActionDefine actionDefine;
             public ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo;
         }
         #endregion

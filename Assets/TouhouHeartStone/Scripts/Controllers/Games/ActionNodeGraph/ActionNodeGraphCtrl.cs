@@ -50,7 +50,7 @@ namespace Controllers
                 //更新UI
                 _ui.gameObject.SetActive(true);
                 _ui.displayCardSelectPanel(false);
-                if (info.editObject is SerializableActionDefine actionDefine)
+                if (info.editObject is GeneratedActionDefine actionDefine)
                     return openGeneratedActionDefine(actionDefine);
                 else if (info.editObject is TriggerGraph trigger)
                     return openTriggerGraph(trigger, info.entryType);
@@ -244,8 +244,7 @@ namespace Controllers
                         GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(
                             _curCardPoolId,
                             game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT));
-                        SerializableActionDefine serializableActionDefine = game.card.getSerializableActionDefine(generatedActionDefine);
-                        await scene.effectEditor.display(_curCardPoolId, serializableActionDefine);
+                        await scene.effectEditor.display(_curCardPoolId, generatedActionDefine);
                     }
                 }
                 else
@@ -292,7 +291,7 @@ namespace Controllers
                         return;
                     }
                     Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
-                    Type inputType = game.editor.getTypeByName(_generatedActionDefine.outputList[inputIndex].typeName);
+                    Type inputType = _generatedActionDefine.outputList[inputIndex].type;
                     if (!isValidTypeForConnection(outputType, inputType))
                     {
                         //相互连接的输入输出类型必须可以相互转化
@@ -1321,10 +1320,10 @@ namespace Controllers
         {
             if (_generatedActionDefine != null)
             {
-                if (_generatedActionDefine.returnList == null)
-                    _generatedActionDefine.returnList = new List<ReturnValueRef>();
+                if (_generatedActionDefine.returnValueRefList == null)
+                    _generatedActionDefine.returnValueRefList = new List<ReturnValueRef>();
                 //判断是否已经相连
-                if (_generatedActionDefine.returnList.Exists(r =>
+                if (_generatedActionDefine.returnValueRefList.Exists(r =>
                     r != null &&
                     r.valueRef != null &&
                     r.valueRef.actionNodeId == outputActionNode.id &&
@@ -1340,7 +1339,7 @@ namespace Controllers
                     unconnectNode4ReturnValueRef(outputActionNode, outputIndex, inputIndex);
                 }
                 //建立新的连接
-                _generatedActionDefine.returnList.Add(new ReturnValueRef(outputActionNode.id, outputIndex, inputIndex));
+                _generatedActionDefine.returnValueRefList.Add(new ReturnValueRef(outputActionNode.id, outputIndex, inputIndex));
                 //从离散节点列表中去掉被连接的节点
                 _graphInfo.freeActionNodeList.Remove(outputActionNode);
                 //更新ui
@@ -1542,7 +1541,7 @@ namespace Controllers
         {
             if (_generatedActionDefine != null)
             {
-                ReturnValueRef returnValueRef = _generatedActionDefine.returnList.Find(r =>
+                ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList.Find(r =>
                     r != null &&
                     r.valueRef != null &&
                     r.valueRef.actionNodeId == outputActionNode.id &&
@@ -1551,7 +1550,7 @@ namespace Controllers
                 if (returnValueRef != null)
                 {
                     //断开与返回值节点的连接
-                    _generatedActionDefine.returnList.Remove(returnValueRef);
+                    _generatedActionDefine.returnValueRefList.Remove(returnValueRef);
                 }
                 //输出节点一定会变得离散
                 if (!_graphInfo.freeActionNodeList.Contains(outputActionNode))
