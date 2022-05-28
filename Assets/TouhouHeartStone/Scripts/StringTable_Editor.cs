@@ -94,6 +94,8 @@ namespace Game
         public const string EDIOTR_NODE_NAME_LOGIC_OPERATION = "逻辑运算";
         [TranslateMsg("动作图编辑器中动作节点名称之比较")]
         public const string EDIOTR_NODE_NAME_COMPARE = "比较";
+        [TranslateMsg("动作图编辑器中动作节点名称之分支动作")]
+        public const string EDIOTR_NODE_NAME_BRANCH_ACTION = "分支动作";
         [TranslateMsg("动作图编辑器中动作节点名称之固定整数")]
         public const string EDIOTR_NODE_NAME_INTEGER_CONST = "固定整数";
         [TranslateMsg("动作图编辑器中动作节点名称之固定字符串")]
@@ -216,6 +218,12 @@ namespace Game
         public const string EDITOR_NODE_NAME_SET_PROPERTY = "设置属性";
         [TranslateMsg("动作图编辑器中动作输入名称之值")]
         public const string EDITOR_PARAM_NAME_VALUE = "值";
+        [TranslateMsg("动作图编辑器中动作输入名称之真值")]
+        public const string EDITOR_PARAM_NAME_BOOLEAN = "真值";
+        [TranslateMsg("动作图编辑器中动作输入名称之动作")]
+        public const string EDITOR_PARAM_NAME_ACTION = "动作";
+        [TranslateMsg("动作图编辑器中动作输入名称之否则动作")]
+        public const string EDITOR_PARAM_NAME_ELSE_ACTION = "否则动作";
         [TranslateMsg("动作图编辑器中动作输入名称之是设置")]
         public const string EDITOR_PARAM_NAME_IS_VALUE = "是设置";
         [TranslateMsg("动作图编辑器中动作节点名称之获取唯一属性名")]
@@ -242,14 +250,20 @@ namespace Game
         public const string EDITOR_NODE__IS_DEFINE = "卡牌类型判断";
         [TranslateMsg("动作图编辑器中动作参数名称之目标卡牌")]
         public const string EDITOR_PARAM_NAME_TARGET_CARD = "目标卡牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取所有卡牌定义")]
+        public const string EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE = "获取所有卡牌定义";
         [TranslateMsg("动作图编辑器中动作节点名称之获取卡牌定义")]
         public const string EDITOR_NODE_NAME_GET_CARD_DEFINE = "获取卡牌定义";
         [TranslateMsg("动作图编辑器中动作节点名称之获取卡牌定义列表")]
         public const string EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY = "获取卡牌定义列表";
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌定义是否具有标签")]
+        public const string EDITOR_NODE_NAME_CARD_DEFINE_HAS_TAG = "卡牌定义是否具有标签";
         [TranslateMsg("动作图编辑器中动作参数名称之卡牌引用")]
         public const string EDITOR_PARAM_NAME_CARD_REFERENCE = "卡牌引用";
         [TranslateMsg("动作图编辑器中动作参数名称之卡牌定义")]
         public const string EDITOR_PARAM_NAME_CARD_DEFINE = "卡牌定义";
+        [TranslateMsg("动作图编辑器中动作参数名称之标签")]
+        public const string EDITOR_PARAM_NAME_TAG = "标签";
         [TranslateMsg("动作图编辑器中动作节点名称之获取随机卡牌定义")]
         public const string EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE = "获取随机卡牌定义";
         [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并置入手牌")]
@@ -304,10 +318,20 @@ namespace Game
         #region 集合运算
         [TranslateMsg("动作图编辑器中动作节点分类之集合运算")]
         public const string EDITOR_NODE_CATEGORY_COLLECTION_OPERATION = "集合运算";
+        [TranslateMsg("动作图编辑器中动作节点名称之创建集合")]
+        public const string EDITOR_NODE_NAME_CREATE_ARRAY = "创建集合";
+        [TranslateMsg("动作图编辑器中动作节点名称之向集合添加元素")]
+        public const string EDITOR_NODE_NAME_ADD_ELEMENT_TO_ARRAY = "向集合添加元素";
         [TranslateMsg("动作图编辑器中动作节点名称之集合相减")]
         public const string EDITOR_NODE_NAME_EXCEPT = "集合相减";
         [TranslateMsg("动作图编辑器中动作节点名称之获取元素数量")]
         public const string EDITOR_NODE_NAME_GET_COUNT = "获取元素数量";
+        [TranslateMsg("动作图编辑器中动作节点名称之筛选")]
+        public const string EDITOR_NODE_NAME_WHERE = "筛选";
+        [TranslateMsg("动作图编辑器中参数节点名称之集合")]
+        public const string EDITOR_PARAM_NAME_ARRAY = "集合";
+        [TranslateMsg("动作图编辑器中参数节点名称之元素")]
+        public const string EDITOR_PARAM_NAME_ELEMENT = "元素";
         #endregion
         #endregion
         #region 事件类型
@@ -487,6 +511,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_CHAR = "字符";
         [TranslateMsg("编辑器中的文本的名称")]
         public const string EDITOR_TYPE_NAME_STRING = "文本";
+        [TranslateMsg("编辑器中的集合的名称")]
+        public const string EDITOR_TYPE_NAME_ARRAY = "集合";
         [TranslateMsg("编辑器中的规则的名称")]
         public const string EDITOR_TYPE_NAME_RULE = "规则";
         [TranslateMsg("编辑器中的游戏的名称")]

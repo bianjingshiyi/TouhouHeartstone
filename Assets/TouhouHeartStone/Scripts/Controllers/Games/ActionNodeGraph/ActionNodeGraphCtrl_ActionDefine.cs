@@ -113,7 +113,7 @@ namespace Controllers
             for (int i = 0; i < _generatedActionDefine.outputList.Count; i++)
             {
                 viewData[i] = (_generatedActionDefine.outputList[i].name,
-                    game.editor.getColorByTypeName(_generatedActionDefine.outputList[i].type.Name));
+                    game.editor.getColorByType(_generatedActionDefine.outputList[i].type));
             }
             _returnNodeItem.setInputs(viewData);
         }
@@ -121,16 +121,16 @@ namespace Controllers
         private void updateActionDefineEntryNode()
         {
             (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.inputList.Count + _generatedActionDefine.constList.Count + 1];
-            viewData[0] = (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)));
+            viewData[0] = (string.Empty, game.editor.getColorByType(typeof(ActionNode)));
             for (int i = 0; i < _generatedActionDefine.inputList.Count; i++)
             {
                 viewData[i + 1] = (_generatedActionDefine.inputList[i].name,
-                    game.editor.getColorByTypeName(_generatedActionDefine.inputList[i].type.Name));
+                    game.editor.getColorByType(_generatedActionDefine.inputList[i].type));
             }
             for (int i = 0; i < _generatedActionDefine.constList.Count; i++)
             {
                 viewData[i + _generatedActionDefine.inputList.Count + 1] = (_generatedActionDefine.constList[i].name,
-                    game.editor.getColorByTypeName(_generatedActionDefine.constList[i].type.Name));
+                    game.editor.getColorByType(_generatedActionDefine.constList[i].type));
             }
             _entryNodeItem.setOutputs(viewData);
         }

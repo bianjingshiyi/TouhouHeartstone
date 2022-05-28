@@ -769,7 +769,7 @@ namespace Controllers
                         new ActionNodeValueInfo[0],
                         new (string name, Color color)[]
                         {
-                            (string.Empty,game.editor.getColorByTypeName(nameof(ActionNode)))
+                            (string.Empty,game.editor.getColorByType(typeof(ActionNode)))
                         });
                     var actionNodeItem = await createGraph4ActionNode(_effect.onEnableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
@@ -782,7 +782,7 @@ namespace Controllers
                         new ActionNodeValueInfo[0],
                         new (string name, Color color)[]
                         {
-                            (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
+                            (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
                         });
                 }
             }
@@ -796,7 +796,7 @@ namespace Controllers
                         new ActionNodeValueInfo[0],
                         new (string name, Color color)[]
                         {
-                            (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
+                            (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
                         });
                     var actionNodeItem = await createGraph4ActionNode(_effect.onDisableAction);
                     _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
@@ -809,7 +809,7 @@ namespace Controllers
                         new ActionNodeValueInfo[0],
                         new (string name, Color color)[]
                         {
-                            (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
+                            (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
                         });
                 }
             }
@@ -849,7 +849,7 @@ namespace Controllers
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new (string name, Color color)[]
                 {
-                    (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByTypeName(typeof(object).Name))
+                    (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByType(typeof(object)))
                 },
                 new ActionNodeValueInfo[0],
                 new (string name, Color color)[0]);
@@ -888,7 +888,7 @@ namespace Controllers
                 game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
                 new (string name, Color color)[]
                 {
-                    (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByTypeName(typeof(bool).Name))
+                    (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByType(typeof(bool)))
                 },
                 new ActionNodeValueInfo[]
                 {
@@ -977,8 +977,58 @@ namespace Controllers
                 setNodeInfo(actionNode, nodeInfo);
             }
             actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, pos.x, pos.y);
-            //为动作分支创建节点图
+            //为输入节点创建节点图
             float lastNodeOffset = 0;
+            if (actionNode.inputs != null)
+            {
+                for (int i = 0; i < actionNode.inputs.Length; i++)
+                {
+                    ActionValueRef valueRef = actionNode.inputs[i];
+                    if (valueRef == null)
+                        continue;
+                    if (sizeDict == null)
+                        sizeDict = new Dictionary<ActionNode, Vector2>();
+                    if (!string.IsNullOrEmpty(valueRef.eventVarName))
+                    {
+                        //与触发节点连接
+                        _ui.connectNode(_entryNodeItem, 1 + getEventVarNameIndex(valueRef.eventVarName), actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                    }
+                    else
+                    {
+                        ActionNode inputActionNode = valueRef.action != null ? valueRef.action : getActionNode(valueRef.actionNodeId);
+                        if (inputActionNode != null)
+                        {
+                            //与普通节点连接
+                            try
+                            {
+                                if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
+                                {
+                                    inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
+                                        nextNodeItem: actionNodeItem,
+                                        startPosOffset: lastNodeOffset,
+                                        sizeDict: sizeDict);
+                                    Vector2 size = calcActionNodeGraphSize(inputActionNode, sizeDict);
+                                    lastNodeOffset -= size.y;
+                                }
+                                //输出索引要被动作分支占用若干个空位
+                                //输入索引要被前置动作占用一个空位
+                                _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError("创建子节点" + inputActionNode + "的图像时发生异常：" + e);
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            _ui.connectNode(_entryNodeItem, 1 + valueRef.argIndex, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                        }
+                    }
+                }
+            }
+            //为动作分支创建节点图
+            lastNodeOffset = 0;
             if (actionNode.branches != null)
             {
                 for (int i = 0; i < actionNode.branches.Length; i++)
@@ -995,53 +1045,6 @@ namespace Controllers
                     Vector2 size = calcActionNodeGraphSize(nextActionNode, sizeDict);
                     lastNodeOffset -= size.y;
                     _ui.connectNode(actionNodeItem, i, nextActionNodeItem, 0, ActionNodeConnectionType.action);
-                }
-            }
-            //为输入节点创建节点图
-            lastNodeOffset = 0;
-            if (actionNode.inputs != null)
-            {
-                for (int i = 0; i < actionNode.inputs.Length; i++)
-                {
-                    ActionValueRef valueRef = actionNode.inputs[i];
-                    if (valueRef == null)
-                        continue;
-                    if (sizeDict == null)
-                        sizeDict = new Dictionary<ActionNode, Vector2>();
-                    if (string.IsNullOrEmpty(valueRef.eventVarName))
-                    {
-                        //与普通节点连接
-                        ActionNode inputActionNode = valueRef.action != null ? valueRef.action : getActionNode(valueRef.actionNodeId);
-                        if (inputActionNode == null)
-                        {
-                            continue;
-                        }
-                        try
-                        {
-                            if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
-                            {
-                                inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
-                                    nextNodeItem: actionNodeItem,
-                                    startPosOffset: lastNodeOffset,
-                                    sizeDict: sizeDict);
-                                Vector2 size = calcActionNodeGraphSize(inputActionNode, sizeDict);
-                                lastNodeOffset -= size.y;
-                            }
-                            //输出索引要被动作分支占用若干个空位
-                            //输入索引要被前置动作占用一个空位
-                            _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError("创建子节点" + inputActionNode + "的图像时发生异常：" + e);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        //与入口节点连接
-                        _ui.connectNode(_entryNodeItem, 1 + getEventVarNameIndex(valueRef.eventVarName), actionNodeItem, 1 + i, ActionNodeConnectionType.value);
-                    }
                 }
             }
             return actionNodeItem;
@@ -1231,8 +1234,8 @@ namespace Controllers
                     posX,
                     posY,
                     game.langManager.getString(StringTable.EDITOR_NODE_NAME_UNKNOW));
-                actionNodeItem.setInputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode))) });
-                actionNodeItem.setOutputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode))) });
+                actionNodeItem.setInputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByType(typeof(ActionNode))) });
+                actionNodeItem.setOutputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByType(typeof(ActionNode))) });
             }
             _actionNodeItemList.Add(actionNodeItem);
             if (!_actionNodeList.Contains(actionNode))
@@ -1339,20 +1342,19 @@ namespace Controllers
                 if (_generatedActionDefine.returnValueRefList == null)
                     _generatedActionDefine.returnValueRefList = new List<ReturnValueRef>();
                 //判断是否已经相连
-                if (_generatedActionDefine.returnValueRefList.Exists(r =>
-                    r != null &&
-                    r.valueRef != null &&
-                    r.valueRef.actionNodeId == outputActionNode.id &&
-                    r.valueRef.index == outputIndex &&
-                    r.returnIndex == inputIndex))
+                ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList.Find(r => r != null && r.valueRef != null && r.returnIndex == inputIndex);
+                if (returnValueRef != null)
                 {
-                    //已经相连，什么也不做
-                    return;
-                }
-                else
-                {
-                    //如果输入已经和其他输出连接，则断开。
-                    unconnectNode4ReturnValueRef(outputActionNode, outputIndex, inputIndex);
+                    if (returnValueRef.valueRef.actionNodeId == outputActionNode.id && returnValueRef.valueRef.index == outputIndex)
+                    {
+                        //已经相连，什么也不做
+                        return;
+                    }
+                    else
+                    {
+                        //如果输入已经和其他输出连接，则断开。
+                        unconnectNode4AnyType(outputActionNode, outputIndex, null, inputIndex);
+                    }
                 }
                 //建立新的连接
                 _generatedActionDefine.returnValueRefList.Add(new ReturnValueRef(outputActionNode.id, outputIndex, inputIndex));
@@ -1657,6 +1659,7 @@ namespace Controllers
                         _ui.connectNode(_entryNodeItem, getEventVarNameIndex(inputList[i].eventVarName) + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
                     }
                 }
+                inputActionNodeItem.setInputs(getActionNodeInputViewData(inputActionNode));
             }
             else
             {
@@ -2178,11 +2181,11 @@ namespace Controllers
             ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             List<(string name, Color color)> viewDataList = new List<(string name, Color color)>();
             //动作输入
-            viewDataList.Add((string.Empty, game.editor.getColorByTypeName(nameof(ActionNode))));
+            viewDataList.Add((string.Empty, game.editor.getColorByType(typeof(ActionNode))));
             //值输入
             for (int i = 0; i < actionDefine.inputs.Length; i++)
             {
-                viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByTypeName(actionDefine.inputs[i].type.Name)));
+                viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByType(actionDefine.inputs[i].type)));
                 if (i == actionDefine.inputs.Length - 1 && actionDefine.inputs[i].isParams)
                 {
                     //变长参数，要多已有参数的连接点和一个空的连接点
@@ -2190,13 +2193,20 @@ namespace Controllers
                     {
                         for (int j = actionDefine.inputs.Length; j < actionNode.inputs.Length; j++)
                         {
-                            //跳过空的，这可能有风险，但是先看看会有什么效果吧
-                            if (actionNode.inputs[i] == null)
+                            //空的直接去掉，跳过
+                            if (j != actionNode.inputs.Length - 1 && actionNode.inputs[j] == null)
+                            {
+                                var list = new List<ActionValueRef>(actionNode.inputs);
+                                list.RemoveAt(j);
+                                actionNode.inputs = list.ToArray();
+                                j--;
                                 continue;
-                            viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByTypeName(actionDefine.inputs[i].type.Name)));
+                            }
+                            viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByType(actionDefine.inputs[i].type)));
                         }
                     }
-                    viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByTypeName(actionDefine.inputs[i].type.Name)));
+                    else if (i < actionNode.inputs.Length && actionNode.inputs[i] != null)
+                        viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByType(actionDefine.inputs[i].type)));
                 }
             }
             return viewDataList.ToArray();
@@ -2301,19 +2311,19 @@ namespace Controllers
             ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             List<(string name, Color color)> outputList = new List<(string name, Color color)>()
             {
-                (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
+                (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
             };
             for (int i = 0; i < actionDefine.outputs.Length; i++)
             {
                 if (actionDefine.outputs[i].type == typeof(ActionNode))
                 {
                     //动作分支节点
-                    outputList.Add((actionDefine.outputs[i].name, game.editor.getColorByTypeName(nameof(ActionNode))));
+                    outputList.Add((actionDefine.outputs[i].name, game.editor.getColorByType(typeof(ActionNode))));
                 }
                 else
                 {
                     //输出值节点
-                    outputList.Add((actionDefine.outputs[i].name, game.editor.getColorByTypeName(actionDefine.outputs[i].type.Name)));
+                    outputList.Add((actionDefine.outputs[i].name, game.editor.getColorByType(actionDefine.outputs[i].type)));
                 }
             }
             return outputList.ToArray();
@@ -2357,7 +2367,7 @@ namespace Controllers
         private async Task<ActionNodeItem> createActionNodeAtCurPos(ActionDefine actionDefine)
         {
             var actionNode = new ActionNode(0, actionDefine.defineName,
-                new ActionValueRef[actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams ? actionDefine.inputs.Length - 1 : actionDefine.inputs.Length],
+                new ActionValueRef[/*actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams ? actionDefine.inputs.Length - 1 :*/ actionDefine.inputs.Length],
                 new object[actionDefine.consts.Length],
                 null, new ActionNode[actionDefine.getActionOutputs().Length + 1]);
             _actionNodeList.Add(actionNode);
@@ -2487,7 +2497,9 @@ namespace Controllers
             }
             set
             {
-                if (_effect != null)
+                if (_generatedActionDefine != null)
+                    _generatedActionDefine.action = value;
+                else if (_effect != null)
                 {
                     if (_entryType == nameof(GeneratedEffect.onEnableAction))
                         _effect.onEnableAction = value;

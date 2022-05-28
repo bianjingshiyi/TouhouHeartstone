@@ -13,8 +13,23 @@ namespace Game
         Servant,
         Item
     }
-    public static class EffectEditorLibrary
+    public static partial class EffectEditorLibrary
     {
+        [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION, null)]
+        public static Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)] bool isTrue,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ActionNode thenAction,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELSE_ACTION, isOut: true)] ActionNode elseAction)
+        {
+            if (isTrue)
+            {
+                return thenAction != null ? game.doActionsAsync(card, buff, eventArg, thenAction) : Task.CompletedTask;
+            }
+            else
+            {
+                return elseAction != null ? game.doActionsAsync(card, buff, eventArg, elseAction) : Task.CompletedTask;
+            }
+        }
         //  把这个“玩家”逐步移到下面几个去
         #region 玩家
         /// <summary>
@@ -173,6 +188,12 @@ namespace Game
 
         //  卡牌（包括随从）的操作，比如addbuff，attack
         #region 卡牌
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
+        public static CardDefine[] getAllCardDefines(CardEngine game)
+        {
+            return game.getDefines();
+        }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] CardReference cardRef)
@@ -191,6 +212,14 @@ namespace Game
                 cardDefines[i] = game.getDefine(cardRefs[i].cardId);
             }
             return cardDefines;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_DEFINE_HAS_TAG, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool hasTag(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG)] string tag)
+        {
+            return cardDefine.hasTag(tag);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
@@ -495,7 +524,45 @@ namespace Game
             return player.draw(game, out drawEvent);
         }
         #endregion
-
+        #region 集合运算
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
+        public static Array createArray([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isParams: true)] object[] elements)
+        {
+            return elements;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_ADD_ELEMENT_TO_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
+        public static Array addElementToArray(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isParams: true)] object[] elements)
+        {
+            object[] newArray = new object[array.Length + elements.Length];
+            Array.Copy(array, 0, newArray, 0, array.Length);
+            Array.Copy(elements, 0, newArray, array.Length, elements.Length);
+            return newArray;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_WHERE, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
+        public static Array where(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
+        {
+            List<object> objList = new List<object>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                object obj = array.GetValue(i);
+                scope.setOutParamValue(0, obj);
+                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: scope).Result;
+                if (result)
+                {
+                    objList.Add(obj);
+                }
+            }
+            return objList.ToArray();
+        }
+        #endregion
         /// <summary>
         /// 简单召唤召唤物节点
         /// </summary>

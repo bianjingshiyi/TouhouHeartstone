@@ -87,11 +87,12 @@ namespace Game
             }
             return nameList.ToArray();
         }
-        public Color getColorByTypeName(string typeName)
+        public Color getColorByType(Type type)
         {
             for (int i = 0; i < _editorTypeInfos.Length; i++)
             {
-                if (_editorTypeInfos[i].type.Name == typeName || _editorTypeInfos[i].type.FullName == typeName)
+                if (_editorTypeInfos[i].type == type || 
+                    (_editorTypeInfos[i].type != typeof(object) && _editorTypeInfos[i].type.IsAssignableFrom(type)))
                 {
                     return _editorTypeInfos[i].color;
                 }
@@ -129,6 +130,7 @@ namespace Game
             new EditorTypeInfo() { type = typeof(bool), typeName = StringTable.EDITOR_TYPE_NAME_BOOL, isVarType = true, isConstType = true, color = new Color(.6f, 1, .8f, 1) },
             new EditorTypeInfo() { type = typeof(char), typeName = StringTable.EDITOR_TYPE_NAME_CHAR, isVarType = true, isConstType = true, color = new Color(.5f, .8f, .2f, 1) },
             new EditorTypeInfo() { type = typeof(string), typeName = StringTable.EDITOR_TYPE_NAME_STRING, isVarType = true, isConstType = true, color = new Color(.7f, .8f, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(Array), typeName = StringTable.EDITOR_TYPE_NAME_ARRAY, isVarType = true, isConstType = false, color = new Color(.8f, .8f, .8f, 1) },
             #endregion
             #region 引擎类型
             new EditorTypeInfo() { type = typeof(Rule), typeName = StringTable.EDITOR_TYPE_NAME_RULE, isVarType = true, color = new Color(.2f, .2f, .6f, 1) },

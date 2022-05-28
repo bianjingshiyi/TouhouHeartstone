@@ -200,12 +200,12 @@ namespace Controllers
             (string name, Color color)[] inputs = new (string name, Color color)[1 + _trigger.targetCheckerList.Count];
             inputs[0] = (
                 game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TRIGGER_CONDITION),
-                game.editor.getColorByTypeName(typeof(ActionValueRef).Name));
+                game.editor.getColorByType(typeof(ActionValueRef)));
             for (int i = 0; i < _trigger.targetCheckerList.Count; i++)
             {
                 inputs[1 + i] = (
                     string.Format(game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TARGET_CONDITION), 1 + i),
-                    game.editor.getColorByTypeName(typeof(ActionValueRef).Name));
+                    game.editor.getColorByType(typeof(ActionValueRef)));
             }
             return inputs;
         }
@@ -221,13 +221,13 @@ namespace Controllers
             {
                 (string name, Color color)[] viewData = new (string name, Color color)[eventTypeInfo.variableInfos.Length + 1];
                 //动作输出
-                viewData[0] = (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)));
+                viewData[0] = (string.Empty, game.editor.getColorByType(typeof(ActionNode)));
                 for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
                 {
                     //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
                     //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
                     viewData[i + 1] = (game.langManager.getString(eventTypeInfo.variableInfos[i].name),
-                        game.editor.getColorByTypeName(eventTypeInfo.variableInfos[i].type.Name));
+                        game.editor.getColorByType(eventTypeInfo.variableInfos[i].type));
                 }
                 return viewData;
             }
@@ -236,7 +236,7 @@ namespace Controllers
                 //只有一个动作输出
                 return new (string name, Color color)[]
                 {
-                    (string.Empty, game.editor.getColorByTypeName(nameof(ActionNode)))
+                    (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
                 };
             }
         }

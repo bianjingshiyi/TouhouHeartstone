@@ -1804,16 +1804,17 @@
           "posY" : 163.10198974609375
         },
         "2" : {
-          "posX" : 254.7347412109375,
-          "posY" : -274.9183349609375
+          "posX" : 192.3687744140625,
+          "posY" : -272.21295166015625
         }
       },
       "freeActionNodeList" : [{
           "_id" : 2,
-          "defineName" : "元素融为一体",
+          "defineName" : "获取元素标签",
           "branches" : [null],
           "inputs" : [null],
-          "consts" : []
+          "consts" : [],
+          "regVar" : []
         }]
     }, {
       "cardId" : -2147418098,
@@ -2045,7 +2046,298 @@
       },
       "freeActionNodeList" : []
     }, {
+      "entryType" : "triggerList",
       "actionDefineId" : 1,
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 731.2568359375,
+          "posY" : 145.540771484375
+        },
+        "2" : {
+          "posX" : 548.6937255859375,
+          "posY" : -298.2996826171875
+        },
+        "3" : {
+          "posX" : 499.501220703125,
+          "posY" : -618.0513916015625
+        },
+        "4" : {
+          "posX" : 1089.1065673828125,
+          "posY" : 25.9512939453125
+        },
+        "5" : {
+          "posX" : 883.30615234375,
+          "posY" : -171.9747314453125
+        },
+        "6" : {
+          "posX" : 1209.8001708984375,
+          "posY" : -360.8809814453125
+        },
+        "7" : {
+          "posX" : 1171.7879638671875,
+          "posY" : -660.5048828125
+        },
+        "8" : {
+          "posX" : 1485.849609375,
+          "posY" : -72.51763916015625
+        },
+        "9" : {
+          "posX" : 1854.1015625,
+          "posY" : 157.3741455078125
+        },
+        "10" : {
+          "posX" : 1853.2454833984375,
+          "posY" : -670.5511474609375
+        },
+        "11" : {
+          "posX" : 1887.4722900390625,
+          "posY" : -321.65673828125
+        },
+        "12" : {
+          "posX" : 2156.97998046875,
+          "posY" : 222.72509765625
+        },
+        "13" : {
+          "posX" : 2492.38427734375,
+          "posY" : 254.0294189453125
+        },
+        "14" : {
+          "posX" : 2461.548828125,
+          "posY" : -262.9892578125
+        },
+        "15" : {
+          "posX" : 2429.9130859375,
+          "posY" : -558.1287841796875
+        },
+        "16" : {
+          "posX" : 2955.2412109375,
+          "posY" : 292.04180908203125
+        },
+        "17" : {
+          "posX" : 3304.0029296875,
+          "posY" : 304.2984619140625
+        },
+        "18" : {
+          "posX" : 3202.73486328125,
+          "posY" : 16.5120849609375
+        },
+        "19" : {
+          "posX" : 3181.4150390625,
+          "posY" : -332.3095703125
+        },
+        "20" : {
+          "posX" : 3481.78271484375,
+          "posY" : 296.513916015625
+        },
+        "21" : {
+          "posX" : 451.753662109375,
+          "posY" : 237.2178955078125
+        }
+      },
+      "freeActionNodeList" : [{
+          "_id" : 21,
+          "defineName" : "创建集合",
+          "branches" : [{
+              "_id" : 1,
+              "defineName" : "分支动作",
+              "branches" : [{
+                  "_id" : 4,
+                  "defineName" : "分支动作",
+                  "branches" : [{
+                      "_id" : 9,
+                      "defineName" : "分支动作",
+                      "branches" : [{
+                          "_id" : 13,
+                          "defineName" : "分支动作",
+                          "branches" : [{
+                              "_id" : 17,
+                              "defineName" : "分支动作",
+                              "branches" : [null, {
+                                  "_id" : 20,
+                                  "defineName" : "向集合添加元素",
+                                  "branches" : [null],
+                                  "inputs" : [{
+                                      "actionNodeId" : 21
+                                    }, {
+                                      "action" : {
+                                        "_id" : 19,
+                                        "defineName" : "StringConst",
+                                        "branches" : [null],
+                                        "inputs" : [],
+                                        "consts" : ["土"],
+                                        "regVar" : [true]
+                                      }
+                                    }],
+                                  "consts" : [],
+                                  "regVar" : []
+                                }, null],
+                              "inputs" : [{
+                                  "action" : {
+                                    "_id" : 18,
+                                    "defineName" : "卡牌定义是否具有标签",
+                                    "branches" : [null],
+                                    "inputs" : [{ }, {
+                                        "action" : {
+                                          "_id" : 19,
+                                          "defineName" : "StringConst",
+                                          "branches" : [null],
+                                          "inputs" : [],
+                                          "consts" : ["土"],
+                                          "regVar" : [true]
+                                        }
+                                      }],
+                                    "consts" : [],
+                                    "regVar" : [false]
+                                  }
+                                }],
+                              "consts" : [],
+                              "regVar" : []
+                            }, {
+                              "_id" : 16,
+                              "defineName" : "向集合添加元素",
+                              "branches" : [null],
+                              "inputs" : [{
+                                  "actionNodeId" : 21
+                                }, {
+                                  "actionNodeId" : 15
+                                }],
+                              "consts" : [],
+                              "regVar" : []
+                            }, null],
+                          "inputs" : [{
+                              "action" : {
+                                "_id" : 14,
+                                "defineName" : "卡牌定义是否具有标签",
+                                "branches" : [null],
+                                "inputs" : [{ }, {
+                                    "action" : {
+                                      "_id" : 15,
+                                      "defineName" : "StringConst",
+                                      "branches" : [null],
+                                      "inputs" : [],
+                                      "consts" : ["火"],
+                                      "regVar" : [true]
+                                    }
+                                  }],
+                                "consts" : [],
+                                "regVar" : [false]
+                              }
+                            }],
+                          "consts" : [],
+                          "regVar" : []
+                        }, {
+                          "_id" : 12,
+                          "defineName" : "向集合添加元素",
+                          "branches" : [null],
+                          "inputs" : [{
+                              "actionNodeId" : 21
+                            }, {
+                              "actionNodeId" : 10
+                            }],
+                          "consts" : [],
+                          "regVar" : []
+                        }, null],
+                      "inputs" : [{
+                          "action" : {
+                            "_id" : 11,
+                            "defineName" : "卡牌定义是否具有标签",
+                            "branches" : [null],
+                            "inputs" : [{ }, {
+                                "action" : {
+                                  "_id" : 10,
+                                  "defineName" : "StringConst",
+                                  "branches" : [null],
+                                  "inputs" : [],
+                                  "consts" : ["水"],
+                                  "regVar" : [true]
+                                }
+                              }],
+                            "consts" : [],
+                            "regVar" : [false]
+                          }
+                        }],
+                      "consts" : [],
+                      "regVar" : []
+                    }, {
+                      "_id" : 8,
+                      "defineName" : "向集合添加元素",
+                      "branches" : [null],
+                      "inputs" : [{
+                          "actionNodeId" : 21
+                        }, {
+                          "action" : {
+                            "_id" : 7,
+                            "defineName" : "StringConst",
+                            "branches" : [null],
+                            "inputs" : [],
+                            "consts" : ["木"],
+                            "regVar" : [true]
+                          }
+                        }],
+                      "consts" : [],
+                      "regVar" : []
+                    }, null],
+                  "inputs" : [{
+                      "action" : {
+                        "_id" : 6,
+                        "defineName" : "卡牌定义是否具有标签",
+                        "branches" : [null],
+                        "inputs" : [{ }, {
+                            "action" : {
+                              "_id" : 7,
+                              "defineName" : "StringConst",
+                              "branches" : [null],
+                              "inputs" : [],
+                              "consts" : ["木"],
+                              "regVar" : [true]
+                            }
+                          }],
+                        "consts" : [],
+                        "regVar" : [false]
+                      }
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "向集合添加元素",
+                  "branches" : [null],
+                  "inputs" : [{
+                      "actionNodeId" : 21
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, null],
+              "inputs" : [{
+                  "action" : {
+                    "_id" : 2,
+                    "defineName" : "卡牌定义是否具有标签",
+                    "branches" : [null],
+                    "inputs" : [{ }, {
+                        "action" : {
+                          "_id" : 3,
+                          "defineName" : "StringConst",
+                          "branches" : [null],
+                          "inputs" : [],
+                          "consts" : ["金"],
+                          "regVar" : [true]
+                        }
+                      }],
+                    "consts" : [],
+                    "regVar" : [false]
+                  }
+                }],
+              "consts" : [],
+              "regVar" : []
+            }],
+          "inputs" : [null],
+          "consts" : [],
+          "regVar" : [true]
+        }]
+    }, {
+      "actionDefineId" : 2,
       "actionInfoDict" : { },
       "freeActionNodeList" : []
     }],
@@ -2499,18 +2791,226 @@
     }],
   "actionDefineList" : [{
       "_id" : 1,
-      "name" : "元素融为一体",
+      "name" : "获取元素标签",
       "inputList" : [{
-          "typeName" : "System.Int32",
-          "name" : "变量1"
+          "typeName" : "TouhouCardEngine.CardDefine",
+          "name" : "元素卡牌定义"
         }],
       "constList" : [],
       "outputList" : [{
-          "typeName" : "System.Int32",
-          "name" : "变量1"
+          "typeName" : "System.String",
+          "name" : "元素标签",
+          "isArray" : true
         }],
-      "returnList" : [{
-          "valueRef" : { }
-        }]
+      "returnList" : [],
+      "action" : {
+        "_id" : 21,
+        "defineName" : "创建集合",
+        "branches" : [{
+            "_id" : 1,
+            "defineName" : "分支动作",
+            "branches" : [{
+                "_id" : 4,
+                "defineName" : "分支动作",
+                "branches" : [{
+                    "_id" : 9,
+                    "defineName" : "分支动作",
+                    "branches" : [{
+                        "_id" : 13,
+                        "defineName" : "分支动作",
+                        "branches" : [{
+                            "_id" : 17,
+                            "defineName" : "分支动作",
+                            "branches" : [null, {
+                                "_id" : 20,
+                                "defineName" : "向集合添加元素",
+                                "branches" : [null],
+                                "inputs" : [{
+                                    "actionNodeId" : 21
+                                  }, {
+                                    "action" : {
+                                      "_id" : 19,
+                                      "defineName" : "StringConst",
+                                      "branches" : [null],
+                                      "inputs" : [],
+                                      "consts" : ["土"],
+                                      "regVar" : [true]
+                                    }
+                                  }],
+                                "consts" : [],
+                                "regVar" : []
+                              }, null],
+                            "inputs" : [{
+                                "action" : {
+                                  "_id" : 18,
+                                  "defineName" : "卡牌定义是否具有标签",
+                                  "branches" : [null],
+                                  "inputs" : [{ }, {
+                                      "action" : {
+                                        "_id" : 19,
+                                        "defineName" : "StringConst",
+                                        "branches" : [null],
+                                        "inputs" : [],
+                                        "consts" : ["土"],
+                                        "regVar" : [true]
+                                      }
+                                    }],
+                                  "consts" : [],
+                                  "regVar" : [false]
+                                }
+                              }],
+                            "consts" : [],
+                            "regVar" : []
+                          }, {
+                            "_id" : 16,
+                            "defineName" : "向集合添加元素",
+                            "branches" : [null],
+                            "inputs" : [{
+                                "actionNodeId" : 21
+                              }, {
+                                "actionNodeId" : 15
+                              }],
+                            "consts" : [],
+                            "regVar" : []
+                          }, null],
+                        "inputs" : [{
+                            "action" : {
+                              "_id" : 14,
+                              "defineName" : "卡牌定义是否具有标签",
+                              "branches" : [null],
+                              "inputs" : [{ }, {
+                                  "action" : {
+                                    "_id" : 15,
+                                    "defineName" : "StringConst",
+                                    "branches" : [null],
+                                    "inputs" : [],
+                                    "consts" : ["火"],
+                                    "regVar" : [true]
+                                  }
+                                }],
+                              "consts" : [],
+                              "regVar" : [false]
+                            }
+                          }],
+                        "consts" : [],
+                        "regVar" : []
+                      }, {
+                        "_id" : 12,
+                        "defineName" : "向集合添加元素",
+                        "branches" : [null],
+                        "inputs" : [{
+                            "actionNodeId" : 21
+                          }, {
+                            "actionNodeId" : 10
+                          }],
+                        "consts" : [],
+                        "regVar" : []
+                      }, null],
+                    "inputs" : [{
+                        "action" : {
+                          "_id" : 11,
+                          "defineName" : "卡牌定义是否具有标签",
+                          "branches" : [null],
+                          "inputs" : [{ }, {
+                              "action" : {
+                                "_id" : 10,
+                                "defineName" : "StringConst",
+                                "branches" : [null],
+                                "inputs" : [],
+                                "consts" : ["水"],
+                                "regVar" : [true]
+                              }
+                            }],
+                          "consts" : [],
+                          "regVar" : [false]
+                        }
+                      }],
+                    "consts" : [],
+                    "regVar" : []
+                  }, {
+                    "_id" : 8,
+                    "defineName" : "向集合添加元素",
+                    "branches" : [null],
+                    "inputs" : [{
+                        "actionNodeId" : 21
+                      }, {
+                        "action" : {
+                          "_id" : 7,
+                          "defineName" : "StringConst",
+                          "branches" : [null],
+                          "inputs" : [],
+                          "consts" : ["木"],
+                          "regVar" : [true]
+                        }
+                      }],
+                    "consts" : [],
+                    "regVar" : []
+                  }, null],
+                "inputs" : [{
+                    "action" : {
+                      "_id" : 6,
+                      "defineName" : "卡牌定义是否具有标签",
+                      "branches" : [null],
+                      "inputs" : [{ }, {
+                          "action" : {
+                            "_id" : 7,
+                            "defineName" : "StringConst",
+                            "branches" : [null],
+                            "inputs" : [],
+                            "consts" : ["木"],
+                            "regVar" : [true]
+                          }
+                        }],
+                      "consts" : [],
+                      "regVar" : [false]
+                    }
+                  }],
+                "consts" : [],
+                "regVar" : []
+              }, {
+                "_id" : 5,
+                "defineName" : "向集合添加元素",
+                "branches" : [null],
+                "inputs" : [{
+                    "actionNodeId" : 21
+                  }, {
+                    "actionNodeId" : 3
+                  }],
+                "consts" : [],
+                "regVar" : []
+              }, null],
+            "inputs" : [{
+                "action" : {
+                  "_id" : 2,
+                  "defineName" : "卡牌定义是否具有标签",
+                  "branches" : [null],
+                  "inputs" : [{ }, {
+                      "action" : {
+                        "_id" : 3,
+                        "defineName" : "StringConst",
+                        "branches" : [null],
+                        "inputs" : [],
+                        "consts" : ["金"],
+                        "regVar" : [true]
+                      }
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }
+              }],
+            "consts" : [],
+            "regVar" : []
+          }],
+        "inputs" : [null],
+        "consts" : [],
+        "regVar" : [true]
+      }
+    }, {
+      "_id" : 2,
+      "name" : "自定义动作",
+      "inputList" : [],
+      "constList" : [],
+      "outputList" : [],
+      "returnList" : []
     }]
 }
