@@ -169,7 +169,7 @@ namespace Game
                 //如果是StreamingAssets，那要转存成可持续化文件
                 path = path.Substring(3, path.Length - 3);
             }
-            cardPoolInfo.version = CARD_POOL_VERSION_0_2;
+            cardPoolInfo.version = CARD_POOL_VERSION_0_3;
             await game.fileManager.saveFile(path, new string[]
             {
                 cardPoolInfo.toJson(),//文件头信息
