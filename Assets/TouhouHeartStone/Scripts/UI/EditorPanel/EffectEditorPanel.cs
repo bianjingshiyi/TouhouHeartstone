@@ -35,6 +35,14 @@ namespace UI
         {
             _nameInputField.SetTextWithoutNotify(name);
         }
+        /// <summary>
+        /// 设置卡牌定义的分类
+        /// </summary>
+        /// <param name="index"></param>
+        public void setActionDefineCategory(int index)
+        {
+            _categoryDropdown.SetValueWithoutNotify(index);
+        }
         public void initActionDefineViewData(string[] categories, string[] variableTypes, string[] constTypes)
         {
             _categoryDropdown.ClearOptions();

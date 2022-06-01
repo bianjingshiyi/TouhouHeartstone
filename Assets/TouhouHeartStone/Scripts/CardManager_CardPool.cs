@@ -149,12 +149,12 @@ namespace Game
                 cardPoolPath = allocCardPoolPath(cardPoolInfo);
                 _cardPoolInfoDict.Add(cardPoolPath, cardPoolInfo);
             }
-            CardPool cardPool = _cardPoolDict[cardPoolInfo.cardPoolId];
+            SerializableCardPool cardPool = new SerializableCardPool(_cardPoolDict[cardPoolInfo.cardPoolId]);
             //对缓存的动作定义进行保存
-            if (_runtimeGenActDefDict.TryGetValue(cardPoolInfo.cardPoolId, out var actionDefineList))
-            {
-                cardPool.actionDefineList = actionDefineList.ConvertAll(g => new SerializableActionDefine(g));
-            }
+            //if (_runtimeGenActDefDict.TryGetValue(cardPoolInfo.cardPoolId, out var actionDefineList))
+            //{
+            //    cardPool.actionDefineList = actionDefineList.ConvertAll(g => new SerializableActionDefine(g));
+            //}
             //对缓存的图片进行保存
             await saveExternalImages(cardPoolInfo.cardPoolId);
             //保存文件
@@ -205,7 +205,32 @@ namespace Game
             string json = lines[0];
             CardPoolInfo cardPoolInfo = JsonHelper.fromJson<CardPoolInfo>(json);
             CardPool cardPool;
-            if (cardPoolInfo.version >= CARD_POOL_VERSION_0_2)
+            if (cardPoolInfo.version >= CARD_POOL_VERSION_0_3)
+            {
+                if (path.StartsWith("sa:"))
+                    json = await game.fileManager.readStreamingTextFileToEnd(path, 1);
+                else
+                    json = await game.fileManager.readTextFileToEnd(path, 1);
+                try
+                {
+                    SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
+                    cardPool = serializableCardPool.toCardPool(game.editor.getTypeByName);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
+                }
+                _cardPoolInfoDict[path] = cardPoolInfo;
+                _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
+                //if (!_runtimeGenActDefDict.TryGetValue(cardPoolInfo.cardPoolId, out var actionDefineList))
+                //{
+                //    actionDefineList = new List<GeneratedActionDefine>();
+                //    _runtimeGenActDefDict.Add(cardPoolInfo.cardPoolId, actionDefineList);
+                //}
+                //actionDefineList.Clear();
+                //actionDefineList.AddRange(cardPool.actionDefineList.ConvertAll(s => s.toGeneratedActionDefine(game.editor.getTypeByName)));
+            }
+            else if (cardPoolInfo.version >= CARD_POOL_VERSION_0_2)
             {
                 if (path.StartsWith("sa:"))
                 {
@@ -231,7 +256,7 @@ namespace Game
                     _runtimeGenActDefDict.Add(cardPoolInfo.cardPoolId, actionDefineList);
                 }
                 actionDefineList.Clear();
-                actionDefineList.AddRange(cardPool.actionDefineList.ConvertAll(s => new GeneratedActionDefine(s, game.editor.getTypeByName)));
+                actionDefineList.AddRange(cardPool.actionDefineList.ConvertAll(s => s.toGeneratedActionDefine(game.editor.getTypeByName)));
             }
             else if (cardPoolInfo.version == CARD_POOL_VERSION_0_1)
             {
@@ -912,6 +937,7 @@ namespace Game
         {
             1
         };
+        const float CARD_POOL_VERSION_0_3 = 0.3f;
         const float CARD_POOL_VERSION_0_2 = 0.2f;
         const float CARD_POOL_VERSION_0_1 = 0.1f;
         #endregion

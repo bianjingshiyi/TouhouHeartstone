@@ -48,7 +48,7 @@ namespace TouhouHeartstone.Builtin
         }
         public static CardDefine[] getElementCards(CardEngine game)
         {
-            return game.getDefines().Where(c => getElements(c).Length == 1 && c is SpellCardDefine spell && !spell.isToken).ToArray();
+            return game.getDefines().Where(c => getElements(c).Length == 1 && c.isSpell() && !c.isToken()).ToArray();
         }
         public static CardDefine[] getMixCards(CardEngine game)
         {

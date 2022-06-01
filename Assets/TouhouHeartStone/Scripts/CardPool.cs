@@ -14,5 +14,46 @@ namespace Game
         public List<GeneratedBuffDefine> buffDefineList = new List<GeneratedBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
         public List<SerializableActionDefine> actionDefineList = new List<SerializableActionDefine>();
+        public List<GeneratedActionDefine> generatedActionDefineList = new List<GeneratedActionDefine>();
+    }
+    [Serializable]
+    public class SerializableCardPool
+    {
+        #region 公有方法
+        #region 构造方法
+        public SerializableCardPool(CardPool cardPool)
+        {
+            cardDefineList = cardPool.cardDefineList.ConvertAll(c => new SerializableCardDefine(c));
+            cardSkinList = cardPool.cardSkinList;
+            actionNodeGraphInfoList = cardPool.actionNodeGraphInfoList;
+            buffDefineList = cardPool.buffDefineList.ConvertAll(b => new SerializableBuffDefine(b));
+            buffSkinList = cardPool.buffSkinList;
+            if (cardPool.actionDefineList != null)
+                actionDefineList = cardPool.actionDefineList;
+            else
+                actionDefineList = cardPool.generatedActionDefineList.ConvertAll(a => new SerializableActionDefine(a));
+        }
+        #endregion
+        public CardPool toCardPool(Func<string, Type> typeFinder)
+        {
+            return new CardPool()
+            {
+                cardDefineList = cardDefineList.ConvertAll(c => c.toCardDefine()),
+                cardSkinList = cardSkinList,
+                actionNodeGraphInfoList = actionNodeGraphInfoList,
+                buffDefineList = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine()),
+                buffSkinList = buffSkinList,
+                generatedActionDefineList = actionDefineList.ConvertAll(a => a.toGeneratedActionDefine(typeFinder))
+            };
+        }
+        #endregion
+        #region 属性字段
+        public List<SerializableCardDefine> cardDefineList = new List<SerializableCardDefine>();
+        public List<CardSkinData> cardSkinList = new List<CardSkinData>();
+        public List<ActionNodeGraphInfo> actionNodeGraphInfoList = new List<ActionNodeGraphInfo>();
+        public List<SerializableBuffDefine> buffDefineList = new List<SerializableBuffDefine>();
+        public List<BuffSkin> buffSkinList = new List<BuffSkin>();
+        public List<SerializableActionDefine> actionDefineList = new List<SerializableActionDefine>();
+        #endregion
     }
 }

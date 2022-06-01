@@ -234,6 +234,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_ADD_BUFF = "添加增益";
         [TranslateMsg("动作图编辑器中动作节点名称之是否为法术牌")]
         public const string EDITOR_NODE_NAME_IS_SPELL = "是否为法术牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之是否为衍生牌")]
+        public const string EDITOR_NODE_NAME_IS_TOKEN = "是否为衍生牌";
         [TranslateMsg("动作图编辑器中动作节点名称之移除增益")]
         public const string EDITOR_NODE_NAME_REMOVE_BUFF = "移除增益";
         [TranslateMsg("动作图编辑器中动作节点名称之是否具有增益")]

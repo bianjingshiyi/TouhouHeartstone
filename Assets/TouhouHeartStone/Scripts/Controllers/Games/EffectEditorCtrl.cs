@@ -479,6 +479,8 @@ namespace Controllers
             _ui.switchToActionDefine();
             //更新名称
             _ui.setActionDefineName(_actionDefine.defineName);
+            //更新类型
+            _ui.setActionDefineCategory(Array.IndexOf(_categories, _actionDefine.category));
             //更新输入
             (int typeIndex, string name, bool isArray, bool isParams)[] inputViewData =
                 new (int typeIndex, string name, bool isArray, bool isParams)[_actionDefine.inputList.Count];
