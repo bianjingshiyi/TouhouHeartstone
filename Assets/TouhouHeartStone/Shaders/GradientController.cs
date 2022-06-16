@@ -15,36 +15,36 @@ namespace Animations
     {
         protected override void Update()
         {
-            base.material.SetTexture("_MainTex", this._MainTex);
-            base.material.SetColor("_Color", this._Color);
-            base.material.SetFloat("_StencilComp", this._StencilComp);
-            base.material.SetFloat("_Stencil", this._Stencil);
-            base.material.SetFloat("_StencilOp", this._StencilOp);
-            base.material.SetFloat("_StencilWriteMask", this._StencilWriteMask);
-            base.material.SetFloat("_StencilReadMask", this._StencilReadMask);
-            base.material.SetFloat("_ColorMask", this._ColorMask);
-            base.material.SetFloat("_UseUIAlphaClip", this._UseUIAlphaClip);
-            base.material.SetColor("_Color1", this._Color1);
-            base.material.SetColor("_Color2", this._Color2);
-            base.material.SetVector("_Direction", this._Direction);
-            base.material.SetFloat("_Arg", this._Arg);
+            base.materials[0].SetTexture("_MainTex", this._MainTex);
+            base.materials[0].SetColor("_Color", this._Color);
+            base.materials[0].SetFloat("_StencilComp", this._StencilComp);
+            base.materials[0].SetFloat("_Stencil", this._Stencil);
+            base.materials[0].SetFloat("_StencilOp", this._StencilOp);
+            base.materials[0].SetFloat("_StencilWriteMask", this._StencilWriteMask);
+            base.materials[0].SetFloat("_StencilReadMask", this._StencilReadMask);
+            base.materials[0].SetFloat("_ColorMask", this._ColorMask);
+            base.materials[0].SetFloat("_UseUIAlphaClip", this._UseUIAlphaClip);
+            base.materials[0].SetColor("_Color1", this._Color1);
+            base.materials[0].SetColor("_Color2", this._Color2);
+            base.materials[0].SetVector("_Direction", this._Direction);
+            base.materials[0].SetFloat("_Arg", this._Arg);
         }
         protected override void Reset()
         {
             base.Reset();
-            this._MainTex = base.material.GetTexture("_MainTex");
-            this._Color = base.material.GetColor("_Color");
-            this._StencilComp = base.material.GetFloat("_StencilComp");
-            this._Stencil = base.material.GetFloat("_Stencil");
-            this._StencilOp = base.material.GetFloat("_StencilOp");
-            this._StencilWriteMask = base.material.GetFloat("_StencilWriteMask");
-            this._StencilReadMask = base.material.GetFloat("_StencilReadMask");
-            this._ColorMask = base.material.GetFloat("_ColorMask");
-            this._UseUIAlphaClip = base.material.GetFloat("_UseUIAlphaClip");
-            this._Color1 = base.material.GetColor("_Color1");
-            this._Color2 = base.material.GetColor("_Color2");
-            this._Direction = base.material.GetVector("_Direction");
-            this._Arg = base.material.GetFloat("_Arg");
+            this._MainTex = base.materials[0].GetTexture("_MainTex");
+            this._Color = base.materials[0].GetColor("_Color");
+            this._StencilComp = base.materials[0].GetFloat("_StencilComp");
+            this._Stencil = base.materials[0].GetFloat("_Stencil");
+            this._StencilOp = base.materials[0].GetFloat("_StencilOp");
+            this._StencilWriteMask = base.materials[0].GetFloat("_StencilWriteMask");
+            this._StencilReadMask = base.materials[0].GetFloat("_StencilReadMask");
+            this._ColorMask = base.materials[0].GetFloat("_ColorMask");
+            this._UseUIAlphaClip = base.materials[0].GetFloat("_UseUIAlphaClip");
+            this._Color1 = base.materials[0].GetColor("_Color1");
+            this._Color2 = base.materials[0].GetColor("_Color2");
+            this._Direction = base.materials[0].GetVector("_Direction");
+            this._Arg = base.materials[0].GetFloat("_Arg");
         }
         [UnityEngine.SerializeField()]
         public UnityEngine.Texture _MainTex;

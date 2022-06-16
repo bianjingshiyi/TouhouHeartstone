@@ -150,11 +150,6 @@ namespace Game
                 _cardPoolInfoDict.Add(cardPoolPath, cardPoolInfo);
             }
             SerializableCardPool cardPool = new SerializableCardPool(_cardPoolDict[cardPoolInfo.cardPoolId]);
-            //对缓存的动作定义进行保存
-            //if (_runtimeGenActDefDict.TryGetValue(cardPoolInfo.cardPoolId, out var actionDefineList))
-            //{
-            //    cardPool.actionDefineList = actionDefineList.ConvertAll(g => new SerializableActionDefine(g));
-            //}
             //对缓存的图片进行保存
             await saveExternalImages(cardPoolInfo.cardPoolId);
             //保存文件
@@ -218,7 +213,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
+                    throw new FormatException("反序列化卡池" + path + "失败", e);
                 }
                 _cardPoolInfoDict[path] = cardPoolInfo;
                 _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;

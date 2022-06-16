@@ -14,14 +14,14 @@ namespace Game
         Color _Color;
         protected override void Update()
         {
-            material.SetFloat(nameof(_Gray), _Gray);
-            material.SetColor(nameof(_Color), _Color);
+            materials[0].SetFloat(nameof(_Gray), _Gray);
+            materials[0].SetColor(nameof(_Color), _Color);
         }
         protected override void Reset()
         {
             base.Reset();
-            _Gray = material.GetFloat(nameof(_Gray));
-            _Color = material.GetColor(nameof(_Color));
+            _Gray = materials[0].GetFloat(nameof(_Gray));
+            _Color = materials[0].GetColor(nameof(_Color));
         }
     }
 }

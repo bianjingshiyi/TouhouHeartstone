@@ -1345,7 +1345,7 @@ namespace Controllers
                 ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList.Find(r => r != null && r.valueRef != null && r.returnIndex == inputIndex);
                 if (returnValueRef != null)
                 {
-                    if (returnValueRef.valueRef.actionNodeId == outputActionNode.id && returnValueRef.valueRef.index == outputIndex)
+                    if (returnValueRef.valueRef.action == outputActionNode && returnValueRef.valueRef.index == outputIndex)
                     {
                         //已经相连，什么也不做
                         return;
@@ -1357,7 +1357,7 @@ namespace Controllers
                     }
                 }
                 //建立新的连接
-                _generatedActionDefine.returnValueRefList.Add(new ReturnValueRef(outputActionNode.id, outputIndex, inputIndex));
+                _generatedActionDefine.returnValueRefList.Add(new ReturnValueRef(outputActionNode, outputIndex, inputIndex));
                 //从离散节点列表中去掉被连接的节点
                 _graphInfo.freeActionNodeList.Remove(outputActionNode);
                 //更新ui
@@ -1496,33 +1496,35 @@ namespace Controllers
             //这种解决方案会导致一个问题，那就是在ui上显示为一个的节点，实际上可能是多个不同的节点。
             ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
             ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
-            if (!isActionNodeValueRefedInPrevNodes(outputActionNode, inputActionNode, inputIndex))
-            {
-                inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
-                //遍历子节点，使其中所有对相同值输出的引用从直接引用变为id引用
-                traverseActionNode(inputActionNode, false, a =>
-                {
-                    if (a == inputActionNode)
-                        return;
-                    if (a.inputs != null && a.inputs.Length > 0)
-                    {
-                        for (int i = 0; i < a.inputs.Length; i++)
-                        {
-                            if (a.inputs[i] == null)
-                                continue;
-                            if (a.inputs[i].action == outputActionNode)
-                            {
-                                a.inputs[i].action = null;
-                                a.inputs[i].actionNodeId = outputActionNode.id;
-                            }
-                        }
-                    }
-                });
-            }
-            else
-            {
-                inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode.id, outputIndex);
-            }
+            //因为动作的序列化类型和运行时类型彻底分开，所以不再需要维持动作节点在树状结构中的唯一实例存在
+            //if (!isActionNodeValueRefedInPrevNodes(outputActionNode, inputActionNode, inputIndex))
+            //{
+            //    inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
+            //    //遍历子节点，使其中所有对相同值输出的引用从直接引用变为id引用
+            //    traverseActionNode(inputActionNode, false, a =>
+            //    {
+            //        if (a == inputActionNode)
+            //            return;
+            //        if (a.inputs != null && a.inputs.Length > 0)
+            //        {
+            //            for (int i = 0; i < a.inputs.Length; i++)
+            //            {
+            //                if (a.inputs[i] == null)
+            //                    continue;
+            //                if (a.inputs[i].action == outputActionNode)
+            //                {
+            //                    a.inputs[i].action = null;
+            //                    a.inputs[i].actionNodeId = outputActionNode.id;
+            //                }
+            //            }
+            //        }
+            //    });
+            //}
+            //else
+            //{
+            //    inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode.id, outputIndex);
+            //}
+            inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
             if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length - 1)
             {
                 //是多参数
@@ -1562,7 +1564,7 @@ namespace Controllers
                 ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList.Find(r =>
                     r != null &&
                     r.valueRef != null &&
-                    r.valueRef.actionNodeId == outputActionNode.id &&
+                    r.valueRef.action == outputActionNode &&
                     r.valueRef.index == outputIndex &&
                     r.returnIndex == inputIndex);
                 if (returnValueRef != null)
@@ -1671,25 +1673,26 @@ namespace Controllers
                     _ui.unconnectNode(outputActionNodeItem, outputActionNode.branches.Length + outputIndex, inputActionNodeItem, inputActionNode.branches.Length + inputIndex);
                 }
             }
-            if (inputActionValueRef.action != null)
-            {
-                //寻找子节点中的第一个值引用，将其改为引用对象本身
-                traverseActionNode(inputActionNode, false, a =>
-                {
-                    if (a.inputs == null)
-                        return false;
-                    for (int i = 0; i < a.inputs.Length; i++)
-                    {
-                        if (a.inputs[i] != null && a.inputs[i].actionNodeId == inputActionValueRef.action.id)
-                        {
-                            a.inputs[i].action = inputActionValueRef.action;
-                            a.inputs[i].actionNodeId = 0;
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-            }
+            //因为动作的序列化类型和运行时类型彻底分开，所以动作节点不需要维持树状结构，进而不需要维持每个节点在树中的唯一直接引用
+            //if (inputActionValueRef.action != null)
+            //{
+            //    //寻找子节点中的第一个值引用，将其改为引用对象本身
+            //    traverseActionNode(inputActionNode, false, a =>
+            //    {
+            //        if (a.inputs == null)
+            //            return false;
+            //        for (int i = 0; i < a.inputs.Length; i++)
+            //        {
+            //            if (a.inputs[i] != null && a.inputs[i].actionNodeId == inputActionValueRef.action.id)
+            //            {
+            //                a.inputs[i].action = inputActionValueRef.action;
+            //                a.inputs[i].actionNodeId = 0;
+            //                return true;
+            //            }
+            //        }
+            //        return false;
+            //    });
+            //}
             //更新离散和输出状态
             if (isFreeActionNode(outputActionNode))
             {
