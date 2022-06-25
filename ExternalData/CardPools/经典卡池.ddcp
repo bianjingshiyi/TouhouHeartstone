@@ -1,64 +1,67 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : 1, "cardPoolName" : "经典卡池", "version" : 0.20000000298023224 }
+{ "_t" : "CardPoolInfo", "cardPoolId" : 1, "cardPoolName" : "经典卡池", "version" : 0.30000001192092896 }
 {
-  "_t" : "CardPool",
+  "_t" : "SerializableCardPool",
   "cardDefineList" : [{
       "_id" : -2147418111,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "cost" : 3,
         "characterId" : 4194304
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "condition" : { },
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 8,
-                "defineName" : "添加增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 9,
-                      "defineName" : "获取玩家英雄",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 5,
-                            "defineName" : "获取卡牌拥有者",
-                            "branches" : [null],
-                            "inputs" : [{
-                                "eventVarName" : "卡牌"
-                              }],
-                            "consts" : [],
-                            "regVar" : []
-                          }
-                        }],
-                      "consts" : [],
-                      "regVar" : []
-                    }
-                  }, {
-                    "action" : {
-                      "_id" : 10,
-                      "defineName" : "获取增益定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [1],
-                      "regVar" : []
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 8,
+              "actionList" : [{
+                  "_id" : 8,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 9
+                    }, {
+                      "actionNodeId" : 10
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 9,
+                  "defineName" : "获取玩家英雄",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 10,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [1],
+                  "regVar" : []
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418110,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "cost" : 5,
         "characterId" : 4194304,
         "tags" : {
@@ -66,8 +69,10 @@
           "_v" : [null, "Fire"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "condition" : { },
@@ -76,87 +81,91 @@
                   "condition" : { },
                   "errorTip" : ""
                 }],
-              "action" : {
-                "_id" : 7,
-                "defineName" : "对目标造成固定法术伤害",
-                "branches" : [null],
-                "inputs" : [{
-                    "eventVarName" : "目标卡牌"
-                  }],
-                "consts" : [7],
-                "regVar" : []
-              }
+              "actionId" : 7,
+              "actionList" : [{
+                  "_id" : 7,
+                  "defineName" : "对目标造成固定法术伤害",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [7],
+                  "regVar" : []
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418109,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "characterId" : 4194304,
         "cost" : 2
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "抽目标卡牌",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 3,
-                      "defineName" : "从一定数量的卡牌中选择一张",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 6,
-                            "defineName" : "过滤满足条件的卡牌",
-                            "branches" : [null, {
-                                "_id" : 7,
-                                "defineName" : "是否为法术牌",
-                                "branches" : [null],
-                                "inputs" : [{
-                                    "actionNodeId" : 6
-                                  }],
-                                "consts" : [],
-                                "regVar" : []
-                              }],
-                            "inputs" : [{
-                                "action" : {
-                                  "_id" : 5,
-                                  "defineName" : "获取玩家牌库中的卡牌",
-                                  "branches" : [null],
-                                  "inputs" : [{
-                                      "eventVarName" : "玩家"
-                                    }],
-                                  "consts" : [],
-                                  "regVar" : [false]
-                                }
-                              }],
-                            "consts" : [],
-                            "regVar" : [false, false, false]
-                          },
-                          "index" : 1
-                        }],
-                      "consts" : [5],
-                      "regVar" : [false]
-                    }
-                  }, null],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "抽目标卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, null],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "从一定数量的卡牌中选择一张",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 6,
+                      "index" : 1
+                    }],
+                  "consts" : [5],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "过滤满足条件的卡牌",
+                  "branches" : [0, 7],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : [false, false, false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "获取玩家牌库中的卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "是否为法术牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418108,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "characterId" : 4194304,
         "cost" : 5,
         "tags" : {
@@ -164,8 +173,10 @@
           "_v" : [null, "Wood"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "condition" : { },
@@ -174,33 +185,34 @@
                   "condition" : { },
                   "errorTip" : ""
                 }],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "添加增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "eventVarName" : "目标卡牌"
-                  }, {
-                    "action" : {
-                      "_id" : 3,
-                      "defineName" : "获取增益定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [4],
-                      "regVar" : []
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [4],
+                  "regVar" : []
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418107,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "cost" : 5,
         "characterId" : 4194304,
         "tags" : {
@@ -208,36 +220,39 @@
           "_v" : [null, "Metal"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "对目标造成固定法术伤害",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取敌方随从",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [3],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "对目标造成固定法术伤害",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [3],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取敌方随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418106,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "cost" : 5,
         "characterId" : 4194304,
         "tags" : {
@@ -245,45 +260,48 @@
           "_v" : [null, "Water"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "添加增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取友方角色",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }, {
-                    "action" : {
-                      "_id" : 3,
-                      "defineName" : "获取增益定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [8],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取友方角色",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [8],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418105,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "cost" : 5,
         "characterId" : 4194304,
         "tags" : {
@@ -291,40 +309,43 @@
           "_v" : [null, "Earth"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "创建衍生卡并置入战场",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取卡牌定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [{
-                          "_t" : "CardReference",
-                          "cardPoolId" : 1,
-                          "cardId" : -2147418095
-                        }],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "CardReference",
+                      "cardPoolId" : 1,
+                      "cardId" : -2147418095
+                    }],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418104,
-      "_type" : "Servant",
-      "_propDict" : {
+      "type" : "Servant",
+      "propDict" : {
         "cost" : 1,
         "attack" : 1,
         "life" : 1,
@@ -334,63 +355,66 @@
           "_v" : [null]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 2,
-                "defineName" : "创建衍生卡并置入手牌",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 4,
-                      "defineName" : "获取随机卡牌定义",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 3,
-                            "defineName" : "获取卡牌定义列表",
-                            "branches" : [null],
-                            "inputs" : [],
-                            "consts" : [{
-                                "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
-                                "_v" : [{
-                                    "cardPoolId" : 0,
-                                    "cardId" : 4206626
-                                  }, {
-                                    "cardPoolId" : 0,
-                                    "cardId" : 4206625
-                                  }, {
-                                    "cardPoolId" : 0,
-                                    "cardId" : 4206624
-                                  }, {
-                                    "cardPoolId" : 0,
-                                    "cardId" : 4206617
-                                  }, {
-                                    "cardPoolId" : 0,
-                                    "cardId" : 4206627
-                                  }]
-                              }],
-                            "regVar" : [false]
-                          }
-                        }],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 2,
+              "actionList" : [{
+                  "_id" : 2,
+                  "defineName" : "创建衍生卡并置入手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取随机卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取卡牌定义列表",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
+                      "_v" : [{
+                          "cardPoolId" : 0,
+                          "cardId" : 4206626
+                        }, {
+                          "cardPoolId" : 0,
+                          "cardId" : 4206625
+                        }, {
+                          "cardPoolId" : 0,
+                          "cardId" : 4206624
+                        }, {
+                          "cardPoolId" : 0,
+                          "cardId" : 4206617
+                        }, {
+                          "cardPoolId" : 0,
+                          "cardId" : 4206627
+                        }]
+                    }],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : ["battleCry"],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418103,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "isToken" : true,
         "characterId" : 4194304,
         "cost" : 0,
@@ -399,36 +423,39 @@
           "_v" : [null, "Metal"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "对固定数量的随机目标造成固定法术伤害",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取敌方随从",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [1, 2],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "对固定数量的随机目标造成固定法术伤害",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [1, 2],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取敌方随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418102,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "isToken" : true,
         "characterId" : 4194304,
         "tags" : {
@@ -436,8 +463,10 @@
           "_v" : [null, "Wood"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [{
@@ -445,193 +474,197 @@
                   "condition" : { },
                   "errorTip" : "必须以随从为目标"
                 }],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "添加增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "eventVarName" : "目标卡牌"
-                  }, {
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取增益定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [5],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [5],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418101,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "characterId" : 4194304,
         "cost" : 1
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "添加增益",
-                "branches" : [{
-                    "_id" : 5,
-                    "defineName" : "创建衍生卡并置入手牌",
-                    "branches" : [{
-                        "_id" : 7,
-                        "defineName" : "设置玩家属性",
-                        "branches" : [{
-                            "_id" : 11,
-                            "defineName" : "创建衍生卡并洗入牌库",
-                            "branches" : [{
-                                "_id" : 13,
-                                "defineName" : "设置属性",
-                                "branches" : [null],
-                                "inputs" : [{
-                                    "actionNodeId" : 11
-                                  }, {
-                                    "action" : {
-                                      "_id" : 15,
-                                      "defineName" : "StringConst",
-                                      "branches" : [null],
-                                      "inputs" : [],
-                                      "consts" : ["damage"],
-                                      "regVar" : [false]
-                                    }
-                                  }, {
-                                    "action" : {
-                                      "_id" : 14,
-                                      "defineName" : "获取玩家属性",
-                                      "branches" : [null],
-                                      "inputs" : [{
-                                          "eventVarName" : "玩家"
-                                        }],
-                                      "consts" : ["哮喘"],
-                                      "regVar" : [false]
-                                    }
-                                  }],
-                                "consts" : [],
-                                "regVar" : []
-                              }],
-                            "inputs" : [{
-                                "action" : {
-                                  "_id" : 12,
-                                  "defineName" : "获取卡牌定义",
-                                  "branches" : [null],
-                                  "inputs" : [],
-                                  "consts" : [{
-                                      "_t" : "CardReference",
-                                      "cardPoolId" : 0,
-                                      "cardId" : 4206646
-                                    }],
-                                  "regVar" : [false]
-                                }
-                              }],
-                            "consts" : [],
-                            "regVar" : [false]
-                          }],
-                        "inputs" : [{
-                            "eventVarName" : "玩家"
-                          }, {
-                            "action" : {
-                              "_id" : 9,
-                              "defineName" : "IntegerOperation",
-                              "branches" : [null],
-                              "inputs" : [{
-                                  "action" : {
-                                    "_id" : 8,
-                                    "defineName" : "获取玩家属性",
-                                    "branches" : [null],
-                                    "inputs" : [{
-                                        "eventVarName" : "玩家"
-                                      }],
-                                    "consts" : ["哮喘"],
-                                    "regVar" : [false]
-                                  }
-                                }, {
-                                  "action" : {
-                                    "_id" : 10,
-                                    "defineName" : "IntegerConst",
-                                    "branches" : [null],
-                                    "inputs" : [],
-                                    "consts" : [1],
-                                    "regVar" : [false]
-                                  }
-                                }, null],
-                              "consts" : [null],
-                              "regVar" : [false]
-                            }
-                          }],
-                        "consts" : ["哮喘"],
-                        "regVar" : []
-                      }],
-                    "inputs" : [{
-                        "action" : {
-                          "_id" : 6,
-                          "defineName" : "获取卡牌定义",
-                          "branches" : [null],
-                          "inputs" : [],
-                          "consts" : [{
-                              "_t" : "CardReference",
-                              "cardPoolId" : 1,
-                              "cardId" : -2147418101
-                            }],
-                          "regVar" : [false]
-                        }
-                      }],
-                    "consts" : [],
-                    "regVar" : []
-                  }],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 4,
-                      "defineName" : "获取随机卡牌",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 3,
-                            "defineName" : "获取玩家的手牌",
-                            "branches" : [null],
-                            "inputs" : [{
-                                "eventVarName" : "玩家"
-                              }],
-                            "consts" : [],
-                            "regVar" : [false]
-                          }
-                        }],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }, {
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取增益定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [6],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "添加增益",
+                  "branches" : [5],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取随机卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取玩家的手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [6],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "创建衍生卡并置入手牌",
+                  "branches" : [7],
+                  "inputs" : [{
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "CardReference",
+                      "cardPoolId" : 1,
+                      "cardId" : -2147418101
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "设置玩家属性",
+                  "branches" : [11],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 9
+                    }],
+                  "consts" : ["哮喘"],
+                  "regVar" : []
+                }, {
+                  "_id" : 9,
+                  "defineName" : "IntegerOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 8
+                    }, {
+                      "actionNodeId" : 10
+                    }, null],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 8,
+                  "defineName" : "获取玩家属性",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : ["哮喘"],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 10,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [1],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 11,
+                  "defineName" : "创建衍生卡并洗入牌库",
+                  "branches" : [13],
+                  "inputs" : [{
+                      "actionNodeId" : 12
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 12,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "CardReference",
+                      "cardPoolId" : 0,
+                      "cardId" : 4206646
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 13,
+                  "defineName" : "设置属性",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 11
+                    }, {
+                      "actionNodeId" : 15
+                    }, {
+                      "actionNodeId" : 14
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 15,
+                  "defineName" : "StringConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["damage"],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 14,
+                  "defineName" : "获取玩家属性",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : ["哮喘"],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418100,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "isToken" : true,
         "tags" : {
           "_t" : "System.String[]",
@@ -639,8 +672,10 @@
         },
         "characterId" : 4194304
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [{
@@ -648,33 +683,34 @@
                   "condition" : { },
                   "errorTip" : "必须以随从为目标"
                 }],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "添加增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "eventVarName" : "目标卡牌"
-                  }, {
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取增益定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [7],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [7],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418099,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "isToken" : true,
         "tags" : {
           "_t" : "System.String[]",
@@ -682,8 +718,10 @@
         },
         "characterId" : 4194304
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [{
@@ -691,24 +729,25 @@
                   "condition" : { },
                   "errorTip" : "必须以随从为目标"
                 }],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "禁锢",
-                "branches" : [null],
-                "inputs" : [{
-                    "eventVarName" : "目标卡牌"
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "禁锢",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418098,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "isToken" : true,
         "tags" : {
           "_t" : "System.String[]",
@@ -716,40 +755,43 @@
         },
         "characterId" : 4194304
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "创建衍生卡并置入战场",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取卡牌定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [{
-                          "_t" : "CardReference",
-                          "cardPoolId" : 1,
-                          "cardId" : -2147418097
-                        }],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "CardReference",
+                      "cardPoolId" : 1,
+                      "cardId" : -2147418097
+                    }],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418097,
-      "_type" : "Servant",
-      "_propDict" : {
+      "type" : "Servant",
+      "propDict" : {
         "cost" : 0,
         "attack" : 1,
         "life" : 1,
@@ -760,11 +802,11 @@
         },
         "characterId" : 4194304
       },
-      "_effectList" : []
+      "effectList" : []
     }, {
       "_id" : -2147418096,
-      "_type" : "Item",
-      "_propDict" : {
+      "type" : "Item",
+      "propDict" : {
         "cost" : 4,
         "attack" : 0,
         "life" : 5,
@@ -774,115 +816,121 @@
           "_v" : ["unique"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "创建衍生卡并置入手牌",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取随机卡牌定义",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 3,
-                            "defineName" : "获取卡牌定义列表",
-                            "branches" : [null],
-                            "inputs" : [],
-                            "consts" : [{
-                                "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
-                                "_v" : [{
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418107
-                                  }, {
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418108
-                                  }, {
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418106
-                                  }, {
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418110
-                                  }, {
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418105
-                                  }]
-                              }],
-                            "regVar" : [false]
-                          }
-                        }],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "创建衍生卡并置入手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取随机卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取卡牌定义列表",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
+                      "_v" : [{
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418107
+                        }, {
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418108
+                        }, {
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418106
+                        }, {
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418110
+                        }, {
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418105
+                        }]
+                    }],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }, {
           "pileList" : ["Item"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "AfterTurnStartEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "创建衍生卡并置入手牌",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取随机卡牌定义",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 3,
-                            "defineName" : "获取卡牌定义列表",
-                            "branches" : [null],
-                            "inputs" : [],
-                            "consts" : [{
-                                "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
-                                "_v" : [{
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418107
-                                  }, {
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418108
-                                  }, {
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418106
-                                  }, {
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418110
-                                  }, {
-                                    "cardPoolId" : 1,
-                                    "cardId" : -2147418105
-                                  }]
-                              }],
-                            "regVar" : [false]
-                          }
-                        }],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "创建衍生卡并置入手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取随机卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取卡牌定义列表",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
+                      "_v" : [{
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418107
+                        }, {
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418108
+                        }, {
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418106
+                        }, {
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418110
+                        }, {
+                          "cardPoolId" : 1,
+                          "cardId" : -2147418105
+                        }]
+                    }],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418095,
-      "_type" : "Servant",
-      "_propDict" : {
+      "type" : "Servant",
+      "propDict" : {
         "cost" : 5,
         "attack" : 3,
         "life" : 9,
@@ -893,11 +941,11 @@
         },
         "characterId" : 4194304
       },
-      "_effectList" : []
+      "effectList" : []
     }, {
       "_id" : -2147418094,
-      "_type" : "Servant",
-      "_propDict" : {
+      "type" : "Servant",
+      "propDict" : {
         "cost" : 6,
         "attack" : 6,
         "life" : 6,
@@ -907,27 +955,30 @@
           "_v" : ["unique"]
         }
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "从一定数量的卡牌中选择一张",
-                "branches" : [null],
-                "inputs" : [null],
-                "consts" : [3],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "从一定数量的卡牌中选择一张",
+                  "branches" : [0],
+                  "inputs" : [null],
+                  "consts" : [3],
+                  "regVar" : []
+                }]
             }],
           "tagList" : ["battleCry"],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418093,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "cost" : 12,
         "attack" : 12,
         "keywords" : {
@@ -936,47 +987,50 @@
         },
         "characterId" : 4194304
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "对目标造成固定法术伤害",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取玩家英雄",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 3,
-                            "defineName" : "获取玩家对手",
-                            "branches" : [null],
-                            "inputs" : [{
-                                "eventVarName" : "玩家"
-                              }],
-                            "consts" : [],
-                            "regVar" : [false]
-                          }
-                        }],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [15],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "对目标造成固定法术伤害",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [15],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取玩家英雄",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取玩家对手",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418092,
-      "_type" : "Spell",
-      "_propDict" : {
+      "type" : "Spell",
+      "propDict" : {
         "cost" : 12,
         "attack" : 0,
         "life" : 0,
@@ -986,175 +1040,174 @@
         },
         "characterId" : 4194304
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 2,
-                "defineName" : "沉默",
-                "branches" : [{
-                    "_id" : 3,
-                    "defineName" : "消灭",
-                    "branches" : [null],
-                    "inputs" : [{
-                        "actionNodeId" : 1
-                      }],
-                    "consts" : [],
-                    "regVar" : []
-                  }],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 1,
-                      "defineName" : "获取敌方随从",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [true]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 2,
+              "actionList" : [{
+                  "_id" : 2,
+                  "defineName" : "沉默",
+                  "branches" : [3],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取敌方随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "消灭",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418091,
-      "_type" : "Servant",
-      "_propDict" : {
+      "type" : "Servant",
+      "propDict" : {
         "cost" : 7,
         "attack" : 7,
         "life" : 7,
         "characterId" : 4194304
       },
-      "_effectList" : [{
+      "effectList" : [{
           "pileList" : ["Hand"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "AfterUseEvent",
               "condition" : {
-                "action" : {
+                "actionNodeId" : 1
+              },
+              "targetCheckerList" : [],
+              "actionId" : 9,
+              "actionList" : [{
                   "_id" : 1,
                   "defineName" : "LogicOperation",
-                  "branches" : [null],
+                  "branches" : [0],
                   "inputs" : [{
-                      "action" : {
-                        "_id" : 2,
-                        "defineName" : "Compare",
-                        "branches" : [null],
-                        "inputs" : [{
-                            "eventVarName" : "玩家"
-                          }, {
-                            "action" : {
-                              "_id" : 3,
-                              "defineName" : "获取卡牌拥有者",
-                              "branches" : [null],
-                              "inputs" : [{
-                                  "action" : {
-                                    "_id" : 4,
-                                    "defineName" : "这张卡牌",
-                                    "branches" : [null],
-                                    "inputs" : [],
-                                    "consts" : [],
-                                    "regVar" : [true]
-                                  }
-                                }],
-                              "consts" : [],
-                              "regVar" : [false]
-                            }
-                          }],
-                        "consts" : [null],
-                        "regVar" : [false]
-                      }
+                      "actionNodeId" : 2
                     }, {
-                      "action" : {
-                        "_id" : 5,
-                        "defineName" : "是否为法术牌",
-                        "branches" : [null],
-                        "inputs" : [{
-                            "eventVarName" : "卡牌"
-                          }],
-                        "consts" : [],
-                        "regVar" : [false]
-                      }
+                      "actionNodeId" : 5
                     }, {
-                      "action" : {
-                        "_id" : 6,
-                        "defineName" : "LogicOperation",
-                        "branches" : [null],
-                        "inputs" : [{
-                            "action" : {
-                              "_id" : 7,
-                              "defineName" : "是否具有增益",
-                              "branches" : [null],
-                              "inputs" : [{
-                                  "action" : {
-                                    "_id" : 4,
-                                    "defineName" : "这张卡牌",
-                                    "branches" : [null],
-                                    "inputs" : [],
-                                    "consts" : [],
-                                    "regVar" : [true]
-                                  }
-                                }, {
-                                  "action" : {
-                                    "_id" : 8,
-                                    "defineName" : "获取增益定义",
-                                    "branches" : [null],
-                                    "inputs" : [],
-                                    "consts" : [9],
-                                    "regVar" : [false]
-                                  }
-                                }],
-                              "consts" : [],
-                              "regVar" : [false]
-                            }
-                          }, null],
-                        "consts" : [null],
-                        "regVar" : [false]
-                      }
+                      "actionNodeId" : 6
                     }, null],
                   "consts" : [1],
                   "regVar" : []
-                }
-              },
-              "targetCheckerList" : [],
-              "action" : {
-                "_id" : 9,
-                "defineName" : "添加增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 10,
-                      "defineName" : "这张卡牌",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }, {
-                    "action" : {
-                      "_id" : 11,
-                      "defineName" : "获取增益定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [9],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+                }, {
+                  "_id" : 2,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "是否为法术牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "LogicOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }, null],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "是否具有增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 8,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [9],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 9,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 10
+                    }, {
+                      "actionNodeId" : 11
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 10,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 11,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [9],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }]
     }, {
       "_id" : -2147418090,
-      "_type" : "Servant",
-      "_propDict" : {
+      "type" : "Servant",
+      "propDict" : {
         "cost" : 3,
         "attack" : 2,
         "life" : 1,
@@ -1164,155 +1217,85 @@
         },
         "characterId" : 4194304
       },
-      "_effectList" : [{
-          "_t" : "GeneratedBattlecry",
+      "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "condition" : { },
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "添加增益",
-                "branches" : [{
-                    "_id" : 3,
-                    "defineName" : "设置增益属性",
-                    "branches" : [null],
-                    "inputs" : [{
-                        "actionNodeId" : 1
-                      }, {
-                        "action" : {
-                          "_id" : 4,
-                          "defineName" : "获取卡牌数量",
-                          "branches" : [null],
-                          "inputs" : [{
-                              "action" : {
-                                "_id" : 5,
-                                "defineName" : "过滤满足条件的卡牌",
-                                "branches" : [null, {
-                                    "_id" : 7,
-                                    "defineName" : "是否为法术牌",
-                                    "branches" : [null],
-                                    "inputs" : [{
-                                        "actionNodeId" : 5
-                                      }],
-                                    "consts" : [],
-                                    "regVar" : []
-                                  }],
-                                "inputs" : [{
-                                    "action" : {
-                                      "_id" : 6,
-                                      "defineName" : "获取玩家的手牌",
-                                      "branches" : [null],
-                                      "inputs" : [{
-                                          "eventVarName" : "玩家"
-                                        }],
-                                      "consts" : [],
-                                      "regVar" : [false]
-                                    }
-                                  }],
-                                "consts" : [],
-                                "regVar" : [false, false, false]
-                              },
-                              "index" : 1
-                            }],
-                          "consts" : [],
-                          "regVar" : [false]
-                        }
-                      }],
-                    "consts" : ["x"],
-                    "regVar" : []
-                  }],
-                "inputs" : [{
-                    "eventVarName" : "卡牌"
-                  }, {
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取增益定义",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [11],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : [true]
-              }
-            }],
-          "tagList" : ["battleCry"],
-          "propDict" : { },
-          "activeTrigger" : {
-            "eventName" : "ActiveEvent",
-            "condition" : { },
-            "targetCheckerList" : [],
-            "action" : {
-              "_id" : 1,
-              "defineName" : "添加增益",
-              "branches" : [{
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "添加增益",
+                  "branches" : [3],
+                  "inputs" : [{
+                      "eventVarName" : "卡牌"
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [11],
+                  "regVar" : [false]
+                }, {
                   "_id" : 3,
                   "defineName" : "设置增益属性",
-                  "branches" : [null],
+                  "branches" : [0],
                   "inputs" : [{
                       "actionNodeId" : 1
                     }, {
-                      "action" : {
-                        "_id" : 4,
-                        "defineName" : "获取卡牌数量",
-                        "branches" : [null],
-                        "inputs" : [{
-                            "action" : {
-                              "_id" : 5,
-                              "defineName" : "过滤满足条件的卡牌",
-                              "branches" : [null, {
-                                  "_id" : 7,
-                                  "defineName" : "是否为法术牌",
-                                  "branches" : [null],
-                                  "inputs" : [{
-                                      "actionNodeId" : 5
-                                    }],
-                                  "consts" : [],
-                                  "regVar" : []
-                                }],
-                              "inputs" : [{
-                                  "action" : {
-                                    "_id" : 6,
-                                    "defineName" : "获取玩家的手牌",
-                                    "branches" : [null],
-                                    "inputs" : [{
-                                        "eventVarName" : "玩家"
-                                      }],
-                                    "consts" : [],
-                                    "regVar" : [false]
-                                  }
-                                }],
-                              "consts" : [],
-                              "regVar" : [false, false, false]
-                            },
-                            "index" : 1
-                          }],
-                        "consts" : [],
-                        "regVar" : [false]
-                      }
+                      "actionNodeId" : 4
                     }],
                   "consts" : ["x"],
                   "regVar" : []
-                }],
-              "inputs" : [{
-                  "eventVarName" : "卡牌"
                 }, {
-                  "action" : {
-                    "_id" : 2,
-                    "defineName" : "获取增益定义",
-                    "branches" : [null],
-                    "inputs" : [],
-                    "consts" : [11],
-                    "regVar" : [false]
-                  }
-                }],
-              "consts" : [],
-              "regVar" : [true]
-            }
-          }
+                  "_id" : 4,
+                  "defineName" : "获取卡牌数量",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5,
+                      "index" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "过滤满足条件的卡牌",
+                  "branches" : [0, 7],
+                  "inputs" : [{
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [],
+                  "regVar" : [false, false, false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取玩家的手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "是否为法术牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }]
+            }],
+          "tagList" : ["battleCry"],
+          "propDict" : { }
         }]
     }],
   "cardSkinList" : [{
@@ -1804,8 +1787,8 @@
           "posY" : 163.10198974609375
         },
         "2" : {
-          "posX" : 100.326904296875,
-          "posY" : -252.101806640625
+          "posX" : 5.7022705078125,
+          "posY" : -220.08050537109375
         }
       },
       "freeActionNodeList" : [{
@@ -2145,41 +2128,44 @@
       "_id" : 1,
       "propModifierList" : [],
       "effectList" : [{
-          "_t" : "GeneratedHalo",
           "pileList" : ["Master"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [],
           "tagList" : [],
           "propDict" : {
             "getHaloBuffDefine" : {
-              "_t" : "ActionValueRef",
-              "action" : {
-                "_id" : 1,
-                "defineName" : "获取增益定义",
-                "branches" : [null],
-                "inputs" : [],
-                "consts" : [2],
-                "regVar" : []
-              }
+              "_t" : "SerializableActionValueRef",
+              "actionNodeId" : 1,
+              "actionNodeList" : [{
+                  "_id" : 1,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [2],
+                  "regVar" : []
+                }]
             },
             "affectCondition" : {
-              "_t" : "ActionValueRef",
-              "action" : {
-                "_id" : 1,
-                "defineName" : "是否为法术牌",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 3,
-                      "defineName" : "这张卡牌",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : []
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "_t" : "SerializableActionValueRef",
+              "actionNodeId" : 1,
+              "actionNodeList" : [{
+                  "_id" : 1,
+                  "defineName" : "是否为法术牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : []
+                }]
             },
             "rangeList" : {
               "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
@@ -2188,170 +2174,221 @@
           }
         }, {
           "pileList" : ["Master"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "BeforeUseEvent",
               "condition" : {
-                "action" : {
+                "actionNodeId" : 1
+              },
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
                   "_id" : 1,
                   "defineName" : "LogicOperation",
-                  "branches" : [null],
+                  "branches" : [0],
                   "inputs" : [{
-                      "action" : {
-                        "_id" : 2,
-                        "defineName" : "Compare",
-                        "branches" : [null],
-                        "inputs" : [{
-                            "action" : {
-                              "_id" : 3,
-                              "defineName" : "GetVariable",
-                              "branches" : [null],
-                              "inputs" : [],
-                              "consts" : ["Player"],
-                              "regVar" : []
-                            }
-                          }, {
-                            "action" : {
-                              "_id" : 4,
-                              "defineName" : "获取卡牌拥有者",
-                              "branches" : [null],
-                              "inputs" : [{
-                                  "action" : {
-                                    "_id" : 5,
-                                    "defineName" : "GetVariable",
-                                    "branches" : [null],
-                                    "inputs" : [],
-                                    "consts" : ["Card"],
-                                    "regVar" : []
-                                  }
-                                }],
-                              "consts" : [],
-                              "regVar" : []
-                            }
-                          }],
-                        "consts" : [null],
-                        "regVar" : []
-                      }
+                      "actionNodeId" : 2
                     }, {
-                      "action" : {
-                        "_id" : 6,
-                        "defineName" : "是否为法术牌",
-                        "branches" : [null],
-                        "inputs" : [{
-                            "action" : {
-                              "_id" : 7,
-                              "defineName" : "GetVariable",
-                              "branches" : [null],
-                              "inputs" : [],
-                              "consts" : ["Card"],
-                              "regVar" : []
-                            }
-                          }],
-                        "consts" : [],
-                        "regVar" : []
-                      }
+                      "actionNodeId" : 6
                     }],
                   "consts" : [1],
                   "regVar" : []
-                }
-              },
-              "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "移除增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "这张卡牌",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : []
-                    }
-                  }, {
-                    "action" : {
-                      "_id" : 3,
-                      "defineName" : "该增益",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : []
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+                }, {
+                  "_id" : 2,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Player"],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Card"],
+                  "regVar" : []
+                }, {
+                  "_id" : 6,
+                  "defineName" : "是否为法术牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Card"],
+                  "regVar" : []
+                }, {
+                  "_id" : 1,
+                  "defineName" : "LogicOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [1],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Player"],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Card"],
+                  "regVar" : []
+                }, {
+                  "_id" : 6,
+                  "defineName" : "是否为法术牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Card"],
+                  "regVar" : []
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
         }, {
           "pileList" : ["Master"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "BeforeTurnEndEvent",
               "condition" : {
-                "action" : {
+                "actionNodeId" : 1
+              },
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
                   "_id" : 1,
                   "defineName" : "Compare",
-                  "branches" : [null],
+                  "branches" : [0],
                   "inputs" : [{
-                      "action" : {
-                        "_id" : 2,
-                        "defineName" : "GetVariable",
-                        "branches" : [null],
-                        "inputs" : [],
-                        "consts" : ["Player"],
-                        "regVar" : []
-                      }
+                      "actionNodeId" : 2
                     }, {
-                      "action" : {
-                        "_id" : 4,
-                        "defineName" : "获取卡牌拥有者",
-                        "branches" : [null],
-                        "inputs" : [{
-                            "action" : {
-                              "_id" : 3,
-                              "defineName" : "GetVariable",
-                              "branches" : [null],
-                              "inputs" : [],
-                              "consts" : ["Card"],
-                              "regVar" : []
-                            }
-                          }],
-                        "consts" : [],
-                        "regVar" : []
-                      }
+                      "actionNodeId" : 4
                     }],
                   "consts" : [null],
                   "regVar" : []
-                }
-              },
-              "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "移除增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 3,
-                      "defineName" : "这张卡牌",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : []
-                    }
-                  }, {
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "该增益",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : []
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+                }, {
+                  "_id" : 2,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Player"],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Card"],
+                  "regVar" : []
+                }, {
+                  "_id" : 1,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Player"],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "GetVariable",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Card"],
+                  "regVar" : []
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
@@ -2425,35 +2462,38 @@
         }],
       "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "BeforeTurnEndEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "移除增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "这张卡牌",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }, {
-                    "action" : {
-                      "_id" : 3,
-                      "defineName" : "该增益",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "移除增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "该增益",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
@@ -2482,35 +2522,38 @@
         }],
       "effectList" : [{
           "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "BeforeTurnEndEvent",
               "targetCheckerList" : [],
-              "action" : {
-                "_id" : 1,
-                "defineName" : "移除增益",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "这张卡牌",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }, {
-                    "action" : {
-                      "_id" : 3,
-                      "defineName" : "该增益",
-                      "branches" : [null],
-                      "inputs" : [],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "移除增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "该增益",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
             }],
           "tagList" : [],
           "propDict" : { }
@@ -2602,215 +2645,217 @@
           "name" : "元素标签",
           "isArray" : true
         }],
-      "returnList" : [],
-      "action" : {
-        "_id" : 21,
-        "defineName" : "创建集合",
-        "branches" : [{
-            "_id" : 1,
-            "defineName" : "分支动作",
-            "branches" : [{
-                "_id" : 4,
-                "defineName" : "分支动作",
-                "branches" : [{
-                    "_id" : 9,
-                    "defineName" : "分支动作",
-                    "branches" : [{
-                        "_id" : 13,
-                        "defineName" : "分支动作",
-                        "branches" : [{
-                            "_id" : 17,
-                            "defineName" : "分支动作",
-                            "branches" : [null, {
-                                "_id" : 20,
-                                "defineName" : "向集合添加元素",
-                                "branches" : [null],
-                                "inputs" : [{
-                                    "actionNodeId" : 21
-                                  }, {
-                                    "action" : {
-                                      "_id" : 19,
-                                      "defineName" : "StringConst",
-                                      "branches" : [null],
-                                      "inputs" : [],
-                                      "consts" : ["土"],
-                                      "regVar" : [true]
-                                    }
-                                  }],
-                                "consts" : [],
-                                "regVar" : []
-                              }, null],
-                            "inputs" : [{
-                                "action" : {
-                                  "_id" : 18,
-                                  "defineName" : "卡牌定义是否具有标签",
-                                  "branches" : [null],
-                                  "inputs" : [{ }, {
-                                      "action" : {
-                                        "_id" : 19,
-                                        "defineName" : "StringConst",
-                                        "branches" : [null],
-                                        "inputs" : [],
-                                        "consts" : ["土"],
-                                        "regVar" : [true]
-                                      }
-                                    }],
-                                  "consts" : [],
-                                  "regVar" : [false]
-                                }
-                              }],
-                            "consts" : [],
-                            "regVar" : []
-                          }, {
-                            "_id" : 16,
-                            "defineName" : "向集合添加元素",
-                            "branches" : [null],
-                            "inputs" : [{
-                                "actionNodeId" : 21
-                              }, {
-                                "actionNodeId" : 15
-                              }],
-                            "consts" : [],
-                            "regVar" : []
-                          }, null],
-                        "inputs" : [{
-                            "action" : {
-                              "_id" : 14,
-                              "defineName" : "卡牌定义是否具有标签",
-                              "branches" : [null],
-                              "inputs" : [{ }, {
-                                  "action" : {
-                                    "_id" : 15,
-                                    "defineName" : "StringConst",
-                                    "branches" : [null],
-                                    "inputs" : [],
-                                    "consts" : ["火"],
-                                    "regVar" : [true]
-                                  }
-                                }],
-                              "consts" : [],
-                              "regVar" : [false]
-                            }
-                          }],
-                        "consts" : [],
-                        "regVar" : []
-                      }, {
-                        "_id" : 12,
-                        "defineName" : "向集合添加元素",
-                        "branches" : [null],
-                        "inputs" : [{
-                            "actionNodeId" : 21
-                          }, {
-                            "actionNodeId" : 10
-                          }],
-                        "consts" : [],
-                        "regVar" : []
-                      }, null],
-                    "inputs" : [{
-                        "action" : {
-                          "_id" : 11,
-                          "defineName" : "卡牌定义是否具有标签",
-                          "branches" : [null],
-                          "inputs" : [{ }, {
-                              "action" : {
-                                "_id" : 10,
-                                "defineName" : "StringConst",
-                                "branches" : [null],
-                                "inputs" : [],
-                                "consts" : ["水"],
-                                "regVar" : [true]
-                              }
-                            }],
-                          "consts" : [],
-                          "regVar" : [false]
-                        }
-                      }],
-                    "consts" : [],
-                    "regVar" : []
-                  }, {
-                    "_id" : 8,
-                    "defineName" : "向集合添加元素",
-                    "branches" : [null],
-                    "inputs" : [{
-                        "actionNodeId" : 21
-                      }, {
-                        "action" : {
-                          "_id" : 7,
-                          "defineName" : "StringConst",
-                          "branches" : [null],
-                          "inputs" : [],
-                          "consts" : ["木"],
-                          "regVar" : [true]
-                        }
-                      }],
-                    "consts" : [],
-                    "regVar" : []
-                  }, null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 6,
-                      "defineName" : "卡牌定义是否具有标签",
-                      "branches" : [null],
-                      "inputs" : [{ }, {
-                          "action" : {
-                            "_id" : 7,
-                            "defineName" : "StringConst",
-                            "branches" : [null],
-                            "inputs" : [],
-                            "consts" : ["木"],
-                            "regVar" : [true]
-                          }
-                        }],
-                      "consts" : [],
-                      "regVar" : [false]
-                    }
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }, {
-                "_id" : 5,
-                "defineName" : "向集合添加元素",
-                "branches" : [null],
-                "inputs" : [{
-                    "actionNodeId" : 21
-                  }, {
-                    "actionNodeId" : 3
-                  }],
-                "consts" : [],
-                "regVar" : []
-              }, null],
-            "inputs" : [{
-                "action" : {
-                  "_id" : 2,
-                  "defineName" : "卡牌定义是否具有标签",
-                  "branches" : [null],
-                  "inputs" : [{ }, {
-                      "action" : {
-                        "_id" : 3,
-                        "defineName" : "StringConst",
-                        "branches" : [null],
-                        "inputs" : [],
-                        "consts" : ["金"],
-                        "regVar" : [true]
-                      }
-                    }],
-                  "consts" : [],
-                  "regVar" : [false]
-                }
-              }],
-            "consts" : [],
-            "regVar" : []
-          }],
-        "inputs" : [null],
-        "consts" : [],
-        "regVar" : [true]
-      }
+      "seriReturnList" : [],
+      "rootActionId" : 21,
+      "actionNodeList" : [{
+          "_id" : 21,
+          "defineName" : "创建集合",
+          "branches" : [1],
+          "inputs" : [null],
+          "consts" : [],
+          "regVar" : [true]
+        }, {
+          "_id" : 1,
+          "defineName" : "分支动作",
+          "branches" : [4, 5, 0],
+          "inputs" : [{
+              "actionNodeId" : 2
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 2,
+          "defineName" : "卡牌定义是否具有标签",
+          "branches" : [0],
+          "inputs" : [{ }, {
+              "actionNodeId" : 3
+            }],
+          "consts" : [],
+          "regVar" : [false]
+        }, {
+          "_id" : 3,
+          "defineName" : "StringConst",
+          "branches" : [0],
+          "inputs" : [],
+          "consts" : ["金"],
+          "regVar" : [true]
+        }, {
+          "_id" : 4,
+          "defineName" : "分支动作",
+          "branches" : [9, 8, 0],
+          "inputs" : [{
+              "actionNodeId" : 6
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 6,
+          "defineName" : "卡牌定义是否具有标签",
+          "branches" : [0],
+          "inputs" : [{ }, {
+              "actionNodeId" : 7
+            }],
+          "consts" : [],
+          "regVar" : [false]
+        }, {
+          "_id" : 7,
+          "defineName" : "StringConst",
+          "branches" : [0],
+          "inputs" : [],
+          "consts" : ["木"],
+          "regVar" : [true]
+        }, {
+          "_id" : 9,
+          "defineName" : "分支动作",
+          "branches" : [13, 12, 0],
+          "inputs" : [{
+              "actionNodeId" : 11
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 11,
+          "defineName" : "卡牌定义是否具有标签",
+          "branches" : [0],
+          "inputs" : [{ }, {
+              "actionNodeId" : 10
+            }],
+          "consts" : [],
+          "regVar" : [false]
+        }, {
+          "_id" : 10,
+          "defineName" : "StringConst",
+          "branches" : [0],
+          "inputs" : [],
+          "consts" : ["水"],
+          "regVar" : [true]
+        }, {
+          "_id" : 13,
+          "defineName" : "分支动作",
+          "branches" : [17, 16, 0],
+          "inputs" : [{
+              "actionNodeId" : 14
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 14,
+          "defineName" : "卡牌定义是否具有标签",
+          "branches" : [0],
+          "inputs" : [{ }, {
+              "actionNodeId" : 15
+            }],
+          "consts" : [],
+          "regVar" : [false]
+        }, {
+          "_id" : 15,
+          "defineName" : "StringConst",
+          "branches" : [0],
+          "inputs" : [],
+          "consts" : ["火"],
+          "regVar" : [true]
+        }, {
+          "_id" : 17,
+          "defineName" : "分支动作",
+          "branches" : [0, 20, 0],
+          "inputs" : [{
+              "actionNodeId" : 18
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 18,
+          "defineName" : "卡牌定义是否具有标签",
+          "branches" : [0],
+          "inputs" : [{ }, {
+              "actionNodeId" : 19
+            }],
+          "consts" : [],
+          "regVar" : [false]
+        }, {
+          "_id" : 19,
+          "defineName" : "StringConst",
+          "branches" : [0],
+          "inputs" : [],
+          "consts" : ["土"],
+          "regVar" : [true]
+        }, {
+          "_id" : 20,
+          "defineName" : "向集合添加元素",
+          "branches" : [0],
+          "inputs" : [{
+              "actionNodeId" : 21
+            }, {
+              "actionNodeId" : 19
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 19,
+          "defineName" : "StringConst",
+          "branches" : [0],
+          "inputs" : [],
+          "consts" : ["土"],
+          "regVar" : [true]
+        }, {
+          "_id" : 16,
+          "defineName" : "向集合添加元素",
+          "branches" : [0],
+          "inputs" : [{
+              "actionNodeId" : 21
+            }, {
+              "actionNodeId" : 15
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 12,
+          "defineName" : "向集合添加元素",
+          "branches" : [0],
+          "inputs" : [{
+              "actionNodeId" : 21
+            }, {
+              "actionNodeId" : 10
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 8,
+          "defineName" : "向集合添加元素",
+          "branches" : [0],
+          "inputs" : [{
+              "actionNodeId" : 21
+            }, {
+              "actionNodeId" : 7
+            }],
+          "consts" : [],
+          "regVar" : []
+        }, {
+          "_id" : 7,
+          "defineName" : "StringConst",
+          "branches" : [0],
+          "inputs" : [],
+          "consts" : ["木"],
+          "regVar" : [true]
+        }, {
+          "_id" : 5,
+          "defineName" : "向集合添加元素",
+          "branches" : [0],
+          "inputs" : [{
+              "actionNodeId" : 21
+            }, {
+              "actionNodeId" : 3
+            }],
+          "consts" : [],
+          "regVar" : []
+        }]
     }, {
       "_id" : 2,
       "name" : "自定义动作",
       "inputList" : [],
       "constList" : [],
       "outputList" : [],
-      "returnList" : []
+      "seriReturnList" : [],
+      "actionNodeList" : []
     }]
 }

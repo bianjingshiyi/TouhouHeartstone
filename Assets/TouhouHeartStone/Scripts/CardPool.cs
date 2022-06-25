@@ -23,15 +23,19 @@ namespace Game
         #region 构造方法
         public SerializableCardPool(CardPool cardPool)
         {
+            if (cardPool == null)
+                throw new ArgumentNullException(nameof(cardPool));
             cardDefineList = cardPool.cardDefineList.ConvertAll(c => new SerializableCardDefine(c));
             cardSkinList = cardPool.cardSkinList;
             actionNodeGraphInfoList = cardPool.actionNodeGraphInfoList;
             buffDefineList = cardPool.buffDefineList.ConvertAll(b => new SerializableBuffDefine(b));
             buffSkinList = cardPool.buffSkinList;
-            if (cardPool.actionDefineList != null)
+            if (cardPool.actionDefineList.Count > 0)
                 actionDefineList = cardPool.actionDefineList;
-            else
+            else if (cardPool.generatedActionDefineList.Count > 0)
                 actionDefineList = cardPool.generatedActionDefineList.ConvertAll(a => new SerializableActionDefine(a));
+            else
+                actionDefineList = new List<SerializableActionDefine>();
         }
         #endregion
         public CardPool toCardPool(Func<string, Type> typeFinder)
@@ -53,7 +57,7 @@ namespace Game
         public List<ActionNodeGraphInfo> actionNodeGraphInfoList = new List<ActionNodeGraphInfo>();
         public List<SerializableBuffDefine> buffDefineList = new List<SerializableBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
-        public List<SerializableActionDefine> actionDefineList = new List<SerializableActionDefine>();
+        public List<SerializableActionDefine> actionDefineList;
         #endregion
     }
 }

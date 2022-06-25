@@ -15,6 +15,7 @@ namespace Controllers
         public static void init()
         {
             BsonClassMap.RegisterClassMap<CardReference>();
+            BsonClassMap.RegisterClassMap<ActionValueRef>();
             isInited = true;
         }
         public static string toJson(this object obj, bool readFriendly = false)
