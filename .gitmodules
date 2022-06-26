@@ -5,11 +5,11 @@
 [submodule "Assets/Plugins/TouhouCardEngine"]
 	path = Assets/Plugins/TouhouCardEngine
 	branch = master
-	url = https://github.com/bianjingshiyi/TouhouCardEngine.git
+	url = https://code.lotlab.org/IGensokyo/TouhouCardEngine.git
 [submodule "Assets/Plugins/BJSYGameCore"]
 	path = Assets/Plugins/BJSYGameCore
 	branch = master
-	url = https://github.com/bianjingshiyi/BJSYGameCore.git
+	url = https://code.lotlab.org/IGensokyo/BJSYGameCore.git
 [submodule "Assets/Plugins/CustomBuilder"]
 	path = Assets/Plugins/CustomBuilder
 	branch = master
