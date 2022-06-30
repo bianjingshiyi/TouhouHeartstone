@@ -47,7 +47,7 @@ namespace UI
         {
             _skinDropdown.SetValueWithoutNotify(skinIndex);
         }
-        public void setLanguages(string[] languages)
+        public void initLanguages(string[] languages)
         {
             _languageDropdown.ClearOptions();
             _languageDropdown.AddOptions(new List<string>(languages));
@@ -64,7 +64,7 @@ namespace UI
         /// 设置可选的卡牌类型
         /// </summary>
         /// <param name="types"></param>
-        public void setTypes(string[] types)
+        public void initTypes(string[] types)
         {
             _typeDropdown.ClearOptions();
             _typeDropdown.AddOptions(new List<string>(types));

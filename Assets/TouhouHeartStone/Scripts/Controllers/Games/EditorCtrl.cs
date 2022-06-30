@@ -24,6 +24,7 @@ namespace Controllers
             //切换模式
             if (switchToView)
             {
+                hasUnsavedChanges = false;
                 //牌库浏览模式
                 if (reloadCardPoolInfos)
                 {
@@ -106,8 +107,28 @@ namespace Controllers
         /// <param name="ui"></param>
         private void onClickReturnButton()
         {
-            _ui.gameObject.SetActive(false);
-            scene.menu.display();
+            if (hasUnsavedChanges)
+            {
+                game.ui.dialog.ShowQuestion(
+                    game.langManager.getString(StringTable.WARNING),
+                    game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES), async () =>
+                    {
+                        //保存卡池
+                        await game.card.saveCardPool(_curCardPoolInfo);
+                        //返回主菜单
+                        _ui.gameObject.SetActive(false);
+                        scene.menu.display();
+                    }, () =>
+                    {
+                        _ui.gameObject.SetActive(false);
+                        scene.menu.display();
+                    });
+            }
+            else
+            {
+                _ui.gameObject.SetActive(false);
+                scene.menu.display();
+            }
         }
         /// <summary>
         /// 当用户点击卡池列表项，切换右侧栏到编辑卡牌状态，读取对应文件并显示卡牌列表
@@ -132,6 +153,7 @@ namespace Controllers
             {
                 _ui.findInstance<UIDialog>().ShowQuestion(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
+                    hasUnsavedChanges = true;
                     game.card.removeCardPool(_cardPoolInfoList[index].cardPoolId);
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
@@ -148,6 +170,7 @@ namespace Controllers
         /// </summary>
         private void onClickAddCardPoolButton()
         {
+            hasUnsavedChanges = true;
             _curCardPoolPath = null;
             game.card.createCardPool(out _curCardPoolInfo, out _);
             _cardPoolInfoList.Add(_curCardPoolInfo);
@@ -168,6 +191,7 @@ namespace Controllers
         /// </summary>
         private async void onClickNewCardButton()
         {
+            hasUnsavedChanges = true;
             game.card.createCard(_curCardPoolInfo, out CardDefine newCardDefine, out _);
             await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, newCardDefine, getSelectableCharacters());
         }
@@ -203,6 +227,7 @@ namespace Controllers
             {
                 game.ui.dialog.ShowConfirm(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
+                    hasUnsavedChanges = true;
                     //删除当前卡池
                     game.card.removeCardPool(_curCardPoolInfo.cardPoolId);
                     int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
@@ -215,6 +240,7 @@ namespace Controllers
         }
         private void onDeckNameInputFieldValueChanged(string value)
         {
+            hasUnsavedChanges = true;
             _curCardPoolInfo.cardPoolName = value;
         }
         #endregion
@@ -286,18 +312,6 @@ namespace Controllers
             await updateDeckListUI();
             await _cardPoolViewPanelCtrl.hide();
         }
-
-        private int allocCardPoolId()
-        {
-            for (int i = 1; i < 0x7FFF; i++)
-            {
-                if (_cardPoolInfoList.Exists(p => p.cardPoolId == i) ||//不能是已有的卡池ID
-                    game.card.isStandardCardPool(i))//不能是官方卡池ID
-                    continue;
-                return i;
-            }
-            throw new OverflowException("卡池数量已达上限");
-        }
         private CardDefine[] getSelectableCharacters()
         {
             List<CardDefine> cardList = new List<CardDefine>();
@@ -332,7 +346,12 @@ namespace Controllers
             _ui.updateDeckCardList(viewData);
         }
         #endregion
-        [SerializeField]
+        #region 属性字段
+        public bool hasUnsavedChanges
+        {
+            get { return _hasUnsavedChanges; }
+            set { _hasUnsavedChanges = value; }
+        }
         private EditorPanel _ui;
         [SerializeField]
         private CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
@@ -340,5 +359,8 @@ namespace Controllers
         List<CardPoolInfo> _cardPoolInfoList = new List<CardPoolInfo>();
         string _curCardPoolPath;
         CardPoolInfo _curCardPoolInfo;
+        [SerializeField]
+        bool _hasUnsavedChanges;
+        #endregion
     }
 }

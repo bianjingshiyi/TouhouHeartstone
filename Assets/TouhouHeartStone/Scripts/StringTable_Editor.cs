@@ -56,6 +56,8 @@ namespace Game
         public const string EDITOR_VALUE_NAME_INVALID_MSG = "错误提示";
         [TranslateMsg("编辑器中当玩家删除一个动作的时候发出的警告")]
         public const string EDITOR_WARNING_DELETE_ACTION_DFINE = "删除一个动作定义会导致所有使用到它的卡牌效果无效，确定要这么做吗？";
+        [TranslateMsg("编辑器中当玩家离开编辑界面但是还有没保存的更改的时候的警告")]
+        public const string EDITOR_WARNING_UNSAVED_CHANGES = "你有未保存的改动，是否先保存卡池再离开编辑界面？";
         [TranslateMsg("编辑器错误提示")]
         public const string EDITOR_ERROR_INVALID_TYPE_CONNECT = "相互连接的输入输出类型必须可以相互转化";
         [TranslateMsg("编辑器错误提示")]

@@ -93,7 +93,7 @@ namespace Controllers
                 StringTable.GAME_CARD_TYPE_SPELL,
                 StringTable.GAME_CARD_TYPE_ITEM
             };
-            _ui.setTypes(typeNames);
+            _ui.initTypes(typeNames);
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
@@ -102,7 +102,7 @@ namespace Controllers
             {
                 languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
             }
-            _ui.setLanguages(languages);
+            _ui.initLanguages(languages);
             _ui.onChangeLanguage += onChangeLanguage;
             string[] keywords = new string[]
             {
@@ -209,6 +209,7 @@ namespace Controllers
         {
             if (skinIndex == getSkinCount())
             {
+                scene.editor.hasUnsavedChanges = true;
                 //新建皮肤
                 _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 updateSkinNames();
@@ -217,6 +218,7 @@ namespace Controllers
         }
         private async void onChangeSkinName(string skinName)
         {
+            scene.editor.hasUnsavedChanges = true;
             var skinGroup = getSkins().GroupBy(c => c.skinId).ToList();
             int index = skinGroup.FindIndex(g => g.Key == _curCardSkin.skinId);
             var curSkinGroup = skinGroup[index];
@@ -229,6 +231,7 @@ namespace Controllers
         }
         private async void onDeleteSkin()
         {
+            scene.editor.hasUnsavedChanges = true;
             var skinGroup = getSkins().GroupBy(c => c.skinId).ToList();
             if (skinGroup.Count < 2)
             {
@@ -247,6 +250,7 @@ namespace Controllers
             var targetSkin = skinGroup.FirstOrDefault(s => s.language == language);
             if (targetSkin == null)
             {
+                scene.editor.hasUnsavedChanges = true;
                 //不存在对应语言的皮肤，新建一个
                 targetSkin = game.card.createSkinForDiffLanguage(_cardPoolId, _curCardSkin, language);
             }
@@ -265,15 +269,18 @@ namespace Controllers
         /// <param name="typeIndex"></param>
         private void onChangeType(int typeIndex)
         {
+            scene.editor.hasUnsavedChanges = true;
             _cardDefine.type = _types[typeIndex];
             _ui.setType(typeIndex, _types[typeIndex]);
         }
         private void onIsTokenToggleValueChanged(bool value)
         {
+            scene.editor.hasUnsavedChanges = true;
             _cardDefine.setIsToken(value);
         }
         private void onTagDropdownValueChanged(bool[] value)
         {
+            scene.editor.hasUnsavedChanges = true;
             string[] tags = _cardDefine.getTags();
             string race = tags.Length > 0 ? tags[0] : null;
             List<string> tagList = new List<string>();
@@ -297,6 +304,7 @@ namespace Controllers
         /// <param name="value"></param>
         private void onChangeKeywords(bool[] value)
         {
+            scene.editor.hasUnsavedChanges = true;
             List<string> keywordList = new List<string>();
             for (int i = 0; i < _keywords.Length; i++)
             {
@@ -309,6 +317,7 @@ namespace Controllers
         }
         private void onChangeCharacter(int characterIndex)
         {
+            scene.editor.hasUnsavedChanges = true;
             if (characterIndex < 1)
             {
                 _cardDefine.setCharacterID(0);
@@ -326,6 +335,7 @@ namespace Controllers
         {
             if (int.TryParse(cost, out int value))
             {
+                scene.editor.hasUnsavedChanges = true;
                 _cardDefine.setProp(DEFINE.COST, value);
                 _ui.setCost(cost);
             }
@@ -336,6 +346,7 @@ namespace Controllers
         /// <param name="name"></param>
         void onChangeName(string name)
         {
+            scene.editor.hasUnsavedChanges = true;
             _curCardSkin.name = name;
             _ui.setName(name);
         }
@@ -345,6 +356,7 @@ namespace Controllers
         /// <param name="subName"></param>
         void onChangeSubName(string subName)
         {
+            scene.editor.hasUnsavedChanges = true;
             _curCardSkin.subname = subName;
             _ui.setSubName(subName);
         }
@@ -356,6 +368,7 @@ namespace Controllers
             Sprite sprite = await game.card.selectExternalImage();
             if (sprite != null)
             {
+                scene.editor.hasUnsavedChanges = true;
                 _curCardSkin.imagePath = game.card.getSpritePath(sprite);
             }
             return sprite;
@@ -366,6 +379,7 @@ namespace Controllers
         /// <param name="desc"></param>
         void onChangeDesc(string desc)
         {
+            scene.editor.hasUnsavedChanges = true;
             _curCardSkin.desc = desc;
             _ui.setDesc(desc);
         }
@@ -377,6 +391,7 @@ namespace Controllers
         {
             if (int.TryParse(attack, out int value))
             {
+                scene.editor.hasUnsavedChanges = true;
                 _cardDefine.setProp(DEFINE.ATTACK, value);
                 _ui.setAttack(attack);
             }
@@ -389,6 +404,7 @@ namespace Controllers
         {
             if (int.TryParse(life, out int value))
             {
+                scene.editor.hasUnsavedChanges = true;
                 _cardDefine.setProp(DEFINE.LIFE, value);
                 _ui.setLife(life);
             }
@@ -398,6 +414,7 @@ namespace Controllers
         /// </summary>
         private void onChangeRace(int index)
         {
+            scene.editor.hasUnsavedChanges = true;
             string[] value = _cardDefine.getTags();
             if (value == null || value.Length < 1)
             {
@@ -417,6 +434,7 @@ namespace Controllers
         }
         private void onClickRemoveEffectButton(int index)
         {
+            scene.editor.hasUnsavedChanges = true;
             GeneratedEffect[] prevEffects = _cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             GeneratedEffect[] newEffects = new GeneratedEffect[prevEffects.Length - 1];
             for (int i = 0; i < index; i++)
@@ -435,6 +453,7 @@ namespace Controllers
         /// </summary>
         private void onClickAddEffectMenu(int index)
         {
+            scene.editor.hasUnsavedChanges = true;
             GeneratedEffect[] effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(game.card.createEffectByIndex(index)).ToArray();
             _cardDefine.setEffects(effects);
             updateEffectList(effects);
@@ -448,6 +467,7 @@ namespace Controllers
         }
         private void onClickDeleteCardButton()
         {
+            scene.editor.hasUnsavedChanges = true;
             //删除当前卡牌
             game.card.removeCard(_cardDefine);
             //返回上个界面
