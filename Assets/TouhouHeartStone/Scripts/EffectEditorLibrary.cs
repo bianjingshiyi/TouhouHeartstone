@@ -165,7 +165,7 @@ namespace Game
             for (int i = 0; i < cards.Length; i++)
             {
                 scope.localVarDict[scope.getLocalVarName(0)] = cards[i];
-                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: scope).Result;
+                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: new Scope(scope)).Result;
                 if (result)
                 {
                     cardList.Add(cards[i]);
