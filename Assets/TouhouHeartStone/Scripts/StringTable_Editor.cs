@@ -286,6 +286,10 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_ENEMY_SERVANTS = "获取敌方随从";
         [TranslateMsg("动作图编辑器中动作节点名称之获取友方角色")]
         public const string EDITOR_NODE_NAME_GET_FRIEND_CHARACTERS = "获取友方角色";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取敌方角色")]
+        public const string EDITOR_NODE_NAME_GET_ENEMY_CHARACTERS = "获取敌方角色";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取所有角色")]
+        public const string EDITOR_NODE_NAME_GET_ALL_CHARACTERS = "获取所有角色";
         [TranslateMsg("动作图编辑器中动作节点名称之获取随机卡牌")]
         public const string EDITOR_NODE_NAME_GET_RANDOM_CARD = "获取随机卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之创建衍生卡并洗入牌库")]
@@ -298,6 +302,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD = "创建衍生卡并置入战场";
         [TranslateMsg("动作图编辑器中动作节点名称之对目标造成固定法术伤害")]
         public const string EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS = "对目标造成固定法术伤害";
+        [TranslateMsg("动作图编辑器中动作节点名称之对造成固定法术伤害并分配给随机目标")]
+        public const string EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS = "造成固定法术伤害并分配给随机目标";
         [TranslateMsg("动作图编辑器中动作节点名称之消灭")]
         public const string EDITOR_NODE_NAME_DESTROY = "消灭";
         [TranslateMsg("动作图编辑器中动作节点参数名称之死亡事件")]

@@ -210,6 +210,14 @@ namespace Game
         {
             return targets.damage(game, card, card.owner.getSpellDamage(game, damage));
         }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToRandomTargets(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
+        {
+            return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage));
+        }
         /// <summary>
         /// 对固定数量的随机敌人造成法术伤害
         /// </summary>
@@ -260,6 +268,29 @@ namespace Game
             characters[0] = master;
             Array.Copy(servants, 0, characters, 1, servants.Length);
             return characters;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ENEMY_CHARACTERS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getEnemyCharacters(CardEngine game, Card card)
+        {
+            Card master = game.getOpponent(card.owner).getMaster();
+            Card[] servants = game.getOpponent(card.owner).getField();
+            Card[] characters = new Card[servants.Length + 1];
+            characters[0] = master;
+            Array.Copy(servants, 0, characters, 1, servants.Length);
+            return characters;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ALL_CHARACTERS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getAllCharacters(CardEngine game)
+        {
+            List<Card> cardList = new List<Card>();
+            foreach (var player in game.players)
+            {
+                cardList.Add(player.getMaster());
+                cardList.AddRange(player.getField());
+            }
+            return cardList.ToArray();
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FREEZE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]

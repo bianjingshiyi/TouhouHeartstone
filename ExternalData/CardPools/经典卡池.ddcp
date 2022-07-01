@@ -1409,9 +1409,38 @@
           "_v" : [null, "Water", "Fire"]
         },
         "characterId" : 4194304,
-        "cost" : 4
+        "cost" : 4,
+        "isToken" : true
       },
-      "effectList" : []
+      "effectList" : [{
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [],
+              "actionId" : 5,
+              "actionList" : [{
+                  "_id" : 5,
+                  "defineName" : "造成固定法术伤害并分配给随机目标",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [7],
+                  "regVar" : []
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取敌方随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
     }, {
       "_id" : -2147418087,
       "type" : "Spell",
@@ -2623,79 +2652,16 @@
       "cardId" : -2147418088,
       "entryType" : "triggerList",
       "actionInfoDict" : {
-        "1" : {
-          "posX" : 62.9332275390625,
-          "posY" : -246.40777587890625
+        "5" : {
+          "posX" : 583.338623046875,
+          "posY" : 107.86187744140625
         },
-        "2" : {
-          "posX" : 272.6419677734375,
-          "posY" : -241.1650390625
-        },
-        "3" : {
-          "posX" : 646.65087890625,
-          "posY" : 82.13592529296875
+        "6" : {
+          "posX" : 272.7373046875,
+          "posY" : -245.1251220703125
         }
       },
-      "freeActionNodeList" : [{
-          "_id" : 4,
-          "defineName" : "向集合添加元素",
-          "branches" : [null],
-          "inputs" : [{
-              "action" : {
-                "_id" : 1,
-                "defineName" : "获取敌方随从",
-                "branches" : [null],
-                "inputs" : [],
-                "consts" : [],
-                "regVar" : [true]
-              },
-              "index" : 0,
-              "actionNodeId" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0
-            }, {
-              "action" : {
-                "_id" : 3,
-                "defineName" : "获取玩家英雄",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取卡牌拥有者",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 1,
-                            "defineName" : "获取敌方随从",
-                            "branches" : [null],
-                            "inputs" : [],
-                            "consts" : [],
-                            "regVar" : [true]
-                          },
-                          "index" : 0,
-                          "actionNodeId" : 0,
-                          "eventVarName" : null,
-                          "argIndex" : 0
-                        }],
-                      "consts" : [],
-                      "regVar" : [false]
-                    },
-                    "index" : 0,
-                    "actionNodeId" : 0,
-                    "eventVarName" : null,
-                    "argIndex" : 0
-                  }],
-                "consts" : [],
-                "regVar" : [false]
-              },
-              "index" : 0,
-              "actionNodeId" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0
-            }, null],
-          "consts" : [],
-          "regVar" : []
-        }]
+      "freeActionNodeList" : []
     }, {
       "cardId" : -2147418087,
       "entryType" : "triggerList",
@@ -2731,16 +2697,16 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 764.5421142578125,
-          "posY" : -155.29559326171875
+          "posX" : 706.1065673828125,
+          "posY" : 3.5023193359375
         },
         "2" : {
-          "posX" : -621.283203125,
-          "posY" : 377.67977905273438
+          "posX" : 259.082275390625,
+          "posY" : -221.7978515625
         },
         "3" : {
-          "posX" : 1030.1390380859375,
-          "posY" : 231.37835693359375
+          "posX" : 1291.1097412109375,
+          "posY" : 129.736083984375
         },
         "4" : {
           "posX" : 754.707275390625,
@@ -2755,8 +2721,8 @@
           "posY" : 486.5113525390625
         },
         "7" : {
-          "posX" : 695.28955078125,
-          "posY" : 449.824951171875
+          "posX" : 919.3638916015625,
+          "posY" : 506.0997314453125
         }
       },
       "freeActionNodeList" : []
