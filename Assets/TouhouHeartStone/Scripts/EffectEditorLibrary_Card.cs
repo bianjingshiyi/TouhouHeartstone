@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -225,6 +226,17 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
             return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ALL_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getAllServants(CardEngine game)
+        {
+            List<Card> cardList = new List<Card>();
+            foreach (var player in game.players)
+            {
+                cardList.AddRange(player.getField());
+            }
+            return cardList.ToArray();
         }
         /// <summary>
         /// 获取敌方随从

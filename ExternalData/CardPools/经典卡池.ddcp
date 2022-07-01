@@ -2882,6 +2882,40 @@
         }
       },
       "freeActionNodeList" : []
+    }, {
+      "cardId" : -2147418090,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 1644.37548828125,
+          "posY" : 505.28814697265625
+        },
+        "2" : {
+          "posX" : 1069.587890625,
+          "posY" : 343.9864501953125
+        },
+        "3" : {
+          "posX" : 1999.9453125,
+          "posY" : 495.931884765625
+        },
+        "4" : {
+          "posX" : 1262.775634765625,
+          "posY" : -608.65203857421875
+        },
+        "5" : {
+          "posX" : 596.541748046875,
+          "posY" : -313.88519287109375
+        },
+        "6" : {
+          "posX" : 554.4638671875,
+          "posY" : -33.36578369140625
+        },
+        "7" : {
+          "posX" : 947.191162109375,
+          "posY" : -378.17059326171875
+        }
+      },
+      "freeActionNodeList" : []
     }],
   "buffDefineList" : [{
       "_id" : 1,
@@ -3327,6 +3361,7 @@
           "_t" : "LifeModifier",
           "relatedPropName" : "x",
           "propertyName" : "life",
+          "value" : 4,
           "isSet" : false,
           "minValue" : 0,
           "maxValue" : 2147483647
