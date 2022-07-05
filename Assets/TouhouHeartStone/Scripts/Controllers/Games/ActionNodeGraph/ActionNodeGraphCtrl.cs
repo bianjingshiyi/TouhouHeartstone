@@ -1626,7 +1626,9 @@ namespace Controllers
             ActionValueRef inputActionValueRef = inputActionNode.inputs[inputIndex];
             //断开之前的节点连接
             ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
-            if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length - 1)
+            if (inputActionDefine != null &&
+                inputActionDefine.inputs.Last().isParams &&
+                inputIndex >= inputActionDefine.inputs.Length - 1)
             {
                 //如果断开的是多参数节点
                 List<ActionValueRef> inputList = new List<ActionValueRef>(inputActionNode.inputs);

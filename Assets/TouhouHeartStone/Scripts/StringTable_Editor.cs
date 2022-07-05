@@ -142,6 +142,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_BURN_EVENT = "爆牌事件";
         [TranslateMsg("动作图编辑器中动作节点名称之从一定数量的卡牌中选择一张")]
         public const string EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS = "从一定数量的卡牌中选择一张";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之集合")]
+        public const string EDITOR_PARAM_NAME_COLLECTION = "集合";
         [TranslateMsg("动作图编辑器中动作节点参数名称之数量")]
         public const string EDITOR_PARAM_NAME_COUNT = "数量";
         [TranslateMsg("动作图编辑器中动作节点参数名称之重复次数")]

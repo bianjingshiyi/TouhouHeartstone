@@ -308,6 +308,17 @@ namespace Game
             }
             return objList.ToArray();
         }
+        /// <summary>
+        /// 计算集合中元素数量
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_COUNT, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)]
+        public static int getCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection)
+        {
+            return collection.Length;
+        }
         #endregion
         /// <summary>
         /// 简单召唤召唤物节点

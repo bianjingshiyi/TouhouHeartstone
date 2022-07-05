@@ -1695,6 +1695,91 @@
           "tagList" : [],
           "propDict" : { }
         }]
+    }, {
+      "_id" : -2147418080,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 6,
+        "isToken" : false,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : [null, "Metal", "Earth"]
+        },
+        "characterId" : 4194304
+      },
+      "effectList" : [{
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 4],
+                  "inputs" : [{
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取元素数量",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取敌方随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "CardReference",
+                      "cardPoolId" : 1,
+                      "cardId" : -2147418079
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : -2147418079,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 3,
+        "attack" : 3,
+        "life" : 1,
+        "isToken" : true,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["rush"]
+        },
+        "characterId" : 4194304
+      },
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : -2147418111,
@@ -1902,6 +1987,18 @@
       "_name" : "奥术知识",
       "_imagePath" : "经典卡池\\Card-2147418081\\0\\Image_zh-Hans.jpg",
       "_desc" : "检视牌库中5张牌，选择一张。执行两次，然后抽这两张牌。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : -2147418080,
+      "_name" : "土金符【淡黄阵风】",
+      "_imagePath" : "经典卡池\\Card-2147418080\\0\\Image_zh-Hans.jpg",
+      "_desc" : "每有一个敌方随从，便召唤一个3/1具有突袭的沙尘元素",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : -2147418079,
+      "_name" : "沙尘元素",
+      "_imagePath" : "经典卡池\\Card-2147418079\\0\\Image_zh-Hans.jpg",
+      "_desc" : "突袭",
       "_language" : "zh-Hans"
     }],
   "actionNodeGraphInfoList" : [{
@@ -2857,6 +2954,32 @@
         "7" : {
           "posX" : 947.191162109375,
           "posY" : -378.17059326171875
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : -2147418080,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 544.20068359375,
+          "posY" : 139.11517333984375
+        },
+        "6" : {
+          "posX" : 392.6298828125,
+          "posY" : -215.0704345703125
+        },
+        "3" : {
+          "posX" : 112.8680419921875,
+          "posY" : -219.8297119140625
+        },
+        "4" : {
+          "posX" : 920.558837890625,
+          "posY" : 75.02484130859375
+        },
+        "5" : {
+          "posX" : 646.601318359375,
+          "posY" : -169.98358154296875
         }
       },
       "freeActionNodeList" : []
