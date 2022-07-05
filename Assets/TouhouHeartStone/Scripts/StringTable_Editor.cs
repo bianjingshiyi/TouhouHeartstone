@@ -98,6 +98,8 @@ namespace Game
         public const string EDIOTR_NODE_NAME_COMPARE = "比较";
         [TranslateMsg("动作图编辑器中动作节点名称之分支动作")]
         public const string EDIOTR_NODE_NAME_BRANCH_ACTION = "分支动作";
+        [TranslateMsg("动作图编辑器中动作节点名称之重复动作")]
+        public const string EDIOTR_NODE_NAME_FOR_ACTION = "重复动作";
         [TranslateMsg("动作图编辑器中动作节点名称之固定整数")]
         public const string EDIOTR_NODE_NAME_INTEGER_CONST = "固定整数";
         [TranslateMsg("动作图编辑器中动作节点名称之固定字符串")]
@@ -142,6 +144,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS = "从一定数量的卡牌中选择一张";
         [TranslateMsg("动作图编辑器中动作节点参数名称之数量")]
         public const string EDITOR_PARAM_NAME_COUNT = "数量";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之重复次数")]
+        public const string EDITOR_PARAM_NAME_REPEAT_TIME = "重复次数";
         [TranslateMsg("动作图编辑器中动作节点名称之获取牌库中满足条件的卡牌")]
         public const string EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION = "获取牌库中满足条件的卡牌";
         [TranslateMsg("动作图编辑器中动作节点名称之过滤满足条件的卡牌")]

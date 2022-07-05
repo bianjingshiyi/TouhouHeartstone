@@ -25,6 +25,20 @@ namespace Game
                 return elseAction != null ? game.doActionsAsync(card, buff, eventArg, elseAction) : Task.CompletedTask;
             }
         }
+        [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_FOR_ACTION, null)]
+        public static async Task forAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ActionNode action,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME, isOut: true)] int repeatTime)
+        {
+            if (action == null)
+                return;
+            for (int i = 1; i <= count; i++)
+            {
+                scope.setOutParamValue(1, i);
+                await game.doActionsAsync(card, buff, eventArg, action);
+            }
+        }
         //  把这个“玩家”逐步移到下面几个去
         #region 玩家
         /// <summary>
