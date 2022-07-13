@@ -351,26 +351,7 @@ namespace UI
         {
             return _actionNodesRoot.InverseTransformPoint(worldPosition);
         }
-        public void setScrollViewContentSize(Vector2 size)
-        {
-            //内容大小不能小于滚动视图本身大小
-            if (size.x < (_scrollRect.transform as RectTransform).rect.size.x)
-            {
-                size.x = (_scrollRect.transform as RectTransform).rect.size.x;
-            }
-            if (size.y < (_scrollRect.transform as RectTransform).rect.size.y)
-            {
-                size.y = (_scrollRect.transform as RectTransform).rect.size.y;
-            }
-            //获取当前视图位置
-            Vector2 curPos = new Vector2(_scrollRect.horizontalNormalizedPosition * _scrollViewContentRectTransform.sizeDelta.x,
-                _scrollRect.verticalNormalizedPosition * _scrollViewContentRectTransform.sizeDelta.y);
-            //设置内容大小
-            _scrollViewContentRectTransform.sizeDelta = size;
-            //换算位置保持当前位置不变
-            _scrollRect.horizontalNormalizedPosition = curPos.x / _scrollViewContentRectTransform.sizeDelta.x;
-            _scrollRect.verticalNormalizedPosition = curPos.y / _scrollViewContentRectTransform.sizeDelta.y;
-        }
+       
         public void displayCardSelectPanel(bool value)
         {
             _cardSelectPanel.SetActive(value);

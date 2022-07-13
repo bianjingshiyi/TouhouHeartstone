@@ -2459,7 +2459,7 @@ namespace Controllers
                     size.y = Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMax);
                 }
             }
-            _ui.setScrollViewContentSize(size * 2);
+          
         }
         #endregion
         #region 属性字段
