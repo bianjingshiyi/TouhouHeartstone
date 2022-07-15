@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using System.Reflection;
@@ -361,6 +362,42 @@ namespace UI
             _actionNodeItemTemplate.initBuffLanguages(languages);
             _actionNodeItemTemplate.initEventTypes(eventTypes);
         }
+        #region 缩放和拖拽方法by断剑君
+        //以下是缩放方法：
+        //对缩放方法进行的初始数据声明
+        private Vector3 initialScale;
+        
+
+
+        public void EditorZooming(BaseEventData eventData)
+        {
+            var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化
+            var desiredScale = PanelBackground.transform.localScale + delta;//进行缩放
+
+            desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
+
+            PanelBackground.transform.localScale = desiredScale;
+        }
+
+      
+
+        //接下来是拖拽方法
+        private Vector2 offsetPos;
+
+
+        public void EditorDrag(BaseEventData eventData)
+        {
+           PanelBackground.transform.position = (Vector2)Input.mousePosition - offsetPos;
+        }
+
+        public void EditorBeginDrag(BaseEventData eventData)
+        {
+            offsetPos = (Vector2)Input.mousePosition - (Vector2) PanelBackground.transform.position;
+        }
+
+
+
+        #endregion
         #endregion
         #region 私有方法
         #region 生命周期
@@ -385,6 +422,28 @@ namespace UI
             _cancelSelectButton.onClick.AddListener(onClickCancelSelectButtonCallback);
 
             displayCardSelectPanel(false);
+            #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
+            initialScale = PanelBackground.transform.localScale;//读取目前的缩放比例 
+
+           ///UnityAction <BaseEventData> zoomingAction =  new UnityAction <BaseEventData> (EditorZooming);
+            EventTrigger.Entry scrollZooming = new EventTrigger.Entry();
+            scrollZooming.eventID = EventTriggerType.Scroll;
+            scrollZooming.callback.AddListener(EditorZooming);
+            EventTrigger addTriggerIntoBackgrond = PanelBackground.AddComponent <EventTrigger>();
+            addTriggerIntoBackgrond.triggers.Add(scrollZooming);
+
+            EventTrigger.Entry BackgroundonDrag = new EventTrigger.Entry();
+            BackgroundonDrag.eventID = EventTriggerType.Drag;
+            BackgroundonDrag.callback.AddListener(EditorDrag);
+            EventTrigger addOnDragIntoBackground = PanelBackground.AddComponent<EventTrigger>();
+            addOnDragIntoBackground.triggers.Add(BackgroundonDrag);
+
+            EventTrigger.Entry BackgroundBeginDrag = new EventTrigger.Entry();
+            BackgroundBeginDrag.eventID = EventTriggerType.BeginDrag;
+            BackgroundBeginDrag.callback.AddListener(EditorBeginDrag);
+            EventTrigger addBeginDragIntoBackground = PanelBackground.AddComponent<EventTrigger>();
+            addBeginDragIntoBackground .triggers.Add(BackgroundBeginDrag);
+            #endregion
         }
         protected void Update()
         {
@@ -762,6 +821,12 @@ namespace UI
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
             return actionNodeItem;
         }
+        private Vector3 ClampDesiredScale(Vector3 desiredScale)//clamp函数
+        {
+            desiredScale = Vector3.Max(initialScale / maxZoom, desiredScale);//最大倍率和最小倍率
+            desiredScale = Vector3.Min(initialScale * maxZoom, desiredScale);
+            return desiredScale;
+        }
         #endregion
         #region 事件
         /// <summary>
@@ -873,9 +938,9 @@ namespace UI
         [SerializeField]
         float _autoPosSpacingHeight = 300;
         [SerializeField]
-        ScrollRect _scrollRect;
+        private float zoomSpeed = 0.1f;
         [SerializeField]
-        RectTransform _scrollViewContentRectTransform;
+        private float maxZoom = 10f;
         [SerializeField]
         Button _returnButton;
         [SerializeField]
@@ -920,6 +985,12 @@ namespace UI
         [Header("编辑器线条属性")]
         [SerializeField]
         List<Color> _listColor;
+
+        #region background读取by断剑君
+        [SerializeField]
+        GameObject PanelBackground;
+        #endregion
+
         #endregion
 
         /// <summary>
@@ -930,6 +1001,8 @@ namespace UI
         {
             return _listColor;
         }
+
+
     }
     public struct ActionNodeValueInfo
     {
@@ -1031,4 +1104,5 @@ namespace UI
         action,
         value
     }
+   
 }
