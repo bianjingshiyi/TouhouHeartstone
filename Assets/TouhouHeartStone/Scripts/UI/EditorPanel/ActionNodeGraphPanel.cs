@@ -305,6 +305,7 @@ namespace UI
             _menuRoot.gameObject.SetActive(true);
             _menuRoot.anchoredPosition = new Vector2(posX, posY);
             updateMenu(options);
+            SetMenuHeight();
         }
         public void updateMenu(string[] options)
         {
@@ -322,10 +323,37 @@ namespace UI
                 item.onClick -= onClickMenuOption;
             });
         }
-        /// <summary>
-        /// 关闭菜单。
-        /// </summary>
-        public void closeMenu()
+
+
+        public void SetMenuHeight()
+        {
+            float childHeight;
+            childHeight = _menuItemTemplate.rect.height;//查找子物体高度
+            float HeightSize = childHeight * (_Content.childCount - 1);//高度设置 = 子物体高度*子物体数量
+
+            ScrollRect MenuScrollComponent = _menuScrollView.GetComponent<ScrollRect>();
+            RectTransform MenuRectTransform = _menuScrollView.GetComponent<RectTransform>();
+            MenuScrollComponent.content.anchoredPosition = Vector2.zero;
+
+            if (HeightSize <= _menuMaxHeight)
+            {
+                //当总高度小于设置的最大高度时，关闭scrollRect，并将设置物体大小至size height
+                MenuRectTransform.sizeDelta = new Vector2(MenuRectTransform.rect.width, HeightSize);
+                //MenuScrollComponent.enabled = false;
+            }
+            else
+            {
+                //否则启用scrollRect自适应功能
+                MenuRectTransform.sizeDelta = new Vector2(MenuRectTransform.rect.width, _menuMaxHeight);
+                //MenuScrollComponent.enabled = true;
+            }
+
+        }
+
+            /// <summary>
+            /// 关闭菜单。
+            /// </summary>
+            public void closeMenu()
         {
             _menuRoot.gameObject.SetActive(false);
         }
@@ -891,6 +919,8 @@ namespace UI
         [SerializeField]
         private float maxZoom = 10f;
         [SerializeField]
+        float _menuMaxHeight;//设置右键菜单最高高度
+        [SerializeField]
         Button _returnButton;
         [SerializeField]
         Image _backgroundImage;
@@ -914,6 +944,8 @@ namespace UI
         RectTransform _Content;
         [SerializeField]
         RectTransform _menuItemTemplate;
+        [SerializeField]
+        GameObject _menuScrollView;
         [SerializeField]
         List<RectTransform> _menuItemList = new List<RectTransform>();
         [SerializeField]
