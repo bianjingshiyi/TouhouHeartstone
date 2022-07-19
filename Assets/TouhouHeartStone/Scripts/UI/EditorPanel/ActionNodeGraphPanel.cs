@@ -352,7 +352,7 @@ namespace UI
         {
             return _actionNodesRoot.InverseTransformPoint(worldPosition);
         }
-       
+
         public void displayCardSelectPanel(bool value)
         {
             _cardSelectPanel.SetActive(value);
@@ -365,38 +365,23 @@ namespace UI
         #region 缩放和拖拽方法by断剑君
         //以下是缩放方法：
         //对缩放方法进行的初始数据声明
-        private Vector3 initialScale;
-        
-
-
-        public void EditorZooming(BaseEventData eventData)
+        private void onBackgroundScroll(BaseEventData eventData)
         {
             var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化
-            var desiredScale = PanelBackground.transform.localScale + delta;//进行缩放
+            var desiredScale = _backgroundImage.transform.localScale + delta;//进行缩放
 
             desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
 
-            PanelBackground.transform.localScale = desiredScale;
+            _backgroundImage.transform.localScale = desiredScale;
         }
-
-      
-
-        //接下来是拖拽方法
-        private Vector2 offsetPos;
-
-
-        public void EditorDrag(BaseEventData eventData)
+        public void onBackgroundDrag(BaseEventData eventData)
         {
-           PanelBackground.transform.position = (Vector2)Input.mousePosition - offsetPos;
+            _backgroundImage.transform.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
         }
-
-        public void EditorBeginDrag(BaseEventData eventData)
+        public void onBackgroundBeginDrag(BaseEventData eventData)
         {
-            offsetPos = (Vector2)Input.mousePosition - (Vector2) PanelBackground.transform.position;
+            _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_backgroundImage.transform.position;
         }
-
-
-
         #endregion
         #endregion
         #region 私有方法
@@ -423,26 +408,26 @@ namespace UI
 
             displayCardSelectPanel(false);
             #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
-            initialScale = PanelBackground.transform.localScale;//读取目前的缩放比例 
+            _backgroundOriginScale = _backgroundImage.transform.localScale;//读取目前的缩放比例 
 
-           ///UnityAction <BaseEventData> zoomingAction =  new UnityAction <BaseEventData> (EditorZooming);
+            ///UnityAction <BaseEventData> zoomingAction =  new UnityAction <BaseEventData> (EditorZooming);
             EventTrigger.Entry scrollZooming = new EventTrigger.Entry();
             scrollZooming.eventID = EventTriggerType.Scroll;
-            scrollZooming.callback.AddListener(EditorZooming);
-            EventTrigger addTriggerIntoBackgrond = PanelBackground.AddComponent <EventTrigger>();
+            scrollZooming.callback.AddListener(onBackgroundScroll);
+            EventTrigger addTriggerIntoBackgrond = _backgroundImage.gameObject.AddComponent<EventTrigger>();
             addTriggerIntoBackgrond.triggers.Add(scrollZooming);
 
             EventTrigger.Entry BackgroundonDrag = new EventTrigger.Entry();
             BackgroundonDrag.eventID = EventTriggerType.Drag;
-            BackgroundonDrag.callback.AddListener(EditorDrag);
-            EventTrigger addOnDragIntoBackground = PanelBackground.AddComponent<EventTrigger>();
+            BackgroundonDrag.callback.AddListener(onBackgroundDrag);
+            EventTrigger addOnDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
             addOnDragIntoBackground.triggers.Add(BackgroundonDrag);
 
             EventTrigger.Entry BackgroundBeginDrag = new EventTrigger.Entry();
             BackgroundBeginDrag.eventID = EventTriggerType.BeginDrag;
-            BackgroundBeginDrag.callback.AddListener(EditorBeginDrag);
-            EventTrigger addBeginDragIntoBackground = PanelBackground.AddComponent<EventTrigger>();
-            addBeginDragIntoBackground .triggers.Add(BackgroundBeginDrag);
+            BackgroundBeginDrag.callback.AddListener(onBackgroundBeginDrag);
+            EventTrigger addBeginDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            addBeginDragIntoBackground.triggers.Add(BackgroundBeginDrag);
             #endregion
         }
         protected void Update()
@@ -644,7 +629,7 @@ namespace UI
                 }
                 else
                 {
-                    if ((eventData as PointerEventData).button == PointerEventData.InputButton.Right)
+                    if (eventData.button == PointerEventData.InputButton.Right)
                     {
                         onRightClickActionNode?.Invoke(item, eventData.position);
                     }
@@ -688,10 +673,6 @@ namespace UI
         private void onClickActionNodeItemConstValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex)
         {
             onClickActionNodeConstValueItemEditButton?.Invoke(item, constValueIndex, itemIndex);
-        }
-        private void onTriggerNodeEventNameChanged(ActionNodeItem item, string eventName)
-        {
-            onChangeTriggerEventName?.Invoke(eventName);
         }
         private void onTriggerNodeEventIndexChanged(ActionNodeItem item, int eventIndex)
         {
@@ -747,23 +728,6 @@ namespace UI
             line.setPosition(from, to);
             return line;
         }
-
-
-        /// <summary>
-        /// 在指定位置创建连线
-        /// </summary>
-        /// <param name="from">相对于连线根节点的局部坐标</param>
-        /// <param name="to">相对于连线根节点的局部坐标</param>
-        /// <returns></returns>
-        private ActionNodeGraphLine createLine(Vector2 from, Vector2 to, int colorIndex)
-        {
-            ActionNodeGraphLine line = Instantiate(_actionNodeLineTemplate, _actionNodeLineRoot);
-            line.gameObject.SetActive(true);
-            line.setPosition(from, to);
-            line.SetColor(GetCurrentColor(colorIndex));
-            return line;
-        }
-
         /// <summary>
         /// 在指定位置创建连线
         /// </summary>
@@ -778,21 +742,6 @@ namespace UI
             line.SetColor(color);
             return line;
         }
-
-
-        public Color GetCurrentColor(int colorIndex)
-        {
-            if (_listColor.Count < colorIndex)
-            {
-                //容错
-                return Color.white;
-            }
-            else
-            {
-                return _listColor[colorIndex];
-            }
-        }
-
         /// <summary>
         /// 创建一个不确定类型的节点，必须在之后对其进行初始化。
         /// </summary>
@@ -823,8 +772,8 @@ namespace UI
         }
         private Vector3 ClampDesiredScale(Vector3 desiredScale)//clamp函数
         {
-            desiredScale = Vector3.Max(initialScale / maxZoom, desiredScale);//最大倍率和最小倍率
-            desiredScale = Vector3.Min(initialScale * maxZoom, desiredScale);
+            desiredScale = Vector3.Max(_backgroundOriginScale / maxZoom, desiredScale);//最大倍率和最小倍率
+            desiredScale = Vector3.Min(_backgroundOriginScale * maxZoom, desiredScale);
             return desiredScale;
         }
         #endregion
@@ -981,28 +930,11 @@ namespace UI
         Vector2 _dragItemPositionOffset;
         [SerializeField]
         ActionNodeGraphLine _dragLine;
-
-        [Header("编辑器线条属性")]
         [SerializeField]
-        List<Color> _listColor;
-
-        #region background读取by断剑君
+        private Vector3 _backgroundOriginScale;
         [SerializeField]
-        GameObject PanelBackground;
+        private Vector2 _backgroundDragStartPosition;
         #endregion
-
-        #endregion
-
-        /// <summary>
-        /// 获取类型颜色组
-        /// </summary>
-        /// <returns></returns>
-        public List<Color> GetTypeListColor()
-        {
-            return _listColor;
-        }
-
-
     }
     public struct ActionNodeValueInfo
     {
@@ -1104,5 +1036,5 @@ namespace UI
         action,
         value
     }
-   
+
 }
