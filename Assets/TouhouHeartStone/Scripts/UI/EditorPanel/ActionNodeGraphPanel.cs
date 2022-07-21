@@ -305,7 +305,7 @@ namespace UI
             _menuRoot.gameObject.SetActive(true);
             _menuRoot.anchoredPosition = new Vector2(posX, posY);
             updateMenu(options);
-            SetMenuHeight();
+            updateMenuHeight();
         }
         public void updateMenu(string[] options)
         {
@@ -324,36 +324,10 @@ namespace UI
             });
         }
 
-
-        public void SetMenuHeight()
-        {
-            float childHeight;
-            childHeight = _menuItemTemplate.rect.height;//查找子物体高度
-            float HeightSize = childHeight * (_Content.childCount - 1);//高度设置 = 子物体高度*子物体数量
-
-            ScrollRect MenuScrollComponent = _menuScrollView.GetComponent<ScrollRect>();
-            RectTransform MenuRectTransform = _menuScrollView.GetComponent<RectTransform>();
-            MenuScrollComponent.content.anchoredPosition = Vector2.zero;
-
-            if (HeightSize <= _menuMaxHeight)
-            {
-                //当总高度小于设置的最大高度时，关闭scrollRect，并将设置物体大小至size height
-                MenuRectTransform.sizeDelta = new Vector2(MenuRectTransform.rect.width, HeightSize);
-                //MenuScrollComponent.enabled = false;
-            }
-            else
-            {
-                //否则启用scrollRect自适应功能
-                MenuRectTransform.sizeDelta = new Vector2(MenuRectTransform.rect.width, _menuMaxHeight);
-                //MenuScrollComponent.enabled = true;
-            }
-
-        }
-
-            /// <summary>
-            /// 关闭菜单。
-            /// </summary>
-            public void closeMenu()
+        /// <summary>
+        /// 关闭菜单。
+        /// </summary>
+        public void closeMenu()
         {
             _menuRoot.gameObject.SetActive(false);
         }
@@ -390,27 +364,6 @@ namespace UI
             _actionNodeItemTemplate.initBuffLanguages(languages);
             _actionNodeItemTemplate.initEventTypes(eventTypes);
         }
-        #region 缩放和拖拽方法by断剑君
-        //以下是缩放方法：
-        //对缩放方法进行的初始数据声明
-        private void onBackgroundScroll(BaseEventData eventData)
-        {
-            var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化
-            var desiredScale = _backgroundImage.transform.localScale + delta;//进行缩放
-
-            desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
-
-            _backgroundImage.transform.localScale = desiredScale;
-        }
-        public void onBackgroundDrag(BaseEventData eventData)
-        {
-            _backgroundImage.transform.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
-        }
-        public void onBackgroundBeginDrag(BaseEventData eventData)
-        {
-            _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_backgroundImage.transform.position;
-        }
-        #endregion
         #endregion
         #region 私有方法
         #region 生命周期
@@ -495,6 +448,23 @@ namespace UI
                     onLeftClickBackground?.Invoke(localPoistion.x, localPoistion.y);
                 }
             }
+        }
+        private void onBackgroundScroll(BaseEventData eventData)
+        {
+            var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化
+            var desiredScale = _backgroundImage.transform.localScale + delta;//进行缩放
+
+            desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
+
+            _backgroundImage.transform.localScale = desiredScale;
+        }
+        public void onBackgroundDrag(BaseEventData eventData)
+        {
+            _backgroundImage.transform.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
+        }
+        public void onBackgroundBeginDrag(BaseEventData eventData)
+        {
+            _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_backgroundImage.transform.position;
         }
         /// <summary>
         /// 开始拖拽输入接口，创建一根跟着鼠标移动的连线
@@ -803,6 +773,29 @@ namespace UI
             desiredScale = Vector3.Max(_backgroundOriginScale / maxZoom, desiredScale);//最大倍率和最小倍率
             desiredScale = Vector3.Min(_backgroundOriginScale * maxZoom, desiredScale);
             return desiredScale;
+        }
+        private void updateMenuHeight()
+        {
+            float childHeight;
+            childHeight = _menuItemTemplate.rect.height;//查找子物体高度
+            float HeightSize = childHeight * (_Content.childCount - 1);//高度设置 = 子物体高度*子物体数量
+
+            ScrollRect MenuScrollComponent = _menuScrollView.GetComponent<ScrollRect>();
+            RectTransform MenuRectTransform = _menuScrollView.GetComponent<RectTransform>();
+            MenuScrollComponent.content.anchoredPosition = Vector2.zero;
+
+            if (HeightSize <= _menuMaxHeight)
+            {
+                //当总高度小于设置的最大高度时，关闭scrollRect，并将设置物体大小至size height
+                MenuRectTransform.sizeDelta = new Vector2(MenuRectTransform.rect.width, HeightSize);
+                //MenuScrollComponent.enabled = false;
+            }
+            else
+            {
+                //否则启用scrollRect自适应功能
+                MenuRectTransform.sizeDelta = new Vector2(MenuRectTransform.rect.width, _menuMaxHeight);
+                //MenuScrollComponent.enabled = true;
+            }
         }
         #endregion
         #region 事件
