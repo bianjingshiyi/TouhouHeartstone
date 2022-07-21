@@ -302,10 +302,14 @@ namespace UI
         /// <param name="options"></param>
         public void openMenu(float posX, float posY, string[] options)
         {
-            _menuRoot.gameObject.SetActive(true);
-            _menuRoot.anchoredPosition = new Vector2(posX, posY);
-            updateMenu(options);
-            updateMenuHeight();
+            if (!_isDragging)
+            {
+                _menuRoot.gameObject.SetActive(true);
+                _menuRoot.anchoredPosition = new Vector2(posX, posY);
+                updateMenu(options);
+                updateMenuHeight();
+            }
+            
         }
         public void updateMenu(string[] options)
         {
@@ -409,6 +413,13 @@ namespace UI
             BackgroundBeginDrag.callback.AddListener(onBackgroundBeginDrag);
             EventTrigger addBeginDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
             addBeginDragIntoBackground.triggers.Add(BackgroundBeginDrag);
+
+            EventTrigger.Entry BackgroundEndDrag = new EventTrigger.Entry();
+            BackgroundEndDrag.eventID = EventTriggerType.EndDrag;
+            BackgroundEndDrag.callback.AddListener(OnBackgroundEndDrag);
+            EventTrigger addEndDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            addEndDragIntoBackground.triggers.Add(BackgroundEndDrag);
+            
             #endregion
         }
         protected void Update()
@@ -460,11 +471,16 @@ namespace UI
         }
         public void onBackgroundDrag(BaseEventData eventData)
         {
+            _isDragging = true;
             _backgroundImage.transform.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
         {
             _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_backgroundImage.transform.position;
+        }
+        public  void OnBackgroundEndDrag(BaseEventData eventData) 
+        {
+            _isDragging = false;
         }
         /// <summary>
         /// 开始拖拽输入接口，创建一根跟着鼠标移动的连线
@@ -959,6 +975,9 @@ namespace UI
         private Vector3 _backgroundOriginScale;
         [SerializeField]
         private Vector2 _backgroundDragStartPosition;
+        [SerializeField]
+        private bool _isDragging; 
+        
         #endregion
     }
     public struct ActionNodeValueInfo
