@@ -45,6 +45,11 @@ namespace UI
         {
             return _nodeRect.position;
         }
+        public GameObject getNode()
+        {
+            return _nodeRect.gameObject;
+        }
+
         protected void Awake()
         {
             EventTrigger trigger = _nodeRect.gameObject.AddComponent<EventTrigger>();

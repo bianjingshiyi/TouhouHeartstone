@@ -262,7 +262,6 @@ namespace UI
         {
             return _outputList[index].GetComponent<ActionNodeItemOutput>().getNodeWorldPosition();
         }
-
         public ActionNodeItemInput getInput(int index)
         {
             return _inputList[index].GetComponent<ActionNodeItemInput>();

@@ -1,0 +1,30 @@
+﻿/*using UnityEngine;
+using UnityEngine.UI;
+
+ public   class ActionNodeGraphLine : MonoBehaviour
+    {
+        /// <summary>
+        /// 设置连线的位置
+        /// </summary>
+        /// <param name="from">连线相对根的局部坐标</param>
+        /// <param name="to">连线相对根的局部坐标</param>
+        public void setPosition(Vector2 from, Vector2 to)
+        {
+            RectTransform rectTransform = transform as RectTransform;
+
+            Debug.LogError(from);
+            rectTransform.position = from;
+            rectTransform.right = (to - from).normalized;
+            rectTransform.sizeDelta = new Vector2(Vector2.Distance(from, to), rectTransform.sizeDelta.y);
+        }        
+        /// <summary>
+        /// 设置线条的颜色
+        /// </summary>
+        /// <param name="baseColor">基础颜色</param>
+        public void SetColor(Color baseColor)
+        {
+            var image = GetComponent<Image>();
+            image.color = baseColor;
+        }
+    }
+*/
