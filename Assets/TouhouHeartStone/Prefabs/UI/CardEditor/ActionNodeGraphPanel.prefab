@@ -479,12 +479,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 914907736196792977}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c69a3c7ab31ee74cabe21212626f661, type: 3}
+  m_Script: {fileID: 11500000, guid: 5b33b2e663e78774c9f0c9af55018725, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 3}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -494,8 +494,9 @@ MonoBehaviour:
   m_Resolution: 0
   m_useNativeSize: 0
   m_points:
-  - {x: 0, y: 0}
-  lineThickness: 8
+  - {x: -89.670166, y: 10.418579}
+  - {x: 100, y: 0}
+  lineThickness: 10
   relativeSize: 0
   lineList: 0
   lineCaps: 0
@@ -6958,21 +6959,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: EffectList
       objectReference: {fileID: 0}
-    - target: {fileID: 3911518168966244478, guid: b337bdc15545cd741b7ff17fd1ae9654,
-        type: 3}
-      propertyPath: _itemRoot
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3911518168966244478, guid: b337bdc15545cd741b7ff17fd1ae9654,
-        type: 3}
-      propertyPath: _itemTemplate
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3911518168966244478, guid: b337bdc15545cd741b7ff17fd1ae9654,
-        type: 3}
-      propertyPath: _addEffectMenu
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 4210028747560119245, guid: b337bdc15545cd741b7ff17fd1ae9654,
         type: 3}
       propertyPath: _nameText
@@ -7613,71 +7599,6 @@ PrefabInstance:
     - target: {fileID: 4423168793525014555, guid: 4dc76bb3ab4827d468af5c81d2048639,
         type: 3}
       propertyPath: m_as_Button
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _Card
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _button
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _toggle
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _dropdown
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _listRoot
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _nameText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _buttonText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _cardButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _inputField
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _listTemplate
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _addItemButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _removeItemButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _multiSelectDropdown
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5126548240768758034, guid: 4dc76bb3ab4827d468af5c81d2048639,
@@ -8805,71 +8726,6 @@ PrefabInstance:
     - target: {fileID: 4423168793525014555, guid: 4dc76bb3ab4827d468af5c81d2048639,
         type: 3}
       propertyPath: m_as_Button
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _Card
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _button
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _toggle
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _dropdown
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _listRoot
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _nameText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _buttonText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _cardButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _inputField
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _listTemplate
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _addItemButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _removeItemButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4518820491824092309, guid: 4dc76bb3ab4827d468af5c81d2048639,
-        type: 3}
-      propertyPath: _multiSelectDropdown
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5126548240768758034, guid: 4dc76bb3ab4827d468af5c81d2048639,

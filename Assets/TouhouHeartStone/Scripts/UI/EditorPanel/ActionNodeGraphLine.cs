@@ -34,7 +34,7 @@ namespace UI
                 if (t.name == "Slot") { _controlPoints[3] = t; }
             }
             _uiline.Points = new Vector2[_length];
-            Debug.LogError(_controlPoints[0].position);
+            //Debug.LogError(_controlPoints[0].position);
         }
 
 
