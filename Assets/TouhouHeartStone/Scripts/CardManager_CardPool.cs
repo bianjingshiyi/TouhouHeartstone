@@ -96,9 +96,11 @@ namespace Game
             int cardPoolId = 0;
             for (int i = 1; i < 0x7FFF; i++)
             {
-                if (!game.card.isStandardCardPool(i) &&//不能是官方卡池ID
-                    !_cardPoolInfoDict.Any(p => p.Value.cardPoolId == i)//不能是已有的卡池ID
-                    )
+                if (game.card.isStandardCardPool(i))//不能是官方卡池ID
+                {
+                    continue;
+                }
+                if (_cardPoolInfoDict.Any(p => p.Value.cardPoolId == i))//不能是已有的卡池ID
                 {
                     continue;
                 }
