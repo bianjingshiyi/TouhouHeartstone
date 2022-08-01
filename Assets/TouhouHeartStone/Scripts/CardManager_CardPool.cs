@@ -10,7 +10,7 @@ using UnityEngine;
 using MongoDB.Bson.Serialization;
 using TouhouHeartstone;
 using System.Reflection;
-
+using System.Text.RegularExpressions;
 namespace Game
 {
     partial class CardManager
@@ -96,18 +96,11 @@ namespace Game
             int cardPoolId = 0;
             for (int i = 1; i < 0x7FFF; i++)
             {
-                if (game.card.isStandardCardPool(i))
+                if (!game.card.isStandardCardPool(i) &&//不能是官方卡池ID
+                    !_cardPoolInfoDict.Any(p => p.Value.cardPoolId == i)//不能是已有的卡池ID
+                    )
                 {
-                    //不能是官方卡池ID
                     continue;
-                }
-                foreach (var info in _cardPoolInfoDict.Values)
-                {
-                    if (info.cardPoolId == i)
-                    {
-                        //不能是已有的卡池ID
-                        continue;
-                    }
                 }
                 cardPoolId = i;
                 break;
@@ -896,7 +889,25 @@ namespace Game
         }
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
-            return Path.Combine(Application.persistentDataPath, cardPoolDirName, cardPool.cardPoolName + "." + cardPoolFilePostfix);
+            string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, cardPool.cardPoolName + "." + cardPoolFilePostfix);
+            for (int i = 0; i < 100 && File.Exists(path); i++)
+            {
+                if (i == 99)
+                {
+                    throw new IOException("达到最大文件存储上限");
+                }
+                Match match = Regex.Match(path, @"(?<path>.+)\s\((?<num>\d+)\)\." + cardPoolFilePostfix);
+                if (match.Success)
+                {
+                    int num = int.Parse(match.Groups["num"].Value);
+                    path = path.Replace("(" + num + ")", "(" + (num + 1) + ")");
+                }
+                else
+                {
+                    path = path.Insert(path.LastIndexOf('.'), " (0)");
+                }
+            }
+            return path;
         }
         #endregion
         #region 属性字段
