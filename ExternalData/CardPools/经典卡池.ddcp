@@ -2005,26 +2005,22 @@
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "actionId" : 2,
+              "actionId" : 5,
               "actionList" : [{
-                  "_id" : 2,
-                  "defineName" : "创建衍生卡并置入战场",
-                  "branches" : [3],
+                  "_id" : 5,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 3],
                   "inputs" : [{
-                      "actionNodeId" : 4
+                      "actionNodeId" : 6
                     }],
                   "consts" : [],
                   "regVar" : []
                 }, {
-                  "_id" : 4,
-                  "defineName" : "获取卡牌定义",
+                  "_id" : 6,
+                  "defineName" : "IntegerConst",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418075
-                    }],
+                  "consts" : [2],
                   "regVar" : [false]
                 }, {
                   "_id" : 3,
@@ -2075,35 +2071,29 @@
           "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "BeforeTurnEndEvent",
+              "condition" : {
+                "actionNodeId" : 8
+              },
               "targetCheckerList" : [],
-              "actionId" : 2,
+              "actionId" : 6,
               "actionList" : [{
-                  "_id" : 2,
-                  "defineName" : "Damage",
+                  "_id" : 8,
+                  "defineName" : "Compare",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 3
+                      "eventVarName" : "玩家"
                     }, {
-                      "actionNodeId" : 4
-                    }, {
-                      "actionNodeId" : 5
+                      "actionNodeId" : 9
                     }],
-                  "consts" : [],
+                  "consts" : [null],
                   "regVar" : []
                 }, {
-                  "_id" : 3,
-                  "defineName" : "获取随机卡牌",
+                  "_id" : 9,
+                  "defineName" : "获取卡牌拥有者",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 1
+                      "actionNodeId" : 4
                     }],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 1,
-                  "defineName" : "获取敌方角色",
-                  "branches" : [0],
-                  "inputs" : [],
                   "consts" : [],
                   "regVar" : [false]
                 }, {
@@ -2114,11 +2104,20 @@
                   "consts" : [],
                   "regVar" : [false]
                 }, {
-                  "_id" : 5,
-                  "defineName" : "IntegerConst",
+                  "_id" : 6,
+                  "defineName" : "对固定数量的随机目标造成固定伤害",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }],
+                  "consts" : [1, 2],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "获取敌方随从",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [2],
+                  "consts" : [],
                   "regVar" : [false]
                 }]
             }],
@@ -2444,7 +2443,7 @@
     }, {
       "_id" : -2147418075,
       "_name" : "熔岩元素",
-      "_imagePath" : "经典卡池\\Card-2147418076\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "经典卡池\\Card-2147418075\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>守卫</b>\r\n每当你的回合结束时，随机对一个敌人造成2点伤害。",
       "_language" : "zh-Hans"
     }, {
@@ -3697,25 +3696,25 @@
       "cardId" : -2147418075,
       "entryType" : "triggerList",
       "actionInfoDict" : {
-        "1" : {
-          "posX" : -133.984375,
-          "posY" : -302.330078125
+        "9" : {
+          "posX" : -1123.228271484375,
+          "posY" : 65.81915283203125
         },
-        "2" : {
-          "posX" : 553.0787353515625,
-          "posY" : 38.44659423828125
-        },
-        "3" : {
-          "posX" : -50.10089111328125,
-          "posY" : -186.99029541015625
+        "8" : {
+          "posX" : -640.6251220703125,
+          "posY" : 115.01654052734375
         },
         "4" : {
-          "posX" : 98.4427490234375,
-          "posY" : 330.29129028320313
+          "posX" : -1345.787841796875,
+          "posY" : 65.81915283203125
         },
-        "5" : {
-          "posX" : 131.6466064453125,
-          "posY" : -417.21978759765625
+        "7" : {
+          "posX" : 399.5487060546875,
+          "posY" : -149.71234130859375
+        },
+        "6" : {
+          "posX" : 519.028076171875,
+          "posY" : 117.3592529296875
         }
       },
       "freeActionNodeList" : []
@@ -3724,20 +3723,20 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 896.4393310546875,
-          "posY" : -252.21234130859375
-        },
-        "2" : {
-          "posX" : 573.9798583984375,
-          "posY" : 22.47576904296875
+          "posX" : 970.587646484375,
+          "posY" : -566.504638671875
         },
         "3" : {
-          "posX" : 957.2266845703125,
-          "posY" : 99.57763671875
+          "posX" : 1131.6505126953125,
+          "posY" : 51.391265869140625
         },
-        "4" : {
-          "posX" : 146.73046875,
-          "posY" : -471.875
+        "6" : {
+          "posX" : 273.62432861328125,
+          "posY" : -253.1640625
+        },
+        "5" : {
+          "posX" : 762.669921875,
+          "posY" : 124.60174560546875
         }
       },
       "freeActionNodeList" : []

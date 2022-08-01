@@ -202,6 +202,14 @@ namespace Game
         {
             return cardDefine.isToken();
         }
+        /// <summary>
+        /// 对目标造成固定的法术伤害
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="damage"></param>
+        /// <param name="targets"></param>
+        /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg> dealSpecificSpellDamageToTargets(CardEngine game, Card card,
@@ -210,6 +218,14 @@ namespace Game
         {
             return targets.damage(game, card, card.owner.getSpellDamage(game, damage));
         }
+        /// <summary>
+        /// 对随机敌人造成造成固定的法术伤害
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="damage"></param>
+        /// <param name="targets"></param>
+        /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToRandomTargets(CardEngine game, Card card,
@@ -219,7 +235,24 @@ namespace Game
             return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage));
         }
         /// <summary>
-        /// 对固定数量的随机敌人造成法术伤害
+        /// 对固定数量的随机敌人造成固定伤害
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="count"></param>
+        /// <param name="damage"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        public static Task<THHCard.DamageEventArg> dealSpecificDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
+        {
+            return targets.damageByRandomCount(game, card, damage, count);
+        }
+        /// <summary>
+        /// 对固定数量的随机敌人造成固定法术伤害
         /// </summary>
         /// <param name="game"></param>
         /// <param name="card"></param>
