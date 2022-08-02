@@ -415,8 +415,24 @@ namespace Controllers
                    });
                });
         }
+
+
+        public EditorCtrl _getCardinfo;
+        /// <summary>
+        /// 在这里调用保存,在prefab里面赋值了
+        /// </summary>
         private async void onClickReturnButton()
         {
+            _ui.SaveBackGroundInfo();
+
+            await game.card.saveCardPool(_getCardinfo.CurCardPoolInfo);
+            _getCardinfo.CurCardPoolPath = game.card.getCardPoolPath(_getCardinfo.CurCardPoolInfo);
+            int index = _getCardinfo.CardPoolInfoList.IndexOf(_getCardinfo.CurCardPoolInfo);
+            _getCardinfo.CardPoolPathList[index] =
+                _getCardinfo.CurCardPoolPath;
+
+
+
             await game.ui.returnPrevUI(() =>
             {
                 _ui.gameObject.SetActive(false);

@@ -82,6 +82,7 @@ namespace Controllers
         #region 生命周期
         protected void Awake()
         {
+
             if (_ui == null)
             {
                 _ui = GetComponentInChildren<EditorPanel>();
@@ -200,6 +201,7 @@ namespace Controllers
         /// </summary>
         private async void onClickSaveCardPoolButton()
         {
+
             await game.card.saveCardPool(_curCardPoolInfo);
             _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
             int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
@@ -347,10 +349,33 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
+
+
         public bool hasUnsavedChanges
         {
             get { return _hasUnsavedChanges; }
             set { _hasUnsavedChanges = value; }
+        }
+        public string CurCardPoolPath
+        {
+            get { return _curCardPoolPath; }
+            set { _curCardPoolPath = value; }
+        }
+        public List<string> CardPoolPathList
+        {
+            get { return _cardPoolPathList; }
+
+        }
+
+        public List<CardPoolInfo> CardPoolInfoList
+        {
+            get { return _cardPoolInfoList; }
+
+        }
+        public CardPoolInfo CurCardPoolInfo
+        {
+            get { return _curCardPoolInfo; }
+
         }
         private EditorPanel _ui;
         [SerializeField]

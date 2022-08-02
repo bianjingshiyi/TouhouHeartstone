@@ -1,6 +1,7 @@
 ﻿using BJSYGameCore.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 namespace UI
@@ -392,6 +393,58 @@ namespace UI
         Button _deleteActionDefineButton;
         [SerializeField]
         Button _returnButton;
+        [SerializeField]
+        RectTransform _background;
         #endregion
+
+
+
+        /// <summary>
+        /// ///保存背景图信息
+        /// </summary>
+        public void SaveBackGroundInfo()
+        {
+            string BeginInfo = Path.Combine(Application.persistentDataPath, "bginfo.json");//画布数据保存路径
+            if (!File.Exists(BeginInfo)) { File.Create(BeginInfo).Dispose(); }
+            BackGroundInfo bginfo = new BackGroundInfo() { };
+            bginfo.anchoredPosition = _background.anchoredPosition;
+            ///bginfo.sizeDelta = _background.sizeDelta;
+            bginfo.localScale = new Vector3(0.5f, 0.5f);
+            string SaveToJason = JsonUtility.ToJson(bginfo);
+            File.WriteAllText(BeginInfo, SaveToJason);
+        }
+
+        /// <summary>
+        /// 加载背景图信息
+        /// </summary>
+        public void LoadBackGroundInfo()
+        {
+
+            string BeginInfo = Path.Combine(Application.persistentDataPath, "bginfo.json");///画布数据保存路径
+            if (File.Exists(BeginInfo))
+            {
+                string SavedData = File.ReadAllText(BeginInfo);
+                BackGroundInfo bginfo = JsonUtility.FromJson<BackGroundInfo>(SavedData);
+                _background.anchoredPosition = bginfo.anchoredPosition;
+                ///_background.sizeDelta = bginfo.sizeDelta;
+                _background.localScale = bginfo.localScale;
+
+            }
+        }
+
+
     }
+
+    ///数据类，保存画布RectTransform信息
+    [SerializeField]
+
+    public class BackGroundInfo
+    {
+        public Vector2 anchoredPosition;
+        public Vector2 sizeDelta;
+        public Vector2 localScale = Vector2.one;
+    }
+
+
+
 }

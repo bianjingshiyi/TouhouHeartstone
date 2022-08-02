@@ -509,7 +509,7 @@ namespace UI
                 GameObject tod = new GameObject();
                 tod.name = "Slot_d";
                 tod.transform.SetParent(to.transform);
-                to.transform.SetParent(_dragLine.transform);
+                to.transform.SetParent(_actionNodeLineRoot);
                 to.transform.position = eventData.currentInputModule.input.mousePosition;
                 _dragLine = createLine(from, to, input.GetColor());
 
@@ -603,8 +603,8 @@ namespace UI
                 GameObject tod = new GameObject();
                 tod.name = "Slot_d";
                 tod.transform.SetParent(to.transform);
-                to.transform.SetParent(_dragLine.transform);
-                to.transform.position = eventData.currentInputModule.input.mousePosition;    
+                to.transform.SetParent(_actionNodeLineRoot);
+                to.transform.position = eventData.currentInputModule.input.mousePosition;
                 _dragLine = createLine(from, to, output.GetColor());
             }
             else

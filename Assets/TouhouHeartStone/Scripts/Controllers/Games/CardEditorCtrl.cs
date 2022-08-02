@@ -86,6 +86,8 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<CardEditorPanel>();
             }
+
+           
             _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM };
             string[] typeNames = new string[]
             {
@@ -427,8 +429,11 @@ namespace Controllers
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
+     
+        public EffectEditorPanel _effectEditorPanel ;//画布组件的引用
         private void onClickEditEffectButton(int index)
         {
+            _effectEditorPanel.LoadBackGroundInfo();
             GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
             scene.effectEditor.display(_cardPoolId, _cardDefine, effect);
         }
