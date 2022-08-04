@@ -130,14 +130,15 @@ namespace Game
             }
             //如果当前的卡池没有被保存过，没有分配地址，则给它分配一个地址。
             string cardPoolPath = null;
-            foreach (var pair in _cardPoolInfoDict)
-            {
-                if (pair.Value.cardPoolId == cardPoolInfo.cardPoolId)
+            if (cardPoolInfo == null) { return; }//如果没有保存需求就跳过这个流程
+                foreach (var pair in _cardPoolInfoDict)
                 {
-                    cardPoolPath = pair.Key;
-                    break;
+                    if (pair.Value.cardPoolId == cardPoolInfo.cardPoolId)
+                    {
+                        cardPoolPath = pair.Key;
+                        break;
+                    }
                 }
-            }
             if (cardPoolPath == null)
             {
                 //没有指定地址

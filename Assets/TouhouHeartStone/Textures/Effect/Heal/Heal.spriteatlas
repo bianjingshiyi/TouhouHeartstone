@@ -7,7 +7,6 @@ SpriteAtlas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Heal
-  serializedVersion: 2
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -85,4 +84,3 @@ SpriteAtlas:
   - Heal_10
   m_Tag: Heal
   m_IsVariant: 0
-  m_IsPlaceholder: 0

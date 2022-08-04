@@ -113,23 +113,30 @@ namespace Controllers
                 game.ui.dialog.ShowQuestion(
                     game.langManager.getString(StringTable.WARNING),
                     game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES), async () =>
-                    {
+                      {
                         //保存卡池
                         await game.card.saveCardPool(_curCardPoolInfo);
                         //返回主菜单
-                        _ui.gameObject.SetActive(false);
-                        scene.menu.display();
+                        await returnToView();
+                       hasUnsavedChanges = false;
                     }, () =>
                     {
-                        _ui.gameObject.SetActive(false);
-                        scene.menu.display();
+                        returnToView();
+                        hasUnsavedChanges = false;
                     });
             }
             else
             {
-                _ui.gameObject.SetActive(false);
-                scene.menu.display();
+                if (_curCardPoolPath == null)
+                {
+                    _ui.gameObject.SetActive(false);
+                    scene.menu.display();
+                }
+                else {
+                    returnToView();
+                }
             }
+
         }
         /// <summary>
         /// 当用户点击卡池列表项，切换右侧栏到编辑卡牌状态，读取对应文件并显示卡牌列表
@@ -206,6 +213,7 @@ namespace Controllers
             _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
             int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
             _cardPoolPathList[index] = _curCardPoolPath;
+            hasUnsavedChanges = false;//如果已经保存则不需要再提示保存
         }
         /// <summary>
         /// 当点击返回浏览卡池按钮，清空字段并切换回浏览卡池状态
@@ -307,12 +315,14 @@ namespace Controllers
         /// </summary>
         private async Task returnToView()
         {
-            _curCardPoolPath = null;
-            _curCardPoolInfo = null;
-            _ui.setDeckListActive(true);
-            _ui.setEditDeckPanelActive(false);
-            await updateDeckListUI();
-            await _cardPoolViewPanelCtrl.hide();
+           
+                _curCardPoolPath = null;
+                _curCardPoolInfo = null;
+                _ui.setDeckListActive(true);
+                _ui.setEditDeckPanelActive(false);
+                await updateDeckListUI();
+                await _cardPoolViewPanelCtrl.hide();
+           
         }
         private CardDefine[] getSelectableCharacters()
         {
