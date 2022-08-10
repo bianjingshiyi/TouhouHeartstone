@@ -197,7 +197,7 @@ namespace Controllers
                 game.langManager.getString(StringTable.GAME_RACE_GOD),
                 game.langManager.getString(StringTable.GAME_RACE_MACHINE)
             };
-            _ui.setTags(_races);
+            _ui.setTags();
             _ui.onChangeRace += onChangeRace;
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;

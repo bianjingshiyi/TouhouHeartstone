@@ -75,7 +75,7 @@ namespace UI
         /// 设置卡牌的卡框类型索引
         /// </summary>
         /// <param name="typeIndex"></param>
-        public void setType(int typeIndex,string typeName)
+        public void setType(int typeIndex, string typeName)
         {
             _typeDropdown.SetValueWithoutNotify(typeIndex);
             _card.setTypeByName(typeName);
@@ -172,6 +172,7 @@ namespace UI
         /// <param name="life"></param>
         public void setLife(string life)
         {
+
             _card.setLife(life);
             _lifeInputField.SetTextWithoutNotify(life);
         }
@@ -179,10 +180,13 @@ namespace UI
         /// 设置卡牌可选的标签
         /// </summary>
         /// <param name="tags"></param>
-        public void setTags(string[] tags)
+        public void setTags()
         {
+
             _tagDropdown.ClearOptions();
-            _tagDropdown.AddOptions(new List<string>(tags));
+            //_tagDropdown.AddOptions(new List<string>(tags));
+            _tagInput = new List<string>(_tagInputField.text.Split(',', '，', ' '));
+
         }
         /// <summary>
         /// 设置卡牌的标签
@@ -190,7 +194,7 @@ namespace UI
         /// <param name="tag"></param>
         public void setRace(int index)
         {
-            _card.setTag(_tagDropdown.options[index].text);
+            _card.setTag(_tagInput[index]);
             _tagDropdown.SetValueWithoutNotify(index);
         }
         public void setEffectTypes(string[] effectTypeNames)

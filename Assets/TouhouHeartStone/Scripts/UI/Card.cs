@@ -139,7 +139,7 @@ namespace UI
                         asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
                         asAnimator.SetBool(ANIM_PARAM_ISMASTER, true);
                         asAnimator.SetBool(ANIM_PARAM_ISSKILL,false);
-                        IS_MASTER = asAnimator.GetBool(ANIM_PARAM_ISMASTER);
+                        _is_MASTER = asAnimator.GetBool(ANIM_PARAM_ISMASTER);
                         _onTypeControllerMaster.Invoke();
                         break;
                     case CATEGORY.SPELL:
@@ -160,8 +160,8 @@ namespace UI
                         break;
                     case CATEGORY.SKILL:
                         asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISITEM, true);
+                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, true);
+                        asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
                         asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
                         asAnimator.SetBool(ANIM_PARAM_ISSKILL, true);
                         _onTypeControllerSkill.Invoke();
@@ -196,7 +196,7 @@ namespace UI
         public string _notifyAnimName;
         public SimpleAnim onCast;
         public SimpleAnim ShowAnim;
-        public bool IS_MASTER;
+        public bool _is_MASTER;
         
     }
 }
