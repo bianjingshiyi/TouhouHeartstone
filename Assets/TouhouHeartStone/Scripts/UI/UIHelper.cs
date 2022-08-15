@@ -83,6 +83,7 @@ namespace Game
             if (card.define.type == DEFINE.MASTER)
             {
                 ui.type = CATEGORY.MASTER;
+                ui.setLife("30");
             }
             else if (card.define.type == DEFINE.SERVANT)
             {

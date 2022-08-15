@@ -123,6 +123,10 @@ namespace UI
                     return CATEGORY.SPELL;
                 else if (asAnimator.GetBool(ANIM_PARAM_ISITEM))
                     return CATEGORY.ITEM;
+                else if (asAnimator.GetBool(ANIM_PARAM_ISMASTER))
+                    return CATEGORY.MASTER;
+                else if (asAnimator.GetBool(ANIM_PARAM_ISSKILL))
+                    return CATEGORY.SKILL;
                 return CATEGORY.NONE;
             }
             set
@@ -130,27 +134,44 @@ namespace UI
                 switch (value)
                 {
                     case CATEGORY.MASTER:
+                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, true);
+                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, true);
+                        asAnimator.SetBool(ANIM_PARAM_ISSKILL,false);
+                        IS_MASTER = asAnimator.GetBool(ANIM_PARAM_ISMASTER);
                         _onTypeControllerMaster.Invoke();
                         break;
                     case CATEGORY.SPELL:
                         asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
                         asAnimator.SetBool(ANIM_PARAM_ISSPELL, true);
                         asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISSKILL, false);
                         _onTypeControllerSpell.Invoke();
                         break;
                     case CATEGORY.ITEM:
                         asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
                         asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
                         asAnimator.SetBool(ANIM_PARAM_ISITEM, true);
+                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISSKILL, false);
                         _onTypeControllerItem.Invoke();
                         break;
                     case CATEGORY.SKILL:
+                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISITEM, true);
+                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISSKILL, true);
                         _onTypeControllerSkill.Invoke();
                         break;
                     default://SERVANT
                         asAnimator.SetBool(ANIM_PARAM_ISSERVANT, true);
                         asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
                         asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
+                        asAnimator.SetBool(ANIM_PARAM_ISSKILL, false);
                         _onTypeControllerServant.Invoke();
                         break;
                 }
@@ -175,5 +196,7 @@ namespace UI
         public string _notifyAnimName;
         public SimpleAnim onCast;
         public SimpleAnim ShowAnim;
+        public bool IS_MASTER;
+        
     }
 }

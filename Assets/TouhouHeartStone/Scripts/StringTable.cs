@@ -85,6 +85,10 @@ namespace Game
         public const string GAME_CARD_TYPE_SPELL = "法术";
         [TranslateMsg("游戏中卡牌的类型之道具")]
         public const string GAME_CARD_TYPE_ITEM = "道具";
+        [TranslateMsg("游戏中卡牌的类型之英雄")]
+        public const string GAME_CARD_TYPE_MASTER = "英雄";
+        [TranslateMsg("游戏中卡牌的类型之技能")]
+        public const string GAME_CARD_TYPE_SKILL = "技能";
         #region 关键词
         [TranslateMsg("游戏中的关键词守卫")]
         public const string GAME_KEYWORD_TAUNT = "守卫";

@@ -86,14 +86,15 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<CardEditorPanel>();
             }
-
-           
-            _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM };
+            _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM , DEFINE.MASTER, DEFINE.SKILL};
             string[] typeNames = new string[]
             {
                 StringTable.GAME_CARD_TYPE_SERVANT,
                 StringTable.GAME_CARD_TYPE_SPELL,
-                StringTable.GAME_CARD_TYPE_ITEM
+                StringTable.GAME_CARD_TYPE_ITEM,
+                StringTable.GAME_CARD_TYPE_MASTER,
+                StringTable.GAME_CARD_TYPE_SKILL,
+                
             };
             _ui.initTypes(typeNames);
             _ui.onChangeSkin += onChangeSkin;

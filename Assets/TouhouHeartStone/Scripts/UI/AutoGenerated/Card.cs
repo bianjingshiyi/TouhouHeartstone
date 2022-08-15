@@ -48,6 +48,8 @@ namespace UI
         private const string ANIM_PARAM_ISSPELL = "isSpell";
         private const string ANIM_PARAM_ISSERVANT = "isServant";
         private const string ANIM_PARAM_ISITEM = "isItem";
+        private const string ANIM_PARAM_ISMASTER = "isMaster";
+        private const string ANIM_PARAM_ISSKILL = "isSkill";
         [SerializeField()]
         [AutoCompoAttribute(20142, "./Highlight")]
         private GameObject _highlight;
