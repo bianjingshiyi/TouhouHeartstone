@@ -214,7 +214,7 @@ pipeline {
 
                 String textLog = ''
                 if (env.BRANCH_NAME.startsWith('PR')) {
-                    textLog = "${BRANCH_NAME} - ${BUILD_DISPLAY_NAME} 检测完毕:\n${CHANGE_TITLE} - ${CHANGE_AUTHOR} \n${DOWNLOAD_LINK}"
+                    textLog = "${BRANCH_NAME} - ${BUILD_DISPLAY_NAME} 检测完毕: \n${DOWNLOAD_LINK}"
                 } else {
                     try {
                         if (env.GIT_COMMIT) {
