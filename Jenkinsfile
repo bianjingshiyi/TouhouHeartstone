@@ -184,14 +184,14 @@ pipeline {
                     sshPublisher(publishers: [sshPublisherDesc(configName: 'IGensoukyo Test Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd /home/jim/test-serv/account && ./new_update.sh ${BUILD_GIT_TAG} \"${downloadURL}\"", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'account', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
                 }
                 if (!env.BRANCH_NAME.startsWith('PR')) {
-                    mail bcc: '', body: "请访问 ${BUILD_URL} 查看下载地址和详细变更日志", cc: 'bianjingshiyi@hotmail.com', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说自动打包结果 - $BUILD_DISPLAY_NAME", to: 'jim@lotlab.org'
+                    mail bcc: '', body: "请访问 ${BUILD_URL} 查看下载地址和详细变更日志", cc: 'bianjingshiyi@hotmail.com', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", to: 'jim@lotlab.org'
                 }
             }
         }
         failure {
             script {
                 if (!env.BRANCH_NAME.startsWith('PR')) {
-                    mail bcc: '', body: "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包", cc: 'bianjingshiyi@hotmail.com', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说打包失败通知 - $BUILD_DISPLAY_NAME", to: 'jim@lotlab.org'
+                    mail bcc: '', body: "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包", cc: 'bianjingshiyi@hotmail.com', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说构建失败通知 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", to: 'jim@lotlab.org'
                 }
             }
         }
@@ -212,10 +212,10 @@ pipeline {
                 ]
                 def bot = new QQBot(this, env.QQ_BOT_HOST, 'token')
 
+                String textLog = ''
                 if (env.BRANCH_NAME.startsWith('PR')) {
-                    bot.sendGroupMsg('1156816727', "Pull Request 检测完毕: ${BRANCH_NAME} - ${BUILD_DISPLAY_NAME}\n${DOWNLOAD_LINK}")
+                    textLog = "${BRANCH_NAME} - ${BUILD_DISPLAY_NAME} 检测完毕:\n${CHANGE_TITLE} - ${CHANGE_AUTHOR} \n${DOWNLOAD_LINK}"
                 } else {
-                    String textLog = ''
                     try {
                         if (env.GIT_COMMIT) {
                             String textTemplate = readFile('ci/changelog.success.txt')
@@ -233,9 +233,10 @@ pipeline {
                     }
 
                     if (textLog.length() > 1000) textLog = textLog.substring(0, 1000)
-                    bot.sendGroupMsg('1156816727', textLog)
-                    bot.sendGroupMsg('217522101', textLog)
                 }
+
+                bot.sendGroupMsg('1156816727', textLog)
+                bot.sendGroupMsg('217522101', textLog)
             }
         }
     }
