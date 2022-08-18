@@ -43,7 +43,7 @@ namespace Controllers
             {
                 tagsValue[i] = _cardDefine.getTags().Contains(_tags[i]);
             }
-            _ui.setTags(tagsValue);
+            _ui.setInitTags(_cardDefine.getTags());
             string[] charactersName = new string[selectableCharacters.Length + 1];
             charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
             for (int i = 1; i < charactersName.Length; i++)
@@ -204,6 +204,7 @@ namespace Controllers
             _ui.onClickAddEffectMenu += onClickAddEffectMenu;
             _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
+            _ui.onChangeTag += onChangeTag;
         }
         #endregion
         #region 事件回调
@@ -425,6 +426,11 @@ namespace Controllers
             value[0] = index > 0 ? _races[index] : null;
             _cardDefine.setTags(value);
             _ui.setRace(index);
+        }
+
+        private void onChangeTag(string text) 
+        {
+            _cardDefine.setTags(text.Split(',',' ','，'));
         }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。

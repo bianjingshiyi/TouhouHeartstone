@@ -10,6 +10,9 @@ using UnityEngine.EventSystems;
 using Game;
 using UIHelper = Game.UIHelper;
 using System.Threading.Tasks;
+using TouhouHeartstone;
+using TouhouCardEngine;
+
 
 namespace UI
 {
@@ -104,9 +107,12 @@ namespace UI
             _noRaceTagDropdown.ClearOptions();
             _noRaceTagDropdown.AddOptions(new List<string>(tagNames));
         }
-        public void setTags(bool[] value)
+        public void setInitTags(string[] tags)
         {
-            _noRaceTagDropdown.SetValueWithoutNotify(value);
+            List<string> tagList = new List<string>(tags);
+            tagList.RemoveAll(s => string.IsNullOrEmpty(s));
+            tags = tagList.ToArray();
+            _tagInputField.text = string.Join(",",tags);
         }
         /// <summary>
         /// 设置费用
@@ -283,6 +289,7 @@ namespace UI
             _subnameInputField.onEndEdit.AddListener(onSubNameInputFieldEndEdit);
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
             _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChangedCallback);
+            _tagInputField.onEndEdit.AddListener(onTagInputFieldEndEdit);
             EventTrigger trigger = _tagDropdown.gameObject.AddComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.Deselect;
@@ -535,6 +542,11 @@ namespace UI
         {
             onClickDeleteCardButton?.Invoke();
         }
+        private void onTagInputFieldEndEdit(string text)
+        {
+            onChangeTag?.Invoke(text);
+          
+        }
         #endregion
         #endregion
         #region 事件
@@ -598,6 +610,7 @@ namespace UI
         /// <summary>
         /// 当更改卡牌标签，参数为更改后的卡牌标签。
         /// </summary>
+        public event Action<string> onChangeTag;
         public event Action<int> onChangeRace;
         public event Action<bool[]> onTagDropdownValueChanged;
         /// <summary>
@@ -682,5 +695,8 @@ namespace UI
         Button _backgroundButton;
         [SerializeField]
         Button _deleteCardButton;
+        [SerializeField]
+        InputField _tagInputField;
+        
     }
 }
