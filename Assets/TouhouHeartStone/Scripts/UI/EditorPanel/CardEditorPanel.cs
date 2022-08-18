@@ -10,8 +10,7 @@ using UnityEngine.EventSystems;
 using Game;
 using UIHelper = Game.UIHelper;
 using System.Threading.Tasks;
-using TouhouHeartstone;
-using TouhouCardEngine;
+
 
 
 namespace UI
