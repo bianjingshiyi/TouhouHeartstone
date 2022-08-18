@@ -176,7 +176,7 @@ namespace UI
                 return;
             }
 
-            var output = node.getOutput(outputIndex); 
+            var output = node.getOutput(outputIndex);
             var input = targetNode.getInput(inputIndex);
             ActionNodeGraphLine line = createLine(output.gameObject, input.gameObject, output.GetColor());
 
@@ -235,21 +235,21 @@ namespace UI
         public void moveActionNodeTo(ActionNodeItem item, Vector2 graphPosition)
         {
             //设置节点位置
-            item.transform.localPosition = graphPosition + _dragItemPositionOffset;
+            (item.transform as RectTransform).anchoredPosition = graphPosition; //+ _dragItemPositionOffset;
             //设置背景大小
             //刷新连线位置
-           /* for (int i = 0; i < _connectionList.Count; i++)
-            {
-                if (_connectionList[i].outputNode == _dragItem || _connectionList[i].inputNode == _dragItem)
-                {
-                    Vector2 from = _connectionList[i].outputNode.getOutputWorldPosition(_connectionList[i].outputIndex);
-                    from = _actionNodesRoot.InverseTransformPoint(from);
-                    Vector2 to = _connectionList[i].inputNode.getInputWorldPosition(_connectionList[i].inputIndex);
-                    to = _actionNodesRoot.InverseTransformPoint(to);
+            /* for (int i = 0; i < _connectionList.Count; i++)
+             {
+                 if (_connectionList[i].outputNode == _dragItem || _connectionList[i].inputNode == _dragItem)
+                 {
+                     Vector2 from = _connectionList[i].outputNode.getOutputWorldPosition(_connectionList[i].outputIndex);
+                     from = _actionNodesRoot.InverseTransformPoint(from);
+                     Vector2 to = _connectionList[i].inputNode.getInputWorldPosition(_connectionList[i].inputIndex);
+                     to = _actionNodesRoot.InverseTransformPoint(to);
 
-                    _connectionList[i].line.setPosition(from, to);
-                }
-            }*/
+                     _connectionList[i].line.setPosition(from, to);
+                 }
+             }*/
         }
         /// <summary>
         /// 从图上移除一个指定节点
@@ -308,7 +308,7 @@ namespace UI
                 updateMenu(options);
                 updateMenuHeight();
             }
-            
+
         }
         public void updateMenu(string[] options)
         {
@@ -378,10 +378,10 @@ namespace UI
             {
                 _actionNodeItemTemplate.gameObject.SetActive(false);
             }
-          /*  if (_actionNodeLineTemplate.transform.parent == _actionNodeLineRoot)
-            {
-                _actionNodeLineTemplate.gameObject.SetActive(false);
-            }*/
+            /*  if (_actionNodeLineTemplate.transform.parent == _actionNodeLineRoot)
+              {
+                  _actionNodeLineTemplate.gameObject.SetActive(false);
+              }*/
             if (_ActionNodeGraphLineTemplate.transform.parent == _actionNodeLineRoot)
             {
                 _ActionNodeGraphLineTemplate.gameObject.SetActive(false);
@@ -423,20 +423,20 @@ namespace UI
             BackgroundEndDrag.callback.AddListener(OnBackgroundEndDrag);
             EventTrigger addEndDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
             addEndDragIntoBackground.triggers.Add(BackgroundEndDrag);
-            
+
             #endregion
         }
         protected void Update()
         {
             //更新线段位置
-          /* foreach (ActionNodeConnectionData connection in _connectionList)
-            {
-                Vector2 from = connection.outputNode.getOutputWorldPosition(connection.outputIndex);
-                from = _actionNodesRoot.InverseTransformPoint(from);
-                Vector2 to = connection.inputNode.getInputWorldPosition(connection.inputIndex);
-                to = _actionNodesRoot.InverseTransformPoint(to);
-                connection.line.setPosition(from, to);
-            }*/
+            /* foreach (ActionNodeConnectionData connection in _connectionList)
+              {
+                  Vector2 from = connection.outputNode.getOutputWorldPosition(connection.outputIndex);
+                  from = _actionNodesRoot.InverseTransformPoint(from);
+                  Vector2 to = connection.inputNode.getInputWorldPosition(connection.inputIndex);
+                  to = _actionNodesRoot.InverseTransformPoint(to);
+                  connection.line.setPosition(from, to);
+              }*/
         }
         #endregion
         #region 事件回调
@@ -482,7 +482,7 @@ namespace UI
         {
             _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_backgroundImage.transform.position;
         }
-        public  void OnBackgroundEndDrag(BaseEventData eventData) 
+        public void OnBackgroundEndDrag(BaseEventData eventData)
         {
             _isDragging = false;
         }
@@ -620,11 +620,11 @@ namespace UI
         /// <param name="eventData"></param>
         private void onDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
-           /*  Vector2 from = output.getNodeWorldPosition();
-            from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-            Vector2 to = eventData.currentInputModule.input.mousePosition;
-            to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-            _dragLine.setPosition(from, to);*/
+            /*  Vector2 from = output.getNodeWorldPosition();
+             from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
+             Vector2 to = eventData.currentInputModule.input.mousePosition;
+             to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
+             _dragLine.setPosition(from, to);*/
 
 
             GameObject from = output.getNode();
@@ -633,8 +633,8 @@ namespace UI
             GameObject tod = new GameObject();
             tod.name = "Slot_d";
             tod.transform.SetParent(to.transform);
-            to.transform.SetParent(_dragLine.transform);            
-            to.transform.position = eventData.currentInputModule.input.mousePosition;      
+            to.transform.SetParent(_dragLine.transform);
+            to.transform.position = eventData.currentInputModule.input.mousePosition;
             _dragLine.setPosition(from, to);
         }
         /// <summary>
@@ -709,13 +709,13 @@ namespace UI
                 _longPressTimer.reset();
             }
             _dragItem = item;
-            _dragItemPositionOffset = item.transform.localPosition - _actionNodesRoot.InverseTransformPoint(eventData.position);
+            _dragItemPositionOffset = (item.transform as RectTransform).anchoredPosition - (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position);
         }
         private void onDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
             if (item != _dragItem)
                 return;
-            Vector2 graphPosition = _actionNodesRoot.InverseTransformPoint(eventData.position);
+            Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
             onDragActionNode?.Invoke(item, graphPosition);
         }
         private void onEndDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
@@ -1006,7 +1006,7 @@ namespace UI
         [SerializeField]
         List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
         //[SerializeField]
-       // ActionNodeGraphLine _actionNodeLineTemplate;
+        // ActionNodeGraphLine _actionNodeLineTemplate;
         [SerializeField]
         ActionNodeGraphLine _ActionNodeGraphLineTemplate;
         [SerializeField]
@@ -1034,17 +1034,17 @@ namespace UI
         [SerializeField]
         ActionNodeItem _dragItem;
         [SerializeField]
-        Vector2 _dragItemPositionOffset;
+        private Vector2 _dragItemPositionOffset;
         [SerializeField]
         ActionNodeGraphLine _dragLine;
-       // ActionNodeGraphLine _dragLine;
+        // ActionNodeGraphLine _dragLine;
         [SerializeField]
         private Vector3 _backgroundOriginScale;
         [SerializeField]
         private Vector2 _backgroundDragStartPosition;
         [SerializeField]
-        private bool _isDragging; 
-        
+        private bool _isDragging;
+
         #endregion
     }
     public struct ActionNodeValueInfo
