@@ -86,7 +86,7 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<CardEditorPanel>();
             }
-            _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM , DEFINE.MASTER, DEFINE.SKILL};
+            _types = new string[] { DEFINE.SERVANT, DEFINE.SPELL, DEFINE.ITEM, DEFINE.MASTER, DEFINE.SKILL };
             string[] typeNames = new string[]
             {
                 StringTable.GAME_CARD_TYPE_SERVANT,
@@ -94,7 +94,7 @@ namespace Controllers
                 StringTable.GAME_CARD_TYPE_ITEM,
                 StringTable.GAME_CARD_TYPE_MASTER,
                 StringTable.GAME_CARD_TYPE_SKILL,
-                
+
             };
             _ui.initTypes(typeNames);
             _ui.onChangeSkin += onChangeSkin;
@@ -197,7 +197,7 @@ namespace Controllers
                 game.langManager.getString(StringTable.GAME_RACE_GOD),
                 game.langManager.getString(StringTable.GAME_RACE_MACHINE)
             };
-            _ui.setTags();
+            _ui.setTags(racesName);
             _ui.onChangeRace += onChangeRace;
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
@@ -429,15 +429,15 @@ namespace Controllers
             _ui.setRace(index);
         }
 
-        private void onChangeTag(string text) 
+        private void onChangeTag(string text)
         {
-            _cardDefine.setTags(text.Split(',',' ','，'));
+            _cardDefine.setTags(text.Split(',', ' ', '，'));
         }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
-     
-        public EffectEditorPanel _effectEditorPanel ;//画布组件的引用
+
+        public EffectEditorPanel _effectEditorPanel;//画布组件的引用
         private void onClickEditEffectButton(int index)
         {
             _effectEditorPanel.LoadBackGroundInfo();

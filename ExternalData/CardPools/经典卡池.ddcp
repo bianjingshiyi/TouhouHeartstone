@@ -1968,7 +1968,61 @@
         },
         "characterId" : 4194304
       },
-      "effectList" : []
+      "effectList" : [{
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [{
+                  "targetType" : "Servant",
+                  "condition" : { },
+                  "errorTip" : "目标必须是随从"
+                }],
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "添加增益",
+                  "branches" : [3],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [14],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "治疗目标卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取生命值",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
     }, {
       "_id" : -2147418077,
       "type" : "Servant",
@@ -3770,6 +3824,28 @@
         }
       },
       "freeActionNodeList" : []
+    }, {
+      "cardId" : -2147418078,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 695.35546875,
+          "posY" : 43.374053955078125
+        },
+        "2" : {
+          "posX" : 23.414962768554688,
+          "posY" : -647.8546142578125
+        },
+        "3" : {
+          "posX" : 1135.0426025390625,
+          "posY" : 47.711746215820313
+        },
+        "4" : {
+          "posX" : 733.69085693359375,
+          "posY" : -254.79179382324219
+        }
+      },
+      "freeActionNodeList" : []
     }],
   "buffDefineList" : [{
       "_id" : 1,
@@ -4036,6 +4112,24 @@
           "maxValue" : 2147483647
         }],
       "effectList" : []
+    }, {
+      "_id" : 14,
+      "propModifierList" : [{
+          "_t" : "AttackModifier",
+          "propertyName" : "attack",
+          "value" : 3,
+          "isSet" : false,
+          "minValue" : 0,
+          "maxValue" : 2147483647
+        }, {
+          "_t" : "LifeModifier",
+          "propertyName" : "life",
+          "value" : 6,
+          "isSet" : false,
+          "minValue" : 0,
+          "maxValue" : 2147483647
+        }],
+      "effectList" : []
     }],
   "buffSkinList" : [{
       "buffId" : 1,
@@ -4118,6 +4212,12 @@
     }, {
       "buffId" : 13,
       "language" : "zh-Hans"
+    }, {
+      "buffId" : 14,
+      "language" : "zh-Hans",
+      "name" : "水精灵",
+      "desc" : "属性+3/+6，嘲讽",
+      "imagePath" : "经典卡池\\Buff14\\Image_zh-Hans.jpg"
     }, {
       "buffId" : 14,
       "language" : "zh-Hans"

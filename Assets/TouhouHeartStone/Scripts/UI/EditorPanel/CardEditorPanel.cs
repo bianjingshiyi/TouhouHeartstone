@@ -111,7 +111,7 @@ namespace UI
             List<string> tagList = new List<string>(tags);
             tagList.RemoveAll(s => string.IsNullOrEmpty(s));
             tags = tagList.ToArray();
-            _tagInputField.text = string.Join(",",tags);
+            _tagInputField.text = string.Join(",", tags);
         }
         /// <summary>
         /// 设置费用
@@ -180,13 +180,11 @@ namespace UI
         /// 设置卡牌可选的标签
         /// </summary>
         /// <param name="tags"></param>
-        public void setTags()
+        public void setTags(string[] tags)
         {
 
             _tagDropdown.ClearOptions();
-            //_tagDropdown.AddOptions(new List<string>(tags));
-            _tagInput = new List<string>(_tagInputField.text.Split(',', '，', ' '));
-
+            _tagDropdown.AddOptions(new List<string>(tags));
         }
         /// <summary>
         /// 设置卡牌的标签
@@ -194,7 +192,6 @@ namespace UI
         /// <param name="tag"></param>
         public void setRace(int index)
         {
-            _card.setTag(_tagInput[index]);
             _tagDropdown.SetValueWithoutNotify(index);
         }
         public void setEffectTypes(string[] effectTypeNames)
@@ -548,7 +545,7 @@ namespace UI
         private void onTagInputFieldEndEdit(string text)
         {
             onChangeTag?.Invoke(text);
-          
+
         }
         #endregion
         #endregion
@@ -700,6 +697,6 @@ namespace UI
         Button _deleteCardButton;
         [SerializeField]
         InputField _tagInputField;
-        
+
     }
 }

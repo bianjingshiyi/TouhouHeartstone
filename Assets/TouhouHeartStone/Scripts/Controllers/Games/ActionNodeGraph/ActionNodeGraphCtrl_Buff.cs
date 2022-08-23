@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using SFB;
 using Game;
+using System.Linq;
 
 namespace Controllers
 {
@@ -198,6 +199,19 @@ namespace Controllers
                 item.setBuffSkin(buffSkin.name, buffSkin.desc, sprite);
             }
         }
+        private string[] getBuffDefinePropertyTypes()
+        {
+            return _propertyTypes.Select(s => game.langManager.getString(s)).ToArray();
+        }
+        private string[] getBuffDefineModifyTypes(string propertyType)
+        {
+            if (propertyType == StringTable.GAME_CARD_PROP_NAME_KEYWORDS)
+            {
+
+            }
+            else
+                _intModifyTypes.Select(s => game.langManager.getString(s)).ToArray()
+        }
         private ActionNodePropertyModifierViewData[] getBuffDefinePropModifiersViewData(GeneratedBuffDefine buffDefine)
         {
             ActionNodePropertyModifierViewData[] propModifiersViewData = new ActionNodePropertyModifierViewData[buffDefine.propModifierList.Count];
@@ -225,6 +239,8 @@ namespace Controllers
         }
         private int getPropertyModifierIndex(PropModifier propModifier)
         {
+            if (propModifier is KeywordsModifier)
+                return 4;
             if (propModifier is DamageReduceModifier)
                 return 3;
             if (propModifier is LifeModifier)
@@ -235,7 +251,11 @@ namespace Controllers
         }
         private int getModifyTypeIndex(PropModifier propModifier)
         {
-            if (propModifier is IntPropModifier intPropModifier)
+            if (propModifier is KeywordsModifier keywordsModifier)
+            {
+                return 4;
+            }
+            else if (propModifier is IntPropModifier intPropModifier)
             {
                 if (propModifier.relatedPropName != null && intPropModifier.isSet)
                     return 3;
@@ -250,7 +270,40 @@ namespace Controllers
         }
         private void setModifyTypeByIndex(PropModifier propModifier, int index)
         {
-            if (propModifier is IntPropModifier intPropModifier)
+            if (propModifier is KeywordsModifier keywordsModifier)
+            {
+                if (index == 5)
+                {
+                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
+                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.set;
+                }
+                else if (index == 4)
+                {
+                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
+                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.remove;
+                }
+                else if (index == 3)
+                {
+                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
+                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.add;
+                }
+                else if (index == 2)
+                {
+                    propModifier.relatedPropName = null;
+                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.set;
+                }
+                else if (index == 1)
+                {
+                    propModifier.relatedPropName = null;
+                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.remove;
+                }
+                else
+                {
+                    propModifier.relatedPropName = null;
+                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.add;
+                }
+            }
+            else if (propModifier is IntPropModifier intPropModifier)
             {
                 if (index == 3)
                 {
@@ -290,6 +343,8 @@ namespace Controllers
                     return ActionNodeValueType.integer;
                 else if (propModifier is DamageReduceModifier)
                     return ActionNodeValueType.integer;
+                else if (propModifier is KeywordsModifier)
+                    return ActionNodeValueType.text;
                 throw new NotImplementedException();
             }
         }

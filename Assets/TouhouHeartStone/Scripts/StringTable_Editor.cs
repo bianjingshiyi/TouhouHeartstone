@@ -224,6 +224,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_PROPERTY_NAME = "属性名称";
         [TranslateMsg("动作图编辑器中动作节点名称之设置属性")]
         public const string EDITOR_NODE_NAME_SET_PROPERTY = "设置属性";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取生命值")]
+        public const string EDITOR_NODE_NAME_GET_LIFE = "获取生命值";
         [TranslateMsg("动作图编辑器中动作输入名称之值")]
         public const string EDITOR_PARAM_NAME_VALUE = "值";
         [TranslateMsg("动作图编辑器中动作输入名称之真值")]
@@ -282,8 +284,14 @@ namespace Game
         public const string EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET = "对固定数量的随机目标造成固定伤害";
         [TranslateMsg("动作图编辑器中动作节点名称之对固定数量的随机目标造成固定法术伤害")]
         public const string EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET = "对固定数量的随机目标造成固定法术伤害";
+        [TranslateMsg("动作图编辑器中动作节点名称之治疗目标卡牌")]
+        public const string EDITOR_NODE_NAME_HEAL_TARGETS = "治疗目标卡牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之对目标卡牌造成固定治疗")]
+        public const string EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS = "对目标卡牌造成固定治疗";
         [TranslateMsg("动作图编辑器中动作节点参数名称之伤害事件")]
         public const string EDITOR_PARAM_NAME_DAMAGE_EVENT = "伤害事件";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之治疗事件")]
+        public const string EDITOR_PARAM_NAME_HEAL_EVENT = "治疗事件";
         [TranslateMsg("动作图编辑器中动作节点参数名称之伤害")]
         public const string EDITOR_PARAM_NAME_DAMAGE = "伤害";
         [TranslateMsg("动作图编辑器中动作节点参数名称之基础伤害")]

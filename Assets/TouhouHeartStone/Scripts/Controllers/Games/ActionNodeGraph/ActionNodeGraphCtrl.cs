@@ -1157,8 +1157,8 @@ namespace Controllers
                     buffName = buffSkin.name,
                     buffDesc = buffSkin.desc,
                     buffImage = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId),
-                    propertyTypes = _propertyTypes.Select(s => game.langManager.getString(s)).ToArray(),
-                    modifyTypes = _modifyTypes.Select(s => game.langManager.getString(s)).ToArray(),
+                    propertyTypes = getBuffDefinePropertyTypes(),
+                    modifyTypes = _intModifyTypes.Select(s => game.langManager.getString(s)).ToArray(),
                     propModifiersViewData = getBuffDefinePropModifiersViewData(generatedBuffDefine),
                     effectTypeNames = game.card.getEffectNames(),
                     effectNames = game.card.getEffectNames(generatedBuffDefine.effectList.ToArray())
@@ -2459,7 +2459,7 @@ namespace Controllers
                     size.y = Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMax);
                 }
             }
-          
+
         }
         #endregion
         #region 属性字段
@@ -2557,9 +2557,17 @@ namespace Controllers
             StringTable.GAME_CARD_PROP_NAME_COST,
             StringTable.GAME_CARD_PROP_NAME_ATTACK,
             StringTable.GAME_CARD_PROP_NAME_LIFE,
-            StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE
+            StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE,
+
         };
-        string[] _modifyTypes = new string[]
+        string[] _intModifyTypes = new string[]
+        {
+            StringTable.GAME_CARD_PROP_MODIFY_ADD,
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO,
+            StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
+        };
+        string[] _textModifyTypes = new string[]
         {
             StringTable.GAME_CARD_PROP_MODIFY_ADD,
             StringTable.GAME_CARD_PROP_MODIFY_SETTO,

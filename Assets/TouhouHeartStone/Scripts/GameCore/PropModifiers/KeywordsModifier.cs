@@ -5,11 +5,6 @@ namespace TouhouHeartstone
 {
     public class KeywordsModifier : PropModifier<string[]>
     {
-        public enum ModifyType
-        {
-            add, remove, set
-        }
-        public ModifyType modifyType { get; }
         public KeywordsModifier(ModifyType modifyType, params string[] keywords)
         {
             propertyName = DEFINE.KEYWORDS;
@@ -48,6 +43,11 @@ namespace TouhouHeartstone
                 default:
                     return "keywords + " + (value.Length > 0 ? string.Join(",", value) : "empty");
             }
+        }
+        public ModifyType modifyType;
+        public enum ModifyType
+        {
+            add, remove, set
         }
     }
 }

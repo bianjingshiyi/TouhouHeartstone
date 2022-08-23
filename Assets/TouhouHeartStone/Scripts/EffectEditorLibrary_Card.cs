@@ -153,6 +153,13 @@ namespace Game
         {
             return card.setProp(game, propName, value);
         }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_LIFE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getLife(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.getLife(game);
+        }
         /// <summary>
         /// 获取一个独一无二的属性名。当你在一段可以重复生效的效果中为卡牌设置额外属性的时候，应该使用这个方法。
         /// 注意，这个方法是为了避免属性名之间的冲突，在不会发生冲突的情况下，输入相同的参数仍然会让这个方法返回相同的属性名。
@@ -267,6 +274,22 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
             return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HEAL_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
+        public static Task<THHCard.HealEventArg> healTargets(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
+        {
+            return targets.heal(game, card, value);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
+        public static Task<THHCard.HealEventArg> healSpecificAmountToTargets(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE, isConst: true)] int value)
+        {
+            return targets.heal(game, card, value);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ALL_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
