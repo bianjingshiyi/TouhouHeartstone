@@ -32,10 +32,10 @@ namespace Controllers
             _ui.setId(_cardDefine.id);
             _ui.setType(Array.IndexOf(_types, _cardDefine.type), _cardDefine.type);
             _ui.setIsToken(_cardDefine.isToken());
-            bool[] keywordsValue = new bool[_keywords.Length];
+            bool[] keywordsValue = new bool[keywords.Length];
             for (int i = 0; i < keywordsValue.Length; i++)
             {
-                keywordsValue[i] = _cardDefine.hasKeyword(_keywords[i]);
+                keywordsValue[i] = _cardDefine.hasKeyword(keywords[i]);
             }
             _ui.setKeywords(keywordsValue);
             bool[] tagsValue = new bool[_tags.Length];
@@ -107,47 +107,7 @@ namespace Controllers
             }
             _ui.initLanguages(languages);
             _ui.onChangeLanguage += onChangeLanguage;
-            string[] keywords = new string[]
-            {
-                "守卫",
-                "先攻",
-                "速攻",
-                "护盾",
-                "隐形",
-                "永久隐形",
-                "吸血",
-                "致命",
-                "魔免",
-                "禁锢",
-                "唯一",
-                "自动施放",
-                "无法攻击",
-                "双击",
-                "无敌",
-                "陷阱",
-                "任务"
-            };
-            _keywords = new string[]
-            {
-                KEYWORD.TAUNT,
-                KEYWORD.CHARGE,
-                KEYWORD.RUSH,
-                KEYWORD.SHIELD,
-                KEYWORD.STEALTH,
-                KEYWORD.PERMANENTSTEALTH,
-                KEYWORD.DRAIN,
-                KEYWORD.POISONOUS,
-                KEYWORD.ELUSIVE,
-                KEYWORD.FREEZED,
-                KEYWORD.UNIQUE,
-                KEYWORD.AUTOCAST,
-                KEYWORD.CANTATTACK,
-                KEYWORD.WINDFURY,
-                KEYWORD.IMMUNITY,
-                KEYWORD.SECRET,
-                KEYWORD.MISSION
-            };
-            _ui.initKeywords(keywords);
+            _ui.initKeywords(Array.ConvertAll(keywordNames, s => game.langManager.getString(s)));
             _ui.onChangeKeywords += onChangeKeywords;
             _ui.onChangeType += onChangeType;
             _ui.onIsTokenToggleValueChanged += onIsTokenToggleValueChanged;
@@ -310,11 +270,11 @@ namespace Controllers
         {
             scene.editor.hasUnsavedChanges = true;
             List<string> keywordList = new List<string>();
-            for (int i = 0; i < _keywords.Length; i++)
+            for (int i = 0; i < keywords.Length; i++)
             {
                 if (value[i])
                 {
-                    keywordList.Add(_keywords[i]);
+                    keywordList.Add(keywords[i]);
                 }
             }
             _cardDefine.setKeywords(keywordList.ToArray());
@@ -529,7 +489,46 @@ namespace Controllers
         public MainCtrl main { get; }
         CardEditorPanel _ui;
         string[] _types;
-        string[] _keywords;
+        public static readonly string[] keywords = new string[]
+        {
+            KEYWORD.TAUNT,
+            KEYWORD.CHARGE,
+            KEYWORD.RUSH,
+            KEYWORD.SHIELD,
+            KEYWORD.STEALTH,
+            KEYWORD.PERMANENTSTEALTH,
+            KEYWORD.DRAIN,
+            KEYWORD.POISONOUS,
+            KEYWORD.ELUSIVE,
+            KEYWORD.FREEZED,
+            KEYWORD.UNIQUE,
+            KEYWORD.AUTOCAST,
+            KEYWORD.CANTATTACK,
+            KEYWORD.WINDFURY,
+            KEYWORD.IMMUNITY,
+            KEYWORD.SECRET,
+            KEYWORD.MISSION
+        };
+        public static readonly string[] keywordNames = new string[]
+        {
+            StringTable.GAME_KEYWORD_TAUNT,
+            StringTable.GAME_KEYWORD_CHARGE,
+            StringTable.GAME_KEYWORD_RUSH,
+            StringTable.GAME_KEYWORD_SHIELD,
+            StringTable.GAME_KEYWORD_STEALTH,
+            StringTable.GAME_KEYWORD_PERMANENT_STEALTH,
+            StringTable.GAME_KEYWORD_DRAIN,
+            StringTable.GAME_KEYWORD_POISONOUS,
+            StringTable.GAME_KEYWORD_ELUSIVE,
+            StringTable.GAME_KEYWORD_FREEZE,
+            StringTable.GAME_KEYWORD_UNIQUE,
+            StringTable.GAME_KEYWORD_AUTOCAST,
+            StringTable.GAME_KEYWORD_CANTATTACK,
+            StringTable.GAME_KEYWORD_WINDFURY,
+            StringTable.GAME_KEYWORD_IMMUNITY,
+            StringTable.GAME_KEYWORD_SECRET,
+            StringTable.GAME_KEYWORD_MISSION
+        };
         string[] _races;
         string[] _tags;
         int _cardPoolId;

@@ -47,6 +47,11 @@ namespace UI
             _effectTagNames = effectTagNames;
             _effectTagValues = effectTagValues;
         }
+        public void initKeywords(string[] keywordNames, string[] keywordValues)
+        {
+            _keywordNames = keywordNames;
+            _keywordValues = keywordValues;
+        }
         #endregion
         #region 私有方法
         protected void Awake()
@@ -149,6 +154,31 @@ namespace UI
                 if (isValueChanged)
                 {
                     onValueChanged?.Invoke(this, effectTagCol);
+                }
+            }
+            else if (_valueInfo.type == ActionNodeValueType.keywords)
+            {
+                if (!(_valueInfo.value is KeywordCollection keywordCol))
+                {
+                    keywordCol = new KeywordCollection();
+                }
+                bool isValueChanged = false;
+                for (int i = 0; i < value.Length; i++)
+                {
+                    if (value[i] && !keywordCol.Contains(_keywordValues[i]))
+                    {
+                        keywordCol.Add(_keywordValues[i]);
+                        isValueChanged = true;
+                    }
+                    else if (!value[i])
+                    {
+                        keywordCol.Remove(_keywordValues[i]);
+                        isValueChanged = true;
+                    }
+                }
+                if (isValueChanged)
+                {
+                    onValueChanged?.Invoke(this, keywordCol);
                 }
             }
         }
@@ -326,9 +356,33 @@ namespace UI
                     _multiSelectDropdown.SetValueWithoutNotify(boolValue);
                 }
                 else
-                {
                     _multiSelectDropdown.SetValueWithoutNotify(new bool[_effectTagValues.Length]);
+            }
+            else if (_valueInfo.type == ActionNodeValueType.keywords)
+            {
+                _multiSelectDropdown.gameObject.SetActive(true);
+                _multiSelectDropdown.ClearOptions();
+                _multiSelectDropdown.AddOptions(new List<string>(_keywordNames));
+                if (_valueInfo.value is KeywordCollection keywordCol)
+                {
+                    for (int i = 0; i < keywordCol.Count; i++)
+                    {
+                        //剔除掉未知的值
+                        if (Array.IndexOf(_keywordValues, keywordCol[i]) < 0)
+                        {
+                            keywordCol.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    bool[] boolValue = new bool[_keywordValues.Length];
+                    for (int i = 0; i < boolValue.Length; i++)
+                    {
+                        boolValue[i] = keywordCol.Contains(_keywordValues[i]);
+                    }
+                    _multiSelectDropdown.SetValueWithoutNotify(boolValue);
                 }
+                else
+                    _multiSelectDropdown.SetValueWithoutNotify(new bool[_keywordValues.Length]);
             }
             else
             {
@@ -461,11 +515,15 @@ namespace UI
         [SerializeField]
         string[] _pileNames;
         [SerializeField]
-        string[] _pileValues;
+        private string[] _pileValues;
         [SerializeField]
-        string[] _effectTagNames;
+        private string[] _effectTagNames;
         [SerializeField]
-        string[] _effectTagValues;
+        private string[] _effectTagValues;
+        [SerializeField]
+        private string[] _keywordNames;
+        [SerializeField]
+        private string[] _keywordValues;
         [SerializeField]
         Card _Card;
         [SerializeField]

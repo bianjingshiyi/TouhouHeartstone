@@ -4128,6 +4128,11 @@
           "isSet" : false,
           "minValue" : 0,
           "maxValue" : 2147483647
+        }, {
+          "_t" : "KeywordsModifier",
+          "propertyName" : "keywords",
+          "value" : ["taunt"],
+          "modifyType" : 0
         }],
       "effectList" : []
     }],

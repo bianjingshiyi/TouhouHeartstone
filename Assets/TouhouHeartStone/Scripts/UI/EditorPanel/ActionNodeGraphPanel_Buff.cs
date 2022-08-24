@@ -14,7 +14,7 @@ namespace UI
             node.setBuffValue(viewData.buffIndex);
             node.setBuffLanguage(viewData.buffLanguageIndex);
             node.setBuffSkin(viewData.buffName, viewData.buffDesc, viewData.buffImage);
-            node.setupPropModifierTemplate(viewData.propertyTypes, viewData.modifyTypes);
+            node.setupPropModifierTemplate(viewData.propertyTypes);
             node.updatePropModifierList(viewData.propModifiersViewData);
             node.updateEffectList(viewData.effectTypeNames, viewData.effectNames);
             node.setOutputs(outputNames);
@@ -126,7 +126,6 @@ namespace UI
         public string buffDesc;
         public Sprite buffImage;
         public string[] propertyTypes;
-        public string[] modifyTypes;
         public ActionNodePropertyModifierViewData[] propModifiersViewData;
         public string[] effectTypeNames;
         public string[] effectNames;
@@ -134,6 +133,7 @@ namespace UI
     public class ActionNodePropertyModifierViewData
     {
         public int propertyTypeIndex;
+        public string[] modifyTypes;
         public int modifyTypeIndex;
         public ActionNodeValueType valueType;
         public object value;

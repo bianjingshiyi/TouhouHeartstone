@@ -362,9 +362,9 @@ namespace UI
         {
             _cardSelectPanel.SetActive(value);
         }
-        public void init(string[] languages, string[] eventTypes)
+        public void init(string[] languages, string[] eventTypes, string[] keywordNames, string[] keywordValues)
         {
-            _actionNodeItemTemplate.initBuffLanguages(languages);
+            _actionNodeItemTemplate.initBuffLanguages(languages, keywordNames, keywordValues);
             _actionNodeItemTemplate.initEventTypes(eventTypes);
         }
         #endregion
@@ -1142,6 +1142,10 @@ namespace UI
         /// 卡牌引用集合
         /// </summary>
         cardReferenceCollection,
+        /// <summary>
+        /// 关键词
+        /// </summary>
+        keywords,
     }
     public enum ActionNodeConnectionType
     {

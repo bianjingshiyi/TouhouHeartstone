@@ -133,6 +133,10 @@ namespace UI
         {
             _effectPropListTemplate.GetComponent<ValueInputField>().initEffectTagNames(effectTagNames, effectTagValues);
         }
+        public void initKeywords(string[] keywordNames, string[] keywordValues)
+        {
+            _effectPropListTemplate.GetComponent<ValueInputField>().initKeywords(keywordNames, keywordValues);
+        }
         public void updatePropList(ActionNodeValueInfo[] valueInfos)
         {
             UIHelper.updateList(_effectPropListRoot, _effectPropListTemplate, _effectPropList, valueInfos.Length, (i, itemRect) =>

@@ -149,7 +149,11 @@ namespace Controllers
             {
                 languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
             }
-            _ui.init(languages, getEventTypeNamesForEditor());
+            _ui.init(
+                languages, 
+                getEventTypeNamesForEditor(),
+                Array.ConvertAll(CardEditorCtrl.keywordNames, s => game.langManager.getString(s)),
+                CardEditorCtrl.keywords);
         }
         #endregion
         #region 事件回调
@@ -1158,7 +1162,6 @@ namespace Controllers
                     buffDesc = buffSkin.desc,
                     buffImage = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId),
                     propertyTypes = getBuffDefinePropertyTypes(),
-                    modifyTypes = _intModifyTypes.Select(s => game.langManager.getString(s)).ToArray(),
                     propModifiersViewData = getBuffDefinePropModifiersViewData(generatedBuffDefine),
                     effectTypeNames = game.card.getEffectNames(),
                     effectNames = game.card.getEffectNames(generatedBuffDefine.effectList.ToArray())
@@ -2271,21 +2274,17 @@ namespace Controllers
                 else if (type == typeof(string))
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.text, actionNode.consts[i]);
                 else if (type.IsEnum)
-                {
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.enumValue, actionNode.consts[i], type);
-                }
                 else if (type == typeof(ActionValueRef))
-                {
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.actionValueRef, actionNode.consts[i]);
-                }
                 else if (type == typeof(CardReference))
-                {
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReference, actionNode.consts[i]);
-                }
                 else if (type == typeof(CardReference[]))
-                {
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReferenceCollection, actionNode.consts[i]);
-                }
+                else if (type == typeof(PileNameCollection))
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.pileNameCollection, actionNode.consts[i]);
+                else if (type == typeof(KeywordCollection))
+                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.keywords, actionNode.consts[i]);
                 else
                     throw new NotImplementedException("没有" + type + "对应的常数类型");
             }
@@ -2551,28 +2550,6 @@ namespace Controllers
         {
             DEFINE.TARGET_TYPE_CHARACTER,
             DEFINE.TARGET_TYPE_SERVANT
-        };
-        string[] _propertyTypes = new string[]
-        {
-            StringTable.GAME_CARD_PROP_NAME_COST,
-            StringTable.GAME_CARD_PROP_NAME_ATTACK,
-            StringTable.GAME_CARD_PROP_NAME_LIFE,
-            StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE,
-
-        };
-        string[] _intModifyTypes = new string[]
-        {
-            StringTable.GAME_CARD_PROP_MODIFY_ADD,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO,
-            StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
-        };
-        string[] _textModifyTypes = new string[]
-        {
-            StringTable.GAME_CARD_PROP_MODIFY_ADD,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO,
-            StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
         };
         readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
         {

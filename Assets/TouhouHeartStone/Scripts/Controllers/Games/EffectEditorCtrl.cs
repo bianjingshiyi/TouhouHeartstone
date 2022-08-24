@@ -511,6 +511,8 @@ namespace Controllers
                 return ActionNodeValueType.cardReference;
             else if (type == typeof(CardReference[]))
                 return ActionNodeValueType.cardReferenceCollection;
+            else if (type == typeof(KeywordCollection))
+                return ActionNodeValueType.keywords;
             else
                 throw new NotImplementedException();
         }

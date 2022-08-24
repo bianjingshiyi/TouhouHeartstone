@@ -79,6 +79,8 @@ namespace Game
         public const string GAME_CARD_PROP_MODIFY_SETTO = "变为";
         [TranslateMsg("游戏中卡牌的属性修改类型之增加属性")]
         public const string GAME_CARD_PROP_MODIFY_ADD_PROP = "增加属性";
+        [TranslateMsg("游戏中卡牌的属性修改类型之减少属性")]
+        public const string GAME_CARD_PROP_MODIFY_SUB_PROP = "减少属性";
         [TranslateMsg("游戏中卡牌的属性修改类型之变为属性")]
         public const string GAME_CARD_PROP_MODIFY_SETTO_PROP = "变为属性";
         [TranslateMsg("游戏中卡牌的类型之仆从")]

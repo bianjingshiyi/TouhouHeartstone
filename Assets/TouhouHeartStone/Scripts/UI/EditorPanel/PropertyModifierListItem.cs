@@ -8,18 +8,22 @@ namespace UI
     public class PropertyModifierListItem : MonoBehaviour
     {
         #region 公有方法
-        public void updateSelectableValues(string[] propertyTypes, string[] modifyTypes)
+        public void updateSelectableValues(string[] propertyTypes)
         {
             _propertyTypeDropdown.ClearOptions();
             _propertyTypeDropdown.AddOptions(new List<string>(propertyTypes));
-            _modifyTypeDropdown.ClearOptions();
-            _modifyTypeDropdown.AddOptions(new List<string>(modifyTypes));
         }
-        public void updateValues(int propertyTypeIndex, int modifyTypeIndex, ActionNodeValueInfo valueInfo)
+        public void updateValues(int propertyTypeIndex, string[] modifyTypes, int modifyTypeIndex, ActionNodeValueInfo valueInfo)
         {
             _propertyTypeDropdown.SetValueWithoutNotify(propertyTypeIndex);
+            _modifyTypeDropdown.ClearOptions();
+            _modifyTypeDropdown.AddOptions(new List<string>(modifyTypes));
             _modifyTypeDropdown.SetValueWithoutNotify(modifyTypeIndex);
             _valueField.setValueInfo(valueInfo);
+        }
+        public void init(string[] keywordNames, string[] keywordValues)
+        {
+            _valueField.initKeywords(keywordNames, keywordValues);
         }
         #endregion
         #region 私有方法

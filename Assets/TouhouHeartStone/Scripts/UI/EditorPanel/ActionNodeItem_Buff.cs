@@ -38,10 +38,11 @@ namespace UI
         /// 设置皮肤有哪些语言可选
         /// </summary>
         /// <param name="languages"></param>
-        public void initBuffLanguages(string[] languages)
+        public void initBuffLanguages(string[] languages, string[] keywordNames, string[] keywordValues)
         {
             _buffLanguageDropdown.ClearOptions();
             _buffLanguageDropdown.AddOptions(new List<string>(languages));
+            _propModifierTemplate.GetComponent<PropertyModifierListItem>().init(keywordNames, keywordValues);
         }
         /// <summary>
         /// 设置增益皮肤
@@ -55,17 +56,17 @@ namespace UI
             _buffDescInputField.SetTextWithoutNotify(buffDesc);
             _buffImage.sprite = buffImage;
         }
-        public void setupPropModifierTemplate(string[] propTypes, string[] modifyTypes)
+        public void setupPropModifierTemplate(string[] propTypes)
         {
             PropertyModifierListItem item = _propModifierTemplate.GetComponent<PropertyModifierListItem>();
-            item.updateSelectableValues(propTypes, modifyTypes);
+            item.updateSelectableValues(propTypes);
         }
         public void updatePropModifierList(ActionNodePropertyModifierViewData[] viewData)
         {
             UIHelper.updateList(_propModifierRoot, _propModifierTemplate, _propModifierList, viewData.Length, (i, itemRect) =>
             {
                 PropertyModifierListItem item = itemRect.GetComponent<PropertyModifierListItem>();
-                item.updateValues(viewData[i].propertyTypeIndex, viewData[i].modifyTypeIndex, new ActionNodeValueInfo()
+                item.updateValues(viewData[i].propertyTypeIndex, viewData[i].modifyTypes, viewData[i].modifyTypeIndex, new ActionNodeValueInfo()
                 {
                     type = viewData[i].valueType,
                     value = viewData[i].value

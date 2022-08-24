@@ -101,6 +101,10 @@ namespace Controllers
                     {
                         intPropModifier.value = (int)value;
                     }
+                    else if (propModifier is KeywordsModifier keywordsModifier)
+                    {
+                        keywordsModifier.value = ((KeywordCollection)value).ToArray();
+                    }
                 }
                 await updateBuffActionNode(item, generatedBuffDefine, null);
             }
@@ -201,16 +205,14 @@ namespace Controllers
         }
         private string[] getBuffDefinePropertyTypes()
         {
-            return _propertyTypes.Select(s => game.langManager.getString(s)).ToArray();
+            return Array.ConvertAll(_propertyTypes, s => game.langManager.getString(s));
         }
         private string[] getBuffDefineModifyTypes(string propertyType)
         {
             if (propertyType == StringTable.GAME_CARD_PROP_NAME_KEYWORDS)
-            {
-
-            }
+                return Array.ConvertAll(_keywordsModifyTypes, s => game.langManager.getString(s));
             else
-                _intModifyTypes.Select(s => game.langManager.getString(s)).ToArray()
+                return Array.ConvertAll(_intModifyTypes, s => game.langManager.getString(s));
         }
         private ActionNodePropertyModifierViewData[] getBuffDefinePropModifiersViewData(GeneratedBuffDefine buffDefine)
         {
@@ -221,14 +223,19 @@ namespace Controllers
                 ActionNodePropertyModifierViewData propModifierViewData = new ActionNodePropertyModifierViewData();
                 propModifiersViewData[i] = propModifierViewData;
                 propModifierViewData.propertyTypeIndex = getPropertyModifierIndex(propModifier);
+                propModifierViewData.modifyTypes = getBuffDefineModifyTypes(
+                    propModifierViewData.propertyTypeIndex < 0 ? string.Empty :
+                    getBuffDefinePropertyTypes()[propModifierViewData.propertyTypeIndex]);
                 propModifierViewData.modifyTypeIndex = getModifyTypeIndex(propModifier);
                 propModifierViewData.valueType = getPropModifierValueType(propModifier);
-                propModifierViewData.value = propModifier.relatedPropName != null ? propModifier.relatedPropName : propModifier.getValue();
+                propModifierViewData.value = getPropModifierValue(propModifier);
             }
             return propModifiersViewData;
         }
         private PropModifier createPropertyModifierByIndex(int index)
         {
+            if (index == 4)
+                return new KeywordsModifier(KeywordsModifier.ModifyType.add);
             if (index == 3)
                 return new DamageReduceModifier(0);
             if (index == 2)
@@ -253,7 +260,27 @@ namespace Controllers
         {
             if (propModifier is KeywordsModifier keywordsModifier)
             {
-                return 4;
+                if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.set)
+                {
+                    if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
+                        return 2;
+                    else
+                        return 5;
+                }
+                else if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.remove)
+                {
+                    if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
+                        return 1;
+                    else
+                        return 4;
+                }
+                else if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.add)
+                {
+                    if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
+                        return 0;
+                    else
+                        return 3;
+                }
             }
             else if (propModifier is IntPropModifier intPropModifier)
             {
@@ -344,9 +371,18 @@ namespace Controllers
                 else if (propModifier is DamageReduceModifier)
                     return ActionNodeValueType.integer;
                 else if (propModifier is KeywordsModifier)
-                    return ActionNodeValueType.text;
+                    return ActionNodeValueType.keywords;
                 throw new NotImplementedException();
             }
+        }
+        private object getPropModifierValue(PropModifier propModifier)
+        {
+            if (!string.IsNullOrWhiteSpace(propModifier.relatedPropName))
+                return propModifier.relatedPropName;
+            else if (propModifier is KeywordsModifier keywordsModifier)
+                return new KeywordCollection(keywordsModifier.value);
+            else
+                return propModifier.getValue();
         }
         private BuffSkin getOrCreateBuffSkin(GeneratedBuffDefine buffDefine)
         {
@@ -358,6 +394,32 @@ namespace Controllers
                 buffSkin = buffSkins[0];
             return buffSkin;
         }
+        #endregion
+        #region 属性字段
+        string[] _propertyTypes = new string[]
+        {
+            StringTable.GAME_CARD_PROP_NAME_COST,
+            StringTable.GAME_CARD_PROP_NAME_ATTACK,
+            StringTable.GAME_CARD_PROP_NAME_LIFE,
+            StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE,
+            StringTable.GAME_CARD_PROP_NAME_KEYWORDS
+        };
+        string[] _intModifyTypes = new string[]
+        {
+            StringTable.GAME_CARD_PROP_MODIFY_ADD,
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO,
+            StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
+        };
+        string[] _keywordsModifyTypes = new string[]
+        {
+            StringTable.GAME_CARD_PROP_MODIFY_ADD,
+            StringTable.GAME_CARD_PROP_MODIFY_SUB,
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO,
+            StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
+            StringTable.GAME_CARD_PROP_MODIFY_SUB_PROP,
+            StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
+        };
         #endregion
     }
 }
