@@ -126,6 +126,15 @@ namespace Game
         {
             return game.askSelect(card.owner, cards, count);
         }
+       [ActionNodeMethod(StringTable.EDITOR_NODE_CARD_TO_DISCARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        public static void DiscardRandomNumbersOfCards(
+             CardEngine game, Card card
+            ) 
+        {
+             card.owner.discard(game,card);
+          
+        }
+        
         #endregion
 
         //  有关全局的操作，比如说获取发现池，获取卡牌

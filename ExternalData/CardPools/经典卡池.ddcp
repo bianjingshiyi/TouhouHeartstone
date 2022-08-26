@@ -1726,7 +1726,7 @@
                       "actionNodeId" : 10,
                       "index" : 1
                     }, {
-                      "actionNodeId" : 6
+                      "actionNodeId" : 12
                     }],
                   "consts" : [],
                   "regVar" : []
@@ -1756,7 +1756,7 @@
                   "consts" : [1],
                   "regVar" : []
                 }, {
-                  "_id" : 6,
+                  "_id" : 12,
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
@@ -3330,12 +3330,12 @@
           "posY" : -44.81365966796875
         },
         "4" : {
-          "posX" : 1179.3045654296875,
-          "posY" : 345.5577392578125
+          "posX" : 1555.943115234375,
+          "posY" : 531.608154296875
         },
-        "6" : {
-          "posX" : 1359.1387939453125,
-          "posY" : 184.22344970703125
+        "12" : {
+          "posX" : 1809.1524658203125,
+          "posY" : -410.33273315429688
         },
         "7" : {
           "posX" : -78.0859375,
@@ -3350,8 +3350,8 @@
           "posY" : -221.3184814453125
         },
         "10" : {
-          "posX" : 713.8480224609375,
-          "posY" : -195.10491943359375
+          "posX" : 630.465576171875,
+          "posY" : -715.2520751953125
         },
         "11" : {
           "posX" : 1194.4305419921875,
@@ -4135,6 +4135,10 @@
           "modifyType" : 0
         }],
       "effectList" : []
+    }, {
+      "_id" : 15,
+      "propModifierList" : [],
+      "effectList" : []
     }],
   "buffSkinList" : [{
       "buffId" : 1,
@@ -4200,8 +4204,7 @@
       "buffId" : 12,
       "language" : "zh-Hans",
       "name" : "森林大火",
-      "desc" : "+2/+2",
-      "imagePath" : "经典卡池\\Buff12\\Image_zh-Hans.jpg"
+      "desc" : "+2/+2"
     }, {
       "buffId" : 3,
       "language" : "zh-Hans"
@@ -4228,6 +4231,9 @@
       "language" : "zh-Hans"
     }, {
       "buffId" : 14,
+      "language" : "zh-Hans"
+    }, {
+      "buffId" : 15,
       "language" : "zh-Hans"
     }],
   "actionDefineList" : [{

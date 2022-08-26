@@ -190,6 +190,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_SELECTED_OPTION = "所选选项";
         [TranslateMsg("动作图编辑器中动作节点参数名称之所选卡牌")]
         public const string EDITOR_PARAM_NAME_SELECTED_CARD = "所选卡牌";
+        [TranslateMsg("丢弃卡牌")]
+        public const string EDITOR_NODE_CARD_TO_DISCARD = "丢弃卡牌";
         #endregion
         #region 牌堆
         [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]
