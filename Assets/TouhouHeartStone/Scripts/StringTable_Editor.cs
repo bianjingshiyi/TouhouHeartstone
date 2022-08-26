@@ -138,6 +138,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_PILE = "牌堆";
         [TranslateMsg("动作图编辑器中动作节点参数名称之抽牌事件")]
         public const string EDITOR_PARAM_NAME_DRAW_EVENT = "抽牌事件";
+        [TranslateMsg("动作节点参数名称之弃牌事件", "动作图编辑器")]
+        public const string EDITOR_PARAM_NAME_DISCARD_EVENT = "弃牌事件";
         [TranslateMsg("动作图编辑器中动作节点参数名称之爆牌事件")]
         public const string EDITOR_PARAM_NAME_BURN_EVENT = "爆牌事件";
         [TranslateMsg("动作图编辑器中动作节点名称之从一定数量的卡牌中选择一张")]
@@ -188,10 +190,10 @@ namespace Game
         public const string EDITOR_PARAM_NAME_OPTIONS = "选项";
         [TranslateMsg("动作图编辑器中动作节点参数名称之所选选项")]
         public const string EDITOR_PARAM_NAME_SELECTED_OPTION = "所选选项";
-        [TranslateMsg("动作图编辑器中动作节点参数名称之所选卡牌")]
+        [TranslateMsg("动作节点参数名称之所选卡牌", "动作图编辑器")]
         public const string EDITOR_PARAM_NAME_SELECTED_CARD = "所选卡牌";
-        [TranslateMsg("丢弃卡牌")]
-        public const string EDITOR_NODE_CARD_TO_DISCARD = "丢弃卡牌";
+        [TranslateMsg("动作节点参数名称之丢弃卡牌", "动作图编辑器")]
+        public const string EDITOR_NODE_NAME_DISCARD = "丢弃卡牌";
         #endregion
         #region 牌堆
         [TranslateMsg("动作图编辑器中动作节点分类之牌堆")]

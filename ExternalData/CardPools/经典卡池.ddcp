@@ -2040,7 +2040,93 @@
           "_v" : ["rush"]
         }
       },
-      "effectList" : []
+      "effectList" : [{
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "BeforeTurnStartEvent",
+              "condition" : {
+                "actionNodeId" : 6
+              },
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 6,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 7
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 8,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "丢弃卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取随机卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4,
+                      "index" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "筛选",
+                  "branches" : [0, 5],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : [false, false, false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取玩家的手牌",
+                  "branches" : [0],
+                  "inputs" : [null],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "是否为法术牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
     }, {
       "_id" : -2147418076,
       "type" : "Spell",
@@ -2696,16 +2782,16 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "2" : {
-          "posX" : 485.3834228515625,
-          "posY" : 113.2054443359375
+          "posX" : 707.1536865234375,
+          "posY" : 39.999725341796875
         },
         "3" : {
           "posX" : -100.6622314453125,
           "posY" : -2935.83740234375
         },
         "4" : {
-          "posX" : 136.0848388671875,
-          "posY" : -252.01171875
+          "posX" : 204.98443603515625,
+          "posY" : -359.667236328125
         }
       },
       "freeActionNodeList" : []
@@ -3846,6 +3932,82 @@
         }
       },
       "freeActionNodeList" : []
+    }, {
+      "cardId" : -2147418077,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 1714.4564208984375,
+          "posY" : 4.904388427734375
+        },
+        "2" : {
+          "posX" : 541.94720458984375,
+          "posY" : -180.64324951171875
+        },
+        "3" : {
+          "posX" : 1357.4931640625,
+          "posY" : -300.34771728515625
+        },
+        "4" : {
+          "posX" : 813.34539794921875,
+          "posY" : -240.98956298828125
+        },
+        "5" : {
+          "posX" : 1092.1865234375,
+          "posY" : -239.73408508300781
+        },
+        "6" : {
+          "posX" : -669.910888671875,
+          "posY" : -352.655029296875
+        },
+        "7" : {
+          "posX" : -1225.1746826171875,
+          "posY" : -187.9180908203125
+        },
+        "8" : {
+          "posX" : -1489.1219482421875,
+          "posY" : -190.2864990234375
+        }
+      },
+      "freeActionNodeList" : [{
+          "_id" : 6,
+          "defineName" : "Compare",
+          "branches" : [null],
+          "inputs" : [{
+              "action" : null,
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : "玩家",
+              "argIndex" : 0
+            }, {
+              "action" : {
+                "_id" : 7,
+                "defineName" : "获取卡牌拥有者",
+                "branches" : [null],
+                "inputs" : [{
+                    "action" : {
+                      "_id" : 8,
+                      "defineName" : "这张卡牌",
+                      "branches" : [null],
+                      "inputs" : [],
+                      "consts" : [],
+                      "regVar" : [false]
+                    },
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : null,
+                    "argIndex" : 0
+                  }],
+                "consts" : [],
+                "regVar" : [false]
+              },
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : null,
+              "argIndex" : 0
+            }],
+          "consts" : [null]
+        }]
     }],
   "buffDefineList" : [{
       "_id" : 1,

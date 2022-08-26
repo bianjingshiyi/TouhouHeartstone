@@ -126,15 +126,13 @@ namespace Game
         {
             return game.askSelect(card.owner, cards, count);
         }
-       [ActionNodeMethod(StringTable.EDITOR_NODE_CARD_TO_DISCARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
-        public static void DiscardRandomNumbersOfCards(
-             CardEngine game, Card card
-            ) 
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DISCARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
+        public static Task<HearthStoneRule.DiscardEventArg> discard(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HANDS)] Card[] hands)
         {
-             card.owner.discard(game,card);
-          
+            return card.owner.discard(game, hands);
         }
-        
         #endregion
 
         //  有关全局的操作，比如说获取发现池，获取卡牌
