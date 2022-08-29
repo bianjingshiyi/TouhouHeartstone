@@ -235,8 +235,12 @@ pipeline {
                     if (textLog.length() > 1000) textLog = textLog.substring(0, 1000)
                 }
 
-                bot.sendGroupMsg('1156816727', textLog)
-                bot.sendGroupMsg('217522101', textLog)
+                try {
+                    bot.sendGroupMsg('1156816727', textLog)
+                    bot.sendGroupMsg('217522101', textLog)
+                } catch (Exception e) {
+                    echo e.toString();
+                }
             }
         }
     }
