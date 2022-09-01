@@ -424,6 +424,27 @@ namespace UI
             EventTrigger addEndDragIntoBackground = _backgroundImage.gameObject.AddComponent<EventTrigger>();
             addEndDragIntoBackground.triggers.Add(BackgroundEndDrag);
 
+            EventTrigger.Entry ScreenOnTouch = new EventTrigger.Entry();
+            ScreenOnTouch.eventID = EventTriggerType.PointerDown;
+            ScreenOnTouch.callback.AddListener(OnFingertouch);
+            EventTrigger addScreenTouchIntoBackground =
+                _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            addScreenTouchIntoBackground.triggers.Add(ScreenOnTouch);
+
+            EventTrigger.Entry ScreenDuringTouch = new EventTrigger.Entry();
+            ScreenDuringTouch.eventID = EventTriggerType.BeginDrag;
+            ScreenDuringTouch.callback.AddListener(onFingerDragging);
+            EventTrigger addScreenDuringTouchIntoBackground =
+                _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            addScreenDuringTouchIntoBackground.triggers.Add(ScreenDuringTouch);
+
+            EventTrigger.Entry ScreenEndTouch = new EventTrigger.Entry();
+            ScreenEndTouch.eventID = EventTriggerType.EndDrag;
+            ScreenEndTouch.callback.AddListener(OnFingertouch);
+            EventTrigger addEndTouchIntoBackground =
+                _backgroundImage.gameObject.AddComponent<EventTrigger>();
+            addScreenTouchIntoBackground.triggers.Add(ScreenEndTouch);
+
             #endregion
         }
         protected void Update()
@@ -466,17 +487,71 @@ namespace UI
         }
         private void onBackgroundScroll(BaseEventData eventData)
         {
-            var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化
+            var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化           
             var desiredScale = _backgroundImage.transform.localScale + delta;//进行缩放
-
             desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
 
             _backgroundImage.transform.localScale = desiredScale;
         }
+
+        private void OnFingertouch(BaseEventData eventData)
+        {
+
+            if (Input.touchCount > 1)
+            {
+                _isTouchZooming = true;
+                _isDragging = true;
+                _currentTouch1 = Input.GetTouch(0);
+                _currentTouch2 = Input.GetTouch(1);
+                if (_currentTouch2.phase == TouchPhase.Began)
+                {
+                    _perviousTouch1 = _currentTouch1;
+                    _perviousTouch2 = _currentTouch2;
+                }
+            }
+        }
+
+        private void onFingerDragging(BaseEventData eventData)
+        {
+
+            _currentTouch1 = Input.GetTouch(0);
+            _currentTouch2 = Input.GetTouch(1);
+            Vector2 _perviousPosition1 = _perviousTouch1.position;
+            Vector2 _perviousPosition2 = _perviousTouch2.position;
+            Vector2 _currentPosition1 = _currentTouch1.position;
+            Vector2 _currentPosition2 = _currentTouch2.position;
+            float leng1 = Mathf.Sqrt((_perviousPosition1.x - _perviousPosition2.x) * (_perviousPosition1.x - _perviousPosition2.x) + (_perviousPosition1.y - _perviousPosition2.y) * (_perviousPosition1.y - _perviousPosition2.y));
+            float leng2 = Mathf.Sqrt((_currentPosition1.x - _currentPosition2.x) * (_currentPosition1.x - _currentPosition2.x) + (_currentPosition1.y - _currentPosition2.y) * (_currentPosition1.y - _currentPosition2.y));
+            var _isPositive = 0;
+            if (leng1 < leng2)
+            {
+                _isPositive = 1;
+            }
+            else
+            {
+                _isPositive = -1;
+            }
+            var delta = Vector3.one * (_isPositive * _touchZoomSpeed);
+            var desiredScale = _backgroundImage.transform.localScale + delta;
+            desiredScale = ClampDesiredScale(desiredScale);
+            _backgroundImage.transform.localScale = desiredScale;
+
+
+        }
+        public void onFigerEndTouch(BaseEventData eventData)
+        {
+            _perviousTouch1 = _currentTouch1;
+            _perviousTouch2 = _currentTouch2;
+            _isDragging = false;
+            _isTouchZooming = false;
+            return;
+        }
         public void onBackgroundDrag(BaseEventData eventData)
         {
+
             _isDragging = true;
             _backgroundImage.transform.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
+
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
         {
@@ -494,29 +569,32 @@ namespace UI
         /// <param name="eventData"></param>
         private void onBeginDragInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
-            int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == item.indexOfInput(input));
-            if (index < 0)
+            if (!_isTouchZooming)
             {
-                /*   Vector2 from = input.getNodeWorldPosition();
-                   from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-                   Vector2 to = eventData.currentInputModule.input.mousePosition;
-                   to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-                   _dragLine = createLine(from, to, input.GetColor());*/
+                int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == item.indexOfInput(input));
+                if (index < 0)
+                {
+                    /*   Vector2 from = input.getNodeWorldPosition();
+                       from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
+                       Vector2 to = eventData.currentInputModule.input.mousePosition;
+                       to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
+                       _dragLine = createLine(from, to, input.GetColor());*/
 
-                GameObject from = input.getNode();
-                GameObject to = new GameObject();
-                to.name = "Slot";
-                GameObject tod = new GameObject();
-                tod.name = "Slot_d";
-                tod.transform.SetParent(to.transform);
-                to.transform.SetParent(_actionNodeLineRoot);
-                to.transform.position = eventData.currentInputModule.input.mousePosition;
-                _dragLine = createLine(from, to, input.GetColor());
+                    GameObject from = input.getNode();
+                    GameObject to = new GameObject();
+                    to.name = "Slot";
+                    GameObject tod = new GameObject();
+                    tod.name = "Slot_d";
+                    tod.transform.SetParent(to.transform);
+                    to.transform.SetParent(_actionNodeLineRoot);
+                    to.transform.position = eventData.currentInputModule.input.mousePosition;
+                    _dragLine = createLine(from, to, input.GetColor());
 
-            }
-            else
-            {
-                _dragLine = _connectionList[index].line;
+                }
+                else
+                {
+                    _dragLine = _connectionList[index].line;
+                }
             }
         }
         /// <summary>
@@ -527,21 +605,24 @@ namespace UI
         /// <param name="eventData"></param>
         private void onDragInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
-            /*Vector2 from = input.getNodeWorldPosition();
-            from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-            Vector2 to = eventData.currentInputModule.input.mousePosition;
-            to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-            _dragLine.setPosition(from, to);*/
+            if (!_isTouchZooming)
+            {
+                /*Vector2 from = input.getNodeWorldPosition();
+                from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
+                Vector2 to = eventData.currentInputModule.input.mousePosition;
+                to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
+                _dragLine.setPosition(from, to);*/
 
-            GameObject from = input.getNode();
-            GameObject to = new GameObject();
-            to.name = "Slot";
-            GameObject tod = new GameObject();
-            tod.name = "Slot_d";
-            tod.transform.SetParent(to.transform);
-            to.transform.SetParent(_dragLine.transform);
-            to.transform.position = eventData.currentInputModule.input.mousePosition;
-            _dragLine.setPosition(from, to);
+                GameObject from = input.getNode();
+                GameObject to = new GameObject();
+                to.name = "Slot";
+                GameObject tod = new GameObject();
+                tod.name = "Slot_d";
+                tod.transform.SetParent(to.transform);
+                to.transform.SetParent(_dragLine.transform);
+                to.transform.position = eventData.currentInputModule.input.mousePosition;
+                _dragLine.setPosition(from, to);
+            }
         }
         /// <summary>
         /// 停止拖拽输入接口，销毁拖拽连线，如果在另外一个输出接口上则触发事件
@@ -587,29 +668,32 @@ namespace UI
         /// <param name="eventData"></param>
         private void onBeginDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
-            int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
-            if (index < 0)
+            if (!_isTouchZooming)
             {
-                /*
-                 *Vector2 from = output.getNodeWorldPosition();
-                from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-                Vector2 to = eventData.currentInputModule.input.mousePosition;
-                to = _actionNodeLineRoot.transform.InverseTransformPoint(to);*/
+                int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
+                if (index < 0)
+                {
+                    /*
+                     *Vector2 from = output.getNodeWorldPosition();
+                    from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
+                    Vector2 to = eventData.currentInputModule.input.mousePosition;
+                    to = _actionNodeLineRoot.transform.InverseTransformPoint(to);*/
 
 
-                GameObject from = output.getNode();
-                GameObject to = new GameObject();
-                to.name = "Slot";
-                GameObject tod = new GameObject();
-                tod.name = "Slot_d";
-                tod.transform.SetParent(to.transform);
-                to.transform.SetParent(_actionNodeLineRoot);
-                to.transform.position = eventData.currentInputModule.input.mousePosition;
-                _dragLine = createLine(from, to, output.GetColor());
-            }
-            else
-            {
-                _dragLine = _connectionList[index].line;
+                    GameObject from = output.getNode();
+                    GameObject to = new GameObject();
+                    to.name = "Slot";
+                    GameObject tod = new GameObject();
+                    tod.name = "Slot_d";
+                    tod.transform.SetParent(to.transform);
+                    to.transform.SetParent(_actionNodeLineRoot);
+                    to.transform.position = eventData.currentInputModule.input.mousePosition;
+                    _dragLine = createLine(from, to, output.GetColor());
+                }
+                else
+                {
+                    _dragLine = _connectionList[index].line;
+                }
             }
         }
         /// <summary>
@@ -620,22 +704,25 @@ namespace UI
         /// <param name="eventData"></param>
         private void onDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
-            /*  Vector2 from = output.getNodeWorldPosition();
-             from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-             Vector2 to = eventData.currentInputModule.input.mousePosition;
-             to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-             _dragLine.setPosition(from, to);*/
+            if (!_isTouchZooming)
+            {
+                /*  Vector2 from = output.getNodeWorldPosition();
+                 from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
+                 Vector2 to = eventData.currentInputModule.input.mousePosition;
+                 to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
+                 _dragLine.setPosition(from, to);*/
 
 
-            GameObject from = output.getNode();
-            GameObject to = new GameObject();
-            to.name = "Slot";
-            GameObject tod = new GameObject();
-            tod.name = "Slot_d";
-            tod.transform.SetParent(to.transform);
-            to.transform.SetParent(_dragLine.transform);
-            to.transform.position = eventData.currentInputModule.input.mousePosition;
-            _dragLine.setPosition(from, to);
+                GameObject from = output.getNode();
+                GameObject to = new GameObject();
+                to.name = "Slot";
+                GameObject tod = new GameObject();
+                tod.name = "Slot_d";
+                tod.transform.SetParent(to.transform);
+                to.transform.SetParent(_dragLine.transform);
+                to.transform.position = eventData.currentInputModule.input.mousePosition;
+                _dragLine.setPosition(from, to);
+            }
         }
         /// <summary>
         /// 停止拖拽输入接口，销毁拖拽连线，如果在另外一个输出接口上则触发事件
@@ -675,9 +762,11 @@ namespace UI
         }
         private void onPointerDownActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
-         
-            _pointerOverActionNodeItem = item;
-            _longPressTimer.start();
+            if (!_isTouchZooming)
+            {
+                _pointerOverActionNodeItem = item;
+                _longPressTimer.start();
+            }
         }
         private void onPointerUpActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
@@ -704,21 +793,26 @@ namespace UI
         }
         private void onBeginDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
-            
-            if (_pointerOverActionNodeItem == item)
+            if (!_isTouchZooming)
             {
-                _pointerOverActionNodeItem = null;
-                _longPressTimer.reset();
+                if (_pointerOverActionNodeItem == item)
+                {
+                    _pointerOverActionNodeItem = null;
+                    _longPressTimer.reset();
+                }
+                _dragItem = item;
+                _dragItemPositionOffset = (item.transform as RectTransform).anchoredPosition - (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position);
             }
-            _dragItem = item;
-            _dragItemPositionOffset = (item.transform as RectTransform).anchoredPosition - (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position);
         }
         private void onDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
-            if (item != _dragItem)
-                return;
-            Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
-            onDragActionNode?.Invoke(item, graphPosition);
+            if (!_isTouchZooming)
+            {
+                if (item != _dragItem)
+                    return;
+                Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
+                onDragActionNode?.Invoke(item, graphPosition);
+            }
         }
         private void onEndDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
@@ -1046,6 +1140,18 @@ namespace UI
         private Vector2 _backgroundDragStartPosition;
         [SerializeField]
         private bool _isDragging;
+        [SerializeField]
+        private Touch _perviousTouch1;
+        [SerializeField]
+        private Touch _perviousTouch2;
+        [SerializeField]
+        private Touch _currentTouch1;
+        [SerializeField]
+        private Touch _currentTouch2;
+        [SerializeField]
+        private float _touchZoomSpeed = 0.1f;
+        [SerializeField]
+        private bool _isTouchZooming;
 
         #endregion
     }
