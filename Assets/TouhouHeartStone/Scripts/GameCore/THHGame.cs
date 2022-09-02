@@ -229,7 +229,7 @@ namespace TouhouHeartstone
             string title = null)
         {
             var selectedId = await game.askSelect(player, cards.Select(c => c.id).ToArray(), count, title);
-            Card selectedCard = cards.First(c => c.id == selectedId);
+            Card selectedCard = cards.FirstOrDefault(c => c.id == selectedId);
             return selectedCard;
         }
 
@@ -237,7 +237,7 @@ namespace TouhouHeartstone
             int count = 3, string title = null)
         {
             var selectedId = await game.askSelect(player, cards.Select(c => c.id).ToArray(), count, title);
-            CardDefine selectedCard = cards.First(c => c.id == selectedId);
+            CardDefine selectedCard = cards.FirstOrDefault(c => c.id == selectedId);
             return selectedCard;
         }
     }

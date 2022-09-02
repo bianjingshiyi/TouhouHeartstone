@@ -626,9 +626,13 @@ namespace TouhouHeartstone
         {
             return game.triggers.doEvent(new HearthStoneRule.DiscardEventArg() { player = player, cards = cards.ToArray() }, arg =>
             {
-                player = arg.player;
-                cards = arg.cards;
-                return player.getHand().moveTo(game, cards, player.getGrave());
+                Player actualPlayer = arg.player;
+                Card[] actualCards = arg.cards;
+                if (actualPlayer == null)
+                    return Task.CompletedTask;
+                if (actualCards == null || actualCards.Length < 1)
+                    return Task.CompletedTask;
+                return actualPlayer.getHand().moveTo(game, actualCards, actualPlayer.getGrave());
             });
         }
 

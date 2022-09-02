@@ -294,7 +294,10 @@ namespace UI
                 _dropdown.gameObject.SetActive(true);
                 _dropdown.ClearOptions();
                 _dropdown.AddOptions(new List<string>(_valueInfo.optionalNames));
-                _dropdown.SetValueWithoutNotify(Array.IndexOf(_valueInfo.optionalValues, _valueInfo.value));
+                int index = Array.IndexOf(_valueInfo.optionalValues, _valueInfo.value);
+                if (index < 0)
+                    index = 0;
+                _dropdown.SetValueWithoutNotify(index);
             }
             else
             {

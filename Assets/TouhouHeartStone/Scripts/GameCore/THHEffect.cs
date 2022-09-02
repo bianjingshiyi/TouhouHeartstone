@@ -91,7 +91,7 @@ namespace TouhouHeartstone
             foreach (TriggerTime time in triggers)
             {
                 string effectName = getEffectName(game, card, buff, time);
-                Trigger trigger = new Trigger(args => triggerAction(game, card, buff, args), name: effectName);
+                Trigger trigger = new Trigger(action: args => triggerAction(game, card, buff, args), name: effectName);
                 await card.setProp(null, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
                 onRegisterTrigger?.Invoke(game, card, buff);
@@ -646,7 +646,7 @@ namespace TouhouHeartstone
             Pile[] ranges = getRange != null ? getRange(game, card) : null;
             if (getOnCardEnterHandTrigger(game, card, buff) == null)
             {
-                setOnCardEnterHandTrigger(game, card, buff, new Trigger<Pile.MoveCardEventArg>(async arg =>
+                setOnCardEnterHandTrigger(game, card, buff, new Trigger<Pile.MoveCardEventArg>(action: async arg =>
                 {
                     if (ranges == null)
                         return;
@@ -724,7 +724,7 @@ namespace TouhouHeartstone
 
         public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
-            Trigger<HearthStoneRule.TurnStartEventArg> enableTrig = new Trigger<HearthStoneRule.TurnStartEventArg>(
+            Trigger<HearthStoneRule.TurnStartEventArg> enableTrig = new Trigger<HearthStoneRule.TurnStartEventArg>(action:
                 arg =>
                 {
                     if (condition == null || condition(game, card, buff))
@@ -733,7 +733,7 @@ namespace TouhouHeartstone
                 });
             await card.setProp(game, nameof(ConditionalPassiveEffect) + GetHashCode() + "enableTrig", enableTrig);
             game.triggers.registerAfter(enableTrig);
-            Trigger<HearthStoneRule.UseEventArg> disableTrig = new Trigger<HearthStoneRule.UseEventArg>(arg =>
+            Trigger<HearthStoneRule.UseEventArg> disableTrig = new Trigger<HearthStoneRule.UseEventArg>(action: arg =>
             {
                 if (condition != null && !condition(game, card, buff))
                     effect.onDisable(game, card, buff);
@@ -898,7 +898,7 @@ namespace TouhouHeartstone
                 triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
             Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
             game.logger.log("Effect", card + "注册亡语" + triggerName);
-            trigger = new Trigger<THHCard.DeathEventArg>(arg => execute(game, card, buff, arg));
+            trigger = new Trigger<THHCard.DeathEventArg>(action: arg => execute(game, card, buff, arg));
             await card.setProp(game, triggerName, trigger);
             game.triggers.registerAfter(trigger);
         }
@@ -1066,7 +1066,7 @@ namespace TouhouHeartstone
             Trigger<T> trigger = card.getProp<Trigger<T>>(game, getTriggerName(buff));
             if (trigger == null)
             {
-                trigger = new Trigger<T>(async arg =>
+                trigger = new Trigger<T>(action: async arg =>
                 {
                     foreach (var pair in modifiers)
                     {

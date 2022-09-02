@@ -37,49 +37,49 @@ namespace TouhouHeartstone
             //获取光环的作用范围
             Pile[] ranges = rangeList != null && rangeList.Count > 0 ? (card as Card).getOwner().getPiles(rangeList) : new Pile[0];
             //注册卡片入场触发器
-            Trigger<Pile.MoveCardEventArg> trigger = new Trigger<Pile.MoveCardEventArg>(async eventArg =>
-            {
-                if (ranges == null || ranges.Length < 1)
+            Trigger<Pile.MoveCardEventArg> trigger = new Trigger<Pile.MoveCardEventArg>(
+                eventArg =>
                 {
-                    //如果没有作用范围，就什么都不做
-                    return;
-                }
-                Dictionary<Card, Buff> buffDict = getBuffDic(game as CardEngine, card as Card, buff as Buff);
-                if (ranges.Contains(eventArg.to))
+                    return ranges == null || ranges.Length < 1;
+                },
+                async eventArg =>
                 {
-                    //卡牌进入作用范围
-                    if (affectCondition != null)
+                    Dictionary<Card, Buff> buffDict = getBuffDic(game as CardEngine, card as Card, buff as Buff);
+                    if (ranges.Contains(eventArg.to))
                     {
-                        Task<bool> task = (game as CardEngine).getActionReturnValueAsync<bool>(eventArg.card as Card, null, eventArg, affectCondition.action, affectCondition.index);
-                        if (!task.IsCompleted)
-                            throw new TaskNotCompleteException(buff != null ?
-                                card + "的" + buff + "的光环效果" + this + "的作用条件没有立刻返回值" :
-                                card + "的光环效果" + this + "的作用条件没有立刻返回值");
-                        if (!task.Result)
+                        //卡牌进入作用范围
+                        if (affectCondition != null)
                         {
-                            //不符合作用条件，忽略
-                            return;
+                            Task<bool> task = (game as CardEngine).getActionReturnValueAsync<bool>(eventArg.card as Card, null, eventArg, affectCondition.action, affectCondition.index);
+                            if (!task.IsCompleted)
+                                throw new TaskNotCompleteException(buff != null ?
+                                    card + "的" + buff + "的光环效果" + this + "的作用条件没有立刻返回值" :
+                                    card + "的光环效果" + this + "的作用条件没有立刻返回值");
+                            if (!task.Result)
+                            {
+                                //不符合作用条件，忽略
+                                return;
+                            }
+                        }
+                        //为入场卡牌添加光环增益并记录
+                        if (!buffDict.ContainsKey(eventArg.card))
+                        {
+                            BuffDefine buffDefine = await (game as CardEngine).getActionReturnValueAsync<BuffDefine>(card as Card, buff as Buff, eventArg, getHaloBuffDefine.action, getHaloBuffDefine.index);
+                            GeneratedBuff haloBuff = new GeneratedBuff(buffDefine);
+                            await eventArg.card.addBuff(game, haloBuff);
+                            buffDict.Add(eventArg.card, haloBuff);
                         }
                     }
-                    //为入场卡牌添加光环增益并记录
-                    if (!buffDict.ContainsKey(eventArg.card))
+                    else if (ranges.Contains(eventArg.from))
                     {
-                        BuffDefine buffDefine = await (game as CardEngine).getActionReturnValueAsync<BuffDefine>(card as Card, buff as Buff, eventArg, getHaloBuffDefine.action, getHaloBuffDefine.index);
-                        GeneratedBuff haloBuff = new GeneratedBuff(buffDefine);
-                        await eventArg.card.addBuff(game, haloBuff);
-                        buffDict.Add(eventArg.card, haloBuff);
+                        //卡牌离开作用范围
+                        if (buffDict.ContainsKey(eventArg.card))
+                        {
+                            await eventArg.card.removeBuff(game, buffDict[eventArg.card]);
+                            buffDict.Remove(eventArg.card);
+                        }
                     }
-                }
-                else if (ranges.Contains(eventArg.from))
-                {
-                    //卡牌离开作用范围
-                    if (buffDict.ContainsKey(eventArg.card))
-                    {
-                        await eventArg.card.removeBuff(game, buffDict[eventArg.card]);
-                        buffDict.Remove(eventArg.card);
-                    }
-                }
-            });
+                });
             //记录入场触发器，以便在效果失效的时候注销
             setHaloMoveCardTrigger(game, card, buff, trigger);
             game.triggers.registerAfter(trigger);

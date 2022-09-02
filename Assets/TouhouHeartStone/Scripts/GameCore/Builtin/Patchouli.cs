@@ -813,7 +813,7 @@ namespace TouhouHeartstone.Builtin
                 await card.addBuff(game, buff);
                 if (TurnEndTrigger == null)
                 {
-                    TurnEndTrigger = new Trigger<HearthStoneRule.TurnEndEventArg>(async arg =>
+                    TurnEndTrigger = new Trigger<HearthStoneRule.TurnEndEventArg>(action: async arg =>
                     {
                         await card.removeBuff(game, buff);
                         game.triggers.removeAfter(TurnEndTrigger);
