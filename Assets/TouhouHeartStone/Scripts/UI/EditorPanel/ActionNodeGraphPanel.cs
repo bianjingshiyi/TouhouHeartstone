@@ -1138,19 +1138,14 @@ namespace UI
         private Vector3 _backgroundOriginScale;
         [SerializeField]
         private Vector2 _backgroundDragStartPosition;
-        [SerializeField]
+
         private bool _isDragging;
-        [SerializeField]
         private Touch _perviousTouch1;
-        [SerializeField]
         private Touch _perviousTouch2;
-        [SerializeField]
         private Touch _currentTouch1;
-        [SerializeField]
         private Touch _currentTouch2;
         [SerializeField]
         private float _touchZoomSpeed = 0.1f;
-        [SerializeField]
         private bool _isTouchZooming;
 
         #endregion
