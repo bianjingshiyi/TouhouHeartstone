@@ -212,6 +212,8 @@ pipeline {
                 ]
                 def bot = new QQBot(this, env.QQ_BOT_HOST, 'token')
 
+                currentBuild.description = '成品: \n' + env.DOWNLOAD_LINK;
+
                 String textLog = ''
                 if (env.BRANCH_NAME.startsWith('PR')) {
                     textLog = "${BRANCH_NAME} - ${BUILD_DISPLAY_NAME} 检测完毕: \n${DOWNLOAD_LINK}"
