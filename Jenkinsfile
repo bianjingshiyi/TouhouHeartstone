@@ -210,9 +210,15 @@ pipeline {
                     [name: 'branch', value: env.BRANCH_NAME],
                     [name: 'projectUrl', value: env.BUILD_URL]
                 ]
-                def bot = new QQBot(this, env.QQ_BOT_HOST, 'token')
 
-                currentBuild.description = '成品: \n' + env.DOWNLOAD_LINK;
+                def description = '成品:<br>\n<ul>\n'
+                def lines = env.DOWNLOAD_LINK.split('\n')
+                for (int i = 0; i < lines.size(); i++) {
+                    def cols = lines[i].split(': ')
+                    description += '<li><a href="' + cols[1] + '" target="_blank">' + cols[0] + '</a></li>\n'
+                }
+                description += '</ul>'
+                currentBuild.description = description
 
                 String textLog = ''
                 if (env.BRANCH_NAME.startsWith('PR')) {
@@ -238,6 +244,7 @@ pipeline {
                 }
 
                 try {
+                    def bot = new QQBot(this, env.QQ_BOT_HOST, 'token')
                     bot.sendGroupMsg('1156816727', textLog)
                     bot.sendGroupMsg('217522101', textLog)
                 } catch (Exception e) {
