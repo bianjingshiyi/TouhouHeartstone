@@ -184,7 +184,7 @@ pipeline {
                     sshPublisher(publishers: [sshPublisherDesc(configName: 'IGensoukyo Test Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd /home/jim/test-serv/account && ./new_update.sh ${BUILD_GIT_TAG} \"${downloadURL}\"", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'account', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
                 }
                 if (!env.BRANCH_NAME.startsWith('PR')) {
-                    mail bcc: '', body: "请访问 ${BUILD_URL} 查看下载地址和详细变更日志", cc: 'bianjingshiyi@hotmail.com', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", to: 'jim@lotlab.org'
+                    mail bcc: '', body: "项目地址： ${BUILD_URL} \n\n下载链接: \n${DOWNLOAD_LINK}", cc: 'bianjingshiyi@hotmail.com', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", to: 'jim@lotlab.org'
                 }
             }
         }
