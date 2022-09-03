@@ -161,12 +161,12 @@ pipeline {
             steps {
                 script {
                     BackblazeB2 b2 = new BackblazeB2(this, 'sample', 'backblaze-b2')
-                    b2.syncUploadKeep("${env.WORKSPACE}/Build/_artifact", 'b2://igsk-ci/snapshots', '15')
 
                     def files = findFiles excludes: '', glob: 'Build/_artifact/**'
                     env.DOWNLOAD_LINK = ''
                     for (int i = 0; i < files.size(); i++) {
                         def filename = files[i].name
+                        b2.upload("${env.WORKSPACE}/Build/_artifact", filename, 'igsk-ci', 'snapshots/' + filename)
                         def url = 'https://cdn.igsk.fun/snapshots/' + URLEncoder.encode(filename)
                         env.DOWNLOAD_LINK += "${filename}: ${url} \n" 
                     }
