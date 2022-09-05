@@ -432,7 +432,7 @@ namespace UI
             addScreenTouchIntoBackground.triggers.Add(ScreenOnTouch);
 
             EventTrigger.Entry ScreenDuringTouch = new EventTrigger.Entry();
-            ScreenDuringTouch.eventID = EventTriggerType.BeginDrag;
+            ScreenDuringTouch.eventID = EventTriggerType.Drag;
             ScreenDuringTouch.callback.AddListener(onFingerDragging);
             EventTrigger addScreenDuringTouchIntoBackground =
                 _backgroundImage.gameObject.AddComponent<EventTrigger>();
@@ -532,10 +532,12 @@ namespace UI
                 {
                     _isPositive = -1;
                 }
-                var delta = Vector3.one * (_isPositive * _touchZoomSpeed);
+                var delta = Vector3.one * (_isPositive * _touchZoomSpeed)*Time.deltaTime*7f;
                 var desiredScale = _backgroundImage.transform.localScale + delta;
                 desiredScale = ClampDesiredScale(desiredScale);
                 _backgroundImage.transform.localScale = desiredScale;
+                _perviousTouch1 = _currentTouch1;
+                _perviousTouch2 = _currentTouch2;
             }
         }
         public void onFigerEndTouch(BaseEventData eventData)
