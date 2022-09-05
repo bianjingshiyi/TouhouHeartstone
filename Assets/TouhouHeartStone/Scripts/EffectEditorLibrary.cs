@@ -307,7 +307,8 @@ namespace Game
             {
                 object obj = array.GetValue(i);
                 scope.setOutParamValue(0, obj);
-                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: scope).Result;
+                Scope childScope = new Scope() { parentScope = scope };
+                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: childScope).Result;
                 if (result)
                 {
                     objList.Add(obj);
