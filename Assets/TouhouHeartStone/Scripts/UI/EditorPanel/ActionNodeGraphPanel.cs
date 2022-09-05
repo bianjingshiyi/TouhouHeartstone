@@ -499,8 +499,7 @@ namespace UI
 
             if (Input.touchCount > 1)
             {
-                _isTouchZooming = true;
-                _isDragging = true;
+
                 _currentTouch1 = Input.GetTouch(0);
                 _currentTouch2 = Input.GetTouch(1);
                 if (_currentTouch2.phase == TouchPhase.Began)
@@ -515,6 +514,8 @@ namespace UI
         {
             if (Input.touchCount > 1)
             {
+                _isTouchZooming = true;
+                _isDragging = true;
                 _currentTouch1 = Input.GetTouch(0);
                 _currentTouch2 = Input.GetTouch(1);
                 Vector2 _perviousPosition1 = _perviousTouch1.position;
@@ -532,20 +533,19 @@ namespace UI
                 {
                     _isPositive = -1;
                 }
-                var delta = Vector3.one * (_isPositive * _touchZoomSpeed)*Time.deltaTime*7f;
+                var delta = Vector3.one * (_isPositive * _touchZoomSpeed) * Time.deltaTime * 7f;
                 var desiredScale = _backgroundImage.transform.localScale + delta;
                 desiredScale = ClampDesiredScale(desiredScale);
                 _backgroundImage.transform.localScale = desiredScale;
-                _perviousTouch1 = _currentTouch1;
-                _perviousTouch2 = _currentTouch2;
+
             }
         }
         public void onFigerEndTouch(BaseEventData eventData)
         {
             _perviousTouch1 = _currentTouch1;
             _perviousTouch2 = _currentTouch2;
-            _isDragging = false;
             _isTouchZooming = false;
+            _isDragging = false;
             return;
         }
         public void onBackgroundDrag(BaseEventData eventData)
