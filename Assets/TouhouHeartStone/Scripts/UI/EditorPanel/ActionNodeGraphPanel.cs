@@ -440,7 +440,7 @@ namespace UI
 
             EventTrigger.Entry ScreenEndTouch = new EventTrigger.Entry();
             ScreenEndTouch.eventID = EventTriggerType.EndDrag;
-            ScreenEndTouch.callback.AddListener(OnFingertouch);
+            ScreenEndTouch.callback.AddListener(onFigerEndTouch);
             EventTrigger addEndTouchIntoBackground =
                 _backgroundImage.gameObject.AddComponent<EventTrigger>();
             addScreenTouchIntoBackground.triggers.Add(ScreenEndTouch);
@@ -513,30 +513,30 @@ namespace UI
 
         private void onFingerDragging(BaseEventData eventData)
         {
-
-            _currentTouch1 = Input.GetTouch(0);
-            _currentTouch2 = Input.GetTouch(1);
-            Vector2 _perviousPosition1 = _perviousTouch1.position;
-            Vector2 _perviousPosition2 = _perviousTouch2.position;
-            Vector2 _currentPosition1 = _currentTouch1.position;
-            Vector2 _currentPosition2 = _currentTouch2.position;
-            float leng1 = Mathf.Sqrt((_perviousPosition1.x - _perviousPosition2.x) * (_perviousPosition1.x - _perviousPosition2.x) + (_perviousPosition1.y - _perviousPosition2.y) * (_perviousPosition1.y - _perviousPosition2.y));
-            float leng2 = Mathf.Sqrt((_currentPosition1.x - _currentPosition2.x) * (_currentPosition1.x - _currentPosition2.x) + (_currentPosition1.y - _currentPosition2.y) * (_currentPosition1.y - _currentPosition2.y));
-            var _isPositive = 0;
-            if (leng1 < leng2)
+            if (Input.touchCount > 1)
             {
-                _isPositive = 1;
+                _currentTouch1 = Input.GetTouch(0);
+                _currentTouch2 = Input.GetTouch(1);
+                Vector2 _perviousPosition1 = _perviousTouch1.position;
+                Vector2 _perviousPosition2 = _perviousTouch2.position;
+                Vector2 _currentPosition1 = _currentTouch1.position;
+                Vector2 _currentPosition2 = _currentTouch2.position;
+                float leng1 = Mathf.Sqrt((_perviousPosition1.x - _perviousPosition2.x) * (_perviousPosition1.x - _perviousPosition2.x) + (_perviousPosition1.y - _perviousPosition2.y) * (_perviousPosition1.y - _perviousPosition2.y));
+                float leng2 = Mathf.Sqrt((_currentPosition1.x - _currentPosition2.x) * (_currentPosition1.x - _currentPosition2.x) + (_currentPosition1.y - _currentPosition2.y) * (_currentPosition1.y - _currentPosition2.y));
+                var _isPositive = 0;
+                if (leng1 < leng2)
+                {
+                    _isPositive = 1;
+                }
+                else
+                {
+                    _isPositive = -1;
+                }
+                var delta = Vector3.one * (_isPositive * _touchZoomSpeed);
+                var desiredScale = _backgroundImage.transform.localScale + delta;
+                desiredScale = ClampDesiredScale(desiredScale);
+                _backgroundImage.transform.localScale = desiredScale;
             }
-            else
-            {
-                _isPositive = -1;
-            }
-            var delta = Vector3.one * (_isPositive * _touchZoomSpeed);
-            var desiredScale = _backgroundImage.transform.localScale + delta;
-            desiredScale = ClampDesiredScale(desiredScale);
-            _backgroundImage.transform.localScale = desiredScale;
-
-
         }
         public void onFigerEndTouch(BaseEventData eventData)
         {
