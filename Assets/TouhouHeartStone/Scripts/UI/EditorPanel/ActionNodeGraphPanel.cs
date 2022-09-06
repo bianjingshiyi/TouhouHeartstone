@@ -301,7 +301,7 @@ namespace UI
         /// <param name="options"></param>
         public void openMenu(float posX, float posY, string[] options)
         {
-            if (!_isDragging)
+            if (!_isDragging && !_isTouchZooming)
             {
                 _menuRoot.gameObject.SetActive(true);
                 _menuRoot.anchoredPosition = new Vector2(posX, posY);
@@ -515,7 +515,6 @@ namespace UI
             if (Input.touchCount > 1)
             {
                 _isTouchZooming = true;
-                _isDragging = true;
                 _currentTouch1 = Input.GetTouch(0);
                 _currentTouch2 = Input.GetTouch(1);
                 Vector2 _perviousPosition1 = _perviousTouch1.position;
@@ -542,11 +541,14 @@ namespace UI
         }
         public void onFigerEndTouch(BaseEventData eventData)
         {
+
             _perviousTouch1 = _currentTouch1;
             _perviousTouch2 = _currentTouch2;
-            _isTouchZooming = false;
-            _isDragging = false;
-            return;
+
+            if (Input.touchCount <= 1)
+            {
+                _isTouchZooming = false;
+            }
         }
         public void onBackgroundDrag(BaseEventData eventData)
         {
