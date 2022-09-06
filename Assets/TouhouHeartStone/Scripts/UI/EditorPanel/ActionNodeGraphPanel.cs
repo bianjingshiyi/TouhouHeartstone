@@ -527,16 +527,26 @@ namespace UI
                 if (leng1 < leng2)
                 {
                     _isPositive = 1;
+                    if (leng1 > leng2) //即使在放大判定下也能在手指不松情况下反向缩小
+                    {
+                        _isPositive = -1;
+                    }
                 }
                 else
                 {
                     _isPositive = -1;
+                    if (leng1 < leng2)//即使在缩小判定下也能在手指不松情况下反向放大
+                    {
+                        _isPositive = 1;
+                    }
                 }
                 var delta = Vector3.one * (_isPositive * _touchZoomSpeed) * Time.deltaTime * 7f;
                 var desiredScale = _backgroundImage.transform.localScale + delta;
                 desiredScale = ClampDesiredScale(desiredScale);
                 _backgroundImage.transform.localScale = desiredScale;
-
+               //重置一下输入位置
+                _perviousTouch1 = _currentTouch1;
+                _perviousTouch2 = _currentTouch2;
             }
         }
         public void onFigerEndTouch(BaseEventData eventData)
