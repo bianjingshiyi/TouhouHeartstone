@@ -540,13 +540,16 @@ namespace UI
                         _isPositive = 1;
                     }
                 }
+                float currentDist = Vector2.Distance(_currentPosition1,_perviousPosition1);
+                float previousDist = Vector2.Distance(_currentPosition2, _perviousPosition2);
+                Debug.Log("cd:" + currentDist + "pd:" + previousDist);
+
+                if (currentDist >= 40f || previousDist>= 40f){
                 var delta = Vector3.one * (_isPositive * _touchZoomSpeed) * Time.deltaTime * 7f;
                 var desiredScale = _backgroundImage.transform.localScale + delta;
                 desiredScale = ClampDesiredScale(desiredScale);
                 _backgroundImage.transform.localScale = desiredScale;
-               //重置一下输入位置
-                _perviousTouch1 = _currentTouch1;
-                _perviousTouch2 = _currentTouch2;
+                }
             }
         }
         public void onFigerEndTouch(BaseEventData eventData)
