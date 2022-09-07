@@ -540,11 +540,12 @@ namespace UI
                         _isPositive = 1;
                     }
                 }
-                float currentDist = Vector2.Distance(_currentPosition1,_perviousPosition1);
-                float previousDist = Vector2.Distance(_currentPosition2, _perviousPosition2);
+                float currentDist = Vector2.Distance(_currentPosition1, _currentPosition2);
+                float previousDist = Vector2.Distance(_perviousPosition1, _perviousPosition2);
+                float totalDist = currentDist - previousDist;
                 Debug.Log("cd:" + currentDist + "pd:" + previousDist);
 
-                if (currentDist >= 40f || previousDist>= 40f){
+                if (Mathf.Abs(totalDist)>=100f){
                 var delta = Vector3.one * (_isPositive * _touchZoomSpeed) * Time.deltaTime * 7f;
                 var desiredScale = _backgroundImage.transform.localScale + delta;
                 desiredScale = ClampDesiredScale(desiredScale);
