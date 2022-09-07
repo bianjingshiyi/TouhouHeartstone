@@ -487,6 +487,7 @@ namespace UI
         }
         private void onBackgroundScroll(BaseEventData eventData)
         {
+            maxZoom = 10f;
             var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化           
             var desiredScale = _backgroundImage.transform.localScale + delta;//进行缩放
             desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
@@ -524,31 +525,47 @@ namespace UI
                 float leng1 = Mathf.Sqrt((_perviousPosition1.x - _perviousPosition2.x) * (_perviousPosition1.x - _perviousPosition2.x) + (_perviousPosition1.y - _perviousPosition2.y) * (_perviousPosition1.y - _perviousPosition2.y));
                 float leng2 = Mathf.Sqrt((_currentPosition1.x - _currentPosition2.x) * (_currentPosition1.x - _currentPosition2.x) + (_currentPosition1.y - _currentPosition2.y) * (_currentPosition1.y - _currentPosition2.y));
                 var _isPositive = 0;
+                var _zoomScale = leng1 / leng2;
                 if (leng1 < leng2)
                 {
                     _isPositive = 1;
+                    _touchZoomSpeed = 0.1f;
+                    maxZoom = 10f;
                     if (leng1 > leng2) //即使在放大判定下也能在手指不松情况下反向缩小
                     {
                         _isPositive = -1;
                     }
                 }
-             else
+                else
                 {
                     _isPositive = -1;
+                    _touchZoomSpeed *= 0.93f;
+
                     if (leng1 < leng2)//即使在缩小判定下也能在手指不松情况下反向放大
                     {
                         _isPositive = 1;
                     }
                 }
-                float currentDist = Vector2.Distance(_currentPosition1,_perviousPosition1);
+
+                float currentDist = Vector2.Distance(_currentPosition1, _perviousPosition1);
                 float previousDist = Vector2.Distance(_currentPosition2, _perviousPosition2);
-                float finalDist = Mathf.Abs(currentDist-previousDist);               
-                
-                var delta = Vector3.one * (_isPositive * _touchZoomSpeed) *finalDist*0.01f;
-                var desiredScale = _backgroundImage.transform.localScale + delta;
-                desiredScale = ClampDesiredScale(desiredScale);
-                _backgroundImage.transform.localScale = desiredScale;
+                float finalDist = Mathf.Abs(currentDist - previousDist);
+
+                var delta = _isPositive * _zoomScale * _touchZoomSpeed;
+                Debug.Log("zoomscale: " + _zoomScale + " ,delta:" + delta);  
+                Vector3 _localScale = _backgroundImage.transform.localScale;
+                Vector3 desiredScale = new Vector3(_localScale.x + delta, _localScale.y + delta, _localScale.z + delta);
+                float _maxScale = 1.7f;
+                float _minScale = 0.3f;
+                Debug.Log("desiredscale: " + desiredScale);
+                if (desiredScale.x < _maxScale && desiredScale.y < _maxScale && desiredScale.x >_minScale && desiredScale.y >_minScale )
+                {
+                    _backgroundImage.transform.localScale = desiredScale;
+                   
+                }
+
             }
+
         }
         public void onFigerEndTouch(BaseEventData eventData)
         {
