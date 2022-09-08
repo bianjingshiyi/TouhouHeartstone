@@ -524,47 +524,26 @@ namespace UI
                 Vector2 _currentPosition2 = _currentTouch2.position;
                 float leng1 = Mathf.Sqrt((_perviousPosition1.x - _perviousPosition2.x) * (_perviousPosition1.x - _perviousPosition2.x) + (_perviousPosition1.y - _perviousPosition2.y) * (_perviousPosition1.y - _perviousPosition2.y));
                 float leng2 = Mathf.Sqrt((_currentPosition1.x - _currentPosition2.x) * (_currentPosition1.x - _currentPosition2.x) + (_currentPosition1.y - _currentPosition2.y) * (_currentPosition1.y - _currentPosition2.y));
-                var _isPositive = 0;
-                var _zoomScale = leng1 / leng2;
-                if (leng1 < leng2)
-                {
-                    _isPositive = 1;
-                    _touchZoomSpeed = 0.1f;
-                    maxZoom = 10f;
-                    if (leng1 > leng2) //即使在放大判定下也能在手指不松情况下反向缩小
-                    {
-                        _isPositive = -1;
-                    }
-                }
-                else
-                {
-                    _isPositive = -1;
-                    _touchZoomSpeed *= 0.93f;
-
-                    if (leng1 < leng2)//即使在缩小判定下也能在手指不松情况下反向放大
-                    {
-                        _isPositive = 1;
-                    }
-                }
-
-                float currentDist = Vector2.Distance(_currentPosition1, _perviousPosition1);
-                float previousDist = Vector2.Distance(_currentPosition2, _perviousPosition2);
-                float finalDist = Mathf.Abs(currentDist - previousDist);
-
-                var delta = _isPositive * _zoomScale * _touchZoomSpeed;
-                Debug.Log("zoomscale: " + _zoomScale + " ,delta:" + delta);  
+                var _zoomScale = leng2 / leng1;
+                Vector2 _delta1 = _perviousPosition1 - _currentPosition1;
+                Vector2 _delta2 = _perviousPosition2 - _currentPosition2;
+                Debug.Log("_delta1:" + _delta1+"_delta2 :" + _delta2);
                 Vector3 _localScale = _backgroundImage.transform.localScale;
-                Vector3 desiredScale = new Vector3(_localScale.x + delta, _localScale.y + delta, _localScale.z + delta);
+                Vector3 _localPosition = _backgroundImage.transform.position;
+                Vector3 desiredScale = new Vector3(_localScale.x * _zoomScale, _localScale.y * _zoomScale, _localScale.z * _zoomScale);
+                Debug.Log("desoredScale:" + desiredScale);
+                Vector2 desiredPosition = new Vector3(_localPosition.x - (_delta1.x - _delta2.x), _localPosition.y - (_delta1.y - _delta2.y),0);
                 float _maxScale = 1.7f;
                 float _minScale = 0.3f;
-                Debug.Log("desiredscale: " + desiredScale);
-                if (desiredScale.x < _maxScale && desiredScale.y < _maxScale && desiredScale.x >_minScale && desiredScale.y >_minScale )
+                if (desiredScale.x < _maxScale && desiredScale.y < _maxScale && desiredScale.x > _minScale && desiredScale.y > _minScale)
                 {
                     _backgroundImage.transform.localScale = desiredScale;
-                   
+                    _backgroundImage.transform.position = desiredPosition;
                 }
-
+                _perviousTouch1 = _currentTouch1;
+                _perviousTouch2 = _currentTouch2;
             }
+
 
         }
         public void onFigerEndTouch(BaseEventData eventData)
