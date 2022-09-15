@@ -498,63 +498,64 @@ namespace UI
 
             if (Input.touchCount > 1)
             {
-                // _currentTouch1 = Input.GetTouch(0);
-                //_currentTouch2 = Input.GetTouch(1);
+                _currentTouch1 = Input.GetTouch(0);
+                _currentTouch2 = Input.GetTouch(1);
                 if (_currentTouch2.phase == TouchPhase.Began)
                 {
                     _perviousTouch1 = _currentTouch1;
                     _perviousTouch2 = _currentTouch2;
-
                 }
             }
         }
-
+        /// <summary>
+        /// 此方法下的debuglog暂且以注释形式保留，为后续优化做准备
+        /// </summary>
+        /// <param name="eventData"></param>
         private void onFingerDragging(BaseEventData eventData)
         {
+
             if (Input.touchCount > 1)
             {
                 _isTouchZooming = true;
-
                 _currentTouch1 = Input.GetTouch(0);
                 _currentTouch2 = Input.GetTouch(1);
                 Vector2 _perviousPosition1 = _perviousTouch1.position;
                 Vector2 _perviousPosition2 = _perviousTouch2.position;
                 Vector2 _currentPosition1 = _currentTouch1.position;
                 Vector2 _currentPosition2 = _currentTouch2.position;
-                float leng1 = Mathf.Sqrt((_perviousPosition1.x - _perviousPosition2.x) * (_perviousPosition1.x - _perviousPosition2.x) + (_perviousPosition1.y - _perviousPosition2.y) * (_perviousPosition1.y - _perviousPosition2.y));
-                float leng2 = Mathf.Sqrt((_currentPosition1.x - _currentPosition2.x) * (_currentPosition1.x - _currentPosition2.x) + (_currentPosition1.y - _currentPosition2.y) * (_currentPosition1.y - _currentPosition2.y));
-                _currentZoomScale = leng2 / leng1;
+               // Debug.Log("pervpos1 = " + _perviousPosition1 + ", pervpos2 = " + _perviousPosition2);
+                //Debug.Log("curpos1 = " + _currentPosition1 + ", curvpos2 = " + _currentPosition2);
+                float leng1 = Vector2.Distance(_perviousPosition1, _perviousPosition2);
+                float leng2 = Vector2.Distance(_currentPosition1, _currentPosition2);
+                var _zoomScale = leng2 / leng1;
                 Vector3 _delta1 = (_perviousPosition1 + _perviousPosition2) / 2;
                 Vector3 _delta2 = (_currentPosition1 + _currentPosition2) / 2;
-                _backgroundPivot = _backgroundImage.GetComponent<RectTransform>().position;
-                Vector3 _fingerMidPositionOnBackground = (_delta1 - _perviousOffsetScale ) / _perviousZoomScale + _backgroundPivot;
                 Vector3 _localScale = _backgroundImage.transform.localScale;
-                Vector3 _localPosition = _backgroundImage.transform.position;
-                Vector3 desiredScale = new Vector3(_localScale.x * _currentZoomScale, _localScale.y * _currentZoomScale, _localScale.z * _currentZoomScale);
+                Vector3 desiredScale = new Vector3(_localScale.x * _zoomScale, _localScale.y * _zoomScale, _localScale.z * _zoomScale);
                 _maxScale = 1.7f;
                 _minScale = 0.3f;
                 if (desiredScale.x < _maxScale && desiredScale.y < _maxScale && desiredScale.x > _minScale && desiredScale.y > _minScale)
                 {
                     _backgroundImage.transform.localScale = desiredScale;
-                    var _zoomScale = _currentZoomScale / _perviousZoomScale;
-                    _currentOffsetScale = (1 - _zoomScale) * _delta1 + _zoomScale * _perviousOffsetScale;
-                    Vector3 desiredPosition = _localPosition - ((_delta1 - _delta2) + _currentOffsetScale);
-                    _backgroundImage.GetComponent<Transform>().position = desiredPosition;
+                    _currentOffsetScale = (1 - _zoomScale) * _delta1 + _zoomScale * _backgroundImage.transform.position;
+                    //Debug.Log("offsetScale = " + _currentOffsetScale);
+                    //Debug.Log("localPosition = " + _localPosition);
+                    Vector3 desiredPosition = _currentOffsetScale + (_delta2 - _delta1);
+                    //Debug.Log("zoomScale = " + _zoomScale);
+                    //Debug.Log("desiredPosition = " + desiredPosition);
+                    //Debug.Log("delta1 = " + _delta1);
+                    //Debug.Log("delta2 = " + _delta2);
+                    _backgroundImage.transform.position = desiredPosition;
                 }
                 _perviousTouch1 = _currentTouch1;
                 _perviousTouch2 = _currentTouch2;
-                _perviousZoomScale = _currentZoomScale;
-                _perviousOffsetScale = _currentOffsetScale;
             }
         }
         public void onFigerEndTouch(BaseEventData eventData)
         {
-            /*
+            
             _perviousTouch1 = _currentTouch1;
             _perviousTouch2 = _currentTouch2;
-            */
-            _perviousZoomScale = _currentZoomScale;
-            //_offsetScale = Vector3.zero;
             if (Input.touchCount <= 1)
             {
                 _isTouchZooming = false;
@@ -1151,12 +1152,8 @@ namespace UI
         [SerializeField]
         float _minScale = 0.3f;
         private bool _isTouchZooming;
-        private Vector3 _backgroundPivot;
-        private Vector3 _screenPivot = new Vector3(Screen.width / 2, Screen.height / 2, 0);
-        private float _perviousZoomScale = 0f;
-        private float _currentZoomScale;
-        private Vector3 _perviousOffsetScale = Vector3.zero;
         private Vector3 _currentOffsetScale;
+
 
         #endregion
     }
