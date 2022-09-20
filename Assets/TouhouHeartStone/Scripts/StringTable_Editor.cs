@@ -567,6 +567,10 @@ namespace Game
         public const string EDITOR_TYPE_NAME_BUFF = "增益";
         [TranslateMsg("编辑器中的效果的名称")]
         public const string EDITOR_TYPE_NAME_EFFECT = "效果";
+        [TranslateMsg("编辑器中的光环效果的名称")]
+        public const string EDITOR_TYPE_NAME_HALO_EFFECT = "光环效果";
+        [TranslateMsg("编辑器中的战吼效果的名称")]
+        public const string EDITOR_TYPE_NAME_BATTLECRAY_EFFECT = "战吼效果";
         [TranslateMsg("编辑器中的效果标签的名称")]
         public const string EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION = "效果标签";
         [TranslateMsg("编辑器中的事件的名称")]

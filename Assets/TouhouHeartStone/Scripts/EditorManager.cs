@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using TouhouCardEngine;
+using TouhouHeartstone;
 using UnityEngine;
 
 namespace Game
@@ -91,7 +92,7 @@ namespace Game
         {
             for (int i = 0; i < _editorTypeInfos.Length; i++)
             {
-                if (_editorTypeInfos[i].type == type || 
+                if (_editorTypeInfos[i].type == type ||
                     (_editorTypeInfos[i].type != typeof(object) && _editorTypeInfos[i].type.IsAssignableFrom(type)))
                 {
                     return _editorTypeInfos[i].color;
@@ -144,6 +145,9 @@ namespace Game
             new EditorTypeInfo() { type = typeof(BuffDefine), typeName = StringTable.EDITOR_TYPE_NAME_BUFF_DEFINE, isVarType = true, color = new Color(.1f, .5f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(Buff), typeName = StringTable.EDITOR_TYPE_NAME_BUFF, isVarType = true, color = new Color(.2f, .8f, 1, 1) },
             new EditorTypeInfo() { type = typeof(Effect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
+            new EditorTypeInfo() { type = typeof(GeneratedEffect), typeName = StringTable.EDITOR_TYPE_NAME_HALO_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
+            new EditorTypeInfo() { type = typeof(GeneratedHalo), typeName = StringTable.EDITOR_TYPE_NAME_HALO_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
+            new EditorTypeInfo() { type = typeof(GeneratedBattlecry), typeName = StringTable.EDITOR_TYPE_NAME_BATTLECRAY_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
             new EditorTypeInfo() { type = typeof(EffectTagCollection), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION, isConstType = true, color = new Color(.2f, .5f, .5f, 1) },
             new EditorTypeInfo() { type = typeof(EventArg), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_ARG, isVarType = true, color = new Color(1, 1, .2f, 1) },
             new EditorTypeInfo() { type = typeof(PropModifier), typeName = StringTable.EDITOR_TYPE_NAME_PROP_MODIFIER, isVarType = true, color = new Color(1, .2f, .8f, 1) },

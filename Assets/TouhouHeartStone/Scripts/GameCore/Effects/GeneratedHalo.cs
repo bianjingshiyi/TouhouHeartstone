@@ -24,10 +24,12 @@ namespace TouhouHeartstone
         /// <param name="affectCondition">光环作用条件</param>
         public GeneratedHalo(int buffDefineId, IEnumerable<string> piles, IEnumerable<string> ranges, ActionValueRef affectCondition) : base(piles, null, null, null, null)
         {
-            getHaloBuffDefine = new ActionValueRef(new ActionNode("GetBuffDefine", new object[] { buffDefineId }));
+            if (buffDefineId > 0)
+                getHaloBuffDefine = new ActionValueRef(new ActionNode("GetBuffDefine", new object[] { buffDefineId }));
             if (ranges != null)
                 rangeList.AddRange(ranges);
-            this.affectCondition = affectCondition;
+            if (affectCondition != null)
+                this.affectCondition = affectCondition;
         }
         public GeneratedHalo() : this(0, null, null, null)
         {

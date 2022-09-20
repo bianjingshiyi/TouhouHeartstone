@@ -42,10 +42,10 @@ namespace Game
         {
             return new CardPool()
             {
-                cardDefineList = cardDefineList.ConvertAll(c => c.toCardDefine()),
+                cardDefineList = cardDefineList.ConvertAll(c => c.toCardDefine(typeFinder)),
                 cardSkinList = cardSkinList,
                 actionNodeGraphInfoList = actionNodeGraphInfoList,
-                buffDefineList = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine()),
+                buffDefineList = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine(typeFinder)),
                 buffSkinList = buffSkinList,
                 generatedActionDefineList = actionDefineList.ConvertAll(a => a.toGeneratedActionDefine(typeFinder))
             };

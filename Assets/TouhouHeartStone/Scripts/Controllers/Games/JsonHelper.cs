@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using TouhouCardEngine;
+using TouhouHeartstone;
 
 namespace Controllers
 {
@@ -14,8 +15,14 @@ namespace Controllers
     {
         public static void init()
         {
-            BsonClassMap.RegisterClassMap<CardReference>();
-            BsonClassMap.RegisterClassMap<ActionValueRef>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(CardReference)))
+                BsonClassMap.RegisterClassMap<CardReference>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(ActionValueRef)))
+                BsonClassMap.RegisterClassMap<ActionValueRef>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedEffect)))
+                BsonClassMap.RegisterClassMap<GeneratedEffect>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedHalo)))
+                BsonClassMap.RegisterClassMap<GeneratedHalo>();
             isInited = true;
         }
         public static string toJson(this object obj, bool readFriendly = false)

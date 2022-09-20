@@ -860,7 +860,7 @@ namespace Controllers
             if (valueRef.action != null)
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
-                _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.action);
+                _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
             }
             //创建离散节点
             for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)

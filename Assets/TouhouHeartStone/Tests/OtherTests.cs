@@ -34,7 +34,8 @@ namespace Tests
             {
                 new GeneratedHalo(1,new string[]{ PILE.MASTER },new string[]{ PILE.HAND },null)
             };
-            string json = effects.toJson();
+            string json = effects.toJson(true);
+            Debug.Log(string.Format("Json:{0}", json));
             effects = JsonHelper.fromJson<List<GeneratedEffect>>(json);
             Assert.IsInstanceOf<GeneratedHalo>(effects[0]);
         }

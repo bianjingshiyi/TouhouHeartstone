@@ -161,6 +161,11 @@ namespace Game
                 path = path.Substring(3, path.Length - 3);
             }
             cardPoolInfo.version = CARD_POOL_VERSION_0_3;
+            //初始化JSON
+            if (!JsonHelper.isInited)
+            {
+                JsonHelper.init();
+            }
             await game.fileManager.saveFile(path, new string[]
             {
                 cardPoolInfo.toJson(),//文件头信息

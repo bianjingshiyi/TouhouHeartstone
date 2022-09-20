@@ -6959,21 +6959,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: EffectList
       objectReference: {fileID: 0}
-    - target: {fileID: 4210028747560119245, guid: b337bdc15545cd741b7ff17fd1ae9654,
-        type: 3}
-      propertyPath: _nameText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4210028747560119245, guid: b337bdc15545cd741b7ff17fd1ae9654,
-        type: 3}
-      propertyPath: _editButton
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4210028747560119245, guid: b337bdc15545cd741b7ff17fd1ae9654,
-        type: 3}
-      propertyPath: _removeButton
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 4587509355819148002, guid: b337bdc15545cd741b7ff17fd1ae9654,
         type: 3}
       propertyPath: _HandleImage
