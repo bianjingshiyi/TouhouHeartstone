@@ -388,7 +388,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
-            if (!player.getHand().isFull && (player.getHand().maxCount - player.getHand().count) >= cards.Length)
+            if (!player.getHand().isFull)
             {
                 await player.getGrave().moveTo(game, cards, player.getHand());
             }
