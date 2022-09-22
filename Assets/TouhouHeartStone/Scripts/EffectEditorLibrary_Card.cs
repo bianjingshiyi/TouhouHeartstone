@@ -390,16 +390,13 @@ namespace Game
         {
             if (!player.getHand().isFull)
             {
-                if ((player.getHand().maxCount - player.getHand().count) >= cards.Length)
-                {
-                    await player.getGrave().moveTo(game, cards, player.getHand());
-                }
-                else if ((player.getHand().maxCount - player.getHand().count) < cards.Length)
-                {
-                    await player.getGrave().moveTo(game, cards.Take((player.getHand().maxCount - player.getHand().count)), player.getHand());
-                }
+                await player.getGrave().moveTo(game, cards, player.getHand());
             }
-            else 
+            else if ((player.getHand().maxCount - player.getHand().count) < cards.Length) 
+            {
+                    await player.getGrave().moveTo(game, cards.Take((player.getHand().maxCount - player.getHand().count)), player.getHand());
+            }
+            else
             {
                 return;
             }
