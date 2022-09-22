@@ -675,6 +675,7 @@ namespace UI
         }
         private void onPointerDownActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
+         
             _pointerOverActionNodeItem = item;
             _longPressTimer.start();
         }
@@ -703,6 +704,7 @@ namespace UI
         }
         private void onBeginDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
+            
             if (_pointerOverActionNodeItem == item)
             {
                 _pointerOverActionNodeItem = null;

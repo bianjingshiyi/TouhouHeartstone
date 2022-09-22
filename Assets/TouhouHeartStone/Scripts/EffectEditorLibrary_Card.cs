@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TouhouCardEngine;
+using System.Linq;
+using TouhouCardEngine; 
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
@@ -127,6 +128,7 @@ namespace Game
         {
             Player player = card.owner;
             Card createdCard = game.createCard(cardDefine);
+
             await player.getDeck().insert(game, createdCard, game.randomInt(0, player.getDeck().count));
             return createdCard;
         }
@@ -372,7 +374,36 @@ namespace Game
         {
             return cards.die(game);
         }
-    }
+
+        /// <summary>
+        /// 从墓地取一张卡牌至手牌
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="cardDefine"></param>
+        /// <returns></returns>
+
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_MOVE_CARD_FROM_GRAVE_TO_HAND, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async Task moveCardFromGraveToHand(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        {
+            if (!player.getHand().isFull)
+            {
+                await player.getGrave().moveTo(game, cards, player.getHand());
+            }
+            else if ((player.getHand().maxCount - player.getHand().count) < cards.Length) 
+            {
+                    await player.getGrave().moveTo(game, cards.Take((player.getHand().maxCount - player.getHand().count)), player.getHand());
+            }
+            else
+            {
+                return;
+            }
+        }
+    } 
+
+   
     public enum CardDefineSelect
     {
         Spell,

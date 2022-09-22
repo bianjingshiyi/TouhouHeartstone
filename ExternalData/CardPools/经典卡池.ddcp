@@ -9,7 +9,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -71,7 +70,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -106,7 +104,6 @@
         "cost" : 2
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -177,7 +174,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -225,7 +221,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -266,7 +261,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -316,7 +310,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -363,7 +356,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -432,7 +424,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -473,7 +464,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -516,7 +506,6 @@
         "cost" : 1
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -684,7 +673,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -731,7 +719,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -769,7 +756,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -831,7 +817,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -887,7 +872,6 @@
           "tagList" : [],
           "propDict" : { }
         }, {
-          "typeName" : "GeneratedEffect",
           "pileList" : ["Item"],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -976,7 +960,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -988,16 +971,16 @@
               "actionList" : [{
                   "_id" : 3,
                   "defineName" : "从一定数量的卡牌中选择一张",
-                  "branches" : [0],
+                  "branches" : [6],
                   "inputs" : [{
-                      "actionNodeId" : 1,
+                      "actionNodeId" : 5,
                       "index" : 1
                     }],
                   "consts" : [3],
-                  "regVar" : []
+                  "regVar" : [true]
                 }, {
-                  "_id" : 1,
-                  "defineName" : "过滤满足条件的卡牌",
+                  "_id" : 5,
+                  "defineName" : "筛选",
                   "branches" : [0, 2],
                   "inputs" : [{
                       "actionNodeId" : 4
@@ -1018,10 +1001,39 @@
                   "defineName" : "是否为法术牌",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 1
+                      "actionNodeId" : 5
                     }],
                   "consts" : [],
                   "regVar" : []
+                }, {
+                  "_id" : 6,
+                  "defineName" : "从墓地抽取一张牌至手牌",
+                  "branches" : [7],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 8,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [18],
+                  "regVar" : [false]
                 }]
             }],
           "tagList" : ["battleCry"],
@@ -1040,7 +1052,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1094,7 +1105,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1146,7 +1156,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : ["Hand"],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1277,7 +1286,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1369,7 +1377,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1435,7 +1442,6 @@
         "isToken" : true
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1477,7 +1483,6 @@
         "isToken" : true
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1557,7 +1562,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1684,7 +1688,6 @@
         "isToken" : true
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1800,7 +1803,6 @@
         "cost" : 6
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1837,7 +1839,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1909,7 +1910,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -1998,7 +1998,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -2071,7 +2070,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : ["Field"],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -2172,7 +2170,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -2240,7 +2237,6 @@
         "characterId" : 4194304
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : ["Field"],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -2312,7 +2308,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -2352,7 +2347,6 @@
         }
       },
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -2669,8 +2663,8 @@
           "posY" : 47.82208251953125
         },
         "10" : {
-          "posX" : -33.8253173828125,
-          "posY" : -649.48248291015625
+          "posX" : 79.77288818359375,
+          "posY" : -549.99664306640625
         }
       },
       "freeActionNodeList" : []
@@ -2827,8 +2821,8 @@
           "posY" : -2935.83740234375
         },
         "4" : {
-          "posX" : 204.98443603515625,
-          "posY" : -359.667236328125
+          "posX" : 592.3756103515625,
+          "posY" : -375.3194580078125
         }
       },
       "freeActionNodeList" : []
@@ -2845,14 +2839,7 @@
           "posY" : -244.2769775390625
         }
       },
-      "freeActionNodeList" : [{
-          "_id" : 2,
-          "defineName" : "获取敌方随从",
-          "branches" : [null],
-          "inputs" : [],
-          "consts" : [],
-          "regVar" : [false]
-        }]
+      "freeActionNodeList" : []
     }, {
       "cardId" : -2147418102,
       "entryType" : "triggerList",
@@ -2970,12 +2957,12 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 674.3626708984375,
-          "posY" : 163.10198974609375
+          "posX" : 1101.094482421875,
+          "posY" : 215.784912109375
         },
         "2" : {
-          "posX" : 5.7022705078125,
-          "posY" : -220.08050537109375
+          "posX" : 1164.7266845703125,
+          "posY" : -378.12933349609375
         }
       },
       "freeActionNodeList" : [{
@@ -2995,8 +2982,8 @@
           "posY" : 131.61322021484375
         },
         "2" : {
-          "posX" : 155.8116455078125,
-          "posY" : -222.2545166015625
+          "posX" : 667.24859619140625,
+          "posY" : -507.5855712890625
         }
       },
       "freeActionNodeList" : []
@@ -3072,20 +3059,32 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "2" : {
-          "posX" : 1047.59423828125,
-          "posY" : -160.98614501953125
+          "posX" : 1188.532470703125,
+          "posY" : -254.333251953125
         },
         "3" : {
-          "posX" : 675.7301025390625,
-          "posY" : 253.18646240234375
+          "posX" : 1240.077880859375,
+          "posY" : 453.6212158203125
         },
-        "1" : {
-          "posX" : 757.6097412109375,
-          "posY" : -26.4329833984375
+        "6" : {
+          "posX" : 2086.37451171875,
+          "posY" : 360.5338134765625
         },
         "4" : {
-          "posX" : 435.364501953125,
-          "posY" : -306.03271484375
+          "posX" : 497.97320556640625,
+          "posY" : -312.9892578125
+        },
+        "5" : {
+          "posX" : 759.09320068359375,
+          "posY" : -29.467132568359375
+        },
+        "7" : {
+          "posX" : 2488.072509765625,
+          "posY" : 95.476959228515625
+        },
+        "8" : {
+          "posX" : 1698.967041015625,
+          "posY" : -254.15719604492188
         }
       },
       "freeActionNodeList" : []
@@ -3441,36 +3440,36 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 714.1990966796875,
-          "posY" : 189.1220703125
+          "posX" : 784.7318115234375,
+          "posY" : 347.11581420898438
         },
         "2" : {
-          "posX" : -388.268310546875,
-          "posY" : -263.9569091796875
+          "posX" : -430.58807373046875,
+          "posY" : -306.276611328125
         },
         "3" : {
-          "posX" : 572.2945556640625,
-          "posY" : -44.81365966796875
+          "posX" : 690.789794921875,
+          "posY" : -64.562835693359375
         },
         "4" : {
           "posX" : 1555.943115234375,
           "posY" : 531.608154296875
         },
         "12" : {
-          "posX" : 1809.1524658203125,
-          "posY" : -410.33273315429688
+          "posX" : 1871.2215576171875,
+          "posY" : -540.1134033203125
         },
         "7" : {
-          "posX" : -78.0859375,
-          "posY" : -198.94854736328125
+          "posX" : -1.910400390625,
+          "posY" : -334.37176513671875
         },
         "8" : {
           "posX" : 587.7391357421875,
           "posY" : -312.5399169921875
         },
         "9" : {
-          "posX" : 463.9449462890625,
-          "posY" : -221.3184814453125
+          "posX" : 91.53106689453125,
+          "posY" : -627.5880126953125
         },
         "10" : {
           "posX" : 630.465576171875,
@@ -3644,12 +3643,12 @@
           "posY" : 233.93402099609375
         },
         "2" : {
-          "posX" : 260.88864135742188,
-          "posY" : -479.18701171875
+          "posX" : 636.3883056640625,
+          "posY" : 190.48544311523438
         },
         "3" : {
-          "posX" : 255.55850219726563,
-          "posY" : -243.75605773925781
+          "posX" : 384.6112060546875,
+          "posY" : 305.82525634765625
         },
         "4" : {
           "posX" : -1268.037109375,
@@ -3676,8 +3675,8 @@
           "posY" : -234.41552734375
         },
         "1" : {
-          "posX" : 851.8223876953125,
-          "posY" : -21.83831787109375
+          "posX" : 334.0582275390625,
+          "posY" : -401.9417724609375
         }
       },
       "freeActionNodeList" : []
@@ -3757,12 +3756,12 @@
       "entryType" : "affectCondition",
       "actionInfoDict" : {
         "1" : {
-          "posX" : -268.97467041015625,
-          "posY" : 16.268699645996094
+          "posX" : -528.7379150390625,
+          "posY" : 272.378662109375
         },
         "2" : {
-          "posX" : -528.99951171875,
-          "posY" : 14.027099609375
+          "posX" : -74.368896484375,
+          "posY" : 333.543701171875
         }
       },
       "freeActionNodeList" : []
@@ -3771,8 +3770,8 @@
       "entryType" : "getHaloBuffDefine",
       "actionInfoDict" : {
         "1" : {
-          "posX" : -526.7579345703125,
-          "posY" : -109.26045227050781
+          "posX" : -172.23382568359375,
+          "posY" : -61.4058837890625
         }
       },
       "freeActionNodeList" : []
@@ -3785,8 +3784,8 @@
           "posY" : 139.9254150390625
         },
         "2" : {
-          "posX" : 237.8751220703125,
-          "posY" : 480.94671630859375
+          "posX" : 83.10577392578125,
+          "posY" : 587.35064697265625
         },
         "3" : {
           "posX" : 599.6226806640625,
@@ -3797,8 +3796,8 @@
           "posY" : 197.83990478515625
         },
         "5" : {
-          "posX" : 1507.8070068359375,
-          "posY" : 248.3944091796875
+          "posX" : 1818.15185546875,
+          "posY" : 287.89285278320313
         },
         "6" : {
           "posX" : 254.5009765625,
@@ -3809,20 +3808,20 @@
           "posY" : -342.40472412109375
         },
         "8" : {
-          "posX" : 1566.6778564453125,
-          "posY" : -389.5455322265625
+          "posX" : 1699.2796630859375,
+          "posY" : -296.44207763671875
         },
         "9" : {
-          "posX" : 973.6033935546875,
-          "posY" : -134.19891357421875
+          "posX" : 1312.1612548828125,
+          "posY" : -131.3775634765625
         },
         "10" : {
-          "posX" : 1447.471923828125,
-          "posY" : -235.5987548828125
+          "posX" : 2056.87646484375,
+          "posY" : -832.3072509765625
         },
         "11" : {
-          "posX" : 92.8265380859375,
-          "posY" : 213.56805419921875
+          "posX" : -117.56307983398438,
+          "posY" : 544.8712158203125
         }
       },
       "freeActionNodeList" : []
@@ -4008,296 +4007,20 @@
       },
       "freeActionNodeList" : []
     }, {
-      "buffId" : 1,
-      "effectIndex" : 2,
+      "cardId" : -2147418103,
       "entryType" : "onEnableAction",
       "actionInfoDict" : { },
       "freeActionNodeList" : []
     }, {
-      "buffId" : 1,
-      "effectIndex" : 2,
+      "cardId" : -2147418103,
       "entryType" : "onDisableAction",
       "actionInfoDict" : { },
       "freeActionNodeList" : []
-    }, {
-      "buffId" : 1,
-      "effectIndex" : 1,
-      "entryType" : "triggerList",
-      "triggerIndex" : 1,
-      "actionInfoDict" : {
-        "1" : {
-          "posX" : -936.82440185546875,
-          "posY" : 116.09709167480469
-        },
-        "2" : {
-          "posX" : -1438.16455078125,
-          "posY" : 63.641265869140625
-        },
-        "3" : {
-          "posX" : -1728.1986083984375,
-          "posY" : 0.079864501953125
-        },
-        "4" : {
-          "posX" : 753.71710205078125,
-          "posY" : -601.00836181640625
-        },
-        "5" : {
-          "posX" : 284.26950073242188,
-          "posY" : -770.4381103515625
-        },
-        "9" : {
-          "posX" : -789.0189208984375,
-          "posY" : -427.63006591796875
-        },
-        "7" : {
-          "posX" : -1472.615234375,
-          "posY" : -400.6571044921875
-        },
-        "8" : {
-          "posX" : 276.73300170898438,
-          "posY" : -478.74533081054688
-        }
-      },
-      "freeActionNodeList" : [{
-          "_id" : 9,
-          "defineName" : "LogicOperation",
-          "branches" : [null],
-          "inputs" : [{
-              "action" : {
-                "_id" : 1,
-                "defineName" : "Compare",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : null,
-                    "index" : 0,
-                    "actionNodeId" : 0,
-                    "eventVarName" : "玩家",
-                    "argIndex" : 0
-                  }, {
-                    "action" : {
-                      "_id" : 2,
-                      "defineName" : "获取卡牌拥有者",
-                      "branches" : [null],
-                      "inputs" : [{
-                          "action" : {
-                            "_id" : 3,
-                            "defineName" : "这张卡牌",
-                            "branches" : [null],
-                            "inputs" : [],
-                            "consts" : [],
-                            "regVar" : [false]
-                          },
-                          "index" : 0,
-                          "actionNodeId" : 0,
-                          "eventVarName" : null,
-                          "argIndex" : 0
-                        }],
-                      "consts" : [],
-                      "regVar" : [false]
-                    },
-                    "index" : 0,
-                    "actionNodeId" : 0,
-                    "eventVarName" : null,
-                    "argIndex" : 0
-                  }],
-                "consts" : [null],
-                "regVar" : [false]
-              },
-              "index" : 0,
-              "actionNodeId" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0
-            }, {
-              "action" : {
-                "_id" : 7,
-                "defineName" : "是否为法术牌",
-                "branches" : [null],
-                "inputs" : [{
-                    "action" : null,
-                    "index" : 0,
-                    "actionNodeId" : 0,
-                    "eventVarName" : "卡牌",
-                    "argIndex" : 0
-                  }],
-                "consts" : [],
-                "regVar" : [false]
-              },
-              "index" : 0,
-              "actionNodeId" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0
-            }, null],
-          "consts" : [1]
-        }]
     }],
   "buffDefineList" : [{
       "_id" : 1,
       "propModifierList" : [],
-      "effectList" : [{
-          "typeName" : "GeneratedHalo",
-          "pileList" : ["Master"],
-          "onEnableActionList" : [],
-          "onDisalbeActionList" : [],
-          "triggerList" : [],
-          "tagList" : [],
-          "propDict" : {
-            "getHaloBuffDefine" : {
-              "_t" : "SerializableActionValueRef",
-              "actionNodeId" : 1,
-              "actionNodeList" : [{
-                  "_id" : 1,
-                  "defineName" : "获取增益定义",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [2],
-                  "regVar" : []
-                }]
-            },
-            "affectCondition" : {
-              "_t" : "SerializableActionValueRef",
-              "actionNodeId" : 1,
-              "actionNodeList" : [{
-                  "_id" : 1,
-                  "defineName" : "是否为法术牌",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "actionNodeId" : 2
-                    }],
-                  "consts" : [],
-                  "regVar" : []
-                }, {
-                  "_id" : 2,
-                  "defineName" : "这张卡牌",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [],
-                  "regVar" : [false]
-                }]
-            },
-            "rangeList" : {
-              "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-              "_v" : ["Hand"]
-            }
-          }
-        }, {
-          "typeName" : "GeneratedEffect",
-          "pileList" : ["Master"],
-          "onEnableActionList" : [],
-          "onDisalbeActionList" : [],
-          "triggerList" : [{
-              "eventName" : "BeforeTurnEndEvent",
-              "targetCheckerList" : [],
-              "actionId" : 1,
-              "actionList" : [{
-                  "_id" : 1,
-                  "defineName" : "移除增益",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "actionNodeId" : 3
-                    }, {
-                      "actionNodeId" : 2
-                    }],
-                  "consts" : [],
-                  "regVar" : []
-                }, {
-                  "_id" : 3,
-                  "defineName" : "这张卡牌",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 2,
-                  "defineName" : "该增益",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [],
-                  "regVar" : [false]
-                }]
-            }, {
-              "eventName" : "BeforeUseEvent",
-              "condition" : {
-                "actionNodeId" : 9
-              },
-              "targetCheckerList" : [],
-              "actionId" : 4,
-              "actionList" : [{
-                  "_id" : 9,
-                  "defineName" : "LogicOperation",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "actionNodeId" : 1
-                    }, {
-                      "actionNodeId" : 7
-                    }, null],
-                  "consts" : [1],
-                  "regVar" : []
-                }, {
-                  "_id" : 1,
-                  "defineName" : "Compare",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "eventVarName" : "玩家"
-                    }, {
-                      "actionNodeId" : 2
-                    }],
-                  "consts" : [null],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 2,
-                  "defineName" : "获取卡牌拥有者",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "actionNodeId" : 3
-                    }],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 3,
-                  "defineName" : "这张卡牌",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 7,
-                  "defineName" : "是否为法术牌",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "eventVarName" : "卡牌"
-                    }],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 4,
-                  "defineName" : "移除增益",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "actionNodeId" : 8
-                    }, {
-                      "actionNodeId" : 5
-                    }],
-                  "consts" : [],
-                  "regVar" : []
-                }, {
-                  "_id" : 8,
-                  "defineName" : "这张卡牌",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 5,
-                  "defineName" : "该增益",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [],
-                  "regVar" : [false]
-                }]
-            }],
-          "tagList" : [],
-          "propDict" : { }
-        }]
+      "effectList" : []
     }, {
       "_id" : 2,
       "propModifierList" : [{
@@ -4366,7 +4089,6 @@
           "maxValue" : 2147483647
         }],
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -4427,7 +4149,6 @@
           "onCheckCondition" : null
         }],
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -4476,7 +4197,6 @@
           "maxValue" : 2147483647
         }],
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
           "pileList" : ["Field"],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
@@ -4599,7 +4319,15 @@
       "effectList" : []
     }, {
       "_id" : 18,
-      "propModifierList" : [],
+      "propModifierList" : [{
+          "_t" : "CostModifier",
+          "propertyName" : "cost",
+          "value" : -3,
+          "isSet" : false,
+          "minValue" : 0,
+          "maxValue" : 2147483647,
+          "onCheckCondition" : null
+        }],
       "effectList" : []
     }],
   "buffSkinList" : [{

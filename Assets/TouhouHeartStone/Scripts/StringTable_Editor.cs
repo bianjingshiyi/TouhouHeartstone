@@ -328,6 +328,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_DESTROY = "消灭";
         [TranslateMsg("动作图编辑器中动作节点参数名称之死亡事件")]
         public const string EDITOR_PARAM_NAME_DEATH_EVENT = "死亡事件";
+        [TranslateMsg("动作图编辑器中动作节点名称之从墓地抽取一张牌至手牌")]
+        public const string EDITOR_NODE_NAME_MOVE_CARD_FROM_GRAVE_TO_HAND = "从墓地抽取一张牌至手牌";
         #endregion
         #region 增益
         [TranslateMsg("动作图编辑器中动作节点分类之增益")]
