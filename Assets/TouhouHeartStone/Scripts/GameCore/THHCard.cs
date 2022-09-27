@@ -283,7 +283,7 @@ namespace TouhouHeartstone
                 tip = INFO_CANNOT_ATTACK_SELF;
                 return false;
             }
-            if (game.getOpponent(player).getField().Any(c => c.isTaunt(game)) && !target.isTaunt(game))
+            if (game.getOpponent(player).getField().Any(c => c.isTaunt(game) && !c.isStealth(game) && !c.isImmunity(game)) && !target.isTaunt(game))
             {
                 tip = INFO_GUARD_SERVANT;
                 return false;
@@ -1071,7 +1071,7 @@ namespace TouhouHeartstone
                     game.logger.log(card + "无法进行攻击");
                 else
                 {
-                    card = arg.card;
+                    card = arg.card; 
                     target = arg.target;
                     game.logger.log(card + "攻击" + target);
                     await damage(game, new Dictionary<Card, DamageEventArg.Info>()
@@ -1192,7 +1192,9 @@ namespace TouhouHeartstone
                     Card source = info.source;
                     int value = info.damageValue;
                     if (source != null && source.isStealth(game))
+                    {
                         source.setStealth(game, false);
+                    }
                     if (value < 1)
                     {
                         removeKeys.Add(card);
