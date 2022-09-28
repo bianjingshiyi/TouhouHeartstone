@@ -234,22 +234,8 @@ namespace UI
         /// <param name="graphPosition">动作图坐标系坐标</param>
         public void moveActionNodeTo(ActionNodeItem item, Vector2 graphPosition)
         {
-            //设置节点位置
+            // 设置节点位置
             (item.transform as RectTransform).anchoredPosition = graphPosition; //+ _dragItemPositionOffset;
-            //设置背景大小
-            //刷新连线位置
-            /* for (int i = 0; i < _connectionList.Count; i++)
-             {
-                 if (_connectionList[i].outputNode == _dragItem || _connectionList[i].inputNode == _dragItem)
-                 {
-                     Vector2 from = _connectionList[i].outputNode.getOutputWorldPosition(_connectionList[i].outputIndex);
-                     from = _actionNodesRoot.InverseTransformPoint(from);
-                     Vector2 to = _connectionList[i].inputNode.getInputWorldPosition(_connectionList[i].inputIndex);
-                     to = _actionNodesRoot.InverseTransformPoint(to);
-
-                     _connectionList[i].line.setPosition(from, to);
-                 }
-             }*/
         }
         /// <summary>
         /// 从图上移除一个指定节点
@@ -439,25 +425,13 @@ namespace UI
             addScreenDuringTouchIntoBackground.triggers.Add(ScreenDuringTouch);
 
             EventTrigger.Entry ScreenEndTouch = new EventTrigger.Entry();
-            ScreenEndTouch.eventID = EventTriggerType.EndDrag;
+            ScreenEndTouch.eventID = EventTriggerType.PointerUp;
             ScreenEndTouch.callback.AddListener(onFigerEndTouch);
             EventTrigger addEndTouchIntoBackground =
                 _backgroundImage.gameObject.AddComponent<EventTrigger>();
             addScreenTouchIntoBackground.triggers.Add(ScreenEndTouch);
 
             #endregion
-        }
-        protected void Update()
-        {
-            //更新线段位置
-            /* foreach (ActionNodeConnectionData connection in _connectionList)
-              {
-                  Vector2 from = connection.outputNode.getOutputWorldPosition(connection.outputIndex);
-                  from = _actionNodesRoot.InverseTransformPoint(from);
-                  Vector2 to = connection.inputNode.getInputWorldPosition(connection.inputIndex);
-                  to = _actionNodesRoot.InverseTransformPoint(to);
-                  connection.line.setPosition(from, to);
-              }*/
         }
         #endregion
         #region 事件回调
@@ -495,12 +469,11 @@ namespace UI
 
         private void OnFingertouch(BaseEventData eventData)
         {
-
             if (Input.touchCount > 1)
             {
-                _currentTouch1 = Input.GetTouch(0);
-                _currentTouch2 = Input.GetTouch(1);
-                if (_currentTouch2.phase == TouchPhase.Began)
+                var _currentTouch1 = Input.GetTouch(0);
+                var _currentTouch2 = Input.GetTouch(1);
+                if (_currentTouch1.phase == TouchPhase.Began || _currentTouch2.phase == TouchPhase.Began)
                 {
                     _perviousTouch1 = _currentTouch1;
                     _perviousTouch2 = _currentTouch2;
@@ -513,49 +486,42 @@ namespace UI
         /// <param name="eventData"></param>
         private void onFingerDragging(BaseEventData eventData)
         {
-
             if (Input.touchCount > 1)
             {
                 _isTouchZooming = true;
-                _currentTouch1 = Input.GetTouch(0);
-                _currentTouch2 = Input.GetTouch(1);
+                var _currentTouch1 = Input.GetTouch(0);
+                var _currentTouch2 = Input.GetTouch(1);
                 Vector2 _perviousPosition1 = _perviousTouch1.position;
                 Vector2 _perviousPosition2 = _perviousTouch2.position;
                 Vector2 _currentPosition1 = _currentTouch1.position;
                 Vector2 _currentPosition2 = _currentTouch2.position;
-               // Debug.Log("pervpos1 = " + _perviousPosition1 + ", pervpos2 = " + _perviousPosition2);
-                //Debug.Log("curpos1 = " + _currentPosition1 + ", curvpos2 = " + _currentPosition2);
+
                 float leng1 = Vector2.Distance(_perviousPosition1, _perviousPosition2);
                 float leng2 = Vector2.Distance(_currentPosition1, _currentPosition2);
-                var _zoomScale = leng2 / leng1;
-                Vector3 _delta1 = (_perviousPosition1 + _perviousPosition2) / 2;
-                Vector3 _delta2 = (_currentPosition1 + _currentPosition2) / 2;
+                var scaleFactor = leng2 / leng1;
+                Vector3 prevCenter = (_perviousPosition1 + _perviousPosition2) / 2;
+                Vector3 currCenter = (_currentPosition1 + _currentPosition2) / 2;
                 Vector3 _localScale = _backgroundImage.transform.localScale;
-                Vector3 desiredScale = new Vector3(_localScale.x * _zoomScale, _localScale.y * _zoomScale, _localScale.z * _zoomScale);
-                _maxScale = 1.7f;
-                _minScale = 0.3f;
-                if (desiredScale.x < _maxScale && desiredScale.y < _maxScale && desiredScale.x > _minScale && desiredScale.y > _minScale)
+                Vector3 desiredScale = _localScale * scaleFactor;
+
+                if (scaleFactor != 1 && desiredScale.x < _maxScale && desiredScale.y < _maxScale && desiredScale.x > _minScale && desiredScale.y > _minScale)
                 {
+                    var localPos = _backgroundImage.transform.position;
+                    var targetPos = (1 - scaleFactor) * prevCenter + scaleFactor * localPos;
+                    //Debug.Log($"c1: {prevCenter}, c2: {currCenter}, factor: {scaleFactor}, delta: {targetPos - localPos}, prev: {localPos}");
+
                     _backgroundImage.transform.localScale = desiredScale;
-                    _currentOffsetScale = (1 - _zoomScale) * _delta1 + _zoomScale * _backgroundImage.transform.position;
-                    //Debug.Log("offsetScale = " + _currentOffsetScale);
-                    //Debug.Log("localPosition = " + _localPosition);
-                    Vector3 desiredPosition = _currentOffsetScale + (_delta2 - _delta1);
-                    //Debug.Log("zoomScale = " + _zoomScale);
-                    //Debug.Log("desiredPosition = " + desiredPosition);
-                    //Debug.Log("delta1 = " + _delta1);
-                    //Debug.Log("delta2 = " + _delta2);
-                    _backgroundImage.transform.position = desiredPosition;
+                    _backgroundImage.transform.position = targetPos;
                 }
+
+                _backgroundImage.transform.position += (currCenter - prevCenter);
+
                 _perviousTouch1 = _currentTouch1;
                 _perviousTouch2 = _currentTouch2;
             }
         }
         public void onFigerEndTouch(BaseEventData eventData)
         {
-            
-            _perviousTouch1 = _currentTouch1;
-            _perviousTouch2 = _currentTouch2;
             if (Input.touchCount <= 1)
             {
                 _isTouchZooming = false;
@@ -564,7 +530,10 @@ namespace UI
         public void onBackgroundDrag(BaseEventData eventData)
         {
             _isDragging = true;
-            _backgroundImage.transform.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
+            if (!_isTouchZooming)
+            {
+                _backgroundImage.transform.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
+            }
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
         {
@@ -587,12 +556,6 @@ namespace UI
             int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == item.indexOfInput(input));
             if (index < 0)
             {
-                /*   Vector2 from = input.getNodeWorldPosition();
-                   from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-                   Vector2 to = eventData.currentInputModule.input.mousePosition;
-                   to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-                   _dragLine = createLine(from, to, input.GetColor());*/
-
                 GameObject from = input.getNode();
                 GameObject to = new GameObject();
                 to.name = "Slot";
@@ -619,12 +582,6 @@ namespace UI
         private void onDragInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
             if (_isTouchZooming) return;
-
-            /*Vector2 from = input.getNodeWorldPosition();
-            from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-            Vector2 to = eventData.currentInputModule.input.mousePosition;
-            to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-            _dragLine.setPosition(from, to);*/
 
             GameObject from = input.getNode();
             GameObject to = new GameObject();
@@ -686,11 +643,6 @@ namespace UI
                 int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
                 if (index < 0)
                 {
-                    /*
-                     *Vector2 from = output.getNodeWorldPosition();
-                    from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-                    Vector2 to = eventData.currentInputModule.input.mousePosition;
-                    to = _actionNodeLineRoot.transform.InverseTransformPoint(to);*/
                     GameObject from = output.getNode();
                     GameObject to = new GameObject();
                     to.name = "Slot";
@@ -716,13 +668,6 @@ namespace UI
         private void onDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
             if (_isTouchZooming) return;
-
-            /*  Vector2 from = output.getNodeWorldPosition();
-             from = _actionNodeLineRoot.transform.InverseTransformPoint(from);
-             Vector2 to = eventData.currentInputModule.input.mousePosition;
-             to = _actionNodeLineRoot.transform.InverseTransformPoint(to);
-             _dragLine.setPosition(from, to);*/
-
 
             GameObject from = output.getNode();
             GameObject to = new GameObject();
@@ -879,18 +824,9 @@ namespace UI
         /// <summary>
         /// 在指定位置创建连线
         /// </summary>
-        /// <param name="from">相对于连线根节点的局部坐标</param>
-        /// <param name="to">相对于连线根节点的局部坐标</param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
         /// <returns></returns>
-       /* private ActionNodeGraphLine createLine(Vector2 from, Vector2 to)
-        {
-            ActionNodeGraphLine line = Instantiate(_actionNodeLineTemplate, _actionNodeLineRoot);
-            line.gameObject.SetActive(true);
-            line.setPosition(from, to);
-            return line;
-        }*/
-
-
         private ActionNodeGraphLine createLine(GameObject from, GameObject to)
         {
             ActionNodeGraphLine line = Instantiate(_ActionNodeGraphLineTemplate, _actionNodeLineRoot);
@@ -904,14 +840,6 @@ namespace UI
         /// <param name="from">相对于连线根节点的局部坐标</param>
         /// <param name="to">相对于连线根节点的局部坐标</param>
         /// <returns></returns>
-      /*  private ActionNodeGraphLine createLine(Vector2 from, Vector2 to, Color color)
-        {
-            ActionNodeGraphLine line = Instantiate(_actionNodeLineTemplate, _actionNodeLineRoot);
-            line.gameObject.SetActive(true);
-            line.setPosition(from, to);
-            line.SetColor(color);
-            return line;
-        }*/
         private ActionNodeGraphLine createLine(GameObject from, GameObject to, Color color)
         {
             ActionNodeGraphLine line = Instantiate(_ActionNodeGraphLineTemplate, _actionNodeLineRoot);
@@ -1145,14 +1073,11 @@ namespace UI
         private bool _isDragging;
         private Touch _perviousTouch1;
         private Touch _perviousTouch2;
-        private Touch _currentTouch1;
-        private Touch _currentTouch2;
         [SerializeField]
         float _maxScale = 1.7f;
         [SerializeField]
         float _minScale = 0.3f;
         private bool _isTouchZooming;
-        private Vector3 _currentOffsetScale;
 
 
         #endregion
