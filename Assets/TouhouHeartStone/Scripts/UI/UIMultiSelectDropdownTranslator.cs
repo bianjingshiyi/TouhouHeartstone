@@ -13,6 +13,9 @@ namespace Game
         [SerializeField]
         string comment;
 
+        [SerializeField]
+        string context;
+
         List<string> keys = new List<string>();
         public override void Translate()
         {
@@ -25,9 +28,19 @@ namespace Game
             }
 
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-            foreach (var key in keys)
+            if (string.IsNullOrEmpty(Context))
             {
-                options.Add(new Dropdown.OptionData(provider._(key)));
+                foreach (var key in keys)
+                {
+                    options.Add(new Dropdown.OptionData(provider._(key)));
+                }
+            }
+            else
+            {
+                foreach (var key in keys)
+                {
+                    options.Add(new Dropdown.OptionData(provider._p(key, Context)));
+                }
             }
             Component.options = options;
             Component.RefreshShownValue();
@@ -36,6 +49,11 @@ namespace Game
         protected override string getCommentInner()
         {
             return comment;
+        }
+
+        protected override string getContextInner()
+        {
+            return context;
         }
 
         protected override string getKeyInner()

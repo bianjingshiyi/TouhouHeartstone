@@ -35,6 +35,13 @@ namespace TouhouHeartstone {
             EditorSceneManager.OpenScene(active);
         }
 
+        [MenuItem("Custom/Translate/查找代码重复翻译")]
+        public static void TestGenerateCode()
+        {
+            MukioPotGenerator potGenerator = new MukioPotGenerator("ZMCS", "Translation Team");
+            TranslateMsgAttributeFinder.FindAll(potGenerator);
+        }
+
         static void SearchObject(Transform tr, MukioPotGenerator pot)
         {
             var cp = tr.GetComponent<ITranslateComponent>();
