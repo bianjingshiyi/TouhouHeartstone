@@ -10,6 +10,7 @@ using UnityEngine.EventSystems;
 using Game;
 using UIHelper = Game.UIHelper;
 using System.Threading.Tasks;
+using TouhouHeartstone;
 
 
 
@@ -373,7 +374,12 @@ namespace UI
             _card.itemCardFace.nameText.gameObject.SetActive(false);
             _card.servantCardFace.nameText.gameObject.SetActive(false);
             _card.servantCardFace.nameText.gameObject.SetActive(false);
-        }
+            if (_card.type == CATEGORY.SPELL)
+            {
+                _nameInputField.transform.position = _card.spellCardFace.nameText.transform.position;
+                _nameInputField.textComponent.fontSize = (int)_card.spellCardFace.nameText.fontSize;
+                _card.spellCardFace.nameText.gameObject.SetActive(false);
+            }
         private void onEditSubnameButtonClicked()
         {
             _editSubnameButton.gameObject.SetActive(false);
