@@ -317,6 +317,13 @@ namespace UI
         private void onTypeDropdownValueChanged(int value)
         {
             onChangeType?.Invoke(value);
+             if (_card.type == CATEGORY.SPELL)
+            {
+                _editNameButton.transform.position = _card.spellCardFace.nameText.transform.position;
+                _nameInputField.transform.position = _card.spellCardFace.nameText.transform.position;
+                _nameInputField.textComponent.fontSize = (int)_card.spellCardFace.nameText.fontSize;
+                _editSubnameButton.gameObject.SetActive(false);
+            }
         }
         private void onIsTokenToggleValueChangedCallback(bool value)
         {
@@ -380,6 +387,7 @@ namespace UI
                 _nameInputField.textComponent.fontSize = (int)_card.spellCardFace.nameText.fontSize;
                 _card.spellCardFace.nameText.gameObject.SetActive(false);
             }
+        }
         private void onEditSubnameButtonClicked()
         {
             _editSubnameButton.gameObject.SetActive(false);
