@@ -988,13 +988,13 @@
               "actionList" : [{
                   "_id" : 3,
                   "defineName" : "从一定数量的卡牌中选择一张",
-                  "branches" : [0],
+                  "branches" : [5],
                   "inputs" : [{
                       "actionNodeId" : 1,
                       "index" : 1
                     }],
                   "consts" : [3],
-                  "regVar" : []
+                  "regVar" : [true]
                 }, {
                   "_id" : 1,
                   "defineName" : "过滤满足条件的卡牌",
@@ -1022,6 +1022,35 @@
                     }],
                   "consts" : [],
                   "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "从墓地抽取一张牌至手牌",
+                  "branches" : [6],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 6,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "actionNodeId" : 7
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [19],
+                  "regVar" : [false]
                 }]
             }],
           "tagList" : ["battleCry"],
@@ -3072,20 +3101,32 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "2" : {
-          "posX" : 1047.59423828125,
-          "posY" : -160.98614501953125
+          "posX" : 1201.154541015625,
+          "posY" : 50.310272216796875
         },
         "3" : {
-          "posX" : 675.7301025390625,
-          "posY" : 253.18646240234375
+          "posX" : 2088.0,
+          "posY" : 244.92401123046875
         },
         "1" : {
-          "posX" : 757.6097412109375,
-          "posY" : -26.4329833984375
+          "posX" : 869.15234375,
+          "posY" : -199.94390869140625
         },
         "4" : {
-          "posX" : 435.364501953125,
+          "posX" : 544.1866455078125,
           "posY" : -306.03271484375
+        },
+        "5" : {
+          "posX" : 2909.525390625,
+          "posY" : 126.39850616455078
+        },
+        "6" : {
+          "posX" : 3497.68310546875,
+          "posY" : 167.04470825195313
+        },
+        "7" : {
+          "posX" : 2963.533203125,
+          "posY" : -600.6951904296875
         }
       },
       "freeActionNodeList" : []
@@ -4127,7 +4168,8 @@
               "eventVarName" : null,
               "argIndex" : 0
             }, null],
-          "consts" : [1]
+          "consts" : [1],
+          "regVar" : []
         }]
     }],
   "buffDefineList" : [{
@@ -4601,6 +4643,18 @@
       "_id" : 18,
       "propModifierList" : [],
       "effectList" : []
+    }, {
+      "_id" : 19,
+      "propModifierList" : [{
+          "_t" : "CostModifier",
+          "propertyName" : "cost",
+          "value" : -3,
+          "isSet" : false,
+          "minValue" : 0,
+          "maxValue" : 2147483647,
+          "onCheckCondition" : null
+        }],
+      "effectList" : []
     }],
   "buffSkinList" : [{
       "buffId" : 1,
@@ -4705,6 +4759,9 @@
       "language" : "zh-Hans"
     }, {
       "buffId" : 18,
+      "language" : "zh-Hans"
+    }, {
+      "buffId" : 19,
       "language" : "zh-Hans"
     }],
   "actionDefineList" : [{
