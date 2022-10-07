@@ -757,7 +757,6 @@ namespace UI
         }
         private void onDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
-            if (!_isTouchZooming) return;
             if (item != _dragItem)
                 return;
             Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
