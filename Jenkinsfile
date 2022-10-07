@@ -86,7 +86,7 @@ pipeline {
         stage('Build Android Debug') {
             steps {
                 script {
-                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
+                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER, 'zmcs_android_2')
                     unitybuilder.buildPlatform('2019.4.31f1-android-0', 'android-debug')
                 }
             }
@@ -97,7 +97,7 @@ pipeline {
             }
             steps {
                 script {
-                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
+                    UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER, 'zmcs_android_2')
                     unitybuilder.buildPlatform('2019.4.31f1-android-0', 'android-release')
                 }
             }
