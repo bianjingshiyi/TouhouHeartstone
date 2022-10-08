@@ -21,11 +21,11 @@ namespace TouhouHeartstone
             switch (modifyType)
             {
                 case ModifyType.set:
-                    return value;
+                    return this.value;
                 case ModifyType.remove:
-                    return value != null ? value.Except(value).ToArray() : new string[0];
+                    return value != null ? value.Except(this.value).ToArray() : new string[0];
                 default:
-                    return value != null ? value.Union(value).ToArray() : value;
+                    return value != null ? value.Union(this.value).ToArray() : this.value;
             }
         }
         public override PropModifier clone()
