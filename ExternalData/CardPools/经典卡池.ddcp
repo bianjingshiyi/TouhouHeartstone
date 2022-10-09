@@ -2412,68 +2412,68 @@
   "cardSkinList" : [{
       "_id" : -2147418111,
       "_skinName" : "经典皮肤",
-      "_name" : "秘藏魔法",
+      "_name" : "秘藏魔法*",
       "_imagePath" : "经典卡池\\Card-2147418111\\0\\Image_zh-Hans.jpg",
       "_desc" : "本回合中，你的下一张法术牌灵力值消耗减少(5)点。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418110,
-      "_name" : "火符【火神之光】",
+      "_name" : "火符【火神之光】*",
       "_subname" : "",
       "_imagePath" : "经典卡池\\Card-2147418110\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:火</b><br>造成7点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418109,
-      "_name" : "大图书馆",
+      "_name" : "大图书馆*",
       "_imagePath" : "经典卡池\\Card-2147418109\\0\\Image_zh-Hans.jpg",
       "_desc" : "检视牌库中的五张牌，选择一张并抽取。\r",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418108,
-      "_name" : "木符【风灵角笛】",
+      "_name" : "木符【风灵角笛】*",
       "_imagePath" : "经典卡池\\Card-2147418108\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:木</b><br>使一个仆从获得<b>增益：</b>+3/+6。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418107,
-      "_name" : "金符【金属疲劳】",
+      "_name" : "金符【金属疲劳】*",
       "_imagePath" : "经典卡池\\Card-2147418107\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:金</b><br>\r对所有敌方仆从造成3点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418106,
-      "_name" : "水符【水精公主】",
+      "_name" : "水符【水精公主】*",
       "_imagePath" : "经典卡池\\Card-2147418106\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:水</b>\r<br>增益所有友方角色：每次所受到的伤害减少3点，直到你的下个回合开始。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418105,
-      "_name" : "土符【巨石震怒】",
+      "_name" : "土符【巨石震怒】*",
       "_imagePath" : "经典卡池\\Card-2147418105\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:土</b>\r<br>召唤一个3/9具有<b>守卫</b>但无法攻击的岩石元素。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418104,
-      "_name" : "元素精灵",
+      "_name" : "元素精灵*",
       "_imagePath" : "经典卡池\\Card-2147418104\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>宣言</b>：随机将一张灵力值消耗为(0)的<b>元素法术</b>置入手牌。\r",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418103,
-      "_name" : "金符【秋之刃】",
+      "_name" : "金符【秋之刃】*",
       "_imagePath" : "经典卡池\\Card-2147418103\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:金</b>\r\n随机对一个敌方仆从造成2点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418102,
-      "_name" : "木符【春之风】",
+      "_name" : "木符【春之风】*",
       "_imagePath" : "经典卡池\\Card-2147418102\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:木</b>\r\n使一个仆从获得<b>增益：</b>生命值+2。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418101,
-      "_name" : "多重施法",
+      "_name" : "多重施法*",
       "_imagePath" : "经典卡池\\Buff6\\Image_zh-Hans.jpg",
       "_desc" : "随机使一张手牌中的法术牌消耗减少(2)点，将一张伤害递增的“哮喘”洗入牌库，将一张“多重施法”置入你的手牌。",
       "_language" : "zh-Hans"
@@ -2493,174 +2493,174 @@
       "_language" : "en-US"
     }, {
       "_id" : -2147418100,
-      "_name" : "火符【夏之红】",
+      "_name" : "火符【夏之红】*",
       "_imagePath" : "经典卡池\\Buff7\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:火</b>\r\n使一个仆从获得<b>增益：</b>本回合中攻击力+2。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418099,
-      "_name" : "水符【冬之素】",
+      "_name" : "水符【冬之素】*",
       "_imagePath" : "经典卡池\\Card-2147418099\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:水</b>\r\n使一个仆从获得<b>减益：禁锢</b>。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418098,
-      "_name" : "土符【土用之枪】",
+      "_name" : "土符【土用之枪】*",
       "_imagePath" : "经典卡池\\Card-2147418098\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:土</b>\r\n召唤一个1/1的宝石长枪。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418097,
-      "_name" : "宝石长枪",
+      "_name" : "宝石长枪*",
       "_imagePath" : "经典卡池\\Card-2147418097\\0\\Image_zh-Hans.jpg",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418096,
-      "_name" : "贤者之石",
+      "_name" : "贤者之石*",
       "_subname" : "",
       "_imagePath" : "经典卡池\\Card-2147418096\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>唯一</b>。你的回合开始时，触发这张牌的<b>宣言</b>效果。<b>宣言:</b>失去1点耐久，获得一张灵力消耗大于0的<b>元素法术</b>。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418095,
-      "_name" : "巨石元素",
+      "_name" : "巨石元素*",
       "_imagePath" : "经典卡池\\Card-2147418095\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>守卫<br>无法攻击</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418094,
-      "_name" : "小恶魔",
+      "_name" : "小恶魔*",
       "_imagePath" : "经典卡池\\Card-2147418094\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>唯一</b>\r\n<b>宣言</b>：检视墓地中三张法术牌，选择一张，使其灵力消耗减少(3)点并置入手牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418093,
-      "_name" : "日符【皇家烈焰】",
+      "_name" : "日符【皇家烈焰】*",
       "_imagePath" : "经典卡池\\Card-2147418093\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>唯一</b>\r\n对敌方英雄造成15点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418092,
-      "_name" : "月符【沉静月神】",
+      "_name" : "月符【沉静月神】*",
       "_imagePath" : "经典卡池\\Card-2147418092\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>唯一</b>\r\n<b>封印</b>并消灭所有敌方仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418091,
-      "_name" : "机械帕秋莉",
+      "_name" : "机械帕秋莉*",
       "_subname" : "",
       "_imagePath" : "经典卡池\\Card-2147418091\\0\\Image_zh-Hans.jpg",
       "_desc" : "如果你在本回合中使用过法术牌，该仆从灵力消耗减少(2)点。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418090,
-      "_name" : "图书馆保卫者",
+      "_name" : "图书馆保卫者*",
       "_subname" : "",
       "_imagePath" : "经典卡池\\Card-2147418090\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>守卫，宣言：</b>你的手牌中每有一张法术牌，便获得+1生命值。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418089,
-      "_name" : "火金符【圣爱尔摩火柱】",
+      "_name" : "火金符【圣爱尔摩火柱】*",
       "_subname" : "",
       "_imagePath" : "经典卡池\\Card-2147418089\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:金、火</b>\r\n对一个仆从和敌方英雄造成4点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418088,
-      "_name" : "水火符【燃素之雨】",
+      "_name" : "水火符【燃素之雨】*",
       "_subname" : "",
       "_imagePath" : "经典卡池\\Card-2147418088\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:水、火</b>\r\n造成7点伤害，随机分配给所有敌方角色。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418087,
-      "_name" : "土水符【诺亚洪水】",
+      "_name" : "土水符【诺亚洪水】*",
       "_imagePath" : "经典卡池\\Card-2147418087\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:水、土</b>\r\n<b>封印</b>所有仆从，然后召唤1个2/2具有<b>守卫</b>的洪水元素。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418086,
-      "_name" : "洪水元素",
+      "_name" : "洪水元素*",
       "_imagePath" : "经典卡池\\Card-2147418087\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>守卫</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418085,
-      "_name" : "金木符【元素收割者】",
+      "_name" : "金木符【元素收割者】*",
       "_imagePath" : "经典卡池\\Card-2147418085\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:金、木</b>\r\n对所有敌方仆从造成2点伤害。每消灭一个仆从,便增益一个随机友方仆从：+1/+1。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418084,
-      "_name" : "木土符【抽芽复行】",
+      "_name" : "木土符【抽芽复行】*",
       "_subname" : "",
       "_imagePath" : "经典卡池\\Card-2147418084\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:木、土</b>\r\n使一个仆从获得“<b>遗言</b>：召唤一个目标仆从的复制并使其获得+3/+3”。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418083,
-      "_name" : "木火符【森林大火】",
+      "_name" : "木火符【森林大火】*",
       "_imagePath" : "经典卡池\\Card-2147418083\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:木、火</b>\r\n对一个敌方仆从造成你控制仆从数量的伤害，然后使所有友方仆从获得<b>增益：</b>+2/+2。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418082,
-      "_name" : "金水符【水银之毒】",
+      "_name" : "金水符【水银之毒】*",
       "_imagePath" : "经典卡池\\Card-2147418082\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:金、水</b>\r\n使所有敌方仆从获得<b>减益:</b>攻击力-3，直到对手的回合开始。\r\n消灭攻击力为0的敌方仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418081,
-      "_name" : "奥术知识",
+      "_name" : "奥术知识*",
       "_imagePath" : "经典卡池\\Card-2147418081\\0\\Image_zh-Hans.jpg",
       "_desc" : "检视牌库中5张牌，选择一张。执行两次，然后抽这两张牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418080,
-      "_name" : "土金符【淡黄阵风】",
+      "_name" : "土金符【淡黄阵风】*",
       "_imagePath" : "经典卡池\\Card-2147418080\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:金、土</b>\r\n每有一个敌方仆从，便召唤一个3/1具有<b>速攻</b>的沙尘元素。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418079,
-      "_name" : "沙尘元素",
+      "_name" : "沙尘元素*",
       "_imagePath" : "经典卡池\\Card-2147418079\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>速攻</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418078,
-      "_name" : "水木符【水精灵】",
+      "_name" : "水木符【水精灵】*",
       "_imagePath" : "经典卡池\\Card-2147418078\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:木、水</b>\r\n完全治愈一个仆从，然后使其获得<b>增益：</b>+3/+6和<b>守卫</b>。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418077,
-      "_name" : "噬法触手",
+      "_name" : "噬法触手*",
       "_imagePath" : "经典卡池\\Card-2147418077\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>速攻</b>\r\n每当你的回合开始时，随机弃一张法术牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418076,
-      "_name" : "火土符【环状熔岩带】",
+      "_name" : "火土符【环状熔岩带】*",
       "_imagePath" : "经典卡池\\Card-2147418076\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>元素法术:火、土</b>\r\n召唤2个2/2具有<b>守卫</b>的熔岩元素。它们会在你的回合结束时随机对一个敌人造成2点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418075,
-      "_name" : "熔岩元素",
+      "_name" : "熔岩元素*",
       "_imagePath" : "经典卡池\\Card-2147418075\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>守卫</b>\r\n每当你的回合结束时，随机对一个敌人造成2点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418074,
-      "_name" : "西行寺幽幽子",
+      "_name" : "西行寺幽幽子*",
       "_imagePath" : "经典卡池\\Card-2147418074\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>唯一</b>\r\n<b>宣言</b>:消灭一个仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418073,
-      "_name" : "琪露诺",
+      "_name" : "琪露诺*",
       "_imagePath" : "经典卡池\\Card-2147418073\\0\\Image_zh-Hans.jpg",
       "_desc" : "<b>宣言:禁锢</b>一个敌人。",
       "_language" : "zh-Hans"
@@ -4171,6 +4171,16 @@
           "consts" : [1],
           "regVar" : []
         }]
+    }, {
+      "cardId" : -2147418073,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 1016.0947265625,
+          "posY" : -319.526611328125
+        }
+      },
+      "freeActionNodeList" : []
     }],
   "buffDefineList" : [{
       "_id" : 1,
