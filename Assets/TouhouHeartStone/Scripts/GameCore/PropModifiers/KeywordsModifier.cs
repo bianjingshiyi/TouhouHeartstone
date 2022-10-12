@@ -1,6 +1,8 @@
 ﻿using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System.Linq;
+using System.Threading.Tasks;
+
 namespace TouhouHeartstone
 {
     public class KeywordsModifier : PropModifier<string[]>
@@ -15,6 +17,10 @@ namespace TouhouHeartstone
         {
             value = origin.value;
             modifyType = origin.modifyType;
+        }
+        public override Task afterAdd(IGame game, Card card)
+        {
+            return base.afterAdd(game, card);
         }
         public override string[] calc(IGame game, Card card, string[] value)
         {

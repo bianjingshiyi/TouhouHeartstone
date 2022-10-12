@@ -25,7 +25,6 @@ namespace TouhouHeartstone.Builtin
         {
             effects1 = value;
         }
-
         public const string METAL = "Metal";
         public const string WOOD = "Wood";
         public const string WATER = "Water";
@@ -48,43 +47,57 @@ namespace TouhouHeartstone.Builtin
         }
         public static CardDefine[] getElementCards(CardEngine game)
         {
-            return game.getDefines().Where(c => getElements(c).Length == 1 && c.isSpell() && !c.isToken()).ToArray();
+            CardDefine[] defines = Array.FindAll(game.getDefines(), c => getElements(c).Length == 1 && c.isSpell() && !c.isToken());
+            return defines;
         }
-        public static CardDefine[] getMixCards(CardEngine game)
-        {
-            return game.getDefines().Where(c => getElements(c).Length > 1).ToArray();
-        }
+        /// <summary>
+        /// 获取卡牌A与卡牌B可能的融合结果。
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static CardDefine[] getMixCards(CardEngine game, CardDefine a, CardDefine b)
         {
-            var elements = getElements(a).Concat(getElements(b)).Distinct().ToArray();
-            return getMixCards(game).Where(c => elements.isSubset(getElements(c)) && c.id != a.id && c.id != b.id).ToArray();
+            List<string> elementList = new List<string>(getElements(a));
+            string[] elementsB = getElements(b);
+            for (int i = 0; i < elementsB.Length; i++)
+            {
+                if (elementList.Contains(elementsB[i]))
+                    continue;
+                elementList.Add(elementsB[i]);
+            }
+            CardDefine[] defines = Array.FindAll(game.getDefines(),
+                c => getElements(c).Length > 1);
+            defines = Array.FindAll(defines,
+                c => Array.TrueForAll(getElements(c), e => elementList.Contains(e)) &&
+                c.id != a.id &&
+                c.id != b.id);
+            return defines;
         }
-
-
         public static async Task<ElementMixEventArg> tryMix(CardEngine game, Card card)
         {
-            Player player = card.getOwner();
-            var mixableCards = player.getHand().Where(c => getMixCards(game, card.define, c.define).Length > 0);
-            if (mixableCards.Count() < 0)
+            return await game.triggers.doEvent(new ElementMixEventArg()
             {
-                return null;
-            }
-            var eventArg = await game.triggers.doEvent(new ElementMixEventArg()
-            {
-                player = player,
+                player = card.getOwner(),
             }, async args =>
-             {
-                 Card mixCard = await game.askSelect(player, mixableCards, title: "投入魔法");
-                 var mixedResults = getMixCards(game, card.define, mixCard.define);
-                 var mixedResult = await game.askSelect(player, mixedResults, title: "元素融合");
-                 await mixCard.setDefine(game, mixedResult);
-                 await mixCard.resetCard(game);
-             });
-
-            return eventArg;
+            {
+                Player player = args.player;
+                //获取所有有可能有融合结果的手牌
+                Card[] cards = Array.FindAll(player.getHand().ToArray(), c => getMixCards(game, card.define, c.define).Length > 0);
+                if (cards.Length < 1)
+                    return;
+                //让玩家选择另一个融合素材
+                Card mixCard = await game.askSelect(player, cards, title: "投入魔法");
+                //获取两个素材的所有融合结果
+                CardDefine[] mixedResults = getMixCards(game, card.define, mixCard.define);
+                //让玩家选择一个融合结果
+                CardDefine mixedResult = await game.askSelect(player, mixedResults, title: "元素融合");
+                //将卡牌变为融合结果
+                await mixCard.setDefine(game, mixedResult);
+                await mixCard.resetCard(game);
+            });
         }
-
-
         public class ElementMixEventArg : EventArg, IDescribableEventArg
         {
             public Player player;
@@ -134,7 +147,6 @@ namespace TouhouHeartstone.Builtin
                 };
             }
         }
-
     }
 
     /// <summary>
