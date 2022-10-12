@@ -1497,7 +1497,7 @@
       "_id" : -2147418087,
       "type" : "Spell",
       "propDict" : {
-        "cost" : 6,
+        "cost" : 4,
         "characterId" : 4194304,
         "tags" : {
           "_t" : "System.String[]",
