@@ -324,6 +324,16 @@ namespace UI
                 _nameInputField.textComponent.fontSize = (int)_card.spellCardFace.nameText.fontSize;
                 _editSubnameButton.gameObject.SetActive(false);
             }
+             else if (_card.type == CATEGORY.SERVANT)
+            {
+                _editNameButton.transform.position = _card.servantCardFace.nameText.transform.position;
+                _editSubnameButton.transform.position = _card.servantCardFace.subNameText.transform.position;
+                _nameInputField.transform.position = _card.servantCardFace.nameText.transform.position;
+                _subnameInputField.transform.position = _card.servantCardFace.subNameText.transform.position;
+                _nameInputField.textComponent.fontSize = (int)_card.servantCardFace.nameText.fontSize;
+                _subnameInputField.textComponent.fontSize = (int)_card.servantCardFace.subNameText.fontSize;
+                _subnameInputField.gameObject.SetActive(true);
+            }
         }
         private void onIsTokenToggleValueChangedCallback(bool value)
         {
@@ -386,6 +396,18 @@ namespace UI
                 _nameInputField.transform.position = _card.spellCardFace.nameText.transform.position;
                 _nameInputField.textComponent.fontSize = (int)_card.spellCardFace.nameText.fontSize;
                 _card.spellCardFace.nameText.gameObject.SetActive(false);
+                _nameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
+            }
+            else if (_card.type == CATEGORY.SERVANT)
+            {
+                _editNameButton.transform.position = _card.servantCardFace.nameText.transform.position;
+                _editSubnameButton.transform.position = _card.servantCardFace.subNameText.transform.position;
+                _nameInputField.transform.position = _card.servantCardFace.nameText.transform.position;
+                _subnameInputField.transform.position = _card.servantCardFace.subNameText.transform.position;
+                _nameInputField.textComponent.fontSize = (int)_card.servantCardFace.nameText.fontSize;
+                _subnameInputField.textComponent.fontSize = (int)_card.servantCardFace.subNameText.fontSize;
+                _nameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
+                _subnameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
             }
         }
         private void onEditSubnameButtonClicked()
