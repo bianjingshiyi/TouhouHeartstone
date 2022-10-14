@@ -76,6 +76,7 @@ namespace Controllers
             else
                 _ui.switchToServant();
             await setCurSkinIndex(0);
+            _textChangedByType();
         }
         #endregion
         #region 私有方法
@@ -166,9 +167,10 @@ namespace Controllers
             _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
             _ui.onChangeTag += onChangeTag;
+          
         }
         #endregion
-        #region 事件回调
+         #region 事件回调
         private async void onChangeSkin(int skinIndex)
         {
             if (skinIndex == getSkinCount())
@@ -236,6 +238,7 @@ namespace Controllers
             scene.editor.hasUnsavedChanges = true;
             _cardDefine.type = _types[typeIndex];
             _ui.setType(typeIndex, _types[typeIndex]);
+            _textChangedByType();
         }
         private void onIsTokenToggleValueChanged(bool value)
         {
@@ -313,6 +316,7 @@ namespace Controllers
             scene.editor.hasUnsavedChanges = true;
             _curCardSkin.name = name;
             _ui.setName(name);
+            _textChangedByType();
         }
         /// <summary>
         /// 当用户更改卡副名
@@ -323,6 +327,7 @@ namespace Controllers
             scene.editor.hasUnsavedChanges = true;
             _curCardSkin.subname = subName;
             _ui.setSubName(subName);
+          
         }
         /// <summary>
         /// 当需要用户选择图片，根据平台不同调用不同的插件方法，返回选择的贴图。新建的贴图需要缓存在内存中。
@@ -445,6 +450,23 @@ namespace Controllers
             scene.editor.display(false, false, -1, true);
         }
         #endregion
+
+        private void _textChangedByType() 
+        {
+            if (_cardDefine.type == DEFINE.SPELL || _cardDefine.type == DEFINE.ITEM || _cardDefine.type == DEFINE.SKILL)
+            {
+                _ui.EditNameButton.transform.position = _ui.card.spellCardFace.nameText.transform.position;
+                _ui.NameInputField.transform.position = _ui.card.spellCardFace.nameText.transform.position;
+                _ui.NameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
+            }
+
+            else if (_cardDefine.type == DEFINE.SERVANT || _cardDefine.type == DEFINE.MASTER)
+            {
+                _ui.EditNameButton.transform.position = _ui.card.servantCardFace.nameText.transform.position;
+                _ui.NameInputField.transform.position = _ui.card.servantCardFace.nameText.transform.position;
+                _ui.NameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
+            }
+        }
         #endregion
 
         private void updateSkinNames()
@@ -487,6 +509,7 @@ namespace Controllers
         public MainCtrl main { get; }
         CardEditorPanel _ui;
         string[] _types;
+
         public static readonly string[] keywords = new string[]
         {
             KEYWORD.TAUNT,
