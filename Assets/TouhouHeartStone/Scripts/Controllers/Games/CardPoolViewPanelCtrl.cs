@@ -63,11 +63,11 @@ namespace Controllers
                 for (int i = 0; i < _cardPoolInfoList.Count; i++)
                 {
                     //卡池卡牌
+                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].cardPoolId);
                     if (!_cardPoolFilterValue[i])
                     {
                         continue;
                     }
-                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].cardPoolId);
                     _cardDefineList.AddRange(cardDefines);
                 }
                 //过滤
