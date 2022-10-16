@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using TouhouCardEngine; 
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
@@ -154,6 +154,20 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             return card.setProp(game, propName, value);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_COST, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getCost(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.getCost(game);
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ATTACK, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getAttack(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.getAttack(game);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_LIFE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
@@ -392,18 +406,18 @@ namespace Game
             {
                 await player.getGrave().moveTo(game, cards, player.getHand());
             }
-            else if ((player.getHand().maxCount - player.getHand().count) < cards.Length) 
+            else if ((player.getHand().maxCount - player.getHand().count) < cards.Length)
             {
-                    await player.getGrave().moveTo(game, cards.Take((player.getHand().maxCount - player.getHand().count)), player.getHand());
+                await player.getGrave().moveTo(game, cards.Take((player.getHand().maxCount - player.getHand().count)), player.getHand());
             }
             else
             {
                 return;
             }
         }
-    } 
+    }
 
-   
+
     public enum CardDefineSelect
     {
         Spell,

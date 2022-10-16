@@ -228,6 +228,10 @@ namespace Game
         public const string EDITOR_PARAM_NAME_PROPERTY_NAME = "属性名称";
         [TranslateMsg("动作图编辑器中动作节点名称之设置属性")]
         public const string EDITOR_NODE_NAME_SET_PROPERTY = "设置属性";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取花费")]
+        public const string EDITOR_NODE_NAME_GET_COST = "获取花费";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取攻击力")]
+        public const string EDITOR_NODE_NAME_GET_ATTACK = "获取攻击力";
         [TranslateMsg("动作图编辑器中动作节点名称之获取生命值")]
         public const string EDITOR_NODE_NAME_GET_LIFE = "获取生命值";
         [TranslateMsg("动作图编辑器中动作输入名称之值")]
