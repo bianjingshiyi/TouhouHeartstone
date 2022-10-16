@@ -1208,7 +1208,7 @@
                     }, {
                       "actionNodeId" : 3
                     }],
-                  "consts" : [null],
+                  "consts" : [0],
                   "regVar" : [false]
                 }, {
                   "_id" : 3,
@@ -1225,7 +1225,7 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [],
-                  "regVar" : [true]
+                  "regVar" : [false]
                 }, {
                   "_id" : 5,
                   "defineName" : "是否为法术牌",
@@ -1242,17 +1242,24 @@
                   "inputs" : [{
                       "actionNodeId" : 7
                     }, null],
-                  "consts" : [null],
+                  "consts" : [0],
                   "regVar" : [false]
                 }, {
                   "_id" : 7,
                   "defineName" : "是否具有增益",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 4
+                      "actionNodeId" : 12
                     }, {
                       "actionNodeId" : 8
                     }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 12,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
                   "consts" : [],
                   "regVar" : [false]
                 }, {
@@ -3171,7 +3178,7 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 971.873291015625,
+          "posX" : 1102.5582275390625,
           "posY" : 1233.4007568359375
         },
         "2" : {
@@ -3179,12 +3186,12 @@
           "posY" : 1297.703369140625
         },
         "3" : {
-          "posX" : -50.0413818359375,
-          "posY" : 1051.911865234375
+          "posX" : -65.452301025390625,
+          "posY" : 1150.5419921875
         },
         "4" : {
-          "posX" : -318.9383544921875,
-          "posY" : 1144.28076171875
+          "posX" : -494.6234130859375,
+          "posY" : 1258.3218994140625
         },
         "5" : {
           "posX" : 587.033203125,
@@ -3199,8 +3206,8 @@
           "posY" : 661.437255859375
         },
         "8" : {
-          "posX" : -571.45001220703125,
-          "posY" : 758.6883544921875
+          "posX" : -895.0802001953125,
+          "posY" : 419.64727783203125
         },
         "9" : {
           "posX" : 825.822265625,
@@ -3211,8 +3218,12 @@
           "posY" : 238.21533203125
         },
         "11" : {
-          "posX" : 911.192626953125,
-          "posY" : -100.236328125
+          "posX" : 840.7423095703125,
+          "posY" : -456.00946044921875
+        },
+        "12" : {
+          "posX" : -468.92156982421875,
+          "posY" : 955.39404296875
         }
       },
       "freeActionNodeList" : []
@@ -4572,7 +4583,7 @@
           "_t" : "LifeModifier",
           "relatedPropName" : "x",
           "propertyName" : "life",
-          "value" : 9,
+          "value" : 3,
           "isSet" : false,
           "minValue" : 0,
           "maxValue" : 2147483647

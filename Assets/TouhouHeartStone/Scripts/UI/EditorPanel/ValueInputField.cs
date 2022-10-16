@@ -294,7 +294,12 @@ namespace UI
                 _dropdown.gameObject.SetActive(true);
                 _dropdown.ClearOptions();
                 _dropdown.AddOptions(new List<string>(_valueInfo.optionalNames));
-                int index = Array.IndexOf(_valueInfo.optionalValues, _valueInfo.value);
+                if (_valueInfo.value is int index)
+                {
+                    //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
+                }
+                else
+                    index = Array.IndexOf(_valueInfo.optionalValues, _valueInfo.value);
                 if (index < 0)
                     index = 0;
                 _dropdown.SetValueWithoutNotify(index);

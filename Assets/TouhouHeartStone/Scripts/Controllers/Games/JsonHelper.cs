@@ -23,6 +23,12 @@ namespace Controllers
                 BsonClassMap.RegisterClassMap<GeneratedEffect>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedHalo)))
                 BsonClassMap.RegisterClassMap<GeneratedHalo>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(CompareOperator)))
+                BsonClassMap.RegisterClassMap<CompareOperator>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(IntegerOperator)))
+                BsonClassMap.RegisterClassMap<IntegerOperator>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(LogicOperator)))
+                BsonClassMap.RegisterClassMap<LogicOperator>();
             isInited = true;
         }
         public static string toJson(this object obj, bool readFriendly = false)
