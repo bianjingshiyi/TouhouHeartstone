@@ -264,6 +264,8 @@ namespace UI
         #region 生命周期
         protected void Awake()
         {
+            if (_typeDropdown == null)
+                _typeDropdown = transform.Find("DetailPanel/TypeDropdownField/DropdownLight").GetComponent<Dropdown>();
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChanged);
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
             _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
@@ -317,7 +319,7 @@ namespace UI
         private void onTypeDropdownValueChanged(int value)
         {
             onChangeType?.Invoke(value);
-           
+
         }
         private void onIsTokenToggleValueChangedCallback(bool value)
         {
@@ -708,7 +710,7 @@ namespace UI
         }
         public InputField NameInputField
         {
-            get { return _nameInputField;  }
+            get { return _nameInputField; }
             set { _nameInputField = value; }
         }
     }
