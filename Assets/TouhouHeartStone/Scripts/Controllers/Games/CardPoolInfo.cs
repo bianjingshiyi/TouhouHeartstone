@@ -9,5 +9,6 @@ namespace Controllers
         public string cardPoolName;
         public string imageResPath;
         public float version;
+        public int versionNumber;
     }
 }

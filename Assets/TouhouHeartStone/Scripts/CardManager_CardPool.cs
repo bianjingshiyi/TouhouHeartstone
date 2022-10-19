@@ -111,7 +111,7 @@ namespace Game
             cardPoolInfo.cardPoolId = cardPoolId;
             cardPoolInfo.cardPoolName = StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME;
             cardPoolInfo.imageResPath = null;
-            cardPoolInfo.version = CARD_POOL_VERSION_0_2;
+            cardPoolInfo.versionNumber = CARD_POOL_VERSION_1;
             cardPool = new CardPool();
             _cardPoolDict[cardPoolId] = cardPool;
         }
@@ -131,14 +131,14 @@ namespace Game
             //如果当前的卡池没有被保存过，没有分配地址，则给它分配一个地址。
             string cardPoolPath = null;
             if (cardPoolInfo == null) { return; }//如果没有保存需求就跳过这个流程
-                foreach (var pair in _cardPoolInfoDict)
+            foreach (var pair in _cardPoolInfoDict)
+            {
+                if (pair.Value.cardPoolId == cardPoolInfo.cardPoolId)
                 {
-                    if (pair.Value.cardPoolId == cardPoolInfo.cardPoolId)
-                    {
-                        cardPoolPath = pair.Key;
-                        break;
-                    }
+                    cardPoolPath = pair.Key;
+                    break;
                 }
+            }
             if (cardPoolPath == null)
             {
                 //没有指定地址
@@ -160,7 +160,8 @@ namespace Game
                 //如果是StreamingAssets，那要转存成可持续化文件
                 path = path.Substring(3, path.Length - 3);
             }
-            cardPoolInfo.version = CARD_POOL_VERSION_0_3;
+            cardPoolInfo.version = 0;
+            cardPoolInfo.versionNumber = CARD_POOL_VERSION_1;
             //初始化JSON
             if (!JsonHelper.isInited)
             {
@@ -201,30 +202,13 @@ namespace Game
             string json = lines[0];
             CardPoolInfo cardPoolInfo = JsonHelper.fromJson<CardPoolInfo>(json);
             CardPool cardPool;
-            if (cardPoolInfo.version >= CARD_POOL_VERSION_0_3)
+            if (cardPoolInfo.versionNumber >= CARD_POOL_VERSION_1)
             {
-                if (path.StartsWith("sa:"))
-                    json = await game.fileManager.readStreamingTextFileToEnd(path, 1);
-                else
-                    json = await game.fileManager.readTextFileToEnd(path, 1);
-                try
-                {
-                    SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
-                    cardPool = serializableCardPool.toCardPool(game.editor.getTypeByName);
-                }
-                catch (Exception e)
-                {
-                    throw new FormatException("反序列化卡池" + path + "失败", e);
-                }
-                _cardPoolInfoDict[path] = cardPoolInfo;
-                _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
-                //if (!_runtimeGenActDefDict.TryGetValue(cardPoolInfo.cardPoolId, out var actionDefineList))
-                //{
-                //    actionDefineList = new List<GeneratedActionDefine>();
-                //    _runtimeGenActDefDict.Add(cardPoolInfo.cardPoolId, actionDefineList);
-                //}
-                //actionDefineList.Clear();
-                //actionDefineList.AddRange(cardPool.actionDefineList.ConvertAll(s => s.toGeneratedActionDefine(game.editor.getTypeByName)));
+                cardPool = await loadCardPool_v1(path, cardPoolInfo);
+            }
+            else if (cardPoolInfo.version >= CARD_POOL_VERSION_0_3)
+            {
+                cardPool = await loadCardPool_v1(path, cardPoolInfo);
             }
             else if (cardPoolInfo.version >= CARD_POOL_VERSION_0_2)
             {
@@ -895,6 +879,25 @@ namespace Game
                 }
             }
         }
+        private async Task<CardPool> loadCardPool_v1(string path, CardPoolInfo cardPoolInfo)
+        {
+            string json = path.StartsWith("sa:") ?
+                await game.fileManager.readStreamingTextFileToEnd(path, 1) :
+                await game.fileManager.readTextFileToEnd(path, 1);
+            CardPool cardPool;
+            try
+            {
+                SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
+                cardPool = serializableCardPool.toCardPool(game.editor.getTypeByName);
+            }
+            catch (Exception e)
+            {
+                throw new FormatException("反序列化卡池" + path + "失败", e);
+            }
+            _cardPoolInfoDict[path] = cardPoolInfo;
+            _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
+            return cardPool;
+        }
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
             string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, cardPool.cardPoolName + "." + cardPoolFilePostfix);
@@ -954,6 +957,7 @@ namespace Game
         const float CARD_POOL_VERSION_0_3 = 0.3f;
         const float CARD_POOL_VERSION_0_2 = 0.2f;
         const float CARD_POOL_VERSION_0_1 = 0.1f;
+        const int CARD_POOL_VERSION_1 = 1;
         #endregion
     }
 }
