@@ -715,7 +715,6 @@ namespace UI
             OnPlayerReadyChange = null;
         }
     }
-
     partial class RoomPlayerListItem
     {
         partial void onAwake()
