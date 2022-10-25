@@ -5,6 +5,7 @@ using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
+using MukioI18n;
 
 namespace Game
 {
@@ -415,7 +416,27 @@ namespace Game
                 return;
             }
         }
+
+        /// <summary>
+        /// 获取所有友方随从
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取友方随从")]
+        public const string EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS = "获取友方随从";
+
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getFriendlyServants(CardEngine game, Card card)
+        {
+            {
+                Card[] servants = card.owner.getField();
+                return servants;
+            }
+        }
     }
+
 
 
     public enum CardDefineSelect
