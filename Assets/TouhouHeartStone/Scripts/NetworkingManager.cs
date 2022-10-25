@@ -13,6 +13,7 @@ using BJSYGameCore.UI;
 using System.Text.RegularExpressions;
 using NitoriNetwork.Common;
 using MukioI18n;
+using Controllers;
 
 namespace Game
 {
@@ -75,7 +76,8 @@ namespace Game
                 return _logic;
             }
         }
-
+        // 对MainSceneCtrl的引用，用于调用RoomCtrl的display。
+        private MainSceneCtrl _sceneCtrl;
         protected override void onAwake()
         {
             base.onAwake();
@@ -215,6 +217,11 @@ namespace Game
         protected void Start()
         {
             _ = startSequence();
+            // 初始化_sceneCtrl.
+            if (_sceneCtrl == null)
+            {
+                _sceneCtrl = TransformHelper.findComponentInAllScenes<MainSceneCtrl>();
+            }
         }
         protected void Update()
         {
@@ -533,7 +540,8 @@ namespace Game
         private void setRoomPanel(RoomData room)
         {
             Debug.Log("更新房间信息");
-            roomPanel.SetInfo(room);
+            _sceneCtrl.room.display(room, false);
+            //roomPanel.SetInfo(room);
         }
 
         /// <summary>
@@ -545,7 +553,8 @@ namespace Game
 
             roomPanel.onQuitClick += () =>
             {
-                quitRoom();
+                // 不要再quitRoom，onQuitClick本身就会调用quitRoom().
+                //quitRoom();
                 ui.parent.display(ui);
             };
             roomPanel.onStartClick += () =>

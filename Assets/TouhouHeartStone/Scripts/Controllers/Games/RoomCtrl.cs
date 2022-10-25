@@ -174,10 +174,16 @@ namespace Controllers
         }
         private void onClickReadyButton()
         {
+            var localPlayer = getLocalPlayerData();
+            localPlayer.setReady(true);
+            updateStartAndReadyButton();
             //TODO:多人再说
         }
         private void onClickCancleReadyButton()
         {
+            var localPlayer = getLocalPlayerData();
+            localPlayer.setReady(false);
+            updateStartAndReadyButton();
             //TODO:多人再说
         }
         private void onClickQuitButton()
@@ -196,7 +202,7 @@ namespace Controllers
                 var player = _currentRoomData.playerDataList[i];
                 if (player.id == playerId)
                 {
-                    Deck deck = _currentRoomData.playerDataList[i].getDeck();
+                    Deck deck = player.getDeck();
                     if (deck == null)
                     {
                         deck = new Deck(cardsId[0], cardsId.Skip(1));
@@ -206,7 +212,7 @@ namespace Controllers
                         deck.masterId = cardsId[0];
                         deck.setCards(cardsId.Skip(1));
                     }
-                    _currentRoomData.playerDataList[i].setDeck(deck);
+                    player.setDeck(deck);
                     if (player.type == RoomPlayerType.ai)
                     {
                         player.setReady(true);
@@ -222,6 +228,7 @@ namespace Controllers
             _ui.enableInitReplaceTime(isHost);
             _ui.enableTurnTime(isHost);
             _ui.enableDisableRandomPlayerActOrder(isHost);
+            _ui.enableAllowCustomCards(isHost);
         }
         private void updateStartAndReadyButton()
         {
@@ -251,13 +258,24 @@ namespace Controllers
         private bool isAbleToReady(RoomPlayerData player)
         {
             Deck deck = player.getDeck();
-            if (deck == null || game.deck.isValidDeck(deck))
-                return false;
-            return true;
+            if (deck != null)
+            {
+                bool deckValid;
+                if (_isLocalGame)
+                {
+                    deckValid = game.deck.isValidDeck(deck);
+                }
+                else
+                {
+                    deckValid = game.deck.isValidDeckForOnlineGame(deck);
+                }
+                return deckValid;
+            }
+            return false;
         }
         private RoomPlayerData getLocalPlayerData()
         {
-            return _currentRoomData.playerDataList.Find(p => p.id == _currentRoomData.ownerId);
+            return _currentRoomData.playerDataList.Find(p => p.id == game.network.logic.localPlayer.id);
         }
         private void updatePlayerListUI()
         {
@@ -285,7 +303,7 @@ namespace Controllers
                 viewData[i].canRemove = game.network.logic.localPlayer.id == _currentRoomData.ownerId && player.id != _currentRoomData.ownerId;
             }
             _ui.updatePlayerList(viewData);
-            _ui.displayAddAIButton(_currentRoomData.playerDataList.Count < _currentRoomData.maxPlayerCount);
+            _ui.displayAddAIButton(_currentRoomData.playerDataList.Count < _currentRoomData.maxPlayerCount && _isLocalGame);
         }
         private void displayPlayerDeckList(Deck deck)
         {

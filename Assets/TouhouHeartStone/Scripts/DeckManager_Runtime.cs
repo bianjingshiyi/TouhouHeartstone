@@ -51,7 +51,7 @@ namespace Game
             MainManager game = getManager<MainManager>();
             for (int i = 0; i < deck.cardList.Count; i++)
             {
-                if (!game.card.isBuiltinCard(game.card.getCardDefine(deck.cardList[i].id)))
+                if (!game.card.isBuiltinCard(deck.cardList[i].id))
                 {
                     return false;
                 }

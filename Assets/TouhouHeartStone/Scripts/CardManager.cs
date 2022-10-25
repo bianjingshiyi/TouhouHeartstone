@@ -505,7 +505,11 @@ namespace Game
         }
         public bool isBuiltinCard(CardDefine card)
         {
-            return defineDic.ContainsKey(card.id);
+            return isBuiltinCard(card.id);
+        }
+        public bool isBuiltinCard(int cardId)
+        {
+            return defineDic.ContainsKey(cardId);
         }
         public CardDefine[] getCardDefines(int cardPoolId)
         {
