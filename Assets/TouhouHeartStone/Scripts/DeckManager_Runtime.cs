@@ -34,7 +34,7 @@ namespace Game
         public bool isValidDeck(Deck deck)
         {
             //检查数量是否合法，合法数量是可编辑的数量加上一张角色卡
-            if (deck.getCardCount() != deckValidSize + 1)
+            if (deck.getCardCount() != deckValidSize)
             {
                 return false;
             }

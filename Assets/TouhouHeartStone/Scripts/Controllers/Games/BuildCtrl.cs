@@ -703,7 +703,7 @@ namespace Controllers
             {
                 viewData[i].name = deckList[i].name;
                 viewData[i].image = await loadDeckImage(deckList[i]);
-                viewData[i].errorTip = game.deck.isValidDeck(deckList[i]);
+                viewData[i].errorTip = !game.deck.isValidDeck(deckList[i]);
             }
             _ui.updateDeckList(viewData);
         }

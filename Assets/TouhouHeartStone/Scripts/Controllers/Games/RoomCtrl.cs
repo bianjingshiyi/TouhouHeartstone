@@ -213,6 +213,8 @@ namespace Controllers
                         deck.setCards(cardsId.Skip(1));
                     }
                     player.setDeck(deck);
+                    _ui.setPlayerDeck(playerId, cardsId);
+
                     if (player.type == RoomPlayerType.ai)
                     {
                         player.setReady(true);
@@ -228,7 +230,6 @@ namespace Controllers
             _ui.enableInitReplaceTime(isHost);
             _ui.enableTurnTime(isHost);
             _ui.enableDisableRandomPlayerActOrder(isHost);
-            _ui.enableAllowCustomCards(isHost);
         }
         private void updateStartAndReadyButton()
         {
@@ -317,7 +318,7 @@ namespace Controllers
             {
                 viewData[i].name = deckList[i].name;
                 viewData[i].image = await game.card.loadCardImage(deckList[i].masterId);
-                viewData[i].isWarning = _isLocalGame ? game.deck.isValidDeck(deckList[i]) : game.deck.isValidDeckForOnlineGame(deckList[i]);
+                viewData[i].isWarning = _isLocalGame ? !game.deck.isValidDeck(deckList[i]) : !game.deck.isValidDeckForOnlineGame(deckList[i]);
             }
             _ui.displayDeckSelectPanel(viewData);
         }

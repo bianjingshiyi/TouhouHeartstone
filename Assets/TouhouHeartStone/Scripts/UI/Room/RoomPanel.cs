@@ -16,6 +16,7 @@ namespace UI
     partial class RoomPanel
     {
         #region 公有方法
+        // TODO 这个方法和updatePlayerList有冲突，会把原先的物体引用清除掉
         public void SetInfo(RoomData room, bool clearAIPlayerData = false)
         {
             if (clearAIPlayerData)
@@ -217,10 +218,6 @@ namespace UI
                 {
                     onStartClick?.Invoke();
                 }
-                else
-                {
-                    OnPlayerReadyChange?.Invoke(selfPlayerID);
-                }
             });
 
             QuitButtonButtonBlack.asButton.onClick.set(() =>
@@ -405,6 +402,11 @@ namespace UI
         {
             _cancleReadyButton.gameObject.SetActive(value);
         }
+
+        public void setPlayerDeck(int playerId, int[] cards)
+        {
+            onSetPlayerDeck?.Invoke(playerId, cards);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -414,6 +416,7 @@ namespace UI
             _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
             StartButtonButtonBlack.asButton.setSelectable(false);
             DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
+            // TODO 这个回调会直接被跳过。
             DeckSelectionDeckListItem.onClick += (_) =>
             {
                 if (this.findInstance<Controllers.MainSceneCtrl>().room.isDisplay)
@@ -514,6 +517,7 @@ namespace UI
         private void onClickReadyButtonCallback()
         {
             onClickReadyButton?.Invoke();
+            OnPlayerReadyChange?.Invoke(selfPlayerID);
         }
         private void onClickCancleReadyButtonCallback()
         {

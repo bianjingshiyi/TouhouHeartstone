@@ -186,7 +186,7 @@ namespace Controllers
             {
                 viewData[i].name = deckList[i].name;
                 viewData[i].image = await game.card.loadCardImage(deckList[i].masterId);
-                viewData[i].isWarning = game.deck.isValidDeck(deckList[i]);
+                viewData[i].isWarning = !game.deck.isValidDeck(deckList[i]);
             }
             
             // TODO:这里需要一个控件来传入deck数据，并且展示出来
