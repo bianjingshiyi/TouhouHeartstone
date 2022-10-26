@@ -16,7 +16,6 @@ namespace UI
     partial class RoomPanel
     {
         #region 公有方法
-        // TODO 这个方法和updatePlayerList有冲突，会把原先的物体引用清除掉
         public void SetInfo(RoomData room, bool clearAIPlayerData = false)
         {
             if (clearAIPlayerData)
@@ -27,6 +26,8 @@ namespace UI
 
             RoomPlayerData selfPlayer = null;
 
+            // 如果不修改_playerList的元素，会导致_playerList在调用updatePlayerList时包含已经被销毁的游戏对象，然后报错
+            _playerList.Clear();
             RoomPlayerList.clearItems();
             foreach (var player in room.playerDataList)
             {
@@ -35,6 +36,7 @@ namespace UI
                     selfPlayer = player;
 
                 var item = RoomPlayerList.addItem();
+                _playerList.Add(item.rectTransform);
                 item.SetPlayerInfo(player);
                 item.OnPlayerViewDeck += viewDeck;
 
@@ -220,10 +222,11 @@ namespace UI
                 }
             });
 
-            QuitButtonButtonBlack.asButton.onClick.set(() =>
-            {
-                onQuitClick?.Invoke();
-            });
+            // 移动到onClickQuitButtonCallback里面
+            //QuitButtonButtonBlack.asButton.onClick.set(() =>
+            //{
+            //    onQuitClick?.Invoke();
+            //});
         }
 
         bool isHost => currentMode == Mode.Local || currentMode == Mode.NetworkingHost;
@@ -416,7 +419,7 @@ namespace UI
             _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
             StartButtonButtonBlack.asButton.setSelectable(false);
             DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
-            // TODO 这个回调会直接被跳过。
+            // TODO 这个回调会直接被return跳过。
             DeckSelectionDeckListItem.onClick += (_) =>
             {
                 if (this.findInstance<Controllers.MainSceneCtrl>().room.isDisplay)
@@ -517,6 +520,7 @@ namespace UI
         private void onClickReadyButtonCallback()
         {
             onClickReadyButton?.Invoke();
+            // 之前这个是写在按下开始按钮之后调用的，但是完全没有用，写在这里
             OnPlayerReadyChange?.Invoke(selfPlayerID);
         }
         private void onClickCancleReadyButtonCallback()
@@ -527,6 +531,8 @@ namespace UI
         private void onClickQuitButtonCallback()
         {
             onClickQuitButton?.Invoke();
+            //把onQuitClick事件移动到这里。
+            onQuitClick?.Invoke();
         }
 
         private void onClickCloseDeckPanelButtonCallback()

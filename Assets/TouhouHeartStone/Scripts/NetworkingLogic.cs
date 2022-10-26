@@ -93,6 +93,7 @@ namespace Game
         public async Task JoinRoom(string addr, int port)
         {
             await localLanLogic.joinRoom(addr, port);
+            isClient = true;
         }
 
         /// <summary>

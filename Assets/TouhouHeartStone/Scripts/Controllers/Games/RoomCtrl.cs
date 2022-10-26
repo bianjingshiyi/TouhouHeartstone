@@ -170,7 +170,14 @@ namespace Controllers
             {
                 _currentRoomData.setOption(RoomDataPropName.Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
             }
-            await game.game.startLocalGame(_currentRoomData);
+            if (_isLocalGame)
+            {
+                await game.game.startLocalGame(_currentRoomData);
+            }
+            else
+            {
+                game.game.startRemoteGame(_currentRoomData);
+            }
         }
         private void onClickReadyButton()
         {
@@ -213,6 +220,7 @@ namespace Controllers
                         deck.setCards(cardsId.Skip(1));
                     }
                     player.setDeck(deck);
+                    // 触发onSetPlayerDeck回调。
                     _ui.setPlayerDeck(playerId, cardsId);
 
                     if (player.type == RoomPlayerType.ai)

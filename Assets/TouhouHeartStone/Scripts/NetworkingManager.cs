@@ -540,8 +540,7 @@ namespace Game
         private void setRoomPanel(RoomData room)
         {
             Debug.Log("更新房间信息");
-            _sceneCtrl.room.display(room, false);
-            //roomPanel.SetInfo(room);
+            roomPanel.SetInfo(room);
         }
 
         /// <summary>
@@ -586,6 +585,7 @@ namespace Game
             };
 
             ui.parent.display(roomPanel);
+            _sceneCtrl.room.display(logic.CurrentRoom, false);
 
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
             roomPanel.SetMode(isHost ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
