@@ -11,6 +11,8 @@ using BJSYGameCore.UI;
 using NitoriNetwork.Common;
 using MukioI18n;
 using UnityEngine.UI;
+using System.Threading.Tasks;
+
 namespace UI
 {
     partial class RoomPanel
@@ -42,6 +44,7 @@ namespace UI
 
                 // 仅当自己是主机且此玩家不是自己时，设置为可以移除
                 item.SetRemoveable(isHost && selfPlayerID != player.id);
+                item.ViewButtonBlack.asButton.interactable = player.getDeck() != null;
                 item.OnPlayerRemove += (id) =>
                 {
                     if (id == aiPlayerData?.id)
@@ -278,14 +281,27 @@ namespace UI
         /// 查看卡组
         /// </summary>
         /// <param name="cards"></param>
-        void viewDeck(int[] cards)
+        async void viewDeck(int[] cards)
         {
             //_cardViewPanel.setItems(cardManager,cards);
-            var viewData = cards.Select(i =>
+            async Task<(string name, Sprite image)> getCardData(int i)
             {
+                var card = cardManager.getCardDefine(i);
                 var skin = cardManager.getCardSkin(i);
-                return (skin?.name,skin?.image);
-            }).ToArray();
+                Sprite image = null;
+                if (card != null)
+                {
+                    var path = skin?.imagePath;
+                    image = await cardManager.loadCardImage(i);
+                }
+                return (skin?.name, image);
+            }
+            List<(string name, Sprite image)> list = new List<(string name, Sprite image)>();
+            foreach (var i in cards)
+            {
+                list.Add(await getCardData(i));
+            }
+            var viewData = list.ToArray();
             _cardViewPanel.update(viewData);
             _cardPanel.SetActive(true);
         }
@@ -734,9 +750,13 @@ namespace UI
             {
                 if (playerData == null)
                     return;
-                int[] deck = playerData.getDeck().toIdArray(true);
+                var deck = playerData.getDeck();
                 if (deck != null)
-                    OnPlayerViewDeck?.Invoke(deck);
+                {
+                    int[] idArray = playerData.getDeck().toIdArray(true);
+                    if (idArray != null)
+                        OnPlayerViewDeck?.Invoke(idArray);
+                }
             });
             asButton.onClick.AddListener(() =>
             {
