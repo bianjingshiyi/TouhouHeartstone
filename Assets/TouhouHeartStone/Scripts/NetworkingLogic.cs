@@ -335,16 +335,103 @@ namespace Game
 
     public static class RoomDataPropName
     {
+        public enum Option
+        {
+            RandomSeed,
+            SortedPlayers,
+            Shuffle,
+            TimeoutForInitReplace,
+            TimeoutForTurn,
+            StartGem
+        }
+
+        [Obsolete]
         public const string OPTION_GAMEOPTION = "option";
+
+        /// <summary>
+        /// 兼容性接口。
+        /// 
+        /// 将 RoomData 转换为 HearthstoneOption
+        /// </summary>
+        /// <param name="room"></param>
+        /// <returns></returns>
         public static HearthstoneOption getOption(this RoomData room)
         {
-            if (room.tryGetProp<HearthstoneOption>(OPTION_GAMEOPTION, out HearthstoneOption data))
-                return data;
-            return new HearthstoneOption();
+            return new HearthstoneOption()
+            {
+                randomSeed = room.getRandomSeed(),
+                shuffle = room.getShuffle(),
+                sortedPlayers = room.getSortedPlayers(),
+                startGem = room.getStartGem(),
+                timeoutForInitReplace = room.getTimeoutForInitReplace(),
+                timeoutForTurn = room.getTimeoutForTurn(),
+            };
         }
+
+        /// <summary>
+        /// 兼容性接口
+        /// 
+        /// 使用 HearthstoneOption 设置 RoomData 的 Property
+        /// </summary>
+        /// <param name="room"></param>
+        /// <param name="value"></param>
         public static void setOption(this RoomData room, HearthstoneOption value)
         {
-            room.setProp(OPTION_GAMEOPTION, value);
+            room.setOption(Option.RandomSeed, value.randomSeed);
+            room.setOption(Option.SortedPlayers, value.sortedPlayers);
+            room.setOption(Option.Shuffle, value.shuffle);
+            room.setOption(Option.TimeoutForInitReplace, value.timeoutForInitReplace);
+            room.setOption(Option.TimeoutForTurn, value.timeoutForTurn);
+            room.setOption(Option.StartGem, value.startGem);
+        }
+
+        /// <summary>
+        /// 设置指定选项的值
+        /// </summary>
+        /// <param name="room"></param>
+        /// <param name="prop"></param>
+        /// <param name="value"></param>
+        public static void setOption(this RoomData room, Option prop, object value)
+        {
+            room.setProp(prop.ToString(), value);
+        }
+
+        /// <summary>
+        /// 获取指定选项的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="room"></param>
+        /// <param name="prop"></param>
+        /// <returns></returns>
+        public static T getOption<T>(this RoomData room, Option prop)
+        {
+            if (room.tryGetProp<T>(prop.ToString(), out T data))
+                return data;
+            return default(T);
+        }
+        public static int getRandomSeed(this RoomData room)
+        {
+            return room.getOption<int>(Option.RandomSeed);
+        }
+        public static bool getShuffle(this RoomData room)
+        {
+            return room.getOption<bool>(Option.Shuffle);
+        }
+        public static int[] getSortedPlayers(this RoomData room)
+        {
+            return room.getOption<int[]>(Option.SortedPlayers);
+        }
+        public static float getTimeoutForInitReplace(this RoomData room)
+        {
+            return room.getOption<float>(Option.TimeoutForInitReplace);
+        }
+        public static float getTimeoutForTurn(this RoomData room)
+        {
+            return room.getOption<float>(Option.TimeoutForTurn);
+        }
+        public static int getStartGem(this RoomData room)
+        {
+            return room.getOption<int>(Option.StartGem);
         }
     }
 }

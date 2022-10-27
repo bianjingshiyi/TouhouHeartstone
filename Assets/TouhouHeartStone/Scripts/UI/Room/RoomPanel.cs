@@ -90,13 +90,12 @@ namespace UI
             //设置房间选项
             try
             {
-                HearthstoneOption option = room.getOption();
-                var seed = option.randomSeed;
+                var seed = room.getRandomSeed();
                 RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
-                ShuffleContainerGameOptionItemToggle.Toggle.isOn = option.shuffle;
-                InitReplacementContainerGameOptionItemText.InputField.text = option.timeoutForInitReplace.ToString();
-                TurnTimeContainerGameOptionItemText.InputField.text = option.timeoutForTurn.ToString();
-                IsSortedToggleGameOptionItemToggle.Toggle.isOn = option.sortedPlayers != null;
+                ShuffleContainerGameOptionItemToggle.Toggle.isOn = room.getShuffle();
+                InitReplacementContainerGameOptionItemText.InputField.text = room.getTimeoutForInitReplace().ToString();
+                TurnTimeContainerGameOptionItemText.InputField.text = room.getTimeoutForTurn().ToString();
+                IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getSortedPlayers() != null;
             }
             catch (Exception e)
             {
@@ -156,42 +155,34 @@ namespace UI
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    var option = roomData.getOption();
-                    option.randomSeed = 0;
-                    notifyRoomSettingChange(option);
+                    setNotifyRoomSetting(RoomDataPropName.Option.RandomSeed, 0);
                     return;
                 }
 
                 if (int.TryParse(value, out int i))
                 {
-                    var option = roomData.getOption();
-                    option.randomSeed = i;
-                    notifyRoomSettingChange(option);
+                    setNotifyRoomSetting(RoomDataPropName.Option.RandomSeed, i);
                 }
                 else
                 {
-                    RandomSeedContainerGameOptionItemText.InputField.text = roomData.getOption().randomSeed.ToString();
+                    RandomSeedContainerGameOptionItemText.InputField.text = roomData.getRandomSeed().ToString();
                 }
             });
 
             ShuffleContainerGameOptionItemToggle.Toggle.onValueChanged.set(value =>
             {
-                var option = roomData.getOption();
-                option.shuffle = value;
-                notifyRoomSettingChange(option);
+                setNotifyRoomSetting(RoomDataPropName.Option.Shuffle, value);
             });
 
             InitReplacementContainerGameOptionItemText.InputField.onEndEdit.set(value =>
             {
                 if (int.TryParse(value, out int i) && 5 < i)
                 {
-                    var option = roomData.getOption();
-                    option.timeoutForInitReplace = i;
-                    notifyRoomSettingChange(option);
+                    setNotifyRoomSetting(RoomDataPropName.Option.TimeoutForInitReplace, i);
                 }
                 else
                 {
-                    InitReplacementContainerGameOptionItemText.InputField.text = roomData.getOption().timeoutForInitReplace.ToString();
+                    InitReplacementContainerGameOptionItemText.InputField.text = roomData.getTimeoutForInitReplace().ToString();
                 }
             });
 
@@ -199,24 +190,25 @@ namespace UI
             {
                 if (int.TryParse(value, out int i) && 5 < i)
                 {
-                    var option = roomData.getOption();
-                    option.timeoutForTurn = i;
-                    notifyRoomSettingChange(option);
+                    setNotifyRoomSetting(RoomDataPropName.Option.TimeoutForTurn, i);
                 }
                 else
                 {
-                    TurnTimeContainerGameOptionItemText.InputField.text = roomData.getOption().timeoutForTurn.ToString();
+                    TurnTimeContainerGameOptionItemText.InputField.text = roomData.getTimeoutForTurn().ToString();
                 }
             });
 
             IsSortedToggleGameOptionItemToggle.Toggle.onValueChanged.set((value) =>
             {
                 Debug.Log("更新房间设定" + value);
-                var option = new HearthstoneOption(roomData.getOption())
+                if (value)
                 {
-                    sortedPlayers = value ? roomData.playerDataList.Select(p => p.id).ToArray() : null
-                };
-                notifyRoomSettingChange(option);
+                    setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, roomData.playerDataList.Select(p => p.id).ToArray());
+                }
+                else
+                {
+                    setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, null);
+                }
             });
 
             StartButtonButtonBlack.asButton.onClick.set(() =>
@@ -652,9 +644,21 @@ namespace UI
 
         RoomPlayerData aiPlayerData;
 
+        [Obsolete("请使用 setNotifyRoomSetting")]
         void notifyRoomSettingChange(GameOption option)
         {
             onRoomPropUpdate?.Invoke(RoomDataPropName.OPTION_GAMEOPTION, option);
+        }
+
+        /// <summary>
+        /// 设置本地的房间值，并发送房间值改变的通知
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <param name="value"></param>
+        void setNotifyRoomSetting(RoomDataPropName.Option prop, object value)
+        {
+            roomData.setOption(prop, value);
+            onRoomPropUpdate?.Invoke(prop.ToString(), value);
         }
 
         [TranslateMsg]

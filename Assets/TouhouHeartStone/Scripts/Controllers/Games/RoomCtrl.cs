@@ -35,11 +35,11 @@ namespace Controllers
                 {
                     _ui.displayIPText(false);
                 }
-                _ui.setRandomSeed(_currentRoomData.getOption().randomSeed);
-                _ui.setShuffle(_currentRoomData.getOption().shuffle);
-                _ui.setInitReplaceTime(_currentRoomData.getOption().timeoutForInitReplace);
-                _ui.setTurnTime(_currentRoomData.getOption().timeoutForTurn);
-                _ui.setDisableRandomPlayerActOrder(_currentRoomData.getOption().sortedPlayers != null);
+                _ui.setRandomSeed(_currentRoomData.getRandomSeed());
+                _ui.setShuffle(_currentRoomData.getShuffle());
+                _ui.setInitReplaceTime(_currentRoomData.getTimeoutForInitReplace());
+                _ui.setTurnTime(_currentRoomData.getTimeoutForTurn());
+                _ui.setDisableRandomPlayerActOrder(_currentRoomData.getSortedPlayers() != null);
                 updateUIStateForHost();
                 updateStartAndReadyButton();
             }
@@ -92,28 +92,30 @@ namespace Controllers
         #region 事件回调
         private void onRandomSeedInputFieldValueChanged(int value)
         {
-            _currentRoomData.getOption().randomSeed = value;
+            _currentRoomData.setOption(RoomDataPropName.Option.RandomSeed, value);
         }
         private void onShuffleToggleValueChanged(bool value)
         {
-            _currentRoomData.getOption().shuffle = value;
+            _currentRoomData.setOption(RoomDataPropName.Option.Shuffle, value);
         }
         private void onInitReplaceTimeInputFieldValueChanged(float value)
         {
-            _currentRoomData.getOption().timeoutForInitReplace = value;
+            _currentRoomData.setOption(RoomDataPropName.Option.TimeoutForInitReplace, value);
         }
         private void onTurnTimeInputFieldValueChanged(float value)
         {
-            _currentRoomData.getOption().timeoutForTurn = value;
+            _currentRoomData.setOption(RoomDataPropName.Option.TimeoutForTurn, value);
         }
         private void onDisableRandomPlayerActOrderToggleValueChanged(bool value)
         {
             if (value)
             {
-                _currentRoomData.getOption().sortedPlayers = _currentRoomData.playerDataList.Select(p => p.id).ToArray();
+                _currentRoomData.setOption(RoomDataPropName.Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
             }
             else
-                _currentRoomData.getOption().sortedPlayers = null;
+            {
+                _currentRoomData.setOption(RoomDataPropName.Option.SortedPlayers, null);
+            }
         }
         private void onClickPlayerListItemViewDeckButton(int index)
         {
@@ -162,10 +164,11 @@ namespace Controllers
         }
         private async void onClickStartButton()
         {
-            if (_currentRoomData.getOption().sortedPlayers != null &&
-                _currentRoomData.getOption().sortedPlayers.Length != _currentRoomData.playerDataList.Count)
+            var players = _currentRoomData.getSortedPlayers();
+            if (players != null &&
+                players.Length != _currentRoomData.playerDataList.Count)
             {
-                _currentRoomData.getOption().sortedPlayers = _currentRoomData.playerDataList.Select(p => p.id).ToArray();
+                _currentRoomData.setOption(RoomDataPropName.Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
             }
             await game.game.startLocalGame(_currentRoomData);
         }
