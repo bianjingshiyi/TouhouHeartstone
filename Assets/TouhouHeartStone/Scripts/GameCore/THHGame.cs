@@ -429,8 +429,8 @@ namespace TouhouHeartstone
             game.option = options;
             foreach (var playerInfo in players)
             {
-                var deck = playerInfo.getProp<Deck>("deck");
-                createPlayer(game, playerInfo.ID, playerInfo.Name, deck.masterId, deck.toIdArray(false));
+                int[] deckIdArray = playerInfo.getProp<int[]>("deck");
+                createPlayer(game, playerInfo.ID, playerInfo.Name, deckIdArray[0], deckIdArray.Skip(1).ToArray());
             }
             return Task.CompletedTask;
         }

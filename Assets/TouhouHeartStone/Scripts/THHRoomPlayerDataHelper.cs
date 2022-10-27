@@ -1,6 +1,7 @@
 ﻿using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouHeartstone;
+using System.Linq;
 namespace Game
 {
     static class THHRoomPlayerDataHelper
@@ -8,13 +9,14 @@ namespace Game
         public const string PROP_DECK = "deck";
         public static void setDeck(this IRoomPlayer playerData, Deck deck)
         {
-            playerData.setProp(PROP_DECK, deck);
+            playerData.setProp(PROP_DECK, deck.toIdArray(true));
         }
         public static Deck getDeck(this IRoomPlayer playerData)
         {
             if (!playerData.hasProp(PROP_DECK))
                 return null;
-            return playerData.getProp<Deck>(PROP_DECK);
+            int[] idArray = playerData.getProp<int[]>(PROP_DECK);
+            return new Deck(idArray[0], idArray.Skip(1));
         }
 
         public const string PROP_READY = "ready";

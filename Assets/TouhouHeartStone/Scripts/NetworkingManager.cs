@@ -576,7 +576,7 @@ namespace Game
             };
             roomPanel.onSetPlayerDeck += (id, cards) =>
             {
-                _ = logic.SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, new TouhouHeartstone.Deck(cards[0], cards.Skip(1)));
+                _ = logic.SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
             };
             roomPanel.OnPlayerReadyChange += (id) =>
             {
