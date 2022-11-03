@@ -61,8 +61,10 @@ namespace Game
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE__IS_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        [return: ActionNodeParam("Value")]
-        public static bool IsCardDefine([ActionNodeParam("Card")] Card card, [ActionNodeParam("Type", isConst: true)] CardDefineSelect select)
+        [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
+        public static bool IsCardDefine(
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card, 
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
             switch (select)
             {
@@ -70,6 +72,10 @@ namespace Game
                     return card.isSpell();
                 case CardDefineSelect.Servant:
                     return card.isServant();
+                case CardDefineSelect.Master:
+                    return card.isMaster();
+                case CardDefineSelect.Skill:
+                    return card.isSkill();
                 default:
                     return card.isItem();
             }
@@ -443,6 +449,8 @@ namespace Game
     {
         Spell,
         Servant,
-        Item
+        Item,
+        Master,
+        Skill
     }
 }

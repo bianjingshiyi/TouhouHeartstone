@@ -567,6 +567,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_CARD_REFERENCE = "卡牌定义引用";
         [TranslateMsg("编辑器中的卡牌的名称")]
         public const string EDITOR_TYPE_NAME_CARD = "卡牌";
+        [TranslateMsg("编辑器中的卡牌类型的名称")]
+        public const string EDITOR_TYPE_NAME_CARD_TYPE = "卡牌类型";
         [TranslateMsg("编辑器中的增益定义的名称")]
         public const string EDITOR_TYPE_NAME_BUFF_DEFINE = "增益定义";
         [TranslateMsg("编辑器中的增益的名称")]
