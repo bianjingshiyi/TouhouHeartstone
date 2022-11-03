@@ -176,12 +176,22 @@ namespace Game
         {
             return card.getAttack(game);
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_LIFE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_MAX_LIFE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static int getLife(CardEngine game,
+        public static int getMaxLife(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             return card.getLife(game);
+        }
+
+        [TranslateMsg("动作图编辑器中动作节点名称之获取当前生命值")]
+        public const string EDITOR_NODE_NAME_GET_CURRENT_LIFE = "获取当前生命值";
+     [ActionNodeMethod(EDITOR_NODE_NAME_GET_CURRENT_LIFE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getLife(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.getCurrentLife(game);
         }
         /// <summary>
         /// 获取一个独一无二的属性名。当你在一段可以重复生效的效果中为卡牌设置额外属性的时候，应该使用这个方法。
@@ -431,7 +441,6 @@ namespace Game
         /// <returns></returns>
         [TranslateMsg("动作图编辑器中动作节点名称之获取友方随从")]
         public const string EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS = "获取友方随从";
-
         [ActionNodeMethod(EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getFriendlyServants(CardEngine game, Card card)
