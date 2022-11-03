@@ -441,10 +441,33 @@ namespace Game
                 return servants;
             }
         }
+
+        /// <summary>
+        /// 增加护甲
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之增加固定数量护甲")]
+        public const string EDITOR_NODE_ADD_AMOUNT_OF_ARMOR = "增加固定数量护甲";
+        [ActionNodeMethod(EDITOR_NODE_ADD_AMOUNT_OF_ARMOR, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async Task addArmorToTarget(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            await player.getMaster().gainArmor(game, count);
+        }
+        /// <summary>
+        /// 增加固定数量的护甲
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之增加护甲")]
+        public const string EDITOR_NODE_ADD_ARMOR = "增加护甲";
+        [ActionNodeMethod(EDITOR_NODE_ADD_ARMOR, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async Task addAmountOfArmorToTarget(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            await player.getMaster().gainArmor(game, count);
+        }
+
     }
-
-
-
     public enum CardDefineSelect
     {
         Spell,
@@ -454,3 +477,8 @@ namespace Game
         Skill
     }
 }
+
+
+
+ 
+
