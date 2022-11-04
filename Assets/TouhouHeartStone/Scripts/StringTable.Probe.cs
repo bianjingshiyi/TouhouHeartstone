@@ -16,9 +16,9 @@ namespace Game
         [TranslateMsg("编辑器/行动/简单抽牌节点_名称")]
         public const string EDITOR_NODE__SIMPLE_DRAW_CARD__NAME = "简单抽牌";
         [TranslateMsg("编辑器/行动/简单抽牌节点_参数_抽牌玩家")]
-        public const string EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER = "Player";
+        public const string EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER = "玩家";
         [TranslateMsg("编辑器/行动/简单抽牌节点_参数_抽牌事件")]
-        public const string EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT = "Event";
+        public const string EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT = "抽到的卡";
         #endregion
 
         #region 简单召唤

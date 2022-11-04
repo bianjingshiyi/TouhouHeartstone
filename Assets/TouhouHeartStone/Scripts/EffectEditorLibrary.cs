@@ -270,11 +270,12 @@ namespace Game
         /// <param name="drawEvent"></param>
         /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__NAME, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
-        public static Task simpleDrawCard(CardEngine game, Card card,
-            [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent)
+        [return: ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT)]
+        public static Card simpleDrawCard(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player)
         {
-            return player.draw(game, out drawEvent);
+            player.draw(game, out var drawEvent);
+            return drawEvent.card;
         }
         #endregion
         #region 集合运算
@@ -337,6 +338,7 @@ namespace Game
         /// <param name="define"></param>
         /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE__SIMPLE_CREATE_TOKEN__NAME, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+
         public static Task simpleCreateToken(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_CREATE_TOKEN__PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_CREATE_TOKEN__DEFINE)] CardDefine define)
