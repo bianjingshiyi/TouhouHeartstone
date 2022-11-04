@@ -451,16 +451,19 @@ namespace Game
             }
         }
         /// <summary>
-        /// 增加固定数量的护甲
+        /// 获取护甲数量
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之增加固定数量护甲")]
-        public const string EDITOR_NODE_ADD_AMOUNT_OF_ARMOR = "增加固定数量护甲";
-        [ActionNodeMethod(EDITOR_NODE_ADD_AMOUNT_OF_ARMOR, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
-        public static async Task addArmorToTarget(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取护甲值")]
+        public const string EDITOR_NODE_NAME_GET_ARMOR = "获取护甲值";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ARMOR, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getArmor(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
-            await player.getMaster().gainArmor(game, count);
+            return card.getArmor(game);
         }
         /// <summary>
         /// 增加护甲
@@ -614,7 +617,22 @@ namespace Game
             await targets.fieldToHand(game);
         }
 
+        /// <summary>
+        /// 获取道具
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取玩家道具")]
+        public const string EDITOR_NODE_NAME_GET_ITEM = "获取玩家道具";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ITEM, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getItem(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player.getItem();
+        }
     }
+
+
+
     public enum CardDefineSelect
     {
         Spell,
