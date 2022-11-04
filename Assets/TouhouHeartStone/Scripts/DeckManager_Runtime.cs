@@ -58,6 +58,11 @@ namespace Game
             }
             return isValidDeck(deck);
         }
+        /// <summary>
+        /// 卡组中是否有自定义卡牌。
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
         #endregion
         #region 属性字段
         public int deckValidSize => _deckMaxSize;

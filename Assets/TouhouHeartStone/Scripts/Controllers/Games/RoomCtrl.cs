@@ -40,6 +40,7 @@ namespace Controllers
                 _ui.setInitReplaceTime(_currentRoomData.getTimeoutForInitReplace());
                 _ui.setTurnTime(_currentRoomData.getTimeoutForTurn());
                 _ui.setDisableRandomPlayerActOrder(_currentRoomData.getSortedPlayers() != null);
+                _ui.setAllowCustomCards(_currentRoomData.getAllowCustomCards());
                 updateUIStateForHost();
                 updateStartAndReadyButton();
             }
@@ -77,6 +78,7 @@ namespace Controllers
             _ui.onInitReplaceTimeInputFieldValueChanged += onInitReplaceTimeInputFieldValueChanged;
             _ui.onTurnTimeInputFieldValueChanged += onTurnTimeInputFieldValueChanged;
             _ui.onDisableRandomPlayerActOrderToggleValueChanged += onDisableRandomPlayerActOrderToggleValueChanged;
+            _ui.onCustomCardsToggleValueChanged += onCustomCardsToggleValueChanged;
             _ui.onClickPlayerItemViewDeckButton += onClickPlayerListItemViewDeckButton;
             _ui.onClickPlayerItemSetDeckButton += onClickPlayerListItemSetDeckButton;
             _ui.onClickPlayerItemRemoveButton += onClickPlayerListItemRemoveButton;
@@ -117,6 +119,12 @@ namespace Controllers
                 _currentRoomData.setOption(RoomDataPropName.Option.SortedPlayers, null);
             }
         }
+
+        private void onCustomCardsToggleValueChanged(bool value)
+        {
+            _currentRoomData.setOption(RoomDataPropName.Option.AllowCustomCards, value);
+            updateStartAndReadyButton();
+        }    
         private void onClickPlayerListItemViewDeckButton(int index)
         {
             Deck deck = _currentRoomData.playerDataList[index].getDeck();
@@ -172,8 +180,8 @@ namespace Controllers
             }
             if (_isLocalGame)
             {
-                await game.game.startLocalGame(_currentRoomData);
-            }
+            await game.game.startLocalGame(_currentRoomData);
+        }
             else
             {
                 game.game.startRemoteGame(_currentRoomData);
@@ -238,6 +246,7 @@ namespace Controllers
             _ui.enableInitReplaceTime(isHost);
             _ui.enableTurnTime(isHost);
             _ui.enableDisableRandomPlayerActOrder(isHost);
+            _ui.enableAllowCustomCards(isHost);
         }
         private void updateStartAndReadyButton()
         {
@@ -262,6 +271,10 @@ namespace Controllers
                 return false;
             if (!isAbleToReady(getLocalPlayerData()))//房主自己必须准备好
                 return false;
+            if (!_currentRoomData.getAllowCustomCards() && isAnyHasCustomCard())//如果不允许使用自定义卡牌，必须所有玩家都没有包含自定义卡牌的卡组。
+            {
+                return false;
+            }
             return _currentRoomData.playerDataList.Where(p => p.id != _currentRoomData.ownerId).All(p => p.getReady());//其他玩家必须准备好
         }
         private bool isAbleToReady(RoomPlayerData player)
@@ -279,6 +292,39 @@ namespace Controllers
                     deckValid = game.deck.isValidDeckForOnlineGame(deck);
                 }
                 return deckValid;
+            }
+                return false;
+        }
+        /// <summary>
+        /// 是否有任意玩家中的卡组中包含自定义卡牌。
+        /// </summary>
+        /// <returns></returns>
+        private bool isAnyHasCustomCard()
+        {
+            var players = _currentRoomData.playerDataList;
+            foreach (var player in players)
+            {
+                Deck deck = player.getDeck();
+                if (deckHasCustomCard(deck))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool deckHasCustomCard(Deck deck)
+        {
+            if (deck == null)
+            {
+                return false;
+            }
+            //检查是否有自定义卡牌，
+            for (int i = 0; i < deck.cardList.Count; i++)
+            {
+                if (game.card.isCustomCard(deck.cardList[i].id))
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -322,11 +368,29 @@ namespace Controllers
         {
             List<Deck> deckList = game.deck.getOrLoadDeckList();
             (string name, Sprite image, bool isWarning)[] viewData = new (string name, Sprite image, bool isWarning)[deckList.Count];
+            bool allowCustomCards = _currentRoomData.getAllowCustomCards();
             for (int i = 0; i < viewData.Length; i++)
             {
-                viewData[i].name = deckList[i].name;
-                viewData[i].image = await game.card.loadCardImage(deckList[i].masterId);
-                viewData[i].isWarning = _isLocalGame ? !game.deck.isValidDeck(deckList[i]) : !game.deck.isValidDeckForOnlineGame(deckList[i]);
+                Deck deck = deckList[i];
+                
+                viewData[i].name = deck.name;
+                viewData[i].image = await game.card.loadCardImage(deck.masterId);
+                bool warning;
+                // 判断牌组是否合法。
+                if (_isLocalGame)
+                {
+                    warning = !game.deck.isValidDeck(deck);
+                }
+                else
+                {
+                    warning = !game.deck.isValidDeckForOnlineGame(deck);
+                }
+                // 如果不允许使用自定义卡牌，则屏蔽拥有自定义卡牌的卡组。
+                if (!allowCustomCards && deckHasCustomCard(deck))
+                {
+                    warning = true;
+                }
+                viewData[i].isWarning = warning;
             }
             _ui.displayDeckSelectPanel(viewData);
         }

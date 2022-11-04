@@ -511,6 +511,25 @@ namespace Game
         {
             return defineDic.ContainsKey(cardId);
         }
+        /// <summary>
+        /// 卡牌定义是否是自定义。
+        /// </summary>
+        /// <param name="card">卡牌定义。</param>
+        /// <returns></returns>
+        public bool isCustomCard(CardDefine card)
+        {
+            return isCustomCard(card.id);
+        }
+        /// <summary>
+        /// 卡牌ID是否是自定义。
+        /// </summary>
+        /// <param name="card">卡牌ID。</param>
+        /// <returns></returns>
+        public bool isCustomCard(int cardId)
+        {
+            //TODO 58：暂时只判断ID是不是负数，经典卡牌也算是负数，以后改一下
+            return cardId < 0;
+        }
         public CardDefine[] getCardDefines(int cardPoolId)
         {
             if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))

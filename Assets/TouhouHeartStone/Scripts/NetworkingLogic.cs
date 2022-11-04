@@ -343,7 +343,8 @@ namespace Game
             Shuffle,
             TimeoutForInitReplace,
             TimeoutForTurn,
-            StartGem
+            StartGem,
+            AllowCustomCards
         }
 
         [Obsolete]
@@ -366,6 +367,7 @@ namespace Game
                 startGem = room.getStartGem(),
                 timeoutForInitReplace = room.getTimeoutForInitReplace(),
                 timeoutForTurn = room.getTimeoutForTurn(),
+                allowCustomCards = room.getAllowCustomCards()
             };
         }
 
@@ -433,6 +435,10 @@ namespace Game
         public static int getStartGem(this RoomData room)
         {
             return room.getOption<int>(Option.StartGem);
+        }
+        public static bool getAllowCustomCards(this RoomData room)
+        {
+            return room.getOption<bool>(Option.AllowCustomCards);
         }
     }
 }

@@ -390,6 +390,14 @@ namespace UI
         {
             _disableRandomPlayerActOrderToggle.interactable = value;
         }
+        public void setAllowCustomCards(bool value)
+        {
+            _allowCustomCardsToggle.SetIsOnWithoutNotify(value);
+        }
+        public void enableAllowCustomCards(bool value)
+        {
+            _allowCustomCardsToggle.interactable = value;
+        }
         public void updateLocalPlayerDeck(string deckName, Sprite deckImage)
         {
             _localPlayerDeckNameText.text = deckName;
@@ -464,11 +472,16 @@ namespace UI
             //DeckPanelMasterCardSelection.onClickItem += onClickDeckSelectItemCallback;
             _deckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
             //_randomSeedInputField.onValueChanged.AddListener(onRandomSeedInputFieldValueChangedCallback);
+
+            // 选项
             _randomSeedInputField.onEndEdit.AddListener(onRandomSeedInputFieldValueChangedCallback);
             _shuffleToggle.onValueChanged.AddListener(onShuffleToggleValueChangedCallback);
             _initReplaceTimeInputField.onEndEdit.AddListener(onInitReplaceTimeInputFieldValueChangedCallback);
             _turnTimeInputField.onEndEdit.AddListener(onTurnTimeInputFieldValueChangedCallback);
             _disableRandomPlayerActOrderToggle.onValueChanged.AddListener(onDisableRandomPlayerActOrderValueChangedCallback);
+            _allowCustomCardsToggle.onValueChanged.AddListener(onCustomCardsValueChangedCallback);
+
+            // 按钮
             _startButton.onClick.AddListener(onClickStartButtonCallback);
             _readyButton.onClick.AddListener(onClickReadyButtonCallback);
             _cancleReadyButton.onClick.AddListener(onClickCancleReadyButtonCallback);
@@ -528,6 +541,11 @@ namespace UI
         private void onDisableRandomPlayerActOrderValueChangedCallback(bool value)
         {
             onDisableRandomPlayerActOrderToggleValueChanged?.Invoke(value);
+        }
+
+        private void onCustomCardsValueChangedCallback(bool value)
+        {
+            onCustomCardsToggleValueChanged?.Invoke(value);
         }
         private void onClickStartButtonCallback()
         {
@@ -589,6 +607,7 @@ namespace UI
         public event Action<float> onInitReplaceTimeInputFieldValueChanged;
         public event Action<float> onTurnTimeInputFieldValueChanged;
         public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
+        public event Action<bool> onCustomCardsToggleValueChanged;
         public event Action onClickStartButton;
         public event Action onClickReadyButton;
         public event Action onClickCancleReadyButton;
@@ -605,6 +624,8 @@ namespace UI
         Button _addAIPlayerButton;
         [SerializeField]
         Text _ipText;
+
+        [Header("选项")]
         [SerializeField]
         InputField _randomSeedInputField;
         [SerializeField]
@@ -616,11 +637,17 @@ namespace UI
         [SerializeField]
         Toggle _disableRandomPlayerActOrderToggle;
         [SerializeField]
+        Toggle _allowCustomCardsToggle;
+
+        [Header("卡组")]
+        [SerializeField]
         Text _localPlayerDeckNameText;
         [SerializeField]
         Image _localPlayerDeckImage;
         [SerializeField]
         Button _selectDeckButton;
+
+        [Header("按钮")]
         [SerializeField]
         Button _startButton;
         [SerializeField]
