@@ -450,13 +450,12 @@ namespace Game
                 return servants;
             }
         }
-
         /// <summary>
-        /// 增加护甲
+        /// 增加固定数量的护甲
         /// </summary>
         [TranslateMsg("动作图编辑器中动作节点名称之增加固定数量护甲")]
         public const string EDITOR_NODE_ADD_AMOUNT_OF_ARMOR = "增加固定数量护甲";
-        [ActionNodeMethod(EDITOR_NODE_ADD_AMOUNT_OF_ARMOR, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [ActionNodeMethod(EDITOR_NODE_ADD_AMOUNT_OF_ARMOR, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         public static async Task addArmorToTarget(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
@@ -464,16 +463,155 @@ namespace Game
             await player.getMaster().gainArmor(game, count);
         }
         /// <summary>
-        /// 增加固定数量的护甲
+        /// 增加护甲
         /// </summary>
         [TranslateMsg("动作图编辑器中动作节点名称之增加护甲")]
         public const string EDITOR_NODE_ADD_ARMOR = "增加护甲";
-        [ActionNodeMethod(EDITOR_NODE_ADD_ARMOR, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [ActionNodeMethod(EDITOR_NODE_ADD_ARMOR, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         public static async Task addAmountOfArmorToTarget(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
              [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
             await player.getMaster().gainArmor(game, count);
+        }
+        /// <summary>
+        /// 获取延迟区
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取玩家延迟区")]
+        public const string EDITOR_NODE_NAME_GET_HEAD = "获取玩家延迟区";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_HEAD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getHead(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player.getHead();
+        }
+        /// <summary>
+        /// 获取技能
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取玩家技能")]
+        public const string EDITOR_NODE_NAME_GET_SKILL = "获取玩家技能";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_SKILL, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getSkill(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player.getSkill();
+        }
+        /// <summary>
+        /// 复原技能
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之复原技能")]
+        public const string EDITOR_NODE_RESET_SKILL = "复原技能";
+        [ActionNodeMethod(EDITOR_NODE_RESET_SKILL, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        public static async Task resetSkill(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player.getSkill().isUsed(game))
+            {
+                await player.getSkill().setUsed(game, false);
+            }
+        }
+        /// <summary>
+        /// 获取相邻卡牌(战场或者墓地)
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取相邻卡牌")]
+        public const string EDITOR_NODE_NAME_GET_NEARBY_CARD = "获取相邻卡牌";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_NEARBY_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getNearbyCards(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
+        {
+            return card.getNearbyCards();
+        }
+        /// <summary>
+        /// 获取当前灵力值
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取当前灵力值")]
+        public const string EDITOR_NODE_NAME_GET_GEM = "获取当前灵力值";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_GEM, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getGem(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player.getGem();
+        }
+        /// <summary>
+        /// 获取灵力上限
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取灵力上限")]
+        public const string EDITOR_NODE_NAME_GET_MAX_GEM = "获取灵力上限";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_MAX_GEM, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getMaxGem(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player.getMaxGem();
+        }
+        /// <summary>
+        /// 设置当前灵力值
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之设置当前灵力值")]
+        public const string EDITOR_NODE_ADD_AMOUNT_OF_GEM = "设置当前灵力值";
+        [ActionNodeMethod(EDITOR_NODE_ADD_AMOUNT_OF_GEM, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        public static async Task setGem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            await player.setGem(game, count);
+        }
+        /// <summary>
+        /// 增加当前灵力值
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之增加当前灵力值")]
+        public const string EDITOR_NODE_ADD_GEM = "增加当前灵力值";
+        [ActionNodeMethod(EDITOR_NODE_ADD_GEM, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        public static async Task addGem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            await player.setGem(game, player.getGem() + count);
+        }
+        /// <summary>
+        /// 设置灵力上限
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之设置灵力上限")]
+        public const string EDITOR_NODE_SET_MAX_GEM = "设置灵力上限";
+        [ActionNodeMethod(EDITOR_NODE_SET_MAX_GEM, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        public static async Task setMaxGem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            await player.setMaxGem(game, count);
+        }
+        /// <summary>
+        /// 增加灵力上限
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之增加灵力上限")]
+        public const string EDITOR_NODE_ADD_MAX_GEM = "增加灵力上限";
+        [ActionNodeMethod(EDITOR_NODE_ADD_MAX_GEM, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        public static async Task addMaxGem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            await player.setMaxGem(game, player.getMaxGem() + count);
+        }
+        /// <summary>
+        /// 战场卡牌移回手牌
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之战场卡牌移回手牌")]
+        public const string EDITOR_NODE_FIELD_TO_HAND = "战场卡牌移回手牌";
+        [ActionNodeMethod(EDITOR_NODE_FIELD_TO_HAND, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async Task fieldToHand(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
+        {
+            await targets.fieldToHand(game);
         }
 
     }

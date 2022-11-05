@@ -1762,7 +1762,7 @@
           "_v" : [null, "Metal", "Wood"]
         },
         "characterId" : 4194304,
-        "isToken" : true
+        "isToken" : false
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -1829,15 +1829,15 @@
                   "defineName" : "Compare",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 14
+                      "actionNodeId" : 18
                     }, {
                       "actionNodeId" : 16
                     }],
                   "consts" : [4],
                   "regVar" : []
                 }, {
-                  "_id" : 14,
-                  "defineName" : "获取生命值",
+                  "_id" : 18,
+                  "defineName" : "获取当前生命值",
                   "branches" : [0],
                   "inputs" : [{
                       "actionNodeId" : 15
@@ -2307,7 +2307,7 @@
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [{
-                  "targetType" : "Servant",
+                  "targetType" : "Character",
                   "condition" : {
                     "actionNodeId" : 5
                   },
@@ -2330,13 +2330,13 @@
                   "inputs" : [{
                       "eventVarName" : "目标卡牌"
                     }, {
-                      "actionNodeId" : 4
+                      "actionNodeId" : 6
                     }],
                   "consts" : [],
                   "regVar" : []
                 }, {
-                  "_id" : 4,
-                  "defineName" : "获取生命值",
+                  "_id" : 6,
+                  "defineName" : "获取最大生命值",
                   "branches" : [0],
                   "inputs" : [{
                       "eventVarName" : "目标卡牌"
@@ -5130,13 +5130,15 @@
     }, {
       "_id" : -2147418041,
       "_name" : "残像*",
-      "_imagePath" : "经典卡池\\Card-2147418041\\0\\Image_.jpg",
-      "_desc" : "<b>守卫</b>"
+      "_imagePath" : "经典卡池\\Card-2147418041\\0\\Image_zh-Hans.jpg",
+      "_desc" : "<b>守卫</b>",
+      "_language" : "zh-Hans"
     }, {
       "_id" : -2147418040,
       "_name" : "御柱*",
-      "_imagePath" : "经典卡池\\Card-2147418040\\0\\Image_.jpg",
-      "_desc" : "<b>守卫</b>"
+      "_imagePath" : "经典卡池\\Card-2147418040\\0\\Image_zh-Hans.jpg",
+      "_desc" : "<b>守卫</b>",
+      "_language" : "zh-Hans"
     }],
   "actionNodeGraphInfoList" : [{
       "cardId" : -2147418111,
@@ -6432,16 +6434,16 @@
           "posY" : -815.6414794921875
         },
         "11" : {
-          "posX" : 484.2828369140625,
-          "posY" : -113.22805786132813
+          "posX" : 459.81689453125,
+          "posY" : -205.84939575195313
         },
         "13" : {
           "posX" : 598.96868896484375,
           "posY" : 653.4591064453125
         },
-        "14" : {
-          "posX" : 151.1531982421875,
-          "posY" : 519.752197265625
+        "18" : {
+          "posX" : 153.47904968261719,
+          "posY" : 527.5889892578125
         },
         "15" : {
           "posX" : -126.27410888671875,
@@ -6651,40 +6653,27 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 1281.7630615234375,
-          "posY" : 80.267303466796875
+          "posX" : 1325.452392578125,
+          "posY" : 86.820709228515625
         },
         "2" : {
           "posX" : 23.414962768554688,
           "posY" : -647.8546142578125
         },
         "3" : {
-          "posX" : 851.5472412109375,
-          "posY" : 67.129196166992188
+          "posX" : 890.8675537109375,
+          "posY" : 71.498153686523438
         },
-        "4" : {
-          "posX" : 733.69085693359375,
-          "posY" : -254.79179382324219
+        "6" : {
+          "posX" : 580.401123046875,
+          "posY" : -237.80357360839844
         },
         "5" : {
           "posX" : -822.92333984375,
           "posY" : 142.01773071289063
         }
       },
-      "freeActionNodeList" : [{
-          "_id" : 5,
-          "defineName" : "卡牌类型判断",
-          "branches" : [null],
-          "inputs" : [{
-              "action" : null,
-              "index" : 0,
-              "actionNodeId" : 0,
-              "eventVarName" : "目标卡牌",
-              "argIndex" : 0
-            }],
-          "consts" : [1],
-          "regVar" : []
-        }]
+      "freeActionNodeList" : []
     }, {
       "cardId" : -2147418077,
       "entryType" : "triggerList",
@@ -7439,20 +7428,20 @@
           "posY" : 112.08737182617188
         },
         "2" : {
-          "posX" : 617.232177734375,
-          "posY" : 56.165008544921875
+          "posX" : 645.6302490234375,
+          "posY" : 106.40774536132813
         },
         "3" : {
-          "posX" : 1082.086669921875,
-          "posY" : 29.951416015625
+          "posX" : 1210.9700927734375,
+          "posY" : 43.0582275390625
         },
         "4" : {
-          "posX" : 404.02813720703125,
-          "posY" : -319.56317138671875
+          "posX" : 578.78546142578125,
+          "posY" : -557.66998291015625
         },
         "5" : {
-          "posX" : 629.46514892578125,
-          "posY" : -209.46612548828125
+          "posX" : 622.91180419921875,
+          "posY" : -285.92254638671875
         }
       },
       "freeActionNodeList" : []
