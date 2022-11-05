@@ -120,6 +120,15 @@ namespace Game
         public async Task CreateRoom()
         {
             await localLanLogic.createOnlineRoom();
+
+            // 初始化房间设置
+            var option = new HearthstoneOption();
+            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.RandomSeed), option.randomSeed);
+            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.Shuffle), option.shuffle);
+            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.StartGem), option.startGem);
+            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForInitReplace), (int)option.timeoutForInitReplace);
+            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForTurn), (int)option.timeoutForTurn);
+
             isClient = false;
         }
 
@@ -424,13 +433,13 @@ namespace Game
         {
             return room.getOption<int[]>(Option.SortedPlayers);
         }
-        public static float getTimeoutForInitReplace(this RoomData room)
+        public static int getTimeoutForInitReplace(this RoomData room)
         {
-            return room.getOption<float>(Option.TimeoutForInitReplace);
+            return room.getOption<int>(Option.TimeoutForInitReplace);
         }
-        public static float getTimeoutForTurn(this RoomData room)
+        public static int getTimeoutForTurn(this RoomData room)
         {
-            return room.getOption<float>(Option.TimeoutForTurn);
+            return room.getOption<int>(Option.TimeoutForTurn);
         }
         public static int getStartGem(this RoomData room)
         {
