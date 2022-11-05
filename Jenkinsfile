@@ -144,10 +144,7 @@ pipeline {
         }
         stage('Upload To Tencent COS') {
             when {
-                anyOf {
-                    environment name: 'DEPLOY_TO', value: 'release'
-                    branch 'main'
-                }
+                environment name: 'DEPLOY_TO', value: 'release'
             }
             steps {
                 script {
