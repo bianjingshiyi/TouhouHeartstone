@@ -2,6 +2,7 @@
 
 @Library('lotlab-lib')
 import org.lotlab.pipeline.QQBot
+import org.lotlab.pipeline.Wecom
 import org.lotlab.pipeline.Docker
 import org.lotlab.pipeline.UnityBuilder
 import org.lotlab.pipeline.TencentCOS
@@ -210,16 +211,19 @@ pipeline {
 
                 def description = '成品:<br>\n<ul>\n'
                 def lines = env.DOWNLOAD_LINK.split('\n')
+                def downloadList = []
+                def linkList = []
                 for (int i = 0; i < lines.size(); i++) {
                     def cols = lines[i].split(': ')
                     description += '<li><a href="' + cols[1] + '" target="_blank">' + cols[0] + '</a></li>\n'
+                    downloadList += Wecom.contentItem('成品', cols[0], cols[1])
                 }
                 description += '</ul>'
                 currentBuild.description = description
 
                 String textLog = ''
                 if (env.BRANCH_NAME.startsWith('PR')) {
-                    textLog = "${BRANCH_NAME} - ${BUILD_DISPLAY_NAME} 检测完毕: \n${DOWNLOAD_LINK}"
+                    linkList += Wecom.jumpItem('合并请求', env.CHANGE_URL)
                 } else {
                     try {
                         if (env.GIT_COMMIT) {
@@ -234,18 +238,19 @@ pipeline {
                             textLog = new groovy.text.SimpleTemplateEngine().createTemplate(textTemplateFail).make(logVar).toString()
                         }
                     } catch (Exception e) {
-                        textLog = "醉梦传说自动构建结果 - ${BRANCH_NAME} - ${BUILD_DISPLAY_NAME} - 构建失败\n详情请访问： ${BUILD_URL}"
+                        textLog = ""
                     }
 
                     if (textLog.length() > 1000) textLog = textLog.substring(0, 1000)
                 }
 
-                try {
-                    def bot = new QQBot(this, env.QQ_BOT_HOST, 'token')
-                    bot.sendGroupMsg('1156816727', textLog)
-                    bot.sendGroupMsg('217522101', textLog)
-                } catch (Exception e) {
-                    echo e.toString();
+                withCredentials([string(credentialsId: 'igsk_wecom_bot', variable: 'WECOM_TOKEN')]) {
+                    def bot = new Wecom(this, env.WECOM_TOKEN)
+                    try {
+                        bot.sendResultCard(textLog, downloadList, linkList)
+                    } catch (Exception e) {
+                        echo e.toString();
+                    }
                 }
             }
         }
