@@ -436,8 +436,8 @@ namespace Game
             room.setOption(Option.RandomSeed, value.randomSeed);
             room.setOption(Option.SortedPlayers, value.sortedPlayers);
             room.setOption(Option.Shuffle, value.shuffle);
-            room.setOption(Option.TimeoutForInitReplace, value.timeoutForInitReplace);
-            room.setOption(Option.TimeoutForTurn, value.timeoutForTurn);
+            room.setOption(Option.TimeoutForInitReplace, (int)value.timeoutForInitReplace);
+            room.setOption(Option.TimeoutForTurn, (int)value.timeoutForTurn);
             room.setOption(Option.StartGem, value.startGem);
         }
 

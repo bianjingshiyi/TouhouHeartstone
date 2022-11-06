@@ -710,7 +710,7 @@ namespace UI
         /// <param name="value"></param>
         void setNotifyRoomSetting(RoomDataPropName.Option prop, object value)
         {
-            roomData.setOption(prop, value);
+            roomData?.setOption(prop, value);
             onRoomPropUpdate?.Invoke(prop.ToString(), value);
         }
 

@@ -102,11 +102,11 @@ namespace Controllers
         }
         private void onInitReplaceTimeInputFieldValueChanged(float value)
         {
-            _currentRoomData.setOption(RoomDataPropName.Option.TimeoutForInitReplace, value);
+            _currentRoomData.setOption(RoomDataPropName.Option.TimeoutForInitReplace, (int)value);
         }
         private void onTurnTimeInputFieldValueChanged(float value)
         {
-            _currentRoomData.setOption(RoomDataPropName.Option.TimeoutForTurn, value);
+            _currentRoomData.setOption(RoomDataPropName.Option.TimeoutForTurn, (int)value);
         }
         private void onDisableRandomPlayerActOrderToggleValueChanged(bool value)
         {
