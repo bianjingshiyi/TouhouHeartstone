@@ -343,6 +343,50 @@ namespace Game
 
     }
 
+    [Serializable]
+    public class AccountInfo
+    {
+        public string userName;
+        public string password;
+        public string mail;
+        public string nickName;
+        public int uid;
+        public string invite;
+        public bool guest = false;
+
+        /// <summary>
+        /// 登录账号构造器
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <param name="nickName"></param>
+        /// <param name="uid"></param>
+        /// <param name="guest"></param>
+        public AccountInfo(string userName, string password, string nickName, int uid, bool guest = false) : this(userName, password, null, nickName, uid, null)
+        {
+            this.guest = guest;
+        }
+        /// <summary>
+        /// 注册账号构造器
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <param name="mail"></param>
+        /// <param name="nickName"></param>
+        public AccountInfo(string userName, string password, string mail, string nickName, string key) : this(userName, password, mail, nickName, 0, key)
+        {
+        }
+        public AccountInfo(string userName, string password, string mail, string nickName, int uid, string key)
+        {
+            this.userName = userName;
+            this.password = password;
+            this.mail = mail;
+            this.nickName = nickName;
+            this.uid = uid;
+            this.invite = key;
+        }
+    }
+
     public static class RoomDataPropName
     {
         public enum Option

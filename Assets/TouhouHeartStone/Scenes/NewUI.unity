@@ -6789,6 +6789,7 @@ MonoBehaviour:
       randomSeed: 0
       sortedPlayers: 
       shuffle: 1
+      allowCustomCards: 1
       timeoutForInitReplace: 30
       timeoutForTurn: 75
       startGem: 0
@@ -7503,6 +7504,7 @@ MonoBehaviour:
     randomSeed: 0
     sortedPlayers: 
     shuffle: 1
+    allowCustomCards: 1
     timeoutForInitReplace: 30
     timeoutForTurn: 75
     startGem: 0
@@ -7523,7 +7525,6 @@ MonoBehaviour:
   _deck: 00004000012000000120000001200000012000000120000002200000022000000220000002200000022000000220000002200000032000000320000003200000032000000320000003200000122040001220400007304000073040001220400006200000062000000620000006200000062000000620000006200000
   _dummyAI: 0
   _mode: 0
-  _client: {fileID: 0}
 --- !u!4 &1441166624
 Transform:
   m_ObjectHideFlags: 0
@@ -9059,8 +9060,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1750958372}
   - component: {fileID: 1750958371}
-  - component: {fileID: 1750958370}
-  - component: {fileID: 1750958369}
   m_Layer: 0
   m_Name: NetworkingManager
   m_TagString: Untagged
@@ -9068,44 +9067,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1750958369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1750958368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f2e5d912a028bf4a81a8c1a3149e4c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _port: 9051
-  _timeout: 30
-  _autoStart: 0
-  _account:
-    userName: 
-    password: 
-    mail: 
-    nickName: 
-    uid: 0
-    invite: 
-    guest: 0
---- !u!114 &1750958370
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1750958368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a01372fed7c4d0458d250bc5bd83aa7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _port: 9050
-  _autoStart: 0
-  _timeout: 3
 --- !u!114 &1750958371
 MonoBehaviour:
   m_ObjectHideFlags: 0

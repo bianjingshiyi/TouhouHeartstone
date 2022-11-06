@@ -117,32 +117,6 @@ namespace Game
             }
         }
         #region 外部接口
-        [Obsolete]
-        public async Task startLocalGame(RoomInfo room)
-        {
-            //创建游戏
-            CardEngine game = await createGame(room);
-            //初始化本地玩家，AI，UI
-            foreach (var player in game.players)
-            {
-                if (player.id == room.playerList[0].RoomID) // 暂时的
-                {
-                    localPlayer = player;
-                    displayGameUI(game, localPlayer);
-                }
-                else
-                {
-#if UNITY_EDITOR
-                    new AI(game, player, dummy: _dummyAI); //AI玩家用AI
-#else
-                    new AI(game, player);
-#endif
-                }
-            }
-            mode = GameMode.local;
-            //开始游戏
-            await runGame(game);
-        }
         public async Task startLocalGame(RoomData room)
         {
             //创建游戏
@@ -167,17 +141,6 @@ namespace Game
             mode = GameMode.local;
             //开始游戏
             await runGame(game);
-        }
-
-        [Obsolete("Use nwLogic", true)]
-        [SerializeField]
-        ClientManager _client;
-
-        [Obsolete("Use nwLogic", true)]
-        public ClientManager client
-        {
-            get { return _client; }
-            set { _client = value; }
         }
 
         [SerializeField]
@@ -233,13 +196,6 @@ namespace Game
         public event Action onGameStart;
         #endregion
         #region 内部功能
-        [Obsolete]
-        private Task<CardEngine> createGame(RoomInfo room)
-        {
-            if (room._persistDataList.Count > room.runtimeDic.Count)
-                room.deserialize();
-            return createGame(room.getOption(), room.playerList);
-        }
         private Task<CardEngine> createGame(RoomData room)
         {
             return createGame(room.getOption(), room.playerDataList);

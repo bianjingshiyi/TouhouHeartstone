@@ -268,7 +268,7 @@ namespace Tests
             {
                 Debug.Log("Assembly:" + assembly.FullName);
             }
-            foreach (var type in typeof(Room).Assembly.GetTypes())
+            foreach (var type in typeof(RoomData).Assembly.GetTypes())
             {
                 Debug.Log("Type:" + type.FullName);
             }

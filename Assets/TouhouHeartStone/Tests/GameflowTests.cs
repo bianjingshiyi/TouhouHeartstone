@@ -343,6 +343,7 @@ namespace Tests
 
             Assert.False(game.isRunning);
         }
+        /**
         [UnityTest]
         public IEnumerator remoteGameflowTest()
         {
@@ -552,6 +553,7 @@ namespace Tests
             remote.disconnect();
             yield break;
         }
+        */
         [UnityTest]
         public IEnumerator effectRegisterTest()
         {
@@ -634,6 +636,7 @@ namespace Tests
             game.Dispose();
             yield break;
         }
+        /*
         [UnityTest]
         [Obsolete]
         public IEnumerator LANGameTest()
@@ -898,5 +901,6 @@ namespace Tests
             Object.Destroy(remoteGameManager.gameObject);
             Object.Destroy(remoteClient.gameObject);
         }
+        */
     }
 }

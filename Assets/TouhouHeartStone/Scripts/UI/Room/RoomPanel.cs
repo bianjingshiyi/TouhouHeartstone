@@ -140,7 +140,7 @@ namespace UI
             }
         }
         #endregion
-        RoomData roomData;
+        RoomData roomData { get; set; }
 
         DeckManager deckManager => this.findInstance<DeckManager>();
         CardManager cardManager => this.findInstance<CardManager>();
@@ -797,24 +797,6 @@ namespace UI
             ViewButtonBlack.asButton.onClick.AddListener(onClickViewDeckButtonCallback);
             SetButtonBlack.asButton.onClick.AddListener(onClickSetDeckButtonCallback);
             RemoveButtonBlack.asButton.onClick.AddListener(onClickRemoveButtonCallback);
-        }
-        [Obsolete]
-        RoomPlayerInfo playerInfo;
-        /// <summary>
-        /// 设置当前的玩家信息
-        /// </summary>
-        /// <param name="info"></param>
-        [Obsolete]
-        public void SetPlayerInfo(RoomPlayerInfo info)
-        {
-            playerInfo = info;
-
-            NameText.text = info.name;
-            int[] deck;
-            bool exists = info.tryGetProp<int[]>(RoomPlayerInfoName.DECK_INTARRAY, out deck);
-
-            CheckIconImage.gameObject.SetActive(info.ready);
-            CharacterText.text = exists ? this.findInstance<CardManager>().getCardSkin(deck[0]).name : "";
         }
 
         RoomPlayerData playerData;

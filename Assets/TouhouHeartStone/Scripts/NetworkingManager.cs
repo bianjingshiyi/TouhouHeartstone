@@ -812,36 +812,4 @@ namespace Game
         }
         #endregion
     }
-
-    [Obsolete("Use RoomDataPropName")]
-    public static class RoomInfoName
-    {
-        public const string OPTION_GAMEOPTION = "option";
-        public static HearthstoneOption getOption(this RoomInfo roomInfo)
-        {
-            return roomInfo.getProp<HearthstoneOption>(OPTION_GAMEOPTION);
-        }
-        public static void setOption(this RoomInfo roomInfo, HearthstoneOption value)
-        {
-            roomInfo.setProp(OPTION_GAMEOPTION, value);
-        }
-    }
-
-    [Obsolete]
-    public static class RoomPlayerInfoName
-    {
-        public const string DECK_INTARRAY = "deck";
-        public static int[] getDeck(this RoomPlayerInfo playerInfo)
-        {
-            return playerInfo.getProp<int[]>(DECK_INTARRAY);
-        }
-        public static bool tryGetDeck(this RoomPlayerInfo playerInfo, out int[] deck)
-        {
-            return playerInfo.tryGetProp(DECK_INTARRAY, out deck);
-        }
-        public static void setDeck(this RoomPlayerInfo playerInfo, int[] value)
-        {
-            playerInfo.setProp(DECK_INTARRAY, value);
-        }
-    }
 }
