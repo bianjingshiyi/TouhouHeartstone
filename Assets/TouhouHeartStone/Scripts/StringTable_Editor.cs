@@ -144,6 +144,8 @@ namespace Game
         public const string EDITOR_PARAM_NAME_BURN_EVENT = "爆牌事件";
         [TranslateMsg("动作图编辑器中动作节点名称之从一定数量的卡牌中选择一张")]
         public const string EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS = "从一定数量的卡牌中选择一张";
+        [TranslateMsg("动作图编辑器中动作节点名称之从一定数量的卡牌定义中选择一张")]
+        public const string EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_DEFINES = "从一定数量的卡牌定义中选择一张";
         [TranslateMsg("动作图编辑器中动作节点参数名称之集合")]
         public const string EDITOR_PARAM_NAME_COLLECTION = "集合";
         [TranslateMsg("动作图编辑器中动作节点参数名称之数量")]
@@ -266,6 +268,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_THIS_BUFF = "该增益";
         [TranslateMsg("动作图编辑器中动作参数名称之增益")]
         public const string EDITOR_PARAM_NAME_BUFF = "增益";
+        [TranslateMsg("动作图编辑器中动作参数名称之是否至于牌库顶")]
+        public const string EDITOR_NODE_NAME_IS_DECK_TOP = "是否至于牌库顶";
         [TranslateMsg("编辑器/卡牌/卡牌类型判断/节点名称")]
         public const string EDITOR_NODE__IS_DEFINE = "卡牌类型判断";
         [TranslateMsg("动作图编辑器中动作参数名称之目标卡牌")]
@@ -332,8 +336,22 @@ namespace Game
         public const string EDITOR_NODE_NAME_DESTROY = "消灭";
         [TranslateMsg("动作图编辑器中动作节点参数名称之死亡事件")]
         public const string EDITOR_PARAM_NAME_DEATH_EVENT = "死亡事件";
-        [TranslateMsg("动作图编辑器中动作节点名称之从墓地抽取一张牌至手牌")]
-        public const string EDITOR_NODE_NAME_MOVE_CARD_FROM_GRAVE_TO_HAND = "把墓地卡牌置入手牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之把墓地卡牌置入手牌")]
+        public const string EDITOR_NODE_NAME_CARD_GRAVE_TO_HAND = "墓地卡牌置入手牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之墓地卡牌洗入牌库")]
+        public const string EDITOR_NODE_NAME_CARD_GRAVE_TO_DECK = "墓地卡牌洗入牌库";
+        [TranslateMsg("动作图编辑器中动作节点名称之手牌洗入牌库")]
+        public const string EDITOR_NODE_NAME_CARD_HAND_TO_DECK = "手牌洗入牌库";
+        [TranslateMsg("动作图编辑器中动作节点名称之战场仆从洗入牌库")]
+        public const string EDITOR_NODE_NAME_CARD_FIELD_TO_DECK = "战场仆从洗入牌库"; 
+        [TranslateMsg("动作图编辑器中动作节点名称之战场卡牌移回手牌")]
+        public const string EDITOR_NODE_FIELD_TO_HAND = "战场卡牌移回手牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之牌库仆从置入战场")]
+        public const string EDITOR_NODE_DECK_SEVANTS_TO_FIELD = "牌库仆从置入战场";
+        [TranslateMsg("动作图编辑器中动作节点名称之手牌仆从置入战场")]
+        public const string EDITOR_NODE_HAND_SEVANTS_TO_FIELD = "手牌仆从置入战场";
+        [TranslateMsg("动作图编辑器中动作节点名称之墓地仆从置入战场")]
+        public const string EDITOR_NODE_GRAVE_SEVANTS_TO_FIELD = "墓地仆从置入战场";
         #endregion
         #region 增益
         [TranslateMsg("动作图编辑器中动作节点分类之增益")]
@@ -569,6 +587,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_CARD = "卡牌";
         [TranslateMsg("编辑器中的卡牌类型的名称")]
         public const string EDITOR_TYPE_NAME_CARD_TYPE = "卡牌类型";
+        [TranslateMsg("编辑器中的关键词类型的名称")]
+        public const string EDITOR_TYPE_NAME_KEYWORDS_TYPE = "关键词类型";
         [TranslateMsg("编辑器中的增益定义的名称")]
         public const string EDITOR_TYPE_NAME_BUFF_DEFINE = "增益定义";
         [TranslateMsg("编辑器中的增益的名称")]

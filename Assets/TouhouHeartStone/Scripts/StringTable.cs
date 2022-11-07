@@ -102,10 +102,10 @@ namespace Game
         public const string GAME_KEYWORD_RUSH = "速攻";
         [TranslateMsg("游戏中的关键词护盾")]
         public const string GAME_KEYWORD_SHIELD = "护盾";
-        [TranslateMsg("游戏中的关键词隐形")]
-        public const string GAME_KEYWORD_STEALTH = "隐形";
-        [TranslateMsg("游戏中的关键词永久隐形")]
-        public const string GAME_KEYWORD_PERMANENT_STEALTH = "永久隐形";
+        [TranslateMsg("游戏中的关键词隐匿")]
+        public const string GAME_KEYWORD_STEALTH = "隐匿";
+        [TranslateMsg("游戏中的关键词永久隐匿")]
+        public const string GAME_KEYWORD_PERMANENT_STEALTH = "永久隐匿";
         [TranslateMsg("游戏中的关键词吸血")]
         public const string GAME_KEYWORD_DRAIN = "吸血";
         [TranslateMsg("游戏中的关键词致命")]
@@ -126,14 +126,14 @@ namespace Game
         public const string GAME_KEYWORD_IMMUNITY = "无敌";
         [TranslateMsg("游戏中的关键词陷阱")]
         public const string GAME_KEYWORD_SECRET = "陷阱";
-        [TranslateMsg("游戏中的关键词任务")]
-        public const string GAME_KEYWORD_MISSION = "任务";
+        [TranslateMsg("游戏中的关键词委托")]
+        public const string GAME_KEYWORD_MISSION = "委托";
         [TranslateMsg("游戏中的关键词宣言")]
         public const string GAME_KEYWORD_BATTLECRY = "宣言";
         [TranslateMsg("游戏中的关键词遗言")]
         public const string GAME_KEYWORD_DEATHRATTLE = "遗言";
-        [TranslateMsg("游戏中的种族野兽")]
-        public const string GAME_RACE_BEAST = "野兽";
+        [TranslateMsg("游戏中的种族妖兽")]
+        public const string GAME_RACE_BEAST = "妖兽";
         [TranslateMsg("游戏中的种族恶魔")]
         public const string GAME_RACE_DEMON = "恶魔";
         [TranslateMsg("游戏中的种族元素")]
