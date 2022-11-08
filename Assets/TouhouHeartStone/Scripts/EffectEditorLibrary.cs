@@ -275,7 +275,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player)
         {
             player.draw(game, out var drawEvent);
-            return drawEvent.card;
+            return drawEvent!=null?drawEvent.card:null;
         }
         #endregion
 
