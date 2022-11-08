@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MukioI18n;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
@@ -275,7 +276,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player)
         {
             player.draw(game, out var drawEvent);
-            return drawEvent!=null?drawEvent.card:null;
+            return drawEvent?.card;
         }
         #endregion
 
@@ -332,11 +333,14 @@ namespace Game
         #endregion
 
         //  事件处理
+        [TranslateMsg("编辑器/事件_集合名称")]
         public const string EDITOR_NODE_EVENT = "事件";
 
         #region 事件
-        [ActionNodeMethod("阻止事件", EDITOR_NODE_EVENT)]
-        public static void stopEvent([ActionNodeParam("事件", isParams: true)] EventArg eventArg)
+        [TranslateMsg("编辑器/事件_阻止事件_节点名称")]
+        public const string EDITOR_NODE_EVENT_STOP_EVENT = "阻止事件";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_STOP_EVENT, EDITOR_NODE_EVENT)]
+        public static void stopEvent([ActionNodeParam(EDITOR_NODE_EVENT, isParams: true)] EventArg eventArg)
         {
             eventArg.isCanceled = true;
         }
