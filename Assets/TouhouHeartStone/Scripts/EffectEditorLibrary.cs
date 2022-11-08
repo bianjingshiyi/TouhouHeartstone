@@ -278,6 +278,7 @@ namespace Game
             return drawEvent.card;
         }
         #endregion
+
         #region 集合运算
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
@@ -329,20 +330,16 @@ namespace Game
             return collection.Length;
         }
         #endregion
-        /// <summary>
-        /// 简单召唤召唤物节点
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="card"></param>
-        /// <param name="player"></param>
-        /// <param name="define"></param>
-        /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE__SIMPLE_CREATE_TOKEN__NAME, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
-        public static Task simpleCreateToken(CardEngine game, Card card,
-            [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_CREATE_TOKEN__PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_CREATE_TOKEN__DEFINE)] CardDefine define)
+
+        //  事件处理
+        public const string EDITOR_NODE_EVENT = "事件";
+
+        #region 事件
+        [ActionNodeMethod("阻止事件", EDITOR_NODE_EVENT)]
+        public static void stopEvent([ActionNodeParam("事件", isParams: true)] EventArg eventArg)
         {
-            return player.createToken(game, define);
+            eventArg.isCanceled = true;
         }
+        #endregion
     }
 }
