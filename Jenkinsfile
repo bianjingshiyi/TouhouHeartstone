@@ -210,7 +210,10 @@ pipeline {
                 ]
 
                 def description = '成品:<br>\n<ul>\n'
-                def lines = env.DOWNLOAD_LINK.split('\n')
+                def lines = []
+                if (env.DOWNLOAD_LINK != null) {
+                    lines = env.DOWNLOAD_LINK.split('\n')
+                }
                 def downloadList = []
                 def linkList = []
                 for (int i = 0; i < lines.size(); i++) {
