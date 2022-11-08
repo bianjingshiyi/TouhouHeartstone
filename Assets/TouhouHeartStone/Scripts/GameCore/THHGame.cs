@@ -446,14 +446,15 @@ namespace TouhouHeartstone
 
         public Player createPlayer(CardEngine game, int id, string name, int master, int[] deck)
         {
-            if (game.getDefine(master) is MasterCardDefine masterCardDefine)
-            {
-            }
-            else
-            {
-                masterCardDefine = new Reimu();
-                game.logger.logError("非法角色ID" + master + "被替换为灵梦");
-            }
+            //自定义英雄会被强制替换为灵梦，注释掉了
+            //if (game.getDefine(master) is MasterCardDefine masterCardDefine)
+            //{
+            //}
+            //else
+            //{
+            //    masterCardDefine = new Reimu();
+            //    game.logger.logError("非法角色ID" + master + "被替换为灵梦");
+            //}
 
             int luckyCoinId = new LuckyCoin().id;
             for (int i = 1; i < deck.Length; i++)
@@ -472,10 +473,10 @@ namespace TouhouHeartstone
                 }
             }
 
-            return createPlayer(game, id, name, masterCardDefine, game.getDefines(deck));
+            return createPlayer(game, id, name, game.getDefine(master), game.getDefines(deck));
         }
 
-        public Player createPlayer(CardEngine game, int id, string name, MasterCardDefine master,
+        public Player createPlayer(CardEngine game, int id, string name, CardDefine master,
             IEnumerable<CardDefine> deck)
         {
             if (game.players.Any(p => p.id == id))
@@ -492,7 +493,7 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
             player.addPile(new Pile(game, PILE.ITEM, 1));
             player[PILE.MASTER].add(game, game.createCard(master));
-            player[PILE.SKILL].add(game, game.createCard(game.getDefine(master.skillID)));
+            player[PILE.SKILL].add(game, game.createCard(game.getDefine(master.getSkillId())));
             player[PILE.DECK].add(game, deck.Select(d => game.createCard(d)));
             player.setIsPrepared(false);
             player.setGem(game, 0);

@@ -80,6 +80,7 @@ namespace UI
         {
             _typeDropdown.SetValueWithoutNotify(typeIndex);
             _card.setTypeByName(typeName);
+            _skillIdGameObject.SetActive(typeName == DEFINE.MASTER);
         }
         public void setIsToken(bool value)
         {
@@ -213,6 +214,7 @@ namespace UI
             _editTagButton.gameObject.SetActive(true);
             _editAttackButton.gameObject.SetActive(true);
             _editLifeButton.gameObject.SetActive(true);
+            _skillIdGameObject.SetActive(false);
             _nameInputField.transform.position = _card.servantCardFace.nameText.transform.position;
         }
         public void switchToSpell()
@@ -221,6 +223,7 @@ namespace UI
             _editTagButton.gameObject.SetActive(false);
             _editAttackButton.gameObject.SetActive(false);
             _editLifeButton.gameObject.SetActive(false);
+            _skillIdGameObject.SetActive(false);
             _nameInputField.transform.position = _card.spellCardFace.nameText.transform.position;
         }
         public void switchToItem()
@@ -229,7 +232,12 @@ namespace UI
             _editTagButton.gameObject.SetActive(false);
             _editAttackButton.gameObject.SetActive(true);
             _editLifeButton.gameObject.SetActive(true);
+            _skillIdGameObject.SetActive(false);
             _nameInputField.transform.position = _card.itemCardFace.nameText.transform.position;
+        }
+        public void switchToMaster()
+        {
+            _skillIdGameObject.SetActive(true);
         }
         public void closeAllEdit()
         {
@@ -267,6 +275,7 @@ namespace UI
             if (_typeDropdown == null)
                 _typeDropdown = transform.Find("DetailPanel/TypeDropdownField/DropdownLight").GetComponent<Dropdown>();
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChanged);
+            _skillIdInputField.onEndEdit.AddListener(onSkillIDInputFieldEndEdit);
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
             _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
             _keywordsDropdown.onValueChanged.AddListener(onKeywordsDropdownValueChanged);
@@ -552,6 +561,10 @@ namespace UI
             onChangeTag?.Invoke(text);
 
         }
+        private void onSkillIDInputFieldEndEdit(string text)
+        {
+            onChangeSkillID?.Invoke(text);
+        }
         #endregion
         #endregion
         #region 事件
@@ -575,6 +588,10 @@ namespace UI
         /// 当更换卡牌类型，参数为更改类型索引。
         /// </summary>
         public event Action<int> onChangeType;
+        /// <summary>
+        /// 当更改卡牌技能ID，参数为更改后的卡牌技能ID（字符串）。
+        /// </summary>
+        public event Action<string> onChangeSkillID;
         public event Action<bool> onIsTokenToggleValueChanged;
         /// <summary>
         /// 当卡牌的关键词发生改变，参数为更改后的关键词选择状态。
@@ -648,6 +665,10 @@ namespace UI
         Dropdown _typeDropdown;
         [SerializeField]
         Toggle _isTokenToggle;
+        [SerializeField]
+        GameObject _skillIdGameObject;
+        [SerializeField]
+        InputField _skillIdInputField;
         [SerializeField]
         MultiSelectDropdown _keywordsDropdown;
         [SerializeField]

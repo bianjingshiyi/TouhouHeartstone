@@ -224,7 +224,7 @@ namespace Game
             foreach (var player in playerList)
             {
                 Deck deck = player.getDeck();
-                foreach (var cardId in deck.cardList.Select(e => e.id))
+                foreach (var cardId in deck.toIdArray(true))
                 {
                     if (CardDefineHelper.isExternalCard(cardId) &&
                         !cardPoolIdSet.Contains(CardDefineHelper.getCardPoolId(cardId)))

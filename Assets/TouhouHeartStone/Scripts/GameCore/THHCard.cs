@@ -775,31 +775,34 @@ namespace TouhouHeartstone
                     info = NOT_ENOUGH_SPIRIT;
                     return false;
                 }
-                if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
-                {
-                    if (!effect.checkCondition(game, card, null, new object[]
-                    {
-                        new HearthStoneRule.ActiveEventArg(player,card,new object[0])
-                    }))
-                    {
-                        info = SKILL_UNUSABLE;
-                        return false;
-                    }
-                    info = null;
-                    return true;
-                }
-                if (card.define.getActiveEffect() is IActiveEffect activeEffect)
-                {
-                    if (!activeEffect.checkCondition(game, card, null))
-                    {
-                        info = SKILL_UNUSABLE;
-                        return false;
-                    }
-                    info = null;
-                    return true;
-                }
-                info = SKILL_INVALID;
-                return false;
+                // TODO 这个检测是坏的，无法正确判断GeneratedEffect，因此自定义技能永远无法使用
+                //if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect effect)
+                //{
+                //    if (!effect.checkCondition(game, card, null, new object[]
+                //    {
+                //        new HearthStoneRule.ActiveEventArg(player,card,new object[0])
+                //    }))
+                //    {
+                //        info = SKILL_UNUSABLE;
+                //        return false;
+                //    }
+                //    info = null;
+                //    return true;
+                //}
+                //if (card.define.getActiveEffect() is IActiveEffect activeEffect)
+                //{
+                //    if (!activeEffect.checkCondition(game, card, null))
+                //    {
+                //        info = SKILL_UNUSABLE;
+                //        return false;
+                //    }
+                //    info = null;
+                //    return true;
+                //}
+                //info = SKILL_INVALID;
+                //return false;
+                info = null;
+                return true;
             }
             else
             {
@@ -1149,6 +1152,15 @@ namespace TouhouHeartstone
                 get { return getVar<Card>("目标卡牌"); }
                 set { setVar("目标卡牌", value); }
             }
+        }
+        public static void setSkillId(this CardDefine cardDefine, int id)
+        {
+            if (cardDefine is MasterCardDefine masterCardDefine)
+            {
+                masterCardDefine.skillID = id;
+            }
+            else
+                cardDefine.setProp<int>(DEFINE.CARD_PROP_SKILL_ID, id);
         }
         public static int getSkillId(this CardDefine cardDefine)
         {

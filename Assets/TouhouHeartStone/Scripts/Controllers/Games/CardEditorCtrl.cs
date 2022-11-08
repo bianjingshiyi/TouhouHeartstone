@@ -73,6 +73,8 @@ namespace Controllers
                 _ui.switchToSpell();
             else if (cardDefine.isItem())
                 _ui.switchToItem();
+            else if (cardDefine.isMaster())
+                _ui.switchToMaster();
             else
                 _ui.switchToServant();
             await setCurSkinIndex(0);
@@ -167,7 +169,8 @@ namespace Controllers
             _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
             _ui.onChangeTag += onChangeTag;
-          
+            _ui.onChangeSkillID += onChangeSkillID;
+
         }
         #endregion
          #region 事件回调
@@ -397,6 +400,13 @@ namespace Controllers
         private void onChangeTag(string text)
         {
             _cardDefine.setTags(text.Split(',', ' ', '，'));
+        }
+        private void onChangeSkillID(string text)
+        {
+            if (int.TryParse(text, out int result))
+            {
+                _cardDefine.setSkillId(result);
+            }
         }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
