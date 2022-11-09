@@ -86,6 +86,10 @@ namespace UI
         {
             _isTokenToggle.SetIsOnWithoutNotify(value);
         }
+        public void setSpellDamage(int value)
+        {
+            _spellDamageInputField.SetTextWithoutNotify(value.ToString());
+        }
         /// <summary>
         /// 初始化可选的卡牌关键词
         /// </summary>
@@ -302,6 +306,7 @@ namespace UI
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
             _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChangedCallback);
             _tagInputField.onEndEdit.AddListener(onTagInputFieldEndEdit);
+            _spellDamageInputField.onEndEdit.AddListener(onSpellDamageInputFieldEndEdit);
             EventTrigger trigger = _tagDropdown.gameObject.AddComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.Deselect;
@@ -561,6 +566,14 @@ namespace UI
             onChangeTag?.Invoke(text);
 
         }
+        private void onSpellDamageInputFieldEndEdit(string text)
+        {
+            if (int.TryParse(text, out int value))
+            {
+                onChangeSpellDamage?.Invoke(value);
+            }
+
+        }
         private void onSkillIDInputFieldEndEdit(string text)
         {
             onChangeSkillID?.Invoke(text);
@@ -633,6 +646,10 @@ namespace UI
         /// 当更改卡牌标签，参数为更改后的卡牌标签。
         /// </summary>
         public event Action<string> onChangeTag;
+        /// <summary>
+        /// 当更改法术伤害时，参数为更改后的法术伤害。
+        /// </summary>
+        public event Action<int> onChangeSpellDamage;
         public event Action<int> onChangeRace;
         public event Action<bool[]> onTagDropdownValueChanged;
         /// <summary>
@@ -671,6 +688,8 @@ namespace UI
         InputField _skillIdInputField;
         [SerializeField]
         MultiSelectDropdown _keywordsDropdown;
+        [SerializeField]
+        InputField _spellDamageInputField;
         [SerializeField]
         MultiSelectDropdown _noRaceTagDropdown;
         [SerializeField]

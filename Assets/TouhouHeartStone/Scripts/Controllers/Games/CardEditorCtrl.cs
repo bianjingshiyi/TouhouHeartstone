@@ -32,6 +32,7 @@ namespace Controllers
             _ui.setId(_cardDefine.id);
             _ui.setType(Array.IndexOf(_types, _cardDefine.type), _cardDefine.type);
             _ui.setIsToken(_cardDefine.isToken());
+            _ui.setSpellDamage(_cardDefine.getSpellDamage());
             bool[] keywordsValue = new bool[keywords.Length];
             for (int i = 0; i < keywordsValue.Length; i++)
             {
@@ -169,8 +170,8 @@ namespace Controllers
             _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
             _ui.onChangeTag += onChangeTag;
-            _ui.onChangeSkillID += onChangeSkillID;
-
+			ui.onChangeSkillID += onChangeSkillID;
+			ui.onChangeSpellDamage += onChangeSpellDamage;
         }
         #endregion
          #region 事件回调
@@ -408,6 +409,10 @@ namespace Controllers
                 _cardDefine.setSkillId(result);
             }
         }
+        private void onChangeSpellDamage(int value)
+        {
+            _cardDefine.setSpellDamage(value);
+        }    
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>

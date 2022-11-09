@@ -520,11 +520,11 @@ namespace TouhouHeartstone
         }
         public static int getSpellDamage(this Card card, IGame game)
         {
-            return card.getProp<int>(game, nameof(ServantCardDefine.spellDamage));
+            return card.getProp<int>(game, DEFINE.SPELL_DAMAGE);
         }
         public static Task<IPropChangeEventArg> setSpellDamage(this Card card, IGame game, int value)
         {
-            return card.setProp(game, nameof(ServantCardDefine.spellDamage), value);
+            return card.setProp(game, DEFINE.SPELL_DAMAGE, value);
         }
         public static int getDamageReduce(this Card card, IGame game)
         {
@@ -925,13 +925,13 @@ namespace TouhouHeartstone
         public static async Task resetCard(this Card card, CardEngine game)
         {
             await card.removeBuff(game, card.getBuffs());
+            await card.setSpellDamage(game, card.define.getSpellDamage());
 
             if (card.define is ServantCardDefine servant)
             {
                 await card.setDead(game, false);
                 await card.setCurrentLife(game, servant.life);
                 // await card.setCost(game, servant.cost);
-                await card.setSpellDamage(game, servant.spellDamage);
                 await card.setKeywords(game, servant.keywords);
                 await card.setTags(game, servant.tags);
                 await card.setReady(game, false);

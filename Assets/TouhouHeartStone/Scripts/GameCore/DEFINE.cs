@@ -15,6 +15,7 @@
         public const string ISTOKEN = "isToken";
         public const string COST = "cost";
         public const string ATTACK = "attack";
+        public const string SPELL_DAMAGE = "spellDamage";
         public const string KEYWORDS = "keywords";
         public const string TAGS = "tags";
         public const string CARD_PROP_SKILL_ID = "skillId";
