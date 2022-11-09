@@ -1,7 +1,3 @@
-醉梦传说自动构建结果 - {{branch}} - {{buildver}} - {{result}}
-下载链接: {{url}}
-项目链接: {{projectUrl}}
-
 自上个版本的变更:
 {{#commits}}
 {{{messageTitle}}} / {{authorName}} - {{commitTime}}

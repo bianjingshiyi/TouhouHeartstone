@@ -218,8 +218,10 @@ pipeline {
                 def linkList = []
                 for (int i = 0; i < lines.size(); i++) {
                     def cols = lines[i].split(': ')
-                    description += '<li><a href="' + cols[1] + '" target="_blank">' + cols[0] + '</a></li>\n'
-                    downloadList += Wecom.contentItem('成品', cols[0], cols[1])
+                    if (cols.size() == 2) {
+                        description += '<li><a href="' + cols[1] + '" target="_blank">' + cols[0] + '</a></li>\n'
+                        downloadList += Wecom.contentItem('成品', cols[0], cols[1])
+                    }
                 }
                 description += '</ul>'
                 currentBuild.description = description
@@ -237,8 +239,7 @@ pipeline {
                                 textLog = new groovy.text.SimpleTemplateEngine().createTemplate(textTemplate).make(logVar).toString()
                             }
                         } else {
-                            String textTemplateFail = readFile('ci/changelog.fail.txt')
-                            textLog = new groovy.text.SimpleTemplateEngine().createTemplate(textTemplateFail).make(logVar).toString()
+                            textLog = 'Git 检出失败'
                         }
                     } catch (Exception e) {
                         textLog = ""
