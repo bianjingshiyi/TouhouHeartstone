@@ -36,11 +36,41 @@ namespace Game
         {
             if (action == null)
                 return;
+            Scope childScope = new Scope(scope);
             for (int i = 1; i <= count; i++)
             {
-                scope.setOutParamValue(1, i);
-                await game.doActionsAsync(card, buff, eventArg, action);
+                scope.setOutParamValue(0, i);
+                await game.doActionsAsync(card, buff, eventArg, action, childScope);
             }
+        }
+
+        [TranslateMsg("动作图编辑器中动作节点名称之重复动作直到动作")]
+        private const string EDIOTR_NODE_NAME_DO_UNTIL_ACTION = "重复动作直到";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之最多重复次数参数")]
+        private const string EDIOTR_PARAM_NAME_MAX_REPEAT_TIME = "最多重复次数";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之结束条件参数")]
+        private const string EDIOTR_PARAM_NAME_STOP_CONDITION = "结束条件";
+
+        [ActionNodeMethod(EDIOTR_NODE_NAME_DO_UNTIL_ACTION, null)]
+        public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+            [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] ActionNode condition,
+            [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ActionNode action,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME, isOut: true)] int repeatTime)
+        {
+            if (action == null)
+                return;
+            int times = 0;
+            Scope childScope = new Scope(scope);
+            bool shouldBreak;
+            do
+            {
+                times++;
+                scope.setOutParamValue(0, times);
+                await game.doActionsAsync(card, buff, eventArg, action, childScope);
+                shouldBreak = await game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition);
+            }
+            while (!shouldBreak && times < maxRepeatTime);
         }
         //  把这个“玩家”逐步移到下面几个去
         #region 玩家
