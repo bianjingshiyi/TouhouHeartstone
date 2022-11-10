@@ -715,6 +715,49 @@ namespace Game
                 await card.triggerDeathRattles(game);
             }
         }
+        [TranslateMsg("动作图编辑器中动作节点名称之获取最低属性的卡牌")]
+        public const string EDITOR_NODE_NAME_GET_MIN_CARD = "获取最低属性的卡牌";
+        /// <summary>
+        /// 获取一项属性值最低的卡牌。
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_MIN_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getMinPropCard(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)]string propName)
+        {
+            return cards.OrderBy(c =>
+            {
+                object prop = c.getProp(game, propName);
+                if (prop is int intProp)
+                {
+                    return intProp;
+                }
+                return 0;
+            }).FirstOrDefault();
+        }
+
+        [TranslateMsg("动作图编辑器中动作节点名称之获取最高属性的卡牌")]
+        public const string EDITOR_NODE_NAME_GET_MAX_CARD = "获取最高属性的卡牌";
+        /// <summary>
+        /// 获取一项属性值最高的卡牌。
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_MAX_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getMaxPropCard(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
+        {
+            return cards.OrderBy(c =>
+            {
+                object prop = c.getProp(game, propName);
+                if (prop is int intProp)
+                {
+                    return intProp;
+                }
+                return 0;
+            }).LastOrDefault();
+        }
         /// <summary>
         /// X到Y之间随机整数
         /// </summary>
