@@ -294,7 +294,9 @@ namespace Game
         /// <summary>
         /// 卡牌置入战场
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入战场")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD = "卡牌置入战场";
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToField(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -320,7 +322,9 @@ namespace Game
         /// <summary>
         /// 卡牌移回手牌
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_HAND, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌移回手牌")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HAND = "卡牌移回手牌";
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_HAND, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHand(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -347,7 +351,9 @@ namespace Game
         /// <summary>
         /// 卡牌从洗入牌库
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_DECK, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌洗入牌库")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_DECK = "卡牌洗入牌库";
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_DECK, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToDeck(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -368,7 +374,9 @@ namespace Game
         /// <summary>
         /// 卡牌从置入墓地
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入墓地")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE = "卡牌置入墓地";
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToGrave(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -387,7 +395,9 @@ namespace Game
         /// <summary>
         /// 卡牌置入延迟区
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入延迟区")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD = "卡牌置入延迟区";
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHead(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -413,7 +423,10 @@ namespace Game
         /// <summary>
         /// 卡牌装备到道具栏(有显示问题，暂时隐藏）
         /// </summary>
-        /*[ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        /*
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToItem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,

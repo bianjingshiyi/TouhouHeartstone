@@ -340,18 +340,6 @@ namespace Game
         public const string EDITOR_NODE_NAME_DESTROY = "消灭";
         [TranslateMsg("动作图编辑器中动作节点参数名称之死亡事件")]
         public const string EDITOR_PARAM_NAME_DEATH_EVENT = "死亡事件";
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌移回手牌")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HAND = "卡牌移回手牌";
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌洗入牌库")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_DECK = "卡牌洗入牌库";
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入战场")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD = "卡牌置入战场"; 
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入墓地")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE = "卡牌置入墓地";
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入延迟区")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD = "卡牌置入延迟区";
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
         #endregion
         #region 增益
         [TranslateMsg("动作图编辑器中动作节点分类之增益")]
