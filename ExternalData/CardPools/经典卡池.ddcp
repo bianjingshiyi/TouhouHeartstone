@@ -1155,30 +1155,29 @@
           "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "ActiveEvent",
-              "condition" : { },
               "targetCheckerList" : [],
-              "actionId" : 3,
+              "actionId" : 8,
               "actionList" : [{
-                  "_id" : 3,
+                  "_id" : 8,
                   "defineName" : "从一定数量的卡牌中选择一张",
-                  "branches" : [9],
+                  "branches" : [2],
                   "inputs" : [{
-                      "actionNodeId" : 8,
+                      "actionNodeId" : 3,
                       "index" : 1
                     }],
                   "consts" : [3],
                   "regVar" : [true]
                 }, {
-                  "_id" : 8,
+                  "_id" : 3,
                   "defineName" : "筛选",
-                  "branches" : [0, 2],
+                  "branches" : [0, 4],
                   "inputs" : [{
-                      "actionNodeId" : 4
+                      "actionNodeId" : 1
                     }],
                   "consts" : [],
                   "regVar" : [false, false, false]
                 }, {
-                  "_id" : 4,
+                  "_id" : 1,
                   "defineName" : "获取玩家的墓地卡牌",
                   "branches" : [0],
                   "inputs" : [{
@@ -1187,38 +1186,38 @@
                   "consts" : [],
                   "regVar" : [false]
                 }, {
-                  "_id" : 2,
-                  "defineName" : "是否为法术牌",
+                  "_id" : 4,
+                  "defineName" : "卡牌类型判断",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 8
+                      "actionNodeId" : 3
                     }],
-                  "consts" : [],
+                  "consts" : [null],
                   "regVar" : []
                 }, {
-                  "_id" : 9,
-                  "defineName" : "墓地卡牌置入手牌",
-                  "branches" : [10],
+                  "_id" : 2,
+                  "defineName" : "卡牌移回手牌",
+                  "branches" : [6],
                   "inputs" : [{
                       "eventVarName" : "玩家"
                     }, {
-                      "actionNodeId" : 3
+                      "actionNodeId" : 8
                     }],
                   "consts" : [],
                   "regVar" : [true]
                 }, {
-                  "_id" : 10,
+                  "_id" : 6,
                   "defineName" : "添加增益",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 9
+                      "actionNodeId" : 2
                     }, {
-                      "actionNodeId" : 11
+                      "actionNodeId" : 7
                     }],
                   "consts" : [],
                   "regVar" : []
                 }, {
-                  "_id" : 11,
+                  "_id" : 7,
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
@@ -1660,7 +1659,7 @@
           "_v" : [null, "Water", "Fire"]
         },
         "characterId" : 4194304,
-        "cost" : 1,
+        "cost" : 4,
         "isToken" : false
       },
       "effectList" : [{
@@ -2932,10 +2931,10 @@
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "actionId" : 1,
+              "actionId" : 4,
               "actionList" : [{
-                  "_id" : 1,
-                  "defineName" : "墓地卡牌置入手牌",
+                  "_id" : 4,
+                  "defineName" : "卡牌移回手牌",
                   "branches" : [0],
                   "inputs" : [{
                       "eventVarName" : "玩家"
@@ -2949,22 +2948,22 @@
                   "defineName" : "获取随机卡牌",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 3,
+                      "actionNodeId" : 2,
                       "index" : 1
                     }],
                   "consts" : [],
                   "regVar" : [false]
                 }, {
-                  "_id" : 3,
+                  "_id" : 2,
                   "defineName" : "筛选",
-                  "branches" : [0, 4],
+                  "branches" : [0, 3],
                   "inputs" : [{
-                      "actionNodeId" : 2
+                      "actionNodeId" : 1
                     }],
                   "consts" : [],
                   "regVar" : [false, false, false]
                 }, {
-                  "_id" : 2,
+                  "_id" : 1,
                   "defineName" : "获取玩家的墓地卡牌",
                   "branches" : [0],
                   "inputs" : [{
@@ -2973,11 +2972,11 @@
                   "consts" : [],
                   "regVar" : [false]
                 }, {
-                  "_id" : 4,
+                  "_id" : 3,
                   "defineName" : "卡牌类型判断",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 3
+                      "actionNodeId" : 2
                     }],
                   "consts" : [null],
                   "regVar" : []
@@ -4750,12 +4749,41 @@
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "actionId" : 1,
+              "actionId" : 7,
               "actionList" : [{
-                  "_id" : 1,
-                  "defineName" : "战场卡牌移回手牌",
+                  "_id" : 7,
+                  "defineName" : "卡牌移回手牌",
+                  "branches" : [5],
+                  "inputs" : [{
+                      "actionNodeId" : 8
+                    }, {
+                      "actionNodeId" : 9
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 8,
+                  "defineName" : "获取玩家对手",
                   "branches" : [0],
                   "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 9,
+                  "defineName" : "获取敌方随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "卡牌移回手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
                       "actionNodeId" : 3,
                       "index" : 1
                     }],
@@ -4766,13 +4794,13 @@
                   "defineName" : "筛选",
                   "branches" : [0, 4],
                   "inputs" : [{
-                      "actionNodeId" : 2
+                      "actionNodeId" : 6
                     }],
                   "consts" : [],
                   "regVar" : [false, false, false]
                 }, {
-                  "_id" : 2,
-                  "defineName" : "获取所有随从",
+                  "_id" : 6,
+                  "defineName" : "获取友方随从",
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [],
@@ -6073,28 +6101,28 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "2" : {
-          "posX" : 1146.7838134765625,
-          "posY" : -361.6654052734375
+          "posX" : 1532.2720947265625,
+          "posY" : 108.68218994140625
         },
         "3" : {
-          "posX" : 1030.1748046875,
-          "posY" : 145.2568359375
+          "posX" : 576.32611083984375,
+          "posY" : -410.7940673828125
         },
         "4" : {
-          "posX" : 509.4658203125,
-          "posY" : -322.47943115234375
+          "posX" : 1030.582763671875,
+          "posY" : -395.74334716796875
         },
         "6" : {
-          "posX" : 2213.216796875,
-          "posY" : 153.93792724609375
+          "posX" : 1898.048828125,
+          "posY" : 139.69578552246094
         },
         "7" : {
-          "posX" : 1661.5911865234375,
-          "posY" : -725.2098388671875
+          "posX" : 1700.566162109375,
+          "posY" : -691.28399658203125
         },
         "8" : {
-          "posX" : 819.159912109375,
-          "posY" : -395.06243896484375
+          "posX" : 1051.047119140625,
+          "posY" : 146.41876220703125
         },
         "9" : {
           "posX" : 1568.50244140625,
@@ -6107,6 +6135,10 @@
         "11" : {
           "posX" : 1650.7359619140625,
           "posY" : -612.6143798828125
+        },
+        "1" : {
+          "posX" : 295.8360595703125,
+          "posY" : -327.78729248046875
         }
       },
       "freeActionNodeList" : []
@@ -7268,24 +7300,24 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "2" : {
-          "posX" : 484.84783935546875,
-          "posY" : -197.79205322265625
+          "posX" : 855.4476318359375,
+          "posY" : -200.08467102050781
         },
         "3" : {
-          "posX" : 755.3045654296875,
-          "posY" : -280.0255126953125
+          "posX" : 1327.49169921875,
+          "posY" : -190.9630126953125
         },
         "4" : {
-          "posX" : 1199.3656005859375,
-          "posY" : -289.16265869140625
+          "posX" : 1523.606201171875,
+          "posY" : 157.93899536132813
         },
         "5" : {
-          "posX" : 1025.7615966796875,
-          "posY" : -534.03570556640625
+          "posX" : 1135.9375,
+          "posY" : -448.6488037109375
         },
         "1" : {
-          "posX" : 1327.2841796875,
-          "posY" : 54.390838623046875
+          "posX" : 568.11663818359375,
+          "posY" : -104.3076171875
         }
       },
       "freeActionNodeList" : []
@@ -8138,21 +8170,33 @@
       "cardId" : -2147418039,
       "entryType" : "triggerList",
       "actionInfoDict" : {
-        "1" : {
-          "posX" : 1332.2119140625,
-          "posY" : 87.897689819335938
+        "5" : {
+          "posX" : 1598.344482421875,
+          "posY" : 131.82431030273438
         },
-        "2" : {
-          "posX" : 498.16180419921875,
-          "posY" : -157.56159973144531
+        "6" : {
+          "posX" : 512.87176513671875,
+          "posY" : -262.2298583984375
         },
         "3" : {
-          "posX" : 739.0953369140625,
-          "posY" : -198.59773254394531
+          "posX" : 782.87890625,
+          "posY" : -328.12469482421875
         },
         "4" : {
-          "posX" : 1316.0733642578125,
-          "posY" : -277.32376098632813
+          "posX" : 1361.681640625,
+          "posY" : -317.45895385742188
+        },
+        "7" : {
+          "posX" : 1034.6282958984375,
+          "posY" : 129.99993896484375
+        },
+        "8" : {
+          "posX" : 684.3580322265625,
+          "posY" : -19.5947265625
+        },
+        "9" : {
+          "posX" : 559.84796142578125,
+          "posY" : 245.84442138671875
         }
       },
       "freeActionNodeList" : []
@@ -9342,6 +9386,9 @@
       "name" : "冰封",
       "desc" : "禁锢一回合",
       "imagePath" : "经典卡池\\Buff26\\Image_zh-Hans.jpg"
+    }, {
+      "buffId" : 27,
+      "language" : "zh-Hans"
     }, {
       "buffId" : 27,
       "language" : "zh-Hans"

@@ -134,6 +134,10 @@ namespace Game
         public const string EDITOR_PARAM_NAME_PLAYER = "玩家";
         [TranslateMsg("动作图编辑器中动作节点参数名称之对手玩家")]
         public const string EDITOR_PARAM_NAME_OPPONENT_PLAYER = "对手玩家";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之生效玩家")]
+        public const string EDITOR_PARAM_NAME_EFFECT_PLAYER = "生效玩家";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之移动的卡牌")]
+        public const string EDITOR_PARAM_NAME_MOVED_CARD = "移动的卡牌";
         [TranslateMsg("动作图编辑器中动作节点参数名称之牌堆")]
         public const string EDITOR_PARAM_NAME_PILE = "牌堆";
         [TranslateMsg("动作图编辑器中动作节点参数名称之抽牌事件")]
@@ -336,22 +340,18 @@ namespace Game
         public const string EDITOR_NODE_NAME_DESTROY = "消灭";
         [TranslateMsg("动作图编辑器中动作节点参数名称之死亡事件")]
         public const string EDITOR_PARAM_NAME_DEATH_EVENT = "死亡事件";
-        [TranslateMsg("动作图编辑器中动作节点名称之把墓地卡牌置入手牌")]
-        public const string EDITOR_NODE_NAME_CARD_GRAVE_TO_HAND = "墓地卡牌置入手牌";
-        [TranslateMsg("动作图编辑器中动作节点名称之墓地卡牌洗入牌库")]
-        public const string EDITOR_NODE_NAME_CARD_GRAVE_TO_DECK = "墓地卡牌洗入牌库";
-        [TranslateMsg("动作图编辑器中动作节点名称之手牌洗入牌库")]
-        public const string EDITOR_NODE_NAME_CARD_HAND_TO_DECK = "手牌洗入牌库";
-        [TranslateMsg("动作图编辑器中动作节点名称之战场仆从洗入牌库")]
-        public const string EDITOR_NODE_NAME_CARD_FIELD_TO_DECK = "战场仆从洗入牌库"; 
-        [TranslateMsg("动作图编辑器中动作节点名称之战场卡牌移回手牌")]
-        public const string EDITOR_NODE_FIELD_TO_HAND = "战场卡牌移回手牌";
-        [TranslateMsg("动作图编辑器中动作节点名称之牌库仆从置入战场")]
-        public const string EDITOR_NODE_DECK_SEVANTS_TO_FIELD = "牌库仆从置入战场";
-        [TranslateMsg("动作图编辑器中动作节点名称之手牌仆从置入战场")]
-        public const string EDITOR_NODE_HAND_SEVANTS_TO_FIELD = "手牌仆从置入战场";
-        [TranslateMsg("动作图编辑器中动作节点名称之墓地仆从置入战场")]
-        public const string EDITOR_NODE_GRAVE_SEVANTS_TO_FIELD = "墓地仆从置入战场";
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌移回手牌")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HAND = "卡牌移回手牌";
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌洗入牌库")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_DECK = "卡牌洗入牌库";
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入战场")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD = "卡牌置入战场"; 
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入墓地")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE = "卡牌置入墓地";
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入延迟区")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD = "卡牌置入延迟区";
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
         #endregion
         #region 增益
         [TranslateMsg("动作图编辑器中动作节点分类之增益")]

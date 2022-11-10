@@ -292,81 +292,39 @@ namespace Game
             return drawEvent?.card;
         }
         /// <summary>
-        /// 战场卡牌移回手牌
+        /// 卡牌置入战场
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_FIELD_TO_HAND, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> fieldToHand(CardEngine game, Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
-        {
-            await targets.fieldToHand(game);
-            return targets;
-        }
-        /// <summary>
-        /// 牌库仆从置入战场
-        /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_DECK_SEVANTS_TO_FIELD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> deckServantsToField(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        public static async Task<Card[]> moveToField(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
             Card[] movelist;
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
-                var moveEvent = await player.tryEnterField(game, card.getOwner().getDeck(), card, 1);
-                MoveList.Add(moveEvent.card);
+                if (player.getField().isFull)
+                {
+                    game.logger.log(player + "的战场已满，无法将" + string.Join(",", card) + "置入战场");
+                }
+                else
+                {
+                    game.logger.log("将" + string.Join("，", card) + "置入" + player + "的战场");
+                    await card.pile.moveTo(game, card, player.getField());
+                    MoveList.Add(card);
+                }
             }
-            movelist = MoveList.ToArray();
-            return movelist;
+            return MoveList.ToArray();
         }
         /// <summary>
-        /// 手牌仆从置入战场
+        /// 卡牌移回手牌
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_HAND_SEVANTS_TO_FIELD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_HAND, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> handServantsToField(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
-        {
-            Card[] movelist;
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
-            {
-                var moveEvent = await player.tryEnterField(game, card.getOwner().getHand(), card, 1);
-                MoveList.Add(moveEvent.card);
-            }
-            movelist = MoveList.ToArray();
-            return movelist;
-        }
-        /// <summary>
-        /// 墓地仆从置入战场
-        /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_GRAVE_SEVANTS_TO_FIELD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> graveServantsToField(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
-        {
-            Card[] movelist;
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
-            {
-                var moveEvent = await player.tryEnterField(game, card.getOwner().getGrave(), card, 1);
-                MoveList.Add(moveEvent.card);
-            }
-            movelist = MoveList.ToArray();
-            return movelist;
-        }
-        /// <summary>
-        /// 墓地卡牌置入手牌
-        /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_GRAVE_TO_HAND, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> graveToHand(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        public static async Task<Card[]> moveToHand(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
@@ -375,7 +333,8 @@ namespace Game
                 if (restCount > 0)
                 {
                     game.logger.log("将" + string.Join("，", card) + "置入" + player + "的手牌");
-                    await card.getOwner().getGrave().moveTo(game, card, player.getHand());
+                    await card.resetCard(game);
+                    await card.pile.moveTo(game, card, player.getHand());
                     MoveList.Add(card);
                 }
                 else
@@ -386,13 +345,13 @@ namespace Game
             return MoveList.ToArray();
         }
         /// <summary>
-        /// 墓地卡牌洗入牌库
+        /// 卡牌从洗入牌库
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_GRAVE_TO_DECK, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_DECK, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> graveToDeck(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+        public static async Task<Card[]> moveToDeck(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP, isConst: true)] bool top)
         {
             List<Card> MoveList = new List<Card>();
@@ -400,51 +359,83 @@ namespace Game
             {
                 int position = top ? player.getDeck().count : game.randomInt(0, player.getDeck().count);
                 game.logger.log("将" + string.Join("，", card) + "洗入" + player + "的牌库");
-                await card.getOwner().getGrave().moveTo(game, card, player.getDeck(), position);
+                await card.resetCard(game);
+                await card.pile.moveTo(game, card, player.getDeck(), position);
                 MoveList.Add(card);
             }
             return MoveList.ToArray();
         }
         /// <summary>
-        /// 手牌洗入牌库
+        /// 卡牌从置入墓地
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_HAND_TO_DECK, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> handToDeck(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP, isConst: true)] bool top)
+        public static async Task<Card[]> moveToGrave(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
-                int position = top ? player.getDeck().count : game.randomInt(0, player.getDeck().count);
-                game.logger.log("将" + string.Join("，", card) + "洗入" + player + "的牌库");
-                await card.getOwner().getHand().moveTo(game, card, player.getDeck(), position);
+                game.logger.log("将" + string.Join("，", card) + "置入" + player + "的墓地");
+                await card.resetCard(game);
+                await card.pile.moveTo(game, card, player.getGrave());
                 MoveList.Add(card);
             }
             return MoveList.ToArray();
         }
         /// <summary>
-        /// 战场仆从洗入牌库
+        /// 卡牌置入延迟区
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_FIELD_TO_DECK, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> fieldToDeck(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP, isConst: true)] bool top)
+        public static async Task<Card[]> moveToHead(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
+            Card[] movelist;
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
-                int position = top ? player.getField().count : game.randomInt(0, player.getDeck().count);
-                game.logger.log("将" + string.Join("，", card) + "洗入" + player + "的牌库");
-                await card.getOwner().getHand().moveTo(game, card, player.getDeck(), position);
-                MoveList.Add(card);
+                if (player.getHead().isFull)
+                {
+                    game.logger.log(player + "的延迟区已满，无法将" + string.Join(",", card) + "置入延迟区");
+                }
+                else
+                {
+                    game.logger.log("将" + string.Join("，", card) + "置入" + player + "的延迟区");
+                    await card.pile.moveTo(game, card, player.getHead());
+                    MoveList.Add(card);
+                }
             }
             return MoveList.ToArray();
         }
+        /// <summary>
+        /// 卡牌装备到道具栏(有显示问题，暂时隐藏）
+        /// </summary>
+        /*[ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card[]> moveToItem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
+        {
+            Card[] movelist;
+            List<Card> MoveList = new List<Card>();
+            foreach (var card in cards)
+            {
+                if (player[PILE.ITEM].isFull)
+                {
+                    game.logger.logTrace("由于" + player + "的道具栏已满，摧毁当前道具");
+                    await player.destroyItem(game);
+                }
+                game.logger.log("将" + string.Join("，", card) + "装备到" + player + "的道具栏");
+                await card.pile.moveTo(game, card, player[PILE.ITEM]);
+                await card.setCurrentLife(game, card.getLife(game));
+                await card.setAttack(game, card.getAttack(game));
+                MoveList.Add(card);
+            }
+            return MoveList.ToArray();
+        }*/
         #endregion
         #region 集合运算
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]

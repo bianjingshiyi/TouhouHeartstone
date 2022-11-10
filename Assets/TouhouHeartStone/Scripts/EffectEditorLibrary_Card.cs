@@ -467,31 +467,7 @@ namespace Game
         {
             return cards.die(game);
         }
-        /// <summary>
-        /// 把墓地卡牌置入手牌
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="card"></param>
-        /// <param name="cardDefine"></param>
-        /// <returns></returns>
-        /*[ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CARD_GRAVE_TO_HAND, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        public static async Task moveCardFromGraveToHand(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
-        {
-            if (!player.getHand().isFull)
-            {
-                await player.getGrave().moveTo(game, cards, player.getHand());
-            }
-            else if ((player.getHand().maxCount - player.getHand().count) < cards.Length)
-            {
-                await player.getGrave().moveTo(game, cards.Take((player.getHand().maxCount - player.getHand().count)), player.getHand());
-            }
-            else
-            {
-                return;
-            }
-        }*/
+
         /// <summary>
         /// 获取所有友方随从
         /// </summary>
@@ -600,7 +576,7 @@ namespace Game
         /// </summary>
         [TranslateMsg("动作图编辑器中动作节点名称之获取玩家道具")]
         public const string EDITOR_NODE_NAME_GET_ITEM = "获取玩家道具";
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ITEM, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ITEM, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card getItem(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
@@ -753,6 +729,25 @@ namespace Game
            [ActionNodeParam(EDITOR_NODE_NAME_GET_INT_Y, isConst: false)] int countY)
         {
             return game.randomInt(countX,countY);
+        }
+        /// <summary>
+        /// 强制攻击目标
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之强制攻击目标")]
+        public const string EDITOR_NODE_FORCE_ATTACK = "强制攻击目标";
+        public const string EDITOR_NODE_FORCE_ATTACKER = "发动攻击的卡牌";
+        [ActionNodeMethod(EDITOR_NODE_FORCE_ATTACK, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async Task forceAttackTargets(CardEngine game,
+            [ActionNodeParam(EDITOR_NODE_FORCE_ATTACKER)]Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
+        {
+            foreach (var card in cards)
+            {
+                foreach (var target in targets)
+                { 
+                    await card.forceAttack(game, card.getOwner(), target);
+                }
+            }
         }
     }
     public enum CardDefineSelect
