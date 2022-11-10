@@ -170,8 +170,8 @@ namespace Controllers
             _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
             _ui.onChangeTag += onChangeTag;
-			ui.onChangeSkillID += onChangeSkillID;
-			ui.onChangeSpellDamage += onChangeSpellDamage;
+			_ui.onChangeSkillID += onChangeSkillID;
+			_ui.onChangeSpellDamage += onChangeSpellDamage;
         }
         #endregion
          #region 事件回调
