@@ -539,12 +539,33 @@ namespace Game
         public const string EDITOR_NODE_EVENT = "事件";
 
         #region 事件
+        [TranslateMsg("编辑器/事件_当前事件_节点名称")]
+        public const string EDITOR_NODE_EVENT_THIS_EVENT = "当前事件";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_THIS_EVENT, EDITOR_NODE_EVENT)]
+        [return: ActionNodeParam(EDITOR_NODE_EVENT)]
+        public static EventArg thisEvent(EventArg eventArg)
+        {
+            return eventArg;
+        }
         [TranslateMsg("编辑器/事件_阻止事件_节点名称")]
         public const string EDITOR_NODE_EVENT_STOP_EVENT = "阻止事件";
         [ActionNodeMethod(EDITOR_NODE_EVENT_STOP_EVENT, EDITOR_NODE_EVENT)]
         public static void stopEvent([ActionNodeParam(EDITOR_NODE_EVENT, isParams: true)] EventArg eventArg)
         {
             eventArg.isCanceled = true;
+        }
+
+        [TranslateMsg("编辑器/事件_更改攻击目标_节点名称")]
+        public const string EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET = "更改攻击目标";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET, EDITOR_NODE_EVENT)]
+        public static void changeAttackTarget(
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card target)
+        {
+            if (eventArg is THHCard.AttackEventArg attackArg)
+            {
+                attackArg.target = target;
+            }
         }
         #endregion
     }
