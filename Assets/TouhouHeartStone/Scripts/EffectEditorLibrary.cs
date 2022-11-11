@@ -60,6 +60,8 @@ namespace Game
         {
             if (action == null)
                 return;
+            if (maxRepeatTime <= 0)
+                return;
             int times = 0;
             Scope childScope = new Scope(scope);
             bool shouldBreak;
