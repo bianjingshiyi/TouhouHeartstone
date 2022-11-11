@@ -567,6 +567,15 @@ namespace Game
                 attackArg.target = target;
             }
         }
+        [TranslateMsg("编辑器/事件_更改使用目标_节点名称")]
+        public const string EDITOR_NODE_EVENT_CHANGE_USE_TARGET = "更改使用目标";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_CHANGE_USE_TARGET, EDITOR_NODE_EVENT)]
+        public static void changeUseTargets(
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
+        {
+            eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
+        }
         #endregion
     }
 }
