@@ -625,7 +625,7 @@ namespace Game
         [TranslateMsg("编辑器/事件_阻止事件_节点名称")]
         public const string EDITOR_NODE_EVENT_STOP_EVENT = "阻止事件";
         [ActionNodeMethod(EDITOR_NODE_EVENT_STOP_EVENT, EDITOR_NODE_EVENT)]
-        public static void stopEvent([ActionNodeParam(EDITOR_NODE_EVENT, isParams: true)] EventArg eventArg)
+        public static void stopEvent([ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg)
         {
             eventArg.isCanceled = true;
         }
