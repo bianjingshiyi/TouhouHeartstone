@@ -123,6 +123,24 @@ namespace Game
             return cardDefines;
         }
         /// <summary>
+        /// 变形为卡牌定义
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之变形为卡牌定义")]
+        public const string EDITOR_NODE_CARD_SET_DEFINE = "变形为卡牌定义";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之是否重置卡牌")]
+        public const string EDITOR_NODE_CARD_IS_RESET = "是否重置卡牌";
+        [ActionNodeMethod(EDITOR_NODE_CARD_SET_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card> cardSetDefine(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine define,
+            [ActionNodeParam(EDITOR_NODE_CARD_IS_RESET, isConst: true)] bool isreset)
+        {
+            var setDefineEvent = await card.setDefine(game, define);
+            if (isreset) { await card.resetCard(game); }
+            return setDefineEvent?.card;
+        }
+        /// <summary>
         /// 获取随机卡牌
         /// </summary>
         /// <param name="cards"></param>
@@ -183,12 +201,18 @@ namespace Game
             await player.getDeck().insert(game, createdCard, game.randomInt(0, player.getDeck().count));
             return createdCard;
         }
+        /// <summary>
+        /// 这张卡牌
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_THIS_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD, "ThisCard")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card thisCard(Card card)
         {
             return card;
         }
+        /// <summary>
+        /// 获取属性
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PROPERTY, StringTable.EDITOR_NODE_CATEGORY_CARD, "GetProperty")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getProp(CardEngine game,
@@ -197,6 +221,9 @@ namespace Game
         {
             return card.getProp(game, propName);
         }
+        /// <summary>
+        /// 设置属性
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SET_PROPERTY, StringTable.EDITOR_NODE_CATEGORY_CARD, "SetProperty")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static Task<IPropChangeEventArg> setProp(CardEngine game,
@@ -206,6 +233,9 @@ namespace Game
         {
             return card.setProp(game, propName, value);
         }
+        /// <summary>
+        /// 获取花费
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_COST, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCost(CardEngine game,
@@ -213,6 +243,9 @@ namespace Game
         {
             return card.getCost(game);
         }
+        /// <summary>
+        /// 获取攻击
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ATTACK, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getAttack(CardEngine game,
@@ -220,6 +253,9 @@ namespace Game
         {
             return card.getAttack(game);
         }
+        /// <summary>
+        /// 获取最大生命值
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_MAX_LIFE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getMaxLife(CardEngine game,
@@ -227,7 +263,9 @@ namespace Game
         {
             return card.getLife(game);
         }
-
+        /// <summary>
+        /// 获取当前生命值
+        /// </summary>
         [TranslateMsg("动作图编辑器中动作节点名称之获取当前生命值")]
         public const string EDITOR_NODE_NAME_GET_CURRENT_LIFE = "获取当前生命值";
         [ActionNodeMethod(EDITOR_NODE_NAME_GET_CURRENT_LIFE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
@@ -280,6 +318,9 @@ namespace Game
         {
             return card.define.type == DEFINE.SPELL;
         }
+        /// <summary>
+        /// 是否是衍生牌
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_IS_TOKEN, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool isToken([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -765,7 +806,7 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_RANDOM_INT = "X到Y之间的随机整数";
         public const string EDITOR_NODE_NAME_GET_INT_X = "整数X";
         public const string EDITOR_NODE_NAME_GET_INT_Y = "整数Y";
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_RANDOM_INT, null)]
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_RANDOM_INT, StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int randomInt(CardEngine game,
            [ActionNodeParam(EDITOR_NODE_NAME_GET_INT_X, isConst: false)] int countX,
@@ -790,6 +831,21 @@ namespace Game
                 { 
                     await card.forceAttack(game, card.getOwner(), target);
                 }
+            }
+        }
+        /// <summary>
+        /// 本回合增加一次攻击次数
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之本回合攻击次数增加一次")]
+        public const string EDITOR_NODE_EXTRA_ATTACK = "本回合攻击次数增加一次";
+        [ActionNodeMethod(EDITOR_NODE_EXTRA_ATTACK, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async Task extraAttack(CardEngine game,
+            [ActionNodeParam(EDITOR_NODE_FORCE_ATTACKER)]Card[] cards)
+        {
+            foreach (var card in cards)
+            {
+                //await card.setAttackTimes(game, 0);
+                await card.setAttackTimes(game, card.getAttackTimes(game) - 1);
             }
         }
     }

@@ -577,7 +577,7 @@ namespace TouhouHeartstone
                 Card[] masterCards = getSortedPlayers(game).Select(p => { return p.getMaster(); }).ToArray();
                 foreach (Card card in masterCards)
                 {
-                    await card.setCurrentLife(game, 30);
+                    await card.setCurrentLife(game, card.getLife(game));
                 }
 
                 //洗牌，然后抽初始卡牌

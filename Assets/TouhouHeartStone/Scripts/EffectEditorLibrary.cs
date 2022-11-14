@@ -338,15 +338,23 @@ namespace Game
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
-                if (player.getField().isFull)
+                if (card.isServant())
                 {
-                    game.logger.log(player + "的战场已满，无法将" + string.Join(",", card) + "置入战场");
+                    if (player.getField().isFull)
+                    {
+                        game.logger.log(player + "的战场已满，无法将" + string.Join(",", card) + "置入战场");
+                    }
+                    else
+                    {
+                        game.logger.log("将" + string.Join("，", card) + "置入" + player + "的战场");
+                        //await card.pile.moveTo(game, card, player.getField());//直接移动卡牌似乎没有入场事件
+                        await player.tryEnterField(game, card.pile, card, player.getField().count);
+                        MoveList.Add(card);
+                    }
                 }
                 else
                 {
-                    game.logger.log("将" + string.Join("，", card) + "置入" + player + "的战场");
-                    await card.pile.moveTo(game, card, player.getField());
-                    MoveList.Add(card);
+                    game.logger.log("卡牌类型非法，无法将" + string.Join(",", card) + "置入战场");
                 }
             }
             return MoveList.ToArray();
@@ -439,15 +447,22 @@ namespace Game
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
-                if (player.getHead().isFull)
+                if (card.hasKeyword(game, KEYWORD.SECRET) || card.hasKeyword(game, KEYWORD.MISSION))
                 {
-                    game.logger.log(player + "的延迟区已满，无法将" + string.Join(",", card) + "置入延迟区");
+                    if (player.getHead().isFull)
+                    {
+                        game.logger.log(player + "的延迟区已满，无法将" + string.Join(",", card) + "置入延迟区");
+                    }
+                    else
+                    {
+                        game.logger.log("将" + string.Join("，", card) + "置入" + player + "的延迟区");
+                        await card.pile.moveTo(game, card, player.getHead());
+                        MoveList.Add(card);
+                    }
                 }
                 else
                 {
-                    game.logger.log("将" + string.Join("，", card) + "置入" + player + "的延迟区");
-                    await card.pile.moveTo(game, card, player.getHead());
-                    MoveList.Add(card);
+                    game.logger.log("卡牌类型非法，无法将" + string.Join(",", card) + "置入延迟区");
                 }
             }
             return MoveList.ToArray();
@@ -455,18 +470,15 @@ namespace Game
         /// <summary>
         /// 卡牌装备到道具栏(有显示问题，暂时隐藏）
         /// </summary>
-        /*
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
+        /*[TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
         [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> moveToItem(CardEngine game,
+        public static async Task<Card> moveToItem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card card)
         {
-            Card[] movelist;
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
+            if (card.isItem())
             {
                 if (player[PILE.ITEM].isFull)
                 {
@@ -474,12 +486,15 @@ namespace Game
                     await player.destroyItem(game);
                 }
                 game.logger.log("将" + string.Join("，", card) + "装备到" + player + "的道具栏");
-                await card.pile.moveTo(game, card, player[PILE.ITEM]);
                 await card.setCurrentLife(game, card.getLife(game));
-                await card.setAttack(game, card.getAttack(game));
-                MoveList.Add(card);
+                await card.pile.moveTo(game, card, player[PILE.ITEM]);
+                return card;
             }
-            return MoveList.ToArray();
+            else
+            {
+                game.logger.log("卡牌类型非法，无法将" + string.Join(",", card) + "置入道具栏");
+                return null;
+            }
         }*/
         #endregion
         #region 集合运算
@@ -500,14 +515,22 @@ namespace Game
             Array.Copy(elements, 0, newArray, array.Length, elements.Length);
             return newArray;
         }
+        /// <summary>
+        /// 筛选
+        /// </summary>
+        [TranslateMsg("动作图编辑器中参数节点名称之匹配的集合")]
+        public const string EDITOR_PARAM_NAME_ARRAY_MATCHED = "匹配的集合";
+        [TranslateMsg("动作图编辑器中参数节点名称之集合")]
+        public const string EDITOR_PARAM_NAME_ARRAY_MISMATCHED = "不匹配的集合";
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_WHERE, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
         public static Array where(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
             List<object> objList = new List<object>();
+            List<object> negList = new List<object>();
             for (int i = 0; i < array.Length; i++)
             {
                 object obj = array.GetValue(i);
@@ -517,6 +540,10 @@ namespace Game
                 if (result)
                 {
                     objList.Add(obj);
+                }
+                else
+                {
+                    negList.Add(obj);
                 }
             }
             return objList.ToArray();
