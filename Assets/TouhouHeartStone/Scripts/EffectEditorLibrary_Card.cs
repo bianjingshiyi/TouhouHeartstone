@@ -859,6 +859,40 @@ namespace Game
                 await card.setAttackTimes(game, card.getAttackTimes(game) - 1);
             }
         }
+        /// <summary>
+        /// 获取卡牌合法目标集合
+        /// </summary>
+        [TranslateMsg("编辑器/卡牌_获取合法卡牌使用目标")]
+        public const string EDITOR_NODE_GET_CARD_TARGETS = "获取合法卡牌使用目标";
+        [TranslateMsg("编辑器/卡牌_获取合法卡牌使用目标_返回值_合法目标集合")]
+        public const string EDITOR_NODE_GET_CARD_TARGETS_TARGETS = "合法目标集合";
+        [ActionNodeMethod(EDITOR_NODE_GET_CARD_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
+        public static Card[] getCardTargets(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
+        {
+            var availableTargets = card.getAvaliableTargets(game).Where(c => c != card).ToArray();
+
+            return availableTargets;
+        }
+        /// <summary>
+        /// 获取攻击目标集合
+        /// </summary>
+        [TranslateMsg("编辑器/卡牌_获取合法攻击目标")]
+        public const string EDITOR_NODE_GET_ATTACK_TARGETS = "获取合法攻击目标";
+        [TranslateMsg("编辑器/卡牌_获取合法攻击目标_返回值_合法目标集合")]
+        public const string EDITOR_NODE_GET_ATTACK_TARGETS_TARGETS = "合法目标集合";
+        [ActionNodeMethod(EDITOR_NODE_GET_ATTACK_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(EDITOR_NODE_GET_ATTACK_TARGETS_TARGETS)]
+        public static Card[] getAttackTargets(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
+        {
+            var oppo = game.getOpponent(card.getOwner());
+            var availableTargets = oppo.getField().ToList().Append(oppo.getMaster())
+                .Where(c => !c.isStealth(game)).ToArray();
+
+            return availableTargets;
+        }
     }
     public enum CardDefineSelect
     {

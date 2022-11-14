@@ -246,8 +246,9 @@ namespace Game
         {
             return cards.Length;
         }
-        #endregion
 
+        #endregion
+        //  与增益相关
         #region 增益
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE, StringTable.EDITOR_NODE_CATEGORY_BUFF, "GetBuffDefine")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]
@@ -334,7 +335,6 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
-            Card[] movelist;
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
@@ -613,7 +613,6 @@ namespace Game
         //  事件处理
         [TranslateMsg("编辑器/事件_集合名称")]
         public const string EDITOR_NODE_EVENT = "事件";
-
         #region 事件
         [TranslateMsg("编辑器/事件_当前事件_节点名称")]
         public const string EDITOR_NODE_EVENT_THIS_EVENT = "当前事件";
@@ -650,7 +649,8 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
         {
-            eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
+            if(eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length>0)
+                eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
         }
         #endregion
     }
