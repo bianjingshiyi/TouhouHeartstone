@@ -68,6 +68,10 @@ namespace TouhouHeartstone
                 return false;
             return keywords.Contains(keyword);
         }
+        public static string[] getKeywords(this CardDefine define)
+        {
+            return define.getProp<string[]>(DEFINE.KEYWORDS);
+        }
         public static void setKeywords(this CardDefine define, string[] keywords)
         {
             define.setProp(DEFINE.KEYWORDS, keywords);

@@ -924,43 +924,17 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static async Task resetCard(this Card card, CardEngine game)
         {
+            var define = card.define;
             await card.removeBuff(game, card.getBuffs());
-            await card.setSpellDamage(game, card.define.getSpellDamage());
-
-            if (card.define is ServantCardDefine servant)
-            {
-                await card.setDead(game, false);
-                await card.setCurrentLife(game, servant.life);
-                // await card.setCost(game, servant.cost);
-                await card.setKeywords(game, servant.keywords);
-                await card.setTags(game, servant.tags);
-                await card.setReady(game, false);
-                await card.setAttackTimes(game, 0);
-                await card.setProp(game, CARD.SILENCE, false);
-            }
-            else if (card.define is SpellCardDefine spell)
-            {
-                // await card.setCost(game, spell.cost);
-                foreach (var keyword in spell.keywords)
-                {
-                    if (string.IsNullOrEmpty(keyword))
-                        continue;
-                    await card.setProp(game, keyword, true);
-                }
-                await card.setProp(game, DEFINE.KEYWORDS, spell.keywords);
-                await card.setProp(game, nameof(SpellCardDefine.tags), spell.tags);
-            }
-            else if (card.define is SkillCardDefine skill)
-            {
-                // await card.setCost(game, skill.cost);
-            }
-            else if (card.define is ItemCardDefine item)
-            {
-                // await card.setCost(game, item.cost);
-                // await card.setAttack(game, item.attack);
-                // await card.setLife(game, item.life);
-            }
-
+            await card.setSpellDamage(game, define.getSpellDamage());
+            await card.setDead(game, false);
+            await card.setCurrentLife(game, define.getLife());
+            // await card.setCost(game, servant.cost);
+            await card.setKeywords(game, define.getKeywords());
+            await card.setTags(game, define.getTags());
+            await card.setReady(game, false);
+            await card.setAttackTimes(game, 0);
+            await card.setProp(game, CARD.SILENCE, false);
         }
         public static async Task resetCard(this IEnumerable<Card> cards, CardEngine game)
         {
