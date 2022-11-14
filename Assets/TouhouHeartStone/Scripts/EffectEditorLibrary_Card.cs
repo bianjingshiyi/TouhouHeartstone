@@ -277,15 +277,15 @@ namespace Game
         }
 
 
-        [TranslateMsg("动作图编辑器中动作节点名称之增加法术伤害")]
-        public const string EDITOR_NODE_NAME_ADD_SPELL_DAMAGE = "增加法术伤害";
-        [ActionNodeMethod(EDITOR_NODE_NAME_ADD_SPELL_DAMAGE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        public static void addSpellDamage(CardEngine game,
-              [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-              [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
-        {
-            card.setSpellDamage(game, card.getSpellDamage(game) + value);
-        }
+        //[TranslateMsg("动作图编辑器中动作节点名称之增加法术伤害")]
+        //public const string EDITOR_NODE_NAME_ADD_SPELL_DAMAGE = "增加法术伤害";
+        //[ActionNodeMethod(EDITOR_NODE_NAME_ADD_SPELL_DAMAGE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        //public static void addSpellDamage(CardEngine game,
+        //      [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+        //      [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
+        //{
+        //    card.setSpellDamage(game, card.getSpellDamage(game) + value);
+        //}
         /// <summary>
         /// 获取一个独一无二的属性名。当你在一段可以重复生效的效果中为卡牌设置额外属性的时候，应该使用这个方法。
         /// 注意，这个方法是为了避免属性名之间的冲突，在不会发生冲突的情况下，输入相同的参数仍然会让这个方法返回相同的属性名。

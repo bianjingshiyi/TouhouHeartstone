@@ -63,6 +63,8 @@ namespace Game
         public const string GAME_CARD_PROP_NAME_ATTACK = "攻击力";
         [TranslateMsg("游戏中卡牌的生命值属性的名称")]
         public const string GAME_CARD_PROP_NAME_LIFE = "生命值";
+        [TranslateMsg("游戏中卡牌的法术伤害属性的名称")]
+        public const string GAME_CARD_PROP_NAME_SPELL_DAMAGE = "法术伤害";
         [TranslateMsg("游戏中卡牌的减伤属性的名称")]
         public const string GAME_CARD_PROP_NAME_DAMAGE_REDUCE = "减伤";
         [TranslateMsg("游戏中卡牌的关键词属性的名称")]

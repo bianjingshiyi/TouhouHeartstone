@@ -234,6 +234,8 @@ namespace Controllers
         }
         private PropModifier createPropertyModifierByIndex(int index)
         {
+            if (index == 5)
+                return new SpellDamageModifier(0);
             if (index == 4)
                 return new KeywordsModifier(KeywordsModifier.ModifyType.add);
             if (index == 3)
@@ -246,6 +248,8 @@ namespace Controllers
         }
         private int getPropertyModifierIndex(PropModifier propModifier)
         {
+            if (propModifier is SpellDamageModifier)
+                return 5;
             if (propModifier is KeywordsModifier)
                 return 4;
             if (propModifier is DamageReduceModifier)
@@ -372,6 +376,8 @@ namespace Controllers
                     return ActionNodeValueType.integer;
                 else if (propModifier is KeywordsModifier)
                     return ActionNodeValueType.keywords;
+                else if (propModifier is SpellDamageModifier)
+                    return ActionNodeValueType.integer;
                 throw new NotImplementedException();
             }
         }
@@ -402,7 +408,8 @@ namespace Controllers
             StringTable.GAME_CARD_PROP_NAME_ATTACK,
             StringTable.GAME_CARD_PROP_NAME_LIFE,
             StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE,
-            StringTable.GAME_CARD_PROP_NAME_KEYWORDS
+            StringTable.GAME_CARD_PROP_NAME_KEYWORDS,
+            StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE,
         };
         string[] _intModifyTypes = new string[]
         {
