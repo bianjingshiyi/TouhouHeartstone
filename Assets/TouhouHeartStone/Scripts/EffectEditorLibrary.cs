@@ -532,6 +532,55 @@ namespace Game
         {
             return collection.Length;
         }
+
+        [TranslateMsg("编辑器_动作节点_排序")]
+        public const string EDITOR_NODE_NAME_ORDER_BY = "排序";
+        [TranslateMsg("编辑器_参数名称_降序")]
+        public const string EDITOR_NODE_NAME_DESCENDING = "降序";
+        [TranslateMsg("编辑器_参数名称_排序依据")]
+        public const string EDITOR_NODE_NAME_ORDER_KEY = "排序依据";
+        /// <summary>
+        /// 根据排序依据排序。
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_NAME_ORDER_BY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
+        public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+            [ActionNodeParam(EDITOR_NODE_NAME_DESCENDING, isConst: true)] bool descending,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(EDITOR_NODE_NAME_ORDER_KEY)] ActionNode condition,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
+        {
+            Scope childScope = new Scope() { parentScope = scope };
+            object func(object obj)
+            {
+                scope.setOutParamValue(0, obj);
+                return game.getActionReturnValueAsync<object>(card, buff, eventArg, condition, scope: childScope).Result;
+            }
+            if (!descending)
+            {
+                return array.OrderBy(func).ToArray();
+            }
+            else
+            {
+                return array.OrderByDescending(func).ToArray();
+            }
+        }
+
+        [TranslateMsg("编辑器_动作节点_获取第X个元素")]
+        public const string EDITOR_NODE_NAME_GET_ELEMENT_BY_INDEX = "获取第X个元素";
+        [TranslateMsg("编辑器_参数名称_元素位置")]
+        public const string EDITOR_PARAM_NAME_INDEX = "元素位置";
+        /// <summary>
+        /// 获取第X个元素。
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ELEMENT_BY_INDEX, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)]
+        public static object getElementByIndex(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(EDITOR_PARAM_NAME_INDEX)] int index)
+        {
+            return array[index];
+        }
         #endregion
 
         //  事件处理
