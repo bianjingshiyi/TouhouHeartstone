@@ -868,7 +868,7 @@ namespace Game
         public const string EDITOR_NODE_GET_CARD_TARGETS_TARGETS = "合法目标集合";
         [ActionNodeMethod(EDITOR_NODE_GET_CARD_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
-        public static Card[] getCardTargets(CardEngine game,
+        public static Card[] getAllLegalCardTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
         {
             var availableTargets = card.getAvaliableTargets(game).Where(c => c != card).ToArray();
@@ -884,7 +884,7 @@ namespace Game
         public const string EDITOR_NODE_GET_ATTACK_TARGETS_TARGETS = "合法目标集合";
         [ActionNodeMethod(EDITOR_NODE_GET_ATTACK_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(EDITOR_NODE_GET_ATTACK_TARGETS_TARGETS)]
-        public static Card[] getAttackTargets(CardEngine game,
+        public static Card[] getAllLegalAttackTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
         {
             var oppo = game.getOpponent(card.getOwner());
