@@ -871,9 +871,9 @@ namespace Game
         public static Card[] getAllLegalCardTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
         {
-            var availableTargets = card.getAvaliableTargets(game).Where(c => c != card).ToArray();
+            var legalTargets = card.getAvaliableTargets(game).Where(c => c != card).ToArray();
 
-            return availableTargets;
+            return legalTargets;
         }
         /// <summary>
         /// 获取攻击目标集合
@@ -888,10 +888,10 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
         {
             var oppo = game.getOpponent(card.getOwner());
-            var availableTargets = oppo.getField().ToList().Append(oppo.getMaster())
+            var legalTargets = oppo.getField().ToList().Append(oppo.getMaster())
                 .Where(c => !c.isStealth(game)).ToArray();
 
-            return availableTargets;
+            return legalTargets;
         }
     }
     public enum CardDefineSelect
