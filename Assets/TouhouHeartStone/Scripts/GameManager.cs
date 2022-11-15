@@ -220,7 +220,7 @@ namespace Game
             }
 #endif
             //加载外部卡牌
-            HashSet<int> cardPoolIdSet = new HashSet<int>();
+            HashSet<long> cardPoolIdSet = new HashSet<long>();
             foreach (var player in playerList)
             {
                 Deck deck = player.getDeck();

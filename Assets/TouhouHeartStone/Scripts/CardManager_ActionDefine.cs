@@ -35,7 +35,7 @@ namespace Game
             }
             return false;
         }
-        public bool getActionDefine(int cardPoolId, string name, out GeneratedActionDefine actionDefine)
+        public bool getActionDefine(long cardPoolId, string name, out GeneratedActionDefine actionDefine)
         {
             if (_runtimeGenActDefDict.TryGetValue(cardPoolId, out var actDefList))
             {
@@ -45,7 +45,7 @@ namespace Game
             actionDefine = null;
             return false;
         }
-        public GeneratedActionDefine[] getActionDefines(int cardPoolId)
+        public GeneratedActionDefine[] getActionDefines(long cardPoolId)
         {
             if (_runtimeGenActDefDict.TryGetValue(cardPoolId, out var actDefList))
             {

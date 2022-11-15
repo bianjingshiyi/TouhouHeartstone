@@ -517,7 +517,7 @@ namespace Game
             }
             return (defineList.ToArray(), skinList.ToArray());
         }
-        public async Task<CardDefine[]> reloadCardPoolsAndGetCardDefinesAsync(IEnumerable<int> cardPoolsId)
+        public async Task<CardDefine[]> reloadCardPoolsAndGetCardDefinesAsync(IEnumerable<long> cardPoolsId)
         {
             List<CardDefine> cardDefineList = new List<CardDefine>();
             var cardPoolInfoDict = await loadCardPoolInfosAsync();
@@ -543,7 +543,7 @@ namespace Game
             int cardId = 0;
             for (int i = 1; i < 0xFFFF; i++)
             {
-                cardId = 1 << 31 | cardPoolInfo.cardPoolId << 16 | i;
+                cardId = 1 << 31 | (int)cardPoolInfo.cardPoolId << 16 | i;
                 if (cardPool.cardDefineList.Exists(c => c.id == cardId))
                     continue;
                 break;
