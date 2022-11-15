@@ -10,5 +10,6 @@ namespace Controllers
         public string imageResPath;
         public float version;
         public int versionNumber;
+        public int editTime;
     }
 }

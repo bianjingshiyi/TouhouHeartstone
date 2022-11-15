@@ -114,11 +114,15 @@ namespace Controllers
                     game.langManager.getString(StringTable.WARNING),
                     game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES), async () =>
                       {
-                        //保存卡池
-                        await game.card.saveCardPool(_curCardPoolInfo);
-                        //返回主菜单
-                        await returnToView();
-                       hasUnsavedChanges = false;
+                          if (hasUnsavedChanges)
+                          {
+                              _curCardPoolInfo.editTime++;
+                          }
+                          //保存卡池
+                          await game.card.saveCardPool(_curCardPoolInfo);
+                          //返回主菜单
+                          await returnToView();
+                          hasUnsavedChanges = false;
                     }, () =>
                     {
                         returnToView();
@@ -208,7 +212,10 @@ namespace Controllers
         /// </summary>
         private async void onClickSaveCardPoolButton()
         {
-
+            if (hasUnsavedChanges)
+            {
+                _curCardPoolInfo.editTime++;
+            }
             await game.card.saveCardPool(_curCardPoolInfo);
             _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
             int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
