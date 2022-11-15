@@ -18,7 +18,7 @@ namespace Controllers
         /// 打开一个触发器的动作节点图
         /// </summary>
         /// <param name="trigger"></param>
-        public void openTriggerGraph(int cardPoolId, string entryType, TriggerGraph trigger, ActionNodeGraphInfo graphInfo)
+        public void openTriggerGraph(long cardPoolId, string entryType, TriggerGraph trigger, ActionNodeGraphInfo graphInfo)
         {
             display(new DisplayInfo(cardPoolId, entryType, trigger, null, graphInfo));
         }

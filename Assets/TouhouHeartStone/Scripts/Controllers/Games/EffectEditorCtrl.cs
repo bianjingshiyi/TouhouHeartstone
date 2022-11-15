@@ -15,15 +15,15 @@ namespace Controllers
     partial class EffectEditorCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 公有方法
-        public Task display(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
+        public Task display(long cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
         {
             return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, cardDefine, effect, null));
         }
-        public Task display(int cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect)
+        public Task display(long cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect)
         {
             return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, buffDefine, effect, null));
         }
-        public Task display(int cardPoolId, GeneratedActionDefine actionDefine)
+        public Task display(long cardPoolId, GeneratedActionDefine actionDefine)
         {
             return game.ui.displayUIWithReturn(this,
                 new DisplayInfo(cardPoolId, actionDefine,
@@ -540,7 +540,7 @@ namespace Controllers
         EffectEditorPanel _ui;
         [Obsolete("使用game作为替代")]
         public IAppManager app { get; }
-        int _cardPoolId;
+        long _cardPoolId;
         CardDefine _cardDefine;
         GeneratedBuffDefine _buffDefine;
         GeneratedEffect _effect;
@@ -594,27 +594,27 @@ namespace Controllers
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
-            public DisplayInfo(int cardPoolId, CardDefine cardDefine, GeneratedEffect effect, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
+            public DisplayInfo(long cardPoolId, CardDefine cardDefine, GeneratedEffect effect, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
             {
                 this.cardPoolId = cardPoolId;
                 this.cardDefine = cardDefine;
                 this.effect = effect;
                 this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
             }
-            public DisplayInfo(int cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
+            public DisplayInfo(long cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
             {
                 this.cardPoolId = cardPoolId;
                 this.buffDefine = buffDefine;
                 this.effect = effect;
                 this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
             }
-            public DisplayInfo(int cardPoolId, GeneratedActionDefine actionDefine, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
+            public DisplayInfo(long cardPoolId, GeneratedActionDefine actionDefine, ActionNodeGraphCtrl.DisplayInfo actionNodeGraphDisplayInfo)
             {
                 this.cardPoolId = cardPoolId;
                 this.actionDefine = actionDefine;
                 this.actionNodeGraphDisplayInfo = actionNodeGraphDisplayInfo;
             }
-            public int cardPoolId;
+            public long cardPoolId;
             public CardDefine cardDefine;
             public GeneratedBuffDefine buffDefine;
             public GeneratedEffect effect;

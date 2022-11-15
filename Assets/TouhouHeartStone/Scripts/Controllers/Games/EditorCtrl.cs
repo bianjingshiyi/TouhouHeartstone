@@ -306,7 +306,7 @@ namespace Controllers
         /// <param name="cardPoolId">卡池id</param>
         /// <returns></returns>
         /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
-        private async Task readCardPoolByIdAsync(int cardPoolId)
+        private async Task readCardPoolByIdAsync(long cardPoolId)
         {
             if (!game.card.tryGetCardPool(cardPoolId, out _))
             {

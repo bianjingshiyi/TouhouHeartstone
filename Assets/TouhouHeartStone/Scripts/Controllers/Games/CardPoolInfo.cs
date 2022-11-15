@@ -5,7 +5,7 @@ namespace Controllers
     [Serializable]
     public class CardPoolInfo
     {
-        public int cardPoolId;
+        public long cardPoolId;
         public string cardPoolName;
         public string imageResPath;
         public float version;

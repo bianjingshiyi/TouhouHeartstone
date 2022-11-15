@@ -469,7 +469,7 @@ namespace Game
                 return card;
             return defineDic.ContainsKey(id) ? defineDic[id] : null;
         }
-        public CardDefine getCardDefine(int cardPoolId, int cardId)
+        public CardDefine getCardDefine(long cardPoolId, int cardId)
         {
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -530,7 +530,7 @@ namespace Game
             //TODO 58：暂时只判断ID是不是负数，经典卡牌也算是负数，以后改一下
             return cardId < 0;
         }
-        public CardDefine[] getCardDefines(int cardPoolId)
+        public CardDefine[] getCardDefines(long cardPoolId)
         {
             if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
             {
@@ -554,7 +554,7 @@ namespace Game
             }
             return cardDefineList.ToArray();
         }
-        public async Task<CardDefine[]> getOrLoadCardDefines(int cardPoolId)
+        public async Task<CardDefine[]> getOrLoadCardDefines(long cardPoolId)
         {
             if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
             {

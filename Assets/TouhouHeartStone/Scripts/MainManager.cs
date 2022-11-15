@@ -191,6 +191,9 @@ namespace Game
             }
             //_mainCtrl = new MainCtrl(this);
             //_mainCtrl.onAwake();
+
+            // 初始化玩家Key.
+            InitPlayerKey();
         }
         protected async void Start()
         {
@@ -430,6 +433,18 @@ namespace Game
                 Debug.LogError(e);
         }
         #region 私有方法
+        private void InitPlayerKey()
+        {
+            if (PlayerPrefs.HasKey("PlayerKey"))
+            {
+                _playerKey = PlayerPrefs.GetInt("PlayerKey");
+            }
+            else
+            {
+                _playerKey = new System.Random().Next();
+                PlayerPrefs.SetInt("PlayerKey", _playerKey);
+            }
+        }
         string getCurrentVersion()
         {
             return BuildInformation.Instance.Version;
@@ -447,6 +462,7 @@ namespace Game
         public DeckManager deck => getManager<DeckManager>();
         public TriggerManager triggers => this.findInstance<TriggerManager>();
         public EditorManager editor => _editor;
+        public int playerKey => _playerKey;
         [SerializeField]
         EditorManager _editor;
         [SerializeField]
@@ -458,6 +474,7 @@ namespace Game
         RoomData currentRoomData;
         Task _loadCardTask = null;
         Task<ClientUpdateInfo> _getNewVersionTask = null;
+        private int _playerKey;
         #endregion
     }
 }

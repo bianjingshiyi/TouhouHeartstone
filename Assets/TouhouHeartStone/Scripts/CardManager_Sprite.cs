@@ -91,7 +91,7 @@ namespace Game
         /// 保存外部图片，并将指定卡池中所有对外部图片的引用都替换为保存后的路径。
         /// </summary>
         /// <returns></returns>
-        public async Task saveExternalImages(int cardPoolId)
+        public async Task saveExternalImages(long cardPoolId)
         {
             CardPoolInfo cardPoolInfo = getCardPoolInfo(cardPoolId);
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
@@ -173,7 +173,7 @@ namespace Game
                 _externalSpriteCacheDict.Add(savedPathSpritePairList[i].Key, savedPathSpritePairList[i].Value);
             }
         }
-        public async Task<Sprite> loadImage(string path, int cardPoolId)
+        public async Task<Sprite> loadImage(string path, long cardPoolId)
         {
             if (string.IsNullOrEmpty(path))
             {

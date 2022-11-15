@@ -9,7 +9,7 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
-        public GeneratedBuffDefine createBuffDefine(int cardPoolId)
+        public GeneratedBuffDefine createBuffDefine(long cardPoolId)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -26,7 +26,7 @@ namespace Game
             cardPool.buffDefineList.Add(buffDefine);
             return buffDefine;
         }
-        public bool removeBuffDefine(int cardPoolId, GeneratedBuffDefine buffDefine)
+        public bool removeBuffDefine(long cardPoolId, GeneratedBuffDefine buffDefine)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -34,7 +34,7 @@ namespace Game
             }
             return cardPool.buffDefineList.Remove(buffDefine);
         }
-        public bool tryGetBuffDefine(int cardPoolId, int buffDefineId, out GeneratedBuffDefine buffDefine)
+        public bool tryGetBuffDefine(long cardPoolId, int buffDefineId, out GeneratedBuffDefine buffDefine)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -43,7 +43,7 @@ namespace Game
             buffDefine = cardPool.buffDefineList.Find(b => b.id == buffDefineId);
             return buffDefine != null;
         }
-        public GeneratedBuffDefine[] getBuffDefines(int cardPoolId)
+        public GeneratedBuffDefine[] getBuffDefines(long cardPoolId)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -51,7 +51,7 @@ namespace Game
             }
             return cardPool.buffDefineList.ToArray();
         }
-        public GeneratedBuffDefine[] getBuffDefines(IEnumerable<int> cardPoolsId)
+        public GeneratedBuffDefine[] getBuffDefines(IEnumerable<long> cardPoolsId)
         {
             List<GeneratedBuffDefine> buffDefineList = new List<GeneratedBuffDefine>();
             foreach (var id in cardPoolsId)
@@ -70,7 +70,7 @@ namespace Game
             }
             return buffDefineNames;
         }
-        public BuffSkin createBuffSkin(int cardPoolId, int buffId, string language)
+        public BuffSkin createBuffSkin(long cardPoolId, int buffId, string language)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -106,7 +106,7 @@ namespace Game
         /// <returns></returns>
         public BuffSkin getBuffSkin(BuffDefine buffDefine)
         {
-            int cardPoolId = getCardPoolIdOfBuffDefine(buffDefine);
+            long cardPoolId = getCardPoolIdOfBuffDefine(buffDefine);
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
@@ -117,7 +117,7 @@ namespace Game
                 buffSkin = buffSkinList.Count > 0 ? buffSkinList[0] : null;
             return buffSkin;
         }
-        public int getCardPoolIdOfBuffDefine(BuffDefine buffDefine)
+        public long getCardPoolIdOfBuffDefine(BuffDefine buffDefine)
         {
             foreach (var pair in _cardPoolDict)
             {
@@ -128,7 +128,7 @@ namespace Game
             }
             return 0;
         }
-        public BuffSkin[] getBuffSkins(int cardPoolId, int buffId)
+        public BuffSkin[] getBuffSkins(long cardPoolId, int buffId)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {

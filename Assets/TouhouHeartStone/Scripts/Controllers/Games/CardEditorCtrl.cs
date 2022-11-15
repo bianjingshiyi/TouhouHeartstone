@@ -22,7 +22,7 @@ namespace Controllers
         /// <summary>
         /// 打开一张卡片进行编辑
         /// </summary>
-        public async Task display(int cardPoolId, CardDefine cardDefine, CardDefine[] selectableCharacters)
+        public async Task display(long cardPoolId, CardDefine cardDefine, CardDefine[] selectableCharacters)
         {
             gameObject.SetActive(true);
             _selectableCharacters = selectableCharacters;
@@ -574,7 +574,7 @@ namespace Controllers
         };
         string[] _races;
         string[] _tags;
-        int _cardPoolId;
+        long _cardPoolId;
         CardDefine _cardDefine;
         CardSkinData _curCardSkin;
         CardDefine[] _selectableCharacters;

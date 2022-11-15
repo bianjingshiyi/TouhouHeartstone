@@ -93,20 +93,21 @@ namespace Game
         }
         public void createCardPool(out CardPoolInfo cardPoolInfo, out CardPool cardPool)
         {
-            int cardPoolId = 0;
-            for (int i = 1; i < 0x7FFF; i++)
-            {
-                if (game.card.isStandardCardPool(i))//不能是官方卡池ID
-                {
-                    continue;
-                }
-                if (_cardPoolInfoDict.Any(p => p.Value.cardPoolId == i))//不能是已有的卡池ID
-                {
-                    continue;
-                }
-                cardPoolId = i;
-                break;
-            }
+            //int cardPoolId = 0;
+            //for (int i = 1; i < 0x7FFF; i++)
+            //{
+            //    if (game.card.isStandardCardPool(i))//不能是官方卡池ID
+            //    {
+            //        continue;
+            //    }
+            //    if (_cardPoolInfoDict.Any(p => p.Value.cardPoolId == i))//不能是已有的卡池ID
+            //    {
+            //        continue;
+            //    }
+            //    cardPoolId = i;
+            //    break;
+            //}
+            long cardPoolId = snowflakeGen.NewId();
             cardPoolInfo = new CardPoolInfo();
             cardPoolInfo.cardPoolId = cardPoolId;
             cardPoolInfo.cardPoolName = StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME;
@@ -462,7 +463,7 @@ namespace Game
                 }
             }
         }
-        public bool tryGetCardPool(int cardPoolId, out CardPool cardPool)
+        public bool tryGetCardPool(long cardPoolId, out CardPool cardPool)
         {
             return _cardPoolDict.TryGetValue(cardPoolId, out cardPool);
         }
@@ -478,7 +479,7 @@ namespace Game
                 return false;
             }
         }
-        public bool removeCardPool(int cardPoolId)
+        public bool removeCardPool(long cardPoolId)
         {
             if (_cardPoolDict.ContainsKey(cardPoolId))
             {
@@ -590,7 +591,7 @@ namespace Game
         {
             return getCardPoolPath(cardPoolInfo.cardPoolId);
         }
-        public string getCardPoolPath(int cardPoolId)
+        public string getCardPoolPath(long cardPoolId)
         {
             foreach (var pair in _cardPoolInfoDict)
             {
@@ -599,7 +600,7 @@ namespace Game
             }
             return null;
         }
-        public CardPoolInfo getCardPoolInfo(int cardPoolId)
+        public CardPoolInfo getCardPoolInfo(long cardPoolId)
         {
             foreach (var cardPool in _cardPoolInfoDict.Values)
             {
@@ -608,7 +609,7 @@ namespace Game
             }
             return null;
         }
-        public int getCardPoolId(CardPool cardPool)
+        public long getCardPoolId(CardPool cardPool)
         {
             foreach (var pair in _cardPoolDict)
             {
@@ -619,7 +620,7 @@ namespace Game
             }
             return 0;
         }
-        public CardSkinData createSkin(int cardPoolId, int cardDefineId)
+        public CardSkinData createSkin(long cardPoolId, int cardDefineId)
         {
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -633,7 +634,7 @@ namespace Game
             else
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
         }
-        public CardSkinData createSkinForDiffLanguage(int cardPoolId, CardSkinData skin, string language)
+        public CardSkinData createSkinForDiffLanguage(long cardPoolId, CardSkinData skin, string language)
         {
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -645,7 +646,7 @@ namespace Game
             else
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
         }
-        public void removeSkin(int cardPoolId, int cardDefineId, int skinId)
+        public void removeSkin(long cardPoolId, int cardDefineId, int skinId)
         {
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -857,7 +858,7 @@ namespace Game
         {
             return isStandardCardPool(cardPool.cardPoolId);
         }
-        public bool isStandardCardPool(int cardPoolId)
+        public bool isStandardCardPool(long cardPoolId)
         {
             return _standardCardPoolsId.Contains(cardPoolId);
         }
@@ -880,6 +881,7 @@ namespace Game
                     }
                 }
             }
+            snowflakeGen = new SnowflakeGenerator(game.playerKey);
         }
         private async Task<CardPool> loadCardPool_v1(string path, CardPoolInfo cardPoolInfo)
         {
@@ -929,7 +931,7 @@ namespace Game
         public string editorCardPoolDirName => _editorCardPoolDirName;
         public string editorTextureDirName => _editorTextureDirName;
         public string cardPoolFilePostfix => _cardPoolFilePostfix;
-        public int[] standardCardPoolsId => _standardCardPoolsId;
+        public long[] standardCardPoolsId => _standardCardPoolsId;
         /// <summary>
         /// 键为文件地址，值为卡池信息
         /// </summary>
@@ -937,7 +939,8 @@ namespace Game
         /// <summary>
         /// 键为卡池Id，值为卡池
         /// </summary>
-        Dictionary<int, CardPool> _cardPoolDict = new Dictionary<int, CardPool>();
+        Dictionary<long, CardPool> _cardPoolDict = new Dictionary<long, CardPool>();
+        SnowflakeGenerator snowflakeGen;
         [Header("卡池")]
         [SerializeField]
         bool _enableStreamingAssetsInEditor = false;
@@ -952,7 +955,7 @@ namespace Game
         [SerializeField]
         string _editorTextureDirName = "ExternalData/Textures";
         [SerializeField]
-        int[] _standardCardPoolsId = new int[]
+        long[] _standardCardPoolsId = new long[]
         {
             1
         };

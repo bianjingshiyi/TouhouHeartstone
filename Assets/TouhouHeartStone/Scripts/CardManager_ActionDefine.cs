@@ -6,7 +6,7 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
-        public GeneratedActionDefine createActionDefine(int cardPoolId, string name)
+        public GeneratedActionDefine createActionDefine(long cardPoolId, string name)
         {
             if (!_runtimeGenActDefDict.TryGetValue(cardPoolId, out var actDefList))
             {
@@ -27,7 +27,7 @@ namespace Game
             _runtimeGenActDefDict[cardPoolId].Add(actionDefine);
             return actionDefine;
         }
-        public bool removeActionDefine(int cardPoolId, GeneratedActionDefine actionDefine)
+        public bool removeActionDefine(long cardPoolId, GeneratedActionDefine actionDefine)
         {
             if (_runtimeGenActDefDict.TryGetValue(cardPoolId, out var actDefList))
             {
@@ -55,7 +55,7 @@ namespace Game
         }
         #endregion
         #region 属性字段
-        Dictionary<int, List<GeneratedActionDefine>> _runtimeGenActDefDict = new Dictionary<int, List<GeneratedActionDefine>>();
+        Dictionary<long, List<GeneratedActionDefine>> _runtimeGenActDefDict = new Dictionary<long, List<GeneratedActionDefine>>();
         #endregion
     }
 }

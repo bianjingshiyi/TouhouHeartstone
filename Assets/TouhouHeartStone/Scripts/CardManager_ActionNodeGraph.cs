@@ -4,7 +4,7 @@ namespace Game
 {
     partial class CardManager
     {
-        public ActionNodeGraphInfo getOrCreateCardEffectActionNodeGraphInfo(int cardPoolId, int cardDefineId, int effectIndex, string entryType, int triggerIndex)
+        public ActionNodeGraphInfo getOrCreateCardEffectActionNodeGraphInfo(long cardPoolId, int cardDefineId, int effectIndex, string entryType, int triggerIndex)
         {
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -29,7 +29,7 @@ namespace Game
             else
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
         }
-        public ActionNodeGraphInfo getOrCreateBuffEffectActionNodeGraphInfo(int cardPoolId, int buffDefineId, int effectIndex, string entryType, int triggerIndex)
+        public ActionNodeGraphInfo getOrCreateBuffEffectActionNodeGraphInfo(long cardPoolId, int buffDefineId, int effectIndex, string entryType, int triggerIndex)
         {
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -54,7 +54,7 @@ namespace Game
             else
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
         }
-        public ActionNodeGraphInfo getOrCreateActionDefineActionNodeGraphInfo(int cardPoolId, int actionDefineId)
+        public ActionNodeGraphInfo getOrCreateActionDefineActionNodeGraphInfo(long cardPoolId, int actionDefineId)
         {
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {

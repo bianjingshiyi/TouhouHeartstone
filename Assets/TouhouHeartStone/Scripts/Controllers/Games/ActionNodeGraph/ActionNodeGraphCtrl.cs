@@ -23,11 +23,11 @@ namespace Controllers
         /// <param name="effect"></param>
         /// <param name="entryType"></param>
         /// <param name="graphInfo"></param>
-        public void openActionGraph(int cardPoolId, GeneratedEffect effect, string entryType, ActionNodeGraphInfo graphInfo)
+        public void openActionGraph(long cardPoolId, GeneratedEffect effect, string entryType, ActionNodeGraphInfo graphInfo)
         {
             display(new DisplayInfo(cardPoolId, entryType, effect, null, graphInfo));
         }
-        public Task openActionValueRefGraph(int cardPoolId, ActionValueRef valueRef, ActionNodeGraphInfo graphInfo)
+        public Task openActionValueRefGraph(long cardPoolId, ActionValueRef valueRef, ActionNodeGraphInfo graphInfo)
         {
             return display(new DisplayInfo(cardPoolId, null, valueRef, null, graphInfo));
         }
@@ -627,7 +627,7 @@ namespace Controllers
                 if (actionNode.consts[index] is CardReference value)
                 {
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(value.cardId, cardPoolsId: new int[] { value.cardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(value.cardId, cardPoolsId: new long[] { value.cardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -635,7 +635,7 @@ namespace Controllers
                 }
                 else
                 {
-                    await _cardPoolViewPanelCtrl.display(cardPoolsId: new int[] { _curCardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(cardPoolsId: new long[] { _curCardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -660,7 +660,7 @@ namespace Controllers
                         value[itemIndex] = new CardReference();
                     }
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(value[itemIndex].cardId, new int[] { value[itemIndex].cardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(value[itemIndex].cardId, new long[] { value[itemIndex].cardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -668,7 +668,7 @@ namespace Controllers
                 }
                 else
                 {
-                    await _cardPoolViewPanelCtrl.display(cardPoolsId: new int[] { _curCardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(cardPoolsId: new long[] { _curCardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -2533,7 +2533,7 @@ namespace Controllers
             }
         }
         string _entryType;
-        int _curCardPoolId = 0;
+        long _curCardPoolId = 0;
         GeneratedEffect _effect;
         ActionValueRef valueRef
         {
@@ -2605,7 +2605,7 @@ namespace Controllers
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
-            public DisplayInfo(int cardPoolId, string entryType, object editObject, DisplayInfo[] editObjectStack, ActionNodeGraphInfo graphInfo)
+            public DisplayInfo(long cardPoolId, string entryType, object editObject, DisplayInfo[] editObjectStack, ActionNodeGraphInfo graphInfo)
             {
                 this.cardPoolId = cardPoolId;
                 this.entryType = entryType;
@@ -2613,7 +2613,7 @@ namespace Controllers
                 this.editObjectStack = editObjectStack;
                 this.graphInfo = graphInfo;
             }
-            public int cardPoolId;
+            public long cardPoolId;
             public string entryType;
             public object editObject;
             public DisplayInfo[] editObjectStack;

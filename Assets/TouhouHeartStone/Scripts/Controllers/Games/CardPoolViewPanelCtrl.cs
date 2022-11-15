@@ -31,7 +31,7 @@ namespace Controllers
                     var result = await game.card.loadCardPoolInfosAsync();
                     _cardPoolInfoList = new List<CardPoolInfo>(result.Values);
                 }
-                _cardPoolInfoList.Sort((a, b) => a.cardPoolId - b.cardPoolId);
+                _cardPoolInfoList.Sort((a, b) => (int)(a.cardPoolId - b.cardPoolId));
                 if (info.cardPoolFiltersId != null)
                 {
                     //更改卡池过滤器的值
@@ -259,7 +259,7 @@ namespace Controllers
                 _ui.updateCardListCount(_filteredCardDefineList.Count);
             }
         }
-        public Task display(int cardId, int[] cardPoolsId = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
+        public Task display(int cardId, long[] cardPoolsId = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
         {
             return display(new DisplayInfo()
             {
@@ -274,7 +274,7 @@ namespace Controllers
         /// </summary>
         /// <param name="characterId"></param>
         /// <returns></returns>
-        public Task display(int[] cardPoolsId = null, bool? hideBuiltinCards = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
+        public Task display(long[] cardPoolsId = null, bool? hideBuiltinCards = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
         {
             return display(new DisplayInfo()
             {
@@ -294,7 +294,7 @@ namespace Controllers
             return display(new DisplayInfo()
             {
                 cardPoolInfos = new CardPoolInfo[] { cardPoolInfo },
-                cardPoolFiltersId = new int[] { cardPoolInfo.cardPoolId },
+                cardPoolFiltersId = new long[] { cardPoolInfo.cardPoolId },
                 cardFilter = cardFilter
             });
         }
@@ -460,7 +460,7 @@ namespace Controllers
         /// <returns></returns>
         private async Task displayForApplyFilters()
         {
-            List<int> cardPoolsIdList = new List<int>();
+            List<long> cardPoolsIdList = new List<long>();
             for (int i = 0; i < _cardPoolInfoList.Count; i++)
             {
                 if (_cardPoolFilterValue[i])
@@ -557,7 +557,7 @@ namespace Controllers
         {
             public CardPoolInfo[] cardPoolInfos = null;
             public bool? hideBuiltinCards = null;
-            public int[] cardPoolFiltersId = null;
+            public long[] cardPoolFiltersId = null;
             public int sortType = -1;
             public int[] characterFiltersId = null;
             public bool[] costFiltersValue = null;
