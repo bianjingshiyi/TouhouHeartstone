@@ -1,4 +1,5 @@
 ﻿using BJSYGameCore.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace Controllers
         {
             isDisplay = false;
 
+            chatLog.Clear();
             players.Clear();
             return Task.CompletedTask;
         }
@@ -49,9 +51,37 @@ namespace Controllers
         }
         #endregion
         #region 方法回调
-        private void onSendButtonClick(string Value)
+        private void onSendButtonClick(string message)
         {
+            var pm = processMessage(message);
+            if (trySendMessage(pm))
+            {
+                var time = DateTime.Now.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
 
+                chatLog.Add(new ChatLine 
+                { 
+                    time = pm,
+                    speaker = getLocalPlayerData().Name,
+                    content = pm
+                });
+                updateChatPanel();
+            }
+            else
+            {
+                Debug.LogError("发送失败");
+                updateChatPanel();
+            }
+        }
+
+        private void onReceiveMessage(string time,string message,string player)
+        {
+            chatLog.Add(new ChatLine
+            {
+                time = time,
+                speaker = player,
+                content = message
+            });
+            updateChatPanel();
         }
         #endregion
         /// <summary>
@@ -76,6 +106,36 @@ namespace Controllers
         private void registerMethodCallBack()
         {
 
+        }
+
+        /// <summary>
+        /// 处理消息的方法
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private string processMessage(string message)
+        {
+            return message;
+        }
+
+        /// <summary>
+        /// 尝试发送消息
+        /// 总之得先有这么一个方法
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private bool trySendMessage(string message)
+        {
+            //TODO:Probe:实现消息发送
+            return true;
+        }
+        /// <summary>
+        /// 获取本地玩家
+        /// </summary>
+        /// <returns></returns>
+        private Player getLocalPlayerData()
+        {
+            return players.Find(p => p.Id == game.network.logic.localPlayer.id);
         }
         #endregion
         #region 属性字段
