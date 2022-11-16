@@ -172,6 +172,7 @@ namespace Game
                 cardPoolInfo.toJson(),//文件头信息
                 cardPool.toJson(true)//内容对象
             });
+            cardPoolInfo.editTime++;
             Debug.Log("保存卡池" + path + "成功");
         }
         /// <summary>

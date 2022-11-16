@@ -116,13 +116,12 @@ namespace Controllers
                       {
                           if (hasUnsavedChanges)
                           {
-                              _curCardPoolInfo.editTime++;
+                              //保存卡池
+                              await game.card.saveCardPool(_curCardPoolInfo);
+                              //返回主菜单
+                              await returnToView();
+                              hasUnsavedChanges = false;
                           }
-                          //保存卡池
-                          await game.card.saveCardPool(_curCardPoolInfo);
-                          //返回主菜单
-                          await returnToView();
-                          hasUnsavedChanges = false;
                     }, () =>
                     {
                         returnToView();
@@ -214,13 +213,12 @@ namespace Controllers
         {
             if (hasUnsavedChanges)
             {
-                _curCardPoolInfo.editTime++;
+                await game.card.saveCardPool(_curCardPoolInfo);
+                _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
+                int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
+                _cardPoolPathList[index] = _curCardPoolPath;
+                hasUnsavedChanges = false;//如果已经保存则不需要再提示保存
             }
-            await game.card.saveCardPool(_curCardPoolInfo);
-            _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
-            int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
-            _cardPoolPathList[index] = _curCardPoolPath;
-            hasUnsavedChanges = false;//如果已经保存则不需要再提示保存
         }
         /// <summary>
         /// 当点击返回浏览卡池按钮，清空字段并切换回浏览卡池状态
