@@ -160,6 +160,10 @@ namespace Game
     }
     public class MainManager : Manager, IAppManager
     {
+        public long NewSnowflakeId()
+        {
+            return _snowflakeGen.NewId();
+        }
         protected override void onAwake()
         {
             base.onAwake();
@@ -444,6 +448,7 @@ namespace Game
                 _playerKey = new System.Random().Next();
                 PlayerPrefs.SetInt("PlayerKey", _playerKey);
             }
+            _snowflakeGen = new SnowflakeGenerator(_playerKey);
         }
         string getCurrentVersion()
         {
@@ -474,7 +479,8 @@ namespace Game
         RoomData currentRoomData;
         Task _loadCardTask = null;
         Task<ClientUpdateInfo> _getNewVersionTask = null;
-        private int _playerKey;
+        int _playerKey;
+        SnowflakeGenerator _snowflakeGen;
         #endregion
     }
 }

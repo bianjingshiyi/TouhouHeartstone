@@ -107,7 +107,7 @@ namespace Game
             //    cardPoolId = i;
             //    break;
             //}
-            long cardPoolId = snowflakeGen.NewId();
+            long cardPoolId = game.NewSnowflakeId();
             cardPoolInfo = new CardPoolInfo();
             cardPoolInfo.cardPoolId = cardPoolId;
             cardPoolInfo.cardPoolName = StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME;
@@ -881,7 +881,6 @@ namespace Game
                     }
                 }
             }
-            snowflakeGen = new SnowflakeGenerator(game.playerKey);
         }
         private async Task<CardPool> loadCardPool_v1(string path, CardPoolInfo cardPoolInfo)
         {
@@ -940,7 +939,6 @@ namespace Game
         /// 键为卡池Id，值为卡池
         /// </summary>
         Dictionary<long, CardPool> _cardPoolDict = new Dictionary<long, CardPool>();
-        SnowflakeGenerator snowflakeGen;
         [Header("卡池")]
         [SerializeField]
         bool _enableStreamingAssetsInEditor = false;

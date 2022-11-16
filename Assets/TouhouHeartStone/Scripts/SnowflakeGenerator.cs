@@ -15,10 +15,10 @@ namespace Game
         }
         public long NewId()
         {
-            long startTime = new DateTime(2022, 11, 11, 0, 0, 0, 0).Second;
+            long startTime = new DateTime(2022, 11, 11, 0, 0, 0, 0).Ticks / 10000;
 
             DateTime nowUTC = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
-            long timestamp = nowUTC.Second;
+            long timestamp = nowUTC.Ticks / 10000;
             if (timestamp < lastTimestamp)
             {
                 throw new SnowflakeException("当前时间戳早于上一次生成时的时间戳。");
@@ -28,7 +28,7 @@ namespace Game
                 throw new SnowflakeException("尝试在生成的1秒冷却中再次生成一个Id。");
             }
             lastTimestamp = timestamp;
-            return (playerKey << playerKeyShift) | ((nowUTC.Second - startTime) & timestampMask);
+            return (playerKey << playerKeyShift) | ((timestamp - startTime) & timestampMask);
         }
         #endregion
 

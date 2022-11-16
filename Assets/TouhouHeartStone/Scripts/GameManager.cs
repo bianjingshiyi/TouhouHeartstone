@@ -224,12 +224,12 @@ namespace Game
             foreach (var player in playerList)
             {
                 Deck deck = player.getDeck();
-                foreach (var cardId in deck.toIdArray(true))
+                foreach (var cardRef in deck.toRefArray(true))
                 {
-                    if (CardDefineHelper.isExternalCard(cardId) &&
-                        !cardPoolIdSet.Contains(CardDefineHelper.getCardPoolId(cardId)))
+                    if (CardDefineHelper.isExternalCard(cardRef.cardId) &&
+                        !cardPoolIdSet.Contains(cardRef.cardPoolId))
                     {
-                        cardPoolIdSet.Add(CardDefineHelper.getCardPoolId(cardId));
+                        cardPoolIdSet.Add(cardRef.cardPoolId);
                     }
                 }
             }
