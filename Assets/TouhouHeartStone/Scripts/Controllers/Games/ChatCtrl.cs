@@ -1,0 +1,167 @@
+﻿using BJSYGameCore.UI;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using TouhouCardEngine;
+using UnityEngine;
+
+namespace Controllers
+{
+    class ChatCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
+    {
+        #region 公共方法
+        public Task display(UIDisplayInfo displayInfo)
+        {
+            if (displayInfo is DisplayInfo info)
+            {
+                isDisplay = true;
+
+                chatLog = info.ChatLog;
+                players = info.Players;
+
+                resetChatPanel();
+            }
+            return Task.CompletedTask;
+        }
+
+        public UIDisplayInfo getCurrentDisplayInfo()
+        {
+            return new DisplayInfo(chatLog, players);
+        }
+
+        public Task hide()
+        {
+            isDisplay = false;
+
+            players.Clear();
+            return Task.CompletedTask;
+        }
+        #endregion
+        #region 私有方法
+        #region 生命周期
+        private void Awake()
+        {
+            if (ui == null)
+            {
+                ui = GetComponentInChildren<ChatPanel>();
+            }
+            registerMethodCallBack();
+        }
+        #endregion
+        #region 方法回调
+        private void onSendButtonClick(string Value)
+        {
+
+        }
+        #endregion
+        /// <summary>
+        /// 重置聊天框
+        /// </summary>
+        private void resetChatPanel()
+        {
+            //TODO:Probe:清空聊天框，输入框。如果要传入历史记录的话传进去
+        }
+
+        /// <summary>
+        /// 更新聊天框
+        /// </summary>
+        private void updateChatPanel()
+        {
+            //TODO:Probe:聊天框的内容与ChatLog保持一致
+        }
+
+        /// <summary>
+        /// 注册回调
+        /// </summary>
+        private void registerMethodCallBack()
+        {
+
+        }
+        #endregion
+        #region 属性字段
+        public bool IsDisplay { get => isDisplay; }
+        bool isDisplay = false;
+        /// <summary>
+        /// 聊天记录
+        /// </summary>
+        List<ChatLine> chatLog;
+        /// <summary>
+        /// 玩家列表
+        /// </summary>
+        List<Player> players;
+        ChatPanel ui;
+        #endregion
+        #region 内部类
+        public class DisplayInfo : UIDisplayInfo
+        {
+            public DisplayInfo(RoomData data)
+            {
+                ChatLog = new List<ChatLine>();
+                data.playerDataList.ForEach(p =>
+                {
+                    Players.Add(new Player(p));
+                });
+            }
+
+            public DisplayInfo(List<ChatLine> chatLog, List<Player> players)
+            {
+                ChatLog = chatLog;
+                Players = players;
+            }
+            /// <summary>
+            /// 传入的聊天记录
+            /// </summary>
+            public List<ChatLine> ChatLog;
+            /// <summary>
+            /// 参与聊天的玩家列表
+            /// </summary>
+            public List<Player> Players;
+        }
+
+        public struct ChatLine
+        {
+            /// <summary>
+            /// 发送时间
+            /// </summary>
+            public string time;
+            /// <summary>
+            /// 发送玩家ID
+            /// </summary>
+            public string speaker;
+            /// <summary>
+            /// 所讲内容
+            /// </summary>
+            public string content;
+        }
+
+        public class Player
+        {
+            public int Id;
+            public string Name;
+
+            public Player(int id,string name)
+            {
+                Id = id;
+                Name = name;
+            }
+
+            public Player(RoomPlayerData rp)
+            {
+                Id = rp.id;
+                Name = rp.name;
+            }
+        }
+
+        /// <summary>
+        /// 临时用来表示UI的内部类
+        /// 与UI脚本对接后删除
+        /// </summary>
+        class ChatPanel : MonoBehaviour
+        {
+            
+        }
+        #endregion
+    }
+}
+
+
