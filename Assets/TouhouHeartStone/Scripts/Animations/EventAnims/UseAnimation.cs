@@ -185,12 +185,6 @@ namespace Game
                         table.ui.SelfHandList.removeItem(hand);
                     }
                     table.setMaster(table.ui.SelfMaster, table.player.getMaster());
-                    if (table.tryGetItem(eventArg.card, out var item))
-                    {
-                        item.AttackPropNumber.text.text = eventArg.card.getAttack(table.game).ToString();
-                        item.DurabilityPropNumber.text.text = eventArg.card.getCurrentLife(table.game).ToString();
-                        table.setItem(item, eventArg.card);
-                    }
                     if (tryTargetedAnim(table, table.ui.SelfItem, eventArg, time))
                         return false;
                 }

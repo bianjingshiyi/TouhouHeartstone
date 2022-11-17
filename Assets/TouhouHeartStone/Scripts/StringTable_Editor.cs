@@ -543,6 +543,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_ELEMENT = "元素融合时";
         [TranslateMsg("编辑器中的事件类型之元素融合后")]
         public const string EDITOR_EVENT_NAME_AFTER_ELEMENT = "元素融合后";
+        [TranslateMsg("编辑器中的事件类型之装备武器时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_EQUIP = "装备道具时";
+        [TranslateMsg("编辑器中的事件类型之装备武器后")]
+        public const string EDITOR_EVENT_NAME_AFTER_EQUIP = "装备道具后";
         #endregion
         #region 类型
         [TranslateMsg("编辑器中的任意类型的名称")]

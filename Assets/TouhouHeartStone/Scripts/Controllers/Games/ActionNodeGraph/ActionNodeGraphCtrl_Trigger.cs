@@ -624,6 +624,8 @@ namespace Controllers
             _eventTypeInfoList.Find(e => e.eventName == "AfterDiscoverEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DISCOVER;
             //_eventTypeInfoList.Find(e => e.eventName == "BeforeSelectEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SELECT;
             //_eventTypeInfoList.Find(e => e.eventName == "AfterSelectEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SELECT;
+            _eventTypeInfoList.Find(e => e.eventName == "BeforeEquipItemEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_EQUIP;
+            _eventTypeInfoList.Find(e => e.eventName == "AfterEquipItemEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_EQUIP;
             //_eventTypeInfoList.Find(e => e.eventName == "BeforeElementEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ELEMENT;
             //_eventTypeInfoList.Find(e => e.eventName == "AfterElementEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ELEMENT;
             _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeElementMixEvent");

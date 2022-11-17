@@ -243,24 +243,39 @@ namespace TouhouHeartstone
                 else if (card.isItem())
                 {
                     //物品卡，置入物品栏
-                    await p.equip(game, card);
+                    await p.equip(game, p.getHand(), card);
                     await card.activeEffect(game, p, targets);
                 }
             });
             return true;
         }
-        public static async Task equip(this Player player, CardEngine game, Card item)
+        public static async Task<HearthStoneRule.EquipItemEventArg> equip(this Player player, CardEngine game, Pile from, Card item)
         {
             if (player[PILE.ITEM].isFull)
             {
                 game.logger.logTrace("由于" + player + "的道具栏已满，摧毁当前道具");
                 await player.destroyItem(game);
             }
-            // await item.setAttack(game, item.getAttack(game));
-            await item.setCurrentLife(game, item.getLife(game));
-            await player.getHand().moveTo(game, item, player[PILE.ITEM]);
-            item.InitConsumableKeywords(game);
-            game.logger.logTrace(player + "装备" + item);
+
+            return await game.triggers.doEvent(new HearthStoneRule.EquipItemEventArg() { player = player, from = from, card = item }, onEquipItem);
+            async Task onEquipItem(HearthStoneRule.EquipItemEventArg arg)
+            {
+                player = arg.player;
+                from = arg.from;
+                var card = arg.card;
+
+                await card.setDead(game, false);
+                await card.setCurrentLife(game, card.getLife(game));
+                if (from != null)
+                    await from.moveTo(game, card, player[PILE.ITEM]);
+                else
+                    await player[PILE.ITEM].insert(game, card, 0);
+				item.InitConsumableKeywords(game);
+                if (from != null)
+                    game.logger.logTrace(player + "从" + arg.from + "装备了" + arg.card);
+                else
+                    game.logger.logTrace(player + "装备了" + arg.card);
+            }
         }
         public static Task destroyItem(this Player player, CardEngine game)
         {

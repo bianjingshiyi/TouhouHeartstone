@@ -75,8 +75,8 @@ namespace Game
                     if (await game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope))
                     {
                         break;
-                    }
-                }
+            }
+        }
             }
             while (times < maxRepeatTime);
         }
@@ -569,7 +569,7 @@ namespace Game
         /// <summary>
         /// 卡牌装备到道具栏(有显示问题）
         /// </summary>
-        [TranslateMsg]
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
         [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
@@ -577,28 +577,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card card)
         {
-            if (card == null)
-                return null;
-            if (player == null)
-                return card;
-
-            if (card.isItem())
-            {
-                if (player[PILE.ITEM].isFull)
-                {
-                    game.logger.logTrace("由于" + player + "的道具栏已满，摧毁当前道具");
-                    await player.destroyItem(game);
-                }
-                game.logger.log("将" + string.Join("，", card) + "装备到" + player + "的道具栏");
-                await card.setCurrentLife(game, card.getLife(game));
-                await card.pile.moveTo(game, card, player[PILE.ITEM]);
-                return card;
-            }
-            else
-            {
-                game.logger.log("卡牌类型非法，无法将" + string.Join(",", card) + "置入道具栏");
-                return null;
-            }
+            return (await player.equip(game, card.pile, card)).card;
         }
         /// <summary>
         /// 卡牌移动到暂存区(有显示问题）
@@ -758,7 +737,7 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_INDEX)] int index)
         {
             if (index >= 0 && index < array.Length)
-                return array[index];
+            return array[index];
             return null;
         }
         [TranslateMsg("编辑器_动作节点_遍历")]
@@ -838,7 +817,7 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
         {
-            if (eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length > 0)
+            if(eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length>0)
                 eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
         }
         #endregion

@@ -1275,6 +1275,71 @@ namespace TouhouHeartstone
             public int life;
         }
 
+        public class EquipItemEventArg : EventArg, IDescribableEventArg
+        {
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
+            const string TEMPLATE = "{0} 装备了 {1}";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[]
+                {
+                    player.name,
+                    card.getFormatString()
+                };
+            }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)}
+                };
+            }
+            public Player player
+            {
+                get { return getVar<Player>("玩家"); }
+                set { setVar("玩家", value); }
+            }
+            public Pile from;
+            public Card card
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
+            }
+            public int attack;
+            public int life;
+        }
         public class RebornEventArg : EventArg, IDescribableEventArg
         {
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
