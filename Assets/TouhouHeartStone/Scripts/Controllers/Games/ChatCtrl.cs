@@ -56,11 +56,11 @@ namespace Controllers
             var pm = processMessage(message);
             if (trySendMessage(pm))
             {
-                var time = DateTime.Now.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss");
+                var time = DateTime.Now.ToLocalTime();
 
                 chatLog.Add(new ChatLine 
                 { 
-                    time = pm,
+                    time = time,
                     speaker = getLocalPlayerData().Name,
                     content = pm
                 });
@@ -73,7 +73,7 @@ namespace Controllers
             }
         }
 
-        private void onReceiveMessage(string time,string message,string player)
+        private void onReceiveMessage(DateTime time,string message,string player)
         {
             chatLog.Add(new ChatLine
             {
@@ -183,7 +183,7 @@ namespace Controllers
             /// <summary>
             /// 发送时间
             /// </summary>
-            public string time;
+            public DateTime time;
             /// <summary>
             /// 发送玩家ID
             /// </summary>
