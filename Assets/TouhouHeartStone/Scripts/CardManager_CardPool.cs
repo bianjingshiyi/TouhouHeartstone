@@ -167,12 +167,12 @@ namespace Game
             {
                 JsonHelper.init();
             }
+            cardPoolInfo.editTime++;
             await game.fileManager.saveFile(path, new string[]
             {
                 cardPoolInfo.toJson(),//文件头信息
                 cardPool.toJson(true)//内容对象
             });
-            cardPoolInfo.editTime++;
             Debug.Log("保存卡池" + path + "成功");
         }
         /// <summary>
