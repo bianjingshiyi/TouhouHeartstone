@@ -348,6 +348,10 @@ namespace Game
                     {
                         game.logger.log("将" + string.Join("，", card) + "置入" + player + "的战场");
                         //await card.pile.moveTo(game, card, player.getField());//直接移动卡牌似乎没有入场事件
+                        if (card.pile?.name == PILE.GRAVE)//如果是墓地置入战场需要清除增益
+                        {
+                            await card.resetCard(game);
+                        }
                         await player.tryEnterField(game, card.pile, card, player.getField().count);
                         MoveList.Add(card);
                     }

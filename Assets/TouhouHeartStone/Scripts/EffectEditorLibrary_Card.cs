@@ -102,7 +102,7 @@ namespace Game
             return card.hasKeyword(game, select);
         }
         /// <summary>
-        /// 获取目标卡牌的定义
+        /// 获取目标卡牌的定义列表
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
@@ -121,6 +121,18 @@ namespace Game
                 cardDefines[i] = cards[i].define;
             }
             return cardDefines;
+        }
+        /// <summary>
+        /// 获取单张卡牌的定义
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取单张卡牌的定义")]
+        public const string EDITOR_NODE_SPECIFIC_CARD_DEFINE = "获取单张卡牌的定义";
+        [ActionNodeMethod(EDITOR_NODE_SPECIFIC_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
+        public static CardDefine getTagetCardDefineArray(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.define;
         }
         /// <summary>
         /// 变形为卡牌定义
