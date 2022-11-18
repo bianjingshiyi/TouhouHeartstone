@@ -282,14 +282,17 @@ namespace Controllers
             Deck deck = player.getDeck();
             if (deck != null)
             {
-                bool deckValid;
-                if (_isLocalGame)
+                bool deckValid = true;
+                if (ShouldCheckValidDeck())
                 {
-                    deckValid = game.deck.isValidDeck(deck);
-                }
-                else
-                {
-                    deckValid = game.deck.isValidDeckForOnlineGame(deck);
+                    if (_isLocalGame)
+                    {
+                        deckValid = game.deck.isValidDeck(deck);
+                    }
+                    else
+                    {
+                        deckValid = game.deck.isValidDeckForOnlineGame(deck);
+                    }
                 }
                 return deckValid;
             }
@@ -375,15 +378,18 @@ namespace Controllers
                 
                 viewData[i].name = deck.name;
                 viewData[i].image = await game.card.loadCardImage(deck.masterId);
-                bool warning;
-                // 判断牌组是否合法。
-                if (_isLocalGame)
+                bool warning = false; 
+                if (ShouldCheckValidDeck())
                 {
-                    warning = !game.deck.isValidDeck(deck);
-                }
-                else
-                {
-                    warning = !game.deck.isValidDeckForOnlineGame(deck);
+                    // 判断牌组是否合法。
+                    if (_isLocalGame)
+                    {
+                        warning = !game.deck.isValidDeck(deck);
+                    }
+                    else
+                    {
+                        warning = !game.deck.isValidDeckForOnlineGame(deck);
+                    }
                 }
                 // 如果不允许使用自定义卡牌，则屏蔽拥有自定义卡牌的卡组。
                 if (!allowCustomCards && deckHasCustomCard(deck))
@@ -393,6 +399,10 @@ namespace Controllers
                 viewData[i].isWarning = warning;
             }
             _ui.displayDeckSelectPanel(viewData);
+        }
+        private bool ShouldCheckValidDeck()
+        {
+            return !Debug.isDebugBuild && !Application.isEditor;
         }
         #endregion
         #region 属性字段
