@@ -20,7 +20,16 @@ namespace TouhouHeartstone
         }
         public override Task afterAdd(IGame game, Card card)
         {
-            return base.afterAdd(game, card);
+            Task task = base.afterAdd(game, card);
+            if (value.Contains(KEYWORD.SHIELD))
+            {
+                card.setShield(game, true);
+            }
+            if (value.Contains(KEYWORD.STEALTH))
+            {
+                card.setStealth(game, true);
+            }
+            return task;
         }
         public override string[] calc(IGame game, Card card, string[] value)
         {

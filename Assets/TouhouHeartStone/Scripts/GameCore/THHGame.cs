@@ -433,7 +433,6 @@ namespace TouhouHeartstone
 
         public override Task onGameInit(CardEngine game, GameOption options, IRoomPlayer[] players)
         {
-            game.triggers.onEventAfter += onEventAfterHandler;
             game.option = options;
             foreach (var playerInfo in players)
             {
@@ -857,26 +856,6 @@ namespace TouhouHeartstone
         }
 
         #endregion
-
-        private void onEventAfterHandler(IEventArg arg)
-        {
-            if (arg is Card.AddModiEventArg addModi)
-            {
-                var game = addModi.game;
-                // 添加护盾和隐匿关键字修改器后，使卡牌获得护盾和隐匿。
-                if (addModi.modifier is KeywordsModifier keywordModi)
-                {
-                    if (keywordModi.value.Contains(KEYWORD.SHIELD))
-                    {
-                        addModi.card.setShield(game, true);
-                    }
-                    if (keywordModi.value.Contains(KEYWORD.STEALTH))
-                    {
-                        addModi.card.setStealth(game, true);
-                    }
-                }
-            }
-        }
 
         public class InitEventArg : EventArg
         {
