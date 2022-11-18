@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
+using UI;
 using UnityEngine;
 
 namespace Controllers
@@ -16,10 +17,14 @@ namespace Controllers
             if (displayInfo is DisplayInfo info)
             {
                 isDisplay = true;
+                if (ui == null)
+                {
+                    ui = transform.GetComponent<ChatRoom>();
+                }
+                ui.gameObject.SetActive(true);
 
                 chatLog = info.ChatLog;
                 players = info.Players;
-
                 resetChatPanel();
             }
             return Task.CompletedTask;
@@ -33,37 +38,49 @@ namespace Controllers
         public Task hide()
         {
             isDisplay = false;
+            ui.gameObject.SetActive(false);
 
             chatLog.Clear();
             players.Clear();
             return Task.CompletedTask;
         }
+
+        public Task display(RoomData data)
+        {
+            return display(new DisplayInfo(data));
+        }
         #endregion
+
         #region 私有方法
+
         #region 生命周期
-        private void Awake()
+        protected void Awake()
         {
             if (ui == null)
             {
-                ui = GetComponentInChildren<ChatPanel>();
+                ui = transform.GetComponent<ChatRoom>();
             }
             registerMethodCallBack();
         }
         #endregion
+
         #region 方法回调
-        private void onSendButtonClick(string message)
+        private void onSendButtonClicked(string message)
         {
             var pm = processMessage(message);
             if (trySendMessage(pm))
             {
                 var time = DateTime.Now.ToLocalTime();
 
-                chatLog.Add(new ChatLine 
-                { 
+                var cl = new ChatLine
+                {
                     time = time,
                     speaker = getLocalPlayerData().Name,
                     content = pm
-                });
+                };
+
+                chatLog.Add(cl);
+
                 updateChatPanel();
             }
             else
@@ -105,7 +122,7 @@ namespace Controllers
         /// </summary>
         private void registerMethodCallBack()
         {
-
+            ui.onSendButtonClicked += onSendButtonClicked;
         }
 
         /// <summary>
@@ -135,7 +152,13 @@ namespace Controllers
         /// <returns></returns>
         private Player getLocalPlayerData()
         {
+
             return players.Find(p => p.Id == game.network.logic.localPlayer.id);
+        }
+
+        private string chatLineToString(ChatLine cl) 
+        {
+            return $"[${cl.time.ToShortTimeString()}]${cl.speaker} 说: ${cl.content}";
         }
         #endregion
         #region 属性字段
@@ -149,7 +172,7 @@ namespace Controllers
         /// 玩家列表
         /// </summary>
         List<Player> players;
-        ChatPanel ui;
+        ChatRoom ui;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
@@ -171,11 +194,11 @@ namespace Controllers
             /// <summary>
             /// 传入的聊天记录
             /// </summary>
-            public List<ChatLine> ChatLog;
+            public List<ChatLine> ChatLog = new List<ChatLine>();
             /// <summary>
             /// 参与聊天的玩家列表
             /// </summary>
-            public List<Player> Players;
+            public List<Player> Players = new List<Player>();
         }
 
         public struct ChatLine
@@ -212,14 +235,6 @@ namespace Controllers
             }
         }
 
-        /// <summary>
-        /// 临时用来表示UI的内部类
-        /// 与UI脚本对接后删除
-        /// </summary>
-        class ChatPanel : MonoBehaviour
-        {
-            
-        }
         #endregion
     }
 }

@@ -39,6 +39,10 @@ namespace Controllers
             {
                 _actionNodeGraphCtrl = TransformHelper.findComponentInScene<ActionNodeGraphCtrl>(gameObject.scene);
             }
+            if (_chatCtrl == null)
+            {
+                _chatCtrl = TransformHelper.findComponentInScene<ChatCtrl>(gameObject.scene);
+            }
             _menu.gameObject.SetActive(true);
             _room.gameObject.SetActive(false);
             _build.gameObject.SetActive(false);
@@ -47,6 +51,7 @@ namespace Controllers
             _cardEditor.gameObject.SetActive(false);
             _effectEditor.gameObject.SetActive(false);
             _actionNodeGraphCtrl.gameObject.SetActive(false);
+            _chatCtrl.gameObject.SetActive(false);
         }
         public MainMenuCtrl menu => _menu;
         public RoomCtrl room => _room;
@@ -56,6 +61,7 @@ namespace Controllers
         public CardEditorCtrl cardEditor => _cardEditor;
         public EffectEditorCtrl effectEditor => _effectEditor;
         public ActionNodeGraphCtrl actionNodeGraphCtrl => _actionNodeGraphCtrl;
+        public ChatCtrl chatCtrl => _chatCtrl;
         [SerializeField]
         MainMenuCtrl _menu;
         [SerializeField]
@@ -72,5 +78,7 @@ namespace Controllers
         EffectEditorCtrl _effectEditor;
         [SerializeField]
         ActionNodeGraphCtrl _actionNodeGraphCtrl;
+        [SerializeField]
+        ChatCtrl _chatCtrl;
     }
 }

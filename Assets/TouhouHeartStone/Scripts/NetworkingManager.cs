@@ -77,6 +77,7 @@ namespace Game
             }
         }
         // 对MainSceneCtrl的引用，用于调用RoomCtrl的display。
+        // 也要调用ChatPanel的display
         private MainSceneCtrl _sceneCtrl;
         protected override void onAwake()
         {
@@ -586,12 +587,14 @@ namespace Game
 
             ui.parent.display(roomPanel);
             _sceneCtrl.room.display(logic.CurrentRoom, false);
-
+            //  加载聊天框
+            _sceneCtrl.chatCtrl.display(logic.CurrentRoom);
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
             roomPanel.SetMode(isHost ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
 
             setRoomPanel(logic.CurrentRoom);
         }
+
         #endregion
         #region 网络事件处理
         private void NetworkingLogic_onRoomListChange(LobbyRoomDataList obj)
