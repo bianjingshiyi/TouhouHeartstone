@@ -353,25 +353,25 @@ namespace TouhouHeartstone
         }
         public static bool isShield(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.SHIELD);
+            return card.hasKeyword(game, KEYWORD.HAS_SHIELD);
         }
         public static void setShield(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, KEYWORD.SHIELD);
+                card.addKeywords(game, KEYWORD.HAS_SHIELD);
             else
-                card.removeKeywords(game, KEYWORD.SHIELD);
+                card.removeKeywords(game, KEYWORD.HAS_SHIELD);
         }
         public static bool isStealth(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.STEALTH) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
+            return card.hasKeyword(game, KEYWORD.HAS_STEALTH) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
         }
         public static void setStealth(this Card card, IGame game, bool value)
         {
             if (value)
-                card.addKeywords(game, KEYWORD.STEALTH);
+                card.addKeywords(game, KEYWORD.HAS_STEALTH);
             else
-                card.removeKeywords(game, KEYWORD.STEALTH);
+                card.removeKeywords(game, KEYWORD.HAS_STEALTH);
         }
         public static bool isDrain(this Card card, IGame game)
         {
@@ -408,14 +408,14 @@ namespace TouhouHeartstone
         }
         public static bool isFreeze(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.FREEZED);
+            return card.hasKeyword(game, KEYWORD.FROZEN);
         }
         public static Task<IPropChangeEventArg> setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
-                return card.addKeywords(game, KEYWORD.FREEZED);
+                return card.addKeywords(game, KEYWORD.FROZEN);
             else
-                return card.removeKeywords(game, KEYWORD.FREEZED);
+                return card.removeKeywords(game, KEYWORD.FROZEN);
         }
         public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {
@@ -654,7 +654,16 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, nameof(ServantCardDefine.tags), tags);
         }
-
+        /// <summary>
+        /// 初始化卡牌的可消耗关键字，如隐匿、护盾。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        public static void InitConsumableKeywords(this Card card, CardEngine game)
+        {
+            card.setShield(game, card.hasKeyword(game, KEYWORD.SHIELD));
+            card.setStealth(game, card.hasKeyword(game, KEYWORD.STEALTH));
+        }
         [TranslateMsg]
         const string NOT_YOUR_TURN = "这不是你的回合";
 
@@ -966,12 +975,18 @@ namespace TouhouHeartstone
             if (card.isServant() || card.isItem() || card.isMaster())
             {
                 var effect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault(e => e.tagList.Contains(KEYWORD.BATTLECRY)); ;
-                return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                if (effect != null)
+                {
+                    return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                }
             }
             else if (card.isSpell() || card.isSkill())
             {
                 var effect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
-                return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                if (effect != null)
+                {
+                    return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                }
             }
             return Task.CompletedTask;
         }

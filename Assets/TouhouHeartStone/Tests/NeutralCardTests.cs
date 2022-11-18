@@ -946,7 +946,7 @@ namespace Tests
                 new KeyValuePair<int, int>(KawasiroNitori_N.ID, 1));
             game.skipUntilCanUse<KawasiroNitori_N>(you);
             you.cmdUse<KawasiroNitori_N>(game, out var s);
-            Assert.True(s.hasKeyword(game, KEYWORD.SHIELD) && s.isStealth(game));
+            Assert.True(s.hasKeyword(game, KEYWORD.HAS_SHIELD) && s.isStealth(game));
             game.Dispose();
         }
 

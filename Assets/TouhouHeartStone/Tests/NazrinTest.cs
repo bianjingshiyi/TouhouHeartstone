@@ -25,7 +25,7 @@ namespace Tests
             you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             you.cmdUse(game, you.getHand().getCard<Nazrin_01>(), targets: you.getField()[0]);
 
-            Assert.True(you.getField()[0].hasKeyword(game, KEYWORD.SHIELD));
+            Assert.True(you.getField()[0].hasKeyword(game, KEYWORD.HAS_SHIELD));
             game.Dispose();
         }
 

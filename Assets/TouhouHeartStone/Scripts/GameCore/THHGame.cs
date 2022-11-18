@@ -375,26 +375,31 @@ namespace TouhouHeartstone
                             .ToArray());
 
                 //设置生命值，洗牌，然后抽初始卡牌
-                for (int i = 0; i < getSortedPlayers(game).Length; i++)
+                Player[] playersArray = getSortedPlayers(game);
+                for (int i = 0; i < playersArray.Length; i++)
                 {
-                    await getSortedPlayers(game)[i].getMaster().setCurrentLife(game, 30);
-                    if (getSortedPlayers(game)[i].getDeck().count < 1)
+                    Player player = playersArray[i];
+                    Card master = player.getMaster();
+                    await player.getMaster().setCurrentLife(game, 30);
+                    master.InitConsumableKeywords(game);
+
+                    if (player.getDeck().count < 1)
                         continue;
                     if (getOption(game).shuffle)
-                        getSortedPlayers(game)[i].getDeck().shuffle(game);
+                        player.getDeck().shuffle(game);
                     int count = i == 0 ? 3 : 4;
-                    var cards = getSortedPlayers(game)[i].getDeck().Where(c => c.hasKeyword(game, KEYWORD.MISSION))
+                    var cards = player.getDeck().Where(c => c.hasKeyword(game, KEYWORD.MISSION))
                         .randomTake(game, count).ToList();
-                    cards.AddRange(getSortedPlayers(game)[i].getDeck().Except(cards).Reverse()
+                    cards.AddRange(player.getDeck().Except(cards).Reverse()
                         .Take(count - cards.Count()));
                     cards.Reverse();
                     // var cards = getSortedPlayers(game)[i].getDeck().Skip(getSortedPlayers(game)[i].getDeck().count - count).Reverse()
                     //     .ToArray();
-                    await getSortedPlayers(game)[i].getDeck().moveTo(game, cards, game.getSortedPlayers()[i].getInit());
+                    await player.getDeck().moveTo(game, cards, player.getInit());
                 }
 
                 game.logger.logTrace("游戏初始化，玩家行动顺序："
-                                     + string.Join("、", game.getSortedPlayers().Select(p => p.ToString())) + "，"
+                                     + string.Join("、", playersArray.Select(p => p.ToString())) + "，"
                                      + "玩家英雄：" + string.Join("，",
                                          getSortedPlayers(game).Select(p => p.getMaster() + "(" + p.getSkill() + ")")) +
                                      "，"
@@ -428,6 +433,7 @@ namespace TouhouHeartstone
 
         public override Task onGameInit(CardEngine game, GameOption options, IRoomPlayer[] players)
         {
+            game.triggers.onEventAfter += onEventAfterHandler;
             game.option = options;
             foreach (var playerInfo in players)
             {
@@ -741,13 +747,13 @@ namespace TouhouHeartstone
                     {
                         //chara.setAttackTimes(chara.getAttackTimes(this) + 1);
                         if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
-                            chara.define is ServantCardDefine && chara.isReady(game))
+                            chara.isServant() && chara.isReady(game))
                         {
                             game.logger.logTrace("被冻结的随从解除冰冻");
                             chara.setFreeze(game, false);
                         }
                         else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
-                                chara.define is MasterCardDefine)
+                                chara.isMaster())
                         {
                             game.logger.logTrace("被冻结的英雄解除冰冻");
                             chara.setFreeze(game, false);
@@ -851,6 +857,26 @@ namespace TouhouHeartstone
         }
 
         #endregion
+
+        private void onEventAfterHandler(IEventArg arg)
+        {
+            if (arg is Card.AddModiEventArg addModi)
+            {
+                var game = addModi.game;
+                // 添加护盾和隐匿关键字修改器后，使卡牌获得护盾和隐匿。
+                if (addModi.modifier is KeywordsModifier keywordModi)
+                {
+                    if (keywordModi.value.Contains(KEYWORD.SHIELD))
+                    {
+                        addModi.card.setShield(game, true);
+                    }
+                    if (keywordModi.value.Contains(KEYWORD.STEALTH))
+                    {
+                        addModi.card.setStealth(game, true);
+                    }
+                }
+            }
+        }
 
         public class InitEventArg : EventArg
         {

@@ -19,9 +19,17 @@
         /// </summary>
         public const string SHIELD = "shield";
         /// <summary>
+        /// 拥有圣盾
+        /// </summary>
+        public const string HAS_SHIELD = "hasShield";
+        /// <summary>
         /// 潜行
         /// </summary>
         public const string STEALTH = "stealth";
+        /// <summary>
+        /// 拥有潜行
+        /// </summary>
+        public const string HAS_STEALTH = "hasStealth";
         /// <summary>
         /// 永久潜行
         /// </summary>
@@ -41,7 +49,7 @@
         /// <summary>
         /// 被冰冻的
         /// </summary>
-        public const string FREEZED = "freezed";
+        public const string FROZEN = "frozen";
         /// <summary>
         /// 唯一
         /// </summary>

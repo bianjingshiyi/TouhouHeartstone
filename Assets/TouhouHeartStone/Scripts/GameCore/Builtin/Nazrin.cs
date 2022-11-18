@@ -70,7 +70,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                await target.addKeywords(game, KEYWORD.SHIELD);
+                await target.addKeywords(game, KEYWORD.HAS_SHIELD);
             }, PileFlag.both|PileFlag.character)
         };
 

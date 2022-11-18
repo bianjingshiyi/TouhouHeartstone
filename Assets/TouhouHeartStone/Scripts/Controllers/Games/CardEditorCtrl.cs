@@ -541,7 +541,7 @@ namespace Controllers
             KEYWORD.DRAIN,
             KEYWORD.POISONOUS,
             KEYWORD.ELUSIVE,
-            KEYWORD.FREEZED,
+            KEYWORD.FROZEN,
             KEYWORD.UNIQUE,
             KEYWORD.AUTOCAST,
             KEYWORD.CANTATTACK,

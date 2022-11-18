@@ -263,6 +263,7 @@ namespace TouhouHeartstone
             // await item.setAttack(game, item.getAttack(game));
             await item.setCurrentLife(game, item.getLife(game));
             await player.getHand().moveTo(game, item, player[PILE.ITEM]);
+            item.InitConsumableKeywords(game);
             game.logger.logTrace(player + "装备" + item);
         }
         public static Task destroyItem(this Player player, CardEngine game)
@@ -492,6 +493,7 @@ namespace TouhouHeartstone
                     await from.moveTo(game, arg.card, player.getField(), arg.position);//从某pile召唤随从
                 else
                     await player.getField().insert(game, card, position);//虚空生成随从
+                card.InitConsumableKeywords(game);
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }

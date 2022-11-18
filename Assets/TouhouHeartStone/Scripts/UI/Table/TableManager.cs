@@ -488,11 +488,11 @@ namespace Game
                 master.onCanAttackFalse.invokeAfterAnim();
             }
 
-            if (card.hasKeyword(game, KEYWORD.SHIELD))
+            if (card.hasKeyword(game, KEYWORD.HAS_SHIELD))
                 master.ShieldImage.display();
             else
                 master.ShieldImage.hide();
-            if (card.hasKeyword(game, KEYWORD.FREEZED))
+            if (card.hasKeyword(game, KEYWORD.FROZEN))
             {
                 master.onShackleTrue.invokeBeforeAnim();
                 master.onShackleTrue.invokeAfterAnim();
@@ -1311,7 +1311,7 @@ namespace Game
                 servant.onLifeStealFalse.invokeBeforeAnim();
                 servant.onLifeStealFalse.invokeAfterAnim();
             }
-            if (card.hasKeyword(game, KEYWORD.FREEZED))
+            if (card.hasKeyword(game, KEYWORD.FROZEN))
             {
                 servant.onShackleTrue.invokeBeforeAnim();
                 servant.onShackleTrue.invokeAfterAnim();
