@@ -10,12 +10,13 @@ namespace UI
         #region 生命周期
         protected void Awake() 
         {
-            _sendButton.onClick.AddListener(onClickSendButton);
-            _chatInputField.onEndEdit.AddListener(onInputFieldEndEdit);
             _chatInputField = transform.Find("InputFieldDark").GetComponent<InputField>();
-            _chatScrollRect = transform.Find("textshowPanel").GetComponent<ScrollRect>();
-            _displayText = transform.Find("userText").GetComponent<Text>();
+            _chatScrollRect = transform.Find("viewPort/textshowPanel").GetComponent<ScrollRect>();
+            _displayText = transform.Find("viewPort/textshowPanel/userText").GetComponent<Text>();
             _sendButton = transform.Find("sendButton").GetComponent<Button>();
+
+            _chatInputField.onEndEdit.AddListener(onInputFieldEndEdit);
+            _sendButton.onClick.AddListener(onClickSendButton);
 
         }
         #endregion
@@ -50,13 +51,9 @@ namespace UI
 
         #endregion
         #region 属性字段
-        [SerializeField]
         private InputField _chatInputField;
-        [SerializeField]
         private Text _displayText;
-        [SerializeField]
         private Button _sendButton;
-        [SerializeField]
         private ScrollRect _chatScrollRect;
         #endregion
     }
