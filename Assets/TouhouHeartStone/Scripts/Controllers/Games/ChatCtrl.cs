@@ -67,6 +67,11 @@ namespace Controllers
         #region 方法回调
         private void onSendButtonClicked(string message)
         {
+            if (message.Length == 0)
+            {
+                return;
+            }
+
             var pm = processMessage(message);
             if (trySendMessage(pm))
             {
@@ -80,7 +85,6 @@ namespace Controllers
                 };
 
                 chatLog.Add(cl);
-
                 updateChatPanel();
             }
             else
@@ -106,7 +110,19 @@ namespace Controllers
         /// </summary>
         private void resetChatPanel()
         {
-            //TODO:Probe:清空聊天框，输入框。如果要传入历史记录的话传进去
+            ui.DisplayText.text = string.Empty;
+            ui.ChatInputField.text = string.Empty;
+            ui.Scrollbar.value = 0;
+            if (chatLog.Count > 0)
+            {
+                var text = string.Empty;
+                foreach (var cl in chatLog)
+                {
+                    var line = chatLineToString(cl);
+                    text += line + "\n";
+                }
+                ui.ChatInputField.text = text;
+            }
         }
 
         /// <summary>
@@ -114,7 +130,15 @@ namespace Controllers
         /// </summary>
         private void updateChatPanel()
         {
-            //TODO:Probe:聊天框的内容与ChatLog保持一致
+            string text = string.Empty;
+            foreach (var cl in chatLog)
+            {
+                var line = chatLineToString(cl);
+                text += line + "\n";
+            }
+            ui.DisplayText.text = text;
+            ui.ChatInputField.text = string.Empty;
+            ui.Scrollbar.value = 0;
         }
 
         /// <summary>
@@ -132,7 +156,7 @@ namespace Controllers
         /// <returns></returns>
         private string processMessage(string message)
         {
-            return message;
+            return message.Trim();
         }
 
         /// <summary>
@@ -158,7 +182,7 @@ namespace Controllers
 
         private string chatLineToString(ChatLine cl) 
         {
-            return $"[${cl.time.ToShortTimeString()}]${cl.speaker} 说: ${cl.content}";
+            return $"[{cl.time.ToShortTimeString()}]{cl.speaker} 说: {cl.content}";
         }
         #endregion
         #region 属性字段

@@ -10,14 +10,13 @@ namespace UI
         #region 生命周期
         protected void Awake() 
         {
-            _sendButton.onClick.AddListener(onClickSendButton);
-
-            _chatInputField = transform.Find("InputFieldDark").GetComponent<InputField>();
-            _chatScrollRect = transform.Find("textshowPanel").GetComponent<ScrollRect>();
-            _displayText = transform.Find("userText").GetComponent<Text>();
+            _chatInputField= transform.Find("InputFieldDark").GetComponent<InputField>();
+            _displayText = transform.Find("viewPort").Find("textshowPanel").Find("userText").GetComponent<Text>();
             _sendButton = transform.Find("sendButton").GetComponent<Button>();
-
+            scrollbar = transform.Find("viewPort").Find("textshowPanel").Find("ScrollbarVertical").GetComponent<Scrollbar>();
+            _sendButton.onClick.AddListener(onClickSendButton);
         }
+
         #endregion
 
         #region 私有方法
@@ -32,19 +31,47 @@ namespace UI
 
         #region 事件
         public event Action<string> onSendButtonClicked;
-        public event Action<string> onMessageSend;
         #endregion
 
         #endregion
         #region 属性字段
-        [SerializeField]
         private InputField _chatInputField;
-        [SerializeField]
         private Text _displayText;
-        [SerializeField]
         private Button _sendButton;
-        [SerializeField]
-        private ScrollRect _chatScrollRect;
+        private Scrollbar scrollbar;
+        public InputField ChatInputField
+        {
+            get
+            {
+                return _chatInputField;
+            }
+            set
+            {
+                _chatInputField = value;
+            }
+        }
+        public Text DisplayText 
+        { 
+            get 
+            {
+                return _displayText;
+            }
+            set
+            {
+                _displayText = value;
+            }
+        }
+        public Scrollbar Scrollbar
+        {
+            get
+            {
+                return scrollbar;
+            }
+            set
+            {
+                scrollbar = value;
+            }
+        }
         #endregion
     }
 }
