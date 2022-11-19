@@ -23,7 +23,7 @@ namespace Game
         {
             Debug.Log("Init server uri: " + serverUri);
 
-            ServerClient = new ServerClient(serverUri, version, System.IO.Path.Combine(Application.persistentDataPath, "token"));
+            ServerClient = new ServerClient(serverUri, version, System.IO.Path.Combine(Application.persistentDataPath, "token"), new ULogger("ServerAPI"));
             localLanLogic = new ClientLogic("Player.", ports, ServerClient, new ULogger("LAN"));
 
             localLanLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
@@ -229,7 +229,7 @@ namespace Game
         /// </summary>
         public PublicBasicUserInfo UserInfo => userInfo;
         PublicBasicUserInfo userInfo;
-        bool isGuest = false;
+        bool isGuest { get; set; }
 
         /// <summary>
         /// 判断是否登录（非游客）
@@ -306,6 +306,7 @@ namespace Game
             if (success)
             {
                 userInfo = await ServerClient.GetUserInfoAsync();
+                isGuest = false;
             }
             else
             {

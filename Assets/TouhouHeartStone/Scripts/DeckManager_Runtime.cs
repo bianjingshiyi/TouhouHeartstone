@@ -11,21 +11,27 @@ namespace Game
         {
             if (_deckList == null)
             {
-                _deckList = new List<Deck>();
-                foreach (var deckData in GetDecks())
-                {
-                    Deck deck = new Deck()
-                    {
-                        id = (int)deckData.ID,
-                        name = deckData.Name,
-                        masterId = deckData.MasterID,
-                    };
-                    deck.addCards(GetDeckCards(deckData.ID).Values.Select(id => (int)id));
-                    _deckList.Add(deck);
-                }
+                reloadDeckList();
             }
             return _deckList;
         }
+
+        public void reloadDeckList()
+        {
+            _deckList = new List<Deck>();
+            foreach (var deckData in GetDecks())
+            {
+                Deck deck = new Deck()
+                {
+                    id = (int)deckData.ID,
+                    name = deckData.Name,
+                    masterId = deckData.MasterID,
+                };
+                deck.addCards(GetDeckCards(deckData.ID).Values.Select(id => (int)id));
+                _deckList.Add(deck);
+            }
+        }
+
         /// <summary>
         /// 卡组是否合法
         /// </summary>

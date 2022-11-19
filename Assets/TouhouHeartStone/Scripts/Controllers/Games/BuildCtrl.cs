@@ -679,6 +679,7 @@ namespace Controllers
                     Debug.LogWarning(e);
                 }
             }
+            game.deck.reloadDeckList();
         }
         //private bool isDeckContainsExternalCard(int cardPoolId)
         //{
