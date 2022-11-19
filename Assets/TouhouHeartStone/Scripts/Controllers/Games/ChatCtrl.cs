@@ -110,19 +110,7 @@ namespace Controllers
         /// </summary>
         private void resetChatPanel()
         {
-            ui.DisplayText.text = string.Empty;
-            ui.ChatInputField.text = string.Empty;
-            ui.Scrollbar.value = 0;
-            if (chatLog.Count > 0)
-            {
-                var text = string.Empty;
-                foreach (var cl in chatLog)
-                {
-                    var line = chatLineToString(cl);
-                    text += line + "\n";
-                }
-                ui.ChatInputField.text = text;
-            }
+            updateChatPanel();
         }
 
         /// <summary>
@@ -130,15 +118,16 @@ namespace Controllers
         /// </summary>
         private void updateChatPanel()
         {
-            string text = string.Empty;
+            var text = string.Empty;
             foreach (var cl in chatLog)
             {
-                var line = chatLineToString(cl);
-                text += line + "\n";
+                if (!string.IsNullOrEmpty(text))
+                    text += "\n";
+                text += chatLineToString(cl);
             }
-            ui.DisplayText.text = text;
-            ui.ChatInputField.text = string.Empty;
-            ui.Scrollbar.value = 0;
+            ui.SetContent(text);
+            ui.ScrollToEnd();
+            ui.EmptyInputField();
         }
 
         /// <summary>
@@ -176,13 +165,12 @@ namespace Controllers
         /// <returns></returns>
         private Player getLocalPlayerData()
         {
-
             return players.Find(p => p.Id == game.network.logic.localPlayer.id);
         }
 
         private string chatLineToString(ChatLine cl) 
         {
-            return $"[{cl.time.ToShortTimeString()}]{cl.speaker} 说: {cl.content}";
+            return $"[{cl.time.ToShortTimeString()}] {cl.speaker}: {cl.content}";
         }
         #endregion
         #region 属性字段
