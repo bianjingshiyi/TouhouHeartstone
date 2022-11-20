@@ -604,6 +604,18 @@ namespace Game
         [TranslateMsg("编辑器中的动作的名称")]
         public const string EDITOR_TYPE_NAME_ACTION_NODE = "动作";
         #endregion
+        [TranslateMsg("动作图编辑器中参数名称之攻击力")]
+        public const string EDITOR_PARAM_NAME_ATTACK = "攻击力";
+        [TranslateMsg("动作图编辑器中参数名称之当前生命值")]
+        public const string EDITOR_PARAM_NAME_CURRENT_LIFE = "当前生命值";
+        [TranslateMsg("动作图编辑器中参数名称之最大生命值")]
+        public const string EDITOR_PARAM_NAME_MAX_LIFE = "最大生命值";
+        [TranslateMsg("动作图编辑器中参数名称之花费")]
+        public const string EDITOR_PARAM_NAME_COST = "花费";
+        [TranslateMsg("动作图编辑器中参数名称之法术伤害")]
+        public const string EDITOR_PARAM_NAME_SPELL_DAMAGE = "法术伤害";
+        [TranslateMsg("动作图编辑器中参数名称之卡牌拥有者")]
+        public const string EDITOR_PARAM_NAME_OWNER = "卡牌拥有者";
     }
 }
 

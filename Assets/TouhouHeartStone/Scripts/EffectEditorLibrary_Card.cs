@@ -129,7 +129,7 @@ namespace Game
         public const string EDITOR_NODE_SPECIFIC_CARD_DEFINE = "获取单张卡牌的定义";
         [ActionNodeMethod(EDITOR_NODE_SPECIFIC_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
-        public static CardDefine getTagetCardDefineArray(CardEngine game,
+        public static CardDefine getSpecificCardDefine(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             return card.define;

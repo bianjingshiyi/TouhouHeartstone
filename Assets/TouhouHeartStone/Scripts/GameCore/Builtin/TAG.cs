@@ -26,9 +26,9 @@ namespace TouhouHeartstone.Builtin
         [TranslateMsg]
         public const string Element = "元素";
         [TranslateMsg]
-        public const string Beast = "妖兽";
+        public const string Beast = "野兽";
         [TranslateMsg]
-        public const string Bug = "虫子";
+        public const string Bug = "昆虫";
         [TranslateMsg]
         public const string God = "神明";
     }
