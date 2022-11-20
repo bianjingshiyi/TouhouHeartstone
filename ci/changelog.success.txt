@@ -1,4 +1,3 @@
-自上个版本的变更:
 {{#commits}}
-{{{messageTitle}}} / {{authorName}} - {{commitTime}}
+{{{messageTitle}}}
 {{/commits}}
