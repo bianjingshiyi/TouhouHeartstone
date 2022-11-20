@@ -283,17 +283,17 @@ namespace Controllers
             if (deck != null)
             {
                 bool deckValid = true;
-                if (ShouldCheckValidDeck())
+                if (_isLocalGame)
                 {
-                    if (_isLocalGame)
-                    {
-                        deckValid = game.deck.isValidDeck(deck);
-                    }
-                    else
-                    {
-                        deckValid = game.deck.isValidDeckForOnlineGame(deck);
-                    }
+                    deckValid = game.deck.isValidDeck(deck);
                 }
+                else
+                {
+                    deckValid = game.deck.isValidDeckForOnlineGame(deck);
+                }
+#if EDITOR || DEBUG
+                deckValid = true;
+#endif
                 return deckValid;
             }
                 return false;
@@ -379,18 +379,18 @@ namespace Controllers
                 viewData[i].name = deck.name;
                 viewData[i].image = await game.card.loadCardImage(deck.masterId);
                 bool warning = false; 
-                if (ShouldCheckValidDeck())
+                // 判断牌组是否合法。
+                if (_isLocalGame)
                 {
-                    // 判断牌组是否合法。
-                    if (_isLocalGame)
-                    {
-                        warning = !game.deck.isValidDeck(deck);
-                    }
-                    else
-                    {
-                        warning = !game.deck.isValidDeckForOnlineGame(deck);
-                    }
+                    warning = !game.deck.isValidDeck(deck);
                 }
+                else
+                {
+                    warning = !game.deck.isValidDeckForOnlineGame(deck);
+                }
+#if EDITOR || DEBUG
+                warning = false;
+#endif
                 // 如果不允许使用自定义卡牌，则屏蔽拥有自定义卡牌的卡组。
                 if (!allowCustomCards && deckHasCustomCard(deck))
                 {
@@ -400,12 +400,8 @@ namespace Controllers
             }
             _ui.displayDeckSelectPanel(viewData);
         }
-        private bool ShouldCheckValidDeck()
-        {
-            return !Debug.isDebugBuild && !Application.isEditor;
-        }
-        #endregion
-        #region 属性字段
+#endregion
+#region 属性字段
         public bool isDisplay => _isDisplay;
         [SerializeField]
         RoomPanel _ui;
@@ -417,8 +413,8 @@ namespace Controllers
         bool _isLocalGame = true;
         [SerializeField]
         int _selectDeckPlayerId = 0;
-        #endregion
-        #region 内部类
+#endregion
+#region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
             public DisplayInfo(RoomData roomData, bool isLocalGame)
@@ -429,6 +425,6 @@ namespace Controllers
             public RoomData roomData;
             public bool isLocalGame;
         }
-        #endregion
+#endregion
     }
 }
