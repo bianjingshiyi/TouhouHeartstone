@@ -12,6 +12,11 @@ namespace Controllers
     class ChatCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 公共方法
+        protected new void Start()
+        {
+            game.network.logic.OnRecvChat += OnRecvChat;
+        }
+
         public Task display(UIDisplayInfo displayInfo)
         {
             if (displayInfo is DisplayInfo info)
@@ -28,6 +33,11 @@ namespace Controllers
                 resetChatPanel();
             }
             return Task.CompletedTask;
+        }
+
+        private void OnRecvChat(ChatMsg obj)
+        {
+            onReceiveMessage(DateTime.Now, obj.Message, getPlayerName(obj.Sender));
         }
 
         public UIDisplayInfo getCurrentDisplayInfo()
@@ -73,28 +83,14 @@ namespace Controllers
             }
 
             var pm = processMessage(message);
-            if (trySendMessage(pm))
-            {
-                var time = DateTime.Now.ToLocalTime();
-
-                var cl = new ChatLine
-                {
-                    time = time,
-                    speaker = getLocalPlayerData().Name,
-                    content = pm
-                };
-
-                chatLog.Add(cl);
-                updateChatPanel();
-            }
-            else
+            if (!trySendMessage(pm))
             {
                 Debug.LogError("发送失败");
                 updateChatPanel();
             }
         }
 
-        private void onReceiveMessage(DateTime time,string message,string player)
+        private void onReceiveMessage(DateTime time, string message, string player)
         {
             chatLog.Add(new ChatLine
             {
@@ -156,7 +152,7 @@ namespace Controllers
         /// <returns></returns>
         private bool trySendMessage(string message)
         {
-            //TODO:Probe:实现消息发送
+            game.network?.logic?.SendChat(0, message);
             return true;
         }
         /// <summary>
@@ -166,6 +162,11 @@ namespace Controllers
         private Player getLocalPlayerData()
         {
             return players.Find(p => p.Id == game.network.logic.localPlayer.id);
+        }
+
+        private string getPlayerName(int playerID)
+        {
+            return players.Find(p => p.Id == playerID)?.Name;
         }
 
         private string chatLineToString(ChatLine cl) 

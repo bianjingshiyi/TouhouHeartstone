@@ -31,6 +31,7 @@ namespace Game
             localLanLogic.OnPlayerDataChange += roomPlayerDataChangeEvtHandler;
             localLanLogic.OnRoomDataChange += roomDataChangeEvtHandler;
             localLanLogic.OnReceiveData += roomReceiveEvtHandler;
+            localLanLogic.OnRecvChat += roomReceiveChatEvtHandler;
         }
 
         public event Func<int, object, Task> onReceive;
@@ -70,6 +71,12 @@ namespace Game
         private void onGameStartEvtHandler()
         {
             onGameStart?.Invoke();
+        }
+
+        public event Action<ChatMsg> OnRecvChat;
+        private void roomReceiveChatEvtHandler(ChatMsg obj)
+        {
+            OnRecvChat?.Invoke(obj);
         }
         #endregion
 
@@ -169,6 +176,17 @@ namespace Game
         public Task StartGame()
         {
             return localLanLogic.curNetwork.GameStart();
+        }
+
+        /// <summary>
+        /// 发送聊天消息
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public Task SendChat(int channel, string message)
+        {
+            return localLanLogic.sendChat(channel, message);
         }
 
         /// <summary>
