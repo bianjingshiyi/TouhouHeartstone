@@ -291,7 +291,7 @@ namespace Controllers
                 {
                     deckValid = game.deck.isValidDeckForOnlineGame(deck);
                 }
-#if EDITOR || DEBUG
+#if UNITY_EDITOR || DEBUG
                 deckValid = true;
 #endif
                 return deckValid;
@@ -388,7 +388,7 @@ namespace Controllers
                 {
                     warning = !game.deck.isValidDeckForOnlineGame(deck);
                 }
-#if EDITOR || DEBUG
+#if UNITY_EDITOR || DEBUG
                 warning = false;
 #endif
                 // 如果不允许使用自定义卡牌，则屏蔽拥有自定义卡牌的卡组。
@@ -401,7 +401,7 @@ namespace Controllers
             _ui.displayDeckSelectPanel(viewData);
         }
 #endregion
-#region 属性字段
+        #region 属性字段
         public bool isDisplay => _isDisplay;
         [SerializeField]
         RoomPanel _ui;
@@ -413,8 +413,8 @@ namespace Controllers
         bool _isLocalGame = true;
         [SerializeField]
         int _selectDeckPlayerId = 0;
-#endregion
-#region 内部类
+        #endregion
+        #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
             public DisplayInfo(RoomData roomData, bool isLocalGame)
@@ -425,6 +425,6 @@ namespace Controllers
             public RoomData roomData;
             public bool isLocalGame;
         }
-#endregion
+        #endregion
     }
 }
