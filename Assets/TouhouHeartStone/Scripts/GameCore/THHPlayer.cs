@@ -72,8 +72,6 @@ namespace TouhouHeartstone
                     arg.player.setProp(PLAYER.MAXGEM, 0);
                 if (arg.player.getMaxGem() > 10)
                     arg.player.setProp(PLAYER.MAXGEM, 10);
-                /*if (arg.player.getGem() > arg.player.getMaxGem())
-                    arg.player.setProp(PLAYER.MAXGEM, 0);*/
                 game.logger.logTrace(arg.player + "的法力水晶上限变为" + arg.player.getMaxGem());
                 return Task.CompletedTask;
             });
