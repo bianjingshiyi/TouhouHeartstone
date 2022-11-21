@@ -233,7 +233,8 @@ namespace Game
                         }
                     }
                     if (isBlocked)
-                        continue;
+                        //continue;
+                        break; // 一个动画被阻挡之后，之后的都肯定会被阻挡。
                     try
                     {
                         if (anim is TableAnimation tAnim ? tAnim.update(table, time) : anim.update(table.ui))

@@ -26,6 +26,7 @@ namespace Game
                     table.canControl = false;
                 }
                 table.ui.TurnTipImage.GetComponent<Animator>().Play("Display");
+                table.currentAnimPlayer = eventArg.player;
                 foreach (var player in table.game.players)
                 {
                     table.setSkill(player == table.player ? table.ui.SelfSkill : table.ui.EnemySkill, player.getSkill());
