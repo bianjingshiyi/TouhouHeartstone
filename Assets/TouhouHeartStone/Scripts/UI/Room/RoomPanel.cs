@@ -434,6 +434,22 @@ namespace UI
         {
             onSetPlayerDeck?.Invoke(playerId, cards);
         }
+        /// <summary>
+        /// 当进度条推进时调用此方法
+        /// </summary>
+        /// <param name="loading"></param>
+        public void onDownloading(float loading)
+        {
+            if(loading == 0)
+            {
+                loadingCircle.gameObject.SetActive(true);
+            }
+            loadingCircle.OnLoadingUpdate(loading);
+            if (loading == 1)
+            {
+                loadingCircle.gameObject.SetActive(false);
+            }
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -578,6 +594,9 @@ namespace UI
         {
             _cardPanel.SetActive(false);
         }
+
+
+
         #endregion
         #endregion
         #region 事件
@@ -671,7 +690,8 @@ namespace UI
         private DeckViewPanel _cardViewPanel;
         [SerializeField]
         private ButtonBlack _closeCardPanelButton;
-        
+        [SerializeField]
+        private LoadingCircle loadingCircle;
         #endregion
         void showDeckSelectionPanel(Action<int> onDeckSelect)
         {
