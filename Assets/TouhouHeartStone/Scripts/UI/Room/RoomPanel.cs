@@ -438,13 +438,13 @@ namespace UI
         /// 当进度条推进时调用此方法
         /// </summary>
         /// <param name="loading"></param>
-        public void onDownloading(float loading)
+        public void Downloading(float loading)
         {
             if(loading == 0)
             {
                 loadingCircle.gameObject.SetActive(true);
             }
-            loadingCircle.OnLoadingUpdate(loading);
+            loadingCircle.LoadingUpdate(loading);
             if (loading == 1)
             {
                 loadingCircle.gameObject.SetActive(false);

@@ -8,7 +8,7 @@ namespace UI
     public class LoadingCircle : MonoBehaviour
     {
         #region 私有方法
-        public void OnLoadingUpdate(float loading)
+        public void LoadingUpdate(float loading)
         {
             circle.fillAmount = loading;
         }
