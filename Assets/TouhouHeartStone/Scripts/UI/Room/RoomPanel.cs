@@ -438,7 +438,7 @@ namespace UI
         /// 当进度条推进时调用此方法
         /// </summary>
         /// <param name="loading"></param>
-        public void Downloading(float loading)
+        public void UpdateDownloadingUI(float loading)
         {
             if(loading == 0)
             {
