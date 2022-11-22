@@ -18,8 +18,8 @@ namespace Game
             int newBuffDefineId = 0;
             for (int i = 0; i < cardPool.buffDefineList.Count; i++)
             {
-                if (cardPool.buffDefineList[i].getId() > newBuffDefineId)
-                    newBuffDefineId = cardPool.buffDefineList[i].getId();
+                if (cardPool.buffDefineList[i].id > newBuffDefineId)
+                    newBuffDefineId = cardPool.buffDefineList[i].id;
             }
             newBuffDefineId++;
             GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(newBuffDefineId);
@@ -111,22 +111,11 @@ namespace Game
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
-            var buffSkinList = cardPool.buffSkinList.FindAll(s => s.buffId == buffDefine.getId());
+            var buffSkinList = cardPool.buffSkinList.FindAll(s => s.buffId == buffDefine.id);
             BuffSkin buffSkin = buffSkinList.Find(s => s.language == game.langManager.getLanguage());
             if (buffSkin == null)
                 buffSkin = buffSkinList.Count > 0 ? buffSkinList[0] : null;
             return buffSkin;
-        }
-        public long getCardPoolIdOfBuffDefine(BuffDefine buffDefine)
-        {
-            foreach (var pair in _cardPoolDict)
-            {
-                if (pair.Value.buffDefineList.Contains(buffDefine as GeneratedBuffDefine))
-                {
-                    return pair.Key;
-                }
-            }
-            return 0;
         }
         public BuffSkin[] getBuffSkins(long cardPoolId, int buffId)
         {

@@ -140,7 +140,7 @@ namespace Game
             new EditorTypeInfo() { type = typeof(Pile), typeName = StringTable.EDITOR_TYPE_NAME_PILE, isVarType = true, color = new Color(.6f, .2f, 1, 1) },
             new EditorTypeInfo() { type = typeof(PileNameCollection), typeName = StringTable.EDITOR_TYPE_NAME_PILE_NAME_COLLECTION, isConstType = true, color = new Color(.2f, .1f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(CardDefine), typeName = StringTable.EDITOR_TYPE_NAME_CARD_DEFINE, isVarType = true, color = new Color(.1f, .4f, .8f, 1) },
-            new EditorTypeInfo() { type = typeof(CardReference), typeName = StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE, isConstType = true, color = new Color(.1f, .3f, .6f, 1) },
+            new EditorTypeInfo() { type = typeof(DefineReference), typeName = StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE, isConstType = true, color = new Color(.1f, .3f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(Card), typeName = StringTable.EDITOR_TYPE_NAME_CARD, isVarType = true, color = new Color(.2f, .6f, 1, 1) },
             new EditorTypeInfo() { type = typeof(BuffDefine), typeName = StringTable.EDITOR_TYPE_NAME_BUFF_DEFINE, isVarType = true, color = new Color(.1f, .5f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(Buff), typeName = StringTable.EDITOR_TYPE_NAME_BUFF, isVarType = true, color = new Color(.2f, .8f, 1, 1) },

@@ -23,7 +23,7 @@ namespace Tests
 
             Assert.AreEqual("测试卡组", name);
             Assert.AreEqual("测试卡组", d.Name);
-            Assert.AreEqual(1, d.MasterID);
+            Assert.AreEqual(1, d.MasterCardRef);
 
             GameObject.Destroy(dm.gameObject);
         }
@@ -38,8 +38,8 @@ namespace Tests
             var instID1 = dm.AddCard(deckID, 1000);
             var instID2 = dm.AddCard(deckID, 1001);
 
-            Assert.AreEqual(1000, dm.GetCardID(instID1));
-            Assert.AreEqual(1001, dm.GetCardID(instID2));
+            Assert.AreEqual(1000, dm.GetCardRef(instID1));
+            Assert.AreEqual(1001, dm.GetCardRef(instID2));
         }
 
         [Test]
@@ -56,8 +56,8 @@ namespace Tests
 
             System.Threading.Thread.Sleep(50);
 
-            Assert.AreEqual(1000, dm.GetCardID(instID1));
-            Assert.AreEqual(-1, dm.GetCardID(instID2));
+            Assert.AreEqual(1000, dm.GetCardRef(instID1));
+            Assert.AreEqual(-1, dm.GetCardRef(instID2));
         }
 
         [Test]
@@ -75,8 +75,8 @@ namespace Tests
             System.Threading.Thread.Sleep(50);
 
             Assert.Null(dm.GetDeckName(deckID));
-            Assert.AreEqual(-1, dm.GetCardID(instID1));
-            Assert.AreEqual(-1, dm.GetCardID(instID2));
+            Assert.AreEqual(-1, dm.GetCardRef(instID1));
+            Assert.AreEqual(-1, dm.GetCardRef(instID2));
         }
 
         [Test]
@@ -115,8 +115,8 @@ namespace Tests
             var d2 = decks.Where(d => d.ID == deck2ID).First();
             Assert.AreEqual("测试卡组1", d1.Name);
             Assert.AreEqual("测试卡组2", d2.Name);
-            Assert.AreEqual(1, d1.MasterID);
-            Assert.AreEqual(2, d2.MasterID);
+            Assert.AreEqual(1, d1.MasterCardRef);
+            Assert.AreEqual(2, d2.MasterCardRef);
         }
 
         [Test]
@@ -135,26 +135,26 @@ namespace Tests
             var instID3 = dm.AddCard(deckID, 1003);
             dm.RemoveCard(instID1);
 
-            Assert.AreEqual(-1, dm.GetCardID(instID1));
-            Assert.AreEqual(1003, dm.GetCardID(instID3));
+            Assert.AreEqual(-1, dm.GetCardRef(instID1));
+            Assert.AreEqual(1003, dm.GetCardRef(instID3));
 
             // 尝试回滚
             dm.Rollback();
-            Assert.AreEqual(1000, dm.GetCardID(instID1));
-            Assert.AreEqual(-1, dm.GetCardID(instID3));
+            Assert.AreEqual(1000, dm.GetCardRef(instID1));
+            Assert.AreEqual(-1, dm.GetCardRef(instID3));
 
             // 进入事务
             dm.EnterTransaction();
             instID3 = dm.AddCard(deckID, 1003);
             dm.RemoveCard(instID2);
 
-            Assert.AreEqual(-1, dm.GetCardID(instID2));
-            Assert.AreEqual(1003, dm.GetCardID(instID3));
+            Assert.AreEqual(-1, dm.GetCardRef(instID2));
+            Assert.AreEqual(1003, dm.GetCardRef(instID3));
 
             // 提交
             dm.Commit();
-            Assert.AreEqual(-1, dm.GetCardID(instID2));
-            Assert.AreEqual(1003, dm.GetCardID(instID3));
+            Assert.AreEqual(-1, dm.GetCardRef(instID2));
+            Assert.AreEqual(1003, dm.GetCardRef(instID3));
         }
 
         private static DeckManager createDM()

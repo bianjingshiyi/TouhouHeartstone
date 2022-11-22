@@ -21,21 +21,21 @@ namespace Game
         /// 获取单个卡牌定义
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
-        public static CardDefine getCardDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] CardReference cardRef)
+        public static CardDefine getCardDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] DefineReference cardRef)
         {
-            return game.getDefine(cardRef.cardId);
+            return game.getDefine(cardRef.cardPoolId, cardRef.id);
         }
         /// 获取卡牌定义列表
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
-        public static CardDefine[] getCardDefineArray(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] CardReference[] cardRefs)
+        public static CardDefine[] getCardDefineArray(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] DefineReference[] cardRefs)
         {
             if (cardRefs == null || cardRefs.Length < 1)
                 return new CardDefine[0];
             CardDefine[] cardDefines = new CardDefine[cardRefs.Length];
             for (int i = 0; i < cardRefs.Length; i++)
             {
-                cardDefines[i] = game.getDefine(cardRefs[i].cardId);
+                cardDefines[i] = game.getDefine(cardRefs[i].cardPoolId, cardRefs[i].id);
             }
             return cardDefines;
         }
@@ -68,7 +68,7 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE__IS_DEFINE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardDefine(
-            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card, 
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
             switch (select)
@@ -205,7 +205,7 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardShuffleToDeck(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player, 
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
             Card createdCard = game.createCard(cardDefine);
@@ -755,7 +755,7 @@ namespace Game
         public const string EDITOR_NODE_TRIGGER_BATTLECRY = "触发卡牌宣言";
         [ActionNodeMethod(EDITOR_NODE_TRIGGER_BATTLECRY, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         public static async Task triggerActiveEffect(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
             foreach (var card in cards)
@@ -770,7 +770,7 @@ namespace Game
         public const string EDITOR_NODE_TRIGGER_DEATHRATTLE = "触发卡牌遗言";
         [ActionNodeMethod(EDITOR_NODE_TRIGGER_DEATHRATTLE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         public static async Task triggerDeathRattles(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
             foreach (var card in cards)
@@ -835,7 +835,7 @@ namespace Game
            [ActionNodeParam(EDITOR_NODE_NAME_GET_INT_X, isConst: false)] int countX,
            [ActionNodeParam(EDITOR_NODE_NAME_GET_INT_Y, isConst: false)] int countY)
         {
-            return game.randomInt(countX,countY);
+            return game.randomInt(countX, countY);
         }
         /// <summary>
         /// 强制攻击目标
@@ -845,13 +845,13 @@ namespace Game
         public const string EDITOR_NODE_FORCE_ATTACKER = "发动攻击的卡牌";
         [ActionNodeMethod(EDITOR_NODE_FORCE_ATTACK, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         public static async Task forceAttackTargets(CardEngine game,
-            [ActionNodeParam(EDITOR_NODE_FORCE_ATTACKER)]Card[] cards,
+            [ActionNodeParam(EDITOR_NODE_FORCE_ATTACKER)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
             foreach (var card in cards)
             {
                 foreach (var target in targets)
-                { 
+                {
                     await card.forceAttack(game, card.getOwner(), target);
                 }
             }
@@ -918,5 +918,5 @@ namespace Game
 
 
 
- 
+
 

@@ -6,6 +6,7 @@ using System.Data.Common;
 using System;
 using System.IO.Compression;
 using System.IO;
+using TouhouCardEngine;
 
 namespace Game
 {
@@ -31,19 +32,28 @@ namespace Game
             );", null);
 
             // 数据库更新定义
-            var hasRow = db.Read<bool>($@"SELECT sql FROM sqlite_master WHERE type='table' AND name='{tableDeck}';",
-            (r) =>
+            if (!db.Read<bool>($@"SELECT sql FROM sqlite_master WHERE type='table' AND name='{tableDeck}';", r =>
             {
                 if (r.HasRows && r.Read())
                 {
                     return r.Get<string>("sql").Contains("masterID");
                 }
                 return false;
-            });
-
-            if (!hasRow)
+            }))
+            {
                 db.Execute($@"ALTER TABLE {tableDeck} ADD COLUMN masterID INTEGER;", null);
-
+            }
+            if (!db.Read<bool>($@"SELECT sql FROM sqlite_master WHERE type='table' AND name='{tableDeck}';", r =>
+            {
+                if (r.HasRows && r.Read())
+                {
+                    return r.Get<string>("sql").Contains("masterCardPoolID");
+                }
+                return false;
+            }))
+            {
+                db.Execute($@"ALTER TABLE {tableDeck} ADD COLUMN masterCardPoolID INTEGER;", null);
+            }
 
             db.Execute($@"
             CREATE TABLE IF NOT EXISTS {tableCards}(
@@ -51,6 +61,18 @@ namespace Game
                 deckID INTEGER REFERENCES deck(deckID) ,
                 cardID INTEGER
             );", null);
+
+            if (!db.Read<bool>($@"SELECT sql FROM sqlite_master WHERE type='table' AND name='{tableCards}';", r =>
+            {
+                if (r.HasRows && r.Read())
+                {
+                    return r.Get<string>("sql").Contains("cardPoolID");
+                }
+                return false;
+            }))
+            {
+                db.Execute($@"ALTER TABLE {tableCards} ADD COLUMN cardPoolID INTEGER;", null);
+            }
         }
 
         /// <summary>
@@ -58,9 +80,12 @@ namespace Game
         /// </summary>
         /// <param name="name">牌组名称</param>
         /// <returns>新的牌组的ID</returns>
-        public long CreateDeck(string name, int masterID)
+        public long CreateDeck(string name, DefineReference masterCardRef)
         {
-            db.Execute($@"INSERT INTO {tableDeck} (name, masterID) VALUES (?,?)", null, name, masterID);
+            db.Execute($@"INSERT INTO {tableDeck} (name, masterID, masterCardPoolID) VALUES (?,?,?)", null,
+                name,
+                masterCardRef.id,
+                masterCardRef.cardPoolId);
             return db.GetLastInsertID(tableDeck);
         }
 
@@ -69,9 +94,13 @@ namespace Game
         /// </summary>
         /// <param name="name">牌组名称</param>
         /// <returns>新的牌组的ID</returns>
-        public long CreateDeck(long deckID, string name, int masterID)
+        public long CreateDeck(long deckID, string name, DefineReference masterCardRef)
         {
-            db.Execute($@"INSERT INTO {tableDeck} (deckID, name, masterID) VALUES (?, ?,?)", null, deckID, name, masterID);
+            db.Execute($@"INSERT INTO {tableDeck} (deckID, name, masterID, masterCardPoolID) VALUES (?, ?, ?, ?)", null,
+                deckID,
+                name,
+                masterCardRef.id,
+                masterCardRef.cardPoolId);
             return db.GetLastInsertID(tableDeck);
         }
 
@@ -80,14 +109,14 @@ namespace Game
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public int GetDeckMasterID(long id)
+        public DefineReference GetDeckMasterID(long id)
         {
-            return db.Read<int>($@"SELECT masterID FROM {tableDeck} WHERE deckID = ?", (r) =>
+            return db.Read<DefineReference>($@"SELECT masterID, masterCardPoolID FROM {tableDeck} WHERE deckID = ?", r =>
             {
                 if (r.HasRows)
                 {
                     r.Read();
-                    return (int)r.Get<long>("masterID");
+                    return new DefineReference(r.Get<long>("masterCardPoolID"), (int)r.Get<long>("masterID"));
                 }
                 return null;
             }, id);
@@ -97,10 +126,11 @@ namespace Game
         /// 设置牌组的MasterCardID
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="masterID"></param>
-        public void SetDeckMasterID(long id, int masterID)
+        /// <param name="masterCardRef"></param>
+        public void SetDeckMasterID(long id, DefineReference masterCardRef)
         {
-            db.Execute($@"UPDATE {tableDeck} SET masterID = ? WHERE deckID = ?", null, masterID, id);
+            db.Execute($@"UPDATE {tableDeck} SET masterID = ? WHERE deckID = ?", null, masterCardRef.id, id);
+            db.Execute($@"UPDATE {tableDeck} SET masterCardPoolID = ? WHERE deckID = ?", null, masterCardRef.cardPoolId, id);
         }
 
         /// <summary>
@@ -117,7 +147,6 @@ namespace Game
                     r.Read();
                     return r.Get<string>("name");
                 }
-
                 return null;
             }, id);
         }
@@ -182,7 +211,7 @@ namespace Game
                         list.Add(new DeckDefine()
                         {
                             ID = r.Get<long>("deckID"),
-                            MasterID = (int)r.Get<long>("masterID"),
+                            MasterCardRef = new DefineReference(r.Get<long>("masterCardPoolID"), (int)r.Get<long>("masterID")),
                             Name = r.Get<string>("name")
                         });
                     }
@@ -205,7 +234,7 @@ namespace Game
                 return new DeckDefine()
                 {
                     ID = r.Get<long>("deckID"),
-                    MasterID = (int)r.Get<long>("masterID"),
+                    MasterCardRef = new DefineReference(r.Get<long>("masterCardPoolID"), (int)r.Get<long>("masterID")),
                     Name = r.Get<string>("name")
                 };
             }, id);
@@ -215,19 +244,19 @@ namespace Game
         /// 将指定的卡插入卡组中
         /// </summary>
         /// <param name="deckID">卡组ID</param>
-        /// <param name="cardID">卡片ID</param>
+        /// <param name="cardRef">卡片ID</param>
         /// <returns>卡片引用ID</returns>
-        public long AddCard(long deckID, long cardID)
+        public long AddCard(long deckID, DefineReference cardRef)
         {
-            string query = $@"INSERT INTO {tableCards} (deckID, cardID) VALUES (?,?)";
+            string query = $@"INSERT INTO {tableCards} (deckID, cardID, cardPoolID) VALUES (?, ?, ?)";
 
             if (tr == null)
             {
-                db.Execute(query, null, deckID, cardID);
+                db.Execute(query, null, deckID, cardRef.id, cardRef.cardPoolId);
             }
             else
             {
-                using (var cmd = db.CreateCommand(query, tr, deckID, cardID))
+                using (var cmd = db.CreateCommand(query, tr, deckID, cardRef.id, cardRef.cardPoolId))
                 {
                     cmd.ExecuteNonQuery();
                 }
@@ -241,16 +270,16 @@ namespace Game
         /// </summary>
         /// <param name="id">卡片引用ID</param>
         /// <returns>卡片定义ID</returns>
-        public long GetCardID(long id)
+        public DefineReference GetCardRef(long id)
         {
-            return db.Read<Int64>($@"SELECT cardID FROM {tableCards} WHERE ID = ?", (r) =>
+            return db.Read<DefineReference>($@"SELECT cardPoolID, cardID FROM {tableCards} WHERE ID = ?", r =>
             {
                 if (r.HasRows)
                 {
                     r.Read();
-                    return r.Get<Int64>("cardID");
+                    return new DefineReference(r.Get<long>("cardPoolID"), (int)r.Get<long>("cardID"));
                 }
-                return (Int64)(-1);
+                return null;
             }, id);
         }
 
@@ -259,17 +288,16 @@ namespace Game
         /// </summary>
         /// <param name="deckID">卡组ID</param>
         /// <returns>引用ID-定义ID 键值对</returns>
-        public Dictionary<long, long> GetDeckCards(long deckID)
+        public Dictionary<long, DefineReference> GetDeckCards(long deckID)
         {
-            return db.Read<Dictionary<long, long>>($@"SELECT cardID, ID FROM {tableCards} WHERE deckID = ?", (r) =>
+            return db.Read<Dictionary<long, DefineReference>>($@"SELECT cardID, ID FROM {tableCards} WHERE deckID = ?", (r) =>
             {
-                Dictionary<long, long> dict = new Dictionary<long, long>();
+                Dictionary<long, DefineReference> dict = new Dictionary<long, DefineReference>();
                 if (r.HasRows)
                 {
                     while (r.Read())
-                        dict.Add(r.Get<long>("ID"), r.Get<long>("cardID"));
+                        dict.Add(r.Get<long>("ID"), new DefineReference(r.Get<long>("cardPoolID"), (int)r.Get<long>("cardID")));
                 }
-
                 return dict;
             }, deckID);
         }
@@ -369,7 +397,11 @@ namespace Game
         {
             return Convert.ToBase64String(Deck2ByteV2(deck));
         }
-
+        public string DeckToString(DefineReference[] deck)
+        {
+            //TODO:实现该方法
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// Deck转Byte，V1版本
         /// </summary>
@@ -377,7 +409,7 @@ namespace Game
         /// <returns></returns>
         private byte[] Deck2ByteV1(int[] deck)
         {
-            byte[] dataBytes = new byte[(deck.Length) * sizeof(int)];
+            byte[] dataBytes = new byte[deck.Length * sizeof(int)];
 
             int offset = 0;
             foreach (var item in deck)
@@ -437,7 +469,11 @@ namespace Game
             var compressdData = Convert.FromBase64String(str);
             return Byte2Deck(compressdData);
         }
-
+        public DefineReference[] StringToDeckWithCardPoolID(string str)
+        {
+            //TODO:实现该方法
+            throw new NotImplementedException();
+        }
         /// <summary>
         /// Byte转Deck
         /// </summary>
@@ -557,6 +593,6 @@ namespace Game
     {
         public long ID;
         public string Name;
-        public int MasterID;
+        public DefineReference MasterCardRef;
     }
 }

@@ -512,7 +512,7 @@ namespace Game
             }
             else
             {
-                master.Image.sprite = await getManager<CardManager>().loadCardImage(card.define.id);
+                master.Image.sprite = await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(card.define), card.define.id);
             }
         }
 
@@ -557,7 +557,7 @@ namespace Game
             }
             else
             {
-                item.Image.sprite = await getManager<CardManager>().loadCardImage(card.define.id);
+                item.Image.sprite = await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(card.define), card.define.id);
             }
         }
         private void onItemPointerExit(Item item, PointerEventData pointer)
@@ -1056,7 +1056,7 @@ namespace Game
             ui.setCard(game, card, skin);
             if (skin.image == null)
             {
-                ui.setImage(await getManager<CardManager>().loadCardImage(card.define.id));
+                ui.setImage(await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(card.define), card.define.id));
             }
             //if (card.define.type == DEFINE.SERVANT)
             //{
@@ -1102,7 +1102,7 @@ namespace Game
             ui.setCard(define, skin);
             if (skin.image == null)
             {
-                ui.setImage(await getManager<CardManager>().loadCardImage(define.id));
+                ui.setImage(await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(define), define.id));
             }
             //if (define.type == DEFINE.SERVANT)
             //{
@@ -1350,7 +1350,7 @@ namespace Game
                 servant.image.sprite = skin.image;
             }
             else
-                servant.image.sprite = await getManager<CardManager>().loadCardImage(card.define.id);
+                servant.image.sprite = await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(card.define), card.define.id);
         }
         [SerializeField]
         BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
@@ -1577,7 +1577,7 @@ namespace Game
                 servant.image.sprite = skin.image;
             }
             else
-                servant.image.sprite = await getManager<CardManager>().loadCardImage(cardDefine.id);
+                servant.image.sprite = await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(cardDefine), cardDefine.id);
         }
         /// <summary>
         /// 从随从获取对应的卡
@@ -1660,7 +1660,7 @@ namespace Game
 
 
 
-        public void displayDiscoverDialog(int[] cardIdArray, string title)
+        public void displayDiscoverDialog(DefineReference[] cardRefs, string title)
         {
             ui.Discover.display();
             if (string.IsNullOrEmpty(title))
@@ -1669,7 +1669,32 @@ namespace Game
                 ui.Discover.Text.text = title;
             LayoutRebuilder.ForceRebuildLayoutImmediate(ui.Discover.Text.rectTransform);
             ui.Discover.HoriCardList.clearItems();
-            foreach (var cardId in cardIdArray)
+            foreach (var cardRef in cardRefs)
+            {
+                var item = ui.Discover.HoriCardList.addItem();
+                var cardDefine = game.getDefine(cardRef.cardPoolId, cardRef.id);
+                setCard(item.Card, cardDefine, cardDefine.getCost(), cardDefine.getAttack(), cardDefine.getLife(),
+                    true);
+                item.asButton.onClick.set(() =>
+                {
+                    game.answers.answer(player.id, new DiscoverResponse()
+                    {
+                        cardId = cardDefine.id
+                    });
+                    closeDiscoverDialog();
+                });
+            }
+        }
+        public void displayDiscoverDialog(int[] cardIds, string title)
+        {
+            ui.Discover.display();
+            if (string.IsNullOrEmpty(title))
+                ui.Discover.Text.text = StringTable.HINT_SELECT_A_CARD;
+            else
+                ui.Discover.Text.text = title;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(ui.Discover.Text.rectTransform);
+            ui.Discover.HoriCardList.clearItems();
+            foreach (var cardId in cardIds)
             {
                 var item = ui.Discover.HoriCardList.addItem();
                 var card = game.getCard(cardId);
@@ -1681,20 +1706,6 @@ namespace Game
                         game.answers.answer(player.id, new DiscoverResponse()
                         {
                             cardId = card.id
-                        });
-                        closeDiscoverDialog();
-                    });
-                }
-                else
-                {
-                    var cardDefine = game.getDefine(cardId);
-                    setCard(item.Card, cardDefine, cardDefine.getCost(), cardDefine.getAttack(), cardDefine.getLife(),
-                        true);
-                    item.asButton.onClick.set(() =>
-                    {
-                        game.answers.answer(player.id, new DiscoverResponse()
-                        {
-                            cardId = cardDefine.id
                         });
                         closeDiscoverDialog();
                     });
@@ -1717,7 +1728,11 @@ namespace Game
                 ui.Discover.ButtonButtonBlack.asButton.setText(lang._(TAB_HIDE));
                 ui.Discover.PanelImage.display();
                 LayoutRebuilder.ForceRebuildLayoutImmediate(ui.Discover.Text.rectTransform);
-                displayDiscoverDialog(game.answers.getRequest<DiscoverRequest>(player.id).cardIdArray, ui.Discover.Text.text);
+                DiscoverRequest request = game.answers.getRequest<DiscoverRequest>(player.id);
+                if (request.cardIdArray != null)
+                    displayDiscoverDialog(request.cardIdArray, ui.Discover.Text.text);
+                else
+                    displayDiscoverDialog(request.cardRefArray, ui.Discover.Text.text);
             }
         }
         public void closeDiscoverDialog()
@@ -1831,7 +1846,7 @@ namespace Game
         #region Skin
         public CardSkinData getSkin(Card card)
         {
-            CardSkinData skin = getManager<CardManager>().getCardSkin(card.define.id);
+            CardSkinData skin = getManager<CardManager>().getCardSkin(card.define);
             if (skin != null)
                 return skin;
             else
@@ -1848,7 +1863,7 @@ namespace Game
         }
         public CardSkinData getSkin(CardDefine define)
         {
-            CardSkinData skin = getManager<CardManager>().getCardSkin(define.id);
+            CardSkinData skin = getManager<CardManager>().getCardSkin(define);
             if (skin != null)
                 return skin;
             else

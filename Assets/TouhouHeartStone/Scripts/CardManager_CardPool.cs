@@ -479,6 +479,32 @@ namespace Game
                 return false;
             }
         }
+        public Dictionary<long, CardPool> getCardPools()
+        {
+            Dictionary<long, CardPool> cardPoolDict = new Dictionary<long, CardPool>(_cardPoolDict);
+            cardPoolDict.Add(0, new CardPool()
+            {
+                cardDefineList = defineDic.Values.ToList(),
+                cardSkinList = skinDic.Values.ToList()
+            });
+            return cardPoolDict;
+        }
+        public Dictionary<long, CardPool> getCardPools(IEnumerable<long> cardPoolsId)
+        {
+            Dictionary<long, CardPool> cardPoolDict = new Dictionary<long, CardPool>();
+            foreach (long cardPoolId in cardPoolsId)
+            {
+                if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
+                    cardPoolDict.Add(cardPoolId, cardPool);
+            }
+            cardPoolDict.Add(0, new CardPool()
+            {
+                cardDefineList = defineDic.Values.ToList(),
+                cardSkinList = skinDic.Values.ToList()
+            });
+            return cardPoolDict;
+        }
+
         public bool removeCardPool(long cardPoolId)
         {
             if (_cardPoolDict.ContainsKey(cardPoolId))
@@ -517,22 +543,28 @@ namespace Game
             }
             return (defineList.ToArray(), skinList.ToArray());
         }
-        public async Task<CardDefine[]> reloadCardPoolsAndGetCardDefinesAsync(IEnumerable<long> cardPoolsId)
+        public async Task<Dictionary<long, Dictionary<int, CardDefine>>> reloadCardPoolsAndGetCardDefinesAsync(IEnumerable<long> cardPoolsId)
         {
-            List<CardDefine> cardDefineList = new List<CardDefine>();
+            Dictionary<long, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<long, Dictionary<int, CardDefine>>();
             var cardPoolInfoDict = await loadCardPoolInfosAsync();
             foreach (var cardPoolId in cardPoolsId)
             {
+                if (cardPoolId == 0)
+                {
+                    //内置卡牌
+                    cardPoolDict.Add(0, new Dictionary<int, CardDefine>(defineDic));
+                    continue;
+                }
                 foreach (var pair in cardPoolInfoDict)
                 {
                     if (pair.Value.cardPoolId == cardPoolId)
                     {
                         var result = await loadCardPool(pair.Key);
-                        cardDefineList.AddRange(result.cardPool.cardDefineList);
+                        cardPoolDict.Add(result.cardPoolInfo.cardPoolId, result.cardPool.cardDefineList.ToDictionary(c => c.id));
                     }
                 }
             }
-            return cardDefineList.ToArray();
+            return cardPoolDict;
         }
         public void createCard(CardPoolInfo cardPoolInfo, out CardDefine cardDefine, out CardSkinData cardSkin)
         {
@@ -734,9 +766,9 @@ namespace Game
             }
             return sprite;
         }
-        public Task<Sprite> loadCardImage(int cardId)
+        public Task<Sprite> loadCardImage(long cardPoolId, int cardId)
         {
-            CardSkinData skin = getCardSkin(cardId);
+            CardSkinData skin = getCardSkin(cardPoolId, cardId);
             if (skin.image != null)
                 return Task.FromResult(skin.image);
             else
@@ -780,27 +812,28 @@ namespace Game
             dirInfo = dirInfo.Parent;
             return dirInfo.FullName;
         }
-        public bool tryGetCardSkin(int cardId, out CardSkinData skin)
+        public bool tryGetCardSkin(long cardPoolId, int cardId, out CardSkinData skin)
         {
             skin = null;
-            foreach (var cardPool in _cardPoolDict.Values)
+            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
             {
                 //查找所有皮肤
                 var skinGroups = cardPool.cardSkinList.Where(s => s.id == cardId).GroupBy(s => s.skinId).OrderBy(g => g.Key);
-                if (skinGroups.Count() < 1)
-                    continue;
-                var firstSkinGroup = skinGroups.First();
-                //如果存在语言相同的皮肤，则返回
-                skin = firstSkinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
-                if (skin != null)
+                if (skinGroups.Count() > 0)
+                {
+                    var firstSkinGroup = skinGroups.First();
+                    //如果存在语言相同的皮肤，则返回
+                    skin = firstSkinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
+                    if (skin != null)
+                        return true;
+                    //如果存在默认语言的皮肤，则返回
+                    skin = firstSkinGroup.FirstOrDefault(s => s.language == game.langManager.getDefaultLanguage());
+                    if (skin != null)
+                        return true;
+                    //都没有，随便返回第一个
+                    skin = firstSkinGroup.First();
                     return true;
-                //如果存在默认语言的皮肤，则返回
-                skin = firstSkinGroup.FirstOrDefault(s => s.language == game.langManager.getDefaultLanguage());
-                if (skin != null)
-                    return true;
-                //都没有，随便返回第一个
-                skin = firstSkinGroup.First();
-                return true;
+                }
             }
             if (tempSkinDic.ContainsKey(cardId))
             {
@@ -892,6 +925,14 @@ namespace Game
             {
                 SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
                 cardPool = serializableCardPool.toCardPool(game.editor.getTypeByName);
+                for (int i = 0; i < cardPool.cardDefineList.Count; i++)
+                {
+                    cardPool.cardDefineList[i].cardPoolId = cardPoolInfo.cardPoolId;
+                }
+                for (int i = 0; i < cardPool.buffDefineList.Count; i++)
+                {
+                    cardPool.buffDefineList[i].cardPoolId = cardPoolInfo.cardPoolId;
+                }
             }
             catch (Exception e)
             {

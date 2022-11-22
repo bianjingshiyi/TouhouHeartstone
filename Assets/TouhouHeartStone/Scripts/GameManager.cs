@@ -67,10 +67,10 @@ namespace Game
         Deck _testDeck;
         [CardDefineID]
         [SerializeField]
-        int[] _deck = new int[31];
+        DefineReference[] _deck = new DefineReference[31];
 
         [SerializeField] bool _dummyAI = false;
-        public int[] deck
+        public DefineReference[] deck
         {
             get { return _deck; }
             set { _deck = value; }
@@ -89,9 +89,9 @@ namespace Game
         private void Start()
         {
             if (_useDefaultDeck && _defaultDeck != null)
-                _deck = _defaultDeck.toIdArray();
+                _deck = _defaultDeck.toCardRefArray();
             if (_useTestDeck && _testDeck != null)
-                _deck = _testDeck.toIdArray();
+                _deck = _testDeck.toCardRefArray();
         }
         private void Update()
         {
@@ -220,24 +220,32 @@ namespace Game
             }
 #endif
             //加载外部卡牌
-            HashSet<long> cardPoolIdSet = new HashSet<long>();
+            HashSet<long> cardPoolIdSet = new HashSet<long>() { 0 };
             foreach (var player in playerList)
             {
                 Deck deck = player.getDeck();
-                foreach (var cardRef in deck.toRefArray(true))
+                foreach (var cardRef in deck.toCardRefArray(true))
                 {
-                    if (CardDefineHelper.isExternalCard(cardRef.cardId) &&
+                    if (CardDefineHelper.isExternalCard(cardRef.id) &&
                         !cardPoolIdSet.Contains(cardRef.cardPoolId))
                     {
                         cardPoolIdSet.Add(cardRef.cardPoolId);
                     }
                 }
             }
-            CardDefine[] externalCards = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
-            await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
+            Dictionary<long, Dictionary<int, CardDefine>> cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
+            await game.init(
+                new Assembly[] 
+                { 
+                    typeof(CardEngine).Assembly, 
+                    typeof(HearthStoneRule).Assembly,
+                    typeof(EffectEditorLibrary).Assembly 
+                },
                 new HearthStoneRule(
-                    getManager<CardManager>().GetCardDefines().Concat(externalCards),
-                    getManager<CardManager>().getBuffDefines(cardPoolIdSet)),
+                    cardDict,
+                    getManager<CardManager>().getCardPools(cardPoolIdSet).ToDictionary(
+                        p => p.Key,
+                        p => p.Value.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine))),
                 option,
                 playerList.ToArray());
             return game;
@@ -250,7 +258,9 @@ namespace Game
                 _replaySystem.startRecord(game, game.players.Select(p =>
                 {
                     RoomPlayerData playerData = new RoomPlayerData(p.id, p.name, RoomPlayerType.human);
-                    playerData.setDeck(new Deck(p.getMaster().define.id, p.getDeck().Select(c => c.define.id)));
+                    playerData.setDeck(new Deck(
+                        new DefineReference(game.getCardPoolIdOfDefine(p.getMaster().define), p.getMaster().define.id),
+                        p.getDeck().Select(c => new DefineReference(game.getCardPoolIdOfDefine(c.define), c.define.id))));
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();
@@ -299,21 +309,21 @@ namespace Game
         }
         public event Action onGameEnd;
         #endregion
-        private void checkDeckValid(CardEngine game, int[] deck)
+        private void checkDeckValid(CardEngine game, DefineReference[] deck)
         {
             if (deck == null)
                 return;
-            if (game.getDefine(deck[0]) == null)
+            if (game.getDefine(deck[0].cardPoolId, deck[0].id) == null)
             {
                 UberDebug.LogError("非法角色ID" + deck[0] + "被替换为灵梦");
-                deck[0] = game.getDefine<Reimu>().id;
+                deck[0] = new DefineReference(0, Reimu.ID);
             }
             for (int i = 1; i < deck.Length; i++)
             {
-                if (game.getDefine(deck[i]) == null)
+                if (game.getDefine(deck[i].cardPoolId, deck[i].id) == null)
                 {
                     UberDebug.LogError("非法随从ID" + deck[i] + "被替换为小野菊");
-                    deck[i] = game.getDefine<RashFairy>().id;
+                    deck[i] = new DefineReference(0, RashFairy.ID);
                 }
             }
         }

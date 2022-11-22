@@ -351,22 +351,22 @@ namespace Controllers
         {
             for (int i = 0; i < _currentRoomData.playerDataList.Count; i++)
             {
-                var player = _currentRoomData.playerDataList[i];
+                RoomPlayerData player = _currentRoomData.playerDataList[i];
                 if (player.id == playerId)
                 {
                     Deck deck = player.getDeck();
                     if (deck == null)
                     {
-                        deck = new Deck(cardsId[0], cardsId.Skip(1));
+                        deck = new Deck(cardRefs[0], cardRefs.Skip(1));
                     }
                     else
                     {
-                        deck.masterId = cardsId[0];
-                        deck.setCards(cardsId.Skip(1));
+                        deck.masterCardRef = cardRefs[0];
+                        deck.setCards(cardRefs.Skip(1));
                     }
                     player.setDeck(deck);
                     // 触发onSetPlayerDeck回调。
-                    _ui.setPlayerDeck(playerId, cardsId);
+                    _ui.setPlayerDeck(playerId, cardRefs);
 
                     if (player.type == RoomPlayerType.ai)
                     {
@@ -484,7 +484,7 @@ namespace Controllers
                 {
                     viewData[i].characterName = string.Empty;
                 }
-                else if (game.card.tryGetCardSkin(deck.masterId, out CardSkinData skin))
+                else if (game.card.tryGetCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.id, out CardSkinData skin))
                 {
                     viewData[i].characterName = skin.name;
                 }
@@ -515,7 +515,7 @@ namespace Controllers
                 long[] cardPoolList = deck.getCardPools();
 
                 viewData[i].name = deck.name;
-                viewData[i].image = await game.card.loadCardImage(deck.masterId);
+                viewData[i].image = await game.card.loadCardImage(deck.masterCardRef.cardPoolId, deck.masterCardRef.id);
 
                 bool warning = false;
                 // 判断牌组是否合法。

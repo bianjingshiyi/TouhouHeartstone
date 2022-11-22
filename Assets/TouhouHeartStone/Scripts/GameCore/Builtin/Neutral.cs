@@ -1383,7 +1383,12 @@ namespace TouhouHeartstone.Builtin
                 async (g1, c1, p) =>
                 {
                     await c1.getOwner().addRandomCardToHand(g1,
-                        g1.getDefines(new int[] {Beetle_N.ID, Moth_N.ID, Spider_N.ID}));
+                        g1.getDefines(new DefineReference[]
+                        {
+                            new DefineReference(0, Beetle_N.ID),
+                            new DefineReference(0, Moth_N.ID),
+                            new DefineReference(0, Spider_N.ID)
+                        }));
                 })
         };
 

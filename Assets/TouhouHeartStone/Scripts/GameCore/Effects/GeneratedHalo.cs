@@ -149,7 +149,7 @@ namespace TouhouHeartstone
             if (buff != null)
             {
                 //触发器属于Buff
-                if (buff is GeneratedBuff generatedBuff && (game as CardEngine).getBuffDefine(generatedBuff.defineId) is GeneratedBuffDefine generatedBuffDefine)
+                if (buff is GeneratedBuff generatedBuff && (game as CardEngine).getBuffDefine(generatedBuff.defineRef) is GeneratedBuffDefine generatedBuffDefine)
                 {
                     //GeneratedBuff至少能知道自己的效果所在索引，所以能稍微规避一下这个问题
                     (buff as Buff).setProp(game as CardEngine, "HaloMoveCardTrigger" + generatedBuffDefine.effectList.IndexOf(this), trigger);
@@ -171,7 +171,7 @@ namespace TouhouHeartstone
             if (buff != null)
             {
                 //触发器属于Buff
-                if (buff is GeneratedBuff generatedBuff && (game as CardEngine).getBuffDefine(generatedBuff.defineId) is GeneratedBuffDefine generatedBuffDefine)
+                if (buff is GeneratedBuff generatedBuff && (game as CardEngine).getBuffDefine(generatedBuff.defineRef) is GeneratedBuffDefine generatedBuffDefine)
                 {
                     //GeneratedBuff至少能知道自己的效果所在索引，所以能稍微规避一下这个问题
                     return (buff as Buff).getProp<Trigger<Pile.MoveCardEventArg>>(game as CardEngine, "HaloMoveCardTrigger" + generatedBuffDefine.effectList.IndexOf(this));

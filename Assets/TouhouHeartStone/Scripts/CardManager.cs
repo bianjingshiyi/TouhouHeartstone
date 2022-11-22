@@ -530,19 +530,30 @@ namespace Game
             //TODO 58：暂时只判断ID是不是负数，经典卡牌也算是负数，以后改一下
             return cardId < 0;
         }
-        public CardDefine[] getCardDefines(long cardPoolId)
+        public Dictionary<long, Dictionary<int, CardDefine>> getCardDefines(params long[] cardPoolsId)
         {
-            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
+            Dictionary<long, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<long, Dictionary<int, CardDefine>>();
+            for (int i = 0; i < cardPoolsId.Length; i++)
             {
-                //已经加载卡池
-                return cardPool.cardDefineList.ToArray();
+                if (_cardPoolDict.TryGetValue(cardPoolsId[i], out var cardPool))
+                {
+                    //已经加载卡池
+                    cardPoolDict.Add(cardPoolsId[i], cardPool.cardDefineList.ToDictionary(c => c.id));
+                }
             }
-            else
-            {
-                return new CardDefine[0];
-            }
+            return cardPoolDict;
         }
-        public CardDefine[] getCardDefines(Predicate<CardDefine> filter = null)
+        public Dictionary<long, Dictionary<int, CardDefine>> getCardDefines()
+        {
+            Dictionary<long, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<long, Dictionary<int, CardDefine>>();
+            foreach (var cardPool in _cardPoolDict)
+            {
+                cardPoolDict.Add(cardPool.Key, cardPool.Value.cardDefineList.ToDictionary(c => c.id));
+            }
+            cardPoolDict.Add(0, new Dictionary<int, CardDefine>(defineDic));
+            return cardPoolDict;
+        }
+        public CardDefine[] findCardDefines(Predicate<CardDefine> filter = null)
         {
             List<CardDefine> cardDefineList = new List<CardDefine>();
             //反射卡牌
@@ -596,10 +607,22 @@ namespace Game
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public CardSkinData getCardSkin(int cardId)
+        public CardSkinData getCardSkin(long cardPoolId, int cardId)
         {
-            if (tryGetCardSkin(cardId, out CardSkinData skin))
+            if (tryGetCardSkin(cardPoolId, cardId, out CardSkinData skin))
                 return skin;
+            return null;
+        }
+        public CardSkinData getCardSkin(CardDefine cardDefine)
+        {
+            foreach (var cardPool in _cardPoolDict)
+            {
+                if (cardPool.Value.cardDefineList.Contains(cardDefine))
+                {
+                    if (tryGetCardSkin(cardPool.Key, cardDefine.id, out CardSkinData skin))
+                        return skin;
+                }
+            }
             return null;
         }
         Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();

@@ -9,17 +9,17 @@ namespace TouhouHeartstone
     public class Deck
     {
         #region 公有方法
-        public Deck(int id, string name, int masterId, IEnumerable<int> cardsId)
+        public Deck(int id, string name, DefineReference masterCardRef, IEnumerable<DefineReference> cardRefs)
         {
             this.id = id;
             this.name = name;
-            this.masterId = masterId;
-            addCards(cardsId);
+            this.masterCardRef = masterCardRef;
+            addCards(cardRefs);
         }
-        public Deck(int masterId, IEnumerable<int> cardsId) : this(0, null, masterId, cardsId)
+        public Deck(DefineReference masterCardRef, IEnumerable<DefineReference> cardRefs) : this(0, null, masterCardRef, cardRefs)
         {
         }
-        public Deck() : this(0, null, 0, null)
+        public Deck() : this(0, null, null, null)
         {
         }
         [Obsolete]
@@ -56,12 +56,12 @@ namespace TouhouHeartstone
             var item = cardList.Find(e => e.id == cardId);
             return item != null ? item.count : 0;
         }
-            public void setCards(IEnumerable<CardReference> cardsRef)
+        public void setCards(IEnumerable<DefineReference> cardsRef)
         {
             clearCards();
             addCards(cardsRef);
         }
-        public void addCard(CardReference cardRef)
+        public void addCard(DefineReference cardRef)
         {
             int index = cardRefList.FindIndex(e => e.cardRef == cardRef);
             if (index < 0)
@@ -72,51 +72,33 @@ namespace TouhouHeartstone
             {
                 cardRefList[index].count++;
             }
-            addCard(cardRef.cardId);
         }
-        public void addCards(IEnumerable<CardReference> cardsRef)
+        public void addCards(IEnumerable<DefineReference> cardsRef)
         {
             if (cardsRef == null)
                 return;
-            foreach (var cardId in cardsRef)
+            foreach (var cardRef in cardsRef)
             {
-                addCard(cardId);
+                addCard(cardRef);
             }
         }
         public void clearCards()
         {
-            cardList.Clear();
             cardRefList.Clear();
         }
         public int getCardCount()
         {
-            return cardList.Sum(item => item.count);
+            return cardRefList.Sum(item => item.count);
         }
-        public int[] toIdArray(bool includeMasterCard = true)
+        public DefineReference[] toCardRefArray(bool includeMasterCard = true)
         {
-            List<int> list = includeMasterCard ? new List<int>
+            List<DefineReference> list = includeMasterCard ? new List<DefineReference>
             {
-                masterId
-            } : new List<int>();
-            foreach (var item in cardList)
-            {
-                if (item.id == 0)
-                    continue;
-                if (item.count < 1)
-                    continue;
-                list.AddRange(Enumerable.Repeat(item.id, item.count));
-            }
-            return list.ToArray();
-        }
-        public CardReference[] toRefArray(bool includeMasterCard = true)
-        {
-            List<CardReference> list = includeMasterCard ? new List<CardReference>
-            {
-                new CardReference() { cardId = masterId, cardPoolId = CardDefineHelper.getCardPoolId(masterId) }
-            } : new List<CardReference>();
+                masterCardRef
+            } : new List<DefineReference>();
             foreach (var item in cardRefList)
             {
-                if (item.cardRef == null || item.cardRef.cardId == 0)
+                if (item.cardRef == null || item.cardRef.cardPoolId == 0 || item.cardRef.id == 0)
                     continue;
                 if (item.count < 1)
                     continue;
@@ -137,6 +119,7 @@ namespace TouhouHeartstone
         public int id;
         public string name;
         public int masterId;
+        public DefineReference masterCardRef;
         [Obsolete("使用cardRefList")]
         public List<DeckItem> cardList = new List<DeckItem>();
         public List<DeckRefItem> cardRefList = new List<DeckRefItem>();
@@ -151,7 +134,7 @@ namespace TouhouHeartstone
     [Serializable]
     public class DeckRefItem
     {
-        public CardReference cardRef;
+        public DefineReference cardRef;
         public int count;
     }
 }

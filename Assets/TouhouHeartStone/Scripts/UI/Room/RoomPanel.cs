@@ -62,10 +62,10 @@ namespace UI
                         showDeckSelectionPanel((deckID) =>
                         {
                             var deck = deckManager.GetDeck(deckID);
-                            var skin = cardManager.getCardSkin(deck.MasterID);
+                            var skin = cardManager.getCardSkin(deck.MasterCardRef.cardPoolId, deck.MasterCardRef.id);
 
-                            var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
-                            list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
+                            var list = deckManager.GetDeckCards(deckID).Select(k => k.Value).ToList();
+                            list.Insert(0, deck.MasterCardRef); // polyfill: 转换为传统的，第一张卡是master的格式
 
                             onSetPlayerDeck?.Invoke(player.id, list.ToArray());
                         });
@@ -287,25 +287,25 @@ namespace UI
         /// 查看卡组
         /// </summary>
         /// <param name="cards"></param>
-        async void viewDeck(int[] cards)
+        async void viewDeck(DefineReference[] cards)
         {
             //_cardViewPanel.setItems(cardManager,cards);
-            async Task<(string name, Sprite image)> getCardData(int i)
+            async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
             {
-                var card = cardManager.getCardDefine(i);
-                var skin = cardManager.getCardSkin(i);
+                var card = cardManager.getCardDefine(cardRef.cardPoolId, cardRef.id);
+                var skin = cardManager.getCardSkin(cardRef.cardPoolId, cardRef.id);
                 Sprite image = null;
                 if (card != null)
                 {
                     var path = skin?.imagePath;
-                    image = await cardManager.loadCardImage(i);
+                    image = await cardManager.loadCardImage(cardRef.cardPoolId, cardRef.id);
                 }
                 return (skin?.name, image);
             }
             List<(string name, Sprite image)> list = new List<(string name, Sprite image)>();
-            foreach (var i in cards)
+            foreach (var cardRef in cards)
             {
-                list.Add(await getCardData(i));
+                list.Add(await getCardData(cardRef));
             }
             var viewData = list.ToArray();
             _cardViewPanel.update(viewData);
@@ -436,7 +436,7 @@ namespace UI
             _cancleReadyButton.gameObject.SetActive(value);
         }
 
-        public void setPlayerDeck(int playerId, int[] cards)
+        public void setPlayerDeck(int playerId, DefineReference[] cards)
         {
             onSetPlayerDeck?.Invoke(playerId, cards);
         }
@@ -482,11 +482,11 @@ namespace UI
                 showDeckSelectionPanel((deckID) =>
                 {
                     var deck = deckManager.GetDeck(deckID);
-                    var skin = cardManager.getCardSkin(deck.MasterID);
+                    var skin = cardManager.getCardSkin(deck.MasterCardRef.cardPoolId, deck.MasterCardRef.id);
                     DeckSelectionDeckListItem.SetContent(deckID, deck.Name, skin.image);
 
-                    var list = deckManager.GetDeckCards(deckID).Select(k => (int)k.Value).ToList();
-                    list.Insert(0, deck.MasterID); // polyfill: 转换为传统的，第一张卡是master的格式
+                    var list = deckManager.GetDeckCards(deckID).Select(k => k.Value).ToList();
+                    list.Insert(0, deck.MasterCardRef); // polyfill: 转换为传统的，第一张卡是master的格式
                     onSetPlayerDeck?.Invoke(selfPlayerID, list.ToArray());
                 });
             };
@@ -784,7 +784,7 @@ namespace UI
         /// <summary>
         /// 玩家牌组改变
         /// </summary>
-        public event Action<int, int[]> onSetPlayerDeck;
+        public event Action<int, DefineReference[]> onSetPlayerDeck;
         /// <summary>
         /// 玩家准备或取消准备
         /// </summary>
@@ -815,7 +815,7 @@ namespace UI
                 var deck = playerData.getDeck();
                 if (deck != null)
                 {
-                    int[] idArray = playerData.getDeck().toIdArray(true);
+                    DefineReference[] idArray = playerData.getDeck().toCardRefArray(true);
                     if (idArray != null)
                         OnPlayerViewDeck?.Invoke(idArray);
                 }
@@ -844,10 +844,10 @@ namespace UI
             playerData = data;
             NameText.text = data.name;
 
-            int[] deck = data.getDeck()?.toIdArray(true);
+            DefineReference[] deck = data.getDeck()?.toCardRefArray(true);
 
             CheckIconImage.gameObject.SetActive(data.getReady());
-            CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0]).name : "";
+            CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0].cardPoolId, deck[0].id).name : "";
         }
 
         /// <summary>
@@ -909,7 +909,7 @@ namespace UI
         /// <summary>
         /// 点击查看玩家牌组后的事件
         /// </summary>
-        public event Action<int[]> OnPlayerViewDeck;
+        public event Action<DefineReference[]> OnPlayerViewDeck;
         /// <summary>
         /// 点击添加AI玩家的事件
         /// </summary>

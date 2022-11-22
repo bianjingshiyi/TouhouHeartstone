@@ -28,7 +28,7 @@ namespace TouhouHeartstone
         public static Player createPlayer(this CardEngine game, int id, string name, CardDefine master,
             IEnumerable<CardDefine> deck)
         {
-            return game.getRule().createPlayer(game, id, name, master.id, deck.Select(d => d.id).ToArray());
+            return game.getRule().createPlayer(game, id, name, master, deck.ToArray());
         }
 
         public static Player getPlayer(this CardEngine game, int id)
@@ -420,14 +420,15 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.WARP));
             player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
             player.addPile(new Pile(game, PILE.ITEM, maxCount: 1));
-            int[] deck = player.getProp<int[]>(DEFINE.PLAYER_PROP_DECK);
-            int master = deck[0];
-            await player[PILE.MASTER].add(game, game.createCard(master));
-            await player[PILE.SKILL].add(game, game.createCard(game.getDefine(master).getSkillId()));
-            await player[PILE.DECK].add(game, deck.Select(d => game.createCard(d)));
+            DefineReference[] deck = player.getProp<DefineReference[]>(DEFINE.PLAYER_PROP_DECK);
+            DefineReference master = deck[0];
+            await player[PILE.MASTER].add(game, game.createCard(master.cardPoolId, master.id));
+            DefineReference skillRef = game.getDefine(master.cardPoolId, master.id).getSkillRef();
+            await player[PILE.SKILL].add(game, game.createCard(skillRef.cardPoolId, skillRef.id));
+            await player[PILE.DECK].add(game, deck.Select(d => game.createCard(d.cardPoolId, d.id)));
         }
         #endregion
-        public HearthStoneRule(IEnumerable<CardDefine> defines, IEnumerable<BuffDefine> buffs) : base(defines, buffs)
+        public HearthStoneRule(Dictionary<long, Dictionary<int, CardDefine>> defines, Dictionary<long, Dictionary<int, BuffDefine>> buffs) : base(defines, buffs)
         {
         }
 
@@ -436,8 +437,13 @@ namespace TouhouHeartstone
             game.option = options;
             foreach (var playerInfo in players)
             {
-                int[] deckIdArray = playerInfo.getProp<int[]>("deck");
-                createPlayer(game, playerInfo.ID, playerInfo.Name, deckIdArray[0], deckIdArray.Skip(1).ToArray());
+                DefineReference[] deck = playerInfo.getProp<DefineReference[]>("deck");
+                createPlayer(
+                    game,
+                    playerInfo.ID,
+                    playerInfo.Name,
+                    game.getDefine(deck[0].cardPoolId, deck[0].id),
+                    deck.Skip(1).Select(r => game.getDefine(r.cardPoolId, r.id)).ToArray());
             }
             return Task.CompletedTask;
         }
@@ -449,36 +455,26 @@ namespace TouhouHeartstone
 
         public HearthstoneOption getOption(CardEngine game) => game.option as HearthstoneOption;
 
-        public Player createPlayer(CardEngine game, int id, string name, int master, int[] deck)
+        public Player createPlayer(CardEngine game, int id, string name, CardDefine master, CardDefine[] deck)
         {
-            //自定义英雄会被强制替换为灵梦，注释掉了
-            //if (game.getDefine(master) is MasterCardDefine masterCardDefine)
-            //{
-            //}
-            //else
-            //{
-            //    masterCardDefine = new Reimu();
-            //    game.logger.logError("非法角色ID" + master + "被替换为灵梦");
-            //}
-
-            int luckyCoinId = new LuckyCoin().id;
+            CardDefine luckyCoinDefine = game.getDefine(0, LuckyCoin.ID);
             for (int i = 1; i < deck.Length; i++)
             {
-                var define = game.getDefine(deck[i]);
+                var define = deck[i];
                 if (define == null)
                 {
                     game.logger.logError("非法卡牌ID" + deck[i] + "被替换为幸运币");
-                    deck[i] = luckyCoinId;
+                    deck[i] = luckyCoinDefine;
                 }
 
                 if (define is THHCardDefine && define.isToken())
                 {
                     game.logger.log("为什么你的牌库里会有衍生物？让我把它换成幸运币");
-                    deck[i] = luckyCoinId;
+                    deck[i] = luckyCoinDefine;
                 }
             }
 
-            return createPlayer(game, id, name, game.getDefine(master), game.getDefines(deck));
+            return createPlayer(game, id, name, master, deck);
         }
 
         public Player createPlayer(CardEngine game, int id, string name, CardDefine master,
@@ -498,7 +494,8 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
             player.addPile(new Pile(game, PILE.ITEM, 1));
             player[PILE.MASTER].add(game, game.createCard(master));
-            player[PILE.SKILL].add(game, game.createCard(game.getDefine(master.getSkillId())));
+            DefineReference skillRef = master.getSkillRef();
+            player[PILE.SKILL].add(game, game.createCard(game.getDefine(skillRef.cardPoolId, skillRef.id)));
             player[PILE.DECK].add(game, deck.Select(d => game.createCard(d)));
             player.setIsPrepared(false);
             player.setGem(game, 0);

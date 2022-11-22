@@ -10,7 +10,10 @@ namespace Game
             if (!_isOpened)
             {
                 _isOpened = true;
-                table.displayDiscoverDialog(request.cardIdArray, request.title);
+                if (request.cardIdArray != null)
+                    table.displayDiscoverDialog(request.cardIdArray, request.title);
+                else
+                    table.displayDiscoverDialog(request.cardRefArray, request.title);
             }
             if (table.ui.Discover.isDisplaying)
                 return false;

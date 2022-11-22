@@ -491,9 +491,9 @@ namespace Controllers
                 return ActionNodeValueType.trigger;
             else if (type == typeof(TriggerCollection))
                 return ActionNodeValueType.triggerCollection;
-            else if (type == typeof(CardReference))
+            else if (type == typeof(DefineReference))
                 return ActionNodeValueType.cardReference;
-            else if (type == typeof(CardReference[]))
+            else if (type == typeof(DefineReference[]))
                 return ActionNodeValueType.cardReferenceCollection;
             else if (type == typeof(KeywordCollection))
                 return ActionNodeValueType.keywords;

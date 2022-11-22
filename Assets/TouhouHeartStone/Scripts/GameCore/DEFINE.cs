@@ -19,6 +19,7 @@
         public const string KEYWORDS = "keywords";
         public const string TAGS = "tags";
         public const string CARD_PROP_SKILL_ID = "skillId";
+        public const string CARD_PROP_SKILL_REF = "skillRef";
 
         public const string TARGET_TYPE_CHARACTER = "Character";
         public const string TARGET_TYPE_SERVANT = "Servant";

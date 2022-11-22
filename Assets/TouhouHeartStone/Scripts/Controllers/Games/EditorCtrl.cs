@@ -132,7 +132,8 @@ namespace Controllers
                     _ui.gameObject.SetActive(false);
                     scene.menu.display();
                 }
-                else {
+                else
+                {
                     returnToView();
                 }
             }
@@ -331,7 +332,6 @@ namespace Controllers
             _ui.setEditDeckPanelActive(false);
             await updateDeckListUI();
             await _cardPoolViewPanelCtrl.hide();
-           
         }
         private CardDefine[] getSelectableCharacters()
         {
@@ -355,7 +355,7 @@ namespace Controllers
         }
         private async Task updateDeckCardListUI()
         {
-            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.cardPoolId);
+            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.cardPoolId).First().Value.Select(p => p.Value).ToArray();
             (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[cardDefines.Length];
             for (int i = 0; i < viewData.Length; i++)
             {

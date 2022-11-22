@@ -1094,7 +1094,7 @@ namespace TouhouHeartstone
                     game.logger.log(card + "无法进行攻击");
                 else
                 {
-                    card = arg.card; 
+                    card = arg.card;
                     target = arg.target;
                     game.logger.log(card + "攻击" + target);
                     await damage(game, new Dictionary<Card, DamageEventArg.Info>()
@@ -1182,14 +1182,17 @@ namespace TouhouHeartstone
             else
                 cardDefine.setProp<int>(DEFINE.CARD_PROP_SKILL_ID, id);
         }
-        public static int getSkillId(this CardDefine cardDefine)
+        public static DefineReference getSkillRef(this CardDefine cardDefine)
         {
             if (cardDefine is MasterCardDefine masterCardDefine)
             {
-                return masterCardDefine.skillID;
+                return new DefineReference(0, masterCardDefine.skillID);
             }
-            else
-                return cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID);
+            else if (cardDefine.hasProp(DEFINE.CARD_PROP_SKILL_REF))
+            {
+                return cardDefine.getProp<DefineReference>(DEFINE.CARD_PROP_SKILL_REF);
+            }
+            return new DefineReference(0, cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID));
         }
         #region 动作定义
         [ActionNodeMethod("Damage", "Card")]

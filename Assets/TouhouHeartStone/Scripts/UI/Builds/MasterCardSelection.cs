@@ -26,7 +26,7 @@ namespace UI
             foreach (var deck in decks)
             {
                 var c = MasterCardList.addItem();
-                var skin = cardManager.getCardSkin(deck.MasterID);
+                var skin = cardManager.getCardSkin(deck.MasterCardRef);
                 c.SetContent((int)deck.ID, deck.Name, skin?.image);
                 c.SetMode(DeckListItem.Mode.DeckSelect);
                 c.onDeckSelect += (id) =>

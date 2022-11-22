@@ -621,13 +621,13 @@ namespace Controllers
                 pushCurEditObjectToStack();
                 await openValueRefGraph(value);
             }
-            else if (actionDefine.consts[index].type == typeof(CardReference))
+            else if (actionDefine.consts[index].type == typeof(DefineReference))
             {
                 _ui.displayCardSelectPanel(true);
-                if (actionNode.consts[index] is CardReference value)
+                if (actionNode.consts[index] is DefineReference value)
                 {
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(value.cardId, cardPoolsId: new long[] { value.cardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(value.id, cardPoolsId: new long[] { value.cardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -650,17 +650,17 @@ namespace Controllers
         {
             ActionNode actionNode = getActionNode(actionNodeItem);
             ActionDefine actionDefine = getActionDefine(actionNode.defineName);
-            if (actionDefine.consts[index].type == typeof(CardReference[]))
+            if (actionDefine.consts[index].type == typeof(DefineReference[]))
             {
                 _ui.displayCardSelectPanel(true);
-                if (actionNode.consts[index] is CardReference[] value)
+                if (actionNode.consts[index] is DefineReference[] value)
                 {
                     if (value[itemIndex] == null)
                     {
-                        value[itemIndex] = new CardReference();
+                        value[itemIndex] = new DefineReference();
                     }
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(value[itemIndex].cardId, new long[] { value[itemIndex].cardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(value[itemIndex].id, new long[] { value[itemIndex].cardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -688,18 +688,18 @@ namespace Controllers
             }
             if (_curEditActionNodeConstItemIndex < 0)
             {
-                _curEditActionNode.consts[_curEditActionNodeConstIndex] = new CardReference()
+                _curEditActionNode.consts[_curEditActionNodeConstIndex] = new DefineReference()
                 {
                     cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
-                    cardId = cardDefine.id
+                    id = cardDefine.id
                 };
             }
             else
             {
-                (_curEditActionNode.consts[_curEditActionNodeConstIndex] as CardReference[])[_curEditActionNodeConstItemIndex] = new CardReference()
+                (_curEditActionNode.consts[_curEditActionNodeConstIndex] as DefineReference[])[_curEditActionNodeConstItemIndex] = new DefineReference()
                 {
                     cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
-                    cardId = cardDefine.id
+                    id = cardDefine.id
                 };
             }
             ActionNodeItem actionNodeItem = getActionNodeItem(_curEditActionNode);
@@ -1196,9 +1196,9 @@ namespace Controllers
                     if (constsInfo[i].type == ActionNodeValueType.cardReference)
                     {
                         CardDefine cardDefine = null;
-                        if (actionNode.consts[i] is CardReference cardReference)
+                        if (actionNode.consts[i] is DefineReference cardReference)
                         {
-                            cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.cardId);
+                            cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.id);
                         }
                         if (cardDefine != null)
                         {
@@ -1217,14 +1217,14 @@ namespace Controllers
                     }
                     else if (constsInfo[i].type == ActionNodeValueType.cardReferenceCollection)
                     {
-                        if (actionNode.consts[i] is CardReference[] cardRefArray)
+                        if (actionNode.consts[i] is DefineReference[] cardRefArray)
                         {
                             for (int j = 0; j < cardRefArray.Length; j++)
                             {
                                 CardDefine cardDefine = null;
-                                if (cardRefArray[j] is CardReference cardReference)
+                                if (cardRefArray[j] is DefineReference cardReference)
                                 {
-                                    cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.cardId);
+                                    cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.id);
                                 }
                                 if (cardDefine != null)
                                 {
@@ -2291,9 +2291,9 @@ namespace Controllers
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.enumValue, actionNode.consts[i], type);
                 else if (type == typeof(ActionValueRef))
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.actionValueRef, actionNode.consts[i]);
-                else if (type == typeof(CardReference))
+                else if (type == typeof(DefineReference))
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReference, actionNode.consts[i]);
-                else if (type == typeof(CardReference[]))
+                else if (type == typeof(DefineReference[]))
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReferenceCollection, actionNode.consts[i]);
                 else if (type == typeof(PileNameCollection))
                     infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.pileNameCollection, actionNode.consts[i]);

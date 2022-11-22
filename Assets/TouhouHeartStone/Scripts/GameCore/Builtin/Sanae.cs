@@ -40,25 +40,25 @@ namespace TouhouHeartstone.Builtin
         /// <returns></returns>
         public static Task<RevealDuelEventArg> revealDuel(Player player, CardEngine game, int define = 0)
         {
-            return game.triggers.doEvent(new RevealDuelEventArg() {player = player}, async arg =>
-            {
-                Player oppo = game.getOpponent(player);
-                arg.youCard = await player.Reveal(game, player.getDeck(), define);
-                arg.yourCardSnapshot = arg.youCard != null ? new CardSnapshot(game, arg.youCard) : null;
-                arg.oppoCard = await oppo.Reveal(game, oppo.getDeck(), define);
-                arg.oppoCardSnapshot = arg.oppoCard != null ? new CardSnapshot(game, arg.oppoCard) : null;
-                arg.result = false;
+            return game.triggers.doEvent(new RevealDuelEventArg() { player = player }, async arg =>
+              {
+                  Player oppo = game.getOpponent(player);
+                  arg.youCard = await player.Reveal(game, player.getDeck(), define);
+                  arg.yourCardSnapshot = arg.youCard != null ? new CardSnapshot(game, arg.youCard) : null;
+                  arg.oppoCard = await oppo.Reveal(game, oppo.getDeck(), define);
+                  arg.oppoCardSnapshot = arg.oppoCard != null ? new CardSnapshot(game, arg.oppoCard) : null;
+                  arg.result = false;
 
-                if (arg.youCard != null && arg.oppoCard == null)
-                    arg.result = true;
-                else if (arg.youCard != null && arg.youCard.getCost(game) > arg.oppoCard.getCost(game))
-                    arg.result = true;
-                if (arg.youCard != null)
-                    game.logger.log(player + "发动了对决，她揭示了：" + arg.youCard + "。她的对手揭示了：" + arg.oppoCard + "。结果是" +
-                                    arg.result);
-                else
-                    game.logger.log(player + "揭示了个寂寞，输掉了对决。");
-            });
+                  if (arg.youCard != null && arg.oppoCard == null)
+                      arg.result = true;
+                  else if (arg.youCard != null && arg.youCard.getCost(game) > arg.oppoCard.getCost(game))
+                      arg.result = true;
+                  if (arg.youCard != null)
+                      game.logger.log(player + "发动了对决，她揭示了：" + arg.youCard + "。她的对手揭示了：" + arg.oppoCard + "。结果是" +
+                                      arg.result);
+                  else
+                      game.logger.log(player + "揭示了个寂寞，输掉了对决。");
+              });
         }
 
         public class RevealDuelEventArg : EventArg, IDescribableEventArg
@@ -100,7 +100,7 @@ namespace TouhouHeartstone.Builtin
 
             public ICard[] getTargets(IGame game, IPlayer viewer)
             {
-                return new []{youCard, oppoCard};
+                return new[] { youCard, oppoCard };
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
@@ -165,7 +165,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x001;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD._RevealDuel};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -188,7 +188,7 @@ namespace TouhouHeartstone.Builtin
             var duel = await Sanae.revealDuel(you, game);
             if (duel.result)
             {
-                if (duel.youCard.getCost(game) == you.getDeck().Select(c=>c.getCost(game)).Max())
+                if (duel.youCard.getCost(game) == you.getDeck().Select(c => c.getCost(game)).Max())
                 {
                     you.draw(game, duel.youCard);
                 }
@@ -253,7 +253,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
- 
+
     /// <summary>
     /// 五谷丰穰
     /// 治愈5点生命值，分配到所有友方角色身上。
@@ -297,7 +297,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x005;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD._RevealDuel};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -335,7 +335,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x006;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD._RevealDuel};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -371,7 +371,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.RUSH};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -437,7 +437,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
-    
+
 
     /// <summary>
     /// 被操纵的巨蛙
@@ -451,8 +451,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT, KEYWORD.DEATHRATTLE};
-        public override string[] tags { get; set; } = {TAG.BEAST};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT, KEYWORD.DEATHRATTLE };
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -477,7 +477,7 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
-    
+
 
     /// <summary>
     /// 神代大蛇
@@ -493,7 +493,7 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 7;
 
         //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
-        public override string[] tags { get; set; } = {TAG.BEAST};
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -541,8 +541,8 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 10;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.UNIQUE};
-        public override string[] tags { get; set; } = {TAG.GOD};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
+        public override string[] tags { get; set; } = { TAG.GOD };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -577,8 +577,8 @@ namespace TouhouHeartstone.Builtin
             await card3.setProp(game, "count3", count + 6);
             await card4.setProp(game, "count4", count + 2);
 
-            
-            var arg = await card.getOwner().chooseOne(game, options, title:  "见证神迹！");
+
+            var arg = await card.getOwner().chooseOne(game, options, title: "见证神迹！");
             CardDefine choice = arg.choose;
 
             if (choice == game.getDefine<GodMiracleOfRain>())
@@ -726,7 +726,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
         public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
 
     /// <summary>
@@ -744,13 +744,13 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 4;
 
         public override string[] keywords { get; set; } =
-            new string[] {KEYWORD.UNIQUE, KEYWORD.RUSH, KEYWORD.DEATHRATTLE};
+            new string[] { KEYWORD.UNIQUE, KEYWORD.RUSH, KEYWORD.DEATHRATTLE };
 
-        public override string[] tags { get; set; } = {TAG.GOD};
+        public override string[] tags { get; set; } = { TAG.GOD };
 
         private IEffect[] effects1 = new IEffect[]
         {
-            
+
             new DeathRattle(ID, async (game, card, p) =>
             {
                 int index = game.randomInt(1, 4);
@@ -806,7 +806,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
-        public override string[] keywords { get; set; } = new string[] {KEYWORD.TAUNT};
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
     }
 
     /// <summary>
@@ -911,7 +911,7 @@ namespace TouhouHeartstone.Builtin
                     await c.addBuff(game,
                         new CodeBuff(ID, new CostModifier(5),
                             new RemoveBuffAfter<HearthStoneRule.TurnStartEventArg>(PileFlag.hand,
-                                (g, c1,b, a) => { return a.player == card.getOwner(); }, ID)));
+                                (g, c1, b, a) => { return a.player == card.getOwner(); }, ID)));
             }
         }
     }
@@ -962,7 +962,7 @@ namespace TouhouHeartstone.Builtin
 
         private IEffect[] effects1 = new IEffect[]
         {
-            
+
             new NoTargetEffect(effect),
             new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), null,
                 new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
@@ -996,7 +996,7 @@ namespace TouhouHeartstone.Builtin
             await you.getField().fieldToDeck(game, true);
             await oppo.getField().fieldToDeck(game, true);
 
-            
+
         }
     }
 
@@ -1123,7 +1123,13 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner()
-                .addRandomCardToHand(game, game.getDefines(new int[] {Bomb1.ID, Bomb2.ID, Bomb3.ID, Bomb4.ID}));
+                .addRandomCardToHand(game, game.getDefines(new DefineReference[]
+                {
+                    new DefineReference(0, Bomb1.ID),
+                    new DefineReference(0, Bomb2.ID),
+                    new DefineReference(0, Bomb3.ID),
+                    new DefineReference(0, Bomb4.ID)
+                }));
         }
     }
 

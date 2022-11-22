@@ -1,4 +1,5 @@
 ﻿using System;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
@@ -8,6 +9,7 @@ namespace TouhouHeartstone
     {
         public string title;
         public int[] cardIdArray;
+        public DefineReference[] cardRefArray;
         public override IResponse getDefaultResponse(IGame game, int playerId)
         {
             return new DiscoverResponse() { cardId = cardIdArray[game.randomInt(0, cardIdArray.Length - 1)] };
@@ -19,6 +21,11 @@ namespace TouhouHeartstone
         public DiscoverRequest(int[] cardIdArray, string title)
         {
             this.cardIdArray = cardIdArray;
+            this.title = title;
+        }
+        public DiscoverRequest(DefineReference[] cardRefArray, string title)
+        {
+            this.cardRefArray = cardRefArray;
             this.title = title;
         }
     }

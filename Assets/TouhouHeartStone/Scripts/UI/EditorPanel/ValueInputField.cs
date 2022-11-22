@@ -198,15 +198,15 @@ namespace UI
         {
             if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
-                CardReference[] newValue;
-                if (_valueInfo.value is CardReference[] cardRefCollection)
+                DefineReference[] newValue;
+                if (_valueInfo.value is DefineReference[] cardRefCollection)
                 {
-                    newValue = new CardReference[cardRefCollection.Length + 1];
+                    newValue = new DefineReference[cardRefCollection.Length + 1];
                     Array.Copy(cardRefCollection, 0, newValue, 0, cardRefCollection.Length);
                 }
                 else
                 {
-                    newValue = new CardReference[1];
+                    newValue = new DefineReference[1];
                 }
                 _valueInfo.value = newValue;
                 onValueChanged?.Invoke(this, _valueInfo.value);
@@ -224,9 +224,9 @@ namespace UI
             int index = _list.IndexOf(item.transform as RectTransform);
             if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
-                if (_valueInfo.value is CardReference[] cardRefCol)
+                if (_valueInfo.value is DefineReference[] cardRefCol)
                 {
-                    List<CardReference> cardRefList = new List<CardReference>(cardRefCol);
+                    List<DefineReference> cardRefList = new List<DefineReference>(cardRefCol);
                     cardRefList.RemoveAt(index);
                     _valueInfo.value = cardRefList.ToArray();
                     onValueChanged?.Invoke(this, _valueInfo.value);
@@ -444,7 +444,7 @@ namespace UI
             else if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
                 _listRoot.gameObject.SetActive(true);
-                if (!(_valueInfo.value is CardReference[] cardReferenceCollection))
+                if (!(_valueInfo.value is DefineReference[] cardReferenceCollection))
                 {
                     cardReferenceCollection = null;
                 }
