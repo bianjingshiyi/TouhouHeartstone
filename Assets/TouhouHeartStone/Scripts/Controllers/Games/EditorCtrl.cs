@@ -113,15 +113,12 @@ namespace Controllers
                 game.ui.dialog.ShowQuestion(
                     game.langManager.getString(StringTable.WARNING),
                     game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES), async () =>
-                      {
-                          if (hasUnsavedChanges)
-                          {
-                              //保存卡池
-                              await game.card.saveCardPool(_curCardPoolInfo);
-                              //返回主菜单
-                              await returnToView();
-                              hasUnsavedChanges = false;
-                          }
+                    {
+                        //保存卡池
+                        await game.card.saveCardPool(_curCardPoolInfo);
+                        //返回主菜单
+                        await returnToView();
+                        hasUnsavedChanges = false;
                     }, () =>
                     {
                         returnToView();
@@ -320,13 +317,17 @@ namespace Controllers
         /// </summary>
         private async Task returnToView()
         {
-           
-                _curCardPoolPath = null;
-                _curCardPoolInfo = null;
-                _ui.setDeckListActive(true);
-                _ui.setEditDeckPanelActive(false);
-                await updateDeckListUI();
-                await _cardPoolViewPanelCtrl.hide();
+            // 退出时重新加载牌库信息，防止出现临时卡牌变更。
+            if (hasUnsavedChanges)
+            {
+                await game.card.reloadCardPoolsAndGetCardDefinesAsync(new int[] { _curCardPoolInfo.cardPoolId});
+            }
+            _curCardPoolPath = null;
+            _curCardPoolInfo = null;
+            _ui.setDeckListActive(true);
+            _ui.setEditDeckPanelActive(false);
+            await updateDeckListUI();
+            await _cardPoolViewPanelCtrl.hide();
            
         }
         private CardDefine[] getSelectableCharacters()
