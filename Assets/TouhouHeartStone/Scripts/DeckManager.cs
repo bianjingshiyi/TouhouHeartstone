@@ -1,11 +1,10 @@
 ﻿using BJSYGameCore;
 using IGensoukyo.Utilities;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.Common;
 using System;
-using System.IO.Compression;
+using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
+using System.IO.Compression;
 using TouhouCardEngine;
 
 namespace Game
@@ -129,8 +128,7 @@ namespace Game
         /// <param name="masterCardRef"></param>
         public void SetDeckMasterID(long id, DefineReference masterCardRef)
         {
-            db.Execute($@"UPDATE {tableDeck} SET masterID = ? WHERE deckID = ?", null, masterCardRef.id, id);
-            db.Execute($@"UPDATE {tableDeck} SET masterCardPoolID = ? WHERE deckID = ?", null, masterCardRef.cardPoolId, id);
+            db.Execute($@"UPDATE {tableDeck} SET masterCardPoolID = ?, masterID = ? WHERE deckID = ?", null, masterCardRef.cardPoolId, masterCardRef.id, id);
         }
 
         /// <summary>
@@ -382,66 +380,35 @@ namespace Game
         /// </summary>
         /// <param name="deck"></param>
         /// <returns></returns>
+        [Obsolete]
         public string DeckToStringV1(int[] deck)
         {
-            byte[] encByte = Deck2ByteV1(deck);
-            return Convert.ToBase64String(encByte);
+            var rawBytes = deckArrayToRawBytes(deck);
+            return Convert.ToBase64String(gzipCompress(rawBytes));
+        }
+
+        /// <summary>
+        /// Deck转String，V2版本
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        [Obsolete]
+        public string DeckToString(int[] deck)
+        {
+            var rawBytes = deckArrayToRawBytes(deck);
+            return Convert.ToBase64String(encodeShareBytesV2(rawBytes, 2));
         }
 
         /// <summary>
         /// Deck转String
         /// </summary>
+        /// <remarks>V3版本</remarks>
         /// <param name="deck"></param>
         /// <returns></returns>
-        public string DeckToString(int[] deck)
-        {
-            return Convert.ToBase64String(Deck2ByteV2(deck));
-        }
         public string DeckToString(DefineReference[] deck)
         {
-            //TODO:实现该方法
-            throw new NotImplementedException();
-        }
-        /// <summary>
-        /// Deck转Byte，V1版本
-        /// </summary>
-        /// <param name="deck"></param>
-        /// <returns></returns>
-        private byte[] Deck2ByteV1(int[] deck)
-        {
-            byte[] dataBytes = new byte[deck.Length * sizeof(int)];
-
-            int offset = 0;
-            foreach (var item in deck)
-            {
-                BitConverter.GetBytes(item).CopyTo(dataBytes, offset);
-                offset += 4;
-            }
-            byte[] encByte = gzipCompress(dataBytes);
-            return encByte;
-        }
-
-        /// <summary>
-        /// Deck转Byte，V2版本
-        /// </summary>
-        /// <param name="deck"></param>
-        /// <returns></returns>
-        private byte[] Deck2ByteV2(int[] deck)
-        {
-            var bytes = Deck2ByteV1(deck);
-            var srcLen = bytes.Length;
-            var dstLen = srcLen - 10;
-            // 去除10byte的文件头和4byte的尾部，加上3byte的新文件头
-            byte[] result = new byte[dstLen];
-
-            result[0] = ZMHeaderByte1;
-            result[1] = ZMHeaderByte2;
-            result[2] = 2; // Version
-            result[3] = bytes[srcLen - 4]; // Len的MSB。因为它不会大于256，所以直接使用
-
-            Array.Copy(bytes, 10, result, 4, srcLen - 10 - 4);
-
-            return result;
+            var bytes = defineRefToRawBytes(deck);
+            return Convert.ToBase64String(encodeShareBytesV2(bytes, 3));
         }
 
         /// <summary>
@@ -451,6 +418,7 @@ namespace Game
         /// <returns></returns>
         /// <exception cref="FormatException">不是完整的Base64字符串</exception>
         /// <exception cref="IOException">无法以Gzip方式解压</exception>
+        [Obsolete]
         public int[] StringToDeckV1(string str)
         {
             var compressdData = Convert.FromBase64String(str);
@@ -458,29 +426,16 @@ namespace Game
         }
 
         /// <summary>
-        /// String转Deck
+        /// String转Deck，兼容V1 V2
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
         /// <exception cref="FormatException">不是完整的Base64字符串</exception>
         /// <exception cref="IOException">无法以Gzip方式解压</exception>
+        [Obsolete]
         public int[] StringToDeck(string str)
         {
             var compressdData = Convert.FromBase64String(str);
-            return Byte2Deck(compressdData);
-        }
-        public DefineReference[] StringToDeckWithCardPoolID(string str)
-        {
-            //TODO:实现该方法
-            throw new NotImplementedException();
-        }
-        /// <summary>
-        /// Byte转Deck
-        /// </summary>
-        /// <param name="compressdData"></param>
-        /// <returns></returns>
-        private int[] Byte2Deck(byte[] compressdData)
-        {
             if (compressdData[0] == GzipHeaderByte1 && compressdData[1] == GzipHeaderByte2)
             {
                 return Byte2DeckV1(compressdData);
@@ -498,6 +453,54 @@ namespace Game
         }
 
         /// <summary>
+        /// 将老的deck转换为新的DefineReference
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        DefineReference[] toDefineRefs(int[] deck)
+        {
+            DefineReference[] result = new DefineReference[deck.Length];
+            for (int i = 0; i < deck.Length; i++)
+            {
+                result[i] = new DefineReference(0, deck[i]);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// String转Deck，兼容V1/2/3
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException">不是完整的Base64字符串</exception>
+        /// <exception cref="IOException">无法以Gzip方式解压</exception>
+        public DefineReference[] StringToDeckWithCardPoolID(string str)
+        {
+            var compressdData = Convert.FromBase64String(str);
+            if (compressdData[0] == GzipHeaderByte1 && compressdData[1] == GzipHeaderByte2)
+            {
+                return toDefineRefs(Byte2DeckV1(compressdData));
+            }
+            if (compressdData[0] == ZMHeaderByte1 && compressdData[1] == ZMHeaderByte2)
+            {
+                // 版本号
+                var version = compressdData[2];
+                if (version == 2)
+                {
+                    return toDefineRefs(Byte2DeckV2(compressdData));
+                }
+                if (version == 3)
+                {
+                    var rawData = decodeShareBytesV2(compressdData);
+                    return rawBytesToDefineRef(rawData);
+                }
+
+                throw new Exception("无法识别的组卡代码版本");
+            }
+            throw new Exception("无法辨认的格式");
+        }
+
+        /// <summary>
         /// Byte转Deck，V1版本
         /// </summary>
         /// <param name="compressdData"></param>
@@ -506,13 +509,7 @@ namespace Game
         private int[] Byte2DeckV1(byte[] compressdData)
         {
             var decompressedData = gzipDecompress(compressdData);
-            List<int> cards = new List<int>();
-            for (int i = 0; i < decompressedData.Length; i += 4)
-            {
-                var card = BitConverter.ToInt32(decompressedData, i);
-                cards.Add(card);
-            }
-            return cards.ToArray();
+            return rawBytesToDeckArray(decompressedData);
         }
 
         /// <summary>
@@ -521,6 +518,136 @@ namespace Game
         /// <param name="data"></param>
         /// <returns></returns>
         private int[] Byte2DeckV2(byte[] data)
+        {
+            byte[] bytes = decodeShareBytesV2(data);
+            return rawBytesToDeckArray(bytes);
+        }
+        #region 卡组编码
+        /// <summary>
+        /// 将卡片ID数组转换为裸字节
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        private byte[] deckArrayToRawBytes(int[] deck)
+        {
+            byte[] dataBytes = new byte[deck.Length * sizeof(int)];
+
+            int offset = 0;
+            foreach (var item in deck)
+            {
+                BitConverter.GetBytes(item).CopyTo(dataBytes, offset);
+                offset += 4;
+            }
+            return dataBytes;
+        }
+
+        /// <summary>
+        /// 将裸字节转换为卡片ID数组
+        /// </summary>
+        /// <param name="rawBytes"></param>
+        /// <returns></returns>
+        private int[] rawBytesToDeckArray(byte[] rawBytes)
+        {
+            List<int> cards = new List<int>();
+            for (int i = 0; i < rawBytes.Length; i += 4)
+            {
+                var card = BitConverter.ToInt32(rawBytes, i);
+                cards.Add(card);
+            }
+            return cards.ToArray();
+        }
+
+        /// <summary>
+        /// 将卡片引用转换为裸字节
+        /// </summary>
+        /// <param name="deck"></param>
+        /// <returns></returns>
+        private byte[] defineRefToRawBytes(DefineReference[] deck)
+        {
+            byte[] bytes = new byte[deck.Length * (sizeof(int) + sizeof(long))];
+            int offset = 0;
+            foreach (var item in deck)
+            {
+                BitConverter.GetBytes(item.cardPoolId).CopyTo(bytes, offset);
+                offset += sizeof(long);
+                BitConverter.GetBytes(item.id).CopyTo(bytes, offset);
+                offset += sizeof(int);
+            }
+            return bytes;
+        }
+
+        /// <summary>
+        /// 裸字节转换为卡片引用
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        private DefineReference[] rawBytesToDefineRef(byte[] bytes)
+        {
+            List<DefineReference> cards = new List<DefineReference>();
+            for (int offset = 0; offset < bytes.Length; )
+            {
+                var cardPool = BitConverter.ToInt64(bytes, offset);
+                offset += sizeof(long);
+                var id = BitConverter.ToInt32(bytes, offset);
+                offset += sizeof(int);
+
+                cards.Add(new DefineReference(cardPool, id));
+            }
+            return cards.ToArray();
+        }
+        #endregion
+        #region 编码格式
+        /// <summary>
+        /// 卡组分享代码格式解码，V2版本
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        private byte[] decodeShareBytesV2(byte[] bytes)
+        {
+            var gzipBytes = zmcsV2ToGzip(bytes);
+            return gzipDecompress(gzipBytes);
+        }
+
+        /// <summary>
+        /// 卡组分享代码格式编码，V2版本
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="version">版本号</param>
+        /// <returns></returns>
+        private byte[] encodeShareBytesV2(byte[] bytes, byte version)
+        {
+            byte[] encByte = gzipCompress(bytes);
+            return gzipToZmcsV2(encByte, version);
+        }
+
+        /// <summary>
+        /// 将Gzip转换为卡组分享
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        private byte[] gzipToZmcsV2(byte[] bytes, byte version)
+        {
+            var srcLen = bytes.Length;
+            var dstLen = srcLen - 10;
+            // 去除10byte的文件头和4byte的尾部，加上3byte的新文件头
+            byte[] result = new byte[dstLen];
+
+            result[0] = ZMHeaderByte1;
+            result[1] = ZMHeaderByte2;
+            result[2] = version; // Version
+            result[3] = bytes[srcLen - 4]; // Len的MSB。因为它不会大于256，所以直接使用
+
+            Array.Copy(bytes, 10, result, 4, srcLen - 10 - 4);
+            return result;
+        }
+
+        /// <summary>
+        /// 将ZMCS卡组分享转换为标准Gzip
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private static byte[] zmcsV2ToGzip(byte[] data)
         {
             var bytes = new byte[data.Length + 10];
             var i = 0;
@@ -545,8 +672,7 @@ namespace Game
             bytes[i++] = 0;
             bytes[i++] = 0;
             bytes[i++] = 0;
-
-            return Byte2DeckV1(bytes);
+            return bytes;
         }
 
         /// <summary>
@@ -585,7 +711,7 @@ namespace Game
                 }
             }
         }
-
+        #endregion
         #endregion
     }
 
