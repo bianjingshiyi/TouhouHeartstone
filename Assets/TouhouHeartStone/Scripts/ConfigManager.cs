@@ -15,6 +15,7 @@ namespace Game
         const string keySE = "SE";
         const string keyFullScreen = "FullScreen";
         const string keyLanguage = "Language";
+        const string keyCache = "Cache Size";
 
         public class PlayerConfig
         {
@@ -23,6 +24,7 @@ namespace Game
             public float SE;
             public bool FullScreen;
             public string Language;
+            public float CacheSize;
         }
 
         public PlayerConfig Config { get; } = new PlayerConfig();
@@ -40,6 +42,7 @@ namespace Game
             Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
             Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.CurrentCulture.Name;
             MarkChange();
+            Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache):0.5f;
         }
 
         public void SaveConfig()
@@ -49,6 +52,7 @@ namespace Game
             PlayerPrefs.SetFloat(keySE, Config.SE);
             PlayerPrefs.SetInt(keyFullScreen, Config.FullScreen ? 1 : 0);
             PlayerPrefs.SetString(keyLanguage, Config.Language);
+            PlayerPrefs.SetFloat(keyCache, Config.CacheSize);
         }
 
         public void MarkChange()
@@ -64,7 +68,6 @@ namespace Game
         #region Volume
         [SerializeField]
         AudioMixer mixer;
-
         void updateVolumeMixer()
         {
             setVol(keyVolume, Config.Volume);
@@ -81,7 +84,6 @@ namespace Game
             if (p == 0) return -80;
             return 20 * Mathf.Log10(p);
         }
-
         #endregion Volume
     }
 }

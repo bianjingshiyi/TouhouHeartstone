@@ -12,8 +12,21 @@ namespace UI
 
         List<string> langItemList = new List<string>();
 
-        UnityEngine.UI.Dropdown langDropdown => LanguageGameOptionItemDropdown.DropdownLight.asDropdown;
+        GameOptionItemSlider _cacheSlider;
 
+        GameOptionItemSlider cacheSlider
+        {
+            get
+            {
+                if (!_cacheSlider)
+                {
+                    _cacheSlider = transform.Find("Setting/SettingContainer/Cache").GetComponent<GameOptionItemSlider>();
+                }
+                return _cacheSlider;
+            }
+        }
+
+        UnityEngine.UI.Dropdown langDropdown => LanguageGameOptionItemDropdown.DropdownLight.asDropdown;
         partial void onAwake()
         {
             VolumeGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
@@ -29,6 +42,11 @@ namespace UI
             SEGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
             {
                 config.Config.SE = vol;
+                config.MarkChange();
+            });
+            cacheSlider.Slider.onValueChanged.AddListener((cache) =>
+            {
+                config.Config.CacheSize = cache/2;
                 config.MarkChange();
             });
             BackButtonBlack.asButton.onClick.AddListener(() =>
@@ -61,6 +79,7 @@ namespace UI
             BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
             SEGameOptionItemSlider.Slider.value = config.Config.SE;
             FullScreenGameOptionItemToggle.Toggle.isOn = config.Config.FullScreen;
+            _cacheSlider.Slider.value = config.Config.CacheSize * 2;
 
             for (int i = 0; i < langItemList.Count; i++)
             {
@@ -81,5 +100,6 @@ namespace UI
             config.MarkChange();
         }
         bool _isUpdating = false;
+
     }
 }
