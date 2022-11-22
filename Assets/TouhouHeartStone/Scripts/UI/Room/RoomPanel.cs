@@ -440,15 +440,15 @@ namespace UI
         /// <param name="loading"></param>
         public void UpdateDownloadingUI(float loading)
         {
-            if(loading == 0)
-            {
-                loadingCircle.gameObject.SetActive(true);
-            }
             loadingCircle.LoadingUpdate(loading);
-            if (loading == 1)
-            {
-                loadingCircle.gameObject.SetActive(false);
-            }
+        }
+        public void DisplayDownloadingUI()
+        {
+            loadingCircle.Display();
+        }
+        public void HideDownloadingUI()
+        {
+            loadingCircle.Hide();
         }
         #endregion
         #region 私有方法

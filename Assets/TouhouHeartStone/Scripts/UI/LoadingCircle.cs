@@ -7,10 +7,18 @@ namespace UI
 {
     public class LoadingCircle : MonoBehaviour
     {
-        #region 私有方法
+        #region 公共方法
         public void LoadingUpdate(float loading)
         {
             circle.fillAmount = loading;
+        }
+        public void Display()
+        {
+            gameObject.SetActive(true);
+        }
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
         #endregion
 
