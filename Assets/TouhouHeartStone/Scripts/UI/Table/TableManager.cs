@@ -823,17 +823,14 @@ namespace Game
                 }
                 else if (usingCard.isItem())
                 {
-                    if (usingCard.isNeedTarget(game, out _))
+                    if (usingCard.isNeedTarget(game, out var targets))
                     {
-                        //进入选择目标状态，高亮可以选择的目标
-                        if (isOnTarget(pointer, out var target))
-                        {
-                            if (usingCard.isUsable(game, player, out info) && usingCard.isValidTarget(game, target))
-                                player.cmdUse(game, usingCard, 0, target);
-                            else
-                                showTip(info);
-                        }
-                        resetUse(true, false);
+                        usingPosition = 0;
+                        //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
+                        isSelectingTarget = true;
+                        highlightTargets(targets);
+                        ui.SelfSkill.isUsable = false;
+                        ui.SelfHandList.shrink();
                     }
                     else
                     {

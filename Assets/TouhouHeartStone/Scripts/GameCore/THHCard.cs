@@ -478,7 +478,12 @@ namespace TouhouHeartstone
         }
         public static string[] getKeywords(this Card card, IGame game)
         {
-            return card.getProp<string[]>(game, DEFINE.KEYWORDS);
+            var keywords = card.getProp<string[]>(game, DEFINE.KEYWORDS);
+            if (keywords != null)
+            {
+                return keywords;
+            }
+            return Array.Empty<string>();
         }
         public static bool hasKeyword(this Card card, IGame game, string keyword)
         {
