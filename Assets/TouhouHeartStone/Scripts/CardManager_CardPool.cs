@@ -119,18 +119,18 @@ namespace Game
         /// 保存卡池，如果卡池没有被保存过那么会被分配一个新的地址，否则会覆盖已经保存的文件。
         /// </summary>
         /// <param name="cardPoolInfo"></param>
-        /// <returns></returns>
-        public async Task saveCardPool(CardPoolInfo cardPoolInfo)
+        /// <returns>是否成功保存卡池。</returns>
+        public async Task<bool> saveCardPool(CardPoolInfo cardPoolInfo)
         {
             if (!Application.isEditor && isStandardCardPool(cardPoolInfo.cardPoolId))
             {
                 //不能修改标准卡池，虽然其实玩家想改也没人能阻止就是了，最多是和别人玩会失去同步吧。
                 game.ui.dialog.ShowConfirm(StringTable.INVALID_OPERATION, StringTable.EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL, null);
-                return;
+                return false;
             }
             //如果当前的卡池没有被保存过，没有分配地址，则给它分配一个地址。
             string cardPoolPath = null;
-            if (cardPoolInfo == null) { return; }//如果没有保存需求就跳过这个流程
+            if (cardPoolInfo == null) { return false; }//如果没有保存需求就跳过这个流程
             foreach (var pair in _cardPoolInfoDict)
             {
                 if (pair.Value.cardPoolId == cardPoolInfo.cardPoolId)
@@ -174,6 +174,7 @@ namespace Game
                 cardPool.toJson(true)//内容对象
             });
             Debug.Log("保存卡池" + path + "成功");
+            return true;
         }
         /// <summary>
         /// 从目标路径上加载卡池

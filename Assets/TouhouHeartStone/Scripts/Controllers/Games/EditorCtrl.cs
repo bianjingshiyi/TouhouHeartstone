@@ -210,11 +210,14 @@ namespace Controllers
         {
             if (hasUnsavedChanges)
             {
-                await game.card.saveCardPool(_curCardPoolInfo);
-                _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
-                int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
-                _cardPoolPathList[index] = _curCardPoolPath;
-                hasUnsavedChanges = false;//如果已经保存则不需要再提示保存
+                bool success = await game.card.saveCardPool(_curCardPoolInfo);
+                if (success)
+                {
+                    _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
+                    int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
+                    _cardPoolPathList[index] = _curCardPoolPath;
+                    hasUnsavedChanges = false;//如果已经保存则不需要再提示保存
+                }
             }
         }
         /// <summary>
