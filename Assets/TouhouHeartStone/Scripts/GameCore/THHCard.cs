@@ -408,14 +408,14 @@ namespace TouhouHeartstone
         }
         public static bool isFreeze(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.FROZEN);
+            return card.hasKeyword(game, KEYWORD.IS_FROZEN) || card.hasKeyword(game, KEYWORD.PERMANENT_FROZEN);
         }
         public static Task<IPropChangeEventArg> setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
-                return card.addKeywords(game, KEYWORD.FROZEN);
+                return card.addKeywords(game, KEYWORD.IS_FROZEN);
             else
-                return card.removeKeywords(game, KEYWORD.FROZEN);
+                return card.removeKeywords(game, KEYWORD.IS_FROZEN);
         }
         public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {
@@ -668,6 +668,7 @@ namespace TouhouHeartstone
         {
             card.setShield(game, card.hasKeyword(game, KEYWORD.SHIELD));
             card.setStealth(game, card.hasKeyword(game, KEYWORD.STEALTH));
+            card.setFreeze(game, card.hasKeyword(game, KEYWORD.FROZEN));
         }
         [TranslateMsg]
         const string NOT_YOUR_TURN = "这不是你的回合";

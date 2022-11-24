@@ -548,7 +548,8 @@ namespace Controllers
             KEYWORD.WINDFURY,
             KEYWORD.IMMUNITY,
             KEYWORD.SECRET,
-            KEYWORD.MISSION
+            KEYWORD.MISSION,
+            KEYWORD.PERMANENT_FROZEN
         };
         public static readonly string[] keywordNames = new string[]
         {
@@ -568,7 +569,8 @@ namespace Controllers
             StringTable.GAME_KEYWORD_WINDFURY,
             StringTable.GAME_KEYWORD_IMMUNITY,
             StringTable.GAME_KEYWORD_SECRET,
-            StringTable.GAME_KEYWORD_MISSION
+            StringTable.GAME_KEYWORD_MISSION,
+            StringTable.GAME_KEYWORD_PERMANENT_FROZEN
         };
         string[] _races;
         string[] _tags;

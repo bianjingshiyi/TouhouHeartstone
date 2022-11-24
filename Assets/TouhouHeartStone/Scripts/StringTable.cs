@@ -114,8 +114,10 @@ namespace Game
         public const string GAME_KEYWORD_POISONOUS = "致命";
         [TranslateMsg("游戏中的关键词魔免")]
         public const string GAME_KEYWORD_ELUSIVE = "魔免";
-        [TranslateMsg("游戏中的关键词禁锢")]
-        public const string GAME_KEYWORD_FREEZE = "禁锢";
+        [TranslateMsg("游戏中的关键词被禁锢")]
+        public const string GAME_KEYWORD_FREEZE = "被禁锢";
+        [TranslateMsg("游戏中的关键词永久禁锢")]
+        public const string GAME_KEYWORD_PERMANENT_FROZEN = "永久禁锢";
         [TranslateMsg("游戏中的关键词唯一")]
         public const string GAME_KEYWORD_UNIQUE = "唯一";
         [TranslateMsg("游戏中的关键词自动施放")]

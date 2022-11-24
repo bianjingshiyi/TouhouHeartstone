@@ -47,6 +47,10 @@
         /// </summary>
         public const string ELUSIVE = "elusive";
         /// <summary>
+        /// 被禁锢
+        /// </summary>
+        public const string IS_FROZEN = "isFrozen";
+        /// <summary>
         /// 被冰冻的
         /// </summary>
         public const string FROZEN = "frozen";
@@ -95,5 +99,9 @@
         /// 遗言
         /// </summary>
         public const string DEATHRATTLE = "deathRattle";
+        /// <summary>
+        /// 永久禁锢
+        /// </summary>
+        public const string PERMANENT_FROZEN = "permanentFrozen";
     }
 }

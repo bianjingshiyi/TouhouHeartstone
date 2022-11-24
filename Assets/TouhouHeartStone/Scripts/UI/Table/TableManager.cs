@@ -496,7 +496,7 @@ namespace Game
                 master.ShieldImage.display();
             else
                 master.ShieldImage.hide();
-            if (card.hasKeyword(game, KEYWORD.FROZEN))
+            if (card.isFreeze(game))
             {
                 master.onShackleTrue.invokeBeforeAnim();
                 master.onShackleTrue.invokeAfterAnim();
@@ -1312,7 +1312,7 @@ namespace Game
                 servant.onLifeStealFalse.invokeBeforeAnim();
                 servant.onLifeStealFalse.invokeAfterAnim();
             }
-            if (card.hasKeyword(game, KEYWORD.FROZEN))
+            if (card.isFreeze(game))
             {
                 servant.onShackleTrue.invokeBeforeAnim();
                 servant.onShackleTrue.invokeAfterAnim();

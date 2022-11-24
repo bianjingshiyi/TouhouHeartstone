@@ -29,6 +29,10 @@ namespace TouhouHeartstone
             {
                 card.setStealth(game, true);
             }
+            if (value.Contains(KEYWORD.FROZEN))
+            {
+                card.setFreeze(game, true);
+            }
             return task;
         }
         public override string[] calc(IGame game, Card card, string[] value)

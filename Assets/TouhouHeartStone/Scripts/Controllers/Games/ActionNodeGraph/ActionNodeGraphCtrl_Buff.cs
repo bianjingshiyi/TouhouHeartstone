@@ -202,6 +202,7 @@ namespace Controllers
                 Sprite sprite = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId);
                 item.setBuffSkin(buffSkin.name, buffSkin.desc, sprite);
             }
+            OnEdited();
         }
         private string[] getBuffDefinePropertyTypes()
         {
