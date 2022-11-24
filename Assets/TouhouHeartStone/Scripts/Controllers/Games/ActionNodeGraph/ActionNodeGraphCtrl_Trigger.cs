@@ -30,6 +30,7 @@ namespace Controllers
             _trigger.eventName = getEventTypeNameByIndex(typeIndex);
             //TODO:切换事件要断开所有事件变量引用连接
             _entryNodeItem.setOutputs(getTriggerOutputViewData());
+            OnEdited();
         }
         /// <summary>
         /// 当用户更改触发器的事件名称，将事件名称改为更改值
@@ -48,6 +49,7 @@ namespace Controllers
             if (_trigger.condition == null)
                 _trigger.condition = new ActionValueRef();
             await openValueRefGraph(_trigger.condition);
+            OnEdited();
         }
         /// <summary>
         /// 当用户点击新增目标按钮，为当前触发器新建目标检查器，然后在UI列表中新增项目
@@ -56,10 +58,12 @@ namespace Controllers
         {
             _trigger.targetCheckerList.Add(new TargetChecker(string.Empty, new ActionValueRef(null, 0), string.Empty));
             _entryNodeItem.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData());
+            OnEdited();
         }
         private void onTargetCheckerTypeValueChanged(int index, int value)
         {
             _trigger.targetCheckerList[index].targetType = _targetCheckerTypes[value];
+            OnEdited();
         }
         /// <summary>
         /// 当用户点击编辑目标按钮，将当前的编辑信息入栈，打开目标编辑
@@ -69,6 +73,7 @@ namespace Controllers
         {
             pushCurEditObjectToStack();
             await openTargetCheckerGraph(_trigger.targetCheckerList[index]);
+            OnEdited();
         }
         /// <summary>
         /// 当用户点击删除目标按钮，为当前触发器删除目标检查器，然后在UI列表中也删除对应索引项目
@@ -78,10 +83,12 @@ namespace Controllers
         {
             _trigger.targetCheckerList.RemoveAt(index);
             _entryNodeItem.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData());
+            OnEdited();
         }
         private void onTargetCheckerErrorTipValueChanged(int index, string value)
         {
             _trigger.targetCheckerList[index].errorTip = value;
+            OnEdited();
         }
         #endregion
         /// <summary>

@@ -158,6 +158,13 @@ namespace Controllers
         #endregion
         #region 事件回调
         /// <summary>
+        /// 进行效果修改后将编辑器的未保存状态设置为true。
+        /// </summary>
+        private void OnEdited()
+        {
+            scene.editor.hasUnsavedChanges = true;
+        }
+        /// <summary>
         /// 当用户长按背景，展开菜单。目前点菜单内容只有创建节点。
         /// </summary>
         /// <param name="posX"></param>
@@ -273,6 +280,7 @@ namespace Controllers
                 }
             }
             _curEditActionNode = null;
+            OnEdited();
         }
         /// <summary>
         /// 当用户连接节点，检查一下连接的合法性，如果合法那么连接，否则提示。
@@ -449,6 +457,7 @@ namespace Controllers
                     connectNode4ValueRef(outputActionNode, outputIndex - outputBranchesCount, inputActionNode, inputIndex - 1);
                 }
             }
+            OnEdited();
         }
         /// <summary>
         /// 当用户断开节点连接
@@ -505,6 +514,7 @@ namespace Controllers
                     unconnectNode4ValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputActionNode, inputIndex - 1);
                 }
             }
+            OnEdited();
         }
         /// <summary>
         /// 当左击动作节点
@@ -571,6 +581,7 @@ namespace Controllers
             nodeInfo.posY = graphPosition.y - (rootActionNodeItem.transform as RectTransform).anchoredPosition.y;
             _ui.moveActionNodeTo(actionNodeItem, graphPosition);
             updateContentSize();
+            OnEdited();
         }
         /// <summary>
         /// 当用户更改节点的常量值，设置对应的常量。
@@ -592,6 +603,7 @@ namespace Controllers
                 var actionNode = getActionNode(actionNodeItem);
                 actionNode.consts[constIndex] = value;
             }
+            OnEdited();
         }
         private async void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
         {
@@ -665,6 +677,7 @@ namespace Controllers
                 _curEditActionNodeConstIndex = index;
                 _curEditActionNodeConstItemIndex = itemIndex;
             }
+            OnEdited();
         }
         private async void onClickCardSelectPanelCard(CardDefine cardDefine)
         {

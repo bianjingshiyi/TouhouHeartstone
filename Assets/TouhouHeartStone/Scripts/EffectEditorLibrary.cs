@@ -612,6 +612,26 @@ namespace Game
         {
             return array[index];
         }
+        [TranslateMsg("编辑器_动作节点_遍历")]
+        public const string EDITOR_NODE_NAME_FOREACH = "遍历";
+        /// <summary>
+        /// 遍历集合
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_NAME_FOREACH, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        public static async Task foreachAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION)] ActionNode action,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
+        {
+            if (action == null)
+                return;
+            Scope childScope = new Scope(scope);
+            foreach (object ele in array)
+            {
+                scope.setOutParamValue(0, ele);
+                await game.doActionsAsync(card, buff, eventArg, action, childScope);
+            }
+        }
         #endregion
 
         //  事件处理
