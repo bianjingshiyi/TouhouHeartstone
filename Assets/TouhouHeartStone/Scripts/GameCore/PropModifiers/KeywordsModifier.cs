@@ -23,11 +23,11 @@ namespace TouhouHeartstone
             Task task = base.afterAdd(game, card);
             if (value.Contains(KEYWORD.SHIELD))
             {
-                card.setShield(game, true);
+                card.addKeywords(game, KEYWORD.HAS_SHIELD);
             }
             if (value.Contains(KEYWORD.STEALTH))
             {
-                card.setStealth(game, true);
+                card.addKeywords(game, KEYWORD.HAS_STEALTH);
             }
             if (value.Contains(KEYWORD.FROZEN))
             {

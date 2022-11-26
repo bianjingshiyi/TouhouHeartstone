@@ -353,25 +353,37 @@ namespace TouhouHeartstone
         }
         public static bool isShield(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.HAS_SHIELD);
+            return card.hasKeyword(game, KEYWORD.SHIELD) && card.hasKeyword(game, KEYWORD.HAS_SHIELD);
         }
         public static void setShield(this Card card, IGame game, bool value)
         {
             if (value)
+            {
+                card.addKeywords(game, KEYWORD.SHIELD);
                 card.addKeywords(game, KEYWORD.HAS_SHIELD);
+            }
             else
+            {
+                card.removeKeywords(game, KEYWORD.SHIELD);
                 card.removeKeywords(game, KEYWORD.HAS_SHIELD);
+            }
         }
         public static bool isStealth(this Card card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.HAS_STEALTH) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
+            return (card.hasKeyword(game, KEYWORD.STEALTH) && card.hasKeyword(game, KEYWORD.HAS_STEALTH)) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
         }
         public static void setStealth(this Card card, IGame game, bool value)
         {
             if (value)
+            {
+                card.addKeywords(game, KEYWORD.STEALTH);
                 card.addKeywords(game, KEYWORD.HAS_STEALTH);
+            }
             else
+            {
+                card.removeKeywords(game, KEYWORD.STEALTH);
                 card.removeKeywords(game, KEYWORD.HAS_STEALTH);
+            }
         }
         public static bool isDrain(this Card card, IGame game)
         {
@@ -476,9 +488,16 @@ namespace TouhouHeartstone
             }
             return result;
         }
-        public static string[] getKeywords(this Card card, IGame game)
+        /// <summary>
+        /// 获取关键词数组。
+        /// </summary>
+        /// <param name="card">卡牌。</param>
+        /// <param name="game">游戏。</param>
+        /// <param name="raw">是否忽略修改器。</param>
+        /// <returns>关键词列表。</returns>
+        public static string[] getKeywords(this Card card, IGame game, bool raw = false)
         {
-            var keywords = card.getProp<string[]>(game, DEFINE.KEYWORDS);
+            var keywords = card.getProp<string[]>(game, DEFINE.KEYWORDS, raw);
             if (keywords != null)
             {
                 return keywords;
@@ -497,7 +516,7 @@ namespace TouhouHeartstone
 
         public static Task<IPropChangeEventArg> addKeywords(this Card card, IGame game, params string[] keywords)
         {
-            string[] oldKeywords = card.getKeywords(game);
+            string[] oldKeywords = card.getKeywords(game, true);
             if (oldKeywords == null)
                 oldKeywords = keywords;
             else
@@ -513,7 +532,7 @@ namespace TouhouHeartstone
         }
         public static Task<IPropChangeEventArg> removeKeywords(this Card card, IGame game, params string[] keywords)
         {
-            List<string> keywordList = new List<string>(card.getKeywords(game));
+            List<string> keywordList = new List<string>(card.getKeywords(game, true));
             foreach (var keyword in keywords)
             {
                 if (keywordList.Contains(keyword))
@@ -666,8 +685,14 @@ namespace TouhouHeartstone
         /// <param name="game"></param>
         public static void InitConsumableKeywords(this Card card, CardEngine game)
         {
-            card.setShield(game, card.hasKeyword(game, KEYWORD.SHIELD));
-            card.setStealth(game, card.hasKeyword(game, KEYWORD.STEALTH));
+            if (card.hasKeyword(game, KEYWORD.SHIELD))
+            {
+                card.addKeywords(game, KEYWORD.HAS_SHIELD);
+            }
+            if (card.hasKeyword(game, KEYWORD.STEALTH))
+            {
+                card.addKeywords(game, KEYWORD.HAS_STEALTH);
+            }
             card.setFreeze(game, card.hasKeyword(game, KEYWORD.FROZEN));
         }
         [TranslateMsg]

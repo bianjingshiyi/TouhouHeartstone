@@ -266,7 +266,7 @@ namespace TouhouHeartstone.Builtin
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async (g, c, t) => { await t.addKeywords(g, KEYWORD.HAS_STEALTH); },
+            new LambdaSingleTargetEffect(async (g, c, t) => { await t.addKeywords(g, KEYWORD.STEALTH, KEYWORD.HAS_STEALTH); },
                 PileFlag.both | PileFlag.field)
         };
 
