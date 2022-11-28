@@ -436,6 +436,14 @@ namespace Game
                         Debug.LogError("动作节点" + actionNode.id + "的名称未知：" + actionNode.defineName);
                     }
                 }
+                for (int i = 0; i < actionNode.consts.Length; i++)
+                {
+                    if (actionNode.consts[i] is CardReference cardRef)
+                    {
+                        //CardReference过期，使用DefineReference替代
+                        actionNode.consts[i] = new DefineReference(cardRef.cardPoolId, cardRef.cardId);
+                    }
+                }
             }
             void fixTriggerIncorrectData(TriggerGraph trigger)
             {
@@ -801,7 +809,10 @@ namespace Game
                 }
             }
         }
-
+        public Task<Sprite> loadCardImage(DefineReference defRef)
+        {
+            return loadCardImage(defRef.cardPoolId, defRef.defineId);
+        }
         public string getCardPoolPathRootDir(string path)
         {
             DirectoryInfo dirInfo = Directory.GetParent(path);
@@ -923,6 +934,10 @@ namespace Game
             CardPool cardPool;
             try
             {
+                //json = json.Replace("CardReference", "DefineReference");
+                //json = Regex.Replace(json,
+                //    "\"cardPoolId\"\\s*:\\s*(?<cardPoolId>-?\\d+)\\s*,\\s*\"(cardId|id)\"\\s*:\\s*(?<defineId>-?\\d+)",
+                //    "\"cardPoolId\" : ${cardPoolId}, \"defineId\" : ${id}");
                 SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
                 cardPool = serializableCardPool.toCardPool(game.editor.getTypeByName);
                 for (int i = 0; i < cardPool.cardDefineList.Count; i++)

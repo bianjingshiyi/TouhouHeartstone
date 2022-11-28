@@ -15,10 +15,7 @@ namespace Game
         }
         public long NewId()
         {
-            long startTime = new DateTime(2022, 11, 11, 0, 0, 0, 0).Ticks / 10000;
-
-            DateTime nowUTC = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
-            long timestamp = nowUTC.Ticks / 10000;
+            long timestamp = (long)(DateTime.Now - startTime).TotalSeconds;
             if (timestamp < lastTimestamp)
             {
                 throw new SnowflakeException("当前时间戳早于上一次生成时的时间戳。");
@@ -28,7 +25,7 @@ namespace Game
                 throw new SnowflakeException("尝试在生成的1秒冷却中再次生成一个Id。");
             }
             lastTimestamp = timestamp;
-            return (playerKey << playerKeyShift) | ((timestamp - startTime) & timestampMask);
+            return (playerKey << playerKeyShift) | (timestamp & timestampMask);
         }
         #endregion
 
@@ -41,11 +38,15 @@ namespace Game
         //private const long startTime = new DateTime(2022, 11, 11, 0, 0, 0, 0).Second;
         //时间戳位数。
         private const int timestampBits = 30;
-        private const int timestampMask = 1 << timestampBits - 1;
+        /// <summary>
+        /// 时间戳占最后30位，以秒计算可以表示17年
+        /// </summary>
+        private const int timestampMask = 0x3FFFFFFF;
         //玩家Key位数。
         private const int playerKeyBits = 32;
         //玩家Key的位数偏移。
         private const int playerKeyShift = timestampBits;
+        private readonly DateTime startTime = new DateTime(2022, 11, 11, 0, 0, 0, 0);
         #endregion
     }
     public class SnowflakeException : Exception

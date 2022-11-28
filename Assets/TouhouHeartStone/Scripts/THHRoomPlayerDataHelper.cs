@@ -9,14 +9,14 @@ namespace Game
         public const string PROP_DECK = "deck";
         public static void setDeck(this IRoomPlayer playerData, Deck deck)
         {
-            playerData.setProp(PROP_DECK, deck.toIdArray(true));
+            playerData.setProp(PROP_DECK, deck.toDefRefArray(true));
         }
         public static Deck getDeck(this IRoomPlayer playerData)
         {
             if (!playerData.hasProp(PROP_DECK))
                 return null;
-            int[] idArray = playerData.getProp<int[]>(PROP_DECK);
-            return new Deck(idArray[0], idArray.Skip(1));
+            DefineReference[] defRefs = playerData.getProp<DefineReference[]>(PROP_DECK);
+            return new Deck(defRefs[0], defRefs.Skip(1));
         }
 
         public const string PROP_READY = "ready";

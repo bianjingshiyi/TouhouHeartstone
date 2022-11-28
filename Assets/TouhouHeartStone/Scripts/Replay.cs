@@ -52,7 +52,9 @@ namespace Game
             players = game.players.Select(p =>
             {
                 var player = new RoomPlayerInfo() { RoomID = p.id, name = p.name };
-                player.setDeck(new Deck(p.getMaster().define.id, p.getDeck().Select(c => c.define.id).ToArray()));
+                player.setDeck(new Deck(
+                    new DefineReference(p.getMaster().define.cardPoolId, p.getMaster().define.id),
+                    p.getDeck().Select(c => new DefineReference(c.define.cardPoolId, c.define.id)).ToArray()));
                 return player;
             }).ToArray();
         }

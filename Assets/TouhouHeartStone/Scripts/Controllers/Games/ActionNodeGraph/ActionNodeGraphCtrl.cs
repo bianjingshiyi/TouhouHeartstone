@@ -151,7 +151,7 @@ namespace Controllers
                 languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
             }
             _ui.init(
-                languages, 
+                languages,
                 getEventTypeNamesForEditor(),
                 Array.ConvertAll(CardEditorCtrl.keywordNames, s => game.langManager.getString(s)),
                 CardEditorCtrl.keywords);
@@ -627,7 +627,7 @@ namespace Controllers
                 if (actionNode.consts[index] is DefineReference value)
                 {
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(value.id, cardPoolsId: new long[] { value.cardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(value.defineId, cardPoolsId: new long[] { value.cardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -660,7 +660,7 @@ namespace Controllers
                         value[itemIndex] = new DefineReference();
                     }
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(value[itemIndex].id, new long[] { value[itemIndex].cardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(value[itemIndex].defineId, new long[] { value[itemIndex].cardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -691,7 +691,7 @@ namespace Controllers
                 _curEditActionNode.consts[_curEditActionNodeConstIndex] = new DefineReference()
                 {
                     cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
-                    id = cardDefine.id
+                    defineId = cardDefine.id
                 };
             }
             else
@@ -699,7 +699,7 @@ namespace Controllers
                 (_curEditActionNode.consts[_curEditActionNodeConstIndex] as DefineReference[])[_curEditActionNodeConstItemIndex] = new DefineReference()
                 {
                     cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
-                    id = cardDefine.id
+                    defineId = cardDefine.id
                 };
             }
             ActionNodeItem actionNodeItem = getActionNodeItem(_curEditActionNode);
@@ -1142,15 +1142,20 @@ namespace Controllers
                 {
                     //节点没有增益，那么就为它新建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
-                    actionNode.consts = new object[] { generatedBuffDefine.id };
+                    actionNode.consts = new object[] { new DefineReference(generatedBuffDefine.cardPoolId, generatedBuffDefine.id) };
                     //同时还有增益的皮肤，也要新建一个
                     buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
-                else if (!(actionNode.consts[0] is int buffDefineId && game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine)))
+                else if (!((actionNode.consts[0] is DefineReference buffDefRef &&
+                    game.card.tryGetBuffDefine(buffDefRef.cardPoolId, buffDefRef.defineId, out GeneratedBuffDefine buffDefine)) ||
+                    (actionNode.consts[0] is CardReference buffRef &&
+                    game.card.tryGetBuffDefine(buffRef.cardPoolId, buffRef.cardId, out buffDefine)) ||
+                    (actionNode.consts[0] is int buffDefRefId &&
+                    game.card.tryGetBuffDefine(_curCardPoolId, buffDefRefId, out buffDefine))))
                 {
                     //读到了增益id，但是查无此增益，那么重新创建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
-                    actionNode.consts[0] = generatedBuffDefine.id;
+                    actionNode.consts[0] = new DefineReference(_curCardPoolId, generatedBuffDefine.id);
                     //皮肤也要新建一个
                     buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
@@ -1163,10 +1168,17 @@ namespace Controllers
                     if (buffSkin == null)
                     {
                         //如果不存在皮肤，那就创建一个
-                        buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
+                        buffSkin = game.card.createBuffSkin(
+                            generatedBuffDefine.cardPoolId,
+                            generatedBuffDefine.id,
+                            game.langManager.getLanguage());
                     }
                 }
-                BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
+                BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId)
+                    .OrderBy(p => p.Value.cardPoolId)
+                    .ThenBy(p => p.Value.id)
+                    .Select(p => p.Value)
+                    .ToArray();
                 actionNodeItem = _ui.createNodeForBuff(posX, posY, new ActionNodeBuffViewData()
                 {
                     buffNames = buffDefines.Select(b => b.ToString()).ToArray(),
@@ -1174,7 +1186,7 @@ namespace Controllers
                     buffLanguageIndex = Array.IndexOf(game.langManager.getLanguages(), buffSkin.language),
                     buffName = buffSkin.name,
                     buffDesc = buffSkin.desc,
-                    buffImage = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId),
+                    buffImage = await game.card.loadImage(buffSkin.imagePath, generatedBuffDefine.cardPoolId),
                     propertyTypes = getBuffDefinePropertyTypes(),
                     propModifiersViewData = getBuffDefinePropModifiersViewData(generatedBuffDefine),
                     effectTypeNames = game.card.getEffectNames(),
@@ -1198,7 +1210,7 @@ namespace Controllers
                         CardDefine cardDefine = null;
                         if (actionNode.consts[i] is DefineReference cardReference)
                         {
-                            cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.id);
+                            cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.defineId);
                         }
                         if (cardDefine != null)
                         {
@@ -1224,7 +1236,7 @@ namespace Controllers
                                 CardDefine cardDefine = null;
                                 if (cardRefArray[j] is DefineReference cardReference)
                                 {
-                                    cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.id);
+                                    cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.defineId);
                                 }
                                 if (cardDefine != null)
                                 {

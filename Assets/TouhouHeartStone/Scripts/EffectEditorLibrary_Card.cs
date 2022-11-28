@@ -23,7 +23,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] DefineReference cardRef)
         {
-            return game.getDefine(cardRef.cardPoolId, cardRef.id);
+            return game.getDefine(cardRef.cardPoolId, cardRef.defineId);
         }
         /// 获取卡牌定义列表
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY, StringTable.EDITOR_NODE_CATEGORY_CARD)]
@@ -35,7 +35,7 @@ namespace Game
             CardDefine[] cardDefines = new CardDefine[cardRefs.Length];
             for (int i = 0; i < cardRefs.Length; i++)
             {
-                cardDefines[i] = game.getDefine(cardRefs[i].cardPoolId, cardRefs[i].id);
+                cardDefines[i] = game.getDefine(cardRefs[i].cardPoolId, cardRefs[i].defineId);
             }
             return cardDefines;
         }

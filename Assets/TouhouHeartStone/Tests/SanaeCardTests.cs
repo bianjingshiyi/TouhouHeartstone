@@ -377,10 +377,10 @@ namespace Tests
                 you.cmdUse<YasakaKanako>(game, targets: oppo.getMaster());
                 DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
                 Assert.NotNull(discoverRequest);
-                int id = discoverRequest.cardIdArray[i];
+                DefineReference defRef = discoverRequest.cardRefArray[i];
                 int handCount = you.getHand().count;
-                you.cmdDiscover(game, id);
-                CardDefine card = game.getDefine(id);
+                you.cmdDiscover(game, defRef);
+                CardDefine card = game.getDefine(defRef);
                 switch (card)
                 {
                     case GodMiracleOfRain _:

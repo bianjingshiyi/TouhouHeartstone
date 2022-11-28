@@ -117,13 +117,24 @@ namespace Game
             ReplayItemViewData[] viewDatas = new ReplayItemViewData[fileHeads.Length];
             for (int i = 0; i < fileHeads.Length; i++)
             {
-                int[] masterIds = BsonSerializer.Deserialize<int[]>(fileHeads[i][0]);
-                viewDatas[i] = new ReplayItemViewData()
+                if (BsonSerializer.Deserialize<int[]>(fileHeads[i][0]) is int[] masterIds)
                 {
-                    name = Path.GetFileNameWithoutExtension(_paths[i]),
-                    playerAMasterId = masterIds[0],
-                    playerBMasterId = masterIds[1]
-                };
+                    viewDatas[i] = new ReplayItemViewData()
+                    {
+                        name = Path.GetFileNameWithoutExtension(_paths[i]),
+                        playerAMasterDefRef = new DefineReference(0, masterIds[0]),
+                        playerBMasterDefRef = new DefineReference(0, masterIds[1])
+                    };
+                }
+                else if (BsonSerializer.Deserialize<DefineReference[]>(fileHeads[i][0]) is DefineReference[] masterDefRefs)
+                {
+                    viewDatas[i] = new ReplayItemViewData()
+                    {
+                        name = Path.GetFileNameWithoutExtension(_paths[i]),
+                        playerAMasterDefRef = masterDefRefs[0],
+                        playerBMasterDefRef = masterDefRefs[1]
+                    };
+                }
             }
             _ui.updateView(new ReplaySelectViewData()
             {
@@ -445,7 +456,7 @@ namespace Game
             }
             else
             {
-                _playerKey = new System.Random().Next();
+                _playerKey = Guid.NewGuid().GetHashCode();
                 PlayerPrefs.SetInt("PlayerKey", _playerKey);
             }
             _snowflakeGen = new SnowflakeGenerator(_playerKey);

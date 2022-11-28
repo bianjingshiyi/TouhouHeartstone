@@ -1,4 +1,5 @@
 ﻿using System;
+using TouhouCardEngine;
 
 namespace TouhouHeartstone
 {
@@ -6,5 +7,6 @@ namespace TouhouHeartstone
     public class DiscoverResponse : Response
     {
         public int cardId;
+        public DefineReference cardDefRef;
     }
 }

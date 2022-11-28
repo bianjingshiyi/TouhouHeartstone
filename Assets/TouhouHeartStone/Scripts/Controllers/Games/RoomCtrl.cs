@@ -484,7 +484,7 @@ namespace Controllers
                 {
                     viewData[i].characterName = string.Empty;
                 }
-                else if (game.card.tryGetCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.id, out CardSkinData skin))
+                else if (game.card.tryGetCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId, out CardSkinData skin))
                 {
                     viewData[i].characterName = skin.name;
                 }
@@ -515,7 +515,7 @@ namespace Controllers
                 long[] cardPoolList = deck.getCardPools();
 
                 viewData[i].name = deck.name;
-                viewData[i].image = await game.card.loadCardImage(deck.masterCardRef.cardPoolId, deck.masterCardRef.id);
+                viewData[i].image = await game.card.loadCardImage(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId);
 
                 bool warning = false;
                 // 判断牌组是否合法。

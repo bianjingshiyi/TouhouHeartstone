@@ -23,10 +23,10 @@ namespace Controllers
             updatePVEModeUI();
         }
         #endregion
-        
+
         #region 私有方法
 
-        
+
         #region 生命周期
         protected void Awake()
         {
@@ -71,7 +71,7 @@ namespace Controllers
         // {
         //     _currentRoomData.getOption().timeoutForTurn = value;
         // }
-        
+
         /// <summary>
         /// 当用户选中了第index个卡组
         /// </summary>
@@ -86,7 +86,7 @@ namespace Controllers
 
         #endregion
         #region 实现方法
-        
+
         /// <summary>
         /// 返回主界面
         /// </summary>
@@ -95,7 +95,7 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             scene.menu.display();
         }
-        
+
         /// <summary>
         /// 是否已经选择卡组
         /// </summary>
@@ -117,7 +117,7 @@ namespace Controllers
             //TODO:这里判断是否准备下一步了
             return false;
         }
-        
+
         /// <summary>
         /// 更新游戏准备按钮，是否允许用户进入下一步。
         /// 第一步：选择玩家卡组。
@@ -129,7 +129,7 @@ namespace Controllers
             {
                 if (isGameReady())
                 {
-                    
+
                 }
             }
             else
@@ -137,7 +137,7 @@ namespace Controllers
                 // 未选中卡组，不可以下一步
             }
         }
-        
+
         /// <summary>
         /// 更新当前PVE模式的UI内容
         /// </summary>
@@ -174,7 +174,7 @@ namespace Controllers
         {
             //TODO:当用户选择卡组之后，要展示卡组的内容，把编辑器界面里面右边那个挪过来
         }
-        
+
         /// <summary>
         /// 更新可选择的当前的卡组列表
         /// </summary>
@@ -185,17 +185,17 @@ namespace Controllers
             for (int i = 0; i < viewData.Length; i++)
             {
                 viewData[i].name = deckList[i].name;
-                viewData[i].image = await game.card.loadCardImage(deckList[i].masterId);
+                viewData[i].image = await game.card.loadCardImage(deckList[i].masterCardRef);
                 viewData[i].isWarning = !game.deck.isValidDeck(deckList[i]);
             }
-            
+
             // TODO:这里需要一个控件来传入deck数据，并且展示出来
             _ui.displayDeckSelectPanel(viewData);
         }
         #endregion
-        
+
         #endregion
-        
+
         #region 属性字段
         public bool isDisplay => _isDisplay;
         [SerializeField]
@@ -209,7 +209,7 @@ namespace Controllers
         Deck _selectedDeck = null;
         #endregion
         #region 内部类
-        
+
         #endregion
     }
 }

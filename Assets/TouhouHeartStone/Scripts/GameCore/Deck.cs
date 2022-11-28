@@ -90,7 +90,7 @@ namespace TouhouHeartstone
         {
             return cardRefList.Sum(item => item.count);
         }
-        public DefineReference[] toCardRefArray(bool includeMasterCard = true)
+        public DefineReference[] toDefRefArray(bool includeMasterCard = true)
         {
             List<DefineReference> list = includeMasterCard ? new List<DefineReference>
             {
@@ -98,7 +98,7 @@ namespace TouhouHeartstone
             } : new List<DefineReference>();
             foreach (var item in cardRefList)
             {
-                if (item.cardRef == null || item.cardRef.cardPoolId == 0 || item.cardRef.id == 0)
+                if (item.cardRef == null || item.cardRef.cardPoolId == 0 || item.cardRef.defineId == 0)
                     continue;
                 if (item.count < 1)
                     continue;

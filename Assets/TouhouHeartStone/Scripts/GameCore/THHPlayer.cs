@@ -270,53 +270,6 @@ namespace TouhouHeartstone
                 return item.die(game);
             return Task.CompletedTask;
         }
-
-
-        public class SelectEventArg : EventArg
-        {
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { name = "玩家", type = typeof(Player) },
-                    new EventVariableInfo() { name = "选项", type = typeof(int[]) }
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { name = "玩家", type = typeof(Player) },
-                    new EventVariableInfo() { name = "选项", type = typeof(int[]) },
-                    new EventVariableInfo() { name = "所选选项", type = typeof(int) }
-                };
-            }
-            /// <summary>
-            /// 进行选择的玩家
-            /// </summary>
-            public Player player
-            {
-                get { return getVar<Player>("玩家"); }
-                set { setVar("玩家", value); }
-            }
-            /// <summary>
-            /// 提供的选择
-            /// </summary>
-            public int[] options
-            {
-                get { return getVar<int[]>("选项"); }
-                set { setVar("选项", value); }
-            }
-            /// <summary>
-            /// 玩家的选择
-            /// </summary>
-            public int selected
-            {
-                get { return getVar<int>("所选选项"); }
-                set { setVar("所选选项", value); }
-            }
-        }
-
         /// <summary>
         /// 让玩家从提供的卡牌定义中选择一张，创建相应卡牌并置入手牌中
         /// </summary>
@@ -847,6 +800,12 @@ namespace TouhouHeartstone
             {
                 cardId = cardId
             };
+            game.logPlayerAction(player.id, resp);
+            return game.answers.answer(player.id, resp);
+        }
+        public static Task cmdDiscover(this Player player, CardEngine game, DefineReference cardDefRef)
+        {
+            var resp = new DiscoverResponse() { cardDefRef = cardDefRef };
             game.logPlayerAction(player.id, resp);
             return game.answers.answer(player.id, resp);
         }

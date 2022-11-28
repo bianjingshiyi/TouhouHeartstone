@@ -11,7 +11,7 @@ namespace TouhouHeartstone
         }
         public static bool isMaster(this CardDefine card)
         {
-            return card.type == DEFINE.MASTER;
+            return card.type == DEFINE.MASTER || card is MasterCardDefine;
         }
         public static bool isSkill(this CardDefine card)
         {

@@ -252,9 +252,9 @@ namespace Game
         #region 增益
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE, StringTable.EDITOR_NODE_CATEGORY_BUFF, "GetBuffDefine")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]
-        public static BuffDefine getBuffDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ID, isConst: true)] int id)
+        public static BuffDefine getBuffDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ID, isConst: true)] DefineReference defRef)
         {
-            return game.getBuffDefine(id);
+            return game.getBuffDefine(defRef.cardPoolId, defRef.defineId);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_THIS_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "ThisBuff")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]

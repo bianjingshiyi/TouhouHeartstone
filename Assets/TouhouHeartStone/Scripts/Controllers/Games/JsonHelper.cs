@@ -17,6 +17,8 @@ namespace Controllers
         {
             if (!BsonClassMap.IsClassMapRegistered(typeof(DefineReference)))
                 BsonClassMap.RegisterClassMap<DefineReference>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(CardReference)))
+                BsonClassMap.RegisterClassMap<CardReference>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(ActionValueRef)))
                 BsonClassMap.RegisterClassMap<ActionValueRef>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedEffect)))

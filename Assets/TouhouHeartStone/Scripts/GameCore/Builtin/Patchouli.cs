@@ -336,15 +336,28 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect((g1,c1)=>
             {
                 c1.damage(g1,c1,1);
-                return c1.getOwner().addRandomCardToHand(g1,g1.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
-
+                return c1.getOwner().addRandomCardToHand(g1,g1.getDefines(new DefineReference[]
+                {
+                    new DefineReference(0, MetalFatigue.ID),
+                    new DefineReference(0, SylphyHorn.ID),
+                    new DefineReference(0, PrincessUndine.ID),
+                    new DefineReference(0, AgniShine.ID),
+                    new DefineReference(0, TrilithonShake.ID)
+                }));
             }),
             new ItemTrigggerEffectBefore<HearthStoneRule.TurnEndEventArg>((g1,c1,b1,a1)=>
             {
                 return a1.player==c1.getOwner();
-            },(g2,c2,b2,a2)=>
+            }, (g2, c2, b2, a2)=>
             {
-                return c2.getOwner().addRandomCardToHand(g2,g2.getDefines(new int[]{ MetalFatigue.ID,SylphyHorn.ID,PrincessUndine.ID,AgniShine.ID,TrilithonShake.ID }));
+                return c2.getOwner().addRandomCardToHand(g2,g2.getDefines(new DefineReference[]
+                {
+                    new DefineReference(0, MetalFatigue.ID),
+                    new DefineReference(0, SylphyHorn.ID),
+                    new DefineReference(0, PrincessUndine.ID),
+                    new DefineReference(0, AgniShine.ID),
+                    new DefineReference(0, TrilithonShake.ID)
+                }));
             })
         };
 
@@ -688,7 +701,14 @@ namespace TouhouHeartstone.Builtin
 
         static Task effect(CardEngine game, Card card)
         {
-            return card.getOwner().addRandomCardToHand(game, game.getDefines(new int[] { AutumnEdge.ID, SpringWind.ID, WinterElement.ID, SummerRed.ID, DoyouSpear.ID }));
+            return card.getOwner().addRandomCardToHand(game, game.getDefines(new DefineReference[]
+            {
+                new DefineReference(0, AutumnEdge.ID),
+                new DefineReference(0, SpringWind.ID),
+                new DefineReference(0, WinterElement.ID),
+                new DefineReference(0, SummerRed.ID),
+                new DefineReference(0, DoyouSpear.ID)
+            }));
         }
     }
     /// <summary>

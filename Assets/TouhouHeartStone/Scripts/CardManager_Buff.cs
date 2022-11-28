@@ -3,6 +3,7 @@ using TouhouCardEngine;
 using System.Collections.Generic;
 using UI;
 using UnityEngine;
+using System.Linq;
 
 namespace Game
 {
@@ -22,7 +23,10 @@ namespace Game
                     newBuffDefineId = cardPool.buffDefineList[i].id;
             }
             newBuffDefineId++;
-            GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(newBuffDefineId);
+            GeneratedBuffDefine buffDefine = new GeneratedBuffDefine(newBuffDefineId)
+            {
+                cardPoolId = cardPoolId
+            };
             cardPool.buffDefineList.Add(buffDefine);
             return buffDefine;
         }
@@ -43,22 +47,22 @@ namespace Game
             buffDefine = cardPool.buffDefineList.Find(b => b.id == buffDefineId);
             return buffDefine != null;
         }
-        public GeneratedBuffDefine[] getBuffDefines(long cardPoolId)
+        public Dictionary<int, BuffDefine> getBuffDefines(long cardPoolId)
         {
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
-            return cardPool.buffDefineList.ToArray();
+            return cardPool.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine);
         }
-        public GeneratedBuffDefine[] getBuffDefines(IEnumerable<long> cardPoolsId)
+        public Dictionary<long, Dictionary<int, BuffDefine>> getBuffDefines(IEnumerable<long> cardPoolsId)
         {
-            List<GeneratedBuffDefine> buffDefineList = new List<GeneratedBuffDefine>();
-            foreach (var id in cardPoolsId)
+            Dictionary<long, Dictionary<int, BuffDefine>> buffDefDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
+            foreach (var cardPoolId in cardPoolsId)
             {
-                buffDefineList.AddRange(getBuffDefines(id));
+                buffDefDict.Add(cardPoolId, getBuffDefines(cardPoolId));
             }
-            return buffDefineList.ToArray();
+            return buffDefDict;
         }
         public string[] getBuffDefineNames(BuffDefine[] buffDefines)
         {
@@ -106,7 +110,7 @@ namespace Game
         /// <returns></returns>
         public BuffSkin getBuffSkin(BuffDefine buffDefine)
         {
-            long cardPoolId = getCardPoolIdOfBuffDefine(buffDefine);
+            long cardPoolId = buffDefine.cardPoolId;
             if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);

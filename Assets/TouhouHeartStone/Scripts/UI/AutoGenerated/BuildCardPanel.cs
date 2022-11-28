@@ -48,11 +48,9 @@ namespace UI
             this._BuildDeckList = this.transform.Find("DeckCardView").Find("DeckView").Find("Viewport").Find("BuildDeckList").GetComponent<BuildDeckList>();
             this._CardViewScroll = this.transform.Find("CardView").GetComponent<ScrollRect>();
             //this._BuildCardList = this.transform.Find("CardView").Find("Viewport").Find("BuildCardList").GetComponent<BuildCardList>();
-            this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
             this._DragCard = this.transform.Find("DragCard").GetComponent<DragCard>();
             //this._MasterCardSelection = this.transform.Find("MasterCardSelection").GetComponent<MasterCardSelection>();
             this._HintMessageText = this.transform.Find("HintMessage").GetComponent<Text>();
-            this._UIDialog = this.transform.Find("UIDialog")?.GetComponent<UIDialog>();
         }
         [SerializeField()]
         private Image _TitleBarImage;
@@ -341,19 +339,6 @@ namespace UI
         //    }
         //}
         [SerializeField()]
-        private FilterPanel _FilterPanel;
-        public FilterPanel FilterPanel
-        {
-            get
-            {
-                if ((this._FilterPanel == null))
-                {
-                    this._FilterPanel = this.transform.Find("FilterPanel").GetComponent<FilterPanel>();
-                }
-                return this._FilterPanel;
-            }
-        }
-        [SerializeField()]
         private DragCard _DragCard;
         public DragCard DragCard
         {
@@ -379,28 +364,7 @@ namespace UI
                 return this._HintMessageText;
             }
         }
-        [SerializeField()]
-        private UIDialog _UIDialog;
-        public UIDialog UIDialog
-        {
-            get
-            {
-                if ((this._UIDialog == null))
-                {
-                    this._UIDialog = gameObject.scene.findInstance<UIDialog>();
-                }
-                return this._UIDialog;
-            }
-        }
         partial void onAwake();
-
-        [SerializeField]
-        Button _uploadBtn;
-        public Button UploadBtn => _uploadBtn;
-
-        [SerializeField]
-        Button _downloadBtn;
-        public Button DownloadBtn => _downloadBtn;
 
         [SerializeField]
         GameObject _loadingImg;

@@ -1,6 +1,7 @@
 ﻿using BJSYGameCore;
 using BJSYGameCore.UI;
 using Game;
+using TouhouCardEngine;
 
 namespace UI
 {
@@ -12,8 +13,8 @@ namespace UI
         }
         public void updateView(ReplayItemViewData viewData)
         {
-            _playerAImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerAMasterId).image;
-            _playerBImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerBMasterId).image;
+            _playerAImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerAMasterDefRef).image;
+            _playerBImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerBMasterDefRef).image;
             _nameText.text = viewData.name;
         }
 
@@ -24,8 +25,8 @@ namespace UI
     }
     public class ReplayItemViewData
     {
-        public int playerAMasterId;
-        public int playerBMasterId;
+        public DefineReference playerAMasterDefRef;
+        public DefineReference playerBMasterDefRef;
         public string name;
     }
 }

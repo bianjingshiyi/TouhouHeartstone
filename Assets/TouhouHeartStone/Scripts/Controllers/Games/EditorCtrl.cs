@@ -355,7 +355,7 @@ namespace Controllers
         }
         private async Task updateDeckCardListUI()
         {
-            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.cardPoolId).First().Value.Select(p => p.Value).ToArray();
+            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.cardPoolId).Select(p => p.Value).ToArray();
             (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[cardDefines.Length];
             for (int i = 0; i < viewData.Length; i++)
             {

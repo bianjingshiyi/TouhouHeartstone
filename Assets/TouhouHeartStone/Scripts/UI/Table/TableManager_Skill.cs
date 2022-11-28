@@ -64,7 +64,7 @@ namespace Game
             if (skin != null && skin.image != null)
                 skill.image.sprite = skin.image;
             else
-                skill.image.sprite = await getManager<CardManager>().loadCardImage(card.define.id);
+                skill.image.sprite = await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id);
         }
         /// <summary>
         /// 技能点击处理

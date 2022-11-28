@@ -50,7 +50,7 @@ namespace Controllers
 
             //切换角色筛选
             await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, charactersId: new int[] { deck.masterId }, cardFilter: cardFilter);
-            CardSkinData masterSkin = game.card.getCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.id);
+            CardSkinData masterSkin = game.card.getCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId);
 
             // 更新UI
             _ui.gameObject.SetActive(true);
@@ -185,7 +185,7 @@ namespace Controllers
                             //更新UI
                             CardSkinData skin = game.card.getDefaultSkin(_dragCard);
                             _ui.dragCard.setCard(_dragCard, skin);
-                            Sprite image = await game.card.loadCardImage(game.card.getCardPoolIdOfCardDfine(_dragCard), _dragCard.id);
+                            Sprite image = await game.card.loadCardImage(_dragCard.cardPoolId, _dragCard.id);
                             _ui.dragCard.setImage(image);
                             _ui.dragDeckListItem.updateView(skin.name, image);
                         }
@@ -278,7 +278,7 @@ namespace Controllers
             //await updateDeckCardListUI();
             //刷新拖拽卡牌显示
             CardSkinData skin = game.card.getDefaultSkin(_dragCard);
-            Sprite image = await game.card.loadCardImage(game.card.getCardPoolIdOfCardDfine(_dragCard), _dragCard.id);
+            Sprite image = await game.card.loadCardImage(_dragCard.cardPoolId, _dragCard.id);
             _ui.dragCard.setCard(_dragCard, skin);
             _ui.dragCard.setImage(image);
             _ui.dragDeckListItem.updateView(skin.name, image);
@@ -318,7 +318,7 @@ namespace Controllers
                 CardSkinData skin = game.card.getDefaultSkin(_selectableMasters[i]);
                 viewData[i].name = skin.name;
                 viewData[i].image = await game.card.loadCardImage(
-                    game.card.getCardPoolIdOfCardDfine(_selectableMasters[i]),
+                    _selectableMasters[i].cardPoolId,
                     _selectableMasters[i].id);
             }
             _ui.showMasterSelectPanel(viewData);
@@ -551,7 +551,7 @@ namespace Controllers
         /// <returns></returns>
         private Task<Sprite> loadDeckImage(Deck deck)
         {
-            if (!game.card.tryGetCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.id, out CardSkinData skin))
+            if (!game.card.tryGetCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId, out CardSkinData skin))
             {
                 Debug.LogError("不存在卡组角色" + deck.masterId + "的对应皮肤");
                 return Task.FromResult<Sprite>(null);
@@ -610,7 +610,7 @@ namespace Controllers
                 _deck.id = (int)game.deck.CreateDeck(_deck.name, _deck.masterCardRef);
                 deckList.Add(_deck);
             }
-            foreach (var cardRef in _deck.toCardRefArray(includeMasterCard: false))
+            foreach (var cardRef in _deck.toDefRefArray(includeMasterCard: false))
             {
                 game.deck.AddCard(_deck.id, cardRef);
             }
@@ -623,7 +623,7 @@ namespace Controllers
         {
             string outputString = exportStringHeader + " " + _deck.name + "\n";
 
-            outputString += game.deck.DeckToString(_deck.toCardRefArray());
+            outputString += game.deck.DeckToString(_deck.toDefRefArray());
             GUIUtility.systemCopyBuffer = outputString;
 
             game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), game.lang._(PILE_EXPORTED), null);
@@ -640,7 +640,7 @@ namespace Controllers
                 {
                     ID = deck.id,
                     Name = deck.name,
-                    Content = game.deck.DeckToString(deck.toCardRefArray())
+                    Content = game.deck.DeckToString(deck.toDefRefArray())
                 });
             }
 

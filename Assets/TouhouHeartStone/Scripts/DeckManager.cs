@@ -83,7 +83,7 @@ namespace Game
         {
             db.Execute($@"INSERT INTO {tableDeck} (name, masterID, masterCardPoolID) VALUES (?,?,?)", null,
                 name,
-                masterCardRef.id,
+                masterCardRef.defineId,
                 masterCardRef.cardPoolId);
             return db.GetLastInsertID(tableDeck);
         }
@@ -98,7 +98,7 @@ namespace Game
             db.Execute($@"INSERT INTO {tableDeck} (deckID, name, masterID, masterCardPoolID) VALUES (?, ?, ?, ?)", null,
                 deckID,
                 name,
-                masterCardRef.id,
+                masterCardRef.defineId,
                 masterCardRef.cardPoolId);
             return db.GetLastInsertID(tableDeck);
         }
@@ -128,7 +128,7 @@ namespace Game
         /// <param name="masterCardRef"></param>
         public void SetDeckMasterID(long id, DefineReference masterCardRef)
         {
-            db.Execute($@"UPDATE {tableDeck} SET masterCardPoolID = ?, masterID = ? WHERE deckID = ?", null, masterCardRef.cardPoolId, masterCardRef.id, id);
+            db.Execute($@"UPDATE {tableDeck} SET masterCardPoolID = ?, masterID = ? WHERE deckID = ?", null, masterCardRef.cardPoolId, masterCardRef.defineId, id);
         }
 
         /// <summary>
@@ -250,11 +250,11 @@ namespace Game
 
             if (tr == null)
             {
-                db.Execute(query, null, deckID, cardRef.id, cardRef.cardPoolId);
+                db.Execute(query, null, deckID, cardRef.defineId, cardRef.cardPoolId);
             }
             else
             {
-                using (var cmd = db.CreateCommand(query, tr, deckID, cardRef.id, cardRef.cardPoolId))
+                using (var cmd = db.CreateCommand(query, tr, deckID, cardRef.defineId, cardRef.cardPoolId))
                 {
                     cmd.ExecuteNonQuery();
                 }
@@ -570,7 +570,7 @@ namespace Game
             {
                 BitConverter.GetBytes(item.cardPoolId).CopyTo(bytes, offset);
                 offset += sizeof(long);
-                BitConverter.GetBytes(item.id).CopyTo(bytes, offset);
+                BitConverter.GetBytes(item.defineId).CopyTo(bytes, offset);
                 offset += sizeof(int);
             }
             return bytes;
@@ -719,6 +719,8 @@ namespace Game
     {
         public long ID;
         public string Name;
+        [Obsolete("use MasterCardRef instead")]
+        public int MasterID;
         public DefineReference MasterCardRef;
     }
 }

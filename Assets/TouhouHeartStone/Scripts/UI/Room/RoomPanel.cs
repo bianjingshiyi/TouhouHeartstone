@@ -62,7 +62,7 @@ namespace UI
                         showDeckSelectionPanel((deckID) =>
                         {
                             var deck = deckManager.GetDeck(deckID);
-                            var skin = cardManager.getCardSkin(deck.MasterCardRef.cardPoolId, deck.MasterCardRef.id);
+                            var skin = cardManager.getCardSkin(deck.MasterCardRef.cardPoolId, deck.MasterCardRef.defineId);
 
                             var list = deckManager.GetDeckCards(deckID).Select(k => k.Value).ToList();
                             list.Insert(0, deck.MasterCardRef); // polyfill: 转换为传统的，第一张卡是master的格式
@@ -292,13 +292,13 @@ namespace UI
             //_cardViewPanel.setItems(cardManager,cards);
             async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
             {
-                var card = cardManager.getCardDefine(cardRef.cardPoolId, cardRef.id);
-                var skin = cardManager.getCardSkin(cardRef.cardPoolId, cardRef.id);
+                var card = cardManager.getCardDefine(cardRef.cardPoolId, cardRef.defineId);
+                var skin = cardManager.getCardSkin(cardRef.cardPoolId, cardRef.defineId);
                 Sprite image = null;
                 if (card != null)
                 {
                     var path = skin?.imagePath;
-                    image = await cardManager.loadCardImage(cardRef.cardPoolId, cardRef.id);
+                    image = await cardManager.loadCardImage(cardRef.cardPoolId, cardRef.defineId);
                 }
                 return (skin?.name, image);
             }
@@ -482,7 +482,7 @@ namespace UI
                 showDeckSelectionPanel((deckID) =>
                 {
                     var deck = deckManager.GetDeck(deckID);
-                    var skin = cardManager.getCardSkin(deck.MasterCardRef.cardPoolId, deck.MasterCardRef.id);
+                    var skin = cardManager.getCardSkin(deck.MasterCardRef.cardPoolId, deck.MasterCardRef.defineId);
                     DeckSelectionDeckListItem.SetContent(deckID, deck.Name, skin.image);
 
                     var list = deckManager.GetDeckCards(deckID).Select(k => k.Value).ToList();
@@ -815,7 +815,7 @@ namespace UI
                 var deck = playerData.getDeck();
                 if (deck != null)
                 {
-                    DefineReference[] idArray = playerData.getDeck().toCardRefArray(true);
+                    DefineReference[] idArray = playerData.getDeck().toDefRefArray(true);
                     if (idArray != null)
                         OnPlayerViewDeck?.Invoke(idArray);
                 }
@@ -844,10 +844,10 @@ namespace UI
             playerData = data;
             NameText.text = data.name;
 
-            DefineReference[] deck = data.getDeck()?.toCardRefArray(true);
+            DefineReference[] deck = data.getDeck()?.toDefRefArray(true);
 
             CheckIconImage.gameObject.SetActive(data.getReady());
-            CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0].cardPoolId, deck[0].id).name : "";
+            CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0].cardPoolId, deck[0].defineId).name : "";
         }
 
         /// <summary>

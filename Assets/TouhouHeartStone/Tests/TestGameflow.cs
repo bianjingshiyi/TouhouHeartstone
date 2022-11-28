@@ -44,8 +44,8 @@ namespace Tests
             game = initGameWithoutPlayers(null, option);
             IEnumerable<CardDefine> yourTrueDeck = createDeck(game, yourDeck);
             IEnumerable<CardDefine> oppoTrueDeck = createDeck(game, oppoDeck);
-            you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
-            oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
+            you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(0, yourMaster), yourTrueDeck);
+            oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(0, oppoMaster), oppoTrueDeck);
         }
         public static async Task<(CardEngine game, Player you, Player oppo)> createGameWithEditorCards(HearthstoneOption option,
             int yourMaster, KeyValuePair<int, int>[] yourDeck,
@@ -54,8 +54,8 @@ namespace Tests
             CardEngine game = await initGameWithoutPlayers(null, option, true);
             IEnumerable<CardDefine> yourTrueDeck = createDeck(game, yourDeck);
             IEnumerable<CardDefine> oppoTrueDeck = createDeck(game, oppoDeck);
-            Player you = game.createPlayer(1, "玩家1", game.getDefine(yourMaster), yourTrueDeck);
-            Player oppo = game.createPlayer(2, "玩家2", game.getDefine(oppoMaster), oppoTrueDeck);
+            Player you = game.createPlayer(1, "玩家1", game.getDefine(0, yourMaster), yourTrueDeck);
+            Player oppo = game.createPlayer(2, "玩家2", game.getDefine(0, oppoMaster), oppoTrueDeck);
             return (game, you, oppo);
         }
         /// <summary>
@@ -77,8 +77,8 @@ namespace Tests
             game = initGameWithoutPlayers(null, option);
             IEnumerable<CardDefine> yourTrueDeck = createDeck<YourDeck>(game, yourDeck);
             IEnumerable<CardDefine> oppoTrueDeck = createDeck<OppoDeck>(game, oppoDeck);
-            you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(yourMaster), yourTrueDeck);
-            oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(oppoMaster), oppoTrueDeck);
+            you = game.createPlayer(1, "玩家1", game.getDefine<MasterCardDefine>(0, yourMaster), yourTrueDeck);
+            oppo = game.createPlayer(2, "玩家2", game.getDefine<MasterCardDefine>(0, oppoMaster), oppoTrueDeck);
         }
 
         public static void createGame<YourDeck, OppoDeck>(out CardEngine game, out Player you, out Player oppo,
@@ -102,11 +102,11 @@ namespace Tests
         private static IEnumerable<CardDefine> createDeck<_default>(CardEngine game, KeyValuePair<int, int>[] yourDeck) where _default : CardDefine
         {
             IEnumerable<CardDefine> yourTrueDeck = yourDeck.Length > 0 ?
-                Enumerable.Repeat(game.getDefine(yourDeck[0].Key), yourDeck[0].Value) :
+                Enumerable.Repeat(game.getDefine(0, yourDeck[0].Key), yourDeck[0].Value) :
                 Enumerable.Repeat(game.getDefine<_default>(), 30);
             for (int i = 1; i < yourDeck.Length; i++)
             {
-                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine(yourDeck[i].Key), yourDeck[i].Value));
+                yourTrueDeck = yourTrueDeck.Concat(Enumerable.Repeat(game.getDefine(0, yourDeck[i].Key), yourDeck[i].Value));
             }
             int count = yourTrueDeck.Count();
             if (count < 30)
@@ -159,7 +159,16 @@ namespace Tests
             game.answers.game = game;
             (game.triggers as TriggerManager).logger = game.logger;
             CardDefine[] cardDefines = CardHelper.getCardDefines(logger);
-            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly }, new HearthStoneRule(cardDefines, null), option, new RoomPlayerInfo[0]).Wait();
+            game.init(
+                new Assembly[]
+                {
+                    typeof(CardEngine).Assembly,
+                    typeof(HearthStoneRule).Assembly,
+                    typeof(EffectEditorLibrary).Assembly
+                },
+                new HearthStoneRule(new Dictionary<long, Dictionary<int, CardDefine>>() { { 0, cardDefines.ToDictionary(c => c.id) } }, null),
+                option,
+                new RoomPlayerData[0]).Wait();
             return game;
         }
         public static async Task<CardEngine> initGameWithoutPlayers(string name, HearthstoneOption option, bool withEditorCards)
@@ -175,8 +184,11 @@ namespace Tests
             };
             game.answers.game = game;
             (game.triggers as TriggerManager).logger = game.logger;
-            CardDefine[] cardDefines = CardHelper.getCardDefines(logger);
-            BuffDefine[] buffDefines = new BuffDefine[0];
+            Dictionary<long, Dictionary<int, CardDefine>> cardDefines = new Dictionary<long, Dictionary<int, CardDefine>>()
+            {
+                { 0, CardHelper.getCardDefines(logger).ToDictionary(c => c.id) }
+            };
+            Dictionary<long, Dictionary<int, BuffDefine>> buffDefines = new Dictionary<long, Dictionary<int, BuffDefine>>();
             if (withEditorCards)
             {
                 MainManager main = new GameObject(nameof(MainManager)).AddComponent<MainManager>();
@@ -187,11 +199,19 @@ namespace Tests
                 foreach (var pair in result)
                 {
                     await cardManager.loadCardPool(pair.Key);
-                    cardDefines = cardDefines.Concat(cardManager.getCardDefines(pair.Value.cardPoolId)).ToArray();
-                    buffDefines = buffDefines.Concat(cardManager.getBuffDefines(pair.Value.cardPoolId)).ToArray();
+                    cardDefines.Add(pair.Value.cardPoolId, cardManager.getCardDefines(pair.Value.cardPoolId));
+                    buffDefines.Add(pair.Value.cardPoolId, cardManager.getBuffDefines(pair.Value.cardPoolId));
                 }
             }
-            game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly }, new HearthStoneRule(cardDefines, buffDefines), option, new RoomPlayerInfo[0]).Wait();
+            game.init(new Assembly[]
+            {
+                typeof(CardEngine).Assembly,
+                typeof(HearthStoneRule).Assembly,
+                typeof(EffectEditorLibrary).Assembly
+            },
+            new HearthStoneRule(cardDefines, buffDefines),
+            option,
+            new RoomPlayerData[0]).Wait();
             return game;
         }
         public static CardEngine initSyncStandardGame(int[] playersId = null, IEnumerable<CardDefine> cardDefines = null)
@@ -207,7 +227,10 @@ namespace Tests
                     new TestServant(),
                 };
             }
-            CardEngine game = new CardEngine(new HearthStoneRule(cardDefines, null))
+            CardEngine game = new CardEngine(new HearthStoneRule(new Dictionary<long, Dictionary<int, CardDefine>>()
+            {
+                { 0, cardDefines.ToDictionary(c => c.id) }
+            }, null))
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
                 triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),

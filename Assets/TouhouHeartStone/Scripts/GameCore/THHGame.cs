@@ -191,7 +191,6 @@ namespace TouhouHeartstone
         }
 
         #endregion
-
         /// <summary>
         /// 向玩家发出一个选择请求，玩家从提供的卡牌中选择一张，返回玩家选择的结果
         /// </summary>
@@ -201,43 +200,37 @@ namespace TouhouHeartstone
         /// <param name="count">如果小于等于0，则全都可以挑</param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public static async Task<int> askSelect(this CardEngine game, Player player, int[] cards, int count = 3,
-            string title = "选择一项")
-        {
-            if (cards.Count() < 1)
-                return -1;
-            if (count > 0)
-                cards = cards.randomTake(game, count).ToArray();
-            var eventArg = await game.triggers.doEvent(new THHPlayer.SelectEventArg()
-            {
-                player = player,
-                options = cards
-            }, async arg =>
-            {
-                player = arg.player;
-                cards = arg.options;
-                game.logger.logTrace(player + "要从卡牌或卡牌定义ID" + string.Join("，", cards) + "中选择一个");
-                var res = await game.answers.ask(player.id, new DiscoverRequest(cards, title), float.MaxValue);
-                int selectedID = cards.First(id => id == (res as DiscoverResponse).cardId);
-                game.logger.logTrace(player + "选择" + selectedID);
-                arg.selected = selectedID;
-            });
-            return eventArg.selected;
-        }
-
         public static async Task<Card> askSelect(this CardEngine game, Player player, IEnumerable<Card> cards, int count = 3,
             string title = null)
         {
-            var selectedId = await game.askSelect(player, cards.Select(c => c.id).ToArray(), count, title);
-            Card selectedCard = cards.FirstOrDefault(c => c.id == selectedId);
+            if (cards.Count() < 1)
+                return null;
+            if (count > 0)
+                cards = cards.randomTake(game, count).ToArray();
+            game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title), float.MaxValue);
+            Card selectedCard = cards.First(c => c.id == (res as DiscoverResponse).cardId);
+            game.logger.logTrace(player + "选择" + selectedCard);
             return selectedCard;
         }
-
+        /// <summary>
+        /// 向玩家发出一个选择请求，卡牌定义中选择一张，返回玩家选择的结果
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="cards">卡牌的ID，可以是游戏内的卡牌ID，也可以是卡牌定义的ID</param>
+        /// <param name="count">如果小于等于0，则全都可以挑</param>
+        /// <param name="title"></param>
+        /// <returns></returns>
         public static async Task<CardDefine> askSelect(this CardEngine game, Player player, IEnumerable<CardDefine> cards,
             int count = 3, string title = null)
         {
-            var selectedId = await game.askSelect(player, cards.Select(c => c.id).ToArray(), count, title);
-            CardDefine selectedCard = cards.FirstOrDefault(c => c.id == selectedId);
+            game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title), float.MaxValue);
+            CardDefine selectedCard = cards.First(c =>
+                c.cardPoolId == (res as DiscoverResponse).cardDefRef.cardPoolId &&
+                c.id == (res as DiscoverResponse).cardDefRef.defineId);
+            game.logger.logTrace(player + "选择" + selectedCard);
             return selectedCard;
         }
     }
@@ -422,10 +415,10 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.ITEM, maxCount: 1));
             DefineReference[] deck = player.getProp<DefineReference[]>(DEFINE.PLAYER_PROP_DECK);
             DefineReference master = deck[0];
-            await player[PILE.MASTER].add(game, game.createCard(master.cardPoolId, master.id));
-            DefineReference skillRef = game.getDefine(master.cardPoolId, master.id).getSkillRef();
-            await player[PILE.SKILL].add(game, game.createCard(skillRef.cardPoolId, skillRef.id));
-            await player[PILE.DECK].add(game, deck.Select(d => game.createCard(d.cardPoolId, d.id)));
+            await player[PILE.MASTER].add(game, game.createCard(master.cardPoolId, master.defineId));
+            DefineReference skillRef = game.getDefine(master.cardPoolId, master.defineId).getSkillRef();
+            await player[PILE.SKILL].add(game, game.createCard(skillRef.cardPoolId, skillRef.defineId));
+            await player[PILE.DECK].add(game, deck.Select(d => game.createCard(d.cardPoolId, d.defineId)));
         }
         #endregion
         public HearthStoneRule(Dictionary<long, Dictionary<int, CardDefine>> defines, Dictionary<long, Dictionary<int, BuffDefine>> buffs) : base(defines, buffs)
@@ -442,8 +435,8 @@ namespace TouhouHeartstone
                     game,
                     playerInfo.ID,
                     playerInfo.Name,
-                    game.getDefine(deck[0].cardPoolId, deck[0].id),
-                    deck.Skip(1).Select(r => game.getDefine(r.cardPoolId, r.id)).ToArray());
+                    game.getDefine(deck[0].cardPoolId, deck[0].defineId),
+                    deck.Skip(1).Select(r => game.getDefine(r.cardPoolId, r.defineId)).ToArray());
             }
             return Task.CompletedTask;
         }
@@ -495,7 +488,7 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.ITEM, 1));
             player[PILE.MASTER].add(game, game.createCard(master));
             DefineReference skillRef = master.getSkillRef();
-            player[PILE.SKILL].add(game, game.createCard(game.getDefine(skillRef.cardPoolId, skillRef.id)));
+            player[PILE.SKILL].add(game, game.createCard(game.getDefine(skillRef.cardPoolId, skillRef.defineId)));
             player[PILE.DECK].add(game, deck.Select(d => game.createCard(d)));
             player.setIsPrepared(false);
             player.setGem(game, 0);

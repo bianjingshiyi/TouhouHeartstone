@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : 1, "cardPoolName" : "经典卡池", "versionNumber" : 1 }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1 }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -352,9 +352,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418095
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418095
                     }],
                   "regVar" : [false]
                 }]
@@ -412,19 +412,19 @@
                   "consts" : [{
                       "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
                       "_v" : [{
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418103
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418102
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418099
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418100
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418098
                         }]
                     }],
@@ -659,9 +659,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418101
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418101
                     }],
                   "regVar" : [false]
                 }, {
@@ -719,9 +719,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 0,
-                      "cardId" : 4206646
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(0),
+                      "defineId" : 4206646
                     }],
                   "regVar" : [false]
                 }, {
@@ -902,9 +902,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418097
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418097
                     }],
                   "regVar" : [false]
                 }]
@@ -977,19 +977,19 @@
                   "consts" : [{
                       "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
                       "_v" : [{
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418107
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418108
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418106
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418110
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418105
                         }]
                     }],
@@ -1074,19 +1074,19 @@
                   "consts" : [{
                       "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
                       "_v" : [{
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418107
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418108
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418106
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418110
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418105
                         }]
                     }],
@@ -1746,9 +1746,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418086
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418086
                     }],
                   "regVar" : [false]
                 }]
@@ -2281,9 +2281,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418079
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418079
                     }],
                   "regVar" : [false]
                 }]
@@ -2550,9 +2550,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418075
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418075
                     }],
                   "regVar" : [false]
                 }]
@@ -3053,9 +3053,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418066
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418066
                     }],
                   "regVar" : [false]
                 }]
@@ -3414,9 +3414,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418069
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418069
                     }],
                   "regVar" : [false]
                 }, {
@@ -3700,9 +3700,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418056
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418056
                     }],
                   "regVar" : [false]
                 }]
@@ -4488,16 +4488,16 @@
                   "consts" : [{
                       "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
                       "_v" : [{
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418046
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418047
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418048
                         }, {
-                          "cardPoolId" : 1,
+                          "cardPoolId" : NumberLong(1),
                           "cardId" : -2147418045
                         }]
                     }],
@@ -4966,9 +4966,9 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "CardReference",
-                      "cardPoolId" : 1,
-                      "cardId" : -2147418036
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418036
                     }],
                   "regVar" : [false]
                 }]

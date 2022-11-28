@@ -1672,7 +1672,7 @@ namespace Game
             foreach (var cardRef in cardRefs)
             {
                 var item = ui.Discover.HoriCardList.addItem();
-                var cardDefine = game.getDefine(cardRef.cardPoolId, cardRef.id);
+                var cardDefine = game.getDefine(cardRef.cardPoolId, cardRef.defineId);
                 setCard(item.Card, cardDefine, cardDefine.getCost(), cardDefine.getAttack(), cardDefine.getLife(),
                     true);
                 item.asButton.onClick.set(() =>

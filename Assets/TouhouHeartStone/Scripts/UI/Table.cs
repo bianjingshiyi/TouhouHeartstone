@@ -86,7 +86,7 @@ namespace UI
         }
         public CardSkinData getSkin(CardDefine define)
         {
-            return ui.getManager<CardManager>().getCardSkin(define.id);
+            return ui.getManager<CardManager>().getCardSkin(define.cardPoolId, define.id);
         }
         #endregion
         #region Use

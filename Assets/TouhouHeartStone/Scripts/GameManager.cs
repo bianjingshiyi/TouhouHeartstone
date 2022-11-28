@@ -89,9 +89,9 @@ namespace Game
         private void Start()
         {
             if (_useDefaultDeck && _defaultDeck != null)
-                _deck = _defaultDeck.toCardRefArray();
+                _deck = _defaultDeck.toDefRefArray();
             if (_useTestDeck && _testDeck != null)
-                _deck = _testDeck.toCardRefArray();
+                _deck = _testDeck.toDefRefArray();
         }
         private void Update()
         {
@@ -224,9 +224,9 @@ namespace Game
             foreach (var player in playerList)
             {
                 Deck deck = player.getDeck();
-                foreach (var cardRef in deck.toCardRefArray(true))
+                foreach (var cardRef in deck.toDefRefArray(true))
                 {
-                    if (CardDefineHelper.isExternalCard(cardRef.id) &&
+                    if (CardDefineHelper.isExternalCard(cardRef.defineId) &&
                         !cardPoolIdSet.Contains(cardRef.cardPoolId))
                     {
                         cardPoolIdSet.Add(cardRef.cardPoolId);
@@ -313,14 +313,14 @@ namespace Game
         {
             if (deck == null)
                 return;
-            if (game.getDefine(deck[0].cardPoolId, deck[0].id) == null)
+            if (game.getDefine(deck[0].cardPoolId, deck[0].defineId) == null)
             {
                 UberDebug.LogError("非法角色ID" + deck[0] + "被替换为灵梦");
                 deck[0] = new DefineReference(0, Reimu.ID);
             }
             for (int i = 1; i < deck.Length; i++)
             {
-                if (game.getDefine(deck[i].cardPoolId, deck[i].id) == null)
+                if (game.getDefine(deck[i].cardPoolId, deck[i].defineId) == null)
                 {
                     UberDebug.LogError("非法随从ID" + deck[i] + "被替换为小野菊");
                     deck[i] = new DefineReference(0, RashFairy.ID);
@@ -573,7 +573,7 @@ namespace Game
         {
             await getManager<MainManager>().fileManager.savePersistentFile(
                 _replaySystem.getSaveDir() + "/" + _replaySystem.getSaveFileName(_replaySystem.replay) + "." + _replaySystem.getSaveFileExtension(),
-                _replaySystem.replay.players.Select(p => p.getDeck().masterId).ToArray().ToJson() + "\r\n" +
+                _replaySystem.replay.players.Select(p => p.getDeck().masterCardRef).ToArray().ToJson() + "\r\n" +
                 _replaySystem.replay.ToJson());
         }
         #region Events

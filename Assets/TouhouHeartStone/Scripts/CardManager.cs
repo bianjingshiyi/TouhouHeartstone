@@ -530,7 +530,7 @@ namespace Game
             //TODO 58：暂时只判断ID是不是负数，经典卡牌也算是负数，以后改一下
             return cardId < 0;
         }
-        public Dictionary<long, Dictionary<int, CardDefine>> getCardDefines(params long[] cardPoolsId)
+        public Dictionary<long, Dictionary<int, CardDefine>> getCardDefines(long[] cardPoolsId)
         {
             Dictionary<long, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<long, Dictionary<int, CardDefine>>();
             for (int i = 0; i < cardPoolsId.Length; i++)
@@ -542,6 +542,12 @@ namespace Game
                 }
             }
             return cardPoolDict;
+        }
+        public Dictionary<int, CardDefine> getCardDefines(long cardPoolId)
+        {
+            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
+                return cardPool.cardDefineList.ToDictionary(c => c.id);
+            return null;
         }
         public Dictionary<long, Dictionary<int, CardDefine>> getCardDefines()
         {
@@ -613,8 +619,17 @@ namespace Game
                 return skin;
             return null;
         }
+        public CardSkinData getCardSkin(DefineReference defRef)
+        {
+            return getCardSkin(defRef.cardPoolId, defRef.defineId);
+        }
         public CardSkinData getCardSkin(CardDefine cardDefine)
         {
+            if (cardDefine.cardPoolId == 0)
+            {
+                if (skinDic.TryGetValue(cardDefine.id, out CardSkinData skin))
+                    return skin;
+            }
             foreach (var cardPool in _cardPoolDict)
             {
                 if (cardPool.Value.cardDefineList.Contains(cardDefine))

@@ -16,8 +16,10 @@ namespace Controllers
         #region 事件回调
         private async void onItemBuffChangedCallback(ActionNodeItem item, int index)
         {
-            BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
-            GeneratedBuffDefine buffDefine = buffDefines[index] as GeneratedBuffDefine;
+            GeneratedBuffDefine buffDefine = game.card.getBuffDefines(_curCardPoolId)
+                .OrderBy(p => p.Value.cardPoolId)
+                .ThenBy(p => p.Value.id)
+                .ElementAt(index).Value as GeneratedBuffDefine;
             await updateBuffActionNode(item, buffDefine, getOrCreateBuffSkin(buffDefine));
         }
         private async void onClickItemNewBuffButtonCallback(ActionNodeItem item)
@@ -31,8 +33,10 @@ namespace Controllers
             if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
                 game.card.removeBuffDefine(_curCardPoolId, buffDefine))
             {
-                GeneratedBuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
-                buffDefine = buffDefines[buffDefines.Length - 1];
+                buffDefine = game.card.getBuffDefines(_curCardPoolId)
+                    .OrderBy(p => p.Value.cardPoolId)
+                    .ThenBy(p => p.Value.id)
+                    .Last().Value as GeneratedBuffDefine;
                 await updateBuffActionNode(item, buffDefine, getOrCreateBuffSkin(buffDefine));
             }
         }
@@ -189,7 +193,11 @@ namespace Controllers
         private async Task updateBuffActionNode(ActionNodeItem item, GeneratedBuffDefine buffDefine, BuffSkin buffSkin)
         {
             getActionNode(item).consts = new object[] { buffDefine.id };
-            BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId);
+            BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId)
+                .OrderBy(p => p.Value.cardPoolId)
+                .ThenBy(p => p.Value.id)
+                .Select(p => p.Value)
+                .ToArray();
             item.setBuffValues(game.card.getBuffDefineNames(buffDefines));
             item.setBuffValue(Array.IndexOf(buffDefines, buffDefine));
             ActionNodePropertyModifierViewData[] propModifiersViewData = getBuffDefinePropModifiersViewData(buffDefine);

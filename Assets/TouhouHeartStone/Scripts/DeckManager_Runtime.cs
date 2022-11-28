@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
 namespace Game
@@ -30,15 +31,15 @@ namespace Game
         public void reloadDeckList()
         {
             _deckList = new List<Deck>();
-            foreach (var deckData in GetDecks())
+            foreach (DeckDefine deckData in GetDecks())
             {
                 Deck deck = new Deck()
                 {
                     id = (int)deckData.ID,
                     name = deckData.Name,
-                    masterId = deckData.MasterID,
+                    masterCardRef = deckData.MasterCardRef != null ? deckData.MasterCardRef : new DefineReference(0, deckData.MasterID),
                 };
-                deck.addCards(GetDeckCards(deckData.ID).Values.Select(id => (int)id));
+                deck.addCards(GetDeckCards(deckData.ID).Values);
                 _deckList.Add(deck);
             }
         }

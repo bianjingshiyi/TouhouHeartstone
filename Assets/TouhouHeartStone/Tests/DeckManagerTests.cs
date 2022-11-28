@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Game;
 using System.Linq;
+using TouhouCardEngine;
 
 namespace Tests
 {
@@ -17,7 +18,7 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var id = dm.CreateDeck("测试卡组", 1);
+            var id = dm.CreateDeck("测试卡组", new DefineReference(0, 1));
             var d = dm.GetDeck(id);
             var name = dm.GetDeckName(id);
 
@@ -33,10 +34,10 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组", 0);
+            var deckID = dm.CreateDeck("测试卡组", new DefineReference(0, 0));
 
-            var instID1 = dm.AddCard(deckID, 1000);
-            var instID2 = dm.AddCard(deckID, 1001);
+            var instID1 = dm.AddCard(deckID, new DefineReference(0, 1000));
+            var instID2 = dm.AddCard(deckID, new DefineReference(0, 1001));
 
             Assert.AreEqual(1000, dm.GetCardRef(instID1));
             Assert.AreEqual(1001, dm.GetCardRef(instID2));
@@ -47,10 +48,10 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组", 0);
+            var deckID = dm.CreateDeck("测试卡组", new DefineReference(0, 0));
 
-            var instID1 = dm.AddCard(deckID, 1000);
-            var instID2 = dm.AddCard(deckID, 1001);
+            var instID1 = dm.AddCard(deckID, new DefineReference(0, 1000));
+            var instID2 = dm.AddCard(deckID, new DefineReference(0, 1001));
 
             dm.RemoveCard(instID2);
 
@@ -65,10 +66,10 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组", 0);
+            var deckID = dm.CreateDeck("测试卡组", new DefineReference(0, 0));
 
-            var instID1 = dm.AddCard(deckID, 1000);
-            var instID2 = dm.AddCard(deckID, 1001);
+            var instID1 = dm.AddCard(deckID, new DefineReference(0, 1000));
+            var instID2 = dm.AddCard(deckID, new DefineReference(0, 1001));
 
             dm.RemoveDeck(deckID);
 
@@ -84,10 +85,10 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组", 0);
+            var deckID = dm.CreateDeck("测试卡组", new DefineReference(0, 0));
 
-            var instID1 = dm.AddCard(deckID, 1000);
-            var instID2 = dm.AddCard(deckID, 1001);
+            var instID1 = dm.AddCard(deckID, new DefineReference(0, 1000));
+            var instID2 = dm.AddCard(deckID, new DefineReference(0, 1001));
 
             var cards = dm.GetDeckCards(deckID);
             Assert.AreEqual(cards.Count, 2);
@@ -104,9 +105,9 @@ namespace Tests
             var decks = dm.GetDecks();
             foreach (var item in decks)
                 dm.RemoveDeck(item.ID);
-            
-            var deck1ID = dm.CreateDeck("测试卡组1", 1);
-            var deck2ID = dm.CreateDeck("测试卡组2", 2);
+
+            var deck1ID = dm.CreateDeck("测试卡组1", new DefineReference(0, 1));
+            var deck2ID = dm.CreateDeck("测试卡组2", new DefineReference(0, 2));
 
             decks = dm.GetDecks();
             Assert.AreEqual(2, decks.Count());
@@ -124,15 +125,15 @@ namespace Tests
         {
             DeckManager dm = createDM();
 
-            var deckID = dm.CreateDeck("测试卡组", 0);
+            var deckID = dm.CreateDeck("测试卡组", new DefineReference(0, 0));
 
-            var instID1 = dm.AddCard(deckID, 1000);
-            var instID2 = dm.AddCard(deckID, 1001);
+            var instID1 = dm.AddCard(deckID, new DefineReference(0, 1000));
+            var instID2 = dm.AddCard(deckID, new DefineReference(0, 1001));
 
             // 进入事务
             dm.EnterTransaction();
 
-            var instID3 = dm.AddCard(deckID, 1003);
+            var instID3 = dm.AddCard(deckID, new DefineReference(0, 1003));
             dm.RemoveCard(instID1);
 
             Assert.AreEqual(-1, dm.GetCardRef(instID1));
@@ -145,7 +146,7 @@ namespace Tests
 
             // 进入事务
             dm.EnterTransaction();
-            instID3 = dm.AddCard(deckID, 1003);
+            instID3 = dm.AddCard(deckID, new DefineReference(0, 1003));
             dm.RemoveCard(instID2);
 
             Assert.AreEqual(-1, dm.GetCardRef(instID2));

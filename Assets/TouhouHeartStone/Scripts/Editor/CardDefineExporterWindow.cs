@@ -235,7 +235,7 @@ namespace TouhouHeartstone
                 sheet.Cells[cardRow, keywordsIndex] = new Cell(null);
             if (_manager != null)
             {
-                var skin = _manager.getCardSkin(card.id);
+                var skin = _manager.getCardSkin(card.cardPoolId, card.id);
                 int imageIndex = ExcelHelper.findColIndex(sheet, "Image");
                 if (skin == null)
                     sheet.Cells[cardRow, imageIndex] = new Cell(sheet.Cells[cardRow, imageIndex].StringValue);
@@ -324,7 +324,7 @@ namespace TouhouHeartstone
                 xml["Card"]["Keywords"].InnerText = null;
             if (_manager != null)
             {
-                var skin = _manager.getCardSkin(card.id);
+                var skin = _manager.getCardSkin(card.cardPoolId, card.id);
                 xml["Card"]["Skin"]["Image"].InnerText = skin == null ? null : skin.image != null ? skin.image.name + ".png" : null;
                 xml["Card"]["Skin"]["Name"].InnerText = skin == null ? card.GetType().Name : skin.name;
                 xml["Card"]["Skin"]["Desc"].InnerText = skin == null ? null : skin.desc;
