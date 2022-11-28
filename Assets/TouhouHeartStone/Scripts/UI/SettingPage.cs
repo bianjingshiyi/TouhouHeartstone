@@ -46,7 +46,14 @@ namespace UI
             });
             cacheSlider.Slider.onValueChanged.AddListener((cache) =>
             {
-                config.Config.CacheSize = cache/2;
+                if (cacheSlider.Slider.value == 20)
+                {
+                    config.Config.CacheSize = -1;
+                }
+                else
+                {
+                    config.Config.CacheSize = cache / 2;
+                }
                 config.MarkChange();
             });
             BackButtonBlack.asButton.onClick.AddListener(() =>
@@ -79,7 +86,14 @@ namespace UI
             BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
             SEGameOptionItemSlider.Slider.value = config.Config.SE;
             FullScreenGameOptionItemToggle.Toggle.isOn = config.Config.FullScreen;
-            _cacheSlider.Slider.value = config.Config.CacheSize * 2;
+            if (config.Config.CacheSize == -1)
+            {
+                _cacheSlider.Slider.value = 20;
+            }
+            else 
+            {
+                _cacheSlider.Slider.value = config.Config.CacheSize * 2;
+            }
 
             for (int i = 0; i < langItemList.Count; i++)
             {
