@@ -331,6 +331,19 @@ namespace Controllers
             }
             return false;
         }
+        public long[] getDeckCardPools(Deck deck)
+        {
+            HashSet<long> poolList = new HashSet<long>();
+            if (deck != null)
+            {
+                //检查是否有自定义卡牌，
+                for (int i = 0; i < deck.cardList.Count; i++)
+                {
+                    poolList.Add(CardDefineHelper.getCardPoolId(deck.cardList[i].id));
+                }
+            }
+            return poolList.ToArray();
+        }
         private RoomPlayerData getLocalPlayerData()
         {
             return _currentRoomData.playerDataList.Find(p => p.id == game.network.logic.localPlayer.id);

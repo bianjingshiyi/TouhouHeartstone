@@ -421,7 +421,19 @@ namespace Game
 
         [Obsolete]
         public const string OPTION_GAMEOPTION = "option";
-
+        public const string PROP_CARD_POOLS = "card_pools";
+        public static void setCardPools(this RoomData roomData, long[] cardPools)
+        {
+            roomData.setProp(PROP_CARD_POOLS, cardPools);
+        }
+        public static long[] getCardPools(this RoomData roomData)
+        {
+            if (roomData.tryGetProp(PROP_CARD_POOLS, out long[] pools))
+            {
+                return pools;
+            }
+            return Array.Empty<long>();
+        }
         /// <summary>
         /// 兼容性接口。
         /// 
