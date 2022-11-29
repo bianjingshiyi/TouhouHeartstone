@@ -76,6 +76,17 @@ namespace TouhouHeartstone
             }
             return list.ToArray();
         }
+
+        public long[] getCardPools()
+        {
+            HashSet<long> poolList = new HashSet<long>();
+            //检查是否有自定义卡牌，
+            for (int i = 0; i < cardList.Count; i++)
+            {
+                poolList.Add(CardDefineHelper.getCardPoolId(cardList[i].id));
+            }
+            return poolList.ToArray();
+        }
         #endregion
         public int id;
         public string name;
