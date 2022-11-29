@@ -102,6 +102,7 @@ namespace UI
                 InitReplacementContainerGameOptionItemText.InputField.text = room.getTimeoutForInitReplace().ToString();
                 TurnTimeContainerGameOptionItemText.InputField.text = room.getTimeoutForTurn().ToString();
                 IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getSortedPlayers() != null;
+                _allowCustomCardsToggle.isOn = room.getAllowCustomCards();
             }
             catch (Exception e)
             {
@@ -215,6 +216,10 @@ namespace UI
                 {
                     setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, null);
                 }
+            });
+            _allowCustomCardsToggle.onValueChanged.set(value =>
+            {
+                setNotifyRoomSetting(RoomDataPropName.Option.AllowCustomCards, value);
             });
 
             StartButtonButtonBlack.asButton.onClick.set(() =>
