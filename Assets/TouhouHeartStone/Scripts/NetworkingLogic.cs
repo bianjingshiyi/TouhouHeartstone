@@ -416,12 +416,12 @@ namespace Game
             TimeoutForInitReplace,
             TimeoutForTurn,
             StartGem,
-            AllowCustomCards
+            AllowCustomCards,
+            CardPools,
         }
 
         [Obsolete]
         public const string OPTION_GAMEOPTION = "option";
-        public const string PROP_CARD_POOLS = "card_pools";
         /// <summary>
         /// 兼容性接口。
         /// 
@@ -470,10 +470,6 @@ namespace Game
         {
             room.setProp(prop.ToString(), value);
         }
-        public static void setCardPools(this RoomData roomData, long[] cardPools)
-        {
-            roomData.setProp(PROP_CARD_POOLS, cardPools);
-        }
 
         /// <summary>
         /// 获取指定选项的值
@@ -518,7 +514,8 @@ namespace Game
         }
         public static long[] getCardPools(this RoomData roomData)
         {
-            if (roomData.tryGetProp(PROP_CARD_POOLS, out long[] pools))
+            var pools = roomData.getOption<long[]>(Option.CardPools);
+            if (pools != null)
             {
                 return pools;
             }
