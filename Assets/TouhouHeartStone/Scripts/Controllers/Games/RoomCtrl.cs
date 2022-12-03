@@ -201,7 +201,7 @@ namespace Controllers
                     var packs = privatePools.ToArray();
 
                     // 如果是房主，弹出对话框提示是否设置卡池属性。
-                    if (IsHost())
+                    if (isHost)
                     {
                         string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL_HOST);
                         string poolsString = PoolsToString(packs);
@@ -327,10 +327,8 @@ namespace Controllers
             }
             return poolsString;
         }
-        private bool IsHost()
-        {
-            return !game.network.logic.isClient;
-        }
+        private bool isHost => !game.network.logic.isClient;
+
         private void setPlayerDeck(int playerId, int[] cardsId)
         {
             for (int i = 0; i < _currentRoomData.playerDataList.Count; i++)
@@ -361,7 +359,6 @@ namespace Controllers
         }
         private void updateUIStateForHost()
         {
-            bool isHost = IsHost();
             _ui.enableRandomSeed(isHost);
             _ui.enableShuffle(isHost);
             _ui.enableInitReplaceTime(isHost);
@@ -493,13 +490,22 @@ namespace Controllers
             List<Deck> deckList = game.deck.getOrLoadDeckList();
             (string name, Sprite image, bool isWarning,bool hasPrivatePools)[] viewData = new (string name, Sprite image, bool isWarning,bool hasPrivatePools)[deckList.Count];
             bool allowCustomCards = _currentRoomData.getAllowCustomCards();
+
+            long[] roomCardPools = _currentRoomData.getCardPools();
+            if (roomCardPools.Length == 0)
+            {
+                // 修正没有设置的情况下无法使用任何卡的问题
+                roomCardPools = new long[] { 0 };
+            }
+
             for (int i = 0; i < viewData.Length; i++)
             {
                 Deck deck = deckList[i];
                 long[] cardPoolList = deck.getCardPools();
-                long[] roomCardPols = _currentRoomData.getCardPools();
+
                 viewData[i].name = deck.name;
                 viewData[i].image = await game.card.loadCardImage(deck.masterId);
+
                 bool warning = false;
                 // 判断牌组是否合法。
                 if (_isLocalGame)
@@ -520,9 +526,9 @@ namespace Controllers
                 }
                 viewData[i].isWarning = warning;
 
-                for (int j = 0; j <= cardPoolList.Length; j++)
+                for (int j = 0; j < cardPoolList.Length; j++)
                 {
-                    if (!roomCardPols.Contains(cardPoolList[j]))//前一个list是room允许的cardpool列表
+                    if (!roomCardPools.Contains(cardPoolList[j]))//前一个list是room允许的cardpool列表
                     {
                         viewData[i].hasPrivatePools = true;
                         break;
