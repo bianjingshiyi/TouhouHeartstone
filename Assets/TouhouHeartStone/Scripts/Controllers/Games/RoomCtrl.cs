@@ -293,24 +293,6 @@ namespace Controllers
         }
         #endregion
 
-        private bool HasNotSharedPools(long[] pools)
-        {
-            long[] roomCardPools = _currentRoomData.getCardPools();
-            if (roomCardPools.Length == 0)
-            {
-                // 修正没有设置的情况下无法使用任何卡的问题
-                roomCardPools = new long[] { 0 };
-            }
-
-            foreach (long pool in pools)
-            {
-                if (!roomCardPools.Contains(pool))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
         private bool HasNotSharedPools(long[] pools, out long[] privatePools)
         {
             long[] roomCardPools = _currentRoomData.getCardPools();
@@ -555,7 +537,7 @@ namespace Controllers
                 }
                 viewData[i].isWarning = warning;
 
-                viewData[i].hasPrivatePools = HasNotSharedPools(cardPoolList);
+                viewData[i].hasPrivatePools = HasNotSharedPools(cardPoolList, out _);
             }
             _ui.displayDeckSelectPanel(viewData);
         }
