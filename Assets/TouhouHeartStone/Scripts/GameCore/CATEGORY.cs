@@ -39,24 +39,29 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="define"></param>
         /// <returns></returns>
-        public static int getCharacterID(this CardDefine define)
+        public static DefineReference getCharacterRef(this CardDefine define)
         {
             if (define.hasProp(DEFINE.CHARACTER_ID))
-                return define.getProp<int>(DEFINE.CHARACTER_ID);
-            return getCharacterID(define.id);
+            {
+                if (define.getProp<DefineReference>(DEFINE.CHARACTER_ID) is DefineReference characterRef)
+                    return characterRef;
+                else
+                    define.getProp<int>(DEFINE.CHARACTER_ID);
+            }
+            return new DefineReference(0, getCharacterID(define.id));
         }
-        public static void setCharacterID(this CardDefine define, int characterId)
+        public static void setCharacterRef(this CardDefine define, DefineReference characterRef)
         {
-            define.setProp(DEFINE.CHARACTER_ID, characterId);
+            define.setProp(DEFINE.CHARACTER_ID, characterRef);
         }
         /// <summary>
         /// 获取给出的所有卡片定义的所属角色ID
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
-        public static int[] getCharactersID(this IEnumerable<CardDefine> cards)
+        public static DefineReference[] getCharactersID(this IEnumerable<CardDefine> cards)
         {
-            return cards.GroupBy(c => c.getCharacterID()).Select(g => g.Key).ToArray();
+            return cards.GroupBy(c => c.getCharacterRef()).Select(g => g.Key).ToArray();
         }
 
         public static int getCategory(int id)

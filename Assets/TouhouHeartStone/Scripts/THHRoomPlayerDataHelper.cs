@@ -15,8 +15,12 @@ namespace Game
         {
             if (!playerData.hasProp(PROP_DECK))
                 return null;
-            DefineReference[] defRefs = playerData.getProp<DefineReference[]>(PROP_DECK);
-            return new Deck(defRefs[0], defRefs.Skip(1));
+            if (playerData.getProp<DefineReference[]>(PROP_DECK) is DefineReference[] defRefs)
+                return new Deck(defRefs[0], defRefs.Skip(1));
+            else if (playerData.getProp<int[]>(PROP_DECK) is int[] cardsId)
+                return new Deck(new DefineReference(0, cardsId[0]), cardsId.Skip(1).Select(id => new DefineReference(0, id)));
+            else
+                return null;
         }
 
         public const string PROP_READY = "ready";

@@ -102,8 +102,10 @@ namespace Controllers
                 {
                     _filteredCardDefineList.RemoveAll(c => !_cardFilter(c));
                 }
-                List<int> characterIdList = new List<int>();
-                characterIdList.Add(CATEGORY.CHARACTER_NEUTRAL);
+                List<DefineReference> characterRefList = new List<DefineReference>()
+                {
+                    new DefineReference(0,CATEGORY.CHARACTER_NEUTRAL)
+                };
                 for (int i = 0; i < _cardDefineList.Count; i++)
                 {
                     if (_cardPoolFilterValue.Any(v => v))
@@ -122,16 +124,16 @@ namespace Controllers
                     }
                     if (_cardDefineList[i].isMaster())
                     {
-                        characterIdList.Add(_cardDefineList[i].id);
+                        characterRefList.Add(new DefineReference(_cardDefineList[i].cardPoolId, _cardDefineList[i].id));
                     }
                 }
-                _characterFilters = characterIdList.ToArray();
-                if (info.characterFiltersId != null)
+                _characterFilters = characterRefList.ToArray();
+                if (info.characterFilterRefs != null)
                 {
                     _characterFiltersValue = new bool[_characterFilters.Length];
                     for (int i = 0; i < _characterFiltersValue.Length; i++)
                     {
-                        _characterFiltersValue[i] = Array.Exists(info.characterFiltersId, characterId => characterId == _characterFilters[i]);
+                        _characterFiltersValue[i] = Array.Exists(info.characterFilterRefs, characterId => characterId == _characterFilters[i]);
                     }
                 }
                 else if (_characterFiltersValue == null || _characterFiltersValue.Length != _characterFilters.Length)
@@ -143,7 +145,7 @@ namespace Controllers
                     //过滤角色
                     _filteredCardDefineList.RemoveAll(c =>
                     {
-                        int index = Array.IndexOf(_characterFilters, c.getCharacterID());
+                        int index = Array.IndexOf(_characterFilters, c.getCharacterRef());
                         if (index < 0)
                         {
                             return true;
@@ -223,7 +225,7 @@ namespace Controllers
                 string[] characterNames = new string[_characterFilters.Length];
                 for (int i = 0; i < characterNames.Length; i++)
                 {
-                    if (_characterFilters[i] == CATEGORY.CHARACTER_NEUTRAL)
+                    if (_characterFilters[i].cardPoolId == 0 && _characterFilters[i].defineId == CATEGORY.CHARACTER_NEUTRAL)
                     {
                         characterNames[i] = game.langManager.getString(StringTable.CARDVIEW_CHARACTER_NEUTRAL);
                     }
@@ -259,12 +261,12 @@ namespace Controllers
                 _ui.updateCardListCount(_filteredCardDefineList.Count);
             }
         }
-        public Task display(int cardId, long[] cardPoolsId = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
+        public Task display(int cardId, long[] cardPoolsId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
         {
             return display(new DisplayInfo()
             {
                 cardPoolFiltersId = cardPoolsId,
-                characterFiltersId = charactersId,
+                characterFilterRefs = characterRefs,
                 cardFilter = cardFilter,
                 cardId = cardId
             });
@@ -274,13 +276,13 @@ namespace Controllers
         /// </summary>
         /// <param name="characterId"></param>
         /// <returns></returns>
-        public Task display(long[] cardPoolsId = null, bool? hideBuiltinCards = null, int[] charactersId = null, Predicate<CardDefine> cardFilter = null)
+        public Task display(long[] cardPoolsId = null, bool? hideBuiltinCards = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
         {
             return display(new DisplayInfo()
             {
                 cardPoolFiltersId = cardPoolsId,
                 hideBuiltinCards = hideBuiltinCards,
-                characterFiltersId = charactersId,
+                characterFilterRefs = characterRefs,
                 cardFilter = cardFilter
             });
         }
@@ -468,7 +470,7 @@ namespace Controllers
                     cardPoolsIdList.Add(_cardPoolInfoList[i].cardPoolId);
                 }
             }
-            List<int> charactersIdList = new List<int>();
+            List<DefineReference> charactersIdList = new List<DefineReference>();
             for (int i = 0; i < _characterFiltersValue.Length; i++)
             {
                 if (_characterFiltersValue[i])
@@ -482,7 +484,7 @@ namespace Controllers
                 hideBuiltinCards = !_cardPoolFilterValue[_cardPoolFilterValue.Length - 1],
                 cardPoolFiltersId = cardPoolsIdList.ToArray(),
                 sortType = _sortType,
-                characterFiltersId = charactersIdList.ToArray(),
+                characterFilterRefs = charactersIdList.ToArray(),
                 costFiltersValue = _costFiltersValue,
                 typeFiltersValue = _typeFiltersValue,
                 searchFilterValue = _searchFilterString,
@@ -519,7 +521,7 @@ namespace Controllers
         [SerializeField]
         int _sortType;
         [SerializeField]
-        int[] _characterFilters;
+        DefineReference[] _characterFilters;
         [SerializeField]
         bool[] _characterFiltersValue;
         [SerializeField]
@@ -559,7 +561,7 @@ namespace Controllers
             public bool? hideBuiltinCards = null;
             public long[] cardPoolFiltersId = null;
             public int sortType = -1;
-            public int[] characterFiltersId = null;
+            public DefineReference[] characterFilterRefs = null;
             public bool[] costFiltersValue = null;
             public bool[] typeFiltersValue = null;
             public string searchFilterValue = null;

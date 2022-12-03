@@ -49,7 +49,7 @@ namespace Controllers
             _isDeckChanged = false;
 
             //切换角色筛选
-            await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, charactersId: new int[] { deck.masterId }, cardFilter: cardFilter);
+            await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, characterRefs: new DefineReference[] { deck.masterCardRef }, cardFilter: cardFilter);
             CardSkinData masterSkin = game.card.getCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId);
 
             // 更新UI
@@ -128,7 +128,7 @@ namespace Controllers
             else
             {
                 CardDefine card = _cardPoolViewPanelCtrl.getCardDefineAt(index);
-                index = _deck.cardList.FindIndex(e => e.id == card.id);
+                index = _deck.cardList.FindIndex(e => e.cardRef.cardPoolId == card.cardPoolId && e.cardRef.defineId == card.id);
                 if (index >= 0)
                 {
                     int max = card.hasKeyword(KEYWORD.UNIQUE) ? 1 : 2;
@@ -265,8 +265,8 @@ namespace Controllers
         private async void onStartDragDeckCardListItem(int index)
         {
             //获取拖拽卡牌
-            var cards = _deck.cardList.OrderBy(e => game.card.getCardDefine(e.id).getCost()).ToArray();
-            _dragCard = game.card.getCardDefine(cards[index].id);
+            var cards = _deck.cardList.OrderBy(e => game.card.getCardDefine(e.cardRef).getCost()).ToArray();
+            _dragCard = game.card.getCardDefine(cards[index].cardRef);
             index = _deck.cardList.IndexOf(cards[index]);
             //从卡组中删除一张卡牌
             _deck.cardList[index].count--;
@@ -335,7 +335,7 @@ namespace Controllers
             {
                 //id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
                 name = StringTable.BUILD_NEW_DECK_DEFAULT_NAME,
-                masterId = _selectableMasters[index].id
+                masterCardRef = new DefineReference(_selectableMasters[index].cardPoolId, _selectableMasters[index].id)
             };
             display(newDeck);
         }
@@ -401,13 +401,13 @@ namespace Controllers
 
             try
             {
-                var cards = game.deck.StringToDeck(deckContent);
-                int master = cards[0];
+                DefineReference[] cards = game.deck.StringToDeckWithCardPoolID(deckContent);
+                DefineReference master = cards[0];
 
                 // 检查卡片是否存在
                 for (int i = 0; i < cards.Length; i++)
                 {
-                    var card = cards[i];
+                    DefineReference card = cards[i];
                     if (game.card.getCardDefine(card) == null)
                     {
                         game.ui.dialog.ShowConfirm(game.lang._(StringTable.ERROR), game.lang._(StringTable.ERROR_CARD_WITH_ID_NOT_EXISTS, card), null);
@@ -419,7 +419,7 @@ namespace Controllers
                 Deck copiedDeck = new Deck()
                 {
                     name = deckName,
-                    masterId = master,
+                    masterCardRef = master,
                 };
                 //添加卡牌，跳过第一个角色卡
                 copiedDeck.addCards(cards.Skip(1));
@@ -553,7 +553,7 @@ namespace Controllers
         {
             if (!game.card.tryGetCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId, out CardSkinData skin))
             {
-                Debug.LogError("不存在卡组角色" + deck.masterId + "的对应皮肤");
+                Debug.LogError("不存在卡组角色" + deck.masterCardRef + "的对应皮肤");
                 return Task.FromResult<Sprite>(null);
             }
             if (skin.image != null)
@@ -561,7 +561,7 @@ namespace Controllers
             else
             {
                 return game.card.loadImage(skin.imagePath,
-                    game.card.getCardDefine(deck.masterId) is CardDefine cardDefine &&
+                    game.card.getCardDefine(deck.masterCardRef) is CardDefine cardDefine &&
                     game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ?
                     cardPoolInfo.cardPoolId : 0);
             }
@@ -575,21 +575,22 @@ namespace Controllers
                 return false;
             }
             //卡牌数量上限
-            int cardCount = _deck.getCardCount(card.id);
+            int cardCount = _deck.getCardCount(card.cardPoolId, card.id);
             if (cardCount >= 2 || (card.hasKeyword(KEYWORD.UNIQUE) && cardCount >= 1))
             {
                 errorTip = game.lang._(StringTable.BUILD_TIP_CARD_MAX_COUNT);
                 return false;
             }
             // 中立卡或自己的卡
-            if (card.getCharacterID() != CATEGORY.CHARACTER_NEUTRAL
-                && card.getCharacterID() != _deck.masterId)
+            if ((card.getCharacterRef().cardPoolId != 0 ||
+                card.getCharacterRef().defineId != CATEGORY.CHARACTER_NEUTRAL) &&
+                card.getCharacterRef() != _deck.masterCardRef)
             {
                 errorTip = game.lang._(StringTable.BUILD_TIP_CARD_CARRY_LIMIT);
                 return false;
             }
             // 添加卡
-            _deck.addCard(card.id);
+            _deck.addCard(new DefineReference(card));
             // 标记为已经修改
             _isDeckChanged = true;
             errorTip = string.Empty;
@@ -713,11 +714,11 @@ namespace Controllers
         private async Task updateDeckCardListUI()
         {
             _ui.setDeckCardCount(_deck.cardList.Sum(e => e.count), game.deck.deckValidSize);
-            var cards = _deck.cardList.OrderBy(e => game.card.getCardDefine(e.id) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
+            var cards = _deck.cardList.OrderBy(e => game.card.getCardDefine(e.cardRef) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
             (string name, Sprite image, int count)[] deckCardsViewData = new (string name, Sprite image, int count)[cards.Length];
             for (int i = 0; i < cards.Length; i++)
             {
-                CardDefine cardDefine = game.card.getCardDefine(cards[i].id);
+                CardDefine cardDefine = game.card.getCardDefine(cards[i].cardRef);
                 CardSkinData skin = cardDefine != null ? game.card.getDefaultSkin(cardDefine) : null;
                 deckCardsViewData[i].name = skin != null ? skin.name : game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
                 deckCardsViewData[i].image = skin != null ? skin.image != null ?

@@ -137,7 +137,7 @@ namespace UI
                 // 判断准备状态
                 var deck = selfPlayer.getDeck();
                 StartButtonButtonBlack.Text.text = selfPlayer.getReady() ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
-                StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterId != 0 && deck.getCardCount() == 30);
+                StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterCardRef != DefineReference.Empty && deck.getCardCount() == 30);
             }
         }
         #endregion

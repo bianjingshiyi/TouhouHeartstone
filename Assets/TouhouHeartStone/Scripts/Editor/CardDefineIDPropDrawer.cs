@@ -50,9 +50,9 @@ namespace TouhouHeartstone
                 property.intValue = 0;
                 property.serializedObject.ApplyModifiedProperties();
             });
-            foreach (var group in getCardDefines().GroupBy(c => c.getCharacterID()))
+            foreach (var group in getCardDefines().GroupBy(c => c.getCharacterRef()))
             {
-                CardDefine character = getCardDefines().FirstOrDefault(c => c.id == group.Key);
+                CardDefine character = getCardDefines().FirstOrDefault(c => c.cardPoolId == group.Key.cardPoolId && c.id == group.Key.defineId);
                 foreach (var define in group.OrderBy(c => c.GetType().Name))
                 {
                     string path = "";

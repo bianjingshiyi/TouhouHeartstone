@@ -53,7 +53,9 @@ namespace Controllers
             }
             _ui.setSelectableCharacters(charactersName);
             //中立为0，有角色则为index+1
-            _ui.setCharacter(Array.FindIndex(_selectableCharacters, c => c.id == cardDefine.getCharacterID()) + 1);
+            _ui.setCharacter(Array.FindIndex(_selectableCharacters, c =>
+                c.cardPoolId == cardDefine.getCharacterRef().cardPoolId && 
+                c.id == cardDefine.getCharacterRef().defineId) + 1);
             _ui.setCost(_cardDefine.getProp<int>(DEFINE.COST).ToString());
             _ui.setAttack(_cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
             _ui.setLife(_cardDefine.getProp<int>(DEFINE.LIFE).ToString());
@@ -170,11 +172,11 @@ namespace Controllers
             _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
             _ui.onChangeTag += onChangeTag;
-			_ui.onChangeSkillID += onChangeSkillID;
-			_ui.onChangeSpellDamage += onChangeSpellDamage;
+            _ui.onChangeSkillID += onChangeSkillID;
+            _ui.onChangeSpellDamage += onChangeSpellDamage;
         }
         #endregion
-         #region 事件回调
+        #region 事件回调
         private async void onChangeSkin(int skinIndex)
         {
             if (skinIndex == getSkinCount())
@@ -291,11 +293,13 @@ namespace Controllers
             scene.editor.hasUnsavedChanges = true;
             if (characterIndex < 1)
             {
-                _cardDefine.setCharacterID(0);
+                _cardDefine.setCharacterRef(DefineReference.Empty);
             }
             else
             {
-                _cardDefine.setCharacterID(_selectableCharacters[characterIndex - 1].id);
+                _cardDefine.setCharacterRef(new DefineReference(
+                    _selectableCharacters[characterIndex - 1].cardPoolId,
+                    _selectableCharacters[characterIndex - 1].id));
             }
         }
         /// <summary>
@@ -331,7 +335,7 @@ namespace Controllers
             scene.editor.hasUnsavedChanges = true;
             _curCardSkin.subname = subName;
             _ui.setSubName(subName);
-          
+
         }
         /// <summary>
         /// 当需要用户选择图片，根据平台不同调用不同的插件方法，返回选择的贴图。新建的贴图需要缓存在内存中。
@@ -412,7 +416,7 @@ namespace Controllers
         private void onChangeSpellDamage(int value)
         {
             _cardDefine.setSpellDamage(value);
-        }    
+        }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
@@ -466,7 +470,7 @@ namespace Controllers
         }
         #endregion
 
-        private void _textChangedByType() 
+        private void _textChangedByType()
         {
             if (_cardDefine.type == DEFINE.SPELL || _cardDefine.type == DEFINE.ITEM || _cardDefine.type == DEFINE.SKILL)
             {

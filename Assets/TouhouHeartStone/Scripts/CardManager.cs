@@ -481,6 +481,10 @@ namespace Game
             }
             return null;
         }
+        public CardDefine getCardDefine(DefineReference defRef)
+        {
+            return getCardDefine(defRef.cardPoolId, defRef.defineId);
+        }
         /// <summary>
         /// 根据条件获取卡片定义
         /// </summary>
@@ -518,17 +522,26 @@ namespace Game
         /// <returns></returns>
         public bool isCustomCard(CardDefine card)
         {
-            return isCustomCard(card.id);
+            return isCustomCard(card.cardPoolId, card.id);
         }
         /// <summary>
         /// 卡牌ID是否是自定义。
         /// </summary>
         /// <param name="card">卡牌ID。</param>
         /// <returns></returns>
-        public bool isCustomCard(int cardId)
+        public bool isCustomCard(long cardPoolId, int cardId)
         {
-            //TODO 58：暂时只判断ID是不是负数，经典卡牌也算是负数，以后改一下
-            return cardId < 0;
+            if (cardPoolId == 0 || Array.IndexOf(standardCardPoolsId, cardPoolId) >= 0)
+            {
+                //0是内置卡池，包含在经典卡池内是经典卡池
+                return false;
+            }
+            else if (cardId > 0)
+            {
+                //负数才是自定义卡
+                return false;
+            }
+            return true;
         }
         public Dictionary<long, Dictionary<int, CardDefine>> getCardDefines(long[] cardPoolsId)
         {
