@@ -171,7 +171,7 @@ namespace Controllers
             _selectDeckPlayerId = scene.game.network.logic.localPlayer.id;
             await displaySelectDeckPanel();
         }
-        private async void onClickDeckSelectPanelItem(int index)
+        private void onClickDeckSelectPanelItem(int index)
         {
             //选择卡组
             var deck = game.deck.getOrLoadDeckList()[index];
@@ -181,25 +181,20 @@ namespace Controllers
             {
                 // 检测deck是否有房间没有的卡池。
                 long[] pools = deck.getCardPools();
-                long[] roomPools = _currentRoomData.getCardPools();
-                List<CardPoolInfoPack> privatePools = new List<CardPoolInfoPack>();
-                foreach (long pool in pools)
+                // 如果有房间没有的卡池，提议加入该卡池。
+                if (HasNotSharedPools(pools, out var privatePools))
                 {
-                    if (!roomPools.Contains(pool))
+                    List<CardPoolInfoPack> packsList = new List<CardPoolInfoPack>();
+                    foreach (long pool in privatePools)
                     {
                         CardPoolInfo info = game.card.getCardPoolInfo((int)pool);
                         if (info != null)
                         {
                             CardPoolInfoPack pack = new CardPoolInfoPack(info.cardPoolId, info.cardPoolName, info.editTime);
-                            privatePools.Add(pack);
+                            packsList.Add(pack);
                         }
                     }
-                }
-                // 如果有房间没有的卡池，提议加入该卡池。
-                if (privatePools.Any())
-                {
-                    var packs = privatePools.ToArray();
-
+                    CardPoolInfoPack[] packs = packsList.ToArray();
                     // 如果是房主，弹出对话框提示是否设置卡池属性。
                     if (isHost)
                     {
@@ -297,6 +292,47 @@ namespace Controllers
             game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
         }
         #endregion
+
+        private bool HasNotSharedPools(long[] pools)
+        {
+            long[] roomCardPools = _currentRoomData.getCardPools();
+            if (roomCardPools.Length == 0)
+            {
+                // 修正没有设置的情况下无法使用任何卡的问题
+                roomCardPools = new long[] { 0 };
+            }
+
+            foreach (long pool in pools)
+            {
+                if (!roomCardPools.Contains(pool))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        private bool HasNotSharedPools(long[] pools, out long[] privatePools)
+        {
+            long[] roomCardPools = _currentRoomData.getCardPools();
+            if (roomCardPools.Length == 0)
+            {
+                // 修正没有设置的情况下无法使用任何卡的问题
+                roomCardPools = new long[] { 0 };
+            }
+
+            List<long> privates = new List<long>();
+            bool hasNotShared = false;
+            foreach (long pool in pools)
+            {
+                if (!roomCardPools.Contains(pool))
+                {
+                    hasNotShared = true;
+                    privates.Add(pool);
+                }
+            }
+            privatePools = privates.ToArray();
+            return hasNotShared;
+        }
         private async void SetPlayerDeck(int playerId, Deck deck)
         {
             setPlayerDeck(playerId, deck.toIdArray());
@@ -491,13 +527,6 @@ namespace Controllers
             (string name, Sprite image, bool isWarning,bool hasPrivatePools)[] viewData = new (string name, Sprite image, bool isWarning,bool hasPrivatePools)[deckList.Count];
             bool allowCustomCards = _currentRoomData.getAllowCustomCards();
 
-            long[] roomCardPools = _currentRoomData.getCardPools();
-            if (roomCardPools.Length == 0)
-            {
-                // 修正没有设置的情况下无法使用任何卡的问题
-                roomCardPools = new long[] { 0 };
-            }
-
             for (int i = 0; i < viewData.Length; i++)
             {
                 Deck deck = deckList[i];
@@ -526,18 +555,7 @@ namespace Controllers
                 }
                 viewData[i].isWarning = warning;
 
-                for (int j = 0; j < cardPoolList.Length; j++)
-                {
-                    if (!roomCardPools.Contains(cardPoolList[j]))//前一个list是room允许的cardpool列表
-                    {
-                        viewData[i].hasPrivatePools = true;
-                        break;
-                    }
-                    else
-                    {
-                        viewData[i].hasPrivatePools = false;
-                    }
-                }
+                viewData[i].hasPrivatePools = HasNotSharedPools(cardPoolList);
             }
             _ui.displayDeckSelectPanel(viewData);
         }
