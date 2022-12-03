@@ -408,7 +408,7 @@ namespace UI
             _localPlayerDeckNameText.text = deckName;
             _localPlayerDeckImage.sprite = deckImage;
         }
-        public void displayDeckSelectPanel((string name, Sprite image, bool isWarning)[] viewData)
+        public void displayDeckSelectPanel((string name, Sprite image, bool isWarning,bool hasPrivatePools)[] viewData)
         {
             _deckViewPanel.update(viewData);
             _deckPanel.SetActive(true);
@@ -704,13 +704,11 @@ namespace UI
             var viewData = decks.Select((define =>
             {
                 // 只有30张卡的卡组才能选择
-                return (define.Name, cardManager.getCardSkin(define.MasterID).image,(deckManager.GetDeckCards(define.ID).Count >= 30));
+                return (define.Name, cardManager.getCardSkin(define.MasterID).image,(deckManager.GetDeckCards(define.ID).Count >= 30),false);
             })).ToArray();
             _deckViewPanel.update(viewData);
             _deckPanel.SetActive(true);
-
             _deckViewPanel.onClickDeckListItem -= onSelectCallback;
-
             _deckViewPanel.onClickDeckListItem += onSelectCallback;
             void onSelectCallback(int id)
             {

@@ -63,6 +63,10 @@ namespace UI
             NotCompleteImage.gameObject.SetActive(val);
         }
 
+        public void setCardRentWarning (bool val) 
+        {
+            _cardPoolWarningImage.gameObject.SetActive(val);
+        }
         public enum Mode
         {
             DeckListItem, // 牌组列表
@@ -101,6 +105,8 @@ namespace UI
         Text _nameText;
         [SerializeField]
         Image _image;
+        [SerializeField]
+        Image _cardPoolWarningImage;
         #endregion
     }
 }

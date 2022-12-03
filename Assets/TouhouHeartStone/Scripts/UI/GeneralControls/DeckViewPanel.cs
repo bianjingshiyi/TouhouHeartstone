@@ -12,7 +12,7 @@ namespace UI
     {
         #region 公有方法
 
-        public void update((string name, Sprite image, bool isWarning)[] deckViewData)
+        public void update((string name, Sprite image, bool isWarning, bool hasPrivatePools)[] deckViewData)
         {
             UIHelper.updateList(_deckListRoot, _deckListItemTemplate, _deckItemList, deckViewData.Length, (i, item) =>
             {
@@ -21,6 +21,7 @@ namespace UI
                 deckListItem.setWarning(deckViewData[i].isWarning);
                 deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
                 deckListItem.SetSelectable(!deckViewData[i].isWarning);
+                deckListItem.setCardRentWarning(deckViewData[i].hasPrivatePools);
             }, item =>
             {
                 DeckListItem deckListItem = item.GetComponent<DeckListItem>();

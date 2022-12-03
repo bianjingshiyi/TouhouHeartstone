@@ -6,6 +6,7 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
+using UnityEngine.UI;
 using Deck = TouhouHeartstone.Deck;
 using System.Linq;
 using System.Collections.Generic;
@@ -124,7 +125,7 @@ namespace Controllers
         {
             _currentRoomData.setOption(RoomDataPropName.Option.AllowCustomCards, value);
             updateStartAndReadyButton();
-        }    
+        }
         private void onClickPlayerListItemViewDeckButton(int index)
         {
             Deck deck = _currentRoomData.playerDataList[index].getDeck();
@@ -180,8 +181,8 @@ namespace Controllers
             }
             if (_isLocalGame)
             {
-            await game.game.startLocalGame(_currentRoomData);
-        }
+                await game.game.startLocalGame(_currentRoomData);
+            }
             else
             {
                 game.game.startRemoteGame(_currentRoomData);
@@ -296,7 +297,7 @@ namespace Controllers
 #endif
                 return deckValid;
             }
-                return false;
+            return false;
         }
         /// <summary>
         /// 是否有任意玩家中的卡组中包含自定义卡牌。
@@ -370,15 +371,16 @@ namespace Controllers
         private async Task displaySelectDeckPanel()
         {
             List<Deck> deckList = game.deck.getOrLoadDeckList();
-            (string name, Sprite image, bool isWarning)[] viewData = new (string name, Sprite image, bool isWarning)[deckList.Count];
+            (string name, Sprite image, bool isWarning,bool hasPrivatePools)[] viewData = new (string name, Sprite image, bool isWarning,bool hasPrivatePools)[deckList.Count];
             bool allowCustomCards = _currentRoomData.getAllowCustomCards();
             for (int i = 0; i < viewData.Length; i++)
             {
                 Deck deck = deckList[i];
-                
+                long[] cardPoolList = deck.getCardPools();
+                long[] roomCardPols = _currentRoomData.getCardPools();
                 viewData[i].name = deck.name;
                 viewData[i].image = await game.card.loadCardImage(deck.masterId);
-                bool warning = false; 
+                bool warning = false;
                 // 判断牌组是否合法。
                 if (_isLocalGame)
                 {
@@ -397,10 +399,25 @@ namespace Controllers
                     warning = true;
                 }
                 viewData[i].isWarning = warning;
+
+                for (int j = 0; j <= cardPoolList.Length; j++)
+                {
+                    if (!roomCardPols.Contains(cardPoolList[j]))//前一个list是room允许的cardpool列表
+                    {
+                        viewData[i].hasPrivatePools = true;
+                        break;
+                    }
+                    else
+                    {
+                        viewData[i].hasPrivatePools = false;
+                    }
+                }
             }
             _ui.displayDeckSelectPanel(viewData);
         }
-#endregion
+
+
+        #endregion
         #region 属性字段
         public bool isDisplay => _isDisplay;
         [SerializeField]

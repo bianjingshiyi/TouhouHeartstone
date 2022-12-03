@@ -31,7 +31,7 @@ namespace UI
             this._DeleteButtonIconGlass = this.transform.Find("ImageMask").Find("Delete").GetComponent<ButtonIconGlass>();
             this._DeckNameImage = this.transform.Find("ImageMask").Find("DeckName").GetComponent<Image>();
             this._Text = this.transform.Find("ImageMask").Find("DeckName").Find("Text").GetComponent<Text>();
-            this._NotCompleteImage = this.transform.Find("ImageMask").Find("DeckName").Find("NotComplete").GetComponent<Image>();
+            this._NotCompleteImage = this.transform.Find("ImageMask").Find("DeckName").Find("CautionSignLocation").Find("NotComplete").GetComponent<Image>();
             this._NameInputField = this.transform.Find("ImageMask").Find("NameInputField").GetComponent<InputField>();
             this._AddButtonBlack = this.transform.Find("Add").GetComponent<ButtonBlack>();
         }
