@@ -24,6 +24,30 @@ namespace Game
         {
             return logic.ServerClient.GetLatestUpdateAsync();
         }
+        /// <summary>
+        /// 向房主提议增加卡池。
+        /// </summary>
+        /// <param name="cardPools">卡池信息列表。</param>
+        public void SuggestCardPools(CardPoolSuggestion suggestion)
+        {
+            logic.SuggestCardPools(suggestion);
+        }
+        /// <summary>
+        /// 房主同意增加卡池的提议。
+        /// </summary>
+        /// <param name="playerId">同意的玩家ID。</param>
+        public void AnwserCardPoolsSuggestion(int playerId, CardPoolSuggestion suggestion, bool agree)
+        {
+            logic.AnwserCardPoolsSuggestion(playerId, suggestion, agree);
+        }
+        /// <summary>
+        /// 向每个玩家分发卡池。
+        /// </summary>
+        /// <param name="cardPools">卡池信息列表。</param>
+        public void DistributeCardPools(CardPoolInfoPack[] cardPools)
+        {
+            //TODO
+        }
         #endregion
         [Header("配置")]
         [Tooltip("正式服务器地址")]
@@ -156,6 +180,8 @@ namespace Game
             logic.OnRoomDataChange += NetworkingLogic_OnRoomDataChange;
             logic.OnPlayerDataChange += NetworkingLogic_OnPlayerDataChange;
             logic.onGameStart += Logic_onGameStart;
+            logic.OnSuggestCardPools += NetworkingLogic_OnSuggestCardPools;
+            logic.OnCardPoolsSuggestionAnwsered += NetworkingLogic_OnCardPoolsSuggestionAnwsered;
 
             // todo: Client断开后退出房间
             gameManager.onGameEnd += logic.ClearRoom;
@@ -628,7 +654,14 @@ namespace Game
             }
             setRoomPanel(logic.CurrentRoom);
         }
-
+        private void NetworkingLogic_OnSuggestCardPools(int playerId, CardPoolSuggestion suggestion)
+        {
+            roomPanel.ReceiveCardPoolsSuggestion(playerId, suggestion);
+        }
+        private void NetworkingLogic_OnCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
+        {
+            roomPanel.ReceiveCardPoolsSuggestionAnwser(suggestion, agree);
+        }
         #endregion
         #region UI事件处理
         [TranslateMsg]

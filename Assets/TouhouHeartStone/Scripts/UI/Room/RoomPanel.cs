@@ -222,6 +222,7 @@ namespace UI
                 setNotifyRoomSetting(RoomDataPropName.Option.AllowCustomCards, value);
             });
 
+
             StartButtonButtonBlack.asButton.onClick.set(() =>
             {
                 if (isHost)
@@ -455,6 +456,15 @@ namespace UI
         {
             loadingCircle.Hide();
         }
+        public void ReceiveCardPoolsSuggestion(int playerId, CardPoolSuggestion suggestion)
+        {
+            onSuggestCardPools?.Invoke(playerId, suggestion);
+        }
+        public void ReceiveCardPoolsSuggestionAnwser(CardPoolSuggestion suggestion, bool agree)
+        {
+            onCardPoolsSuggestionAnwsered?.Invoke(suggestion, agree);
+        }
+
         #endregion
         #region 私有方法
         #region 生命周期
@@ -636,6 +646,8 @@ namespace UI
         public event Action onClickReadyButton;
         public event Action onClickCancleReadyButton;
         public event Action onClickQuitButton;
+        public event Action<int, CardPoolSuggestion> onSuggestCardPools;
+        public event Action<CardPoolSuggestion, bool> onCardPoolsSuggestionAnwsered;
         #endregion
         #region 属性字段
         [SerializeField]

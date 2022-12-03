@@ -5,6 +5,7 @@ using TouhouHeartstone;
 using System;
 using TouhouCardEngine.Interfaces;
 using UnityEngine;
+using Controllers;
 
 namespace Game
 {
@@ -32,6 +33,8 @@ namespace Game
             localLanLogic.OnRoomDataChange += roomDataChangeEvtHandler;
             localLanLogic.OnReceiveData += roomReceiveEvtHandler;
             localLanLogic.OnRecvChat += roomReceiveChatEvtHandler;
+            localLanLogic.OnSuggestCardPools += roomReceiveCardPoolSuggestionHandler;
+            localLanLogic.OnCardPoolsSuggestionAnwsered += roomReceiveCardPoolSuggestionAnwserHandler;
         }
 
         public event Func<int, object, Task> onReceive;
@@ -78,6 +81,18 @@ namespace Game
         {
             OnRecvChat?.Invoke(obj);
         }
+        public event Action<int, CardPoolSuggestion> OnSuggestCardPools;
+        private void roomReceiveCardPoolSuggestionHandler(int playerId, CardPoolSuggestion suggestion)
+        {
+            OnSuggestCardPools?.Invoke(playerId, suggestion);
+        }
+
+        public event Action<CardPoolSuggestion, bool> OnCardPoolsSuggestionAnwsered;
+        private void roomReceiveCardPoolSuggestionAnwserHandler(CardPoolSuggestion suggestion, bool agree)
+        {
+            OnCardPoolsSuggestionAnwsered?.Invoke(suggestion, agree);
+        }
+
         #endregion
 
         /// <summary>
@@ -187,6 +202,25 @@ namespace Game
         public Task SendChat(int channel, string message)
         {
             return localLanLogic.sendChat(channel, message);
+        }
+        /// <summary>
+        /// 向房主提议添加卡池。
+        /// </summary>
+        /// <param name="cardPools">卡池信息列表。</param>
+        /// <returns></returns>
+        public Task SuggestCardPools(CardPoolSuggestion suggestion)
+        {
+            return localLanLogic.SuggestCardPools(suggestion);
+        }
+        /// <summary>
+        /// 房主回应添加卡池的提议。
+        /// </summary>
+        /// <param name="suggestion">建议。</param>
+        /// <param name="agree">是否同意建议。</param>
+        /// <returns></returns>
+        public Task AnwserCardPoolsSuggestion(int playerId, CardPoolSuggestion suggestion, bool agree)
+        {
+            return localLanLogic.AnwserCardPoolsSuggestion(playerId, suggestion, agree);
         }
 
         /// <summary>
