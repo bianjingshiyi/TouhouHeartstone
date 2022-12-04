@@ -317,7 +317,7 @@ namespace Controllers
         }
         private async void SetPlayerDeck(int playerId, Deck deck)
         {
-            setPlayerDeck(playerId, deck.toIdArray());
+            setPlayerDeck(playerId, deck.toDefRefArray());
             //隐藏选择卡组界面
             _ui.hideDeckSelectPanel();
             //更新界面
@@ -325,7 +325,7 @@ namespace Controllers
             updateStartAndReadyButton();
             if (playerId == game.network.logic.localPlayer.id)
             {
-                _ui.updateLocalPlayerDeck(deck.name, await game.card.loadCardImage(deck.masterId));
+                _ui.updateLocalPlayerDeck(deck.name, await game.card.loadCardImage(deck.masterCardRef));
             }
         }
         private void AddCardPools(CardPoolInfoPack[] packs)
@@ -347,7 +347,7 @@ namespace Controllers
         }
         private bool isHost => !game.network.logic.isClient;
 
-        private void setPlayerDeck(int playerId, int[] cardsId)
+        private void setPlayerDeck(int playerId, DefineReference[] cardRefs)
         {
             for (int i = 0; i < _currentRoomData.playerDataList.Count; i++)
             {
@@ -506,7 +506,7 @@ namespace Controllers
         private async Task displaySelectDeckPanel()
         {
             List<Deck> deckList = game.deck.getOrLoadDeckList();
-            (string name, Sprite image, bool isWarning,bool hasPrivatePools)[] viewData = new (string name, Sprite image, bool isWarning,bool hasPrivatePools)[deckList.Count];
+            (string name, Sprite image, bool isWarning, bool hasPrivatePools)[] viewData = new (string name, Sprite image, bool isWarning, bool hasPrivatePools)[deckList.Count];
             bool allowCustomCards = _currentRoomData.getAllowCustomCards();
 
             for (int i = 0; i < viewData.Length; i++)

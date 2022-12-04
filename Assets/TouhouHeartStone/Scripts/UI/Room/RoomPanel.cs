@@ -716,7 +716,7 @@ namespace UI
             var viewData = decks.Select((define =>
             {
                 // 只有30张卡的卡组才能选择
-                return (define.Name, cardManager.getCardSkin(define.MasterID).image, (deckManager.GetDeckCards(define.ID).Count >= 30), false);
+                return (define.Name, cardManager.getCardSkin(define.MasterCardRef).image, (deckManager.GetDeckCards(define.ID).Count >= 30), false);
             })).ToArray();
             _deckViewPanel.update(viewData);
             _deckPanel.SetActive(true);

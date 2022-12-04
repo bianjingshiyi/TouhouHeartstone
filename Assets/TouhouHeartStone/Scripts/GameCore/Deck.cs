@@ -82,10 +82,14 @@ namespace TouhouHeartstone
             //检查是否有自定义卡牌，
             for (int i = 0; i < cardList.Count; i++)
             {
-                poolList.Add(CardDefineHelper.getCardPoolId(cardList[i].id));
+                if (cardList[i].cardRef.cardPoolId != 0)
+                    poolList.Add(cardList[i].cardRef.cardPoolId);
+                else if (cardList[i].cardRef.defineId < 0)
+                    poolList.Add(CardDefineHelper.getCardPoolId(cardList[i].cardRef.defineId));
             }
             return poolList.ToArray();
-        }        #endregion
+        }
+        #endregion
         public int id;
         public string name;
         public DefineReference masterCardRef;

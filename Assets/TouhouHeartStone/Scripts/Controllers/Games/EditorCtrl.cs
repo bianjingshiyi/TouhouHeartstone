@@ -324,7 +324,7 @@ namespace Controllers
             // 退出时重新加载牌库信息，防止出现临时卡牌变更。
             if (hasUnsavedChanges)
             {
-                await game.card.reloadCardPoolsAndGetCardDefinesAsync(new int[] { _curCardPoolInfo.cardPoolId});
+                await game.card.reloadCardPoolsAndGetCardDefinesAsync(new long[] { _curCardPoolInfo.cardPoolId });
             }
             _curCardPoolPath = null;
             _curCardPoolInfo = null;
