@@ -1677,7 +1677,7 @@ namespace TouhouHeartstone
         public static List<Card> getAttackableTargets(this Card card, CardEngine game)
         {
             var targets = new List<Card>();
-            if (card.pile != card.getOwner().getField() && !(card.define is MasterCardDefine))
+            if (card.pile != card.getOwner().getField() && !card.isMaster())
             {
                 return targets;
             }

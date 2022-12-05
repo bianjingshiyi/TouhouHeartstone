@@ -559,7 +559,7 @@ namespace TouhouHeartstone
         {
             if (_onExecute != null)
             {
-                if (!(card.define is SpellCardDefine))
+                if (!card.isSpell())
                 {
                     if (target != null)
                     {

@@ -249,7 +249,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c is ServantCardDefine s && !s.isToken).ToArray();
+            CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c.isServant() && !c.isToken()).ToArray();
             var arg = await card.getOwner().discover(game, defines, title: "广告招租");
             var discovered = arg.discovered;
             await discovered.addBuff(game, new CodeBuff(ID, new CostModifier(0, true)));
@@ -290,7 +290,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             var arg = await card.getOwner().discover(game,
-                game.getDefinesOf(card.getOwner().getMaster().id,CATEGORY.CHARACTER_NEUTRAL).Where(define => define is ServantCardDefine s && !s.isToken));
+                game.getDefinesOf(card.getOwner().getMaster().id,CATEGORY.CHARACTER_NEUTRAL).Where(define => define.isServant() && !define.isToken()));
             await arg.discovered.addBuff(game,
                 new CodeBuff(ID, new CostModifier(5, true), new LifeModifier(5, true),
                     new AttackModifier(5, true)));
@@ -600,7 +600,7 @@ namespace TouhouHeartstone.Builtin
             for (int i = 0; i < 3; i++)
             {
                 await card.getOwner().discover(game,
-                    game.getDefinesOf(card.getOwner().getMaster().id, CATEGORY.CHARACTER_NEUTRAL).Where(define => define is ServantCardDefine s && !s.isToken));
+                    game.getDefinesOf(card.getOwner().getMaster().id, CATEGORY.CHARACTER_NEUTRAL).Where(define => define.isServant() && !define.isToken()));
             }
             
             // List<Card> servantCards = new List<Card>();

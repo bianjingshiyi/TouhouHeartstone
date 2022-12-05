@@ -629,7 +629,7 @@ namespace TouhouHeartstone.Builtin
 
             while (topCard != null &&
                    topCard.hasKeyword(game, KEYWORD.SECRET) &&
-                   topCard.define is SpellCardDefine &&
+                   topCard.isSpell() &&
                    card.getOwner().getHead().count < card.getOwner().getHead().maxCount &&
                    card.getOwner().getHead().All(c => c.define != topCard.define))
             {
@@ -708,7 +708,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     return a.from.owner == c.getOwner() &&
                            a.to == c.getOwner().getHead() &&
-                           a.card.define is SpellCardDefine &&
+                           a.card.isSpell() &&
                            a.card.hasKeyword(g, KEYWORD.SECRET);
                 },
                 async (g, c, a) => { await c.addBuff(g, new CodeBuff(ID, new LifeModifier(1))); })
@@ -740,7 +740,7 @@ namespace TouhouHeartstone.Builtin
             {
                 var spellsUsedInTurn = g.triggers.getRecordedEvents()
                     .skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg _).OfType<HearthStoneRule.UseEventArg>()
-                    .Select(e => e.card).Where(c1 => c1.define is SpellCardDefine).ToArray();
+                    .Select(e => e.card).Where(c1 => c1.isSpell()).ToArray();
 
                 if (spellsUsedInTurn.Length > 1)
                 {

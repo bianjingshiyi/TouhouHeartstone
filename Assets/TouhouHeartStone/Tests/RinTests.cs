@@ -151,7 +151,7 @@ namespace Tests
             game.skipUntilCanUse<CorpseVoyage>(you);
             you.cmdUse<CorpseVoyage>(game);
             Assert.AreEqual(0, you.getField().count);
-            Assert.AreEqual(1, you.getGrave().Count(c => c.define is ServantCardDefine));
+            Assert.AreEqual(1, you.getGrave().Count(c => c.isServant()));
             game.skipUntilCanUse<DefaultServant>(you);
             you.cmdUse<DefaultServant>(game, out s);
             s.setDead(game, true);
@@ -160,7 +160,7 @@ namespace Tests
             you.cmdUse<CorpseVoyage>(game);
             Assert.AreEqual(1, you.getField().count);
             Assert.True(you.getField()[0].define is DefaultServant);
-            Assert.AreEqual(1, you.getGrave().Count(c => c.define is ServantCardDefine));
+            Assert.AreEqual(1, you.getGrave().Count(c => c.isServant()));
             Assert.AreEqual(0, you.getGrave().Count(c => c.getCost(game) <= 3 && c.hasKeyword(game, KEYWORD.DEATHRATTLE)));
             game.Dispose();
         }
@@ -338,7 +338,7 @@ namespace Tests
             you.cmdUse<CorpseShoppingDistrict>(game);
             //墓地中的白板没有被尸体街复活
             Assert.AreEqual(0, you.getField().count);
-            Assert.AreEqual(1, you.getGrave().Count(c => c.define is ServantCardDefine));
+            Assert.AreEqual(1, you.getGrave().Count(c => c.isServant()));
             game.skipUntilCanUse<ZombieFairy>(you);
             you.cmdUse<ZombieFairy>(game, out s);
             s.setDead(game, true);
@@ -351,9 +351,9 @@ namespace Tests
             Assert.AreEqual(2, you.getField().count);
             Assert.AreEqual(1, you.getField().Count(c => c.define is GhostOfHatred));
             //白板仍未被复活，且墓地中无亡语随从
-            Assert.AreEqual(1, you.getGrave().Count(c => c.define is ServantCardDefine));
+            Assert.AreEqual(1, you.getGrave().Count(c => c.isServant()));
             Assert.AreEqual(0,
-                you.getGrave().Count(c => c.define is ServantCardDefine && c.hasKeyword(game, KEYWORD.DEATHRATTLE)));
+                you.getGrave().Count(c => c.isServant() && c.hasKeyword(game, KEYWORD.DEATHRATTLE)));
             you.cmdTurnEnd(game);
             game.skipUntilYourTurn(you);
             //丧失妖精死亡，召唤一只怨灵

@@ -214,7 +214,7 @@ namespace TouhouHeartstone
                 card = arg.card;
                 targets = arg.targets;
                 game.logger.logTrace(p + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
-                if (arg.card.isServant() || (card.define is GeneratedCardDefine && (card.define as GeneratedCardDefine).type == DEFINE.SERVANT))
+                if (arg.card.isServant())
                 {
                     await player.tryEnterField(game, p.getHand(), arg.card, arg.position);//随从卡，将卡置入战场
                     //await card.ComeOnStage(game, p, targets);//触发战吼事件
@@ -241,7 +241,7 @@ namespace TouhouHeartstone
                         await p.getWarp().moveTo(game, card, p.getGrave());//如果是普通法术，则送入墓地
                     }
                 }
-                else if (card.isItem() || (card.define is GeneratedCardDefine gDefine && gDefine.type == DEFINE.ITEM))
+                else if (card.isItem())
                 {
                     //物品卡，置入物品栏
                     await p.equip(game, card);

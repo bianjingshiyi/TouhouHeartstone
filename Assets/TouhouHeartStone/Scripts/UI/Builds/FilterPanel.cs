@@ -100,7 +100,7 @@ namespace UI
 
             // 填充角色列表
             allCharacters = cardManager.GetCardDefines(d => d.GetType().Assembly == typeof(THHGame).Assembly
-            && d is MasterCardDefine
+            && d.isMaster()
             && d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null).Select(d => d.id).ToArray();
 
             // 添加中立卡的过滤

@@ -2395,7 +2395,7 @@ namespace TouhouHeartstone.Builtin
         {
             new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.hand,
                 (game, card, arg) =>
-                    card.getOwner() != arg.player && arg.cost >= 4 && arg.card.define is ServantCardDefine, (game, card, arg) => card.getOwner().tryEnterField(game, card.pile, card, card.getOwner().getField().count))
+                    card.getOwner() != arg.player && arg.cost >= 4 && arg.card.isServant(), (game, card, arg) => card.getOwner().tryEnterField(game, card.pile, card, card.getOwner().getField().count))
         };
 
         public override IEffect[] getEffects()
@@ -2458,7 +2458,7 @@ namespace TouhouHeartstone.Builtin
         {
             foreach (var pair in arg.infoDic.Where(info => info.Value.source == card))
             {
-                if (!pair.Key.isDead(game) && !(pair.Key.define is MasterCardDefine))
+                if (!pair.Key.isDead(game) && !(pair.Key.isMaster()))
                 {
                     pair.Key.setCurrentLife(game, 1);
                 }
@@ -2633,10 +2633,10 @@ namespace TouhouHeartstone.Builtin
                 }
                 else
                 {
-                    if (recorded[i] is HearthStoneRule.UseEventArg &&
-                        !((recorded[i] as HearthStoneRule.UseEventArg).card.define is SkillCardDefine))
+                    if (recorded[i] is HearthStoneRule.UseEventArg arg &&
+                        !(arg.card.isSkill()))
                     {
-                        usedCards.Add((recorded[i] as HearthStoneRule.UseEventArg)?.card);
+                        usedCards.Add(arg.card);
                     }
 
                     if (recorded[i] is HearthStoneRule.TurnEndEventArg)

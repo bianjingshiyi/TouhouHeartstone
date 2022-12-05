@@ -627,34 +627,26 @@ namespace Game
                 return false;
             if (c.GetType().Assembly != typeof(THHGame).Assembly)//非游戏用卡片
                 return false;
-            if (c is MasterCardDefine)//不是英雄牌
+            if (c.isMaster())//不是英雄牌
                 return false;
-            else if (c is SkillCardDefine)//不是技能牌
+            else if (c.isSkill())//不是技能牌
                 return false;
-            else if (c is ServantCardDefine servant)
+            else if (c.isServant())
             {
-                if (servant.isToken)
+                if (c.isToken())
                     return false;
             }
-            else if (c is SpellCardDefine spell)
+            else if (c.isSpell())
             {
-                if (spell.isToken)
+                if (c.isToken())
                     return false;
             }
-            else if (c is ItemCardDefine item)
+            else if (c.isItem())
             {
-                if (item.isToken)
+                if (c.isToken())
                 {
                     return false;
                 }
-            }
-            else if (c is GeneratedCardDefine generated)
-            {
-                if (generated.type == DEFINE.MASTER ||
-                    generated.type == DEFINE.SKILL)
-                    return false;
-                if (generated.getProp<bool>(nameof(ServantCardDefine.isToken)))
-                    return false;
             }
             return true;
         }

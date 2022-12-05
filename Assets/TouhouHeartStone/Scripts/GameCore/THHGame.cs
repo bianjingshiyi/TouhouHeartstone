@@ -471,7 +471,7 @@ namespace TouhouHeartstone
                     deck[i] = luckyCoinId;
                 }
 
-                if (define is THHCardDefine d && d.isToken)
+                if (define is THHCardDefine && define.isToken())
                 {
                     game.logger.log("为什么你的牌库里会有衍生物？让我把它换成幸运币");
                     deck[i] = luckyCoinId;

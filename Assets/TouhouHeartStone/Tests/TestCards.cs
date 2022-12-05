@@ -672,7 +672,7 @@ namespace Tests
         {
             new Halo(new CodeBuff(ID, new CostModifier(-1)), PileFlag.self | PileFlag.hand,filter:(game,card)=>
             {
-                return card.define is SpellCardDefine;
+                return card.isServant();
             })
         };
 
