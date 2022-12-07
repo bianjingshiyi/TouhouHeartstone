@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
@@ -57,6 +58,7 @@ namespace Controllers
                 _ui.setAllowCustomCards(_currentRoomData.getAllowCustomCards());
                 updateUIStateForRoomOwner();
                 updateStartAndReadyButton();
+                UpdateRoomData(_currentRoomData);
             }
             return Task.CompletedTask;
         }
@@ -76,6 +78,11 @@ namespace Controllers
         {
             display(new DisplayInfo(roomData, isLocalGame));
         }
+        public void UpdateRoomData(RoomData roomData)
+        {
+            _currentRoomData = roomData;
+            CheckCardPoolsUpdate();
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -87,7 +94,6 @@ namespace Controllers
             }
             //_ui.onQuitClick += onQuitButtonClick;
             //_ui.onRoomPropUpdate += onRoomPropUpdate;
-            _ui.onRoomDataUpdate += onRoomDataUpdate;
             _ui.onRandomSeedInputFieldValueChanged += onRandomSeedInputFieldValueChanged;
             _ui.onShuffleToggleValueChanged += onShuffleToggleValueChanged;
             _ui.onInitReplaceTimeInputFieldValueChanged += onInitReplaceTimeInputFieldValueChanged;
@@ -125,11 +131,6 @@ namespace Controllers
         }
         #endregion
         #region 事件回调
-        private void onRoomDataUpdate(RoomData roomData)
-        {
-            _currentRoomData = roomData;
-            CheckCardPoolsUpdate();
-        }
         private void onRandomSeedInputFieldValueChanged(int value)
         {
             _currentRoomData.setOption(RoomDataPropName.Option.RandomSeed, value);
@@ -408,14 +409,11 @@ namespace Controllers
                 foreach (var poolPack in cardPools)
                 {
                     string id = poolPack.GetResourceID();
-                    if (await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
+                    string poolPath = Path.Combine(Application.persistentDataPath, "cache", "card", id);
+                    if (!game.fileManager.isFileExist(poolPath))
                     {
-                        string poolPath = Path.Combine(Application.persistentDataPath, "cache", "card", id);
-                        if (!game.fileManager.isFileExist(poolPath))
-                        {
-                            byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, id);
-                            await game.fileManager.saveFile(poolPath, bytes);
-                        }
+                        byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, id);
+                        await game.fileManager.saveFile(poolPath, bytes);
                     }
                 }
                 downloadingCardPools = false;
