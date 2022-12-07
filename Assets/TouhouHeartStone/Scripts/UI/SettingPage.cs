@@ -1,6 +1,9 @@
 ﻿using BJSYGameCore;
 using Game;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine;
+using MukioI18n;
 
 namespace UI
 {
@@ -12,20 +15,11 @@ namespace UI
 
         List<string> langItemList = new List<string>();
 
+        
+        [SerializeField]
         GameOptionItemSlider _cacheSlider;
-
-        GameOptionItemSlider cacheSlider
-        {
-            get
-            {
-                if (!_cacheSlider)
-                {
-                    _cacheSlider = transform.Find("Setting/SettingContainer/Cache").GetComponent<GameOptionItemSlider>();
-                }
-                return _cacheSlider;
-            }
-        }
-
+        [SerializeField]
+        Text _cacheDisplay;
         UnityEngine.UI.Dropdown langDropdown => LanguageGameOptionItemDropdown.DropdownLight.asDropdown;
         partial void onAwake()
         {
@@ -44,15 +38,17 @@ namespace UI
                 config.Config.SE = vol;
                 config.MarkChange();
             });
-            cacheSlider.Slider.onValueChanged.AddListener((cache) =>
+            _cacheSlider.Slider.onValueChanged.AddListener((cache) =>
             {
-                if (cacheSlider.Slider.value == 20)
+                if (cache == 20)
                 {
                     config.Config.CacheSize = -1;
+                    _cacheDisplay.text = lang._(OPTIONS_CACHE_UNLIMITED);
                 }
                 else
                 {
                     config.Config.CacheSize = cache / 2;
+                    _cacheDisplay.text = lang._(CACHE_SIZE, config.Config.CacheSize);
                 }
                 config.MarkChange();
             });
@@ -89,10 +85,12 @@ namespace UI
             if (config.Config.CacheSize == -1)
             {
                 _cacheSlider.Slider.value = 20;
+                _cacheDisplay.text =lang._(OPTIONS_CACHE_UNLIMITED);
             }
-            else 
+            else
             {
                 _cacheSlider.Slider.value = config.Config.CacheSize * 2;
+                _cacheDisplay.text = lang._(CACHE_SIZE, config.Config.CacheSize) ;
             }
 
             for (int i = 0; i < langItemList.Count; i++)
@@ -114,6 +112,9 @@ namespace UI
             config.MarkChange();
         }
         bool _isUpdating = false;
-
+        [TranslateMsg("设置-最大缓存大小-无限制")]
+        const string OPTIONS_CACHE_UNLIMITED = "无限制";
+        [TranslateMsg("缓存大小单位")]
+        string CACHE_SIZE = "{0}G";
     }
 }
