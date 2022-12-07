@@ -25,6 +25,7 @@ namespace UI
                 aiPlayerData = null;
             }
             roomData = room;
+            onRoomDataUpdate?.Invoke(roomData);
 
             RoomPlayerData selfPlayer = null;
 
@@ -793,6 +794,10 @@ namespace UI
         /// 房间信息更新（主要是设置）更新后触发
         /// </summary>
         public event Action<string, object> onRoomPropUpdate;
+        /// <summary>
+        /// 房间数据更新后触发
+        /// </summary>
+        public event Action<RoomData> onRoomDataUpdate;
         /// <summary>
         /// 点击删除玩家按钮后触发
         /// </summary>

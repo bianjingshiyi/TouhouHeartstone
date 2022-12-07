@@ -40,6 +40,25 @@ namespace Game
         {
             logic.AnwserCardPoolsSuggestion(playerId, suggestion, agree);
         }
+        public void NotifyRoomPropChanged(string name, object val)
+        {
+            if (isRoomOwner)
+            {
+                logic.SetRoomProp(name, val);
+            }
+        }
+        public Task<byte[]> GetResourceAsync(TouhouCardEngine.ResourceType type, string id)
+        {
+            return logic.GetResourceAsync(type, id);
+        }
+        public Task UploadResourceAsync(TouhouCardEngine.ResourceType type, string id, byte[] bytes)
+        {
+            return logic.UploadResourceAsync(type, id, bytes);
+        }
+        public Task<bool> ResourceExistsAsync(TouhouCardEngine.ResourceType type, string id)
+        {
+            return logic.ResourceExistsAsync(type, id);
+        }
         /// <summary>
         /// 向每个玩家分发卡池。
         /// </summary>
@@ -587,13 +606,7 @@ namespace Game
             {
                 logic.StartGame();
             };
-            roomPanel.onRoomPropUpdate += (name, obj) =>
-            {
-                if (isRoomOwner)
-                {
-                    logic.SetRoomProp(name, obj);
-                }
-            };
+            roomPanel.onRoomPropUpdate += NotifyRoomPropChanged;
             roomPanel.onPlayerRemove += (id) =>
             {
                 if (isRoomOwner)

@@ -233,6 +233,18 @@ namespace Game
             return localLanLogic.AnwserCardPoolsSuggestion(playerId, suggestion, agree);
         }
 
+        public Task<byte[]> GetResourceAsync(ResourceType type, string id)
+        {
+            return localLanLogic.GetResourceAsync(type, id);
+        }
+        public Task UploadResourceAsync(ResourceType type, string id, byte[] bytes)
+        {
+            return localLanLogic.UploadResourceAsync(type, id, bytes);
+        }
+        public Task<bool> ResourceExistsAsync(ResourceType type, string id)
+        {
+            return localLanLogic.ResourceExistsAsync(type, id);
+        }
         /// <summary>
         /// 请求重载房间列表
         /// </summary>
@@ -559,14 +571,14 @@ namespace Game
         {
             return room.getOption<bool>(Option.AllowCustomCards);
         }
-        public static long[] getCardPools(this RoomData roomData)
+        public static CardPoolInfoPack[] getCardPools(this RoomData roomData)
         {
-            var pools = roomData.getOption<long[]>(Option.CardPools);
+            var pools = roomData.getOption<CardPoolInfoPack[]>(Option.CardPools);
             if (pools != null)
             {
                 return pools;
             }
-            return Array.Empty<long>();
+            return Array.Empty<CardPoolInfoPack>();
         }
     }
 }

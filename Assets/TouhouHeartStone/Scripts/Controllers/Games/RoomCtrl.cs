@@ -8,7 +8,6 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
 using Deck = TouhouHeartstone.Deck;
 
@@ -88,6 +87,7 @@ namespace Controllers
             }
             //_ui.onQuitClick += onQuitButtonClick;
             //_ui.onRoomPropUpdate += onRoomPropUpdate;
+            _ui.onRoomDataUpdate += onRoomDataUpdate;
             _ui.onRandomSeedInputFieldValueChanged += onRandomSeedInputFieldValueChanged;
             _ui.onShuffleToggleValueChanged += onShuffleToggleValueChanged;
             _ui.onInitReplaceTimeInputFieldValueChanged += onInitReplaceTimeInputFieldValueChanged;
@@ -107,8 +107,29 @@ namespace Controllers
             _ui.onSuggestCardPools += onCardPoolsSuggested;
             _ui.onCardPoolsSuggestionAnwsered += onCardPoolsSuggestionAnwsered;
         }
+
+        private void Update()
+        {
+            // 如果卡池有更改，并且没有下载卡池，重试下载卡池。
+            if (cardPoolChanged && !downloadingCardPools)
+            {
+                if (cardPoolDownloadRetryCountdown > 0)
+                {
+                    cardPoolDownloadRetryCountdown -= Time.deltaTime;
+                }
+                else
+                {
+                    CheckCardPoolsUpdate();
+                }
+            }
+        }
         #endregion
         #region 事件回调
+        private void onRoomDataUpdate(RoomData roomData)
+        {
+            _currentRoomData = roomData;
+            CheckCardPoolsUpdate();
+        }
         private void onRandomSeedInputFieldValueChanged(int value)
         {
             _currentRoomData.setOption(RoomDataPropName.Option.RandomSeed, value);
@@ -188,7 +209,7 @@ namespace Controllers
                     List<CardPoolInfoPack> packsList = new List<CardPoolInfoPack>();
                     foreach (long pool in privatePools)
                     {
-                        CardPoolInfo info = game.card.getCardPoolInfo((int)pool);
+                        CardPoolInfo info = game.card.getCardPoolInfo(pool);
                         if (info != null)
                         {
                             CardPoolInfoPack pack = new CardPoolInfoPack(info.cardPoolId, info.cardPoolName, info.editTime);
@@ -199,23 +220,22 @@ namespace Controllers
                     // 如果是房主，弹出对话框提示是否设置卡池属性。
                     if (isRoomOwner)
                     {
-                        string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL_HOST);
                         string poolsString = PoolsToString(packs);
-                        desc = string.Format(desc, poolsString);
+                        string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL_HOST, poolsString);
 
                         game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
                         {
                             AddCardPools(packs);
                             SetPlayerDeck(_selectDeckPlayerId, deck);
+                            UploadCardPools(packs);
                             // TODO 上传卡池，并提醒玩家下载卡池
                         });
                     }
                     // 否则，向房主提议加入卡池。
                     else
                     {
-                        string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL);
                         string poolsString = PoolsToString(packs);
-                        desc = string.Format(desc, poolsString);
+                        string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
 
                         game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
                         {
@@ -268,15 +288,15 @@ namespace Controllers
         }
         private void onCardPoolsSuggested(int playerId, CardPoolSuggestion suggestion)
         {
-            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED);
             string poolsString = PoolsToString(suggestion.cardPools);
+            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED, poolsString);
             var suggester = _currentRoomData.getPlayer(playerId);
             string playerName = game.lang._(ROOM_UNKNOWN_PLAYER);
             if (suggester != null)
             {
                 playerName = suggester.name;
             }
-            desc = string.Format(desc, playerName, poolsString);
+
 
             game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
             {
@@ -291,23 +311,35 @@ namespace Controllers
         {
             string desc = game.lang._(agree ? ROOM_CARD_POOLS_SUGGESTION_AGREED : ROOM_CARD_POOLS_SUGGESTION_REFUSED);
             game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
+
+            if (agree)
+            {
+                AddCardPools(suggestion.cardPools);
+                UploadCardPools(suggestion.cardPools);
+            }
         }
         #endregion
 
+        /// <summary>
+        /// 指定的卡池列表是否不在房间卡池列表中
+        /// </summary>
+        /// <param name="pools"></param>
+        /// <param name="privatePools"></param>
+        /// <returns></returns>
         private bool HasNotSharedPools(long[] pools, out long[] privatePools)
         {
-            long[] roomCardPools = _currentRoomData.getCardPools();
+            CardPoolInfoPack[] roomCardPools = _currentRoomData.getCardPools();
             if (roomCardPools.Length == 0)
             {
                 // 修正没有设置的情况下无法使用任何卡的问题
-                roomCardPools = new long[] { 0 };
+                roomCardPools = new CardPoolInfoPack[] { new CardPoolInfoPack(0, "", 0) };
             }
 
             List<long> privates = new List<long>();
             bool hasNotShared = false;
             foreach (long pool in pools)
             {
-                if (!roomCardPools.Contains(pool))
+                if (!roomCardPools.Any(p => p.cardPoolId == pool))
                 {
                     hasNotShared = true;
                     privates.Add(pool);
@@ -332,8 +364,63 @@ namespace Controllers
         private void AddCardPools(CardPoolInfoPack[] packs)
         {
             var cardPools = _currentRoomData.getCardPools();
-            cardPools = cardPools.Union(packs.Select(p => p.cardPoolId)).ToArray();
+            cardPools = cardPools.Union(packs).ToArray();
             _currentRoomData.setOption(RoomDataPropName.Option.CardPools, cardPools);
+            game.network.NotifyRoomPropChanged(RoomDataPropName.Option.CardPools.ToString(), cardPools);
+        }
+        private void CheckCardPoolsUpdate()
+        {
+            var cardPools = _currentRoomData.getCardPools();
+            List<CardPoolInfoPack> infoPacks = new List<CardPoolInfoPack>();
+            foreach (CardPoolInfoPack poolPack in cardPools)
+            {
+                string id = poolPack.GetResourceID();
+                string poolPath = Path.Combine(Application.persistentDataPath, "cache", "card", id);
+                if (!game.fileManager.isFileExist(poolPath))
+                {
+                    infoPacks.Add(poolPack);
+                }
+            }
+            if (infoPacks.Count > 0)
+            {
+                cardPoolChanged = true;
+                cardPoolDownloadRetryCountdown = 3;
+                DownloadCardPools(infoPacks.ToArray());
+            }
+        }
+        private async void UploadCardPools(CardPoolInfoPack[] cardPools)
+        {
+            foreach (var poolPack in cardPools)
+            {
+                string id = poolPack.GetResourceID();
+                if (!await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
+                {
+                    byte[] bytes = await game.fileManager.readBinaryFile(game.card.getCardPoolPath((int)poolPack.cardPoolId));//TODO 改成long
+                    await game.network.UploadResourceAsync(ResourceType.CardDefine, id, bytes);
+                }
+            }
+        }
+        private async void DownloadCardPools(CardPoolInfoPack[] cardPools)
+        {
+            if (!downloadingCardPools)
+            {
+                downloadingCardPools = true;
+                foreach (var poolPack in cardPools)
+                {
+                    string id = poolPack.GetResourceID();
+                    if (await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
+                    {
+                        string poolPath = Path.Combine(Application.persistentDataPath, "cache", "card", id);
+                        if (!game.fileManager.isFileExist(poolPath))
+                        {
+                            byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, id);
+                            await game.fileManager.saveFile(poolPath, bytes);
+                        }
+                    }
+                }
+                downloadingCardPools = false;
+                cardPoolChanged = false;
+            }
         }
         private string PoolsToString(CardPoolInfoPack[] packs)
         {
@@ -565,6 +652,18 @@ namespace Controllers
         [SerializeField]
         int _selectDeckPlayerId = 0;
 
+        /// <summary>
+        /// 房间卡池是否被更改。
+        /// </summary>
+        bool cardPoolChanged = false;
+        /// <summary>
+        /// 下载卡池的重试倒计时。
+        /// </summary>
+        float cardPoolDownloadRetryCountdown = 0;
+        /// <summary>
+        /// 是否正在下载卡池。
+        /// </summary>
+        bool downloadingCardPools = false;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
