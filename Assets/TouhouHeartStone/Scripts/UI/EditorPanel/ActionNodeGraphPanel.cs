@@ -353,6 +353,11 @@ namespace UI
             _actionNodeItemTemplate.initBuffLanguages(languages, keywordNames, keywordValues);
             _actionNodeItemTemplate.initEventTypes(eventTypes);
         }
+        public void resetView()
+        {
+            _backgroundImage.transform.localPosition = Vector3.zero;
+            _backgroundImage.transform.localScale = Vector3.one;
+        }
         #endregion
         #region 私有方法
         #region 生命周期

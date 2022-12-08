@@ -50,6 +50,7 @@ namespace Controllers
                 //更新UI
                 _ui.gameObject.SetActive(true);
                 _ui.displayCardSelectPanel(false);
+                _ui.resetView();
                 if (info.editObject is GeneratedActionDefine actionDefine)
                     return openGeneratedActionDefine(actionDefine);
                 else if (info.editObject is TriggerGraph trigger)
