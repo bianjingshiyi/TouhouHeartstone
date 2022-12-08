@@ -241,6 +241,8 @@ namespace Controllers
                         game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
                         {
                             SuggestCardPools(new CardPoolSuggestion(packs));
+                            //隐藏选择卡组界面
+                            _ui.hideDeckSelectPanel();
                         });
                     }
                     return;
@@ -290,17 +292,18 @@ namespace Controllers
         private void onCardPoolsSuggested(int playerId, CardPoolSuggestion suggestion)
         {
             string poolsString = PoolsToString(suggestion.cardPools);
-            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED, poolsString);
             var suggester = _currentRoomData.getPlayer(playerId);
             string playerName = game.lang._(ROOM_UNKNOWN_PLAYER);
             if (suggester != null)
             {
                 playerName = suggester.name;
             }
+            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED, playerName, poolsString);
 
 
             game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
             {
+                AddCardPools(suggestion.cardPools);
                 game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
             }, () =>
             {
@@ -315,7 +318,6 @@ namespace Controllers
 
             if (agree)
             {
-                AddCardPools(suggestion.cardPools);
                 UploadCardPools(suggestion.cardPools);
             }
         }
@@ -376,8 +378,7 @@ namespace Controllers
             foreach (CardPoolInfoPack poolPack in cardPools)
             {
                 string id = poolPack.GetResourceID();
-                string poolPath = Path.Combine(Application.persistentDataPath, "cache", "card", id);
-                if (!game.fileManager.isFileExist(poolPath))
+                if (!game.cache.FileExists(ResourceType.CardDefine, id))
                 {
                     infoPacks.Add(poolPack);
                 }
@@ -387,6 +388,11 @@ namespace Controllers
                 cardPoolChanged = true;
                 cardPoolDownloadRetryCountdown = 3;
                 DownloadCardPools(infoPacks.ToArray());
+            }
+            else
+            {
+                cardPoolChanged = false;
+                cardPoolDownloadRetryCountdown = 0;
             }
         }
         private async void UploadCardPools(CardPoolInfoPack[] cardPools)
@@ -409,15 +415,16 @@ namespace Controllers
                 foreach (var poolPack in cardPools)
                 {
                     string id = poolPack.GetResourceID();
-                    string poolPath = Path.Combine(Application.persistentDataPath, "cache", "card", id);
-                    if (!game.fileManager.isFileExist(poolPath))
+                    if (!game.cache.FileExists(ResourceType.CardDefine, id) && await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
                     {
                         byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, id);
-                        await game.fileManager.saveFile(poolPath, bytes);
+                        if (bytes != null)
+                        {
+                            await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, id, bytes);
+                        }
                     }
                 }
                 downloadingCardPools = false;
-                cardPoolChanged = false;
             }
         }
         private string PoolsToString(CardPoolInfoPack[] packs)
