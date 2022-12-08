@@ -229,7 +229,7 @@ namespace Controllers
                             AddCardPools(packs);
                             SetPlayerDeck(_selectDeckPlayerId, deck);
                             UploadCardPools(packs);
-                            // TODO 上传卡池，并提醒玩家下载卡池
+                            //todo: 局域网游戏下不需要上传
                         });
                     }
                     // 否则，向房主提议加入卡池。
@@ -415,6 +415,7 @@ namespace Controllers
                 foreach (var poolPack in cardPools)
                 {
                     string id = poolPack.GetResourceID();
+                    // todo: 资源下载失败或没有资源时候的异常处理
                     if (!game.cache.FileExists(ResourceType.CardDefine, id) && await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
                     {
                         byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, id);

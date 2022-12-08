@@ -128,6 +128,17 @@ namespace Game
         }
         #endregion
 
+        private void OnConfigChange(ConfigManager.PlayerConfig config)
+        {
+            if (config.CacheSize < 0)
+            {
+                MaxSize = -1;
+            }
+            else
+            {
+                MaxSize = (long)Mathf.RoundToInt(config.CacheSize * 2) * 1024 * 1024 * 512;//512MB
+            }
+        }
         private void prepareDirectory(string name)
         {
             string path = Path.Combine(CacheDir, name);
@@ -142,6 +153,7 @@ namespace Game
         {
             base.onAwake();
             CacheDir = Path.Combine(Application.persistentDataPath, "cache");
+            config.OnConfigChange += OnConfigChange;
 
             prepareDirectory(TouhouCardEngine.ResourceType.CardDefine.GetString());
             prepareDirectory(TouhouCardEngine.ResourceType.Picture.GetString());
@@ -149,7 +161,9 @@ namespace Game
         }
         #endregion
         #region 字段属性
-        public long MaxSize { get; set; } = -1;
+        [SerializeField]
+        private ConfigManager config;
+        public long MaxSize { get; set; }
         public string CacheDir { get; private set; }
         #endregion
     }

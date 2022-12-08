@@ -10,7 +10,6 @@ namespace UI
     partial class SettingPage
     {
         ConfigManager config => this.findInstance<ConfigManager>();
-        CacheManager cache => this.findInstance<CacheManager>();
         LangManager lang => this.findInstance<LangManager>();
 
         List<string> langItemList = new List<string>();
@@ -73,7 +72,6 @@ namespace UI
                 langItemList.Add(culture.Name);
                 langDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(culture.NativeName));
             }
-            config.OnConfigChange += OnConfigChange;
         }
 
         private void updateLabels()
@@ -126,17 +124,6 @@ namespace UI
                 return;
             config.Config.FullScreen = value;
             config.MarkChange();
-        }
-        private void OnConfigChange(PlayerConfig config)
-        {
-            if (config.CacheSize < 0)
-            {
-                cache.MaxSize = -1;
-            }
-            else
-            {
-                cache.MaxSize = (long)Mathf.RoundToInt(config.CacheSize * 2) * 536870912;//512MB
-            }
         }
         bool _isUpdating = false;
         [TranslateMsg("设置-最大缓存大小-无限制")]
