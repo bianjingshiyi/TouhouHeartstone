@@ -12,6 +12,7 @@ namespace Game
     {
         public async Task startReplayGame(ReplayData replay)
         {
+            mode = GameMode.replay;
             CardEngine game = await createGame(replay.option, replay.players.Select(p =>
             {
                 RoomPlayerInfo player = new RoomPlayerInfo();
@@ -23,7 +24,6 @@ namespace Game
             _replayPlayer = new ReplayDataPlayer(game, replay);
             localPlayer = game.players.First();
             displayGameUI(game, localPlayer);
-            mode = GameMode.replay;
             //game.answers.onRequest += onReplayGameRequest;
             await runGame(game, false);
         }

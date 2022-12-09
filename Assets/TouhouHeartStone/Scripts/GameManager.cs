@@ -120,6 +120,7 @@ namespace Game
         public async Task startLocalGame(RoomData room)
         {
             //创建游戏
+            mode = GameMode.local;
             CardEngine game = await createGame(room);
             //初始化本地玩家，AI，UI
             foreach (var player in game.players)
@@ -138,7 +139,6 @@ namespace Game
 #endif
                 }
             }
-            mode = GameMode.local;
             //开始游戏
             await runGame(game);
         }
@@ -167,6 +167,7 @@ namespace Game
         }
         public async Task startRemoteGame(IClient client, RoomData room, bool headless = false)
         {
+            mode = GameMode.remote;
             //创建游戏
             CardEngine game = await createGame(room);
             //将游戏与网络连接
@@ -181,16 +182,15 @@ namespace Game
                         displayGameUI(game, localPlayer);
                 }
             }
-            mode = GameMode.remote;
             await runGame(game);
         }
         public async Task startReplayGame(Replay rep)
         {
+            mode = GameMode.replay;
             CardEngine game = await createGame(rep.option, rep.players);
             new ReplayPlayer(rep, game);
             localPlayer = game.players.First();
             displayGameUI(game, localPlayer);
-            mode = GameMode.replay;
             await runGame(game);
         }
         public event Action onGameStart;
@@ -223,31 +223,47 @@ namespace Game
             var cardManager = getManager<CardManager>();
             //加载外部卡牌
             HashSet<long> cardPoolIdSet = new HashSet<long>() { 0 };
-            foreach (var player in playerList)
-            {
-                Deck deck = player.getDeck();
-                foreach (var cardRef in deck.toDefRefArray(true))
-                {
+            List<CardDefine> externalCards = new List<CardDefine>();
+			if (mode == GameMode.local)
+			{
+	            foreach (var player in playerList)
+	            {
+	                Deck deck = player.getDeck();
+	                foreach (var cardRef in deck.toDefRefArray(true))
+
                     if (cardManager.isExternalCard(cardRef) &&
                         !cardPoolIdSet.Contains(cardRef.cardPoolId))
                     {
                         cardPoolIdSet.Add(cardRef.cardPoolId);
                     }
                 }
+                externalCards.AddRange(await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet));
+            }
+            else
+            {
+                foreach (var pool in option.cardPools)
+                {
+                    cardPoolIdSet.Add((int)pool.cardPoolId);// TODO: 改成long
+                    if (cards.tryGetCardPool((int)pool.cardPoolId, out CardPool cardPool))// TODO: 改成long
+                    {
+                        externalCards.AddRange(cardPool.cardDefineList);
+                    }
+                    else
+                    {
+                        var defines = await cards.loadCachedCardDefinesAsync(pool.cardPoolId, pool.version);
+                        externalCards.AddRange(defines.defines);
+                    }
+                }
             }
             Dictionary<long, Dictionary<int, CardDefine>> cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
-            await game.init(
-                new Assembly[] 
-                { 
-                    typeof(CardEngine).Assembly, 
-                    typeof(HearthStoneRule).Assembly,
-                    typeof(EffectEditorLibrary).Assembly 
-                },
-                new HearthStoneRule(
+            Rule rule = new HearthStoneRule(
                     cardDict,
                     cardManager.getCardPools(cardPoolIdSet).ToDictionary(
                         p => p.Key,
-                        p => p.Value.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine))),
+                        p => p.Value.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine)))
+
+            await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
+                rule,
                 option,
                 playerList.ToArray());
             return game;

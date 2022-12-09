@@ -81,7 +81,10 @@ namespace Controllers
         public void UpdateRoomData(RoomData roomData)
         {
             _currentRoomData = roomData;
-            CheckCardPoolsUpdate();
+            if (!_isLocalGame)
+            {
+                CheckCardPoolsUpdate();
+            }
         }
         #endregion
         #region 私有方法

@@ -13,23 +13,23 @@ namespace Game
     public class CacheManager : Manager
     {
         #region 公共方法
-        public string GetResourcePath(TouhouCardEngine.ResourceType type, string id)
+        public string GetCachePath(TouhouCardEngine.ResourceType type, string id)
         {
             return Path.Combine(CacheDir, type.GetString(), id);
         }
         public bool FileExists(TouhouCardEngine.ResourceType type, string id)
         {
-            return File.Exists(GetResourcePath(type, id));
+            return File.Exists(GetCachePath(type, id));
         }
         public Task SaveCache(FileManager fileManager, TouhouCardEngine.ResourceType type, string id, byte[] bytes)
         {
-            string path = GetResourcePath(type, id);
+            string path = GetCachePath(type, id);
             addLRU(path, bytes.LongLength);
             return fileManager.saveFile(path, bytes);
         }
         public Task<byte[]> ReadCache(FileManager fileManager, TouhouCardEngine.ResourceType type, string id)
         {
-            string path = GetResourcePath(type, id);
+            string path = GetCachePath(type, id);
             visitLRU(path);
             return fileManager.readBinaryFile(path);
         }
