@@ -604,11 +604,13 @@ namespace UI
         {
             onClickReadyButton?.Invoke();
             // 之前这个是写在按下开始按钮之后调用的，但是完全没有用，写在这里
-            OnPlayerReadyChange?.Invoke(selfPlayerID);
+            OnPlayerReadyChange?.Invoke(selfPlayerID, true);
         }
         private void onClickCancleReadyButtonCallback()
         {
             onClickCancleReadyButton?.Invoke();
+            // holy shit, 上面的回调是假的，是特技，是化学的成分
+            OnPlayerReadyChange?.Invoke(selfPlayerID, false);
         }
 
         private void onClickQuitButtonCallback()
@@ -806,7 +808,7 @@ namespace UI
         /// <summary>
         /// 玩家准备或取消准备
         /// </summary>
-        public event Action<int> OnPlayerReadyChange;
+        public event Action<int, bool> OnPlayerReadyChange;
 
         public void ResetEvents()
         {

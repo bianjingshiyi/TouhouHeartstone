@@ -605,10 +605,9 @@ namespace Game
             {
                 _ = logic.SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
             };
-            roomPanel.OnPlayerReadyChange += (id) =>
+            roomPanel.OnPlayerReadyChange += (id, state) =>
             {
-                var ready = logic.GetSelfInfo().getReady();
-                _ = logic.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, !ready);
+                _ = logic.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, state);
             };
 
             ui.parent.display(roomPanel);
