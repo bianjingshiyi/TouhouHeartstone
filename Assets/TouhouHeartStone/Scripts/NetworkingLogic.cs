@@ -103,7 +103,7 @@ namespace Game
         public async Task JoinRoom(string roomID)
         {
             await localLanLogic.joinRoom(roomID);
-            isClient = true;
+            isInitialRoomOwner = false;
         }
 
         /// <summary>
@@ -115,17 +115,29 @@ namespace Game
         public async Task JoinRoom(string addr, int port)
         {
             await localLanLogic.joinRoom(addr, port);
-            isClient = true;
+            isInitialRoomOwner = false;
         }
 
         /// <summary>
         /// 当前房间
         /// </summary>
         public RoomData CurrentRoom => localLanLogic.room;
+
         /// <summary>
-        /// 是客户端吗？
+        /// 是局域网的房主吗
         /// </summary>
-        public bool isClient { get; private set; }
+        public bool isLanHost => localLanLogic.curNetwork is LANNetworking lan && isInitialRoomOwner;
+
+        /// <summary>
+        /// 是否为初始的房主
+        /// </summary>
+        public bool isInitialRoomOwner { get; private set; }
+
+        /// <summary>
+        /// 是否为房主
+        /// </summary>
+        public bool isRoomOwner => CurrentRoom?.ownerId == localPlayer?.id;
+
         /// <summary>
         /// 当前是否在一个房间里面
         /// </summary>
@@ -151,7 +163,7 @@ namespace Game
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForInitReplace), (int)option.timeoutForInitReplace);
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForTurn), (int)option.timeoutForTurn);
 
-            isClient = false;
+            isInitialRoomOwner = true;
         }
 
         /// <summary>
@@ -169,13 +181,11 @@ namespace Game
         public void ClearRoom()
         {
             localLanLogic.quitRoom();
-            if (!isClient)
+
+            // 局域网的主机要销毁（关闭）对应的房间
+            if (localLanLogic.curNetwork is LANNetworking lan && isInitialRoomOwner)
             {
-                if (localLanLogic.curNetwork is LANNetworking lan)
-                {
-                    // 如果是房主，要销毁（关闭）对应的房间
-                    lan.DestroyRoom();
-                }
+                lan.DestroyRoom();
             }
         }
 
@@ -281,6 +291,9 @@ namespace Game
         /// </summary>
         public PublicBasicUserInfo UserInfo => userInfo;
         PublicBasicUserInfo userInfo;
+        /// <summary>
+        /// 是否为游客状态
+        /// </summary>
         bool isGuest { get; set; }
 
         /// <summary>

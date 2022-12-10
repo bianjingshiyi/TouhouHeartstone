@@ -293,7 +293,7 @@ namespace Game
             password = PlayerPrefs.GetString("Password", null);
         }
 
-        bool isHost => !logic.isClient;
+        bool isRoomOwner => logic.isRoomOwner;
 
         [TranslateMsg]
         const string CANNOT_CREATE_ROOM = "无法创建房间";
@@ -566,7 +566,7 @@ namespace Game
 
         private void setRoomPanel(RoomData room)
         {
-            Debug.Log("更新房间信息");
+            Debug.Log($"更新房间信息: {room.toJson()}");
             roomPanel.SetInfo(room);
         }
 
@@ -589,14 +589,14 @@ namespace Game
             };
             roomPanel.onRoomPropUpdate += (name, obj) =>
             {
-                if (isHost)
+                if (isRoomOwner)
                 {
                     logic.SetRoomProp(name, obj);
                 }
             };
             roomPanel.onPlayerRemove += (id) =>
             {
-                if (isHost)
+                if (isRoomOwner)
                 {
                     logic.RemovePlayer(id);
                 }
@@ -616,7 +616,7 @@ namespace Game
             //  加载聊天框
             _sceneCtrl.chatCtrl.display(logic.CurrentRoom);
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
-            roomPanel.SetMode(isHost ? RoomPanel.Mode.NetworkingHost : RoomPanel.Mode.NetworkingClient);
+            roomPanel.SetMode(isServerMode ? RoomPanel.Mode.NetworkingClient : RoomPanel.Mode.NetworkingHost);
 
             setRoomPanel(logic.CurrentRoom);
         }

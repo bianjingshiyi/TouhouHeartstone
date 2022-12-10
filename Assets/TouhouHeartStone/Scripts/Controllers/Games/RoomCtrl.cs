@@ -9,6 +9,7 @@ using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 using Deck = TouhouHeartstone.Deck;
 
 namespace Controllers
@@ -55,7 +56,7 @@ namespace Controllers
                 _ui.setTurnTime(_currentRoomData.getTimeoutForTurn());
                 _ui.setDisableRandomPlayerActOrder(_currentRoomData.getSortedPlayers() != null);
                 _ui.setAllowCustomCards(_currentRoomData.getAllowCustomCards());
-                updateUIStateForHost();
+                updateUIStateForRoomOwner();
                 updateStartAndReadyButton();
             }
             return Task.CompletedTask;
@@ -196,7 +197,7 @@ namespace Controllers
                     }
                     CardPoolInfoPack[] packs = packsList.ToArray();
                     // 如果是房主，弹出对话框提示是否设置卡池属性。
-                    if (isHost)
+                    if (isRoomOwner)
                     {
                         string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL_HOST);
                         string poolsString = PoolsToString(packs);
@@ -345,7 +346,11 @@ namespace Controllers
             }
             return poolsString;
         }
-        private bool isHost => !game.network.logic.isClient;
+
+        /// <summary>
+        /// 是否为房主
+        /// </summary>
+        bool isRoomOwner => game.network.logic.localPlayer.id == _currentRoomData.ownerId;
 
         private void setPlayerDeck(int playerId, DefineReference[] cardRefs)
         {
@@ -375,18 +380,18 @@ namespace Controllers
                 }
             }
         }
-        private void updateUIStateForHost()
+        private void updateUIStateForRoomOwner()
         {
-            _ui.enableRandomSeed(isHost);
-            _ui.enableShuffle(isHost);
-            _ui.enableInitReplaceTime(isHost);
-            _ui.enableTurnTime(isHost);
-            _ui.enableDisableRandomPlayerActOrder(isHost);
-            _ui.enableAllowCustomCards(isHost);
+            _ui.enableRandomSeed(isRoomOwner);
+            _ui.enableShuffle(isRoomOwner);
+            _ui.enableInitReplaceTime(isRoomOwner);
+            _ui.enableTurnTime(isRoomOwner);
+            _ui.enableDisableRandomPlayerActOrder(isRoomOwner);
+            _ui.enableAllowCustomCards(isRoomOwner);
         }
         private void updateStartAndReadyButton()
         {
-            if (game.network.logic.localPlayer.id == _currentRoomData.ownerId)
+            if (isRoomOwner)
             {
                 _ui.displayStartButton(true);
                 _ui.displayReadyButton(false);

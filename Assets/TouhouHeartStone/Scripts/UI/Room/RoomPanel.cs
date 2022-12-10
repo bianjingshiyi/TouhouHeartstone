@@ -43,7 +43,7 @@ namespace UI
                 item.OnPlayerViewDeck += viewDeck;
 
                 // 仅当自己是主机且此玩家不是自己时，设置为可以移除
-                item.SetRemoveable(isHost && selfPlayerID != player.id);
+                item.SetRemoveable(isRoomOwner && selfPlayerID != player.id);
                 item.ViewButtonBlack.asButton.interactable = player.getDeck() != null;
                 item.OnPlayerRemove += (id) =>
                 {
@@ -109,7 +109,9 @@ namespace UI
                 Debug.LogException(e);
             }
 
-            if (isHost)
+            updateButtonStates();
+
+            if (isRoomOwner)
             {
                 // 判断是否可以开始游戏
                 bool startable = room.playerDataList.Count == room.maxPlayerCount;
@@ -225,7 +227,7 @@ namespace UI
 
             StartButtonButtonBlack.asButton.onClick.set(() =>
             {
-                if (isHost)
+                if (isRoomOwner)
                 {
                     onStartClick?.Invoke();
                 }
@@ -238,12 +240,24 @@ namespace UI
             //});
         }
 
-        bool isHost => currentMode == Mode.Local || currentMode == Mode.NetworkingHost;
+        /// <summary>
+        /// 是否为房主
+        /// </summary>
+        bool isRoomOwner => currentMode == Mode.Local || roomData?.ownerId == selfPlayerID;
 
         public enum Mode
         {
+            /// <summary>
+            /// 本地游戏
+            /// </summary>
             Local,
+            /// <summary>
+            /// 局域网中的主机
+            /// </summary>
             NetworkingHost,
+            /// <summary>
+            /// 局域网客户端或大厅客户端
+            /// </summary>
             NetworkingClient
         }
 
@@ -256,16 +270,20 @@ namespace UI
         public void SetMode(Mode mode)
         {
             currentMode = mode;
+            IPText.gameObject.SetActive(currentMode == Mode.NetworkingHost);
+            updateButtonStates();
+        }
 
-            RandomSeedContainerGameOptionItemText.InputField.setSelectable(isHost);
-            ShuffleContainerGameOptionItemToggle.Toggle.setSelectable(isHost);
-            InitReplacementContainerGameOptionItemText.InputField.setSelectable(isHost);
-            TurnTimeContainerGameOptionItemText.InputField.setSelectable(isHost);
-            IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(isHost);
+        void updateButtonStates()
+        {
+            RandomSeedContainerGameOptionItemText.InputField.setSelectable(isRoomOwner);
+            ShuffleContainerGameOptionItemToggle.Toggle.setSelectable(isRoomOwner);
+            InitReplacementContainerGameOptionItemText.InputField.setSelectable(isRoomOwner);
+            TurnTimeContainerGameOptionItemText.InputField.setSelectable(isRoomOwner);
+            IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(isRoomOwner);
 
             // 准备按钮
-            StartButtonButtonBlack.Text.text = isHost ? lang._(STR_START_GAME) : lang._(STR_PREPARE);
-            IPText.gameObject.SetActive(currentMode == Mode.NetworkingHost);
+            StartButtonButtonBlack.Text.text = isRoomOwner ? lang._(STR_START_GAME) : lang._(STR_PREPARE);
         }
         [TranslateMsg]
         const string STR_START_GAME = "开始游戏";
