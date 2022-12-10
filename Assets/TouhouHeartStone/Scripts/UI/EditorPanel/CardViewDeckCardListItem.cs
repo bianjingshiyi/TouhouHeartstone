@@ -41,14 +41,26 @@ namespace UI
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
             onBeginDrag?.Invoke(this, eventData);
+            if (!eventData.used)
+            {
+                GetComponentInParent<ScrollRect>()?.SendMessage("OnBeginDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
         }
         void IDragHandler.OnDrag(PointerEventData eventData)
         {
             onDrag?.Invoke(this, eventData);
+            if (!eventData.used)
+            {
+                GetComponentInParent<ScrollRect>()?.SendMessage("OnDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
         }
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
             onEndDrag?.Invoke(this, eventData);
+            if (!eventData.used)
+            {
+                GetComponentInParent<ScrollRect>()?.SendMessage("OnEndDrag", eventData, SendMessageOptions.DontRequireReceiver);
+            }
         }
         #endregion
         #endregion

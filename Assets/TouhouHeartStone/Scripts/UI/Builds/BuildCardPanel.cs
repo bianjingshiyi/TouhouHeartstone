@@ -130,7 +130,7 @@ namespace UI
 
             _dragStartPosition = eventData.position;
             _isDraggingHorizontal = false;
-            eventData.Use();
+            // eventData.Use();
         }
         private void onDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
         {
@@ -145,6 +145,7 @@ namespace UI
                     _isDraggingHorizontal = true;
                     showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
                     onStartDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform));
+                    eventData.Use();
                 }
             }
             if (_isDraggingHorizontal)
@@ -152,8 +153,8 @@ namespace UI
                 _dragCard.rectTransform.position = eventData.position;
                 _dragDeckListItem.transform.position = eventData.position;
                 showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
+                eventData.Use();
             }
-            eventData.Use();
         }
         private void onEndDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
         {
@@ -168,8 +169,8 @@ namespace UI
                 hideDragCard();
                 Vector2 position = eventData.position;
                 onEndDragDeckCardListItem?.Invoke(isPositionOverDeckCardList(position));
+                eventData.Use();
             }
-            eventData.Use();
         }
         private void onClickExportDeckButtonCallback()
         {
