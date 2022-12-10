@@ -74,6 +74,7 @@ namespace Game
         /// </summary>
         /// <param name="sourceString"></param>
         /// <returns></returns>
+        [Obsolete("Use _() instead.")]
         public string getString(string sourceString)
         {
             return _(sourceString);

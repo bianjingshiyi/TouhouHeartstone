@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Controllers;
 using UnityEngine.EventSystems;
+using MukioI18n;
+using Game;
+using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
 {
@@ -221,6 +224,24 @@ namespace UI
             _eventTypeDropdown.SetValueWithoutNotify(eventIndex);
             updateTargetCheckerList(targetTypes, targetCheckers);
         }
+
+        public void setObsoleteMsg(string message)
+        {
+            obsoleteMessage = message;
+            if (message == null)
+            {
+                // normal
+                _nameBackground.color = _normalTitleColor;
+                _warningObj.gameObject.SetActive(false);
+            }
+            else
+            {
+                // obsolete
+                _nameBackground.color = _warningTitleColor;
+                _warningObj.gameObject.SetActive(true);
+            }
+        }
+
         public void updateTargetCheckerList(string[] targetTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
             UIHelper.updateList(_targetCheckerRoot, _targetCheckerTemplate, _targetCheckerList, targetCheckers.Length, (i, itemRect) =>
@@ -303,6 +324,7 @@ namespace UI
             _effectList.onClickAddEffect += onClickPropertyModifierAddEffectMenuCallback;
             _effectList.onClickItemRemoveButton += onClickPropertyModifierEffectRemoveButtonCallback;
             _effectList.onClickItemEditButton += onClickPropertyModifierEffectEditButtonCallback;
+            _warningObj.onClick.AddListener(onClickObsoleteBtn);
             //增益
             onAwake_Buff();
         }
@@ -372,6 +394,18 @@ namespace UI
         {
             onTargetCheckerErrorTipValueChanged?.Invoke(this, _targetCheckerList.IndexOf(item.transform as RectTransform), value);
         }
+
+        [TranslateMsg]
+        const string TITLE_NODE_OBSOLETE = "过时的节点";
+
+        [TranslateMsg("参数0为节点自带的消息")]
+        const string MESSAGE_NODE_OBSOLETE = "此节点已被弃用，很可能在之后的版本中删除。\n{0}";
+
+        private void onClickObsoleteBtn()
+        {
+            var ctrl = gameObject.GetComponentInParent<EffectEditorCtrl>();
+            ctrl.game.ui.dialog?.ShowConfirm(ctrl.game.lang._(TITLE_NODE_OBSOLETE), ctrl.game.lang._(MESSAGE_NODE_OBSOLETE, obsoleteMessage));
+        }
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
             eventData.Use();
@@ -432,8 +466,15 @@ namespace UI
         {
             get { return (transform as RectTransform).anchoredPosition.y; }
         }
+
+        string obsoleteMessage = "";
+
         [SerializeField]
         Text _nameText;
+        [SerializeField]
+        Image _nameBackground;
+        [SerializeField]
+        Button _warningObj;
         [SerializeField]
         RectTransform _inputRoot;
         [SerializeField]
@@ -472,6 +513,11 @@ namespace UI
         List<RectTransform> _targetCheckerList = new List<RectTransform>();
         [SerializeField]
         Button _addTargetCheckerButton;
+
+        [SerializeField]
+        Color _normalTitleColor;
+        [SerializeField]
+        Color _warningTitleColor;
         #endregion
     }
 }

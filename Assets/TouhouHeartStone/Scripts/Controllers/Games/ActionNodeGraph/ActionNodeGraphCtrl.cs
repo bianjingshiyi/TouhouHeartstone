@@ -1202,7 +1202,8 @@ namespace Controllers
                     getActionNodeName(actionNode),
                     getActionNodeInputViewData(actionNode),
                     constsInfo,
-                    getActionNodeOutputViewData(actionNode));
+                    getActionNodeOutputViewData(actionNode),
+                    getActionNodeObsoleteMsg(actionNode));
                 for (int i = 0; i < constsInfo.Length; i++)
                 {
                     if (constsInfo[i].type == ActionNodeValueType.cardReference)
@@ -2202,13 +2203,20 @@ namespace Controllers
         {
             if (_nameTextDict.TryGetValue(actionNode.defineName, out string text))
             {
-                return game.langManager.getString(text);
+                return game.lang._(text);
             }
             else
             {
                 Debug.LogWarning("没有找到动作" + actionNode.defineName + "对应的名称");
-                return actionNode.defineName;
+                return game.lang._(actionNode.defineName);
             }
+        }
+        private string getActionNodeObsoleteMsg(ActionNode actionNode)
+        {
+            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
+            if (actionDefine.obsoleteMsg == null) return null;
+            if (actionDefine.obsoleteMsg == "") return "";
+            return game.lang._(actionDefine.obsoleteMsg);
         }
         private (string name, Color color)[] getActionNodeInputViewData(ActionNode actionNode)
         {

@@ -33,7 +33,8 @@ namespace UI
         public ActionNodeItem createNode(float posX, float posY, string nodeName,
             (string name, Color color)[] inputViewData,
             ActionNodeValueInfo[] constsInfo,
-            (string name, Color color)[] outputViewData)
+            (string name, Color color)[] outputViewData,
+            string obsoleteMsg = null)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
@@ -52,6 +53,7 @@ namespace UI
             actionNodeItem.setInputs(inputViewData);
             actionNodeItem.setConsts(constsInfo);
             actionNodeItem.setOutputs(outputViewData);
+            actionNodeItem.setObsoleteMsg(obsoleteMsg);
             return actionNodeItem;
         }
         /// <summary>
