@@ -1625,7 +1625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _nameText: {fileID: 3503499947058192578}
-  _nodeRect: {fileID: 3503499947575272976}
+  _nodeRect: {fileID: 3503499946384594365}
 --- !u!1 &3503499946601867492
 GameObject:
   m_ObjectHideFlags: 0
@@ -2996,7 +2996,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _nameText: {fileID: 3503499946739990550}
-  _nodeRect: {fileID: 3503499946337747212}
+  _nodeRect: {fileID: 3503499947681237656}
 --- !u!1 &3503499947811142640
 GameObject:
   m_ObjectHideFlags: 0
