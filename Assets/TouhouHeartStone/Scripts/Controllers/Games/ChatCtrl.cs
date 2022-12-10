@@ -29,7 +29,6 @@ namespace Controllers
                 ui.gameObject.SetActive(true);
 
                 chatLog = info.ChatLog;
-                players = info.Players;
                 resetChatPanel();
             }
             return Task.CompletedTask;
@@ -42,7 +41,7 @@ namespace Controllers
 
         public UIDisplayInfo getCurrentDisplayInfo()
         {
-            return new DisplayInfo(chatLog, players);
+            return new DisplayInfo(chatLog);
         }
 
         public Task hide()
@@ -51,7 +50,6 @@ namespace Controllers
             ui.gameObject.SetActive(false);
 
             chatLog.Clear();
-            players.Clear();
             return Task.CompletedTask;
         }
 
@@ -159,14 +157,14 @@ namespace Controllers
         /// 获取本地玩家
         /// </summary>
         /// <returns></returns>
-        private Player getLocalPlayerData()
+        private RoomPlayerData getLocalPlayerData()
         {
-            return players.Find(p => p.Id == game.network.logic.localPlayer.id);
+            return game.network.logic.CurrentRoom.playerDataList.Find(p => p.id == game.network.logic.localPlayer.id);
         }
 
         private string getPlayerName(int playerID)
         {
-            return players.Find(p => p.Id == playerID)?.Name;
+            return game.network.logic.CurrentRoom.playerDataList.Find(p => p.id == playerID)?.name;
         }
 
         private string chatLineToString(ChatLine cl) 
@@ -181,10 +179,6 @@ namespace Controllers
         /// 聊天记录
         /// </summary>
         List<ChatLine> chatLog;
-        /// <summary>
-        /// 玩家列表
-        /// </summary>
-        List<Player> players;
         ChatRoom ui;
         #endregion
         #region 内部类
@@ -193,25 +187,16 @@ namespace Controllers
             public DisplayInfo(RoomData data)
             {
                 ChatLog = new List<ChatLine>();
-                data.playerDataList.ForEach(p =>
-                {
-                    Players.Add(new Player(p));
-                });
             }
 
-            public DisplayInfo(List<ChatLine> chatLog, List<Player> players)
+            public DisplayInfo(List<ChatLine> chatLog)
             {
                 ChatLog = chatLog;
-                Players = players;
             }
             /// <summary>
             /// 传入的聊天记录
             /// </summary>
             public List<ChatLine> ChatLog = new List<ChatLine>();
-            /// <summary>
-            /// 参与聊天的玩家列表
-            /// </summary>
-            public List<Player> Players = new List<Player>();
         }
 
         public struct ChatLine
@@ -229,25 +214,6 @@ namespace Controllers
             /// </summary>
             public string content;
         }
-
-        public class Player
-        {
-            public int Id;
-            public string Name;
-
-            public Player(int id,string name)
-            {
-                Id = id;
-                Name = name;
-            }
-
-            public Player(RoomPlayerData rp)
-            {
-                Id = rp.id;
-                Name = rp.name;
-            }
-        }
-
         #endregion
     }
 }
