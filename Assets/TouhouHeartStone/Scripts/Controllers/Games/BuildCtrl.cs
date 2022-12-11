@@ -302,10 +302,16 @@ namespace Controllers
         {
             display(deckList[index]);
         }
-        private async void onClickDeckListItemDeleteButton(int index)
+
+        [TranslateMsg("{0} 为卡组名称")]
+        const string DECK_DELETE_CONFIRM_CONTENT = "你是否要删除卡组 {0}? 删除后将无法恢复。";
+
+        private void onClickDeckListItemDeleteButton(int index)
         {
-            game.deck.RemoveDeck(deckList[index].id);
-            await updateDeckListUI();
+            game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.i18n._(DECK_DELETE_CONFIRM_CONTENT, deckList[index].name), async () => {
+                game.deck.RemoveDeck(deckList[index].id);
+                await updateDeckListUI();
+            });
         }
         /// <summary>
         /// 点击新建卡组按钮

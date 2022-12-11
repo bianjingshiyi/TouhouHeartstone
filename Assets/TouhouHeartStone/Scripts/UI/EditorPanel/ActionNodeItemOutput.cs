@@ -18,10 +18,9 @@ namespace UI
         /// <param name="color"></param>
         public void setColor(Color color)
         {
-            Image image = _nodeRect.gameObject.GetComponent<Image>();
-            if (image != null)
+            if (_slotImage != null)
             {
-                image.color = color;
+                _slotImage.color = color;
             }
         }
         
@@ -31,10 +30,9 @@ namespace UI
         /// <returns></returns>
         public Color GetColor()
         {
-            Image image = _nodeRect.gameObject.GetComponent<Image>();
-            if (image != null)
+            if (_slotImage != null)
             {
-                return image.color;
+                return _slotImage.color;
             }
 
             return Color.white;
@@ -83,5 +81,7 @@ namespace UI
         Text _nameText;
         [SerializeField]
         RectTransform _nodeRect;
+        [SerializeField]
+        Image _slotImage;
     }
 }

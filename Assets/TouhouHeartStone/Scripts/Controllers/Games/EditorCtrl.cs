@@ -156,11 +156,11 @@ namespace Controllers
             CardPoolInfo cardPool = _cardPoolInfoList[index];
             if (game.card.isStandardCardPool(cardPool))
             {
-                game.ui.dialog.ShowConfirm(StringTable.INVALID_OPERATION, StringTable.EDITOR_DIALOG_CANNOT_DELETE_STANDARD_CARDPOOL, null);
+                game.ui.dialog.ShowConfirm(game.i18n._(StringTable.INVALID_OPERATION), game.i18n._(StringTable.EDITOR_DIALOG_CANNOT_DELETE_STANDARD_CARDPOOL), null);
             }
             else
             {
-                _ui.findInstance<UIDialog>().ShowQuestion(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
+                game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.i18n._(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
                     hasUnsavedChanges = true;
                     game.card.removeCardPool(_cardPoolInfoList[index].cardPoolId);
@@ -236,12 +236,12 @@ namespace Controllers
             if (game.card.isStandardCardPool(_curCardPoolInfo))
             {
                 game.ui.dialog.ShowConfirm(
-                    game.langManager.getString(StringTable.INVALID_OPERATION),
-                    game.langManager.getString(StringTable.EDITOR_DIALOG_CANNOT_DELETE_STANDARD_CARDPOOL), null);
+                    game.i18n._(StringTable.INVALID_OPERATION),
+                    game.i18n._(StringTable.EDITOR_DIALOG_CANNOT_DELETE_STANDARD_CARDPOOL), null);
             }
             else
             {
-                game.ui.dialog.ShowConfirm(null, game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
+                game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
                     hasUnsavedChanges = true;
                     //删除当前卡池
