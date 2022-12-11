@@ -68,7 +68,7 @@ namespace TouhouHeartstone
             } : new List<DefineReference>();
             foreach (var item in cardList)
             {
-                if (item.cardRef == null || item.cardRef.cardPoolId == 0 || item.cardRef.defineId == 0)
+                if (item.cardRef == null || item.cardRef.defineId == 0)
                     continue;
                 if (item.count < 1)
                     continue;

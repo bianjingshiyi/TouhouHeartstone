@@ -471,6 +471,8 @@ namespace Game
         }
         public CardDefine getCardDefine(long cardPoolId, int cardId)
         {
+            if (cardId < 0)
+                cardPoolId = cardId << 1 >> 17;
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 return cardPool.cardDefineList.Find(d => d.id == cardId);

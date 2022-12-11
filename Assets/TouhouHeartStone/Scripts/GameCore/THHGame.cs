@@ -430,13 +430,13 @@ namespace TouhouHeartstone
             game.option = options;
             foreach (var playerInfo in players)
             {
-                DefineReference[] deck = playerInfo.getProp<DefineReference[]>("deck");
+                Deck deck = playerInfo.getProp<Deck>("deck");
                 createPlayer(
                     game,
                     playerInfo.ID,
                     playerInfo.Name,
-                    game.getDefine(deck[0].cardPoolId, deck[0].defineId),
-                    deck.Skip(1).Select(r => game.getDefine(r.cardPoolId, r.defineId)).ToArray());
+                    game.getDefine(deck.masterCardRef),
+                    Array.ConvertAll(deck.toDefRefArray(false), r => game.getDefine(r.cardPoolId, r.defineId)).ToArray());
             }
             return Task.CompletedTask;
         }
@@ -460,19 +460,13 @@ namespace TouhouHeartstone
                     deck[i] = luckyCoinDefine;
                 }
 
-                if (define is THHCardDefine && define.isToken())
+                if (define.isToken())
                 {
                     game.logger.log("为什么你的牌库里会有衍生物？让我把它换成幸运币");
                     deck[i] = luckyCoinDefine;
                 }
             }
 
-            return createPlayer(game, id, name, master, deck);
-        }
-
-        public Player createPlayer(CardEngine game, int id, string name, CardDefine master,
-            IEnumerable<CardDefine> deck)
-        {
             if (game.players.Any(p => p.id == id))
                 throw new ArgumentException("已经存在ID为" + id + "的玩家");
             Player player = new Player(id, name);
@@ -486,10 +480,10 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.WARP));
             player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
             player.addPile(new Pile(game, PILE.ITEM, 1));
-            player[PILE.MASTER].add(game, game.createCard(master));
+            player[PILE.MASTER].add(game, game.createCard(master)).Wait();
             DefineReference skillRef = master.getSkillRef();
-            player[PILE.SKILL].add(game, game.createCard(game.getDefine(skillRef.cardPoolId, skillRef.defineId)));
-            player[PILE.DECK].add(game, deck.Select(d => game.createCard(d)));
+            player[PILE.SKILL].add(game, game.createCard(game.getDefine(skillRef.cardPoolId, skillRef.defineId))).Wait();
+            player[PILE.DECK].add(game, Array.ConvertAll(deck, d => game.createCard(d))).Wait();
             player.setIsPrepared(false);
             player.setGem(game, 0);
             player.setMaxGem(game, 0);
@@ -497,7 +491,6 @@ namespace TouhouHeartstone
             game.addPlayer(player);
             return player;
         }
-
         public Player getPlayer(CardEngine game, int id)
         {
             return game.players.FirstOrDefault(p => p.id == id);
