@@ -130,6 +130,7 @@ namespace UI
 
             _dragStartPosition = eventData.position;
             _isDraggingHorizontal = false;
+            // 开始拖动时，事件应当同时传递给下层列表，使其可以拖动
             // eventData.Use();
         }
         private void onDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
@@ -169,7 +170,9 @@ namespace UI
                 hideDragCard();
                 Vector2 position = eventData.position;
                 onEndDragDeckCardListItem?.Invoke(isPositionOverDeckCardList(position));
-                eventData.Use();
+
+                // 由于上面已经给下方列表传递了事件，故这里也要传递，使列表的状态复位。
+                // eventData.Use();
             }
         }
         private void onClickExportDeckButtonCallback()
