@@ -28,6 +28,7 @@ namespace UI
             this.m_as_Image = this.GetComponent<Image>();
             this._TitleText = this.transform.Find("Title").GetComponent<Text>();
             this._Slider = this.transform.Find("Slider").GetComponent<Slider>();
+            this._DescText = this.transform.Find("Desc").GetComponent<Text>();
         }
         [SerializeField()]
         private Image m_as_Image;
@@ -66,6 +67,19 @@ namespace UI
                     this._Slider = this.transform.Find("Slider").GetComponent<Slider>();
                 }
                 return this._Slider;
+            }
+        }
+        [SerializeField()]
+        private Text _DescText;
+        public Text DescText
+        {
+            get
+            {
+                if ((this._DescText == null))
+                {
+                    this._DescText = this.transform.Find("Desc").GetComponent<Text>();
+                }
+                return this._DescText;
             }
         }
         partial void onAwake();

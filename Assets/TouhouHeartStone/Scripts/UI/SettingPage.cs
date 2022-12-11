@@ -14,28 +14,29 @@ namespace UI
         LangManager lang => this.findInstance<LangManager>();
 
         List<string> langItemList = new List<string>();
-
         
         [SerializeField]
         GameOptionItemSlider _cacheSlider;
-        [SerializeField]
-        Text _cacheDisplay;
+
         UnityEngine.UI.Dropdown langDropdown => LanguageGameOptionItemDropdown.DropdownLight.asDropdown;
         partial void onAwake()
         {
             VolumeGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
             {
                 config.Config.Volume = vol;
+                updateLabels();
                 config.MarkChange();
             });
             BGMGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
             {
                 config.Config.BGM = vol;
+                updateLabels();
                 config.MarkChange();
             });
             SEGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
             {
                 config.Config.SE = vol;
+                updateLabels();
                 config.MarkChange();
             });
             _cacheSlider.Slider.onValueChanged.AddListener((cache) =>
@@ -43,13 +44,12 @@ namespace UI
                 if (cache == 20)
                 {
                     config.Config.CacheSize = -1;
-                    _cacheDisplay.text = lang._(OPTIONS_CACHE_UNLIMITED);
                 }
                 else
                 {
                     config.Config.CacheSize = cache / 2;
-                    _cacheDisplay.text = lang._(CACHE_SIZE, config.Config.CacheSize);
                 }
+                updateLabels();
                 config.MarkChange();
             });
             BackButtonBlack.asButton.onClick.AddListener(() =>
@@ -75,22 +75,36 @@ namespace UI
             }
         }
 
+        private void updateLabels()
+        {
+            VolumeGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.Volume * 100)}%";
+            BGMGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.BGM * 100)}%";
+            SEGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.SE * 100)}%";
+            if (config.Config.CacheSize < 0)
+            {
+                _cacheSlider.DescText.text = lang._(OPTIONS_CACHE_UNLIMITED);
+            }
+            else
+            {
+                _cacheSlider.DescText.text = lang._(CACHE_SIZE, config.Config.CacheSize);
+            }
+        }
+
         private void OnEnable()
         {
             _isUpdating = true;
             VolumeGameOptionItemSlider.Slider.value = config.Config.Volume;
             BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
             SEGameOptionItemSlider.Slider.value = config.Config.SE;
+
             FullScreenGameOptionItemToggle.Toggle.isOn = config.Config.FullScreen;
-            if (config.Config.CacheSize == -1)
+            if (config.Config.CacheSize < 0)
             {
                 _cacheSlider.Slider.value = 20;
-                _cacheDisplay.text =lang._(OPTIONS_CACHE_UNLIMITED);
             }
             else
             {
                 _cacheSlider.Slider.value = config.Config.CacheSize * 2;
-                _cacheDisplay.text = lang._(CACHE_SIZE, config.Config.CacheSize) ;
             }
 
             for (int i = 0; i < langItemList.Count; i++)
@@ -101,6 +115,7 @@ namespace UI
                     break;
                 }
             }
+            updateLabels();
 
             _isUpdating = false;
         }
@@ -115,6 +130,6 @@ namespace UI
         [TranslateMsg("设置-最大缓存大小-无限制")]
         const string OPTIONS_CACHE_UNLIMITED = "无限制";
         [TranslateMsg("缓存大小单位")]
-        string CACHE_SIZE = "{0}G";
+        const string CACHE_SIZE = "{0}G";
     }
 }

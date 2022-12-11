@@ -471,7 +471,17 @@ namespace Game
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
         public FileManager fileManager => new FileManager();
+        /// <summary>
+        /// 语言管理器，仅用于控制语言的修改。如果你需要翻译，请使用 i18n._();
+        /// </summary>
         public LangManager lang => getManager<LangManager>();
+        /// <summary>
+        /// 翻译提供者
+        /// </summary>
+        public ITranslationProvider i18n => lang;
+        /// <summary>
+        /// 语言管理器，仅用于控制语言的修改。如果你需要翻译，请使用 i18n._();
+        /// </summary>
         public ILanguageManager langManager => getManager<LangManager>();
         public IResourceManager resourceManager => getManager<ResourceManager>();
         public CardManager card => getManager<CardManager>();

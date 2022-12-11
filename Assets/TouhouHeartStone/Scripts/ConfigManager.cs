@@ -41,8 +41,8 @@ namespace Game
             Config.SE = PlayerPrefs.HasKey(keySE) ? PlayerPrefs.GetFloat(keySE) : 1;
             Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
             Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.CurrentCulture.Name;
+            Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache) : 0.5f;
             MarkChange();
-            Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache):0.5f;
         }
 
         public void SaveConfig()
