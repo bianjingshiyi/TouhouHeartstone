@@ -115,7 +115,7 @@ namespace Game
                 if (r.HasRows)
                 {
                     r.Read();
-                    return new DefineReference(r.Get<long>("masterCardPoolID"), (int)r.Get<long>("masterID"));
+                    return new DefineReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID"));
                 }
                 return null;
             }, id);
@@ -209,7 +209,7 @@ namespace Game
                         list.Add(new DeckDefine()
                         {
                             ID = r.Get<long>("deckID"),
-                            MasterCardRef = new DefineReference(r.Get<long>("masterCardPoolID"), (int)r.Get<long>("masterID")),
+                            MasterCardRef = new DefineReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID")),
                             Name = r.Get<string>("name")
                         });
                     }
@@ -232,7 +232,7 @@ namespace Game
                 return new DeckDefine()
                 {
                     ID = r.Get<long>("deckID"),
-                    MasterCardRef = new DefineReference(r.Get<long>("masterCardPoolID"), (int)r.Get<long>("masterID")),
+                    MasterCardRef = new DefineReference(r.Get<long>("masterCardPoolID", 0), (int)r.Get<long>("masterID")),
                     Name = r.Get<string>("name")
                 };
             }, id);
@@ -275,7 +275,7 @@ namespace Game
                 if (r.HasRows)
                 {
                     r.Read();
-                    return new DefineReference(r.Get<long>("cardPoolID"), (int)r.Get<long>("cardID"));
+                    return new DefineReference(r.Get<long>("cardPoolID", 0), (int)r.Get<long>("cardID"));
                 }
                 return null;
             }, id);
@@ -288,13 +288,13 @@ namespace Game
         /// <returns>引用ID-定义ID 键值对</returns>
         public Dictionary<long, DefineReference> GetDeckCards(long deckID)
         {
-            return db.Read<Dictionary<long, DefineReference>>($@"SELECT cardID, ID FROM {tableCards} WHERE deckID = ?", (r) =>
+            return db.Read<Dictionary<long, DefineReference>>($@"SELECT cardID, cardPoolID, ID FROM {tableCards} WHERE deckID = ?", (r) =>
             {
                 Dictionary<long, DefineReference> dict = new Dictionary<long, DefineReference>();
                 if (r.HasRows)
                 {
                     while (r.Read())
-                        dict.Add(r.Get<long>("ID"), new DefineReference(r.Get<long>("cardPoolID"), (int)r.Get<long>("cardID")));
+                        dict.Add(r.Get<long>("ID"), new DefineReference(r.Get<long>("cardPoolID", 0), (int)r.Get<long>("cardID")));
                 }
                 return dict;
             }, deckID);

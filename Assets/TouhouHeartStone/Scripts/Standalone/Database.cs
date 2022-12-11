@@ -301,10 +301,12 @@ namespace IGensoukyo.Utilities
         /// <param name="reader"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static T Get<T>(this System.Data.Common.DbDataReader reader, string key)
+        public static T Get<T>(this System.Data.Common.DbDataReader reader, string key, T whenNull = default)
         {
             var ordinal = reader.GetOrdinal(key);
-            return reader.GetFieldValue<T>(ordinal);
+            var val = reader.GetValue(ordinal);
+            if (val is DBNull) return whenNull;
+            return (T)val;
         }
         /// <summary>
         /// 获取指定名字的列

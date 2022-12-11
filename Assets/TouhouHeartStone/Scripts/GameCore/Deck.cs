@@ -54,7 +54,7 @@ namespace TouhouHeartstone
         }
         public int getCardCount(long cardPoolId, int id)
         {
-            return cardList.Find(c => c.cardRef.cardPoolId == cardPoolId && c.cardRef.defineId == id).count;
+            return cardList.Find(c => c.cardRef.cardPoolId == cardPoolId && c.cardRef.defineId == id)?.count ?? 0;
         }
         public int getCardCount()
         {
