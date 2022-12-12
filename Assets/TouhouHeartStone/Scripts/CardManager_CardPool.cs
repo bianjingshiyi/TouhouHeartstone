@@ -444,6 +444,14 @@ namespace Game
                         actionNode.consts[i] = new DefineReference(cardRef.cardPoolId, cardRef.cardId);
                     }
                 }
+                // 将旧版的“获取增益定义”的ID从int变为DefineReference。
+                if (actionNode.defineName == StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE)
+                {
+                    if (actionNode.consts != null && actionNode.consts.Length > 0 && actionNode.consts[0] is int buffId)
+                    {
+                        actionNode.consts[0] = new DefineReference(cardPoolInfo.cardPoolId, buffId);
+                    }
+                }
             }
             void fixTriggerIncorrectData(TriggerGraph trigger)
             {
