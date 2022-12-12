@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SFB;
 using Game;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Controllers
 {
@@ -29,8 +30,7 @@ namespace Controllers
         }
         private async void onClickItemDeleteBuffButtonCallback(ActionNodeItem item)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine) &&
                 game.card.removeBuffDefine(_curCardPoolId, buffDefine))
             {
                 buffDefine = game.card.getBuffDefines(_curCardPoolId)
@@ -46,68 +46,45 @@ namespace Controllers
                actionNode.consts != null &&
                actionNode.consts.Length > 0)
             {
-                object const0 = actionNode.consts[0];
-                bool hasBuffDefine = false;
-                GeneratedBuffDefine buffDefine = null;
-                if (const0 is DefineReference buffDefineRef)
-                {
-                    hasBuffDefine = game.card.tryGetBuffDefine(buffDefineRef.cardPoolId, buffDefineRef.defineId, out buffDefine);
-                }
-                else if (const0 is CardReference cardRef)
-                {
-                    hasBuffDefine = game.card.tryGetBuffDefine(cardRef.cardPoolId, cardRef.cardId, out buffDefine);
-                }
-                else if (const0 is int buffDefineId)
-                {
-                    hasBuffDefine = game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out buffDefine);
-                }
-                if (hasBuffDefine && buffDefine is GeneratedBuffDefine generatedBuffDefine)
+                if (tryGetBuffDefine(actionNode.consts[0], out GeneratedBuffDefine buffDefine))
                 {
                     PropModifier propModifier = new CostModifier(0);
-                    generatedBuffDefine.propModifierList.Add(propModifier);
-                    await updateBuffActionNode(item, generatedBuffDefine, null);
+                    buffDefine.propModifierList.Add(propModifier);
+                    await updateBuffActionNode(item, buffDefine, null);
                 }
             }
         }
         private async void onClickItemRemovePropModifierButtonCallback(ActionNodeItem item, int index)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                generatedBuffDefine.propModifierList.RemoveAt(index);
-                await updateBuffActionNode(item, generatedBuffDefine, null);
+                buffDefine.propModifierList.RemoveAt(index);
+                await updateBuffActionNode(item, buffDefine, null);
             }
         }
         private async void onItemPropModifierPropertyTypeChangedCallback(ActionNodeItem item, int index, int propTypeIndex)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine &&
-                propTypeIndex != getPropertyModifierIndex(generatedBuffDefine.propModifierList[index]))
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine) &&
+                propTypeIndex != getPropertyModifierIndex(buffDefine.propModifierList[index]))
             {
-                generatedBuffDefine.propModifierList[index] = createPropertyModifierByIndex(propTypeIndex);
-                await updateBuffActionNode(item, generatedBuffDefine, null);
+                buffDefine.propModifierList[index] = createPropertyModifierByIndex(propTypeIndex);
+                await updateBuffActionNode(item, buffDefine, null);
             }
         }
         private async void onItemPropModifierModifyTypeChangedCallback(ActionNodeItem item, int index, int modifyTypeIndex)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine &&
-                modifyTypeIndex != getModifyTypeIndex(generatedBuffDefine.propModifierList[index]))
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine) &&
+                modifyTypeIndex != getModifyTypeIndex(buffDefine.propModifierList[index]))
             {
-                setModifyTypeByIndex(generatedBuffDefine.propModifierList[index], modifyTypeIndex);
-                await updateBuffActionNode(item, generatedBuffDefine, null);
+                setModifyTypeByIndex(buffDefine.propModifierList[index], modifyTypeIndex);
+                await updateBuffActionNode(item, buffDefine, null);
             }
         }
         private async void onItemPropModifierValueChangedCallback(ActionNodeItem item, int index, object value)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                PropModifier propModifier = generatedBuffDefine.propModifierList[index];
+                PropModifier propModifier = buffDefine.propModifierList[index];
                 if (propModifier.relatedPropName != null)
                 {
                     propModifier.relatedPropName = (string)value;
@@ -123,89 +100,91 @@ namespace Controllers
                         keywordsModifier.value = ((KeywordCollection)value).ToArray();
                     }
                 }
-                await updateBuffActionNode(item, generatedBuffDefine, null);
+                await updateBuffActionNode(item, buffDefine, null);
             }
         }
         private async void onItemPropModifierAddEffectCallback(ActionNodeItem item, int index)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                generatedBuffDefine.effectList.Add(game.card.createEffectByIndex(index));
-                await updateBuffActionNode(item, generatedBuffDefine, null);
+                buffDefine.effectList.Add(game.card.createEffectByIndex(index));
+                await updateBuffActionNode(item, buffDefine, null);
             }
         }
         private async void onItemPropModifierRemoveEffectCallback(ActionNodeItem item, int index)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                generatedBuffDefine.effectList.RemoveAt(index);
-                await updateBuffActionNode(item, generatedBuffDefine, null);
+                buffDefine.effectList.RemoveAt(index);
+                await updateBuffActionNode(item, buffDefine, null);
             }
         }
         private async void onItemPropModifierEditEffectCallback(ActionNodeItem item, int index)
         {
-            ActionNode actionNode = getActionNode(item);
-            int buffDefineId = (int)actionNode.consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                await scene.effectEditor.display(_curCardPoolId, generatedBuffDefine, generatedBuffDefine.effectList[index]);
+                await scene.effectEditor.display(_curCardPoolId, buffDefine, buffDefine.effectList[index]);
             }
         }
         private async void onItemBuffNameChangedCallback(ActionNodeItem item, string value)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
+                var buffSkin = getOrCreateBuffSkin(buffDefine);
                 buffSkin.name = value;
-                await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
+                await updateBuffActionNode(item, buffDefine, buffSkin);
             }
         }
         private async void onItemBuffDescChangedCallback(ActionNodeItem item, string value)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
+                var buffSkin = getOrCreateBuffSkin(buffDefine);
                 buffSkin.desc = value;
-                await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
+                await updateBuffActionNode(item, buffDefine, buffSkin);
             }
         }
         private async void onItemBuffLanguageChangedCallback(ActionNodeItem item, int index)
         {
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
+                var buffSkin = getOrCreateBuffSkin(buffDefine);
                 string[] languages = game.langManager.getLanguages();
                 buffSkin.language = languages[index];
-                await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
+                await updateBuffActionNode(item, buffDefine, buffSkin);
             }
         }
         private async void onItemNeedSelectBuffImage(ActionNodeItem item)
         {
             Sprite sprite = await game.card.selectExternalImage();
-            int buffDefineId = (int)getActionNode(item).consts[0];
-            if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                var buffSkin = getOrCreateBuffSkin(generatedBuffDefine);
+                var buffSkin = getOrCreateBuffSkin(buffDefine);
                 buffSkin.imagePath = sprite != null ? game.card.getSpritePath(sprite) : null;
-                await updateBuffActionNode(item, generatedBuffDefine, buffSkin);
+                await updateBuffActionNode(item, buffDefine, buffSkin);
             }
         }
         #endregion
+        private bool tryGetBuffDefine(object value, out GeneratedBuffDefine buffDefine)
+        {
+            buffDefine = null;
+            if (value is DefineReference buffDefineRef)
+            {
+                return game.card.tryGetBuffDefine(buffDefineRef.cardPoolId, buffDefineRef.defineId, out buffDefine);
+            }
+            else if (value is CardReference cardRef)
+            {
+                return game.card.tryGetBuffDefine(cardRef.cardPoolId, cardRef.cardId, out buffDefine);
+            }
+            else if (value is int buffDefineId)
+            {
+                return game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out buffDefine);
+            }
+            return false;
+        }    
         private async Task updateBuffActionNode(ActionNodeItem item, GeneratedBuffDefine buffDefine, BuffSkin buffSkin)
         {
-            getActionNode(item).consts = new object[] { buffDefine.id };
+            getActionNode(item).consts = new object[] { new DefineReference(buffDefine.cardPoolId, buffDefine.id) };
             BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId)
                 .OrderBy(p => p.Value.cardPoolId)
                 .ThenBy(p => p.Value.id)

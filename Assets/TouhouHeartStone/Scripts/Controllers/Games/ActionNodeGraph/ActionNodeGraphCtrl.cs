@@ -1146,12 +1146,7 @@ namespace Controllers
                     //同时还有增益的皮肤，也要新建一个
                     buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
-                else if (!((actionNode.consts[0] is DefineReference buffDefRef &&
-                    game.card.tryGetBuffDefine(buffDefRef.cardPoolId, buffDefRef.defineId, out GeneratedBuffDefine buffDefine)) ||
-                    (actionNode.consts[0] is CardReference buffRef &&
-                    game.card.tryGetBuffDefine(buffRef.cardPoolId, buffRef.cardId, out buffDefine)) ||
-                    (actionNode.consts[0] is int buffDefRefId &&
-                    game.card.tryGetBuffDefine(_curCardPoolId, buffDefRefId, out buffDefine))))
+                else if (!tryGetBuffDefine(actionNode.consts[0], out GeneratedBuffDefine buffDefine))
                 {
                     //读到了增益id，但是查无此增益，那么重新创建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
