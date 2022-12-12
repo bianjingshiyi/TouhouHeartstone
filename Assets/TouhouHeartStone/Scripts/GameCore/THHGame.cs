@@ -6,7 +6,6 @@ using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone.Builtin;
-using UnityEngine;
 
 namespace TouhouHeartstone
 {
@@ -432,7 +431,7 @@ namespace TouhouHeartstone
             game.option = options;
             foreach (var playerInfo in players)
             {
-                Deck deck = playerInfo.getProp<Deck>("deck");
+                Deck deck = playerInfo.getDeck();
                 createPlayer(
                     game,
                     playerInfo.ID,

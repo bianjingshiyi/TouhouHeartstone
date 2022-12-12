@@ -150,6 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da889085ebec78d44b46ac9287a0af0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  config: {fileID: 555126699}
 --- !u!4 &4838928
 Transform:
   m_ObjectHideFlags: 0
@@ -6792,6 +6793,7 @@ MonoBehaviour:
       timeoutForInitReplace: 30
       timeoutForTurn: 75
       startGem: 0
+      cardPools: []
     players: []
     logs: []
     _contents: []
@@ -7507,6 +7509,7 @@ MonoBehaviour:
     timeoutForInitReplace: 30
     timeoutForTurn: 75
     startGem: 0
+    cardPools: []
   _mainUI: {fileID: 0}
   _ui: {fileID: 0}
   _useDefaultDeck: 0

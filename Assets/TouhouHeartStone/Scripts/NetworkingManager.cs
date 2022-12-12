@@ -585,7 +585,7 @@ namespace Game
 
         private void setRoomPanel(RoomData room)
         {
-            Debug.Log($"更新房间信息: {room.toJson()}");
+            Debug.Log($"更新房间信息");
             roomPanel.SetInfo(room);
             _sceneCtrl.room.UpdateRoomData(room);
         }

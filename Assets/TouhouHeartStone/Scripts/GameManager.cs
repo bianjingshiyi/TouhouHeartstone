@@ -223,9 +223,10 @@ namespace Game
             var cardManager = getManager<CardManager>();
             //加载外部卡牌
             HashSet<long> cardPoolIdSet = new HashSet<long>() { 0 };
-            List<CardDefine> externalCards = new List<CardDefine>();
+            Dictionary<long, Dictionary<int, CardDefine>> cardDict;
 			if (mode == GameMode.local)
 			{
+                // 本地模式，使用玩家本地的卡池。
 	            foreach (var player in playerList)
 	            {
 	                Deck deck = player.getDeck();
@@ -237,30 +238,36 @@ namespace Game
                         cardPoolIdSet.Add(cardRef.cardPoolId);
                     }
                 }
-                externalCards.AddRange(await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet));
+                cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
             }
             else
             {
+                // 网络模式，尝试从本地获取卡组，否则读取缓存卡组。
+                // 内置卡组。
+                cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
                 foreach (var pool in option.cardPools)
                 {
-                    cardPoolIdSet.Add((int)pool.cardPoolId);// TODO: 改成long
-                    if (cards.tryGetCardPool((int)pool.cardPoolId, out CardPool cardPool))// TODO: 改成long
+                    long poolId = pool.cardPoolId;
+                    cardPoolIdSet.Add(poolId);
+
+                    IEnumerable<CardDefine> cardDefines;
+                    if (cards.tryGetCardPool(poolId, out CardPool cardPool))
                     {
-                        externalCards.AddRange(cardPool.cardDefineList);
+                        cardDefines = cardPool.cardDefineList;
                     }
                     else
                     {
                         var defines = await cards.loadCachedCardDefinesAsync(pool.cardPoolId, pool.version);
-                        externalCards.AddRange(defines.defines);
+                        cardDefines = defines.defines;
                     }
+                    cardDict.Add(poolId, cardDefines.ToDictionary(c => c.id));
                 }
             }
-            Dictionary<long, Dictionary<int, CardDefine>> cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
             Rule rule = new HearthStoneRule(
                     cardDict,
                     cardManager.getCardPools(cardPoolIdSet).ToDictionary(
                         p => p.Key,
-                        p => p.Value.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine)))
+                        p => p.Value.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine)));
 
             await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
                 rule,

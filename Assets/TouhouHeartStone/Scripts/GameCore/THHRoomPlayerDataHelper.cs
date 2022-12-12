@@ -2,9 +2,9 @@
 using TouhouCardEngine;
 using TouhouHeartstone;
 using System.Linq;
-namespace Game
+namespace TouhouHeartstone
 {
-    static class THHRoomPlayerDataHelper
+    public static class THHRoomPlayerDataHelper
     {
         public const string PROP_DECK = "deck";
         public static void setDeck(this IRoomPlayer playerData, Deck deck)
