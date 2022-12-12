@@ -471,7 +471,8 @@ namespace Game
         }
         public CardDefine getCardDefine(long cardPoolId, int cardId)
         {
-            if (cardId < 0)
+            // 如果卡池ID的注册时间早于11月12日0:00，并且不是内置卡池，视为老版本卡池ID，改为从卡牌ID获取
+            if (cardPoolId < 86400 && cardPoolId > 0)
                 cardPoolId = cardId << 1 >> 17;
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
