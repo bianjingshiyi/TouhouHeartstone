@@ -44,11 +44,24 @@ namespace Controllers
         {
             if (getActionNode(item) is ActionNode actionNode &&
                actionNode.consts != null &&
-               actionNode.consts.Length > 0 &&
-               actionNode.consts[0] is int buffDefineId)
+               actionNode.consts.Length > 0)
             {
-                if (game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out GeneratedBuffDefine buffDefine) &&
-                buffDefine is GeneratedBuffDefine generatedBuffDefine)
+                object const0 = actionNode.consts[0];
+                bool hasBuffDefine = false;
+                GeneratedBuffDefine buffDefine = null;
+                if (const0 is DefineReference buffDefineRef)
+                {
+                    hasBuffDefine = game.card.tryGetBuffDefine(buffDefineRef.cardPoolId, buffDefineRef.defineId, out buffDefine);
+                }
+                else if (const0 is CardReference cardRef)
+                {
+                    hasBuffDefine = game.card.tryGetBuffDefine(cardRef.cardPoolId, cardRef.cardId, out buffDefine);
+                }
+                else if (const0 is int buffDefineId)
+                {
+                    hasBuffDefine = game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out buffDefine);
+                }
+                if (hasBuffDefine && buffDefine is GeneratedBuffDefine generatedBuffDefine)
                 {
                     PropModifier propModifier = new CostModifier(0);
                     generatedBuffDefine.propModifierList.Add(propModifier);
