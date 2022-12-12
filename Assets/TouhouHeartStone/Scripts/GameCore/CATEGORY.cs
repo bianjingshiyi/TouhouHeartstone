@@ -46,9 +46,14 @@ namespace TouhouHeartstone
                 if (define.getProp<DefineReference>(DEFINE.CHARACTER_ID) is DefineReference characterRef)
                     return characterRef;
                 else
-                    define.getProp<int>(DEFINE.CHARACTER_ID);
+                {
+                    // 旧版角色ID。
+                    int id = define.getProp<int>(DEFINE.CHARACTER_ID);
+                    return new DefineReference(id << 1 >> 17, id);
+                }
             }
-            return new DefineReference(0, getCharacterID(define.id));
+            // 中立卡牌。
+            return new DefineReference(0, 0);
         }
         public static void setCharacterRef(this CardDefine define, DefineReference characterRef)
         {
