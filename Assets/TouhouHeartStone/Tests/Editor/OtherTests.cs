@@ -13,7 +13,6 @@ using TouhouHeartstone;
 using BJSYGameCore;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson;
 using System.Text.RegularExpressions;

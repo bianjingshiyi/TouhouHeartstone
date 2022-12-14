@@ -1,7 +1,6 @@
 ﻿using TouhouHeartstone;
 using BJSYGameCore;
 using System;
-using Newtonsoft.Json;
 using MongoDB.Bson;
 using System.IO;
 using UnityEngine;
