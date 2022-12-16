@@ -152,7 +152,7 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
-            CacheDir = Path.Combine(Application.persistentDataPath, "cache");
+            CacheDir = Path.Combine(Application.persistentDataPath, dirName);
             config.OnConfigChange += OnConfigChange;
 
             prepareDirectory(TouhouCardEngine.ResourceType.CardDefine.GetString());
@@ -163,6 +163,8 @@ namespace Game
         #region 字段属性
         [SerializeField]
         private ConfigManager config;
+        [SerializeField]
+        private string dirName = "cache";
         public long MaxSize { get; set; }
         public string CacheDir { get; private set; }
         #endregion

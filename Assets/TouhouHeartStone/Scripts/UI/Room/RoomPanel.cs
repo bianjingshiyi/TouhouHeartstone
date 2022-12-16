@@ -866,7 +866,22 @@ namespace UI
 
             DefineReference[] deck = data.getDeck()?.toDefRefArray(true);
 
-            CheckIconImage.gameObject.SetActive(data.getReady());
+            _uploadIconImage.gameObject.SetActive(false);
+            _downloadIconImage.gameObject.SetActive(false);
+            _checkIconImage.gameObject.SetActive(false);
+            int loadState = data.getLoadState();
+            if (loadState == 1)
+            {
+                _uploadIconImage.gameObject.SetActive(true);
+            }
+            else if (loadState == 2)
+            {
+                _downloadIconImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                _checkIconImage.gameObject.SetActive(data.getReady());
+            }
             CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0].cardPoolId, deck[0].defineId).name : "";
         }
 
@@ -901,6 +916,10 @@ namespace UI
             SetButtonBlack.gameObject.SetActive(mode == PlayerListMode.AIPlayer);
             AddImage.gameObject.SetActive(mode == PlayerListMode.AddAI);
         }
+        public void SetState()
+        {
+
+        }    
         #region 私有方法
         #region 事件回调
         private void onClickViewDeckButtonCallback()
@@ -937,6 +956,14 @@ namespace UI
         public event Action<RoomPlayerListItem> onClickViewDeckButton;
         public event Action<RoomPlayerListItem> onClickSetDeckButton;
         public event Action<RoomPlayerListItem> onClickRemoveButton;
+        #endregion
+        #region 属性字段
+        [SerializeField]
+        private Image _checkIconImage;
+        [SerializeField]
+        private Image _uploadIconImage;
+        [SerializeField]
+        private Image _downloadIconImage;
         #endregion
     }
 }

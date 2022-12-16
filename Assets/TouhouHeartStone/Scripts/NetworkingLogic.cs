@@ -574,14 +574,14 @@ namespace Game
         {
             return room.getOption<bool>(Option.AllowCustomCards);
         }
-        public static CardPoolInfoPack[] getCardPools(this RoomData roomData)
+        public static CardPoolArray getCardPools(this RoomData roomData)
         {
-            var pools = roomData.getOption<CardPoolInfoPack[]>(Option.CardPools);
+            var pools = roomData.getOption<CardPoolArray>(Option.CardPools);
             if (pools != null)
             {
                 return pools;
             }
-            return Array.Empty<CardPoolInfoPack>();
+            return new CardPoolArray();
         }
     }
 }

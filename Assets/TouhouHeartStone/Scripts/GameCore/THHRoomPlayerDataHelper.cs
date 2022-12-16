@@ -36,5 +36,18 @@ namespace TouhouHeartstone
         {
             playerData.setProp(PROP_READY, val);
         }
+        public const string PROP_LOAD_STATE = "load_state";
+
+        public static int getLoadState(this IRoomPlayer playerData)
+        {
+            if (!playerData.hasProp(PROP_LOAD_STATE))
+                return 0;
+            return playerData.getProp<int>(PROP_LOAD_STATE);
+        }
+
+        public static void setLoadState(this IRoomPlayer playerData, int val)
+        {
+            playerData.setProp(PROP_LOAD_STATE, val);
+        }
     }
 }

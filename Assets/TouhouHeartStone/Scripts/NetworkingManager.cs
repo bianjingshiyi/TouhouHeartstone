@@ -47,6 +47,10 @@ namespace Game
                 logic.SetRoomProp(name, val);
             }
         }
+        public void NotifyPlayerPropChanged(string name, object val)
+        {
+            logic.SetPlayerProp(name, val);
+        }
         public Task<byte[]> GetResourceAsync(TouhouCardEngine.ResourceType type, string id)
         {
             return logic.GetResourceAsync(type, id);
@@ -617,11 +621,11 @@ namespace Game
             };
             roomPanel.onSetPlayerDeck += (id, cards) =>
             {
-                _ = logic.SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
+                NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_DECK, cards);
             };
             roomPanel.OnPlayerReadyChange += (id, state) =>
             {
-                _ = logic.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, state);
+                NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_READY, state);
             };
 
             ui.parent.display(roomPanel);

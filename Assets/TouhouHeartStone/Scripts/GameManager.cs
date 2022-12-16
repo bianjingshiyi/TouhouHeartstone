@@ -245,8 +245,12 @@ namespace Game
                 // 网络模式，尝试从本地获取卡组，否则读取缓存卡组。
                 // 内置卡组。
                 cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
-                foreach (var pool in option.cardPools)
+                foreach (var pool in option.cardPools.array)
                 {
+                    if (pool.cardPoolId == 0)
+                    {
+                        continue;
+                    }
                     long poolId = pool.cardPoolId;
                     cardPoolIdSet.Add(poolId);
 

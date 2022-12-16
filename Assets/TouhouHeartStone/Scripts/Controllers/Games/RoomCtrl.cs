@@ -334,18 +334,18 @@ namespace Controllers
         /// <returns></returns>
         private bool HasNotSharedPools(long[] pools, out long[] privatePools)
         {
-            CardPoolInfoPack[] roomCardPools = _currentRoomData.getCardPools();
-            if (roomCardPools.Length == 0)
+            var roomCardPools = _currentRoomData.getCardPools();
+            if (roomCardPools.array.Length == 0)
             {
                 // 修正没有设置的情况下无法使用任何卡的问题
-                roomCardPools = new CardPoolInfoPack[] { new CardPoolInfoPack(0, "", 0) };
+                roomCardPools = new CardPoolArray(new CardPoolInfoPack(0, "", 0));
             }
 
             List<long> privates = new List<long>();
             bool hasNotShared = false;
             foreach (long pool in pools)
             {
-                if (!roomCardPools.Any(p => p.cardPoolId == pool))
+                if (!roomCardPools.array.Any(p => p.cardPoolId == pool))
                 {
                     hasNotShared = true;
                     privates.Add(pool);
@@ -369,8 +369,7 @@ namespace Controllers
         }
         private void AddCardPools(CardPoolInfoPack[] packs)
         {
-            var cardPools = _currentRoomData.getCardPools();
-            cardPools = cardPools.Union(packs).ToArray();
+            var cardPools = new CardPoolArray(_currentRoomData.getCardPools().array.Union(packs).ToArray());
             _currentRoomData.setOption(RoomDataPropName.Option.CardPools, cardPools);
             game.network.NotifyRoomPropChanged(RoomDataPropName.Option.CardPools.ToString(), cardPools);
         }
@@ -378,11 +377,11 @@ namespace Controllers
         {
             var cardPools = _currentRoomData.getCardPools();
             List<CardPoolInfoPack> infoPacks = new List<CardPoolInfoPack>();
-            foreach (CardPoolInfoPack poolPack in cardPools)
+            foreach (CardPoolInfoPack poolPack in cardPools.array)
             {
                 string id = poolPack.GetResourceID();
                 // 如果本地不存在该卡池，并且本地没有缓存，加入到列表中
-                if (game.card.getCardPoolInfo(poolPack.cardPoolId) == null && !game.cache.FileExists(ResourceType.CardDefine, id))
+                if (poolPack.cardPoolId > 0 && game.card.getCardPoolInfo(poolPack.cardPoolId) == null && !game.cache.FileExists(ResourceType.CardDefine, id))
                 {
                     infoPacks.Add(poolPack);
                 }
@@ -401,6 +400,14 @@ namespace Controllers
         }
         private async void UploadCardPools(CardPoolInfoPack[] cardPools)
         {
+            var localPlayer = getLocalPlayerData();
+            localPlayer.setLoadState(1);
+            localPlayer.setReady(false);
+            updateStartAndReadyButton();
+            game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_LOAD_STATE, 1);
+            game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_READY, false);
+
+
             foreach (var poolPack in cardPools)
             {
                 string id = poolPack.GetResourceID();
@@ -410,12 +417,27 @@ namespace Controllers
                     await game.network.UploadResourceAsync(ResourceType.CardDefine, id, bytes);
                 }
             }
+
+
+            localPlayer.setLoadState(0);
+            localPlayer.setReady(false);
+            updateStartAndReadyButton();
+            game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_LOAD_STATE, 0);
+            game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_READY, false);
         }
         private async void DownloadCardPools(CardPoolInfoPack[] cardPools)
         {
             if (!downloadingCardPools)
             {
+                var localPlayer = getLocalPlayerData();
+                localPlayer.setLoadState(2);
+                localPlayer.setReady(false);
+                updateStartAndReadyButton();
+                game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_LOAD_STATE, 2);
+                game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_READY, false);
                 downloadingCardPools = true;
+
+
                 foreach (var poolPack in cardPools)
                 {
                     string id = poolPack.GetResourceID();
@@ -430,6 +452,13 @@ namespace Controllers
                     }
                 }
                 downloadingCardPools = false;
+
+
+                localPlayer.setLoadState(0);
+                localPlayer.setReady(false);
+                updateStartAndReadyButton();
+                game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_LOAD_STATE, 0);
+                game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_READY, false);
             }
         }
         private string PoolsToString(CardPoolInfoPack[] packs)
