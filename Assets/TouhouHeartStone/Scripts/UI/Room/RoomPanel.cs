@@ -18,6 +18,10 @@ namespace UI
     partial class RoomPanel
     {
         #region 公有方法
+        public void SetCardPoolLoadProgress(float progress)
+        {
+            _selfPlayerItem?.SetProgress(progress);
+        }
         public void SetInfo(RoomData room, bool clearAIPlayerData = false)
         {
             if (clearAIPlayerData)
@@ -33,15 +37,18 @@ namespace UI
             RoomPlayerList.clearItems();
             foreach (var player in room.playerDataList)
             {
-                // 顺便获取自己的引用
-                if (player.id == selfPlayerID)
-                    selfPlayer = player;
 
                 var item = RoomPlayerList.addItem();
                 _playerList.Add(item.rectTransform);
                 item.SetPlayerInfo(player);
                 item.OnPlayerViewDeck += viewDeck;
 
+                // 顺便获取自己的引用
+                if (player.id == selfPlayerID)
+                {
+                    selfPlayer = player;
+                    _selfPlayerItem = item;
+                }
                 // 仅当自己是主机且此玩家不是自己时，设置为可以移除
                 item.SetRemoveable(isRoomOwner && selfPlayerID != player.id);
                 item.ViewButtonBlack.asButton.interactable = player.getDeck() != null;
@@ -76,6 +83,7 @@ namespace UI
                     item.SetMode(RoomPlayerListItem.PlayerListMode.Player);
                 }
             }
+
 
             if (selfPlayer == null)
             {
@@ -681,6 +689,8 @@ namespace UI
         [SerializeField]
         Text _ipText;
 
+        private RoomPlayerListItem _selfPlayerItem;
+
         [Header("选项")]
         [SerializeField]
         InputField _randomSeedInputField;
@@ -882,6 +892,7 @@ namespace UI
             {
                 _checkIconImage.gameObject.SetActive(data.getReady());
             }
+            _progressBar.gameObject.SetActive(loadState > 0);
             CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0].cardPoolId, deck[0].defineId).name : "";
         }
 
@@ -916,9 +927,9 @@ namespace UI
             SetButtonBlack.gameObject.SetActive(mode == PlayerListMode.AIPlayer);
             AddImage.gameObject.SetActive(mode == PlayerListMode.AddAI);
         }
-        public void SetState()
+        public void SetProgress(float progress)
         {
-
+            _progressBar.transform.localScale = new Vector3(Mathf.Clamp01(progress), 1, 1);
         }    
         #region 私有方法
         #region 事件回调
@@ -964,6 +975,8 @@ namespace UI
         private Image _uploadIconImage;
         [SerializeField]
         private Image _downloadIconImage;
+        [SerializeField]
+        private Image _progressBar;
         #endregion
     }
 }

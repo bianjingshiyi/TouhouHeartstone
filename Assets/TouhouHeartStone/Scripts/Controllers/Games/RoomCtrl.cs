@@ -407,15 +407,17 @@ namespace Controllers
             game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_LOAD_STATE, 1);
             game.network.NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_READY, false);
 
-
-            foreach (var poolPack in cardPools)
+            int count = cardPools.Length;
+            for (int i = 0; i < count;i ++)
             {
+                var poolPack = cardPools[i];
                 string id = poolPack.GetResourceID();
                 if (!await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
                 {
                     byte[] bytes = await game.fileManager.readBinaryFile(game.card.getCardPoolPath(poolPack.cardPoolId));
                     await game.network.UploadResourceAsync(ResourceType.CardDefine, id, bytes);
                 }
+                _ui.SetCardPoolLoadProgress((i + 1) / (float)count);
             }
 
 
@@ -438,8 +440,10 @@ namespace Controllers
                 downloadingCardPools = true;
 
 
-                foreach (var poolPack in cardPools)
+                int count = cardPools.Length;
+                for (int i = 0; i < count; i++)
                 {
+                    var poolPack = cardPools[i];
                     string id = poolPack.GetResourceID();
                     // todo: 资源下载失败或没有资源时候的异常处理
                     if (!game.cache.FileExists(ResourceType.CardDefine, id) && await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
@@ -450,6 +454,7 @@ namespace Controllers
                             await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, id, bytes);
                         }
                     }
+                    _ui.SetCardPoolLoadProgress((i + 1) / (float)count);
                 }
                 downloadingCardPools = false;
 
