@@ -40,14 +40,14 @@ namespace Game
         {
             logic.AnwserCardPoolsSuggestion(playerId, suggestion, agree);
         }
-        public void NotifyRoomPropChanged(string name, object val)
+        public void SetRoomProp(string name, object val)
         {
             if (isRoomOwner)
             {
                 logic.SetRoomProp(name, val);
             }
         }
-        public void NotifyPlayerPropChanged(string name, object val)
+        public void SetPlayerProp(string name, object val)
         {
             logic.SetPlayerProp(name, val);
         }
@@ -611,7 +611,7 @@ namespace Game
             {
                 logic.StartGame();
             };
-            roomPanel.onRoomPropUpdate += NotifyRoomPropChanged;
+            roomPanel.onRoomPropUpdate += SetRoomProp;
             roomPanel.onPlayerRemove += (id) =>
             {
                 if (isRoomOwner)
@@ -621,11 +621,11 @@ namespace Game
             };
             roomPanel.onSetPlayerDeck += (id, cards) =>
             {
-                NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_DECK, cards);
+                SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
             };
             roomPanel.OnPlayerReadyChange += (id, state) =>
             {
-                NotifyPlayerPropChanged(THHRoomPlayerDataHelper.PROP_READY, state);
+                SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, state);
             };
 
             ui.parent.display(roomPanel);

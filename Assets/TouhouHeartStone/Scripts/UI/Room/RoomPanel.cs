@@ -879,12 +879,12 @@ namespace UI
             _uploadIconImage.gameObject.SetActive(false);
             _downloadIconImage.gameObject.SetActive(false);
             _checkIconImage.gameObject.SetActive(false);
-            int loadState = data.getLoadState();
-            if (loadState == 1)
+            PlayerLoadState loadState = data.getLoadState();
+            if (loadState == PlayerLoadState.Upload)
             {
                 _uploadIconImage.gameObject.SetActive(true);
             }
-            else if (loadState == 2)
+            else if (loadState == PlayerLoadState.Download)
             {
                 _downloadIconImage.gameObject.SetActive(true);
             }
@@ -892,7 +892,7 @@ namespace UI
             {
                 _checkIconImage.gameObject.SetActive(data.getReady());
             }
-            _progressBar.gameObject.SetActive(loadState > 0);
+            _progressBar.gameObject.SetActive(loadState != PlayerLoadState.None);
             CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0].cardPoolId, deck[0].defineId).name : "";
         }
 
@@ -911,7 +911,6 @@ namespace UI
             AIPlayer,
             AddAI
         }
-
         PlayerListMode currentMode;
 
         /// <summary>

@@ -126,7 +126,7 @@ namespace Game
         /// <summary>
         /// 是局域网的房主吗
         /// </summary>
-        public bool isLanHost => localLanLogic.curNetwork is LANNetworking lan && isInitialRoomOwner;
+        public bool isLanHost => localLanLogic.curNetwork is LANNetworking && isRoomOwner;
 
         /// <summary>
         /// 是否为初始的房主
