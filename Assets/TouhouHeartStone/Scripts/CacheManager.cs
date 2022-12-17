@@ -10,12 +10,16 @@ using FileItem = System.Tuple<string, long>;
 
 namespace Game
 {
-    public class CacheManager : Manager
+    public class CacheManager : Manager, IResourceProvider
     {
         #region 公共方法
+        public string GetCachePath(string type, string id)
+        {
+            return Path.Combine(CacheDir, type, id);
+        }
         public string GetCachePath(TouhouCardEngine.ResourceType type, string id)
         {
-            return Path.Combine(CacheDir, type.GetString(), id);
+            return GetCachePath(type.GetString(), id);
         }
         public bool FileExists(TouhouCardEngine.ResourceType type, string id)
         {
@@ -44,6 +48,16 @@ namespace Game
                 catch { }
             }
             rebuildLRU();
+        }
+        public bool ResourceIsValid(string resType)
+        {
+            switch (resType)
+            {
+                case "card":
+                case "pic":
+                    return true;
+            }
+            return false;
         }
         #endregion
 
@@ -160,6 +174,58 @@ namespace Game
             rebuildLRU();
         }
         #endregion
+
+        #region 接口实现
+        Stream IResourceProvider.OpenWriteResource(string resType, string resID, long size)
+        {
+            // 检查资源类型
+            if (!ResourceIsValid(resType))
+                return null;
+
+            var folder = Path.Combine(CacheDir, resType);
+            var path = Path.Combine(folder, resID);
+
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+
+            // 更新存储资源
+            addLRU(path, size);
+
+            return new FileStream(path, FileMode.Create, FileAccess.Write);
+        }
+
+        Stream IResourceProvider.OpenReadResource(string resType, string resID)
+        {
+            // 资源类型
+            if (!ResourceIsValid(resType))
+                return null;
+
+            var path = GetCachePath(resType, resID);
+            if (!File.Exists(path))
+                return null;
+
+            // 更新LRU
+            visitLRU(path);
+
+            return File.OpenRead(path);
+        }
+
+        bool IResourceProvider.ResourceInfo(string resType, string resID, out long size)
+        {
+            size = 0;
+            var path = GetCachePath(resType, resID);
+
+            if (!ResourceIsValid(resType) || !File.Exists(path))
+                return false;
+
+            var info = new FileInfo(path);
+            size = info.Length;
+            return true;
+        }
+        #endregion
+
         #region 字段属性
         [SerializeField]
         private ConfigManager config;
@@ -167,6 +233,7 @@ namespace Game
         private string dirName = "cache";
         public long MaxSize { get; set; }
         public string CacheDir { get; private set; }
+
         #endregion
     }
 }

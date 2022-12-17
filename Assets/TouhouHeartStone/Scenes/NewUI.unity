@@ -151,6 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   config: {fileID: 555126699}
+  dirName: cache
 --- !u!4 &4838928
 Transform:
   m_ObjectHideFlags: 0
@@ -6793,7 +6794,11 @@ MonoBehaviour:
       timeoutForInitReplace: 30
       timeoutForTurn: 75
       startGem: 0
-      cardPools: []
+      cardPools:
+        array:
+        - cardPoolId: 0
+          cardPoolName: 
+          version: 0
     players: []
     logs: []
     _contents: []
@@ -7509,7 +7514,11 @@ MonoBehaviour:
     timeoutForInitReplace: 30
     timeoutForTurn: 75
     startGem: 0
-    cardPools: []
+    cardPools:
+      array:
+      - cardPoolId: 0
+        cardPoolName: 
+        version: 0
   _mainUI: {fileID: 0}
   _ui: {fileID: 0}
   _useDefaultDeck: 0
@@ -9137,6 +9146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _accountServerBaseUri: https://serv.igsk.fun
   _testAccountServerBaseUri: https://test.serv.igsk.fun
+  _cacheManager: {fileID: 4838927}
   _ports: 848000008580000086800000
 --- !u!4 &1750958372
 Transform:

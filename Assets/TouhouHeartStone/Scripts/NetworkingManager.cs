@@ -100,6 +100,9 @@ namespace Game
                 return _gameManager;
             }
         }
+        [SerializeField]
+        private CacheManager _cacheManager;
+        public CacheManager cacheManager => _cacheManager;
         public NetworkingPage ui
         {
             get { return getManager<UIManager>().getObject<NetworkingPage>(); }
@@ -117,7 +120,7 @@ namespace Game
                 if (_logic == null)
                 {
                     var version = CustomBuilder.BuildInformation.Instance.Version;
-                    _logic = new NetworkingLogic(serverBaseUri, version, _ports);
+                    _logic = new NetworkingLogic(serverBaseUri, version, cacheManager, _ports);
                 }
 
                 return _logic;

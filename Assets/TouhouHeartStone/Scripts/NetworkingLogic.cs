@@ -20,7 +20,7 @@ namespace Game
         /// </summary>
         ClientLogic localLanLogic;
 
-        public NetworkingLogic(string serverUri, string version, int[] ports = null)
+        public NetworkingLogic(string serverUri, string version, IResourceProvider resProvider, int[] ports = null)
         {
             Debug.Log("Init server uri: " + serverUri);
 
