@@ -3,6 +3,7 @@
 @Library('lotlab-lib')
 import org.lotlab.pipeline.QQBot
 import org.lotlab.pipeline.Wecom
+import org.lotlab.pipeline.Webhook
 import org.lotlab.pipeline.Docker
 import org.lotlab.pipeline.UnityBuilder
 import org.lotlab.pipeline.TencentCOS
@@ -214,18 +215,20 @@ pipeline {
                 if (env.DOWNLOAD_LINK != null) {
                     lines = env.DOWNLOAD_LINK.split('\n')
                 }
-                def downloadList = []
-                def linkList = []
+                def wecomContents = []
+                def downloadMaps = [:]
                 for (int i = 0; i < lines.size(); i++) {
                     def cols = lines[i].split(': ')
                     if (cols.size() == 2) {
                         description += '<li><a href="' + cols[1] + '" target="_blank">' + cols[0] + '</a></li>\n'
-                        downloadList += Wecom.contentItem('成品', cols[0], cols[1])
+                        wecomContents += Wecom.contentItem('成品', cols[0], cols[1])
+                        downloadMaps[cols[0]] = cols[1]
                     }
                 }
                 description += '</ul>'
                 currentBuild.description = description
 
+                def linkList = []
                 String textLog = ''
                 if (env.BRANCH_NAME.startsWith('PR')) {
                     linkList += Wecom.jumpItem('合并请求', env.CHANGE_URL)
@@ -247,7 +250,14 @@ pipeline {
 
                     if (textLog.length() > 1000) textLog = textLog.substring(0, 1000)
                 }
-
+                withCredentials([usernamePassword(credentialsId: 'jenkins_webhook', passwordVariable: 'token', usernameVariable: 'addr')]) {
+                    def webhook = new Webhook(this, env.addr, env.token)
+                    try {
+                        webhook.sendResult(textLog, downloadMaps)
+                    } catch (Exception e) {
+                        echo e.toString();
+                    }
+                }
                 withCredentials([string(credentialsId: 'igsk_wecom_bot', variable: 'WECOM_TOKEN')]) {
                     def bot = new Wecom(this, env.WECOM_TOKEN)
                     try {
