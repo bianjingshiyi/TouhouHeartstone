@@ -8,7 +8,7 @@ using System;
 using Controllers;
 using UI;
 using System.Linq;
-
+using System.Security.Cryptography;
 namespace Game
 {
     partial class CardManager
@@ -103,51 +103,35 @@ namespace Game
             List<KeyValuePair<string, Sprite>> savedPathSpritePairList = new List<KeyValuePair<string, Sprite>>();
             foreach (var pair in _externalSpriteCacheDict)
             {
+                //已经存在的资源图片不需要保存
+                if (isMD5NamedJPG(pair.Key))
+                    continue;
                 //获取使用这张图片的第一个皮肤
                 CardSkinData cardSkin = cardPool.cardSkinList.FirstOrDefault(s => s.imagePath == pair.Key);
                 BuffSkin buffSkin = cardPool.buffSkinList.FirstOrDefault(s => s.imagePath == pair.Key);
                 string path;
-                if (buffSkin != null)
-                {
-                    //Buff图路径为卡池名称/buffId/皮肤id/Image.jpg
-                    path = Path.Combine(cardPoolInfo.cardPoolName, "Buff" + buffSkin.buffId.ToString(), "Image_" + buffSkin.language + ".jpg");
-                }
-                else if (cardSkin != null)
-                {
-                    //卡图路径为卡池名称/卡牌id/皮肤id/Image.jpg
-                    path = Path.Combine(cardPoolInfo.cardPoolName, "Card" + cardSkin.id.ToString(), cardSkin.skinId.ToString(), "Image_" + cardSkin.language + ".jpg");
-                }
-                else
-                {
-                    //没有皮肤使用，跳过
+                //没有皮肤使用，跳过
+                if (buffSkin == null && cardSkin == null)
                     continue;
-                }
                 //另存为图片
                 if (pair.Value is Sprite sprite)
                 {
-                    if (isStandardCardPool(cardPoolInfo))
-                        await game.fileManager.saveFile(Path.Combine(editorTextureDirName, path), sprite.texture.EncodeToJPG());
-                    else
-                        await game.fileManager.savePersistentFile(Path.Combine(textureDirName, path), sprite.texture.EncodeToJPG());
+                    //是Sprite，啥也不做
                 }
                 else if (pair.Value is Task<Sprite> task)
                 {
                     //保存还在加载的图片
                     //虽然这种情况不太可能，但是还是加上去吧
                     sprite = await task;
-                    if (isStandardCardPool(cardPoolInfo))
-                        await game.fileManager.saveFile(Path.Combine(editorTextureDirName, path), sprite.texture.EncodeToJPG());
-                    else
-                        await game.fileManager.savePersistentFile(Path.Combine(textureDirName, path), sprite.texture.EncodeToJPG());
                 }
                 else
                 {
-                    Debug.LogWarning("图片" + path + "为空");
+                    Debug.LogWarning("图片" + pair.Key + "为空");
                     continue;
                 }
-                removeSpritePathList.Add(path);
+                path = await saveImage(cardPoolId, sprite.texture);
+                removeSpritePathList.Add(pair.Key);
                 savedPathSpritePairList.Add(new KeyValuePair<string, Sprite>(path, sprite));
-                Debug.Log("另存为图片" + path + "成功");
                 //替换所有引用这个图片的皮肤的图片地址
                 foreach (var otherCardSkin in cardPool.cardSkinList)
                 {
@@ -172,6 +156,31 @@ namespace Game
             {
                 _externalSpriteCacheDict.Add(savedPathSpritePairList[i].Key, savedPathSpritePairList[i].Value);
             }
+        }
+        public async Task<string> saveImage(long cardPoolId, Texture2D texture)
+        {
+            byte[] bytes = texture.EncodeToJPG();
+            string md5 = calcHashString(bytes);
+            string path = string.Format("{0}.jpg", md5);
+            if (isStandardCardPool(cardPoolId))
+            {
+                string filePath = Path.Combine(editorTextureDirName, path);
+                if (!game.fileManager.isFileExist(filePath))
+                {
+                    await game.fileManager.saveFile(filePath, bytes);
+                    Debug.Log("另存为图片" + path + "成功");
+                }
+            }
+            else
+            {
+                string filePath = Path.Combine(textureDirName, path);
+                if (!game.fileManager.isPersistentFileExist(filePath))
+                {
+                    await game.fileManager.savePersistentFile(filePath, bytes);
+                    Debug.Log("另存为图片" + path + "成功");
+                }
+            }
+            return path;
         }
         public async Task<Sprite> loadImage(string path, long cardPoolId)
         {
@@ -303,9 +312,25 @@ namespace Game
             }
             return null;
         }
+        public static string calcHashString(byte[] bytes)
+        {
+            byte[] md5 = _hashProvider.ComputeHash(bytes);
+            return string.Join(string.Empty, Array.ConvertAll(md5, b => b.ToString("X2").ToLower()));
+        }
+        public static bool isMD5NamedJPG(string imagePath)
+        {
+            return
+                imagePath.Length == 68 &&
+                imagePath.EndsWith(".jpg") &&
+                imagePath.Substring(0, 32).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'z'));
+        }
+        #endregion
+        #region 私有方法
         #endregion
         #region 属性字段
         Dictionary<string, object> _externalSpriteCacheDict = new Dictionary<string, object>();
+
+        private static SHA256 _hashProvider = SHA256.Create();
         #endregion
     }
 }

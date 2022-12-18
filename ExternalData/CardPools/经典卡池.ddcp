@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1 }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 3 }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -5086,68 +5086,68 @@
       "_id" : -2147418111,
       "_skinName" : "经典皮肤",
       "_name" : "秘藏魔法*",
-      "_imagePath" : "经典卡池\\Card-2147418111\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "75e9730fd448b2fd438e274215a3bd1e1113cb5bc3e866b4aefdc8526dcbdba5.jpg",
       "_desc" : "本回合中，你的下一张法术牌灵力值消耗减少(5)点。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418110,
       "_name" : "火符【火神之光】*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Card-2147418110\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "d13fbfc1251358fa5a65ff510aa13a220195998ead61eae3da6d08d7bdc8e9ff.jpg",
       "_desc" : "<b>元素法术:火</b><br>造成7点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418109,
       "_name" : "大图书馆*",
-      "_imagePath" : "经典卡池\\Card-2147418109\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "560d58711a8b3583137faca6eeb64ed9c705e7b24c878b0570d5306a4f04010a.jpg",
       "_desc" : "检视牌库中的五张法术牌，选择一张并抽取。\r",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418108,
       "_name" : "木符【风灵角笛】*",
-      "_imagePath" : "经典卡池\\Card-2147418108\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "03f9c2e9ce74a3cd7282787f4fd38a12309cb9a53f7f2e242e2fea8766dbf5a5.jpg",
       "_desc" : "<b>元素法术:木</b><br>使一个仆从获得<b>增益：</b>+3/+6。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418107,
       "_name" : "金符【金属疲劳】*",
-      "_imagePath" : "经典卡池\\Card-2147418107\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "a2234a4341036ae3d6b4820b64cd42dea854dbd624e059d003a076de126c5fe8.jpg",
       "_desc" : "<b>元素法术:金</b><br>\r对所有敌方仆从造成3点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418106,
       "_name" : "水符【水精公主】*",
-      "_imagePath" : "经典卡池\\Card-2147418106\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "e9b1800c66a277431642425a14fa9d6df6a5ed195f07078d26f123a32e0aeea2.jpg",
       "_desc" : "<b>元素法术:水</b>\r<br>增益所有友方角色：每次所受到的伤害减少3点，直到你的下个回合开始。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418105,
       "_name" : "土符【巨石震怒】*",
-      "_imagePath" : "经典卡池\\Card-2147418105\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "302532d7dd0bd5f1e5bf85a8c1b535f705755140274b8a29afc7acffbf0541ad.jpg",
       "_desc" : "<b>元素法术:土</b>\r<br>召唤一个3/9具有<b>守卫</b>但无法攻击的岩石元素。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418104,
       "_name" : "元素精灵*",
-      "_imagePath" : "经典卡池\\Card-2147418104\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "fa9d5cfa8c26c409d3cbaa1dc3d881188fa74c6261efc3a0eea04eeabfc7f907.jpg",
       "_desc" : "<b>宣言</b>：随机将一张灵力值消耗为(0)的<b>元素法术</b>置入手牌。\r",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418103,
       "_name" : "金符【秋之刃】*",
-      "_imagePath" : "经典卡池\\Card-2147418103\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "c95f5544d9b4aba0067f73eb51779044b4505966fcae7660b058472b440e5a3a.jpg",
       "_desc" : "<b>元素法术:金</b>\r\n随机对一个敌方仆从造成2点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418102,
       "_name" : "木符【春之风】*",
-      "_imagePath" : "经典卡池\\Card-2147418102\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "bfe92cb1ab55baafcb4e9029ea2c661b6ce86068d16bb93da47109e0fe815339.jpg",
       "_desc" : "<b>元素法术:木</b>\r\n使一个仆从获得<b>增益：</b>生命值+2。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418101,
       "_name" : "多重施法*",
-      "_imagePath" : "经典卡池\\Buff6\\Image_zh-Hans.jpg",
+      "_imagePath" : "5f455b1ab3fb45918667786ddb29a8691d358fdc53d605514c816b948e7389d2.jpg",
       "_desc" : "随机使一张手牌中的法术牌消耗减少(2)点，将一张伤害递增的“哮喘”洗入牌库，将一张“多重施法”置入你的手牌。",
       "_language" : "zh-Hans"
     }, {
@@ -5155,428 +5155,428 @@
       "_skinId" : 1,
       "_skinName" : "只是另一个皮肤",
       "_name" : "木符【春之风】",
-      "_imagePath" : "经典卡池\\Card-2147418102\\1\\Image_.jpg",
+      "_imagePath" : "d7bb52c39d889280347dff0562d2ab0a4e1af672326c6e01c2755959743d31e9.jpg",
       "_desc" : "使目标仆从获得生命值+2",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418102,
       "_name" : "Wood Spell[Spring Wind]",
-      "_imagePath" : "经典卡池\\Buff5\\Image_zh-Hans.jpg",
+      "_imagePath" : "088c0b68e709119b3d593113a63875eda2065b065849a8552a138da14dd05503.jpg",
       "_desc" : "Target servant gain life +2",
       "_language" : "en-US"
     }, {
       "_id" : -2147418100,
       "_name" : "火符【夏之红】*",
-      "_imagePath" : "经典卡池\\Buff7\\Image_zh-Hans.jpg",
+      "_imagePath" : "3a2ae2a0773073d9156caeba36e297d8e454e47fac4c6b1c90c0ae4e6fec31c2.jpg",
       "_desc" : "<b>元素法术:火</b>\r\n使一个仆从获得<b>增益：</b>本回合中攻击力+2。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418099,
       "_name" : "水符【冬之素】*",
-      "_imagePath" : "经典卡池\\Card-2147418099\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "e14c3a3b5263b17f11ed7a20fb5ec7e0fdced3ca5001e61c3fcf07ce5429b77d.jpg",
       "_desc" : "<b>元素法术:水</b>\r\n使一个仆从获得<b>减益：禁锢</b>。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418098,
       "_name" : "土符【土用之枪】*",
-      "_imagePath" : "经典卡池\\Card-2147418098\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "62c3b5c8c4d420e4cb99edc2753bdbe8fa19390379311a0efd9035bb88aa8217.jpg",
       "_desc" : "<b>元素法术:土</b>\r\n召唤一个1/1的宝石长枪。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418097,
       "_name" : "宝石长枪*",
-      "_imagePath" : "经典卡池\\Card-2147418097\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "62c3b5c8c4d420e4cb99edc2753bdbe8fa19390379311a0efd9035bb88aa8217.jpg",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418096,
       "_name" : "贤者之石*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Card-2147418096\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "4d3aa528037da7c419afefec606f0fc3e12a75660c8462669e513a5afbe561e8.jpg",
       "_desc" : "<b>唯一，宣言</b>和你的回合结束时，失去1点耐久，将一张灵力值消耗大于(0)的元素法术置入你的手牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418095,
       "_name" : "巨石元素*",
-      "_imagePath" : "经典卡池\\Card-2147418095\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "c50b405af6bfbeb60251e2e967109a0db23d744b0da1d8a9f28bd7e8a003abb3.jpg",
       "_desc" : "<b>守卫<br>无法攻击</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418094,
       "_name" : "小恶魔*",
       "_subname" : "图书管理员",
-      "_imagePath" : "经典卡池\\Card-2147418094\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "bb2829d6380c5fd1bf1a73163eb540723b50f57f47256b85095924ba65078072.jpg",
       "_desc" : "<b>唯一</b>\r\n<b>宣言</b>：检视墓地中三张法术牌，选择一张，使其灵力消耗减少(3)点并置入手牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418093,
       "_name" : "日符【皇家烈焰】*",
-      "_imagePath" : "经典卡池\\Card-2147418093\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "231f8bbe4ec4b2df1b19ed505ed0d0a374b293e30f7096bbf694a8ff571e4ea4.jpg",
       "_desc" : "<b>唯一</b>\r\n对敌方英雄造成15点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418092,
       "_name" : "月符【沉静月神】*",
-      "_imagePath" : "经典卡池\\Card-2147418092\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "50ffde5bd489608529a96276775a990c6af9d0479f7fb35bb7d50396eb3ee165.jpg",
       "_desc" : "<b>唯一</b>\r\n<b>封印</b>并消灭所有敌方仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418091,
       "_name" : "机械帕秋莉*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Card-2147418091\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "f0dbd3d5601e7e44135d11043ee71e5d8ab79ea2700d97448d5725a1ef93fca5.jpg",
       "_desc" : "如果你在本回合中使用过法术牌，该仆从灵力值消耗减少(2)点。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418090,
       "_name" : "图书馆保卫者*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Card-2147418090\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "02400d836e81c70a22d22dadce042cd1d3568351e10a664b774557e9ecbbc5e7.jpg",
       "_desc" : "<b>守卫，宣言：</b>你的手牌中每有一张法术牌，便获得+1生命值。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418089,
       "_name" : "火金符【圣爱尔摩火柱】*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Card-2147418089\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "54866a8a4b8f2d88618d195c637c17982dba5be86ad720b09c0d2d079bf0abd3.jpg",
       "_desc" : "<b>元素法术:金、火</b>\r\n对一个仆从和敌方英雄造成4点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418088,
       "_name" : "水火符【燃素之雨】*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Card-2147418088\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "efb4739bf4d63a7ddc774588e4507021d1962cee2105589d647760e23339c3a0.jpg",
       "_desc" : "<b>元素法术:水、火</b>\r\n造成7点伤害，随机分配给所有敌人。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418087,
       "_name" : "土水符【诺亚洪水】*",
-      "_imagePath" : "经典卡池\\Card-2147418087\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "cbca0bc50ef4b93be43a2f35b6c60dcc94d4a0d59c715d8432eb171b18d6386a.jpg",
       "_desc" : "<b>元素法术:水、土</b>\r\n<b>封印</b>所有仆从，然后召唤一个2/2具有<b>守卫</b>的洪水元素。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418086,
       "_name" : "洪水元素*",
-      "_imagePath" : "经典卡池\\Card-2147418087\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "cbca0bc50ef4b93be43a2f35b6c60dcc94d4a0d59c715d8432eb171b18d6386a.jpg",
       "_desc" : "<b>守卫</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418085,
       "_name" : "金木符【元素收割者】*",
-      "_imagePath" : "经典卡池\\Card-2147418085\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "0ab1be51bad5353720f6f9c83b7cba543a9777176ce93906b3255370fd9b50fc.jpg",
       "_desc" : "<b>元素法术:金、木</b>\r\n对所有敌方仆从造成2点伤害。每消灭一个仆从,便随机增益一个友方仆从：+1/+1。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418084,
       "_name" : "木土符【抽芽复行】*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Card-2147418084\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "0adea969d4450357f084380c638c94884808bceca72a1ee5292dc8413420b688.jpg",
       "_desc" : "<b>元素法术:木、土</b>\r\n使一个仆从获得“<b>遗言</b>：召唤一个目标仆从的复制并使其获得+3/+3”。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418083,
       "_name" : "木火符【森林大火】*",
-      "_imagePath" : "经典卡池\\Card-2147418083\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "d249ed9f88c663deedbe1e438cf7cae1855799569426f9e1986722b549e1e71f.jpg",
       "_desc" : "<b>元素法术:木、火</b>\r\n对一个敌方仆从造成你控制仆从数量的伤害，然后使所有友方仆从获得<b>增益：</b>+2/+2。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418082,
       "_name" : "金水符【水银之毒】*",
-      "_imagePath" : "经典卡池\\Card-2147418082\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "8b7bf898b13c47e27e4b40c2041d7ab7d3bf40c506276cd86498ff4652f457b3.jpg",
       "_desc" : "<b>元素法术:金、水</b>\r\n使所有敌方仆从获得<b>减益:</b>-3攻击力，直到对手的回合开始。\r\n消灭攻击力为0的敌方仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418081,
       "_name" : "奥术知识*",
-      "_imagePath" : "经典卡池\\Card-2147418081\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "f375e7bf10ef7fb154fd6fc261d2d70444639c427404407fae06291636edb101.jpg",
       "_desc" : "检视牌库中五张牌，选择一张抽取，触发两次。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418080,
       "_name" : "土金符【淡黄阵风】*",
-      "_imagePath" : "经典卡池\\Card-2147418080\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "86508a5cbaace59574add3a7c2796098825e24b181c4d2f0f1ce7f63d8a79cdf.jpg",
       "_desc" : "<b>元素法术:金、土</b>\r\n每有一个敌方仆从，便召唤一个3/1具有<b>速攻</b>的沙尘元素。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418079,
       "_name" : "沙尘元素*",
-      "_imagePath" : "经典卡池\\Card-2147418079\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "6ce3aac17d90aa6755481f567e479b31424f7d4a319802fe808562d2657685ae.jpg",
       "_desc" : "<b>速攻</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418078,
       "_name" : "水木符【水精灵】*",
-      "_imagePath" : "经典卡池\\Card-2147418078\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "96296343ac1846fbaa680af0c2022a9ea3207296bf7a442c0e7891ef9c67017b.jpg",
       "_desc" : "<b>元素法术:木、水</b>\r\n完全治愈一个仆从，然后使其获得<b>增益：</b>+3/+6和<b>守卫</b>。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418077,
       "_name" : "噬法触手*",
-      "_imagePath" : "经典卡池\\Card-2147418077\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "07b0a9b5cf80ae4611956bf2b3ba8d40d48850f770ecf5589f215b401333b5bf.jpg",
       "_desc" : "<b>速攻</b>\r\n每当你的回合开始时，随机弃一张法术牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418076,
       "_name" : "火土符【环状熔岩带】*",
-      "_imagePath" : "经典卡池\\Card-2147418076\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "83307a1a4181b0c1207fabb2acbe605e4f2e9ca50fea59a8ef0ee93ce43da753.jpg",
       "_desc" : "<b>元素法术:火、土</b>\r\n召唤2个2/2具有<b>守卫</b>的熔岩元素。它们会在你的回合结束时随机对一个敌人造成2点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418075,
       "_name" : "熔岩元素*",
-      "_imagePath" : "经典卡池\\Card-2147418075\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "8639d773a51752f8e4a8119c684f34308284010847168ad68355d82a728489ad.jpg",
       "_desc" : "<b>守卫</b>\r\n每当你的回合结束时，随机对一个敌人造成2点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418074,
       "_name" : "西行寺幽幽子*",
       "_subname" : "华胥的亡灵",
-      "_imagePath" : "经典卡池\\Card-2147418074\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "8b52343f6f2b5accc93821052349a30aad23d771d6b9f8c6f772cab83d0350f9.jpg",
       "_desc" : "<b>唯一</b>\r\n<b>宣言</b>:消灭一个仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418073,
       "_name" : "琪露诺*",
-      "_imagePath" : "经典卡池\\Card-2147418073\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "368195bc3c7a1660376adfe65dba0a96b041369ac11dd4adca2fa33fd271c080.jpg",
       "_desc" : "<b>宣言:禁锢</b>一个敌人。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418072,
       "_name" : "甲虫*",
-      "_imagePath" : "经典卡池\\Card-2147418072\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "c106c51bc2010643f45b11f23579f84d6646ed6c6f46047745f7cc0fe65d6eec.jpg",
       "_desc" : "<b>守卫</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418071,
       "_name" : "幻象震爆*",
-      "_imagePath" : "经典卡池\\Card-2147418071\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "3244b585517327d3eb71a8faef922089961cea3cb37859ad36790e547bf30170.jpg",
       "_desc" : "对敌方英雄造成5点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418070,
       "_name" : "贩药货郎*",
-      "_imagePath" : "经典卡池\\Card-2147418070\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "2e14b077b967116dde6eea4d8c5aa96e3adc814365810cd6ce8f2e06bae36816.jpg",
       "_desc" : "<b>宣言</b>：<b>治愈</b>4点生命值。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418069,
       "_name" : "橙*",
-      "_imagePath" : "经典卡池\\Card-2147418069\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "8ee8202b93f51d9ff833c8abde34fca9f9b3f24db37a0d2e5b701985dcb12503.jpg",
       "_desc" : "<b>宣言</b>:获得<b>增益</b>:+2攻击力和<b>速攻</b>。\r\n",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418068,
       "_name" : "小恶魔*",
-      "_imagePath" : "经典卡池\\Card-2147418068\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "89daac95f389e8b33106ca8296e6269d32cb8c05597c89e179573f43b82da9ef.jpg",
       "_desc" : "<b>宣言</b>:随机将一张墓地中的法术置入你的手牌。\r\n",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418067,
       "_name" : "爱丽丝·玛格特洛依德*",
       "_subname" : "七色的人偶使",
-      "_imagePath" : "经典卡池\\Card-2147418067\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "622dd65afacba24ee201e9714dd02262e4366b768c4c1df1c95a74eacc46da9d.jpg",
       "_desc" : "<b>唯一</b>\r\n每当你的回合开始时，召唤一个1/1具有<b>守卫</b>的人偶。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418066,
       "_name" : "人偶*",
-      "_imagePath" : "经典卡池\\Card-2147418066\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "0f4d2f1f9c3d9f75a4d873b7cd3101041899935764c959acb1eb0079f910d5bd.jpg",
       "_desc" : "<b>守卫</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418065,
       "_name" : "莉莉白*",
-      "_imagePath" : "经典卡池\\Buff21\\Image_zh-Hans.jpg",
+      "_imagePath" : "7549b49bfd34d6d5878c4650087de885c97970b3a92b70023c2b06499f7d86c0.jpg",
       "_desc" : "每当你的回合开始后，使你的其它仆从获得：+1/+1。\r\n",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418064,
       "_name" : "魂魄妖梦*",
-      "_imagePath" : "经典卡池\\Card-2147418064\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "2f074ab4d65affb08eb6d60ebb5592968225901713b0535ed977e635cabc2999.jpg",
       "_desc" : "<b>速攻</b>\r\n<b>双击</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418063,
       "_name" : "铃仙·优昙华院·因幡*",
-      "_imagePath" : "经典卡池\\Card-2147418063\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "711cc6a0aa3ab02438773f6af1c70dd96c58775a13419da1464e2eaa7409b1c1.jpg",
       "_desc" : "<b>宣言</b>:对敌方英雄造成2点伤害，触发两次。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418062,
       "_name" : "飞蛾*",
-      "_imagePath" : "经典卡池\\Card-2147418062\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "bb49a8c3a30e103d22c3cff67bf1970fb7a4b3f23acf712bbccfd3cc407bd400.jpg",
       "_desc" : "<b>速攻</b>\r\n",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418061,
       "_name" : "八云蓝*",
-      "_imagePath" : "经典卡池\\Buff23\\Image_zh-Hans.jpg",
+      "_imagePath" : "b356127d3865b031548eea34e19ac85844165bc8890edd186b0017394f0aa19c.jpg",
       "_desc" : "<b>速攻</b>\r\n<b>宣言</b>:召唤橙并增益她：+3/+1和<b>速攻</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418060,
       "_name" : "蕾米莉亚·斯卡蕾特*",
       "_subname" : "永远鲜红的幼月",
-      "_imagePath" : "经典卡池\\Card-2147418060\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "343fb03bda73ee6f8b9c05e1df4dc3a805dc53f8c3c362d990a71d1180734dd3.jpg",
       "_desc" : "<b>唯一</b>，<b>吸血</b>\r\n<b>宣言</b>:随机弃三张牌，然后抽三张牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418059,
       "_name" : "芙兰朵露·斯卡蕾特*",
       "_subname" : "恶魔之妹",
-      "_imagePath" : "经典卡池\\Card-2147418059\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "8634eeb75939dfcda6a13569a2d4a3bd1cfc92ecd7f37c24460a8a5d5f1c1d82.jpg",
       "_desc" : "<b>唯一</b>，<b>吸血</b>\r\n<b>宣言</b>:随机弃一张牌，然后随机消灭一个敌方仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418058,
       "_name" : "蜘蛛*",
-      "_imagePath" : "经典卡池\\Card-2147418058\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "365cd25c01ba23c37eb44e747dc27d4a2e7047ee595dfee9d026618b11489c67.jpg",
       "_desc" : "<b>致命</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418057,
       "_name" : "秋穰子*",
-      "_imagePath" : "经典卡池\\Card-2147418057\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "1b654d1a723057aa2abac5c0b6e3892c481779ea64f296f2e182b7f4c58680be.jpg",
       "_desc" : "每当你的回合结束时，将一张红薯置入你的手牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418056,
       "_name" : "红薯*",
-      "_imagePath" : "经典卡池\\Card-2147418056\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "c9b3d0f3daf7f73f0c89844d700881d3266dbe60e866e7885a567fc490f81f0e.jpg",
       "_desc" : "为一个仆从<b>治愈</b>2点生命值。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418055,
       "_name" : "射命丸文*",
-      "_imagePath" : "经典卡池\\Card-2147418055\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "6342686bbb168160c43ed1c639bc391fc0dc3e19843ad4e56ef4586d06a12f5d.jpg",
       "_desc" : "<b>先攻</b>\r\n<b>宣言</b>：每个玩家抽一张牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418054,
       "_name" : "犬走椛*",
-      "_imagePath" : "经典卡池\\Card-2147418054\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "9191408200a9e6c4b80602ad0896920ffb0d533cb54cea97c59c1279400d4093.jpg",
       "_desc" : "<b>守卫</b>\r\n<b>宣言</b>：如果对手控制了至少两个仆从，抽一张牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418053,
       "_name" : "河城荷取*",
-      "_imagePath" : "经典卡池\\Card-2147418053\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "3a70bf571cc360781e8d0ac0024c7b248a5a712c6e9c00022d1afa53e58b4347.jpg",
       "_desc" : "<b>隐匿</b>\r\n<b>护盾</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418052,
       "_name" : "水桥帕露西*",
-      "_imagePath" : "经典卡池\\Buff24\\Image_zh-Hans.jpg",
+      "_imagePath" : "8f61c1461f35f80f1bd44ddc9e2c6bf34ba92b5dd83b4b56407013c7c4a7b948.jpg",
       "_desc" : "<b>宣言</b>：如果战场上有攻击力大于她的仆从，获得<b>增益</b>：+2攻击力。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418051,
       "_name" : "灵乌路空*",
-      "_imagePath" : "经典卡池\\Card-2147418051\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "7e7d3696a135530f327bc1de3df43f408841a12760d7818098a05f5129499337.jpg",
       "_desc" : "无法攻击\r\n每当你的回合结束时，对其他角色造成3点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418050,
       "_name" : "炎之妖精*",
-      "_imagePath" : "经典卡池\\Card-2147418050\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "ab198d76d4135df47a0a776e506929d88bd4e3ef183b4ec337677fd684ab4383.jpg",
       "_desc" : "<b>宣言</b>：随机对一个敌方仆从造成1点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418049,
       "_name" : "妖力掠夺*",
-      "_imagePath" : "经典卡池\\Card-2147418049\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "dfb12bf3b7438e10f49719a926f80f9d534da7efac957979b604e58d55099561.jpg",
       "_desc" : "<b>封印</b>一个仆从，为你的英雄<b>治愈</b>等同于其灵力值消耗的生命值。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418048,
       "_name" : "大凶签炸弹*",
-      "_imagePath" : "经典卡池\\Card-2147418048\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "095fdc00d84adf83d39883869c03b4ac9060c80f630676899dc925ad3249706b.jpg",
       "_desc" : "造成6点伤害，随机分配到所有仆从身上。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418047,
       "_name" : "凶签炸弹*",
-      "_imagePath" : "经典卡池\\Card-2147418047\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "47c50abf9d9204da98c533af377e6fdf15994df98dc8a7a1d8dc377776c5a356.jpg",
       "_desc" : "随机对一个敌方仆从造成4点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418046,
       "_name" : "大吉签炸弹*",
-      "_imagePath" : "经典卡池\\Card-2147418046\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "769fc0943706e5105cd5e9febfbc88de355f55d610c35738a47c00afb1544a15.jpg",
       "_desc" : "对一个仆从造成6点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418045,
       "_name" : "吉签炸弹*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Card-2147418045\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "08444232e999dddb7fdfd4ff6b329071ee8c1baa2ffe17b7a1fb60ff812aed54.jpg",
       "_desc" : "对一个仆从造成4点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418044,
       "_name" : "御神签炸弹*",
-      "_imagePath" : "经典卡池\\Card-2147418044\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "9922bd173efe68ede8078adcc25a2d3ff9864f2f600bdf7eee8bae69b706308a.jpg",
       "_desc" : "随机将一张炸弹置入你的手牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418043,
       "_name" : "叛逃特工*",
-      "_imagePath" : "经典卡池\\Card-2147418043\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "bc5b91ad9f1ae0edeb808ce70657b70010d2eaa029902921f87d9db86e5c65a3.jpg",
       "_desc" : "每当你使用英雄技能时，随机对一个敌人造成2点伤害。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418042,
       "_name" : "野兔兽妖*",
-      "_imagePath" : "经典卡池\\Buff25\\Image_zh-Hans.jpg",
+      "_imagePath" : "faf51e8361197987cc1fa70ba3c89d957e240f1264aca42bbb88e7bc57143573.jpg",
       "_desc" : "每当你使用英雄技能时，获得<b>增益</b>：攻击力变为3。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418041,
       "_name" : "残像*",
-      "_imagePath" : "经典卡池\\Card-2147418041\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "7b0d3341d9e033eae02241aa078966e1bf9dc4a802522c2e25458d58aba47e77.jpg",
       "_desc" : "<b>守卫</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418040,
       "_name" : "御柱*",
-      "_imagePath" : "经典卡池\\Card-2147418040\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "f19a423ea4056d6d1eee63652e2b34fb897c8ff700a4a21e60379ce5e9d499b6.jpg",
       "_desc" : "<b>守卫</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418039,
       "_name" : "八云紫*",
       "_subname" : "神隐的主犯",
-      "_imagePath" : "经典卡池\\Card-2147418039\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "1b7853b2b03541f991209e9b8db5086425f6606681e4b714bd81687f6d9506c5.jpg",
       "_desc" : "<b>唯一</b>\r\n<b>宣言</b>:将其它仆从移回其所有者的手牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418038,
       "_name" : "琪露诺*",
       "_subname" : "",
-      "_imagePath" : "经典卡池\\Buff26\\Image_zh-Hans.jpg",
+      "_imagePath" : "e36b091247b4543128a4be6bcb27d640bc4a9633e6417cd80595a22764372aae.jpg",
       "_desc" : "<b>宣言</b>:选择一个仆从，<b>禁锢</b>其相邻的仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418037,
       "_name" : "秋静叶*",
-      "_imagePath" : "经典卡池\\Card-2147418037\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "c862e46b4fa42ae91a50465d8a9f62be114a2ecdfb67d117f5ba67bcfefeb07d.jpg",
       "_desc" : "每当你的回合结束时，将一张需要清扫的落叶置入对方的手牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418036,
       "_name" : "堆积的落叶*",
-      "_imagePath" : "经典卡池\\Card-2147418036\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "e68597366cd003136ea23f540565cb06cc77b1a7be5f9b2b0ad79f98bc0df2a6.jpg",
       "_desc" : "没有任何效果。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418035,
       "_name" : "十六夜咲夜*",
-      "_imagePath" : "经典卡池\\Card-2147418035\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "0d3dd15ee489a0b0bbfda0b8855a31e58212121bf286282c835c768678250286.jpg",
       "_desc" : "<b>速攻</b>\r\n<b>宣言</b>:抽一张牌，使其获得增益：灵力值消耗变为(0)点，直到回合结束。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418034,
       "_name" : "键山雏*",
-      "_imagePath" : "经典卡池\\Card-2147418034\\0\\Image_zh-Hans.jpg",
+      "_imagePath" : "c87c9077df29ed1b753b9c53eaf3bca72fdb6b1109d83f9c6714e5d3002aec53.jpg",
       "_desc" : "<b>宣言：封印</b>相邻的仆从。",
       "_language" : "zh-Hans"
     }],
@@ -9238,67 +9238,67 @@
       "language" : "zh-Hans",
       "name" : "秘藏魔法",
       "desc" : "你释放的下一个法术消耗-5",
-      "imagePath" : "经典卡池\\Buff1\\Image_zh-Hans.jpg"
+      "imagePath" : "66763548bba2fd513727b8d0b02cb8e22878a4fd2bb236d3dcae5b9da253c2fc.jpg"
     }, {
       "buffId" : 2,
       "language" : "zh-Hans",
       "name" : "秘藏魔法-效果",
       "desc" : "这张法术牌的花费-5",
-      "imagePath" : "经典卡池\\Buff2\\Image_zh-Hans.jpg"
+      "imagePath" : "f6dba121227e2265ae3a2a78373b27a87833f0eeb99be1d7cd9a859e955f784a.jpg"
     }, {
       "buffId" : 5,
       "language" : "zh-Hans",
       "name" : "春之风",
       "desc" : "生命值+2",
-      "imagePath" : "经典卡池\\Buff5\\Image_zh-Hans.jpg"
+      "imagePath" : "088c0b68e709119b3d593113a63875eda2065b065849a8552a138da14dd05503.jpg"
     }, {
       "buffId" : 6,
       "language" : "zh-Hans",
       "name" : "多重施法",
       "desc" : "花费-2",
-      "imagePath" : "经典卡池\\Buff6\\Image_zh-Hans.jpg"
+      "imagePath" : "5f455b1ab3fb45918667786ddb29a8691d358fdc53d605514c816b948e7389d2.jpg"
     }, {
       "buffId" : 7,
       "language" : "zh-Hans",
       "name" : "夏之红",
       "desc" : "本回合攻击力+2",
-      "imagePath" : "经典卡池\\Buff7\\Image_zh-Hans.jpg"
+      "imagePath" : "3a2ae2a0773073d9156caeba36e297d8e454e47fac4c6b1c90c0ae4e6fec31c2.jpg"
     }, {
       "buffId" : 4,
       "language" : "zh-Hans",
       "name" : "风灵角笛",
       "desc" : "属性+3/+6",
-      "imagePath" : "经典卡池\\Buff4\\Image_zh-Hans.jpg"
+      "imagePath" : "03f9c2e9ce74a3cd7282787f4fd38a12309cb9a53f7f2e242e2fea8766dbf5a5.jpg"
     }, {
       "buffId" : 8,
       "language" : "zh-Hans",
       "name" : "水精公主",
       "desc" : "本回合减伤+3",
-      "imagePath" : "经典卡池\\Buff8\\Image_zh-Hans.jpg"
+      "imagePath" : "d56227aeaba39f9a42bc36ad95b18c6675e64693d51e14e2e3e740dd8bb83181.jpg"
     }, {
       "buffId" : 9,
       "language" : "zh-Hans",
       "name" : "机械充能",
       "desc" : "本回合花费-2",
-      "imagePath" : "经典卡池\\Buff9\\Image_zh-Hans.jpg"
+      "imagePath" : "ae4c294a805f5af04f86cba0f1b6cab5d7ee3be1c538be6578fc28168a6d959d.jpg"
     }, {
       "buffId" : 10,
       "language" : "zh-Hans",
       "name" : "水银之毒",
       "desc" : "直到下个回合攻击力-3",
-      "imagePath" : "经典卡池\\Buff10\\Image_zh-Hans.jpg"
+      "imagePath" : "727f6d57b29dd9ada5c3f2e2ae77b45bb9f7fafcd4c7240789dd10a77aac80bd.jpg"
     }, {
       "buffId" : 11,
       "language" : "zh-Hans",
       "name" : "保卫图书馆",
       "desc" : "增加生命值",
-      "imagePath" : "经典卡池\\Buff11\\Image_zh-Hans.jpg"
+      "imagePath" : "02400d836e81c70a22d22dadce042cd1d3568351e10a664b774557e9ecbbc5e7.jpg"
     }, {
       "buffId" : 12,
       "language" : "zh-Hans",
       "name" : "森林大火",
       "desc" : "+2/+2",
-      "imagePath" : "经典卡池\\Buff12\\Image_zh-Hans.jpg"
+      "imagePath" : "3e705905bc87073cdf74408fe0d49b66301bb566c19b388e2a25de833f1416a3.jpg"
     }, {
       "buffId" : 3,
       "language" : "zh-Hans"
@@ -9307,7 +9307,7 @@
       "language" : "zh-Hans",
       "name" : "元素收割",
       "desc" : "+1/+1",
-      "imagePath" : "经典卡池\\Buff13\\Image_zh-Hans.jpg"
+      "imagePath" : "bcbbaa3c93895d307056e586f0067e484e45efb5c195af0012466c9ef9cf15b0.jpg"
     }, {
       "buffId" : 13,
       "language" : "zh-Hans"
@@ -9319,7 +9319,7 @@
       "language" : "zh-Hans",
       "name" : "水精灵",
       "desc" : "属性+3/+6，嘲讽",
-      "imagePath" : "经典卡池\\Buff14\\Image_zh-Hans.jpg"
+      "imagePath" : "01428f9e046b3b6461c00fd52942169032b3d4751050ddb6a6f706afa3b8aa8c.jpg"
     }, {
       "buffId" : 14,
       "language" : "zh-Hans"
@@ -9343,49 +9343,49 @@
       "language" : "zh-Hans",
       "name" : "恶魔研习",
       "desc" : "消耗减少3点",
-      "imagePath" : "经典卡池\\Buff19\\Image_zh-Hans.jpg"
+      "imagePath" : "4703dce53acd24106757c1d4e3115deabc65dcc211249df4da9c6313f33cbfe3.jpg"
     }, {
       "buffId" : 20,
       "language" : "zh-Hans",
       "name" : "猫抓",
       "desc" : "获得+2攻击力和速攻",
-      "imagePath" : "经典卡池\\Buff20\\Image_zh-Hans.jpg"
+      "imagePath" : "226534736b6f1bdaa9bca1a06988a7330b89c371613815ba80ea671233b61590.jpg"
     }, {
       "buffId" : 21,
       "language" : "zh-Hans",
       "name" : "报春",
       "desc" : "获得+1/+1",
-      "imagePath" : "经典卡池\\Buff21\\Image_zh-Hans.jpg"
+      "imagePath" : "7549b49bfd34d6d5878c4650087de885c97970b3a92b70023c2b06499f7d86c0.jpg"
     }, {
       "buffId" : 22,
       "language" : "zh-Hans",
       "name" : "幻世",
       "desc" : "消耗为0直到回合结束",
-      "imagePath" : "经典卡池\\Buff22\\Image_zh-Hans.jpg"
+      "imagePath" : "04150a40b399452dc2ff37bfe518afa904ac33f74cc837773d856b6de41d830a.jpg"
     }, {
       "buffId" : 23,
       "language" : "zh-Hans",
       "name" : "式",
       "desc" : "+3/+1和速攻",
-      "imagePath" : "经典卡池\\Buff23\\Image_zh-Hans.jpg"
+      "imagePath" : "b356127d3865b031548eea34e19ac85844165bc8890edd186b0017394f0aa19c.jpg"
     }, {
       "buffId" : 24,
       "language" : "zh-Hans",
       "name" : "嫉妒",
       "desc" : "获得+2攻击力",
-      "imagePath" : "经典卡池\\Buff24\\Image_zh-Hans.jpg"
+      "imagePath" : "8f61c1461f35f80f1bd44ddc9e2c6bf34ba92b5dd83b4b56407013c7c4a7b948.jpg"
     }, {
       "buffId" : 25,
       "language" : "zh-Hans",
       "name" : "兔子攻击",
       "desc" : "攻击力变为3",
-      "imagePath" : "经典卡池\\Buff25\\Image_zh-Hans.jpg"
+      "imagePath" : "faf51e8361197987cc1fa70ba3c89d957e240f1264aca42bbb88e7bc57143573.jpg"
     }, {
       "buffId" : 26,
       "language" : "zh-Hans",
       "name" : "冰封",
       "desc" : "禁锢一回合",
-      "imagePath" : "经典卡池\\Buff26\\Image_zh-Hans.jpg"
+      "imagePath" : "e36b091247b4543128a4be6bcb27d640bc4a9633e6417cd80595a22764372aae.jpg"
     }, {
       "buffId" : 27,
       "language" : "zh-Hans"

@@ -336,11 +336,10 @@ namespace Controllers
         {
             // 然后在窗口选择之后再正式新建卡组
             _ui.hideMasterSelectPanel();
-            Deck newDeck = new Deck()
+            Deck newDeck = new Deck(new DefineReference(_selectableMasters[index].cardPoolId, _selectableMasters[index].id), Enumerable.Empty<DefineReference>())
             {
                 //id = (int)game.deck.CreateDeck(StringTable.BUILD_NEW_DECK_DEFAULT_NAME, _selectableMasters[index].id),
                 name = StringTable.BUILD_NEW_DECK_DEFAULT_NAME,
-                masterCardRef = new DefineReference(_selectableMasters[index].cardPoolId, _selectableMasters[index].id)
             };
             display(newDeck);
         }

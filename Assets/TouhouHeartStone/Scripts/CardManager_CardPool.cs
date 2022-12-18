@@ -360,6 +360,7 @@ namespace Game
                 _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
             }
             //错误信息修复
+            bool hasUnsavedFix = false;
             Dictionary<string, ActionDefine> actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
             {
                 typeof(CardEngine).Assembly,
@@ -385,6 +386,13 @@ namespace Game
                 {
                     //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
                     skin.language = game.langManager.getDefaultLanguage();
+                }
+                if (!isMD5NamedJPG(skin.imagePath))
+                {
+                    //图片地址必须是32位哈希.jpg
+                    Sprite sprite = await loadImage(skin.imagePath, cardPoolInfo.cardPoolId);
+                    skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                    hasUnsavedFix = true;
                 }
             }
             foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
@@ -412,6 +420,20 @@ namespace Game
                     effect.traverseActionNode(fixActionNodeIncorrectData);
                 }
             }
+            foreach (var buffSkin in cardPool.buffSkinList)
+            {
+                if (string.IsNullOrEmpty(buffSkin.imagePath))
+                    continue;
+                if (!isMD5NamedJPG(buffSkin.imagePath))
+                {
+                    //图片地址必须是32位哈希.jpg
+                    Sprite sprite = await loadImage(buffSkin.imagePath, cardPoolInfo.cardPoolId);
+                    buffSkin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                    hasUnsavedFix = true;
+                }
+            }
+            if (hasUnsavedFix)
+                await saveCardPool(cardPoolInfo);
             return (cardPoolInfo, cardPool);
 
             void fixActionNodeIncorrectData(ActionNode actionNode)

@@ -105,6 +105,7 @@ namespace TouhouHeartstone
         public int id;
         public string name;
         public DefineReference masterCardRef;
+        public List<DeckCardPoolItem> cardPoolList = new List<DeckCardPoolItem>();
         public List<DeckItem> cardList = new List<DeckItem>();
     }
     [Serializable]
@@ -112,5 +113,11 @@ namespace TouhouHeartstone
     {
         public DefineReference cardRef;
         public int count;
+    }
+    [Serializable]
+    public class DeckCardPoolItem
+    {
+        public long cardPoolId;
+        public int edition;
     }
 }

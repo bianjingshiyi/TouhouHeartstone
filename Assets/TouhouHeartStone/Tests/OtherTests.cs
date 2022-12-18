@@ -8,11 +8,30 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using BJSYGameCore;
 using System;
+using System.Security.Cryptography;
+using System.IO;
 
 namespace Tests
 {
     public class OtherTests
     {
+        [Test]
+        public void getTextureHashTest()
+        {
+            Texture2D texture = Resources.Load<Texture2D>("TestPicture");
+            Debug.Log(texture.imageContentsHash.ToString());
+            string textureHash = calcHashString(texture.EncodeToJPG());
+            Debug.Log(textureHash);
+            string fileHash = calcHashString(texture.EncodeToJPG());
+            Debug.Log(fileHash);
+            Assert.AreEqual(textureHash, fileHash);
+            string calcHashString(byte[] bytes)
+            {
+                byte[] hash = SHA256.Create().ComputeHash(bytes);
+                string hashString = string.Join(string.Empty, Array.ConvertAll(hash, b => b.ToString("X2")));
+                return hashString;
+            }
+        }
         [Test]
         public void pettyLookJsonTest()
         {

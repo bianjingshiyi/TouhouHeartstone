@@ -106,7 +106,7 @@ namespace Controllers
         /// 当用户点击返回按钮，返回主菜单
         /// </summary>
         /// <param name="ui"></param>
-        private void onClickReturnButton()
+        private async void onClickReturnButton()
         {
             if (hasUnsavedChanges)
             {
@@ -119,10 +119,10 @@ namespace Controllers
                         //返回主菜单
                         await returnToView();
                         hasUnsavedChanges = false;
-                    }, () =>
+                    }, async () =>
                     {
-                        returnToView();
                         hasUnsavedChanges = false;
+                        await returnToView();
                     });
             }
             else
@@ -134,7 +134,7 @@ namespace Controllers
                 }
                 else
                 {
-                    returnToView();
+                    await returnToView();
                 }
             }
 
