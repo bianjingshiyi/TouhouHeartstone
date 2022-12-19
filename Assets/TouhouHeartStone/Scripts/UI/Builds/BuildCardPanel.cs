@@ -99,6 +99,8 @@ namespace UI
             HintMessageText.gameObject.SetActive(false);
             setLoadingUIActive(false);
 
+            _masterSelectionCloseButton.onClick.AddListener(hideMasterSelectPanel);
+
             _exportDeckButton.onClick.AddListener(onClickExportDeckButtonCallback);
             _exitEditButton.onClick.AddListener(onClickExitEditButtonCallback);
             _importDeckButton.onClick.AddListener(onClickImportDeckButtonCallback);
@@ -309,10 +311,16 @@ namespace UI
         bool _isDraggingHorizontal = false;
         [SerializeField]
         GameObject _editCardListRightPanel;
+
+        [Header("Master Selection")]
         [SerializeField]
         GameObject _masterSelectionPanel;
+        [SerializeField]
+        Button _masterSelectionCloseButton;
         [SerializeField] 
         DeckViewPanel _masterSelectionDeckViewPanel;
+
+        [Header("Buttons")]
         [SerializeField]
         Button _exitEditButton;
         [SerializeField]
