@@ -880,17 +880,17 @@ namespace UI
             _downloadIconImage.gameObject.SetActive(false);
             _checkIconImage.gameObject.SetActive(false);
             PlayerLoadState loadState = data.getLoadState();
-            if (loadState == PlayerLoadState.Upload)
+            switch (loadState)
             {
-                _uploadIconImage.gameObject.SetActive(true);
-            }
-            else if (loadState == PlayerLoadState.Download)
-            {
-                _downloadIconImage.gameObject.SetActive(true);
-            }
-            else
-            {
-                _checkIconImage.gameObject.SetActive(data.getReady());
+                case PlayerLoadState.Upload:
+                    _uploadIconImage.gameObject.SetActive(true);
+                    break;
+                case PlayerLoadState.Download:
+                    _downloadIconImage.gameObject.SetActive(true);
+                    break;
+                default:
+                    _checkIconImage.gameObject.SetActive(data.getReady());
+                    break;
             }
             _progressBar.gameObject.SetActive(loadState != PlayerLoadState.None);
             CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0].cardPoolId, deck[0].defineId).name : "";

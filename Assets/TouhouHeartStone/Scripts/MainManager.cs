@@ -487,7 +487,7 @@ namespace Game
         public CardManager card => getManager<CardManager>();
         public DeckManager deck => getManager<DeckManager>();
         public TriggerManager triggers => this.findInstance<TriggerManager>();
-        public CacheManager cache => this.findInstance<CacheManager>();
+        public CacheManager cache => getManager<CacheManager>();
         public EditorManager editor => _editor;
         public int playerKey => _playerKey;
         [SerializeField]

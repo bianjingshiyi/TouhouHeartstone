@@ -48,15 +48,13 @@ namespace TouhouHeartstone
         {
             if (!playerData.hasProp(PROP_LOAD_STATE))
                 return 0;
-            else if (playerData.getProp<PlayerLoadState>(PROP_LOAD_STATE) is PlayerLoadState state)
-                return state;
             else
                 return (PlayerLoadState)playerData.getProp<int>(PROP_LOAD_STATE);
         }
 
         public static void setLoadState(this IRoomPlayer playerData, PlayerLoadState val)
         {
-            playerData.setProp(PROP_LOAD_STATE, val);
+            playerData.setProp(PROP_LOAD_STATE, (int)val);
         }
     }
 }

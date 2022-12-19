@@ -100,9 +100,7 @@ namespace Game
                 return _gameManager;
             }
         }
-        [SerializeField]
-        private CacheManager _cacheManager;
-        public CacheManager cacheManager => _cacheManager;
+        public CacheManager cacheManager => getManager<CacheManager>();
         public NetworkingPage ui
         {
             get { return getManager<UIManager>().getObject<NetworkingPage>(); }
