@@ -465,7 +465,7 @@ namespace Controllers
             //检查是否有自定义卡牌，
             for (int i = 0; i < deck.cardList.Count; i++)
             {
-                if (game.card.isCustomCard(deck.cardList[i].cardRef.cardPoolId, deck.cardList[i].cardRef.defineId))
+                if (game.card.isExternalCard(deck.cardList[i].cardRef.cardPoolId, deck.cardList[i].cardRef.defineId))
                 {
                     return true;
                 }

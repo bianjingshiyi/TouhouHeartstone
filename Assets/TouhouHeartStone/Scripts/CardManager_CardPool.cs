@@ -591,12 +591,13 @@ namespace Game
             int cardId = 0;
             for (int i = 1; i < 0xFFFF; i++)
             {
-                cardId = 1 << 31 | (int)cardPoolInfo.cardPoolId << 16 | i;
+                cardId = i;
                 if (cardPool.cardDefineList.Exists(c => c.id == cardId))
                     continue;
                 break;
             }
             cardDefine = new CardDefine(cardId, DEFINE.SERVANT);
+            cardDefine.cardPoolId = cardPoolInfo.cardPoolId;
             cardPool.cardDefineList.Add(cardDefine);
             cardSkin = new CardSkinData();
             cardSkin.id = cardDefine.id;
@@ -794,7 +795,7 @@ namespace Game
                 {
                     return Task.FromResult<Sprite>(null);
                 }
-                else if (getCardPoolOfCard(getCardDefine(cardId)) is CardPoolInfo cardPool &&
+                else if (getCardPoolInfo(cardPoolId) is CardPoolInfo cardPool &&
                     game.card.getCardPoolPath(cardPool) is string cardPoolPath)
                 {
                     if (cardPoolPath.StartsWith("sa:") &&

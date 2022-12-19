@@ -1,5 +1,6 @@
 using TouhouCardEngine;
 using System.Linq;
+using System;
 
 namespace TouhouHeartstone
 {
@@ -122,17 +123,19 @@ namespace TouhouHeartstone
             }
         }
         /// <summary>
-        /// 卡牌Id的符号位为负表示它是外部卡牌
+        /// 卡牌卡池ID不为0表示它是外部卡牌
         /// </summary>
         /// <param name="cardId"></param>
         /// <returns></returns>
-        public static bool isExternalCard(int cardId)
+        [Obsolete("Use CardManager.isExternalCard instead")]
+        public static bool isExternalCard(DefineReference cardRef)
         {
-            return cardId < 0;
+            return cardRef.cardPoolId != 0;
         }
+        [Obsolete("Use CardManager.isExternalCard instead")]
         public static bool isExternalCard(this CardDefine card)
         {
-            return isExternalCard(card.id);
+            return card.cardPoolId != 0;
         }
         /// <summary>
         /// 通过位运算获取卡牌Id中的卡池Id。卡池Id的掩码为0x7FFF0000

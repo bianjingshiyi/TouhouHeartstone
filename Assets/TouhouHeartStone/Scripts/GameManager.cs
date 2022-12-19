@@ -219,6 +219,8 @@ namespace Game
                 }
             }
 #endif
+
+            var cardManager = getManager<CardManager>();
             //加载外部卡牌
             HashSet<long> cardPoolIdSet = new HashSet<long>() { 0 };
             foreach (var player in playerList)
@@ -226,7 +228,7 @@ namespace Game
                 Deck deck = player.getDeck();
                 foreach (var cardRef in deck.toDefRefArray(true))
                 {
-                    if (CardDefineHelper.isExternalCard(cardRef.defineId) &&
+                    if (cardManager.isExternalCard(cardRef) &&
                         !cardPoolIdSet.Contains(cardRef.cardPoolId))
                     {
                         cardPoolIdSet.Add(cardRef.cardPoolId);
@@ -243,7 +245,7 @@ namespace Game
                 },
                 new HearthStoneRule(
                     cardDict,
-                    getManager<CardManager>().getCardPools(cardPoolIdSet).ToDictionary(
+                    cardManager.getCardPools(cardPoolIdSet).ToDictionary(
                         p => p.Key,
                         p => p.Value.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine))),
                 option,

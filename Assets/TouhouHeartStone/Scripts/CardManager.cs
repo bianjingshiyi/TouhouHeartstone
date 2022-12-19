@@ -471,8 +471,7 @@ namespace Game
         }
         public CardDefine getCardDefine(long cardPoolId, int cardId)
         {
-            // 如果卡池ID的注册时间早于11月12日0:00，并且不是内置卡池，视为老版本卡池ID，改为从卡牌ID获取
-            if (cardPoolId < 86400 && cardPoolId > 0)
+            if (cardPoolId == 0 && cardId < 0)
                 cardPoolId = cardId << 1 >> 17;
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
@@ -523,25 +522,29 @@ namespace Game
         /// </summary>
         /// <param name="card">卡牌定义。</param>
         /// <returns></returns>
-        public bool isCustomCard(CardDefine card)
+        public bool isExternalCard(CardDefine card)
         {
-            return isCustomCard(card.cardPoolId, card.id);
+            return isExternalCard(card.cardPoolId, card.id);
+        }
+        /// <summary>
+        /// 卡牌引用是否是自定义。
+        /// </summary>
+        /// <param name="card">卡牌ID。</param>
+        /// <returns></returns>
+        public bool isExternalCard(DefineReference defRef)
+        {
+            return isExternalCard(defRef.cardPoolId, defRef.defineId);
         }
         /// <summary>
         /// 卡牌ID是否是自定义。
         /// </summary>
         /// <param name="card">卡牌ID。</param>
         /// <returns></returns>
-        public bool isCustomCard(long cardPoolId, int cardId)
+        public bool isExternalCard(long cardPoolId, int cardId)
         {
             if (cardPoolId == 0 || Array.IndexOf(standardCardPoolsId, cardPoolId) >= 0)
             {
                 //0是内置卡池，包含在经典卡池内是经典卡池
-                return false;
-            }
-            else if (cardId > 0)
-            {
-                //负数才是自定义卡
                 return false;
             }
             return true;
