@@ -1,12 +1,10 @@
-﻿using Game;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Game;
 using MukioI18n;
 using NitoriNetwork.Common;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -308,7 +306,8 @@ namespace Controllers
 
         private void onClickDeckListItemDeleteButton(int index)
         {
-            game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.i18n._(DECK_DELETE_CONFIRM_CONTENT, deckList[index].name), async () => {
+            game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.i18n._(DECK_DELETE_CONFIRM_CONTENT, deckList[index].name), async () =>
+            {
                 game.deck.RemoveDeck(deckList[index].id);
                 await updateDeckListUI();
             });
@@ -596,7 +595,7 @@ namespace Controllers
                 return false;
             }
             // 添加卡
-            _deck.addCard(new DefineReference(card));
+            _deck.addCard(card.getDefineRef());
             // 标记为已经修改
             _isDeckChanged = true;
             errorTip = string.Empty;

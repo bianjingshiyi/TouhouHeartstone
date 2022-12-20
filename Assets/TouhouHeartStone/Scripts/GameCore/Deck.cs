@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using TouhouCardEngine;
+using DeckPack = TouhouCardEngine.Shared.Deck;
 
 namespace TouhouHeartstone
 {
@@ -18,6 +19,12 @@ namespace TouhouHeartstone
         }
         public Deck(DefineReference masterCardRef, IEnumerable<DefineReference> cardRefs) : this(0, null, masterCardRef, cardRefs)
         {
+        }
+        public Deck(DeckPack pack)
+        {
+            var items = pack.defineRefs;
+            masterCardRef = DefineReference.FromDeckItem(items[0]);
+            addCards(items.Skip(1).Select(i => DefineReference.FromDeckItem(i)));
         }
         public Deck() : this(0, null, null, null)
         {
@@ -88,6 +95,10 @@ namespace TouhouHeartstone
                     poolList.Add(CardDefineHelper.getCardPoolId(cardList[i].cardRef.defineId));
             }
             return poolList.ToArray();
+        }
+        public DeckPack ToDeckPack()
+        {
+            return new DeckPack(toDefRefArray(true).Select(r => r.ToDeckItem()).ToArray());
         }
         #endregion
         public int id;

@@ -1,19 +1,19 @@
-﻿using UnityEngine;
-using TouhouCardEngine;
-using BJSYGameCore;
-using UI;
-using System.Threading.Tasks;
-using TouhouHeartstone;
-using System.Net.Sockets;
-using System.Net;
-using System;
+﻿using System;
 using System.Linq;
-using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using BJSYGameCore;
 using BJSYGameCore.UI;
-using System.Text.RegularExpressions;
-using NitoriNetwork.Common;
-using MukioI18n;
 using Controllers;
+using MukioI18n;
+using NitoriNetwork.Common;
+using TouhouCardEngine;
+using TouhouCardEngine.Shared;
+using DeckPack = TouhouCardEngine.Shared.Deck;
+using TouhouHeartstone;
+using UI;
+using UnityEngine;
 
 namespace Game
 {
@@ -495,7 +495,7 @@ namespace Game
                 {
                     addrParser(lanPanel.IPInputField.text, _ports[0], out string address, out int port);
                     await joinRoom(address, port);
-                } 
+                }
                 catch (UriFormatException)
                 {
                     dialog.ShowConfirm(lang._(StringTable.ERROR), lang._(INVALID_ADDRESS), null);
@@ -622,7 +622,7 @@ namespace Game
             };
             roomPanel.onSetPlayerDeck += (id, cards) =>
             {
-                SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
+                SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, new DeckPack(cards.Select(i => i.ToDeckItem()).ToArray()));
             };
             roomPanel.OnPlayerReadyChange += (id, state) =>
             {

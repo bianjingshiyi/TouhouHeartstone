@@ -1,6 +1,6 @@
 ﻿using NitoriNetwork.Common;
 using TouhouCardEngine;
-using TouhouHeartstone;
+using DeckPack = TouhouCardEngine.Shared.Deck;
 using System.Linq;
 namespace TouhouHeartstone
 {
@@ -15,14 +15,14 @@ namespace TouhouHeartstone
         public const string PROP_DECK = "deck";
         public static void setDeck(this IRoomPlayer playerData, Deck deck)
         {
-            playerData.setProp(PROP_DECK, deck);
+            playerData.setProp(PROP_DECK, deck.ToDeckPack());
         }
         public static Deck getDeck(this IRoomPlayer playerData)
         {
             if (!playerData.hasProp(PROP_DECK))
                 return null;
-            if (playerData.getProp<DefineReference[]>(PROP_DECK) is DefineReference[] defRefs)
-                return new Deck(defRefs[0], defRefs.Skip(1));
+            if (playerData.getProp<DeckPack>(PROP_DECK) is DeckPack pack)
+                return new Deck(pack);
             else if (playerData.getProp<int[]>(PROP_DECK) is int[] cardsId)
                 return new Deck(new DefineReference(0, cardsId[0]), cardsId.Skip(1).Select(id => new DefineReference(0, id)));
             else

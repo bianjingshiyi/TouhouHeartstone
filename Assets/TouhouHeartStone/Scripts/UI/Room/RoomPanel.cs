@@ -1,17 +1,17 @@
 ﻿
-using BJSYGameCore;
-using Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using BJSYGameCore;
+using BJSYGameCore.UI;
+using Game;
+using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
-using BJSYGameCore.UI;
-using NitoriNetwork.Common;
-using MukioI18n;
 using UnityEngine.UI;
-using System.Threading.Tasks;
 
 namespace UI
 {
@@ -121,33 +121,33 @@ namespace UI
 
             if (isRoomOwner)
             {
-                // 判断是否可以开始游戏
-                bool startable = room.playerDataList.Count == room.maxPlayerCount;
+                //// 判断是否可以开始游戏
+                //bool startable = room.playerDataList.Count == room.maxPlayerCount;
 
-                foreach (var item in room.playerDataList)
-                {
-                    if (item.id == selfPlayerID)
-                    {
-                        // 主机检查卡组是否满
-                        var decks = item.getDeck();
-                        if (decks == null || decks.getCardCount() < 30)
-                            startable = false;
-                    }
-                    else
-                    {
-                        // 其他检查是否准备好
-                        startable &= item.getReady();
-                    }
-                }
+                //foreach (var item in room.playerDataList)
+                //{
+                //    if (item.id == selfPlayerID)
+                //    {
+                //        // 主机检查卡组是否满
+                //        var decks = item.getDeck();
+                //        if (decks == null || decks.getCardCount() < 30)
+                //            startable = false;
+                //    }
+                //    else
+                //    {
+                //        // 其他检查是否准备好
+                //        startable &= item.getReady();
+                //    }
+                //}
 
-                StartButtonButtonBlack.asButton.setSelectable(startable);
+                //StartButtonButtonBlack.asButton.setSelectable(startable);
             }
             else
             {
                 // 判断准备状态
-                var deck = selfPlayer.getDeck();
-                StartButtonButtonBlack.Text.text = selfPlayer.getReady() ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
-                StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterCardRef != DefineReference.Empty && deck.getCardCount() == 30);
+                //var deck = selfPlayer.getDeck();
+                //StartButtonButtonBlack.Text.text = selfPlayer.getReady() ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
+                //StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterCardRef != DefineReference.Empty && deck.getCardCount() == 30);
             }
         }
         #endregion
@@ -929,7 +929,7 @@ namespace UI
         public void SetProgress(float progress)
         {
             _progressBar.transform.localScale = new Vector3(Mathf.Clamp01(progress), 1, 1);
-        }    
+        }
         #region 私有方法
         #region 事件回调
         private void onClickViewDeckButtonCallback()

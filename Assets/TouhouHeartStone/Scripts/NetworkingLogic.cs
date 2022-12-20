@@ -1,15 +1,15 @@
-﻿using TouhouCardEngine;
-using NitoriNetwork.Common;
+﻿using System;
 using System.Threading.Tasks;
-using TouhouHeartstone;
-using System;
+using NitoriNetwork.Common;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouCardEngine.Shared;
+using TouhouHeartstone;
 using UnityEngine;
-using Controllers;
 
 namespace Game
 {
-    public class NetworkingLogic: IClient
+    public class NetworkingLogic : IClient
     {
         /// <summary>
         /// 服务器的客户端
@@ -332,7 +332,7 @@ namespace Game
             }
             catch (NetClientException e1)
             {
-                Debug.Log($"自动登录失败，{ e1 }，尝试使用游客身份登录.");
+                Debug.Log($"自动登录失败，{e1}，尝试使用游客身份登录.");
 
                 try
                 {
@@ -343,7 +343,7 @@ namespace Game
                 }
                 catch (NetClientException e2)
                 {
-                    Debug.Log($"游客身份登录失败，{ e2 }.");
+                    Debug.Log($"游客身份登录失败，{e2}.");
                     userInfo = null;
                 }
             }

@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone.Builtin;
+using DeckPack = TouhouCardEngine.Shared.Deck;
 
 namespace TouhouHeartstone
 {
@@ -414,8 +416,10 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.WARP));
             player.addPile(new Pile(game, PILE.HEAD, maxCount: 5));
             player.addPile(new Pile(game, PILE.ITEM, maxCount: 1));
-            DefineReference[] deck = player.getProp<DefineReference[]>(DEFINE.PLAYER_PROP_DECK);
-            DefineReference master = deck[0];
+            DeckPack deckPack = player.getProp<DeckPack>(DEFINE.PLAYER_PROP_DECK);
+            Deck deck = new Deck(deckPack);
+            var defRefs = deck.toDefRefArray(true);
+            DefineReference master = defRefs[0];
             await player[PILE.MASTER].add(game, game.createCard(master.cardPoolId, master.defineId));
             DefineReference skillRef = game.getDefine(master.cardPoolId, master.defineId).getSkillRef();
             await player[PILE.SKILL].add(game, game.createCard(skillRef.cardPoolId, skillRef.defineId));

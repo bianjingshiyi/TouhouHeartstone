@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-using System;
 using Deck = TouhouHeartstone.Deck;
 
 namespace Controllers
@@ -85,6 +84,7 @@ namespace Controllers
             {
                 CheckCardPoolsUpdate();
             }
+            updateStartAndReadyButton();
         }
         #endregion
         #region 私有方法
@@ -410,7 +410,7 @@ namespace Controllers
             game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
 
             int count = cardPools.Length;
-            for (int i = 0; i < count;i ++)
+            for (int i = 0; i < count; i++)
             {
                 var poolPack = cardPools[i];
                 string id = poolPack.GetResourceID();

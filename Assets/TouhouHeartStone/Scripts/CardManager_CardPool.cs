@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Threading.Tasks;
-using UI;
-using Controllers;
-using TouhouCardEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
-using MongoDB.Bson.Serialization;
-using TouhouHeartstone;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Controllers;
+using MongoDB.Bson.Serialization;
+using TouhouCardEngine;
+using TouhouCardEngine.Shared;
+using TouhouHeartstone;
+using UI;
+using UnityEngine;
+
 namespace Game
 {
     partial class CardManager
