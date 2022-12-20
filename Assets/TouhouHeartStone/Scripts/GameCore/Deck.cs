@@ -22,7 +22,7 @@ namespace TouhouHeartstone
         }
         public Deck(DeckPack pack)
         {
-            var items = pack.defineRefs;
+            var items = pack.items;
             masterCardRef = DefineReference.FromDeckItem(items[0]);
             addCards(items.Skip(1).Select(i => DefineReference.FromDeckItem(i)));
         }
