@@ -406,7 +406,7 @@ namespace Controllers
             localPlayer.setLoadState(PlayerLoadState.Upload);
             localPlayer.setReady(false);
             updateStartAndReadyButton();
-            game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, PlayerLoadState.Upload);
+            game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)PlayerLoadState.Upload);
             game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
 
             int count = cardPools.Length;
@@ -426,7 +426,7 @@ namespace Controllers
             localPlayer.setLoadState(PlayerLoadState.None);
             localPlayer.setReady(false);
             updateStartAndReadyButton();
-            game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, PlayerLoadState.None);
+            game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)PlayerLoadState.None);
             game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
         }
         private async void DownloadCardPools(CardPoolInfoPack[] cardPools)
@@ -437,7 +437,7 @@ namespace Controllers
                 localPlayer.setLoadState(PlayerLoadState.Download);
                 localPlayer.setReady(false);
                 updateStartAndReadyButton();
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, PlayerLoadState.Download);
+                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)PlayerLoadState.Download);
                 game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
                 downloadingCardPools = true;
 
@@ -464,7 +464,7 @@ namespace Controllers
                 localPlayer.setLoadState(PlayerLoadState.None);
                 localPlayer.setReady(false);
                 updateStartAndReadyButton();
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, PlayerLoadState.None);
+                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)PlayerLoadState.None);
                 game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
             }
         }
