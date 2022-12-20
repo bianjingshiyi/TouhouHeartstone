@@ -32,7 +32,7 @@ namespace UI
         {
             _selfPlayerItem?.SetProgress(progress);
         }
-        public void UpdateRoomData(RoomData room, int selfPlayerID, bool clearAIPlayerData = false)
+        public void UpdateRoomData(RoomData room, RoomMode mode, int selfPlayerID, bool clearAIPlayerData = false)
         {
             if (clearAIPlayerData)
             {
@@ -41,7 +41,7 @@ namespace UI
 
             RoomPlayerData selfPlayer = null;
 
-            bool isRoomOwner = currentMode == Mode.Local || room?.ownerId == selfPlayerID;
+            bool isRoomOwner = mode == RoomMode.Local || room?.ownerId == selfPlayerID;
             // 如果不修改_playerList的元素，会导致_playerList在调用updatePlayerList时包含已经被销毁的游戏对象，然后报错
             _playerList.Clear();
             RoomPlayerList.clearItems();
@@ -101,7 +101,7 @@ namespace UI
                 Debug.LogWarning($"SelfPlayer是空的。PlayerID：{selfPlayerID}, players: {room.playerDataList.Select(e => e.id.ToString())}");
             }
 
-            if (currentMode == Mode.Local && aiPlayerData == null)
+            if (mode == RoomMode.Local && aiPlayerData == null)
             {
                 var item = RoomPlayerList.addItem();
                 item.SetMode(RoomPlayerListItem.PlayerListMode.AddAI);
@@ -128,7 +128,7 @@ namespace UI
                 Debug.LogException(e);
             }
 
-            updateButtonStates(room);
+            updateButtonStates();
 
             if (isRoomOwner)
             {
@@ -165,10 +165,9 @@ namespace UI
         /// 设置房间模式，是本地、客户端还是远程
         /// </summary>
         /// <param name="mode"></param>
-        public void SetMode(Mode mode)
+        public void SetMode(RoomMode mode)
         {
-            currentMode = mode;
-            IPText.gameObject.SetActive(currentMode == Mode.NetworkingHost);
+            IPText.gameObject.SetActive(mode == RoomMode.NetworkingHost);
             updateButtonStates();
         }
 
@@ -352,22 +351,6 @@ namespace UI
             _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
             StartButtonButtonBlack.asButton.setSelectable(false);
             DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
-            // TODO 这个回调会直接被return跳过。
-            DeckSelectionDeckListItem.onClick += (_) =>
-            {
-                if (this.findInstance<Controllers.MainSceneCtrl>().room.isDisplay)
-                    return;
-                showDeckSelectionPanel((deckID) =>
-                {
-                    var deck = deckManager.GetDeck(deckID);
-                    var skin = cardManager.getCardSkin(deck.MasterCardRef.cardPoolId, deck.MasterCardRef.defineId);
-                    DeckSelectionDeckListItem.SetContent(deckID, deck.Name, skin.image);
-
-                    var list = deckManager.GetDeckCards(deckID).Select(k => k.Value).ToList();
-                    list.Insert(0, deck.MasterCardRef); // polyfill: 转换为传统的，第一张卡是master的格式
-                    onSetPlayerDeck?.Invoke(selfPlayerID, list.ToArray());
-                });
-            };
 
             _deckPanel.SetActive(false);
             _cardPanel.SetActive(false);
@@ -588,7 +571,6 @@ namespace UI
         public event Action onUpdateButtons;
         #endregion
         #region 属性字段
-        Mode currentMode;
         RoomPlayerData aiPlayerData;
 
         [SerializeField]
@@ -658,23 +640,6 @@ namespace UI
         CardManager cardManager => this.findInstance<CardManager>();
 
         LangManager lang => this.findInstance<LangManager>();
-        #endregion
-        #region 枚举
-        public enum Mode
-        {
-            /// <summary>
-            /// 本地游戏
-            /// </summary>
-            Local,
-            /// <summary>
-            /// 局域网中的主机
-            /// </summary>
-            NetworkingHost,
-            /// <summary>
-            /// 局域网客户端或大厅客户端
-            /// </summary>
-            NetworkingClient
-        }
         #endregion
     }
     partial class RoomPlayerListItem
@@ -841,5 +806,21 @@ namespace UI
         [SerializeField]
         private Image _progressBar;
         #endregion
+    }
+
+    public enum RoomMode
+    {
+        /// <summary>
+        /// 本地游戏
+        /// </summary>
+        Local,
+        /// <summary>
+        /// 局域网中的主机
+        /// </summary>
+        NetworkingHost,
+        /// <summary>
+        /// 局域网客户端或大厅客户端
+        /// </summary>
+        NetworkingClient
     }
 }

@@ -634,7 +634,7 @@ namespace Game
             ui.parent.display(roomPanel);
             RoomData roomData = logic.CurrentRoom;
             roomCtrl.display(logic.CurrentRoom, false);
-            roomPanel.SetMode(isServerMode ? RoomPanel.Mode.NetworkingClient : RoomPanel.Mode.NetworkingHost);
+            roomCtrl.SetMode(isServerMode ? RoomMode.NetworkingClient : RoomMode.NetworkingHost);
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
             setRoomData(roomData);
             //  加载聊天框

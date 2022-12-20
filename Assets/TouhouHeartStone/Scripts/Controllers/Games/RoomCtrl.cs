@@ -33,7 +33,12 @@ namespace Controllers
         #region 公有方法
         public void SetRoomData(RoomData room)
         {
-             _ui.UpdateRoomData(room, GetSelfID());
+             _ui.UpdateRoomData(room, _currentMode, GetSelfID());
+        }
+        public void SetMode(RoomMode mode)
+        {
+            _currentMode = mode;
+            _ui.SetMode(mode);
         }
         public Task display(UIDisplayInfo displayInfo)
         {
@@ -797,6 +802,7 @@ namespace Controllers
         public event Action<int, bool> onPlayerReadyChange;
         #endregion
         #region 属性字段
+        RoomMode _currentMode;
         public bool isDisplay => _isDisplay;
         [SerializeField]
         RoomPanel _ui;
