@@ -115,7 +115,7 @@ namespace Game
 
         LangManager lang => getManager<LangManager>();
 
-        RoomPanel roomPanel => ui.parent.RoomPanel;
+        RoomCtrl roomCtrl => _sceneCtrl.room;
 
         NetworkingLogic _logic;
         public NetworkingLogic logic
@@ -604,25 +604,24 @@ namespace Game
         /// </summary>
         private void displayRoomPanel()
         {
-            roomPanel.ResetEvents();
             var roomCtrl = _sceneCtrl.room;
             roomCtrl.ResetEvents();
 
-            roomPanel.onClickQuitButton += () =>
+            roomCtrl.onQuitClick += () =>
             {
                 // 不要再quitRoom，onQuitClick本身就会调用quitRoom().
                 //quitRoom();
                 ui.parent.display(ui);
             };
-            roomPanel.onRoomPropUpdate += SetRoomProp;
-            roomPanel.onPlayerRemove += (id) =>
+            roomCtrl.onRoomPropChanged += SetRoomProp;
+            roomCtrl.onPlayerRemove += (id) =>
             {
                 if (isRoomOwner)
                 {
                     logic.RemovePlayer(id);
                 }
             };
-            roomPanel.onSetPlayerDeck += (id, cards) =>
+            roomCtrl.onSetPlayerDeck += (id, cards) =>
             {
                 SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
             };
@@ -631,14 +630,13 @@ namespace Game
                 SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, state);
             };
 
-            ui.parent.display(roomPanel);
+            ui.hide();
             RoomData roomData = logic.CurrentRoom;
-            roomCtrl.display(logic.CurrentRoom, false);
+            roomCtrl.display(roomData, false);
             roomCtrl.SetMode(isServerMode ? RoomMode.NetworkingClient : RoomMode.NetworkingHost);
-            roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
-            setRoomData(roomData);
+            roomCtrl.SetIPText("IP：" + string.Join(", ", addresses));
             //  加载聊天框
-            _sceneCtrl.chatCtrl.display(logic.CurrentRoom);
+            _sceneCtrl.chatCtrl.display(roomData);
         }
 
         #endregion
@@ -676,11 +674,11 @@ namespace Game
         }
         private void NetworkingLogic_OnSuggestCardPools(int playerId, CardPoolSuggestion suggestion)
         {
-            roomPanel.ReceiveCardPoolsSuggestion(playerId, suggestion);
+            roomCtrl.ReceiveCardPoolsSuggested(playerId, suggestion);
         }
         private void NetworkingLogic_OnCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
         {
-            roomPanel.ReceiveCardPoolsSuggestionAnwser(suggestion, agree);
+            roomCtrl.ReceiveCardPoolsSuggestionAnwsered(suggestion, agree);
         }
         #endregion
         #region UI事件处理

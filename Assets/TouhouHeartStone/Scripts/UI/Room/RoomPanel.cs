@@ -75,19 +75,6 @@ namespace UI
                     aiPlayerData = player;
 
                     item.SetMode(RoomPlayerListItem.PlayerListMode.AIPlayer);
-                    item.OnSetAIDeck += () =>
-                    {
-                        showDeckSelectionPanel((deckID) =>
-                        {
-                            var deck = deckManager.GetDeck(deckID);
-                            var skin = cardManager.getCardSkin(deck.MasterCardRef.cardPoolId, deck.MasterCardRef.defineId);
-
-                            var list = deckManager.GetDeckCards(deckID).Select(k => k.Value).ToList();
-                            list.Insert(0, deck.MasterCardRef); // polyfill: 转换为传统的，第一张卡是master的格式
-
-                            onSetPlayerDeck?.Invoke(player.id, list.ToArray());
-                        });
-                    };
                 }
                 else
                 {
@@ -101,16 +88,6 @@ namespace UI
                 Debug.LogWarning($"SelfPlayer是空的。PlayerID：{selfPlayerID}, players: {room.playerDataList.Select(e => e.id.ToString())}");
             }
 
-            if (mode == RoomMode.Local && aiPlayerData == null)
-            {
-                var item = RoomPlayerList.addItem();
-                item.SetMode(RoomPlayerListItem.PlayerListMode.AddAI);
-
-                item.OnAddAIPlayer += () =>
-                {
-                    onAIPlayerAdd?.Invoke();
-                };
-            }
 
             //设置房间选项
             try
@@ -130,36 +107,6 @@ namespace UI
 
             updateButtonStates();
 
-            if (isRoomOwner)
-            {
-                //// 判断是否可以开始游戏
-                //bool startable = room.playerDataList.Count == room.maxPlayerCount;
-
-                //foreach (var item in room.playerDataList)
-                //{
-                //    if (item.id == selfPlayerID)
-                //    {
-                //        // 主机检查卡组是否满
-                //        var decks = item.getDeck();
-                //        if (decks == null || decks.getCardCount() < 30)
-                //            startable = false;
-                //    }
-                //    else
-                //    {
-                //        // 其他检查是否准备好
-                //        startable &= item.getReady();
-                //    }
-                //}
-
-                //StartButtonButtonBlack.asButton.setSelectable(startable);
-            }
-            else
-            {
-                // 判断准备状态
-                //var deck = selfPlayer.getDeck();
-                //StartButtonButtonBlack.Text.text = selfPlayer.getReady() ? lang._(STR_REQUEST_PREPRAE) : lang._(STR_PREPARE);
-                //StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterCardRef != DefineReference.Empty && deck.getCardCount() == 30);
-            }
         }
         /// <summary>
         /// 设置房间模式，是本地、客户端还是远程
@@ -170,13 +117,11 @@ namespace UI
             IPText.gameObject.SetActive(mode == RoomMode.NetworkingHost);
             updateButtonStates();
         }
-
-
         /// <summary>
         /// 设置右上角的（IP地址）文本
         /// </summary>
         /// <param name="text"></param>
-        public void SetRightText(string text)
+        public void SetIPText(string text)
         {
             IPText.text = text;
         }
@@ -187,7 +132,6 @@ namespace UI
 
             onPlayerRemove = null;
             onAIPlayerAdd = null;
-            onSetPlayerDeck = null;
             onUpdateButtons = null;
         }
         public void updatePlayerList((string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[] viewData)
@@ -313,11 +257,6 @@ namespace UI
         {
             _cancleReadyButton.gameObject.SetActive(value);
         }
-
-        public void setPlayerDeck(int playerId, DefineReference[] cards)
-        {
-            onSetPlayerDeck?.Invoke(playerId, cards);
-        }
         /// <summary>
         /// 当进度条推进时调用此方法
         /// </summary>
@@ -333,14 +272,6 @@ namespace UI
         public void HideDownloadingUI()
         {
             loadingCircle.Hide();
-        }
-        public void ReceiveCardPoolsSuggestion(int playerId, CardPoolSuggestion suggestion)
-        {
-            onSuggestCardPools?.Invoke(playerId, suggestion);
-        }
-        public void ReceiveCardPoolsSuggestionAnwser(CardPoolSuggestion suggestion, bool agree)
-        {
-            onCardPoolsSuggestionAnwsered?.Invoke(suggestion, agree);
         }
         #endregion
         #region 私有方法
@@ -548,11 +479,6 @@ namespace UI
         public event Action onClickReadyButton;
         public event Action onClickCancleReadyButton;
         public event Action onClickQuitButton;
-        public event Action<int, CardPoolSuggestion> onSuggestCardPools;
-        public event Action<CardPoolSuggestion, bool> onCardPoolsSuggestionAnwsered;
-
-
-
         /// <summary>
         /// 点击删除玩家按钮后触发
         /// </summary>
@@ -561,10 +487,6 @@ namespace UI
         /// 添加了AI玩家
         /// </summary>
         public event Action onAIPlayerAdd;
-        /// <summary>
-        /// 玩家牌组改变
-        /// </summary>
-        public event Action<int, DefineReference[]> onSetPlayerDeck;
         /// <summary>
         /// 更新按钮状态
         /// </summary>
@@ -646,27 +568,10 @@ namespace UI
     {
         partial void onAwake()
         {
-            RemoveButtonBlack.asButton.onClick.AddListener(() => OnPlayerRemove?.Invoke(playerData.id));
-            ViewButtonBlack.asButton.onClick.AddListener(() =>
-            {
-                if (playerData == null)
-                    return;
-                var deck = playerData.getDeck();
-                if (deck != null)
-                {
-                    DefineReference[] idArray = playerData.getDeck().toDefRefArray(true);
-                    if (idArray != null)
-                        OnPlayerViewDeck?.Invoke(idArray);
-                }
-            });
             asButton.onClick.AddListener(() =>
             {
                 if (currentMode == PlayerListMode.AddAI)
                     OnAddAIPlayer?.Invoke();
-            });
-            SetButtonBlack.asButton.onClick.AddListener(() =>
-            {
-                OnSetAIDeck?.Invoke();
             });
             ViewButtonBlack.asButton.onClick.AddListener(onClickViewDeckButtonCallback);
             SetButtonBlack.asButton.onClick.AddListener(onClickSetDeckButtonCallback);
@@ -762,13 +667,24 @@ namespace UI
         private void onClickViewDeckButtonCallback()
         {
             onClickViewDeckButton?.Invoke(this);
+            if (playerData == null)
+                return;
+            var deck = playerData.getDeck();
+            if (deck != null)
+            {
+                DefineReference[] idArray = playerData.getDeck().toDefRefArray(true);
+                if (idArray != null)
+                    OnPlayerViewDeck?.Invoke(idArray);
+            }
         }
         private void onClickSetDeckButtonCallback()
         {
+            OnSetAIDeck?.Invoke();
             onClickSetDeckButton?.Invoke(this);
         }
         private void onClickRemoveButtonCallback()
         {
+            OnPlayerRemove?.Invoke(playerData.id);
             onClickRemoveButton?.Invoke(this);
         }
         #endregion

@@ -11,6 +11,7 @@ using UI;
 using UnityEngine;
 using Deck = TouhouHeartstone.Deck;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Controllers
 {
@@ -40,6 +41,36 @@ namespace Controllers
             _currentMode = mode;
             _ui.SetMode(mode);
         }
+        public void SetIPText(string text)
+        {
+            _ui.SetIPText(text);
+        }
+
+        public void ReceiveCardPoolsSuggested(int playerId, CardPoolSuggestion suggestion)
+        {
+            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED);
+            string poolsString = PoolsToString(suggestion.cardPools);
+            var suggester = _currentRoomData.getPlayer(playerId);
+            string playerName = game.lang._(ROOM_UNKNOWN_PLAYER);
+            if (suggester != null)
+            {
+                playerName = suggester.name;
+            }
+            desc = string.Format(desc, playerName, poolsString);
+
+            game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+            {
+                game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
+            }, () =>
+            {
+                game.network.AnwserCardPoolsSuggestion(playerId, suggestion, false);
+            });
+        }
+        public void ReceiveCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
+        {
+            string desc = game.lang._(agree ? ROOM_CARD_POOLS_SUGGESTION_AGREED : ROOM_CARD_POOLS_SUGGESTION_REFUSED);
+            game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
+        }
         public Task display(UIDisplayInfo displayInfo)
         {
             if (displayInfo is DisplayInfo info)
@@ -48,12 +79,12 @@ namespace Controllers
                 _isLocalGame = info.isLocalGame;
 
                 _isDisplay = true;
-                _ui.gameObject.SetActive(true);
+
+                _ui.display();
                 //_ui.SetMode(RoomPanel.Mode.Local);
                 //_ui.SetSelfID(scene.game.network.logic.localPlayer.id);
                 //_ui.SetRightText("");
                 //_ui.SetInfo(roomData, true);
-                updatePlayerListUI();
                 if (_isLocalGame)
                 {
                     _ui.displayIPText(false);
@@ -66,7 +97,8 @@ namespace Controllers
                 _ui.setAllowCustomCards(_currentRoomData.getAllowCustomCards());
                 updateUIStateForRoomOwner();
                 updateStartAndReadyButton();
-                UpdateRoomData(_currentRoomData);
+                SetRoomData(_currentRoomData);
+                updatePlayerListUI();
             }
             return Task.CompletedTask;
         }
@@ -85,7 +117,7 @@ namespace Controllers
         /// </summary>
         public int GetSelfID()
         {
-            return game.network.logic.GetSelfInfo().id;
+            return game.network.logic.localPlayer.id;
         }
         public Task hide()
         {
@@ -110,6 +142,8 @@ namespace Controllers
             onStartClick = null;
             onQuitClick = null;
             onPlayerReadyChange = null;
+            onPlayerRemove = null;
+            onSetPlayerDeck = null;
         }
         #endregion
         #region 私有方法
@@ -138,9 +172,8 @@ namespace Controllers
             _ui.onClickReadyButton += onClickReadyButton;
             _ui.onClickCancleReadyButton += onClickCancleReadyButton;
             _ui.onClickQuitButton += onClickQuitButton;
-            _ui.onSuggestCardPools += onCardPoolsSuggested;
-            _ui.onCardPoolsSuggestionAnwsered += onCardPoolsSuggestionAnwsered;
             _ui.onUpdateButtons += onUpdateButtons;
+            _ui.onPlayerRemove += onPlayerRemove;
         }
 
         private void Update()
@@ -441,7 +474,20 @@ namespace Controllers
         }
         private async void SetPlayerDeck(int playerId, Deck deck)
         {
-            setPlayerDeck(playerId, deck.toDefRefArray());
+            for (int i = 0; i < _currentRoomData.playerDataList.Count; i++)
+            {
+                RoomPlayerData player = _currentRoomData.playerDataList[i];
+                if (player.id == playerId)
+                {
+                    player.setDeck(deck);
+                    onSetPlayerDeck?.Invoke(playerId, deck.toDefRefArray(true));
+
+                    if (player.type == RoomPlayerType.ai)
+                    {
+                        player.setReady(true);
+                    }
+                }
+            }
             //隐藏选择卡组界面
             _ui.hideDeckSelectPanel();
             //更新界面
@@ -582,36 +628,7 @@ namespace Controllers
         /// <summary>
         /// 是否为房主
         /// </summary>
-        bool isRoomOwner => game.network.logic.localPlayer.id == _currentRoomData.ownerId;
-
-        private void setPlayerDeck(int playerId, DefineReference[] cardRefs)
-        {
-            for (int i = 0; i < _currentRoomData.playerDataList.Count; i++)
-            {
-                RoomPlayerData player = _currentRoomData.playerDataList[i];
-                if (player.id == playerId)
-                {
-                    Deck deck = player.getDeck();
-                    if (deck == null)
-                    {
-                        deck = new Deck(cardRefs[0], cardRefs.Skip(1));
-                    }
-                    else
-                    {
-                        deck.masterCardRef = cardRefs[0];
-                        deck.setCards(cardRefs.Skip(1));
-                    }
-                    player.setDeck(deck);
-                    // 触发onSetPlayerDeck回调。
-                    _ui.setPlayerDeck(playerId, cardRefs);
-
-                    if (player.type == RoomPlayerType.ai)
-                    {
-                        player.setReady(true);
-                    }
-                }
-            }
-        }
+        bool isRoomOwner => GetSelfID() == _currentRoomData.ownerId;
         private void updateUIStateForRoomOwner()
         {
             _ui.enableRandomSeed(isRoomOwner);
@@ -800,6 +817,14 @@ namespace Controllers
         /// 玩家准备或取消准备
         /// </summary>
         public event Action<int, bool> onPlayerReadyChange;
+        /// <summary>
+        /// 删除玩家后触发
+        /// </summary>
+        public event Action<int> onPlayerRemove;
+        /// <summary>
+        /// 玩家牌组改变
+        /// </summary>
+        public event Action<int, DefineReference[]> onSetPlayerDeck;
         #endregion
         #region 属性字段
         RoomMode _currentMode;
