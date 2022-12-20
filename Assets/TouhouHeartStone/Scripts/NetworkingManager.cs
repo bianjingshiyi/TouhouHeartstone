@@ -357,7 +357,6 @@ namespace Game
             {
                 await logic.CreateRoom();
 
-                roomPanel.SetSelfID(logic.GetSelfInfo().id);
                 displayRoomPanel();
             }
             catch (Exception e)
@@ -385,7 +384,6 @@ namespace Game
             toggleLoadingPanel(true);
             try
             {
-                roomPanel.SetSelfID(logic.GetSelfInfo().id);
                 await logic.JoinRoom(roomID);
                 displayRoomPanel();
             }
@@ -407,7 +405,6 @@ namespace Game
 
             try
             {
-                roomPanel.SetSelfID(logic.GetSelfInfo().id);
                 await logic.JoinRoom(addr, port);
                 displayRoomPanel();
             }
@@ -595,10 +592,10 @@ namespace Game
 
         }
 
-        private void setRoomPanel(RoomData room)
+        private void setRoomData(RoomData room)
         {
             Debug.Log($"更新房间信息");
-            roomPanel.SetInfo(room);
+            _sceneCtrl.room.SetRoomData(room);
             _sceneCtrl.room.UpdateRoomData(room);
         }
 
@@ -611,7 +608,7 @@ namespace Game
             var roomCtrl = _sceneCtrl.room;
             roomCtrl.ResetEvents();
 
-            roomPanel.onQuitClick += () =>
+            roomPanel.onClickQuitButton += () =>
             {
                 // 不要再quitRoom，onQuitClick本身就会调用quitRoom().
                 //quitRoom();
@@ -629,19 +626,19 @@ namespace Game
             {
                 SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
             };
-            roomPanel.OnPlayerReadyChange += (id, state) =>
+            roomCtrl.onPlayerReadyChange += (id, state) =>
             {
                 SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, state);
             };
 
             ui.parent.display(roomPanel);
+            RoomData roomData = logic.CurrentRoom;
             roomCtrl.display(logic.CurrentRoom, false);
+            roomPanel.SetMode(isServerMode ? RoomPanel.Mode.NetworkingClient : RoomPanel.Mode.NetworkingHost);
+            roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
+            setRoomData(roomData);
             //  加载聊天框
             _sceneCtrl.chatCtrl.display(logic.CurrentRoom);
-            roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
-            roomPanel.SetMode(isServerMode ? RoomPanel.Mode.NetworkingClient : RoomPanel.Mode.NetworkingHost);
-
-            setRoomPanel(logic.CurrentRoom);
         }
 
         #endregion
@@ -661,7 +658,7 @@ namespace Game
 
         private void NetworkingLogic_OnRoomDataChange(RoomData obj)
         {
-            setRoomPanel(obj);
+            setRoomData(obj);
         }
 
         private void NetworkingLogic_OnPlayerDataChange(RoomPlayerData[] obj)
@@ -675,7 +672,7 @@ namespace Game
                     // game.getPlayer(roomPlayer.RoomID).cmdSurrender(game);
                 }
             }
-            setRoomPanel(logic.CurrentRoom);
+            setRoomData(logic.CurrentRoom);
         }
         private void NetworkingLogic_OnSuggestCardPools(int playerId, CardPoolSuggestion suggestion)
         {

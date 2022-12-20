@@ -31,6 +31,10 @@ namespace Controllers
         public const string ROOM_UNKNOWN_PLAYER = "未知玩家";
         #endregion
         #region 公有方法
+        public void SetRoomData(RoomData room)
+        {
+             _ui.UpdateRoomData(room, GetSelfID());
+        }
         public Task display(UIDisplayInfo displayInfo)
         {
             if (displayInfo is DisplayInfo info)
@@ -40,7 +44,6 @@ namespace Controllers
 
                 _isDisplay = true;
                 _ui.gameObject.SetActive(true);
-                //_ui.ResetEvents();
                 //_ui.SetMode(RoomPanel.Mode.Local);
                 //_ui.SetSelfID(scene.game.network.logic.localPlayer.id);
                 //_ui.SetRightText("");
@@ -63,20 +66,27 @@ namespace Controllers
             return Task.CompletedTask;
         }
 
+        public void display(RoomData roomData, bool isLocalGame)
+        {
+            display(new DisplayInfo(roomData, isLocalGame));
+        }
         public UIDisplayInfo getCurrentDisplayInfo()
         {
             return new DisplayInfo(_currentRoomData, _isLocalGame);
         }
 
+        /// <summary>
+        /// 获取自己的玩家ID
+        /// </summary>
+        public int GetSelfID()
+        {
+            return game.network.logic.GetSelfInfo().id;
+        }
         public Task hide()
         {
             _isDisplay = false;
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
-        }
-        public void display(RoomData roomData, bool isLocalGame)
-        {
-            display(new DisplayInfo(roomData, isLocalGame));
         }
         public void UpdateRoomData(RoomData roomData)
         {
@@ -91,6 +101,10 @@ namespace Controllers
         public void ResetEvents()
         {
             onRoomPropChanged = null;
+
+            onStartClick = null;
+            onQuitClick = null;
+            onPlayerReadyChange = null;
         }
         #endregion
         #region 私有方法
@@ -121,6 +135,7 @@ namespace Controllers
             _ui.onClickQuitButton += onClickQuitButton;
             _ui.onSuggestCardPools += onCardPoolsSuggested;
             _ui.onCardPoolsSuggestionAnwsered += onCardPoolsSuggestionAnwsered;
+            _ui.onUpdateButtons += onUpdateButtons;
         }
 
         private void Update()
@@ -294,6 +309,10 @@ namespace Controllers
         }
         private async void onClickStartButton()
         {
+            if (isRoomOwner)
+            {
+                onStartClick?.Invoke();
+            }
             var players = _currentRoomData.getSortedPlayers();
             if (players != null &&
                 players.Length != _currentRoomData.playerDataList.Count)
@@ -313,6 +332,7 @@ namespace Controllers
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(true);
+            onPlayerReadyChange?.Invoke(GetSelfID(), true);
             updateStartAndReadyButton();
             //TODO:多人再说
         }
@@ -320,6 +340,7 @@ namespace Controllers
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(false);
+            onPlayerReadyChange?.Invoke(GetSelfID(), false);
             updateStartAndReadyButton();
             //TODO:多人再说
         }
@@ -330,6 +351,8 @@ namespace Controllers
 
             _ui.gameObject.SetActive(false);
             scene.menu.display();
+
+            onQuitClick?.Invoke();
         }
         private void onCardPoolsSuggested(int playerId, CardPoolSuggestion suggestion)
         {
@@ -352,7 +375,6 @@ namespace Controllers
                 game.network.AnwserCardPoolsSuggestion(playerId, suggestion, false);
             });
         }
-
         private void onCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
         {
             string desc = game.lang._(agree ? ROOM_CARD_POOLS_SUGGESTION_AGREED : ROOM_CARD_POOLS_SUGGESTION_REFUSED);
@@ -362,6 +384,15 @@ namespace Controllers
             {
                 UploadCardPools(suggestion.cardPools);
             }
+        }
+        private void onUpdateButtons()
+        {
+            _ui.enableRandomSeed(isRoomOwner);
+            _ui.enableShuffle(isRoomOwner);
+            _ui.enableInitReplaceTime(isRoomOwner);
+            _ui.enableTurnTime(isRoomOwner);
+            _ui.enableDisableRandomPlayerActOrder(isRoomOwner);
+            updateStartAndReadyButton();
         }
         #endregion
 
@@ -749,9 +780,21 @@ namespace Controllers
         #endregion
         #region 事件
         /// <summary>
+        /// 点击开始游戏后触发
+        /// </summary>
+        public event Action onStartClick;
+        /// <summary>
+        /// 点击退出房间后触发
+        /// </summary>
+        public event Action onQuitClick;
+        /// <summary>
         /// 房间信息更新（主要是设置）更新后触发
         /// </summary>
         public event Action<string, object> onRoomPropChanged;
+        /// <summary>
+        /// 玩家准备或取消准备
+        /// </summary>
+        public event Action<int, bool> onPlayerReadyChange;
         #endregion
         #region 属性字段
         public bool isDisplay => _isDisplay;

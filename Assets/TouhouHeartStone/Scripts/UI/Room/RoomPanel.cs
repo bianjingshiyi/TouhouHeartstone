@@ -17,31 +17,42 @@ namespace UI
 {
     partial class RoomPanel
     {
+        #region 常量
+        [TranslateMsg]
+        private const string Cards_Name = "选择你的卡组";
+        [TranslateMsg]
+        const string STR_START_GAME = "开始游戏";
+        [TranslateMsg]
+        const string STR_PREPARE = "准备";
+        [TranslateMsg]
+        private const String STR_REQUEST_PREPRAE = "取消准备";
+        #endregion
         #region 公有方法
         public void SetCardPoolLoadProgress(float progress)
         {
             _selfPlayerItem?.SetProgress(progress);
         }
-        public void SetInfo(RoomData room, bool clearAIPlayerData = false)
+        public void UpdateRoomData(RoomData room, int selfPlayerID, bool clearAIPlayerData = false)
         {
             if (clearAIPlayerData)
             {
                 aiPlayerData = null;
             }
-            roomData = room;
 
             RoomPlayerData selfPlayer = null;
 
+            bool isRoomOwner = currentMode == Mode.Local || room?.ownerId == selfPlayerID;
             // 如果不修改_playerList的元素，会导致_playerList在调用updatePlayerList时包含已经被销毁的游戏对象，然后报错
             _playerList.Clear();
             RoomPlayerList.clearItems();
             foreach (var player in room.playerDataList)
             {
 
+
                 var item = RoomPlayerList.addItem();
                 _playerList.Add(item.rectTransform);
                 item.SetPlayerInfo(player);
-                item.OnPlayerViewDeck += viewDeck;
+                item.OnPlayerViewDeck += onViewDeck;
 
                 // 顺便获取自己的引用
                 if (player.id == selfPlayerID)
@@ -117,7 +128,7 @@ namespace UI
                 Debug.LogException(e);
             }
 
-            updateButtonStates();
+            updateButtonStates(room);
 
             if (isRoomOwner)
             {
@@ -150,50 +161,6 @@ namespace UI
                 //StartButtonButtonBlack.asButton.setSelectable(deck != null && deck.masterCardRef != DefineReference.Empty && deck.getCardCount() == 30);
             }
         }
-        #endregion
-        RoomData roomData { get; set; }
-
-        DeckManager deckManager => this.findInstance<DeckManager>();
-        CardManager cardManager => this.findInstance<CardManager>();
-
-        LangManager lang => this.findInstance<LangManager>();
-
-        [TranslateMsg]
-        private const string Cards_Name = "选择你的卡组";
-
-        private void OnEnable()
-        {
-            DeckSelectionDeckListItem.SetContent(0, lang._(Cards_Name), null);
-        }
-
-        void initEvents()
-        {
-
-        }
-
-        /// <summary>
-        /// 是否为房主
-        /// </summary>
-        bool isRoomOwner => currentMode == Mode.Local || roomData?.ownerId == selfPlayerID;
-
-        public enum Mode
-        {
-            /// <summary>
-            /// 本地游戏
-            /// </summary>
-            Local,
-            /// <summary>
-            /// 局域网中的主机
-            /// </summary>
-            NetworkingHost,
-            /// <summary>
-            /// 局域网客户端或大厅客户端
-            /// </summary>
-            NetworkingClient
-        }
-
-        Mode currentMode;
-
         /// <summary>
         /// 设置房间模式，是本地、客户端还是远程
         /// </summary>
@@ -205,62 +172,25 @@ namespace UI
             updateButtonStates();
         }
 
-        void updateButtonStates()
-        {
-            RandomSeedContainerGameOptionItemText.InputField.setSelectable(isRoomOwner);
-            ShuffleContainerGameOptionItemToggle.Toggle.setSelectable(isRoomOwner);
-            InitReplacementContainerGameOptionItemText.InputField.setSelectable(isRoomOwner);
-            TurnTimeContainerGameOptionItemText.InputField.setSelectable(isRoomOwner);
-            IsSortedToggleGameOptionItemToggle.Toggle.setSelectable(isRoomOwner);
-
-            // 准备按钮
-            StartButtonButtonBlack.Text.text = isRoomOwner ? lang._(STR_START_GAME) : lang._(STR_PREPARE);
-        }
-        [TranslateMsg]
-        const string STR_START_GAME = "开始游戏";
-        [TranslateMsg]
-        const string STR_PREPARE = "准备";
-
-        int selfPlayerID = -1;
 
         /// <summary>
-        /// 设置自己的玩家ID
+        /// 设置右上角的（IP地址）文本
         /// </summary>
-        /// <param name="id"></param>
-        public void SetSelfID(int id)
+        /// <param name="text"></param>
+        public void SetRightText(string text)
         {
-            selfPlayerID = id;
+            IPText.text = text;
         }
 
-        /// <summary>
-        /// 查看卡组
-        /// </summary>
-        /// <param name="cards"></param>
-        async void viewDeck(DefineReference[] cards)
+        public void ResetEvents()
         {
-            //_cardViewPanel.setItems(cardManager,cards);
-            async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
-            {
-                var card = cardManager.getCardDefine(cardRef.cardPoolId, cardRef.defineId);
-                var skin = cardManager.getCardSkin(cardRef.cardPoolId, cardRef.defineId);
-                Sprite image = null;
-                if (card != null)
-                {
-                    var path = skin?.imagePath;
-                    image = await cardManager.loadCardImage(cardRef.cardPoolId, cardRef.defineId);
-                }
-                return (skin?.name, image);
-            }
-            List<(string name, Sprite image)> list = new List<(string name, Sprite image)>();
-            foreach (var cardRef in cards)
-            {
-                list.Add(await getCardData(cardRef));
-            }
-            var viewData = list.ToArray();
-            _cardViewPanel.update(viewData);
-            _cardPanel.SetActive(true);
+            aiPlayerData = null;
+
+            onPlayerRemove = null;
+            onAIPlayerAdd = null;
+            onSetPlayerDeck = null;
+            onUpdateButtons = null;
         }
-        #region 公有方法
         public void updatePlayerList((string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[] viewData)
         {
             BJSYGameCore.UI.UIHelper.updateList(_playerRoot, _playerTemplate, _playerList, viewData.Length, (i, itemRect) =>
@@ -438,7 +368,6 @@ namespace UI
                     onSetPlayerDeck?.Invoke(selfPlayerID, list.ToArray());
                 });
             };
-            initEvents();
 
             _deckPanel.SetActive(false);
             _cardPanel.SetActive(false);
@@ -465,6 +394,10 @@ namespace UI
             _readyButton.onClick.AddListener(onClickReadyButtonCallback);
             _cancleReadyButton.onClick.AddListener(onClickCancleReadyButtonCallback);
             _quitButton.onClick.AddListener(onClickQuitButtonCallback);
+        }
+        private void OnEnable()
+        {
+            DeckSelectionDeckListItem.SetContent(0, lang._(Cards_Name), null);
         }
         #endregion
         #region 事件回调
@@ -524,21 +457,15 @@ namespace UI
         private void onClickReadyButtonCallback()
         {
             onClickReadyButton?.Invoke();
-            // 之前这个是写在按下开始按钮之后调用的，但是完全没有用，写在这里
-            OnPlayerReadyChange?.Invoke(selfPlayerID, true);
         }
         private void onClickCancleReadyButtonCallback()
         {
             onClickCancleReadyButton?.Invoke();
-            // holy shit, 上面的回调是假的，是特技，是化学的成分
-            OnPlayerReadyChange?.Invoke(selfPlayerID, false);
         }
 
         private void onClickQuitButtonCallback()
         {
             onClickQuitButton?.Invoke();
-            //把onQuitClick事件移动到这里。
-            onQuitClick?.Invoke();
         }
 
         private void onClickCloseDeckPanelButtonCallback()
@@ -552,8 +479,59 @@ namespace UI
         }
 
 
+        /// <summary>
+        /// 查看卡组
+        /// </summary>
+        /// <param name="cards"></param>
+        private async void onViewDeck(DefineReference[] cards)
+        {
+            //_cardViewPanel.setItems(cardManager,cards);
+            async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
+            {
+                var card = cardManager.getCardDefine(cardRef.cardPoolId, cardRef.defineId);
+                var skin = cardManager.getCardSkin(cardRef.cardPoolId, cardRef.defineId);
+                Sprite image = null;
+                if (card != null)
+                {
+                    var path = skin?.imagePath;
+                    image = await cardManager.loadCardImage(cardRef.cardPoolId, cardRef.defineId);
+                }
+                return (skin?.name, image);
+            }
+            List<(string name, Sprite image)> list = new List<(string name, Sprite image)>();
+            foreach (var cardRef in cards)
+            {
+                list.Add(await getCardData(cardRef));
+            }
+            var viewData = list.ToArray();
+            _cardViewPanel.update(viewData);
+            _cardPanel.SetActive(true);
+        }
 
         #endregion
+        void updateButtonStates()
+        {
+            onUpdateButtons?.Invoke();
+        }
+        void showDeckSelectionPanel(Action<int> onDeckSelect)
+        {
+            var decks = deckManager.GetDecks();
+            var viewData = decks.Select((define =>
+            {
+                // 只有30张卡的卡组才能选择
+                return (define.Name, cardManager.getCardSkin(define.MasterCardRef).image, (deckManager.GetDeckCards(define.ID).Count >= 30), false);
+            })).ToArray();
+            _deckViewPanel.update(viewData);
+            _deckPanel.SetActive(true);
+            _deckViewPanel.onClickDeckListItem -= onSelectCallback;
+            _deckViewPanel.onClickDeckListItem += onSelectCallback;
+            void onSelectCallback(int id)
+            {
+                _deckPanel.SetActive(false);
+                onDeckSelect(id);
+                _deckViewPanel.onClickDeckListItem -= onSelectCallback;
+            }
+        }
         #endregion
         #region 事件
         /// <summary>
@@ -589,8 +567,30 @@ namespace UI
         public event Action onClickQuitButton;
         public event Action<int, CardPoolSuggestion> onSuggestCardPools;
         public event Action<CardPoolSuggestion, bool> onCardPoolsSuggestionAnwsered;
+
+
+
+        /// <summary>
+        /// 点击删除玩家按钮后触发
+        /// </summary>
+        public event Action<int> onPlayerRemove;
+        /// <summary>
+        /// 添加了AI玩家
+        /// </summary>
+        public event Action onAIPlayerAdd;
+        /// <summary>
+        /// 玩家牌组改变
+        /// </summary>
+        public event Action<int, DefineReference[]> onSetPlayerDeck;
+        /// <summary>
+        /// 更新按钮状态
+        /// </summary>
+        public event Action onUpdateButtons;
         #endregion
         #region 属性字段
+        Mode currentMode;
+        RoomPlayerData aiPlayerData;
+
         [SerializeField]
         RectTransform _playerRoot;
         [SerializeField]
@@ -652,78 +652,30 @@ namespace UI
         private ButtonBlack _closeCardPanelButton;
         [SerializeField]
         private LoadingCircle loadingCircle;
+
+
+        DeckManager deckManager => this.findInstance<DeckManager>();
+        CardManager cardManager => this.findInstance<CardManager>();
+
+        LangManager lang => this.findInstance<LangManager>();
         #endregion
-        void showDeckSelectionPanel(Action<int> onDeckSelect)
+        #region 枚举
+        public enum Mode
         {
-            var decks = deckManager.GetDecks();
-            var viewData = decks.Select((define =>
-            {
-                // 只有30张卡的卡组才能选择
-                return (define.Name, cardManager.getCardSkin(define.MasterCardRef).image, (deckManager.GetDeckCards(define.ID).Count >= 30), false);
-            })).ToArray();
-            _deckViewPanel.update(viewData);
-            _deckPanel.SetActive(true);
-            _deckViewPanel.onClickDeckListItem -= onSelectCallback;
-            _deckViewPanel.onClickDeckListItem += onSelectCallback;
-            void onSelectCallback(int id)
-            {
-                _deckPanel.SetActive(false);
-                onDeckSelect(id);
-                _deckViewPanel.onClickDeckListItem -= onSelectCallback;
-            }
+            /// <summary>
+            /// 本地游戏
+            /// </summary>
+            Local,
+            /// <summary>
+            /// 局域网中的主机
+            /// </summary>
+            NetworkingHost,
+            /// <summary>
+            /// 局域网客户端或大厅客户端
+            /// </summary>
+            NetworkingClient
         }
-
-        RoomPlayerData aiPlayerData;
-
-
-
-        [TranslateMsg]
-        private const String STR_REQUEST_PREPRAE = "取消准备";
-
-        /// <summary>
-        /// 设置右上角的（IP地址）文本
-        /// </summary>
-        /// <param name="text"></param>
-        public void SetRightText(string text)
-        {
-            IPText.text = text;
-        }
-
-        /// <summary>
-        /// 点击退出房间后触发
-        /// </summary>
-        public event Action onQuitClick;
-        /// <summary>
-        /// 房间设置更新后触发
-        /// </summary>
-        public event Action<RoomDataPropName.Option, object> onRoomSettingChanged;
-        /// <summary>
-        /// 点击删除玩家按钮后触发
-        /// </summary>
-        public event Action<int> onPlayerRemove;
-        /// <summary>
-        /// 添加了AI玩家
-        /// </summary>
-        public event Action onAIPlayerAdd;
-        /// <summary>
-        /// 玩家牌组改变
-        /// </summary>
-        public event Action<int, DefineReference[]> onSetPlayerDeck;
-        /// <summary>
-        /// 玩家准备或取消准备
-        /// </summary>
-        public event Action<int, bool> OnPlayerReadyChange;
-
-        public void ResetEvents()
-        {
-            aiPlayerData = null;
-
-            onQuitClick = null;
-            onPlayerRemove = null;
-            onAIPlayerAdd = null;
-            onSetPlayerDeck = null;
-            OnPlayerReadyChange = null;
-        }
+        #endregion
     }
     partial class RoomPlayerListItem
     {
