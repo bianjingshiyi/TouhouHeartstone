@@ -168,76 +168,7 @@ namespace UI
 
         void initEvents()
         {
-            RandomSeedContainerGameOptionItemText.InputField.onValueChanged.set(value =>
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    setNotifyRoomSetting(RoomDataPropName.Option.RandomSeed, 0);
-                    return;
-                }
 
-                if (int.TryParse(value, out int i))
-                {
-                    setNotifyRoomSetting(RoomDataPropName.Option.RandomSeed, i);
-                }
-                else
-                {
-                    RandomSeedContainerGameOptionItemText.InputField.text = roomData.getRandomSeed().ToString();
-                }
-            });
-
-            ShuffleContainerGameOptionItemToggle.Toggle.onValueChanged.set(value =>
-            {
-                setNotifyRoomSetting(RoomDataPropName.Option.Shuffle, value);
-            });
-
-            InitReplacementContainerGameOptionItemText.InputField.onEndEdit.set(value =>
-            {
-                if (int.TryParse(value, out int i) && 5 < i)
-                {
-                    setNotifyRoomSetting(RoomDataPropName.Option.TimeoutForInitReplace, i);
-                }
-                else
-                {
-                    InitReplacementContainerGameOptionItemText.InputField.text = roomData.getTimeoutForInitReplace().ToString();
-                }
-            });
-
-            TurnTimeContainerGameOptionItemText.InputField.onEndEdit.set(value =>
-            {
-                if (int.TryParse(value, out int i) && 5 < i)
-                {
-                    setNotifyRoomSetting(RoomDataPropName.Option.TimeoutForTurn, i);
-                }
-                else
-                {
-                    TurnTimeContainerGameOptionItemText.InputField.text = roomData.getTimeoutForTurn().ToString();
-                }
-            });
-
-            IsSortedToggleGameOptionItemToggle.Toggle.onValueChanged.set((value) =>
-            {
-                Debug.Log("更新房间设定" + value);
-                if (value)
-                {
-                    setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, roomData.playerDataList.Select(p => p.id).ToArray());
-                }
-                else
-                {
-                    setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, null);
-                }
-            });
-            _allowCustomCardsToggle.onValueChanged.set(value =>
-            {
-                setNotifyRoomSetting(RoomDataPropName.Option.AllowCustomCards, value);
-            });
-
-
-            // 移动到onClickQuitButtonCallback里面
-            //QuitButtonButtonBlack.asButton.onClick.set(() =>
-            //{
-            //    onQuitClick?.Invoke();
-            //});
         }
 
         /// <summary>
@@ -482,7 +413,6 @@ namespace UI
         {
             onCardPoolsSuggestionAnwsered?.Invoke(suggestion, agree);
         }
-
         #endregion
         #region 私有方法
         #region 生命周期
@@ -564,10 +494,7 @@ namespace UI
         }
         private void onRandomSeedInputFieldValueChangedCallback(string value)
         {
-            if (int.TryParse(value, out int seed))
-            {
-                onRandomSeedInputFieldValueChanged?.Invoke(seed);
-            }
+            onRandomSeedInputFieldValueChanged?.Invoke(value);
         }
         private void onShuffleToggleValueChangedCallback(bool value)
         {
@@ -575,17 +502,11 @@ namespace UI
         }
         private void onInitReplaceTimeInputFieldValueChangedCallback(string text)
         {
-            if (float.TryParse(text, out float value))
-            {
-                onInitReplaceTimeInputFieldValueChanged?.Invoke(value);
-            }
+            onInitReplaceTimeInputFieldValueChanged?.Invoke(text);
         }
         private void onTurnTimeInputFieldValueChangedCallback(string text)
         {
-            if (float.TryParse(text, out float value))
-            {
-                onTurnTimeInputFieldValueChanged?.Invoke(value);
-            }
+            onTurnTimeInputFieldValueChanged?.Invoke(text);
         }
         private void onDisableRandomPlayerActOrderValueChangedCallback(bool value)
         {
@@ -656,10 +577,10 @@ namespace UI
         /// <summary>
         /// 当房主更改房间随机种子，参数为更改后的随机种子值
         /// </summary>
-        public event Action<int> onRandomSeedInputFieldValueChanged;
+        public event Action<string> onRandomSeedInputFieldValueChanged;
         public event Action<bool> onShuffleToggleValueChanged;
-        public event Action<float> onInitReplaceTimeInputFieldValueChanged;
-        public event Action<float> onTurnTimeInputFieldValueChanged;
+        public event Action<string> onInitReplaceTimeInputFieldValueChanged;
+        public event Action<string> onTurnTimeInputFieldValueChanged;
         public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
         public event Action<bool> onCustomCardsToggleValueChanged;
         public event Action onClickStartButton;
@@ -754,22 +675,7 @@ namespace UI
 
         RoomPlayerData aiPlayerData;
 
-        [Obsolete("请使用 setNotifyRoomSetting")]
-        void notifyRoomSettingChange(GameOption option)
-        {
-            onRoomPropUpdate?.Invoke(RoomDataPropName.OPTION_GAMEOPTION, option);
-        }
 
-        /// <summary>
-        /// 设置本地的房间值，并发送房间值改变的通知
-        /// </summary>
-        /// <param name="prop"></param>
-        /// <param name="value"></param>
-        void setNotifyRoomSetting(RoomDataPropName.Option prop, object value)
-        {
-            roomData?.setOption(prop, value);
-            onRoomPropUpdate?.Invoke(prop.ToString(), value);
-        }
 
         [TranslateMsg]
         private const String STR_REQUEST_PREPRAE = "取消准备";
@@ -788,9 +694,9 @@ namespace UI
         /// </summary>
         public event Action onQuitClick;
         /// <summary>
-        /// 房间信息更新（主要是设置）更新后触发
+        /// 房间设置更新后触发
         /// </summary>
-        public event Action<string, object> onRoomPropUpdate;
+        public event Action<RoomDataPropName.Option, object> onRoomSettingChanged;
         /// <summary>
         /// 点击删除玩家按钮后触发
         /// </summary>
@@ -813,7 +719,6 @@ namespace UI
             aiPlayerData = null;
 
             onQuitClick = null;
-            onRoomPropUpdate = null;
             onPlayerRemove = null;
             onAIPlayerAdd = null;
             onSetPlayerDeck = null;

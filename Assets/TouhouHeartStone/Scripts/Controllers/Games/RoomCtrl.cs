@@ -10,6 +10,7 @@ using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using Deck = TouhouHeartstone.Deck;
+using Newtonsoft.Json.Linq;
 
 namespace Controllers
 {
@@ -87,6 +88,10 @@ namespace Controllers
             LoadCachedCardPools();
             updateStartAndReadyButton();
         }
+        public void ResetEvents()
+        {
+            onRoomPropChanged = null;
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -139,37 +144,64 @@ namespace Controllers
         }
         #endregion
         #region 事件回调
-        private void onRandomSeedInputFieldValueChanged(int value)
+        private void onRandomSeedInputFieldValueChanged(string value)
         {
-            _currentRoomData.setOption(RoomDataPropName.Option.RandomSeed, value);
+            if (string.IsNullOrEmpty(value))
+            {
+                setNotifyRoomSetting(RoomDataPropName.Option.RandomSeed, 0);
+                return;
+            }
+
+            if (int.TryParse(value, out int i))
+            {
+                setNotifyRoomSetting(RoomDataPropName.Option.RandomSeed, i);
+            }
+            else
+            {
+                _ui.setRandomSeed(_currentRoomData.getRandomSeed());
+            }
         }
         private void onShuffleToggleValueChanged(bool value)
         {
-            _currentRoomData.setOption(RoomDataPropName.Option.Shuffle, value);
+            setNotifyRoomSetting(RoomDataPropName.Option.Shuffle, value);
         }
-        private void onInitReplaceTimeInputFieldValueChanged(float value)
+        private void onInitReplaceTimeInputFieldValueChanged(string value)
         {
-            _currentRoomData.setOption(RoomDataPropName.Option.TimeoutForInitReplace, (int)value);
+            if (int.TryParse(value, out int i) && 5 < i)
+            {
+                setNotifyRoomSetting(RoomDataPropName.Option.TimeoutForInitReplace, i);
+            }
+            else
+            {
+                _ui.setInitReplaceTime(_currentRoomData.getTimeoutForInitReplace());
+            }
         }
-        private void onTurnTimeInputFieldValueChanged(float value)
+        private void onTurnTimeInputFieldValueChanged(string value)
         {
-            _currentRoomData.setOption(RoomDataPropName.Option.TimeoutForTurn, (int)value);
+            if (int.TryParse(value, out int i) && 5 < i)
+            {
+                setNotifyRoomSetting(RoomDataPropName.Option.TimeoutForTurn, i);
+            }
+            else
+            {
+                _ui.setTurnTime(_currentRoomData.getTimeoutForTurn());
+            }
         }
         private void onDisableRandomPlayerActOrderToggleValueChanged(bool value)
         {
             if (value)
             {
-                _currentRoomData.setOption(RoomDataPropName.Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
+                setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
             }
             else
             {
-                _currentRoomData.setOption(RoomDataPropName.Option.SortedPlayers, null);
+                setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, null);
             }
         }
 
         private void onCustomCardsToggleValueChanged(bool value)
         {
-            _currentRoomData.setOption(RoomDataPropName.Option.AllowCustomCards, value);
+            setNotifyRoomSetting(RoomDataPropName.Option.AllowCustomCards, value);
             updateStartAndReadyButton();
         }
         private void onClickPlayerListItemViewDeckButton(int index)
@@ -333,6 +365,16 @@ namespace Controllers
         }
         #endregion
 
+        /// <summary>
+        /// 设置本地的房间值，并发送房间值改变的通知
+        /// </summary>
+        /// <param name="prop"></param>
+        /// <param name="value"></param>
+        void setNotifyRoomSetting(RoomDataPropName.Option prop, object value)
+        {
+            _currentRoomData?.setOption(prop, value);
+            onRoomPropChanged?.Invoke(prop.ToString(), value);
+        }
         /// <summary>
         /// 指定的卡池列表是否不在房间卡池列表中
         /// </summary>
@@ -704,6 +746,12 @@ namespace Controllers
         {
             game.network.SuggestCardPools(suggestion);
         }
+        #endregion
+        #region 事件
+        /// <summary>
+        /// 房间信息更新（主要是设置）更新后触发
+        /// </summary>
+        public event Action<string, object> onRoomPropChanged;
         #endregion
         #region 属性字段
         public bool isDisplay => _isDisplay;

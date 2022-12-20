@@ -608,6 +608,8 @@ namespace Game
         private void displayRoomPanel()
         {
             roomPanel.ResetEvents();
+            var roomCtrl = _sceneCtrl.room;
+            roomCtrl.ResetEvents();
 
             roomPanel.onQuitClick += () =>
             {
@@ -633,7 +635,7 @@ namespace Game
             };
 
             ui.parent.display(roomPanel);
-            _sceneCtrl.room.display(logic.CurrentRoom, false);
+            roomCtrl.display(logic.CurrentRoom, false);
             //  加载聊天框
             _sceneCtrl.chatCtrl.display(logic.CurrentRoom);
             roomPanel.SetRightText("IP：" + string.Join(", ", addresses));
