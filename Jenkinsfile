@@ -261,7 +261,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'igsk_wecom_bot', variable: 'WECOM_TOKEN')]) {
                     def bot = new Wecom(this, env.WECOM_TOKEN)
                     try {
-                        bot.sendResultCard(textLog, downloadList, linkList)
+                        bot.sendResultCard(textLog, wecomContents, linkList)
                     } catch (Exception e) {
                         echo e.toString();
                     }
