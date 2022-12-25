@@ -337,17 +337,17 @@ namespace Controllers
         private bool HasNotSharedPools(long[] pools, out long[] privatePools)
         {
             var roomCardPools = _currentRoomData.getCardPools();
-            if (roomCardPools.array.Length == 0)
+            if (roomCardPools.Length == 0)
             {
                 // 修正没有设置的情况下无法使用任何卡的问题
-                roomCardPools = new CardPoolArray(new CardPoolInfoPack(0, "", 0));
+                roomCardPools = new CardPoolInfoPack[0];
             }
 
             List<long> privates = new List<long>();
             bool hasNotShared = false;
             foreach (long pool in pools)
             {
-                if (!roomCardPools.array.Any(p => p.cardPoolId == pool))
+                if (!roomCardPools.Any(p => p.cardPoolId == pool))
                 {
                     hasNotShared = true;
                     privates.Add(pool);
@@ -371,7 +371,7 @@ namespace Controllers
         }
         private void AddCardPools(CardPoolInfoPack[] packs)
         {
-            var cardPools = new CardPoolArray(_currentRoomData.getCardPools().array.Union(packs).ToArray());
+            var cardPools = _currentRoomData.getCardPools().Union(packs).ToArray();
             _currentRoomData.setOption(RoomDataPropName.Option.CardPools, cardPools);
             game.network.SetRoomProp(RoomDataPropName.Option.CardPools.ToString(), cardPools);
         }
@@ -379,7 +379,7 @@ namespace Controllers
         {
             var cardPools = _currentRoomData.getCardPools();
             List<CardPoolInfoPack> infoPacks = new List<CardPoolInfoPack>();
-            foreach (CardPoolInfoPack poolPack in cardPools.array)
+            foreach (CardPoolInfoPack poolPack in cardPools)
             {
                 string id = poolPack.GetResourceID();
                 // 如果本地不存在该卡池，并且本地没有缓存，加入到列表中

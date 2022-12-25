@@ -7,7 +7,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using TouhouCardEngine;
-using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 
 namespace Controllers
@@ -20,10 +19,6 @@ namespace Controllers
                 BsonClassMap.RegisterClassMap<DefineReference>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(CardReference)))
                 BsonClassMap.RegisterClassMap<CardReference>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(TouhouCardEngine.Shared.Deck)))
-                BsonClassMap.RegisterClassMap<TouhouCardEngine.Shared.Deck>(); 
-            if (!BsonClassMap.IsClassMapRegistered(typeof(CardPoolArray)))
-                BsonClassMap.RegisterClassMap<CardPoolArray>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(ActionValueRef)))
                 BsonClassMap.RegisterClassMap<ActionValueRef>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedEffect)))
