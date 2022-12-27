@@ -420,7 +420,7 @@ namespace TouhouHeartstone
             await player[PILE.MASTER].add(game, game.createCard(master.cardPoolId, master.defineId));
             DefineReference skillRef = game.getDefine(master.cardPoolId, master.defineId).getSkillRef();
             await player[PILE.SKILL].add(game, game.createCard(skillRef.cardPoolId, skillRef.defineId));
-            await player[PILE.DECK].add(game, deck.Select(d => game.createCard(d.cardPoolId, d.defineId)));
+            await player[PILE.DECK].add(game, defRefs.Select(d => game.createCard(d.cardPoolId, d.defineId)));
         }
         #endregion
         public HearthStoneRule(Dictionary<long, Dictionary<int, CardDefine>> defines, Dictionary<long, Dictionary<int, BuffDefine>> buffs) : base(defines, buffs)
