@@ -52,6 +52,10 @@ namespace TouhouHeartstone
                     return new DefineReference(id << 1 >> 17, id);
                 }
             }
+            if (define.cardPoolId == 0) //内置卡牌
+            {
+                return new DefineReference(0, getCharacterID(define.id));
+            }
             // 中立卡牌。
             return new DefineReference(0, 0);
         }
