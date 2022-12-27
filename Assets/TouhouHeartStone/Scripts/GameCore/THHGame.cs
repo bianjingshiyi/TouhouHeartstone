@@ -609,8 +609,8 @@ namespace TouhouHeartstone
                 foreach (Player player in getSortedPlayers(game))
                 {
                     await player.setMaxGem(game, getOption(game).startGem);
-                    await player.getInit().moveTo(game, player.getInit()[0, player.getInit().count - 1],
-                        player.getHand(), 0);
+                    var initPile = player.getInit();
+                    await initPile.moveTo(game, initPile, player.getHand(), 0);
                     if (player != getSortedPlayers(game)[0])
                     {
                         await player.getHand().add(game, game.createCard(game.getDefine<LuckyCoin>()));

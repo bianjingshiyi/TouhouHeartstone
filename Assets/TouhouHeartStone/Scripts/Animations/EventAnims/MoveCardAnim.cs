@@ -40,7 +40,7 @@ namespace Game
                     if (eventArg.to.name == PILE.HAND)
                     {
                         //初始手牌
-                        table.createHand(eventArg.card);
+                        table.createHand(eventArg.card, eventArg.position);
                     }
                     return true;
                 case PILE.DECK:
