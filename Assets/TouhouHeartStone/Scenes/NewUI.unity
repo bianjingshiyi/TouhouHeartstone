@@ -5824,7 +5824,7 @@ MonoBehaviour:
   _textureDirName: Textures
   _editorCardPoolDirName: ExternalData/CardPools
   _editorTextureDirName: ExternalData/Textures
-  _standardCardPoolsId: 01000000
+  _standardCardPoolsId: 0100000000000000
 --- !u!4 &902763123
 Transform:
   m_ObjectHideFlags: 0
@@ -7470,15 +7470,81 @@ MonoBehaviour:
   _defaultDeck:
     id: 0
     name: DefaultPatchouli
-    masterId: 0
+    masterCardRef:
+      cardPoolId: 0
+      defineId: 0
     cardList: []
   _useTestDeck: 0
   _testDeck:
     id: 0
     name: 
-    masterId: 0
+    masterCardRef:
+      cardPoolId: 0
+      defineId: 0
     cardList: []
-  _deck: 00004000012000000120000001200000012000000120000002200000022000000220000002200000022000000220000002200000032000000320000003200000032000000320000003200000122040001220400007304000073040001220400006200000062000000620000006200000062000000620000006200000
+  _deck:
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
+  - cardPoolId: 0
+    defineId: 0
   _dummyAI: 0
   _mode: 0
 --- !u!4 &1441166624

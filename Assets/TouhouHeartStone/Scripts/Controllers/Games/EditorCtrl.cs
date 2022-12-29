@@ -162,7 +162,7 @@ namespace Controllers
             {
                 game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.i18n._(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
-                    hasUnsavedChanges = true;
+                    hasUnsavedChanges = false;
                     game.card.removeCardPool(_cardPoolInfoList[index].cardPoolId);
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
@@ -243,7 +243,7 @@ namespace Controllers
             {
                 game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
-                    hasUnsavedChanges = true;
+                    hasUnsavedChanges = false;
                     //删除当前卡池
                     game.card.removeCardPool(_curCardPoolInfo.cardPoolId);
                     int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
