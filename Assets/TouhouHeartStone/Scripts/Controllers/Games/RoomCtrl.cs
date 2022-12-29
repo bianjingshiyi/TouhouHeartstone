@@ -383,7 +383,7 @@ namespace Controllers
             {
                 string id = poolPack.GetResourceID();
                 // 如果本地不存在该卡池，并且本地没有缓存，加入到列表中
-                if (poolPack.cardPoolId > 0 && game.card.getCardPoolInfo(poolPack.cardPoolId) == null && !game.cache.FileExists(ResourceType.CardDefine, id))
+                if (poolPack.cardPoolId != 0 && game.card.getCardPoolInfo(poolPack.cardPoolId) == null && !game.cache.FileExists(ResourceType.CardDefine, id))
                 {
                     infoPacks.Add(poolPack);
                 }

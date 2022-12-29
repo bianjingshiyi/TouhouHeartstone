@@ -25,7 +25,7 @@ namespace Game
                 throw new SnowflakeException("尝试在生成的1秒冷却中再次生成一个Id。");
             }
             lastTimestamp = timestamp;
-            return (playerKey << playerKeyShift) | (timestamp & timestampMask);
+            return ((playerKey << playerKeyShift) & playerKeyMask) | (timestamp & timestampMask);
         }
         #endregion
 
@@ -33,7 +33,7 @@ namespace Game
         //上次生成ID的时间戳。
         private long lastTimestamp;
         //玩家Key。
-        private long playerKey;
+        private int playerKey;
         //开始时间戳。
         //private const long startTime = new DateTime(2022, 11, 11, 0, 0, 0, 0).Second;
         //时间戳位数。
@@ -46,6 +46,7 @@ namespace Game
         private const int playerKeyBits = 32;
         //玩家Key的位数偏移。
         private const int playerKeyShift = timestampBits;
+        private const long playerKeyMask = 0xFFFFFFFF << playerKeyShift;
         private readonly DateTime startTime = new DateTime(2022, 11, 11, 0, 0, 0, 0);
         #endregion
     }
