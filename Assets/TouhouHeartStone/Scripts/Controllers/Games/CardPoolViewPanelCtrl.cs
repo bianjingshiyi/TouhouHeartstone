@@ -115,7 +115,7 @@ namespace Controllers
                         if (cardPoolInfo != null)
                         {
                             int cardPoolInfoIndex = _cardPoolInfoList.FindIndex(c => c.cardPoolId == cardPoolInfo.cardPoolId);
-                            if (!_cardPoolFilterValue[cardPoolInfoIndex])
+                            if ((cardPoolInfoIndex < 0) || !_cardPoolFilterValue[cardPoolInfoIndex])
                             {
                                 //忽略不在选中卡池中的角色
                                 continue;

@@ -676,7 +676,7 @@ namespace Game
                 CardSkinData skin = new CardSkinData();
                 skin.id = cardDefineId;
                 skin.skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME;
-                skin.skinId = getAllSkins(cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1; ;
+                skin.skinId = getAllSkins(cardPoolId, cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1; ;
                 cardPool.cardSkinList.Add(skin);
                 return skin;
             }
@@ -867,7 +867,7 @@ namespace Game
             }
             return false;
         }
-        public CardSkinData[] getAllSkins(int cardId)
+        public CardSkinData[] getAllSkins(long cardPoolId, int cardId)
         {
             List<CardSkinData> skinList = new List<CardSkinData>();
             for (int i = 0; i < _skins.Length; i++)
@@ -885,7 +885,7 @@ namespace Game
             {
                 skinList.Add(tempSkin);
             }
-            foreach (var cardPool in _cardPoolDict.Values)
+            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
             {
                 foreach (var skin in cardPool.cardSkinList)
                 {

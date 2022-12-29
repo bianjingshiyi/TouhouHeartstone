@@ -610,11 +610,11 @@ namespace Game
         }
         public CardSkinData getDefaultSkin(CardDefine cardDefine)
         {
-            return getDefaultSkin(cardDefine.id);
+            return getDefaultSkin(cardDefine.cardPoolId, cardDefine.id);
         }
-        public CardSkinData getDefaultSkin(int id)
+        public CardSkinData getDefaultSkin(long cardPoolId, int id)
         {
-            var skinGroup = getAllSkins(id).GroupBy(s => s.skinId).FirstOrDefault();
+            var skinGroup = getAllSkins(cardPoolId, id).GroupBy(s => s.skinId).FirstOrDefault();
             if (skinGroup == null)
             {
                 //卡牌没有任何皮肤
@@ -634,6 +634,11 @@ namespace Game
         /// <returns></returns>
         public CardSkinData getCardSkin(long cardPoolId, int cardId)
         {
+            if (cardPoolId == 0)
+            {
+                if (skinDic.TryGetValue(cardId, out CardSkinData builtInSkin))
+                    return builtInSkin;
+            }
             if (tryGetCardSkin(cardPoolId, cardId, out CardSkinData skin))
                 return skin;
             return null;
@@ -644,20 +649,7 @@ namespace Game
         }
         public CardSkinData getCardSkin(CardDefine cardDefine)
         {
-            if (cardDefine.cardPoolId == 0)
-            {
-                if (skinDic.TryGetValue(cardDefine.id, out CardSkinData skin))
-                    return skin;
-            }
-            foreach (var cardPool in _cardPoolDict)
-            {
-                if (cardPool.Value.cardDefineList.Contains(cardDefine))
-                {
-                    if (tryGetCardSkin(cardPool.Key, cardDefine.id, out CardSkinData skin))
-                        return skin;
-                }
-            }
-            return null;
+            return getCardSkin(cardDefine.cardPoolId, cardDefine.id);
         }
         Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();
         /// <summary>

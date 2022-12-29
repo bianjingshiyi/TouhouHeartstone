@@ -586,8 +586,14 @@ namespace Game
             {
                 ui.LogScrollView.LogInfoHorizantal.display();
                 string info = lang._(describable.localizeTemplateString(game, localPlayer), describable.localizeStringArgs(game, localPlayer));
-                info = Regex.Replace(info, @"{card:(?<id>-?\d+)}", m => int.TryParse(m.Groups["id"].Value, out var id) ?
-                    getManager<CardManager>().getDefaultSkin(id).name : "未知卡牌");
+                info = Regex.Replace(info, @"{card:(?<poolId>-?\d+),(?<id>-?\d+)}", 
+                    m => {
+                        if (int.TryParse(m.Groups["id"].Value, out var id) && long.TryParse(m.Groups["poolId"].Value, out var poolId))
+                        {
+                            return getManager<CardManager>().getDefaultSkin(poolId, id).name;
+                        }
+                        return "未知卡牌";
+                    });
                 ui.LogScrollView.LogInfoHorizantal.Text.text = info;
                 if (describable.getCard(game, localPlayer) != null)
                 {
