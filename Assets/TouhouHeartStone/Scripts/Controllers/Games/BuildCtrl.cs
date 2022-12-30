@@ -262,24 +262,42 @@ namespace Controllers
         }
         private async void onStartDragDeckCardListItem(int index)
         {
+            var deckList = _deck.cardList;
             //获取拖拽卡牌
-            var cards = _deck.cardList.OrderBy(e => game.card.getCardDefine(e.cardRef).getCost()).ToArray();
+            var cards = deckList.OrderBy(e =>
+            {
+                var define = game.card.getCardDefine(e.cardRef);
+                if (define != null)
+                {
+                    return define.getCost();
+                }
+                return 0;
+            }).ToArray();
             _dragCard = game.card.getCardDefine(cards[index].cardRef);
-            index = _deck.cardList.IndexOf(cards[index]);
+            index = deckList.IndexOf(cards[index]);
             //从卡组中删除一张卡牌
-            _deck.cardList[index].count--;
-            if (_deck.cardList[index].count <= 0)
-                _deck.cardList.RemoveAt(index);
+            var deckItem = deckList[index];
+            deckItem.count--;
+            if (deckItem.count <= 0)
+                deckList.RemoveAt(index);
             //刷新卡池显示
             await _cardPoolViewPanelCtrl.display();
             //这里本来应该刷新卡组显示，但是因为列表物体销毁会导致拖拽事件不再触发，所以移动到停止拖拽
             //await updateDeckCardListUI();
             //刷新拖拽卡牌显示
-            CardSkinData skin = game.card.getDefaultSkin(_dragCard);
-            Sprite image = await game.card.loadCardImage(_dragCard.cardPoolId, _dragCard.id);
-            _ui.dragCard.setCard(_dragCard, skin);
-            _ui.dragCard.setImage(image);
-            _ui.dragDeckListItem.updateView(skin.name, image);
+            if (_dragCard != null)
+            {
+                CardSkinData skin = game.card.getDefaultSkin(_dragCard);
+                Sprite image = await game.card.loadCardImage(_dragCard.cardPoolId, _dragCard.id);
+                _ui.dragCard.setCard(_dragCard, skin);
+                _ui.dragCard.setImage(image);
+                _ui.dragDeckListItem.updateView(skin.name, image);
+            }
+            else
+            {
+                _ui.dragCard.setUnknownCard();
+                _ui.dragDeckListItem.updateView(StringTable.BUILD_UNKNOW_CARD_NAME, null);
+            }
         }
         private async void onEndDragDeckCardListItem(bool isOverDeckCardList)
         {

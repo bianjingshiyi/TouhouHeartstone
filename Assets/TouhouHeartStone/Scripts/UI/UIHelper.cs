@@ -13,6 +13,18 @@ namespace Game
 {
     static class UIHelper
     {
+        public static void setUnknownCard(this UICard ui)
+        {
+            setImage(ui, null);
+            setName(ui, StringTable.BUILD_UNKNOW_CARD_NAME);
+            setSubname(ui, string.Empty);
+            setDesc(ui, string.Empty);
+            ui.isFaceup = true;
+            setCost(ui, "0");
+            ui.type = CATEGORY.SERVANT;
+            setAttack(ui, "0");
+            setLife(ui, "0");
+        }
         public static void setCard(this UICard ui, CardDefine card, CardSkinData skin)
         {
             if (skin != null)
