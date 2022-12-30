@@ -64,10 +64,10 @@ namespace Game
                     resp = discover.getDefaultResponse(game, player.id);
 
                     //////////////////////////////////////////////////////////////////////////////////////////////////
-                    int eirin = discover.cardIdArray.FirstOrDefault(id => game.getCard(id).define is GameOfLife_Rise_N);
-                    if (eirin != 0)
+                    DefineReference eirin = discover.cardRefArray.FirstOrDefault(defRef => game.getDefine(defRef) is GameOfLife_Rise_N);
+                    if (eirin.defineId != 0)
                     {
-                        resp = new DiscoverResponse() {cardId = eirin};
+                        resp = new DiscoverResponse() {cardDefRef = eirin};
                     }
                     //////////////////////////////////////////////////////////////////////////////////////////////////
 

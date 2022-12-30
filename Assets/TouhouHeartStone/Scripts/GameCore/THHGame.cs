@@ -208,8 +208,12 @@ namespace TouhouHeartstone
             if (count > 0)
                 cards = cards.randomTake(game, count).ToArray();
             game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title), float.MaxValue);
-            Card selectedCard = cards.First(c => c.id == (res as DiscoverResponse).cardId);
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => new DefineReference(c.define.cardPoolId, c.define.id)).ToArray(), title), float.MaxValue);
+            Card selectedCard = cards.First(c => 
+            {
+                var defRef = (res as DiscoverResponse).cardDefRef;
+                return c.define.cardPoolId == defRef.cardPoolId && c.define.id == defRef.defineId;
+            });
             game.logger.logTrace(player + "选择" + selectedCard);
             return selectedCard;
         }
@@ -226,7 +230,7 @@ namespace TouhouHeartstone
             int count = 3, string title = null)
         {
             game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => c.id).ToArray(), title), float.MaxValue);
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => new DefineReference(c.cardPoolId, c.id)).ToArray(), title), float.MaxValue);
             CardDefine selectedCard = cards.First(c =>
                 c.cardPoolId == (res as DiscoverResponse).cardDefRef.cardPoolId &&
                 c.id == (res as DiscoverResponse).cardDefRef.defineId);

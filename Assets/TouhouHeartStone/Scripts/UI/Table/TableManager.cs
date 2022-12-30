@@ -1679,7 +1679,7 @@ namespace Game
                 {
                     game.answers.answer(player.id, new DiscoverResponse()
                     {
-                        cardId = cardDefine.id
+                        cardDefRef = new DefineReference(cardDefine)
                     });
                     closeDiscoverDialog();
                 });
@@ -1729,10 +1729,10 @@ namespace Game
                 ui.Discover.PanelImage.display();
                 LayoutRebuilder.ForceRebuildLayoutImmediate(ui.Discover.Text.rectTransform);
                 DiscoverRequest request = game.answers.getRequest<DiscoverRequest>(player.id);
-                if (request.cardIdArray != null)
-                    displayDiscoverDialog(request.cardIdArray, ui.Discover.Text.text);
-                else
+                if (request.cardRefArray != null)
                     displayDiscoverDialog(request.cardRefArray, ui.Discover.Text.text);
+                else
+                    displayDiscoverDialog(request.cardIdArray, ui.Discover.Text.text);
             }
         }
         public void closeDiscoverDialog()
