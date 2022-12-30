@@ -654,14 +654,26 @@ namespace Game
                 }
             }
         }
-        public bool tryGetCardDefine(int cardId, out CardDefine card)
+        public bool tryGetCardDefine(DefineReference defRef, out CardDefine card)
+        {
+            return tryGetCardDefine(defRef.cardPoolId, defRef.defineId, out card);
+        }
+        public bool tryGetCardDefine(long cardPoolId, int cardId, out CardDefine card)
         {
             card = null;
-            foreach (var cardPool in _cardPoolDict.Values)
+            if (cardPoolId == 0 && cardId < 0)
+                cardPoolId = cardId << 1 >> 17;
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
-                card = cardPool.cardDefineList.Find(c => c.id == cardId);
-                if (card != null)
-                    return true;
+                card = cardPool.cardDefineList.Find(d => d.id == cardId);
+            }
+            else if (defineDic.ContainsKey(cardId))
+            {
+                card = defineDic[cardId];
+            }
+            if (card != null)
+            {
+                return true;
             }
             return false;
         }

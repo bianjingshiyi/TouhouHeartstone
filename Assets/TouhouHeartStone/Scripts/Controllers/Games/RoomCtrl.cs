@@ -591,9 +591,6 @@ namespace Controllers
                 {
                     deckValid = game.deck.isValidDeckForOnlineGame(deck);
                 }
-#if UNITY_EDITOR || DEBUG
-                deckValid = true;
-#endif
                 return deckValid;
             }
             return false;
@@ -691,9 +688,6 @@ namespace Controllers
                 {
                     warning = !game.deck.isValidDeckForOnlineGame(deck);
                 }
-#if UNITY_EDITOR || DEBUG
-                warning = false;
-#endif
                 // 如果不允许使用自定义卡牌，则屏蔽拥有自定义卡牌的卡组。
                 if (!allowCustomCards && deckHasCustomCard(deck))
                 {

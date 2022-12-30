@@ -463,23 +463,11 @@ namespace Game
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public CardDefine getCardDefine(int id)
-        {
-            if (tryGetCardDefine(id, out CardDefine card))
-                return card;
-            return defineDic.ContainsKey(id) ? defineDic[id] : null;
-        }
         public CardDefine getCardDefine(long cardPoolId, int cardId)
         {
-            if (cardPoolId == 0 && cardId < 0)
-                cardPoolId = cardId << 1 >> 17;
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (tryGetCardDefine(cardPoolId, cardId, out var cardDefine))
             {
-                return cardPool.cardDefineList.Find(d => d.id == cardId);
-            }
-            if (defineDic.ContainsKey(cardId))
-            {
-                return defineDic[cardId];
+                return cardDefine;
             }
             return null;
         }
@@ -511,11 +499,11 @@ namespace Game
         }
         public bool isBuiltinCard(CardDefine card)
         {
-            return isBuiltinCard(card.id);
+            return isBuiltinCardPool(card.cardPoolId);
         }
-        public bool isBuiltinCard(int cardId)
+        public bool isBuiltinCardPool(long cardPoolId)
         {
-            return defineDic.ContainsKey(cardId);
+            return cardPoolId == 0;
         }
         /// <summary>
         /// 卡牌定义是否是自定义。
