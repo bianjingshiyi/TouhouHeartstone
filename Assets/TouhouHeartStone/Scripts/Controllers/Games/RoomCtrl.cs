@@ -82,7 +82,7 @@ namespace Controllers
             _currentRoomData = roomData;
             if (!_isLocalGame)
             {
-                CheckCardPoolsUpdate();
+                CheckCardPoolsUpdate(out _);
             }
             updateStartAndReadyButton();
         }
@@ -128,7 +128,10 @@ namespace Controllers
                 }
                 else
                 {
-                    CheckCardPoolsUpdate();
+                    if (CheckCardPoolsUpdate(out var pools))
+                    {
+                        DownloadCardPools(pools);
+                    }
                 }
             }
         }
@@ -375,8 +378,9 @@ namespace Controllers
             _currentRoomData.setOption(RoomDataPropName.Option.CardPools, cardPools);
             game.network.SetRoomProp(RoomDataPropName.Option.CardPools.ToString(), cardPools);
         }
-        private void CheckCardPoolsUpdate()
+        private bool CheckCardPoolsUpdate(out CardPoolInfoPack[] pools)
         {
+            pools = null;
             var cardPools = _currentRoomData.getCardPools();
             List<CardPoolInfoPack> infoPacks = new List<CardPoolInfoPack>();
             foreach (CardPoolInfoPack poolPack in cardPools)
@@ -392,12 +396,14 @@ namespace Controllers
             {
                 cardPoolChanged = true;
                 cardPoolDownloadRetryCountdown = 3;
-                DownloadCardPools(infoPacks.ToArray());
+                pools = infoPacks.ToArray();
+                return true;
             }
             else
             {
                 cardPoolChanged = false;
                 cardPoolDownloadRetryCountdown = 0;
+                return false;
             }
         }
         private async void UploadCardPools(CardPoolInfoPack[] cardPools)
@@ -454,6 +460,7 @@ namespace Controllers
                         if (bytes != null)
                         {
                             await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, id, bytes);
+                            await game.card.loadCachedCardDefinesAsync(poolPack.cardPoolId, poolPack.version);
                         }
                     }
                     _ui.SetCardPoolLoadProgress((i + 1) / (float)count);
@@ -553,6 +560,11 @@ namespace Controllers
         }
         private bool isAbleToReady(RoomPlayerData player)
         {
+            if (cardPoolChanged)
+            {
+                return false;
+            }
+
             Deck deck = player.getDeck();
             if (deck != null)
             {

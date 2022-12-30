@@ -25,7 +25,7 @@ namespace Game
             Debug.Log("Init server uri: " + serverUri);
 
             ServerClient = new ServerClient(serverUri, version, System.IO.Path.Combine(Application.persistentDataPath, "token"), new ULogger("ServerAPI"));
-            localLanLogic = new ClientLogic("Player.", ports, ServerClient, new ULogger("LAN"));
+            localLanLogic = new ClientLogic("Player.", ports, ServerClient, new ULogger("LAN"), resProvider);
 
             localLanLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
             localLanLogic.onGameStart += onGameStartEvtHandler;

@@ -893,7 +893,25 @@ namespace UI
                     break;
             }
             _progressBar.gameObject.SetActive(loadState != PlayerLoadState.None);
-            CharacterText.text = deck != null ? this.findInstance<CardManager>().getCardSkin(deck[0].cardPoolId, deck[0].defineId).name : "";
+
+            if (deck != null)
+            {
+                var cardManager = this.findInstance<CardManager>();
+                DefineReference masterRef = deck[0];
+                var skin = cardManager.getCardSkin(masterRef);
+                if (skin != null)
+                {
+                    CharacterText.text = skin.name;
+                }
+                else
+                {
+                    CharacterText.text = ROOM_UNKNOWN_CHARACTER_NAME;
+                }
+            }
+            else
+            {
+                CharacterText.text = string.Empty;
+            }
         }
 
         /// <summary>
@@ -968,6 +986,8 @@ namespace UI
         public event Action<RoomPlayerListItem> onClickRemoveButton;
         #endregion
         #region 属性字段
+        [TranslateMsg("房间显示之未知角色")]
+        private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
         [SerializeField]
         private Image _checkIconImage;
         [SerializeField]

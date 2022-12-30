@@ -84,6 +84,14 @@ namespace TouhouHeartstone
         {
             HashSet<long> poolList = new HashSet<long>();
             //检查是否有自定义卡牌，
+
+            //英雄牌。
+            if (masterCardRef.cardPoolId != 0)
+                poolList.Add(masterCardRef.cardPoolId);
+            else if (masterCardRef.defineId < 0)
+                poolList.Add(CardDefineHelper.getCardPoolId(masterCardRef.defineId));
+
+            //套牌内的卡牌。
             for (int i = 0; i < cardList.Count; i++)
             {
                 if (cardList[i].cardRef.cardPoolId != 0)

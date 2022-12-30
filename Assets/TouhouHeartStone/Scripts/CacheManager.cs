@@ -59,6 +59,19 @@ namespace Game
             }
             return false;
         }
+        public bool TryParseCardPool(string id, out long cardPoolId, out int cardPoolVersion)
+        {
+            cardPoolId = 0;
+            cardPoolVersion = 0;
+            int sepIndex = id.IndexOf('_');
+            string cardPoolIdStr = id.Substring(0, sepIndex);
+            string cardPoolVersionStr = id.Substring(sepIndex + 1);
+            if (long.TryParse(cardPoolIdStr, out cardPoolId) && int.TryParse(cardPoolVersionStr, out cardPoolVersion))
+            {
+                return true;
+            }
+            return false;
+        }
         #endregion
 
         #region LRU
@@ -202,6 +215,21 @@ namespace Game
             if (!ResourceIsValid(resType))
                 return null;
 
+            // 查找本地的卡池。
+            if (resType == "card")
+            {
+                if (TryParseCardPool(resID, out long cardPoolId, out int cardPoolVersion))
+                {
+                    var cardPoolInfo = card.getCardPoolInfo(cardPoolId);
+                    if (cardPoolInfo != null && cardPoolInfo.editTime == cardPoolVersion)
+                    {
+                        string deckPath = card.getCardPoolPath(cardPoolInfo);
+                        return File.OpenRead(deckPath);
+                    }
+                }
+            }
+
+            //查找上传的别人的卡池缓存。
             var path = GetCachePath(resType, resID);
             if (!File.Exists(path))
                 return null;
@@ -215,11 +243,33 @@ namespace Game
         bool IResourceProvider.ResourceInfo(string resType, string resID, out long size)
         {
             size = 0;
+            if (!ResourceIsValid(resType))
+            {
+                return false;
+            }
+
+            // 查找本地的卡池。
+            if (resType == "card")
+            {
+                if (TryParseCardPool(resID, out long cardPoolId, out int cardPoolVersion))
+                {
+                    var cardPoolInfo = card.getCardPoolInfo(cardPoolId);
+                    if (cardPoolInfo != null && cardPoolInfo.editTime == cardPoolVersion)
+                    {
+                        string deckPath = card.getCardPoolPath(cardPoolInfo);
+                        var deckFileInfo = new FileInfo(deckPath);
+                        size = deckFileInfo.Length;
+                        return true;
+                    }
+                }
+            }
+
+            //查找上传的别人的卡池缓存。
             var path = GetCachePath(resType, resID);
 
-            if (!ResourceIsValid(resType) || !File.Exists(path))
+            if (!File.Exists(path))
                 return false;
-
+            
             var info = new FileInfo(path);
             size = info.Length;
             return true;
@@ -229,6 +279,8 @@ namespace Game
         #region 字段属性
         [SerializeField]
         private ConfigManager config;
+        [SerializeField]
+        private CardManager card;
         [SerializeField]
         private string dirName = "cache";
         public long MaxSize { get; set; }
