@@ -484,7 +484,14 @@ namespace TouhouHeartstone
             player.addPile(new Pile(game, PILE.ITEM, 1));
             player[PILE.MASTER].add(game, game.createCard(master)).Wait();
             DefineReference skillRef = master.getSkillRef();
-            player[PILE.SKILL].add(game, game.createCard(game.getDefine(skillRef.cardPoolId, skillRef.defineId))).Wait();
+
+            // TODO: 要么把CardEngine.GetDefine()改成返回null，要么加个CardEngine.TryGetDefine();
+            var skillDef = game.getDefine(skillRef.cardPoolId, skillRef.defineId);
+            if (skillDef != null)
+            {
+                player[PILE.SKILL].add(game, game.createCard(skillDef)).Wait();
+            }
+
             player[PILE.DECK].add(game, Array.ConvertAll(deck, d => game.createCard(d))).Wait();
             player.setIsPrepared(false);
             player.setGem(game, 0);

@@ -1192,7 +1192,7 @@ namespace TouhouHeartstone
             {
                 return cardDefine.getProp<DefineReference>(DEFINE.CARD_PROP_SKILL_REF);
             }
-            return new DefineReference(0, cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID));
+            return new DefineReference(cardDefine.cardPoolId, cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID));
         }
         #region 动作定义
         [ActionNodeMethod("Damage", "Card")]
