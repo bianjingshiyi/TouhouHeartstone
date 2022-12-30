@@ -84,6 +84,7 @@ namespace Controllers
             {
                 CheckCardPoolsUpdate(out _);
             }
+            LoadCachedCardPools();
             updateStartAndReadyButton();
         }
         #endregion
@@ -131,6 +132,7 @@ namespace Controllers
                     if (CheckCardPoolsUpdate(out var pools))
                     {
                         DownloadCardPools(pools);
+                        LoadCachedCardPools();
                     }
                 }
             }
@@ -392,6 +394,7 @@ namespace Controllers
                     infoPacks.Add(poolPack);
                 }
             }
+
             if (infoPacks.Count > 0)
             {
                 cardPoolChanged = true;
@@ -404,6 +407,17 @@ namespace Controllers
                 cardPoolChanged = false;
                 cardPoolDownloadRetryCountdown = 0;
                 return false;
+            }
+        }
+        private async void LoadCachedCardPools()
+        {
+            var cardPools = _currentRoomData.getCardPools();
+            foreach (var cardPool in cardPools)
+            {
+                if (!game.card.tryGetCardPool(cardPool.cardPoolId, out _))
+                {
+                    await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
+                }
             }
         }
         private async void UploadCardPools(CardPoolInfoPack[] cardPools)
@@ -460,7 +474,6 @@ namespace Controllers
                         if (bytes != null)
                         {
                             await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, id, bytes);
-                            await game.card.loadCachedCardDefinesAsync(poolPack.cardPoolId, poolPack.version);
                         }
                     }
                     _ui.SetCardPoolLoadProgress((i + 1) / (float)count);
