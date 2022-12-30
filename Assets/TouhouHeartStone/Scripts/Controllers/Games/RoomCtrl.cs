@@ -419,6 +419,7 @@ namespace Controllers
                     await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
                 }
             }
+            updatePlayerListUI();
         }
         private async void UploadCardPools(CardPoolInfoPack[] cardPools)
         {
