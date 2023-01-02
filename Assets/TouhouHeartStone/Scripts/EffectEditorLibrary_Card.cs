@@ -351,9 +351,7 @@ namespace Game
         {
             return cardDefine.isToken();
         }
-        [TranslateMsg("编辑器中的伤害的名称")]
         public const string EDITOR_TYPE_NAME_DAMAGE = "伤害";
-        [TranslateMsg("编辑器中节点参数名称之是否为法术伤害")]
         public const string EDITOR_NODE_IS_SPELL_DAMAGE = "是否为法术伤害";
         #region 伤害类节点
         /// <summary>
@@ -510,7 +508,9 @@ namespace Game
             return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
         }
         #endregion
-        //治疗
+        /// <summary>
+        /// 治疗
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HEAL_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
         public static Task<THHCard.HealEventArg> healTargets(CardEngine game, Card card,

@@ -172,7 +172,9 @@ namespace Game
         {
             return game.askSelect(card.owner, defines, count);
         }
-        //丢弃卡牌
+        /// <summary>
+        /// 丢弃卡牌
+        /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DISCARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
         public static Task<HearthStoneRule.DiscardEventArg> discard(CardEngine game, Card card,
@@ -473,9 +475,8 @@ namespace Game
             return MoveList.ToArray();
         }
         /// <summary>
-        /// 卡牌装备到道具栏(有显示问题，暂时隐藏）
+        /// 卡牌装备到道具栏(有显示问题）
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
         [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
@@ -502,9 +503,8 @@ namespace Game
             }
         }
         /// <summary>
-        /// 卡牌移动到暂存区(有显示问题，暂时隐藏）
+        /// 卡牌移动到暂存区(有显示问题）
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌移动到暂存区")]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_WARP = "卡牌移动到暂存区";
         [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_WARP, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
