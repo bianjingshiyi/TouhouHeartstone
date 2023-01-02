@@ -351,13 +351,15 @@ namespace Game
         {
             return cardDefine.isToken();
         }
+        [TranslateMsg]
         public const string EDITOR_TYPE_NAME_DAMAGE = "伤害";
+        [TranslateMsg]
         public const string EDITOR_NODE_IS_SPELL_DAMAGE = "是否为法术伤害";
         #region 伤害类节点
         /// <summary>
         /// 造成伤害或法术伤害
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之造成伤害或法伤")]
+        [TranslateMsg]
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE = "造成伤害或法伤";
         [ActionNodeMethod(EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE, EDITOR_TYPE_NAME_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
@@ -378,7 +380,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害并分配给目标
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之造成伤害或法伤并分配给目标")]
+        [TranslateMsg]
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS = "造成伤害或法伤并分配给目标";
         [ActionNodeMethod(EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS, EDITOR_TYPE_NAME_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
@@ -399,7 +401,7 @@ namespace Game
         /// <summary>
         /// 对固定数量的随机目标造成伤害或法术伤害
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之对固定数量的随机目标造成伤害或法伤")]
+        [TranslateMsg]
         public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS = "对固定数量的随机目标造成伤害或法伤";
         [ActionNodeMethod(EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS, EDITOR_TYPE_NAME_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]

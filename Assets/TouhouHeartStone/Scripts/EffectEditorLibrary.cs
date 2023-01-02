@@ -477,6 +477,7 @@ namespace Game
         /// <summary>
         /// 卡牌装备到道具栏(有显示问题）
         /// </summary>
+        [TranslateMsg]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
         [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
@@ -505,6 +506,7 @@ namespace Game
         /// <summary>
         /// 卡牌移动到暂存区(有显示问题）
         /// </summary>
+        [TranslateMsg]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_WARP = "卡牌移动到暂存区";
         [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_WARP, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
