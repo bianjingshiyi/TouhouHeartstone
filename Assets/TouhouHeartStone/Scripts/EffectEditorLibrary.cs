@@ -172,6 +172,7 @@ namespace Game
         {
             return game.askSelect(card.owner, defines, count);
         }
+        //丢弃卡牌
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DISCARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
         public static Task<HearthStoneRule.DiscardEventArg> discard(CardEngine game, Card card,
@@ -474,7 +475,7 @@ namespace Game
         /// <summary>
         /// 卡牌装备到道具栏(有显示问题，暂时隐藏）
         /// </summary>
-        /*[TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
         [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
@@ -499,7 +500,28 @@ namespace Game
                 game.logger.log("卡牌类型非法，无法将" + string.Join(",", card) + "置入道具栏");
                 return null;
             }
-        }*/
+        }
+        /// <summary>
+        /// 卡牌移动到暂存区(有显示问题，暂时隐藏）
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之卡牌移动到暂存区")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_WARP = "卡牌移动到暂存区";
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_WARP, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card[]> moveToWARP(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
+        {
+            List<Card> MoveList = new List<Card>();
+            foreach (var card in cards)
+            {
+                game.logger.log("将" + string.Join("，", card) + "置入" + player + "的暂存区");
+                //await card.resetCard(game);
+                await card.pile.moveTo(game, card, player.getWarp());
+                MoveList.Add(card);
+            }
+            return MoveList.ToArray();
+        }
         #endregion
         #region 集合运算
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]

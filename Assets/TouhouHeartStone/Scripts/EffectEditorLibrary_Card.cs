@@ -335,6 +335,7 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
+        [Obsolete]
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_IS_SPELL, StringTable.EDITOR_NODE_CATEGORY_CARD, "IsSpell")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool isSpell([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -350,6 +351,75 @@ namespace Game
         {
             return cardDefine.isToken();
         }
+        [TranslateMsg("编辑器中的伤害的名称")]
+        public const string EDITOR_TYPE_NAME_DAMAGE = "伤害";
+        [TranslateMsg("编辑器中节点参数名称之是否为法术伤害")]
+        public const string EDITOR_NODE_IS_SPELL_DAMAGE = "是否为法术伤害";
+        #region 伤害类节点
+        /// <summary>
+        /// 造成伤害或法术伤害
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之造成伤害或法伤")]
+        public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE = "造成伤害或法伤";
+        [ActionNodeMethod(EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE, EDITOR_TYPE_NAME_DAMAGE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        public static Task<THHCard.DamageEventArg> dealDamageOrSpellDamage(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype)
+        {
+            if (damagetype)
+            {
+                return targets.damage(game, card, card.owner.getSpellDamage(game, damage));
+            }
+            else
+            {
+                return targets.damage(game, card, damage);
+            }
+        }
+        /// <summary>
+        /// 造成伤害或法术伤害并分配给目标
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之造成伤害或法伤并分配给目标")]
+        public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS = "造成伤害或法伤并分配给目标";
+        [ActionNodeMethod(EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS, EDITOR_TYPE_NAME_DAMAGE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype)
+        {
+            if (damagetype)
+            {
+                return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage));
+            }
+            else
+            {
+                return targets.damageByRandom(game, card, damage);
+            }
+        }
+        /// <summary>
+        /// 对固定数量的随机目标造成伤害或法术伤害
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之对固定数量的随机目标造成伤害或法伤")]
+        public const string EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS = "对固定数量的随机目标造成伤害或法伤";
+        [ActionNodeMethod(EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS, EDITOR_TYPE_NAME_DAMAGE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
+        public static Task<THHCard.DamageEventArg> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game, Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype)
+        {
+            if (damagetype)
+            {
+                return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
+            }
+            else
+            {
+                return targets.damageByRandomCount(game, card, damage, count);
+            }
+        }
         /// <summary>
         /// 对目标造成固定的法术伤害
         /// </summary>
@@ -358,7 +428,8 @@ namespace Game
         /// <param name="damage"></param>
         /// <param name="targets"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [Obsolete]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS, EDITOR_TYPE_NAME_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg> dealSpecificSpellDamageToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
@@ -374,9 +445,10 @@ namespace Game
         /// <param name="damage"></param>
         /// <param name="targets"></param>
         /// <returns></returns>
+        [Obsolete]
         [TranslateMsg("动作图编辑器中动作节点名称之造成法术伤害")]
         public const string EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE = "造成法术伤害";
-        [ActionNodeMethod(EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [ActionNodeMethod(EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE, EDITOR_TYPE_NAME_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg> dealSpellDamageToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
@@ -392,7 +464,8 @@ namespace Game
         /// <param name="damage"></param>
         /// <param name="targets"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [Obsolete]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS, EDITOR_TYPE_NAME_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToRandomTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
@@ -408,7 +481,8 @@ namespace Game
         /// <param name="count"></param>
         /// <param name="damage"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [Obsolete]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET, EDITOR_TYPE_NAME_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg> dealSpecificDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
@@ -425,7 +499,8 @@ namespace Game
         /// <param name="count"></param>
         /// <param name="damage"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [Obsolete]
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET, EDITOR_TYPE_NAME_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg> dealSpecificSpellDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
@@ -434,6 +509,8 @@ namespace Game
         {
             return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
         }
+        #endregion
+        //治疗
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HEAL_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
         public static Task<THHCard.HealEventArg> healTargets(CardEngine game, Card card,
@@ -659,6 +736,18 @@ namespace Game
             await player.destroyItem(game);
         }
         /// <summary>
+        /// 获取暂存区
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取玩家暂存区")]
+        public const string EDITOR_NODE_NAME_GET_WARP = "获取玩家暂存区";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_WARP, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getWarp(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player.getWarp();
+        }
+        /// <summary>
         /// 获取相邻卡牌(战场或者墓地)
         /// </summary>
         [TranslateMsg("动作图编辑器中动作节点名称之获取相邻卡牌")]
@@ -770,13 +859,25 @@ namespace Game
         public const string EDITOR_NODE_TRIGGER_DEATHRATTLE = "触发卡牌遗言";
         [ActionNodeMethod(EDITOR_NODE_TRIGGER_DEATHRATTLE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         public static async Task triggerDeathRattles(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
             foreach (var card in cards)
             {
-                //await card.triggerDeathRattles(game, card.getOwner(), targets);
                 await card.triggerDeathRattles(game);
+            }
+        }
+        /// <summary>
+        /// 重置卡牌
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之重置卡牌")]
+        public const string EDITOR_NODE_RESET_CARD = "重置卡牌";
+        [ActionNodeMethod(EDITOR_NODE_RESET_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async Task resetCards(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        {
+            foreach (var card in cards)
+            {
+                await card.resetCard(game);
             }
         }
         //[TranslateMsg("动作图编辑器中动作节点名称之获取最低属性的卡牌")]
