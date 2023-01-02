@@ -28,7 +28,7 @@ namespace Tests
             string calcHashString(byte[] bytes)
             {
                 byte[] hash = SHA256.Create().ComputeHash(bytes);
-                string hashString = string.Join(string.Empty, Array.ConvertAll(hash, b => b.ToString("X2")));
+                string hashString = string.Join(string.Empty, Array.ConvertAll(hash, b => b.ToString("x2")));
                 return hashString;
             }
         }

@@ -104,7 +104,7 @@ namespace Game
             foreach (var pair in _externalSpriteCacheDict)
             {
                 //已经存在的资源图片不需要保存
-                if (isMD5NamedJPG(pair.Key))
+                if (isHashNamedJPG(pair.Key))
                     continue;
                 //获取使用这张图片的第一个皮肤
                 CardSkinData cardSkin = cardPool.cardSkinList.FirstOrDefault(s => s.imagePath == pair.Key);
@@ -160,8 +160,8 @@ namespace Game
         public async Task<string> saveImage(long cardPoolId, Texture2D texture)
         {
             byte[] bytes = texture.EncodeToJPG();
-            string md5 = calcHashString(bytes);
-            string path = string.Format("{0}.jpg", md5);
+            string hash = calcHashString(bytes);
+            string path = string.Format("{0}.jpg", hash);
             if (isStandardCardPool(cardPoolId))
             {
                 string filePath = Path.Combine(editorTextureDirName, path);
@@ -314,10 +314,10 @@ namespace Game
         }
         public static string calcHashString(byte[] bytes)
         {
-            byte[] md5 = _hashProvider.ComputeHash(bytes);
-            return string.Join(string.Empty, Array.ConvertAll(md5, b => b.ToString("X2").ToLower()));
+            byte[] hash = _hashProvider.ComputeHash(bytes);
+            return string.Join(string.Empty, Array.ConvertAll(hash, b => b.ToString("x2")));
         }
-        public static bool isMD5NamedJPG(string imagePath)
+        public static bool isHashNamedJPG(string imagePath)
         {
             return
                 imagePath.Length == 68 &&

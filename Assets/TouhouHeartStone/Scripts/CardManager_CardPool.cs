@@ -387,7 +387,7 @@ namespace Game
                     //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
                     skin.language = game.langManager.getDefaultLanguage();
                 }
-                if (!isMD5NamedJPG(skin.imagePath))
+                if (!isHashNamedJPG(skin.imagePath))
                 {
                     //图片地址必须是32位哈希.jpg
                     Sprite sprite = await loadImage(skin.imagePath, cardPoolInfo.cardPoolId);
@@ -424,7 +424,7 @@ namespace Game
             {
                 if (string.IsNullOrEmpty(buffSkin.imagePath))
                     continue;
-                if (!isMD5NamedJPG(buffSkin.imagePath))
+                if (!isHashNamedJPG(buffSkin.imagePath))
                 {
                     //图片地址必须是32位哈希.jpg
                     Sprite sprite = await loadImage(buffSkin.imagePath, cardPoolInfo.cardPoolId);
