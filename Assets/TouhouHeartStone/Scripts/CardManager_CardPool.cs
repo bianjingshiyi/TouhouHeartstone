@@ -646,7 +646,7 @@ namespace Game
         }
         public void removeCard(CardDefine card)
         {
-            foreach (var cardPool in _cardPoolDict.Values)
+            if (_cardPoolDict.TryGetValue(card.cardPoolId, out CardPool cardPool))
             {
                 if (cardPool.cardDefineList.Remove(card))
                 {
