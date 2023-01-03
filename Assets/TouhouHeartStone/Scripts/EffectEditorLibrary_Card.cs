@@ -355,6 +355,8 @@ namespace Game
         public const string EDITOR_TYPE_NAME_DAMAGE = "伤害";
         [TranslateMsg]
         public const string EDITOR_NODE_IS_SPELL_DAMAGE = "是否为法术伤害";
+        [TranslateMsg]
+        public const string EDITOR_TYPE_NAME_VALUE_COMPENSATION = "+";
         #region 伤害类节点
         /// <summary>
         /// 造成伤害或法术伤害
@@ -366,15 +368,16 @@ namespace Game
         public static Task<THHCard.DamageEventArg> dealDamageOrSpellDamage(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype)
+            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype,
+            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
             if (damagetype)
             {
-                return targets.damage(game, card, card.owner.getSpellDamage(game, damage));
+                return targets.damage(game, card, card.owner.getSpellDamage(game, damage + damage2));
             }
             else
             {
-                return targets.damage(game, card, damage);
+                return targets.damage(game, card, damage + damage2);
             }
         }
         /// <summary>
@@ -387,15 +390,16 @@ namespace Game
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype)
+            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype,
+            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
             if (damagetype)
             {
-                return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage));
+                return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage + damage2));
             }
             else
             {
-                return targets.damageByRandom(game, card, damage);
+                return targets.damageByRandom(game, card, damage + damage2);
             }
         }
         /// <summary>
@@ -409,15 +413,17 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
-            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype)
+            [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype,
+            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int count2,
+            [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
             if (damagetype)
             {
-                return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
+                return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage + damage2), count + count2);
             }
             else
             {
-                return targets.damageByRandomCount(game, card, damage, count);
+                return targets.damageByRandomCount(game, card, damage + damage2, count + count2);
             }
         }
         /// <summary>
