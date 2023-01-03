@@ -568,7 +568,7 @@ namespace Game
             List<CardSkinData> skinList = new List<CardSkinData>();
 
             string resID = CardPoolInfoPack.GetResourceID(cardPoolId, version);
-            if (game.cache.FileExists(ResourceType.CardDefine, resID))
+            if (game.cache.FileExists(game.fileManager, ResourceType.CardDefine, resID))
             {
                 string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
                 var cardPoolData = await loadCardPool(path);

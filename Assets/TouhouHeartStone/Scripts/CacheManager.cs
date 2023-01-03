@@ -10,33 +10,71 @@ using FileItem = System.Tuple<string, long>;
 
 namespace Game
 {
+    /// <summary>
+    /// 用于管理本地的卡池、图片缓存的管理器
+    /// 同时也作为局域网的资源提供器，提供卡池、图片等资源的下载。
+    /// </summary>
     public class CacheManager : Manager, IResourceProvider
     {
         #region 公共方法
+        /// <summary>
+        /// 根据资源类型字符串和资源ID，获取缓存文件路径。
+        /// </summary>
+        /// <param name="type">资源类型。</param>
+        /// <param name="id">资源ID。</param>
+        /// <returns>缓存文件路径。</returns>
         public string GetCachePath(string type, string id)
         {
             return Path.Combine(CacheDir, type, id);
         }
+        /// <summary>
+        /// 根据资源类型和资源ID，获取缓存文件路径。
+        /// </summary>
+        /// <param name="type">资源类型。</param>
+        /// <param name="id">资源ID。</param>
+        /// <returns>缓存文件路径。</returns>
         public string GetCachePath(TouhouCardEngine.ResourceType type, string id)
         {
             return GetCachePath(type.GetString(), id);
         }
-        public bool FileExists(TouhouCardEngine.ResourceType type, string id)
+        /// <summary>
+        /// 获取缓存文件是否存在。
+        /// </summary>
+        /// <param name="type">资源类型。</param>
+        /// <param name="id">资源ID。</param>
+        /// <returns>缓存文件是否存在。</returns>
+        public bool FileExists(FileManager fileManager, TouhouCardEngine.ResourceType type, string id)
         {
-            return File.Exists(GetCachePath(type, id));
+            return fileManager.isFileExist(GetCachePath(type, id));
         }
+        /// <summary>
+        /// 将字节数组保存为缓存文件资源。
+        /// </summary>
+        /// <param name="type">资源类型。</param>
+        /// <param name="id">资源ID。</param>
+        /// <param name="bytes">字节数组。</param>
+        /// <returns></returns>
         public Task SaveCache(FileManager fileManager, TouhouCardEngine.ResourceType type, string id, byte[] bytes)
         {
             string path = GetCachePath(type, id);
             addLRU(path, bytes.LongLength);
             return fileManager.saveFile(path, bytes);
         }
+        /// <summary>
+        /// 从缓存文件资源中读取字节数组。
+        /// </summary>
+        /// <param name="type">资源类型。</param>
+        /// <param name="id">资源ID。</param>
+        /// <returns>读取出的字节数组。</returns>
         public Task<byte[]> ReadCache(FileManager fileManager, TouhouCardEngine.ResourceType type, string id)
         {
             string path = GetCachePath(type, id);
             visitLRU(path);
             return fileManager.readBinaryFile(path);
         }
+        /// <summary>
+        /// 清除所有缓存文件。
+        /// </summary>
         public void ClearCache(FileManager fileManager)
         {
             foreach (var cache in cacheItems)
@@ -49,6 +87,11 @@ namespace Game
             }
             rebuildLRU();
         }
+        /// <summary>
+        /// 获取资源类型是否有效。
+        /// </summary>
+        /// <param name="resType">资源类型。</param>
+        /// <returns>是否有效。</returns>
         public bool ResourceIsValid(string resType)
         {
             switch (resType)
@@ -59,6 +102,13 @@ namespace Game
             }
             return false;
         }
+        /// <summary>
+        /// 尝试将卡池资源ID拆分为卡池ID和卡池版本。
+        /// </summary>
+        /// <param name="id">资源ID。</param>
+        /// <param name="cardPoolId">拆分出的卡池ID。</param>
+        /// <param name="cardPoolVersion">拆分出的卡池版本。</param>
+        /// <returns>拆分是否成功。</returns>
         public bool TryParseCardPool(string id, out long cardPoolId, out int cardPoolVersion)
         {
             cardPoolId = 0;

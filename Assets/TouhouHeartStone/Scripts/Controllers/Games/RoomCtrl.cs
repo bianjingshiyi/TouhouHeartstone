@@ -389,7 +389,7 @@ namespace Controllers
             {
                 string id = poolPack.GetResourceID();
                 // 如果本地不存在该卡池，并且本地没有缓存，加入到列表中
-                if (poolPack.cardPoolId != 0 && game.card.getCardPoolInfo(poolPack.cardPoolId) == null && !game.cache.FileExists(ResourceType.CardDefine, id))
+                if (poolPack.cardPoolId != 0 && game.card.getCardPoolInfo(poolPack.cardPoolId) == null && !game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id))
                 {
                     infoPacks.Add(poolPack);
                 }
@@ -469,7 +469,7 @@ namespace Controllers
                     var poolPack = cardPools[i];
                     string id = poolPack.GetResourceID();
                     // todo: 资源下载失败或没有资源时候的异常处理
-                    if (!game.cache.FileExists(ResourceType.CardDefine, id) && await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
+                    if (!game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) && await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
                     {
                         byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, id);
                         if (bytes != null)
