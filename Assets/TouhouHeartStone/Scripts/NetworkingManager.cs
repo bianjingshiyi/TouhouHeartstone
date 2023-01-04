@@ -71,6 +71,13 @@ namespace Game
         {
             //TODO
         }
+        /// <summary>
+        /// 开始远程游戏。
+        /// </summary>
+        public void StartRemoteGame()
+        {
+            logic.StartGame();
+        }
         #endregion
         [Header("配置")]
         [Tooltip("正式服务器地址")]
@@ -607,10 +614,6 @@ namespace Game
                 // 不要再quitRoom，onQuitClick本身就会调用quitRoom().
                 //quitRoom();
                 ui.parent.display(ui);
-            };
-            roomPanel.onStartClick += () =>
-            {
-                logic.StartGame();
             };
             roomPanel.onRoomPropUpdate += SetRoomProp;
             roomPanel.onPlayerRemove += (id) =>

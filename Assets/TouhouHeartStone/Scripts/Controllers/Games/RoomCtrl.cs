@@ -274,7 +274,7 @@ namespace Controllers
             }
             else
             {
-                game.game.startRemoteGame(_currentRoomData);
+                game.network.StartRemoteGame();
             }
         }
         private void onClickReadyButton()

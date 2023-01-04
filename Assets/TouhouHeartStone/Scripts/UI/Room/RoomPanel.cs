@@ -233,14 +233,6 @@ namespace UI
             });
 
 
-            StartButtonButtonBlack.asButton.onClick.set(() =>
-            {
-                if (isRoomOwner)
-                {
-                    onStartClick?.Invoke();
-                }
-            });
-
             // 移动到onClickQuitButtonCallback里面
             //QuitButtonButtonBlack.asButton.onClick.set(() =>
             //{
@@ -792,10 +784,6 @@ namespace UI
         }
 
         /// <summary>
-        /// 点击开始游戏后触发
-        /// </summary>
-        public event Action onStartClick;
-        /// <summary>
         /// 点击退出房间后触发
         /// </summary>
         public event Action onQuitClick;
@@ -824,7 +812,6 @@ namespace UI
         {
             aiPlayerData = null;
 
-            onStartClick = null;
             onQuitClick = null;
             onRoomPropUpdate = null;
             onPlayerRemove = null;
