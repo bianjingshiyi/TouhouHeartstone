@@ -48,7 +48,6 @@ namespace Controllers
 
         public void ReceiveCardPoolsSuggested(int playerId, CardPoolSuggestion suggestion)
         {
-            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED);
             string poolsString = PoolsToString(suggestion.cardPools);
             var suggester = _currentRoomData.getPlayer(playerId);
             string playerName = game.lang._(ROOM_UNKNOWN_PLAYER);
@@ -56,10 +55,11 @@ namespace Controllers
             {
                 playerName = suggester.name;
             }
-            desc = string.Format(desc, playerName, poolsString);
+            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED, playerName, poolsString);
 
             game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
             {
+                AddCardPools(suggestion.cardPools);
                 game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
             }, () =>
             {
@@ -70,6 +70,11 @@ namespace Controllers
         {
             string desc = game.lang._(agree ? ROOM_CARD_POOLS_SUGGESTION_AGREED : ROOM_CARD_POOLS_SUGGESTION_REFUSED);
             game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
+
+            if (agree)
+            {
+                UploadCardPools(suggestion.cardPools);
+            }
         }
         public Task display(UIDisplayInfo displayInfo)
         {
@@ -391,37 +396,6 @@ namespace Controllers
             scene.menu.display();
 
             onQuitClick?.Invoke();
-        }
-        private void onCardPoolsSuggested(int playerId, CardPoolSuggestion suggestion)
-        {
-            string poolsString = PoolsToString(suggestion.cardPools);
-            var suggester = _currentRoomData.getPlayer(playerId);
-            string playerName = game.lang._(ROOM_UNKNOWN_PLAYER);
-            if (suggester != null)
-            {
-                playerName = suggester.name;
-            }
-            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED, playerName, poolsString);
-
-
-            game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
-            {
-                AddCardPools(suggestion.cardPools);
-                game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
-            }, () =>
-            {
-                game.network.AnwserCardPoolsSuggestion(playerId, suggestion, false);
-            });
-        }
-        private void onCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
-        {
-            string desc = game.lang._(agree ? ROOM_CARD_POOLS_SUGGESTION_AGREED : ROOM_CARD_POOLS_SUGGESTION_REFUSED);
-            game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
-
-            if (agree)
-            {
-                UploadCardPools(suggestion.cardPools);
-            }
         }
         private void onUpdateButtons()
         {
