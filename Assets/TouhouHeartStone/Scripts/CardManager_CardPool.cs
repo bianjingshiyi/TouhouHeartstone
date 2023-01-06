@@ -387,7 +387,7 @@ namespace Game
                     //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
                     skin.language = game.langManager.getDefaultLanguage();
                 }
-                if (!isHashNamedJPG(skin.imagePath))
+                if (!string.IsNullOrEmpty(skin.imagePath) && !isHashNamedJPG(skin.imagePath))
                 {
                     //图片地址必须是32位哈希.jpg
                     Sprite sprite = await loadImage(skin.imagePath, cardPoolInfo.cardPoolId);
@@ -822,9 +822,33 @@ namespace Game
                     return sprite;
                 }
                 //外部贴图
-                byte[] bytes = Path.GetFullPath(path) == path ?//如果直接给出完整路径就直接从完整路径上读
-                    await game.fileManager.readBinaryFile(path) :
-                    await game.fileManager.readPersistentBinaryFile(path);
+                var fileManager = game.fileManager;
+                bool fullPath = Path.GetFullPath(path) == path;
+                byte[] bytes;
+                if (fullPath && fileManager.isFileExist(path)) 
+                {
+                    //如果直接给出完整路径就直接从完整路径上读
+                    bytes = await fileManager.readBinaryFile(path);
+                }
+                else if (fileManager.isPersistentFileExist(path))
+                {
+                    // 从外部图片路径读取图片。
+                    bytes = await fileManager.readPersistentBinaryFile(path);
+                }
+                else
+                {
+                    //如果图片不存在，尝试从缓存资源中读取。
+                    string picId = Path.GetFileNameWithoutExtension(path);
+                    if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
+                    {
+                        bytes = await game.cache.ReadCache(fileManager, ResourceType.Picture, picId);
+                    }
+                    else
+                    {
+                        // 实在找不到了，返回一个空数组
+                        bytes = Array.Empty<byte>();
+                    }
+                }
                 Texture2D texture = new Texture2D(512, 512);
                 texture.LoadImage(bytes);
                 sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);

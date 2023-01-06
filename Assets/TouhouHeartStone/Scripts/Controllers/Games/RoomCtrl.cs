@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
@@ -487,9 +489,30 @@ namespace Controllers
             {
                 string id = poolPack.GetResourceID();
                 // 如果本地不存在该卡池，并且本地没有缓存，加入到列表中
-                if (poolPack.cardPoolId != 0 && game.card.getCardPoolInfo(poolPack.cardPoolId) == null && !game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id))
+                if (!game.card.isBuiltinCardPool(poolPack.cardPoolId) && game.card.getCardPoolInfo(poolPack.cardPoolId) == null && !game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id))
                 {
                     infoPacks.Add(poolPack);
+                }
+                else // 检测卡池内的图片是否被下载。
+                {
+                    // 获取卡池。
+                    if (game.card.tryGetCardPool(poolPack.cardPoolId, out CardPool cardPool))
+                    {
+                        int skinCount = cardPool.cardSkinList.Count;
+                        // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，将该卡池标记为需要下载。
+                        for (int s = 0; s < skinCount; s++)
+                        {
+                            var skin = cardPool.cardSkinList[s];
+                            string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
+                            if (!string.IsNullOrEmpty(picId) && 
+                                !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
+                                !game.card.isExternalImageExists(skin.imagePath))
+                            {
+                                infoPacks.Add(poolPack);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -531,14 +554,41 @@ namespace Controllers
             int count = cardPools.Length;
             for (int i = 0; i < count; i++)
             {
+                float progress = 0;
+                _ui.SetCardPoolLoadProgress((i + progress) / count);
                 var poolPack = cardPools[i];
-                string id = poolPack.GetResourceID();
-                if (!await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
+                string cardPoolId = poolPack.GetResourceID();
+                if (!await game.network.ResourceExistsAsync(ResourceType.CardDefine, cardPoolId))
                 {
                     byte[] bytes = await game.fileManager.readBinaryFile(game.card.getCardPoolPath(poolPack.cardPoolId));
-                    await game.network.UploadResourceAsync(ResourceType.CardDefine, id, bytes);
+                    await game.network.UploadResourceAsync(ResourceType.CardDefine, cardPoolId, bytes);
+                    progress = progress + 0.5f;
+                    _ui.SetCardPoolLoadProgress((i + progress) / count);
                 }
-                _ui.SetCardPoolLoadProgress((i + 1) / (float)count);
+                // 读取卡池。
+                if (game.card.tryGetCardPool(poolPack.cardPoolId, out CardPool cardPool))
+                {
+                    // 遍历卡池内的皮肤列表。
+                    int skinCount = cardPool.cardSkinList.Count;
+                    for (int s = 0; s < skinCount; s++)
+                    {
+                        // 读取皮肤。
+                        var skin = cardPool.cardSkinList[s];
+                        // 读取皮肤的图像字节数组。
+                        Sprite spr = await game.card.loadImage(skin.imagePath, poolPack.cardPoolId);
+                        if (spr != null)
+                        {
+                            byte[] bytes = spr.texture.EncodeToJPG();
+                            // 图像资源的资源ID。
+                            string pictureId = Path.GetFileNameWithoutExtension(skin.imagePath);
+                            // 上传图片资源。
+                            await game.network.UploadResourceAsync(ResourceType.Picture, pictureId, bytes);
+                        }
+                        // 设置进度条进度。
+                        progress = progress + 0.5f * ((float)s / skinCount);
+                        _ui.SetCardPoolLoadProgress((i + progress) / count);
+                    }
+                }
             }
 
 
@@ -564,18 +614,50 @@ namespace Controllers
                 int count = cardPools.Length;
                 for (int i = 0; i < count; i++)
                 {
+                    float progress = 0;
+                    _ui.SetCardPoolLoadProgress((i + progress) / count);
                     var poolPack = cardPools[i];
-                    string id = poolPack.GetResourceID();
+                    string cardPoolResId = poolPack.GetResourceID();
                     // todo: 资源下载失败或没有资源时候的异常处理
-                    if (!game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) && await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
+                    if (!game.cache.FileExists(game.fileManager, ResourceType.CardDefine, cardPoolResId) && await game.network.ResourceExistsAsync(ResourceType.CardDefine, cardPoolResId))
                     {
-                        byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, id);
+                        byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, cardPoolResId);
                         if (bytes != null)
                         {
-                            await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, id, bytes);
+                            await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, cardPoolResId, bytes);
                         }
                     }
-                    _ui.SetCardPoolLoadProgress((i + 1) / (float)count);
+                    progress += 0.5f;
+                    _ui.SetCardPoolLoadProgress((i + progress) / count);
+
+
+                    // 下载卡图资源。
+                    if (!game.card.tryGetCardPool(poolPack.cardPoolId, out _))
+                    {
+                        await game.card.loadCachedCardDefinesAsync(poolPack.cardPoolId, poolPack.version);
+                    }
+                    if (game.card.tryGetCardPool(poolPack.cardPoolId, out CardPool pool))
+                    {
+                        int skinCount = pool.cardSkinList.Count;
+                        for (int s = 0; s < skinCount; s++) 
+                        {
+                            var skin = pool.cardSkinList[s];
+                            string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
+                            // todo: 资源下载失败或没有资源时候的异常处理
+                            if (await game.network.ResourceExistsAsync(ResourceType.Picture, picId) && 
+                                !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
+                                !game.card.isExternalImageExists(skin.imagePath))
+                            {
+                                byte[] bytes = await game.network.GetResourceAsync(ResourceType.Picture, picId);
+                                if (bytes != null)
+                                {
+                                    await game.cache.SaveCache(game.fileManager, ResourceType.Picture, picId, bytes);
+                                }
+                            }
+                            progress += 0.5f * ((float)s / skinCount);
+                            _ui.SetCardPoolLoadProgress((i + progress) / count);
+                        }
+                    }
                 }
                 downloadingCardPools = false;
 

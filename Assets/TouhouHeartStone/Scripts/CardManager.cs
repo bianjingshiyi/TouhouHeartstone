@@ -25,6 +25,7 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
+            onAwake_Sprite();
             onAwake_CardPool();
         }
         protected void Reset()

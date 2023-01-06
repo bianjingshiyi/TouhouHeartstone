@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
+using Controllers;
 using TouhouCardEngine;
 using UI;
 using UnityEngine;
@@ -278,6 +279,15 @@ namespace Game
                     }
                 }
             }
+            else if(resType == "pic")
+            {
+                // 查找本地的图片资源。
+                string fileName = string.Format("{0}.jpg", resID);
+                if (card.isExternalImageExists(fileName))
+                {
+                    return File.OpenRead(card.getExternalImagePath(fileName));
+                }
+            }
 
             //查找上传的别人的卡池缓存。
             var path = GetCachePath(resType, resID);
@@ -313,7 +323,15 @@ namespace Game
                     }
                 }
             }
-
+            else if (resType == "pic")
+            {
+                // 查找本地的图片资源。
+                string fileName = string.Format("{0}.jpg", resID);
+                if (card.isExternalImageExists(fileName))
+                {
+                    return true;
+                }
+            }
             //查找上传的别人的卡池缓存。
             var path = GetCachePath(resType, resID);
 

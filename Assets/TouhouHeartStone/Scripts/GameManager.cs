@@ -288,8 +288,8 @@ namespace Game
                 {
                     RoomPlayerData playerData = new RoomPlayerData(p.id, p.name, RoomPlayerType.human);
                     playerData.setDeck(new Deck(
-                        new DefineReference(game.getCardPoolIdOfDefine(p.getMaster().define), p.getMaster().define.id),
-                        p.getDeck().Select(c => new DefineReference(game.getCardPoolIdOfDefine(c.define), c.define.id))));
+                        p.getMaster().define.getDefineRef(),
+                        p.getDeck().Select(c => c.define.getDefineRef())));
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();

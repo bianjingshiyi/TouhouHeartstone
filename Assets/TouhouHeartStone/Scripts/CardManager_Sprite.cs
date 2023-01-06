@@ -9,6 +9,8 @@ using Controllers;
 using UI;
 using System.Linq;
 using System.Security.Cryptography;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 namespace Game
 {
     partial class CardManager
@@ -251,7 +253,12 @@ namespace Game
                         //存在卡池，要考虑一下记载这个路径的卡池的路径，综合得到绝对路径
                         //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
                         //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
-                        string absPath = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName, path);
+                        string dirName = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName);
+                        if (!Directory.Exists(dirName))
+                        {
+                            Directory.CreateDirectory(dirName);
+                        }
+                        string absPath = Path.Combine(dirName, path);
                         bytes = await game.fileManager.readBinaryFile(absPath);
                     }
                 }
@@ -312,6 +319,24 @@ namespace Game
             }
             return null;
         }
+        /// <summary>
+        /// 获取外部图片的绝对路径。
+        /// </summary>
+        /// <param name="path">图片名</param>
+        /// <returns>绝对路径。</returns>
+        public string getExternalImagePath(string path)
+        {
+            return Path.Combine(externalImageDir, path);
+        }
+        /// <summary>
+        /// 判断一张外部图片是否存在。
+        /// </summary>
+        /// <param name="path">图片名。</param>
+        /// <returns>是否存在。</returns>
+        public bool isExternalImageExists(string path)
+        {
+            return game.fileManager.isFileExist(getExternalImagePath(path));
+        }
         public static string calcHashString(byte[] bytes)
         {
             byte[] hash = _hashProvider.ComputeHash(bytes);
@@ -319,15 +344,20 @@ namespace Game
         }
         public static bool isHashNamedJPG(string imagePath)
         {
-            return
+            return 
                 imagePath.Length == 68 &&
                 imagePath.EndsWith(".jpg") &&
                 imagePath.Substring(0, 32).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'z'));
         }
         #endregion
         #region 私有方法
+        private void onAwake_Sprite()
+        {
+            externalImageDir = Path.Combine(Application.persistentDataPath, textureDirName);
+        }
         #endregion
         #region 属性字段
+        public string externalImageDir { get; private set; }
         Dictionary<string, object> _externalSpriteCacheDict = new Dictionary<string, object>();
 
         private static SHA256 _hashProvider = SHA256.Create();
