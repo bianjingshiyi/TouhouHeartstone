@@ -512,7 +512,7 @@ namespace Game
             }
             else
             {
-                master.Image.sprite = await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(card.define), card.define.id);
+                master.Image.sprite = await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id);
             }
         }
 
@@ -557,7 +557,7 @@ namespace Game
             }
             else
             {
-                item.Image.sprite = await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(card.define), card.define.id);
+                item.Image.sprite = await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id);
             }
         }
         private void onItemPointerExit(Item item, PointerEventData pointer)
@@ -1056,7 +1056,7 @@ namespace Game
             ui.setCard(game, card, skin);
             if (skin.image == null)
             {
-                ui.setImage(await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(card.define), card.define.id));
+                ui.setImage(await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id));
             }
             //if (card.define.type == DEFINE.SERVANT)
             //{
@@ -1102,7 +1102,7 @@ namespace Game
             ui.setCard(define, skin);
             if (skin.image == null)
             {
-                ui.setImage(await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(define), define.id));
+                ui.setImage(await getManager<CardManager>().loadCardImage(define.cardPoolId, define.id));
             }
             //if (define.type == DEFINE.SERVANT)
             //{
@@ -1350,7 +1350,7 @@ namespace Game
                 servant.image.sprite = skin.image;
             }
             else
-                servant.image.sprite = await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(card.define), card.define.id);
+                servant.image.sprite = await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id);
         }
         [SerializeField]
         BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
@@ -1577,7 +1577,7 @@ namespace Game
                 servant.image.sprite = skin.image;
             }
             else
-                servant.image.sprite = await getManager<CardManager>().loadCardImage(game.getCardPoolIdOfDefine(cardDefine), cardDefine.id);
+                servant.image.sprite = await getManager<CardManager>().loadCardImage(cardDefine.cardPoolId, cardDefine.id);
         }
         /// <summary>
         /// 从随从获取对应的卡
@@ -1679,7 +1679,7 @@ namespace Game
                 {
                     game.answers.answer(player.id, new DiscoverResponse()
                     {
-                        cardDefRef = new DefineReference(cardDefine)
+                        cardDefRef = cardDefine.getDefineRef()
                     });
                     closeDiscoverDialog();
                 });
