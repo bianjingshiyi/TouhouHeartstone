@@ -574,15 +574,21 @@ namespace Controllers
                     {
                         // 读取皮肤。
                         var skin = cardPool.cardSkinList[s];
-                        // 读取皮肤的图像字节数组。
-                        Sprite spr = await game.card.loadImage(skin.imagePath, poolPack.cardPoolId);
-                        if (spr != null)
+                        if (skin.imagePath != null)
                         {
-                            byte[] bytes = spr.texture.EncodeToJPG();
                             // 图像资源的资源ID。
                             string pictureId = Path.GetFileNameWithoutExtension(skin.imagePath);
-                            // 上传图片资源。
-                            await game.network.UploadResourceAsync(ResourceType.Picture, pictureId, bytes);
+                            if (!await game.network.ResourceExistsAsync(ResourceType.Picture, pictureId))
+                            {
+                                // 读取皮肤的图像字节数组。
+                                Sprite spr = await game.card.loadImage(skin.imagePath, poolPack.cardPoolId);
+                                if (spr != null)
+                                {
+                                    byte[] bytes = spr.texture.EncodeToJPG();
+                                    // 上传图片资源。
+                                    await game.network.UploadResourceAsync(ResourceType.Picture, pictureId, bytes);
+                                }
+                            }
                         }
                         // 设置进度条进度。
                         progress = progress + 0.5f * ((float)s / skinCount);
@@ -644,8 +650,7 @@ namespace Controllers
                             var skin = pool.cardSkinList[s];
                             string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
                             // todo: 资源下载失败或没有资源时候的异常处理
-                            if (await game.network.ResourceExistsAsync(ResourceType.Picture, picId) && 
-                                !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
+                            if (!game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
                                 !game.card.isExternalImageExists(skin.imagePath))
                             {
                                 byte[] bytes = await game.network.GetResourceAsync(ResourceType.Picture, picId);

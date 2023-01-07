@@ -9,7 +9,6 @@ using Controllers;
 using UI;
 using System.Linq;
 using System.Security.Cryptography;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Game
 {
@@ -253,12 +252,7 @@ namespace Game
                         //存在卡池，要考虑一下记载这个路径的卡池的路径，综合得到绝对路径
                         //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
                         //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
-                        string dirName = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName);
-                        if (!Directory.Exists(dirName))
-                        {
-                            Directory.CreateDirectory(dirName);
-                        }
-                        string absPath = Path.Combine(dirName, path);
+                        string absPath = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName, path);
                         bytes = await game.fileManager.readBinaryFile(absPath);
                     }
                 }
