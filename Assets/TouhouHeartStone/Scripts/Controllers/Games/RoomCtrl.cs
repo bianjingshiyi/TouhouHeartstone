@@ -664,7 +664,7 @@ namespace Controllers
                                 Sprite spr = await game.card.loadImage(skin.imagePath, poolPack.cardPoolId);
                                 // 图像资源的资源ID。
                                 string pictureId = Path.GetFileNameWithoutExtension(skin.imagePath);
-                                if (spr == null || await game.network.ResourceExistsAsync(ResourceType.Picture, pictureId))
+                                if (spr == null)
                                     continue;
 
                                 byte[] bytes = spr.texture.EncodeToJPG();
