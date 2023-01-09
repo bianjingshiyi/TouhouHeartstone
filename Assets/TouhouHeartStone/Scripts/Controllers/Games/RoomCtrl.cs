@@ -503,41 +503,45 @@ namespace Controllers
                 try
                 {
                     string id = roomPool.GetResourceID();
-                    // 如果本地不存在该卡池，并且本地没有缓存，加入到下载列表中。
-                    if (!game.card.isBuiltinCardPool(roomPool.cardPoolId) && game.card.getCardPoolInfo(roomPool.cardPoolId) == null && !game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id))
+                    bool hasLocalPool = !game.card.isBuiltinCardPool(roomPool.cardPoolId) && game.card.getCardPoolInfo(roomPool.cardPoolId) == null && !game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id);
+                    bool remotePoolExists = await game.network.ResourceExistsAsync(ResourceType.CardDefine, id);
+
+                    // 上传卡池。
+                    // 本地存在该房间指定的卡池，并且远端没有该卡池信息，上传该卡池。
+                    if (hasLocalPool && !remotePoolExists)
+                    {
+                        uploadPools.Add(roomPool);
+                        break;
+                    }
+
+                    // 下载卡池。
+                    // 如果本地不存在该卡池，加入到下载列表中。
+                    if (!hasLocalPool)
                     {
                         downloadPools.Add(roomPool);
+                        break;
                     }
-                    else
+                    // 如果本地存在该卡池，且远端已经有该卡池的信息，检测卡图下载。
+                    else if (remotePoolExists)
                     {
-                        // 本地存在该房间指定的卡池。
-                        // 如果远端已经有该卡池的信息了，检测卡图下载。
-                        if (await game.network.ResourceExistsAsync(ResourceType.CardDefine, id))
+                        // 检测卡池内的图片是否被下载。
+                        // 获取卡池。
+                        if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
                         {
-                            // 检测卡池内的图片是否被下载。
-                            // 获取卡池。
-                            if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
+                            int skinCount = cardPool.cardSkinList.Count;
+                            // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，将该卡池标记为需要下载。
+                            for (int s = 0; s < skinCount; s++)
                             {
-                                int skinCount = cardPool.cardSkinList.Count;
-                                // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，将该卡池标记为需要下载。
-                                for (int s = 0; s < skinCount; s++)
+                                var skin = cardPool.cardSkinList[s];
+                                string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
+                                if (!string.IsNullOrEmpty(picId) &&
+                                    !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
+                                    !game.card.isExternalImageExists(skin.imagePath))
                                 {
-                                    var skin = cardPool.cardSkinList[s];
-                                    string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
-                                    if (!string.IsNullOrEmpty(picId) &&
-                                        !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
-                                        !game.card.isExternalImageExists(skin.imagePath))
-                                    {
-                                        downloadPools.Add(roomPool);
-                                        break;
-                                    }
+                                    downloadPools.Add(roomPool);
+                                    break;
                                 }
                             }
-                        }
-                        else
-                        {
-                            // 远端没有该卡池信息，上传该卡池。
-                            uploadPools.Add(roomPool);
                         }
                     }
                 }
@@ -621,27 +625,24 @@ namespace Controllers
                             int skinCount = cardPool.cardSkinList.Count;
                             for (int s = 0; s < skinCount; s++)
                             {
-                                // 读取皮肤。
-                                var skin = cardPool.cardSkinList[s];
-                                if (skin.imagePath != null)
-                                {
-                                    // 图像资源的资源ID。
-                                    string pictureId = Path.GetFileNameWithoutExtension(skin.imagePath);
-                                    if (!await game.network.ResourceExistsAsync(ResourceType.Picture, pictureId))
-                                    {
-                                        // 读取皮肤的图像字节数组。
-                                        Sprite spr = await game.card.loadImage(skin.imagePath, poolPack.cardPoolId);
-                                        if (spr != null)
-                                        {
-                                            byte[] bytes = spr.texture.EncodeToJPG();
-                                            // 上传图片资源。
-                                            await game.network.UploadResourceAsync(ResourceType.Picture, pictureId, bytes);
-                                        }
-                                    }
-                                }
                                 // 设置进度条进度。
                                 progress = progress + 0.5f * ((float)s / skinCount);
                                 _ui.SetCardPoolLoadProgress((i + progress) / count);
+                                // 读取皮肤。
+                                var skin = cardPool.cardSkinList[s];
+                                if (skin.imagePath == null)
+                                    continue;
+
+                                // 读取皮肤的图像字节数组。
+                                Sprite spr = await game.card.loadImage(skin.imagePath, poolPack.cardPoolId);
+                                // 图像资源的资源ID。
+                                string pictureId = Path.GetFileNameWithoutExtension(skin.imagePath);
+                                if (spr == null || await game.network.ResourceExistsAsync(ResourceType.Picture, pictureId))
+                                    continue;
+
+                                byte[] bytes = spr.texture.EncodeToJPG();
+                                // 上传图片资源。
+                                await game.network.UploadResourceAsync(ResourceType.Picture, pictureId, bytes);
                             }
                         }
                     }
@@ -649,7 +650,8 @@ namespace Controllers
                 catch (Exception e)
                 {
                     string title = game.lang._(StringTable.ERROR);
-                    game.ui.dialog.ShowConfirm(title, e.ToString());
+                    game.ui.dialog.ShowConfirm(title, e.Message);
+                    Debug.LogError(e);
                     _ui.SetCardPoolLoadProgress(0);
                 }
                 transferringCardPools = false;
@@ -675,21 +677,30 @@ namespace Controllers
                 updateStartAndReadyButton();
 
 
-                try
+                int count = cardPools.Length;
+                for (int i = 0; i < count; i++)
                 {
-                    int count = cardPools.Length;
-                    for (int i = 0; i < count; i++)
+                    try
                     {
                         float progress = 0;
                         _ui.SetCardPoolLoadProgress((i + progress) / count);
                         var poolPack = cardPools[i];
                         string cardPoolResId = poolPack.GetResourceID();
-                        if (!game.cache.FileExists(game.fileManager, ResourceType.CardDefine, cardPoolResId) && await game.network.ResourceExistsAsync(ResourceType.CardDefine, cardPoolResId))
+
+                        // 下载卡组资源。
+                        if (!game.cache.FileExists(game.fileManager, ResourceType.CardDefine, cardPoolResId))
                         {
-                            byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, cardPoolResId);
-                            if (bytes != null)
+                            try
                             {
-                                await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, cardPoolResId, bytes);
+                                byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, cardPoolResId);
+                                if (bytes != null)
+                                {
+                                    await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, cardPoolResId, bytes);
+                                }
+                            }
+                            catch (FileNotFoundException)
+                            {
+                                Debug.LogWarning($"尝试下载未找到的卡组资源：{cardPoolResId}");
                             }
                         }
                         progress += 0.5f;
@@ -712,10 +723,17 @@ namespace Controllers
                                 if (!game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
                                     !game.card.isExternalImageExists(skin.imagePath))
                                 {
-                                    byte[] bytes = await game.network.GetResourceAsync(ResourceType.Picture, picId);
-                                    if (bytes != null)
+                                    try
                                     {
-                                        await game.cache.SaveCache(game.fileManager, ResourceType.Picture, picId, bytes);
+                                        byte[] bytes = await game.network.GetResourceAsync(ResourceType.Picture, picId);
+                                        if (bytes != null)
+                                        {
+                                            await game.cache.SaveCache(game.fileManager, ResourceType.Picture, picId, bytes);
+                                        }
+                                    }
+                                    catch (FileNotFoundException)
+                                    {
+                                        Debug.LogWarning($"尝试下载未找到的图片资源：{cardPoolResId}");
                                     }
                                 }
                                 progress += 0.5f * ((float)s / skinCount);
@@ -723,12 +741,13 @@ namespace Controllers
                             }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    string title = game.lang._(StringTable.ERROR);
-                    game.ui.dialog.ShowConfirm(title, e.ToString());
-                    _ui.SetCardPoolLoadProgress(0);
+                    catch (Exception e)
+                    {
+                        string title = game.lang._(StringTable.ERROR);
+                        game.ui.dialog.ShowConfirm(title, e.Message);
+                        Debug.LogError(e);
+                        _ui.SetCardPoolLoadProgress(0);
+                    }
                 }
                 transferringCardPools = false;
                 LoadRoomCardPoolsFromCache();
