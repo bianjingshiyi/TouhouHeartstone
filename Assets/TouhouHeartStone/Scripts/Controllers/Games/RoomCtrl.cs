@@ -503,15 +503,39 @@ namespace Controllers
                 try
                 {
                     string id = roomPool.GetResourceID();
-                    bool hasLocalPool = !game.card.isBuiltinCardPool(roomPool.cardPoolId) && game.card.getCardPoolInfo(roomPool.cardPoolId) == null && !game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id);
+                    bool hasLocalPool = game.card.isBuiltinCardPool(roomPool.cardPoolId) || game.card.getCardPoolInfo(roomPool.cardPoolId) != null || game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id);
                     bool remotePoolExists = await game.network.ResourceExistsAsync(ResourceType.CardDefine, id);
 
                     // 上传卡池。
-                    // 本地存在该房间指定的卡池，并且远端没有该卡池信息，上传该卡池。
-                    if (hasLocalPool && !remotePoolExists)
+                    // 本地存在该房间指定的卡池
+                    if (hasLocalPool)
                     {
-                        uploadPools.Add(roomPool);
-                        break;
+                        if (!remotePoolExists)
+                        {
+                            // 远端没有该卡池信息，上传该卡池。
+                            uploadPools.Add(roomPool);
+                            break;
+                        }
+                        else
+                        {
+                            // 远端已经有该卡池的信息，检测卡图上传。
+                            if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
+                            {
+                                int skinCount = cardPool.cardSkinList.Count;
+                                // 遍历卡池内的所有卡牌皮肤，如果有远端不存在的卡图，将该卡池标记为需要上传。
+                                for (int s = 0; s < skinCount; s++)
+                                {
+                                    var skin = cardPool.cardSkinList[s];
+                                    string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
+                                    if (!string.IsNullOrEmpty(picId) &&
+                                        !await game.network.ResourceExistsAsync(ResourceType.Picture, picId))
+                                    {
+                                        uploadPools.Add(roomPool);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     // 下载卡池。
@@ -526,6 +550,9 @@ namespace Controllers
                     {
                         // 检测卡池内的图片是否被下载。
                         // 获取卡池。
+                        if (!game.card.tryGetCardPool(roomPool.cardPoolId, out _))
+                            await game.card.loadCachedCardDefinesAsync(roomPool.cardPoolId, roomPool.version);
+
                         if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
                         {
                             int skinCount = cardPool.cardSkinList.Count;
