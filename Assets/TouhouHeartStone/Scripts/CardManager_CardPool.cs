@@ -846,8 +846,14 @@ namespace Game
                     else
                     {
                         // 实在找不到了，返回一个空数组
+                        Debug.LogWarning($"未找到路径为{path}的图片。");
                         bytes = Array.Empty<byte>();
                     }
+                }
+                // 如果是空数组，返回默认Sprite.
+                if (bytes.Length <= 0)
+                {
+                    return getDefaultSprite().Result;
                 }
                 Texture2D texture = new Texture2D(512, 512);
                 texture.LoadImage(bytes);

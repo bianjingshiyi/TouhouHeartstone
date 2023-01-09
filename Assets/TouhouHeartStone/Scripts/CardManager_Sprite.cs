@@ -260,6 +260,11 @@ namespace Game
                 {
                     throw new KeyNotFoundException("不存在卡池" + cardPoolId);
                 }
+                // 如果是空数组，返回默认Sprite.
+                if (bytes.Length <= 0)
+                {
+                    return getDefaultSprite().Result;
+                }
                 Texture2D texture = new Texture2D(512, 512);
                 texture.LoadImage(bytes);
                 sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
