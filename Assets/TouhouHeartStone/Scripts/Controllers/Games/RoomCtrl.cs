@@ -30,6 +30,8 @@ namespace Controllers
         public const string ROOM_CARD_POOLS_SUGGESTION_REFUSED = "房主拒绝了你的提议。";
         [TranslateMsg("房间-未知玩家")]
         public const string ROOM_UNKNOWN_PLAYER = "未知玩家";
+        [TranslateMsg("房间-未知卡组")]
+        public const string ROOM_UNKNOWN_DECK = "未知卡组";
         #endregion
         #region 公有方法
         public void SetRoomData(RoomData room)
@@ -316,21 +318,11 @@ namespace Controllers
             if (!_isLocalGame)
             {
                 // 检测deck是否有房间没有的卡池。
-                long[] pools = deck.getCardPools();
+                CardPoolInfoPack[] pools = getDeckCardPools(deck);
                 // 如果有房间没有的卡池，提议加入该卡池。
                 if (HasNotSharedPools(pools, out var privatePools))
                 {
-                    List<CardPoolInfoPack> packsList = new List<CardPoolInfoPack>();
-                    foreach (long pool in privatePools)
-                    {
-                        CardPoolInfo info = game.card.getCardPoolInfo(pool);
-                        if (info != null)
-                        {
-                            CardPoolInfoPack pack = new CardPoolInfoPack(info.cardPoolId, info.cardPoolName, info.editTime);
-                            packsList.Add(pack);
-                        }
-                    }
-                    CardPoolInfoPack[] packs = packsList.ToArray();
+                    CardPoolInfoPack[] packs = privatePools;
                     // 如果是房主，弹出对话框提示是否设置卡池属性。
                     if (isRoomOwner)
                     {
@@ -433,13 +425,28 @@ namespace Controllers
             _currentRoomData?.setOption(prop, value);
             onRoomPropChanged?.Invoke(prop.ToString(), value);
         }
+        private CardPoolInfoPack[] getDeckCardPools(Deck deck)
+        {
+            long[] poolsId = deck.getCardPools();
+            CardPoolInfoPack[] packs = new CardPoolInfoPack[poolsId.Length];
+            for (int i = 0; i < poolsId.Length; i++)
+            {
+                long id = poolsId[i];
+                var poolInfo = game.card.getCardPoolInfo(id);
+                if (poolInfo != null)
+                {
+                    packs[i] = new CardPoolInfoPack(id, poolInfo.cardPoolName, poolInfo.editTime);
+                }
+            }
+            return packs;
+        }
         /// <summary>
         /// 指定的卡池列表是否不在房间卡池列表中
         /// </summary>
         /// <param name="pools"></param>
         /// <param name="privatePools"></param>
         /// <returns></returns>
-        private bool HasNotSharedPools(long[] pools, out long[] privatePools)
+        private bool HasNotSharedPools(CardPoolInfoPack[] pools, out CardPoolInfoPack[] privatePools)
         {
             var roomCardPools = _currentRoomData.getCardPools();
             if (roomCardPools.Length == 0)
@@ -448,11 +455,11 @@ namespace Controllers
                 roomCardPools = new CardPoolInfoPack[0];
             }
 
-            List<long> privates = new List<long>();
+            List<CardPoolInfoPack> privates = new List<CardPoolInfoPack>();
             bool hasNotShared = false;
-            foreach (long pool in pools)
+            foreach (CardPoolInfoPack pool in pools)
             {
-                if (!roomCardPools.Any(p => p.cardPoolId == pool))
+                if (!roomCardPools.Any(p => p.cardPoolId == pool.cardPoolId && p.version == pool.version))
                 {
                     hasNotShared = true;
                     privates.Add(pool);
@@ -489,7 +496,26 @@ namespace Controllers
         }
         private void AddCardPools(CardPoolInfoPack[] packs)
         {
-            var cardPools = _currentRoomData.getCardPools().Union(packs).ToArray();
+            var roomPools = _currentRoomData.getCardPools();
+            var newList = new List<CardPoolInfoPack>(roomPools);
+            // 如果当前房间中有版本旧的卡池，替换成版本更新的卡池。
+            foreach (CardPoolInfoPack pack in packs)
+            {
+                CardPoolInfoPack sameIdPack = newList.FirstOrDefault(p => p.cardPoolId == pack.cardPoolId && p.version != pack.version);
+                if (sameIdPack != null)
+                {
+                    if (pack.version > sameIdPack.version)
+                    {
+                        newList.Remove(sameIdPack);
+                        newList.Add(pack);
+                    }
+                }
+                else
+                {
+                    newList.Add(pack);
+                }
+            }
+            CardPoolInfoPack[] cardPools = newList.ToArray();
             _currentRoomData.setOption(RoomDataPropName.Option.CardPools, cardPools);
             game.network.SetRoomProp(RoomDataPropName.Option.CardPools.ToString(), cardPools);
         }
@@ -550,8 +576,7 @@ namespace Controllers
                     {
                         // 检测卡池内的图片是否被下载。
                         // 获取卡池。
-                        if (!game.card.tryGetCardPool(roomPool.cardPoolId, out _))
-                            await game.card.loadCachedCardDefinesAsync(roomPool.cardPoolId, roomPool.version);
+                        LoadRoomCardPoolsFromCache();
 
                         if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
                         {
@@ -607,7 +632,8 @@ namespace Controllers
             var cardPools = _currentRoomData.getCardPools();
             foreach (var cardPool in cardPools)
             {
-                if (!game.card.tryGetCardPool(cardPool.cardPoolId, out _))
+                CardPoolInfo info = game.card.getCardPoolInfo(cardPool.cardPoolId);
+                if (info == null || info.editTime != cardPool.version)
                 {
                     await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
                 }
@@ -791,7 +817,14 @@ namespace Controllers
         {
             const int MAX_DISPLAY_POOL_COUNT = 10;
             int count = Mathf.Min(packs.Length, MAX_DISPLAY_POOL_COUNT);
-            string poolsString = string.Join(", ", packs.Select(p => p.cardPoolName).ToArray(), 0, count);
+            string poolsString = string.Join(", ", packs.Select(p => 
+            {
+                if (p == null)
+                {
+                    return game.lang._(ROOM_UNKNOWN_DECK);
+                }
+                return p.cardPoolName;
+            }).ToArray(), 0, count);
             if (packs.Length > MAX_DISPLAY_POOL_COUNT)
             {
                 poolsString += "...";
@@ -942,7 +975,7 @@ namespace Controllers
             for (int i = 0; i < viewData.Length; i++)
             {
                 Deck deck = deckList[i];
-                long[] cardPoolList = deck.getCardPools();
+                CardPoolInfoPack[] cardPoolList = getDeckCardPools(deck);
 
                 viewData[i].name = deck.name;
                 viewData[i].image = await game.card.loadCardImage(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId);

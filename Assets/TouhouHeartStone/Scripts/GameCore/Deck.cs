@@ -86,20 +86,26 @@ namespace TouhouHeartstone
             //检查是否有自定义卡牌，
 
             //英雄牌。
-            if (masterCardRef.cardPoolId != 0)
-                poolList.Add(masterCardRef.cardPoolId);
-            else if (masterCardRef.defineId < 0)
-                poolList.Add(CardDefineHelper.getCardPoolId(masterCardRef.defineId));
+            addDefineRef(masterCardRef);
 
             //套牌内的卡牌。
             for (int i = 0; i < cardList.Count; i++)
             {
-                if (cardList[i].cardRef.cardPoolId != 0)
-                    poolList.Add(cardList[i].cardRef.cardPoolId);
-                else if (cardList[i].cardRef.defineId < 0)
-                    poolList.Add(CardDefineHelper.getCardPoolId(cardList[i].cardRef.defineId));
+                addDefineRef(cardList[i].cardRef);
             }
             return poolList.ToArray();
+
+            void addDefineRef(DefineReference defRef)
+            {
+                if (defRef.cardPoolId != 0)
+                {
+                    poolList.Add(defRef.cardPoolId);
+                }
+                else if (defRef.defineId < 0)
+                {
+                    poolList.Add(CardDefineHelper.getCardPoolId(defRef.defineId));
+                }
+            }
         }
         #endregion
         public int id;
