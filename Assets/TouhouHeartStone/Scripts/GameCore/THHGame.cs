@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -434,6 +435,7 @@ namespace TouhouHeartstone
         public override Task onGameInit(CardEngine game, GameOption options, IRoomPlayer[] players)
         {
             game.option = options;
+            game.logger.log($"游戏开始，本局游戏设置：{options.ToJson()}");
             foreach (var playerInfo in players)
             {
                 Deck deck = playerInfo.getDeck();
