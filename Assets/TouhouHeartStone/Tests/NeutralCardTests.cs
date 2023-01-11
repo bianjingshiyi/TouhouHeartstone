@@ -109,7 +109,7 @@ namespace Tests
             you.cmdUse(game, you.getHand()[0], 0);
             Assert.IsInstanceOf<MissingSpecter>(you.getField()[0].define);
             (you.getField()[0].define.getEffects()[0] as DeathRattle).onDisable(game, you.getField()[0], null); //类似沉默
-            you.getField()[0].die(game); //干掉它
+            you.getField()[0].destroy(game); //干掉它
             Assert.AreEqual(0, you.getField().count);
         }
 

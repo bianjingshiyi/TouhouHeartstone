@@ -854,6 +854,7 @@ namespace TouhouHeartstone
     public class DeathRattle : PassiveEffect
     {
         public int id { get; }
+        public bool isDisabled { get; private set; } = false;
         public override string[] piles { get; } = new string[] { PILE.FIELD, PILE.GRAVE };
         public CheckConditionDelegate onCheckCondition { get; }
 
@@ -889,32 +890,35 @@ namespace TouhouHeartstone
             return onEnable(game as CardEngine, card as Card, buff as Buff);
         }
 
-        public override async Task onEnable(CardEngine game, Card card, Buff buff)
+        public override Task onEnable(CardEngine game, Card card, Buff buff)
         {
-            string triggerName;
-            if (buff == null)
-                triggerName = "DeathTrigger<" + id + ">";
-            else
-                triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
-            Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
-            game.logger.log("Effect", card + "注册亡语" + triggerName);
-            trigger = new Trigger<THHCard.DeathEventArg>(action: arg => execute(game, card, buff, arg));
-            await card.setProp(game, triggerName, trigger);
-            game.triggers.registerAfter(trigger);
+            isDisabled = false;
+            return Task.CompletedTask;
+            //string triggerName;
+            //if (buff == null)
+            //    triggerName = "DeathTrigger<" + id + ">";
+            //else
+            //    triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
+            //game.logger.log("Effect", card + "注册亡语" + triggerName);
+            //var trigger = new Trigger<THHCard.DeathEventArg>(action: arg => execute(game, card, buff, arg));
+            //await card.setProp(game, triggerName, trigger);
+            //game.triggers.registerAfter(trigger);
         }
 
         public Task execute(CardEngine game, Card card, Buff buff, THHCard.DeathEventArg deathEvent)
         {
-            if (!deathEvent.infoDic.ContainsKey(card))
+            if (isDisabled) // 被禁用之后不能触发
                 return Task.CompletedTask;
-            if (onCheckConditionBuffed != null && !onCheckConditionBuffed(game, card, buff))
+            if (deathEvent.card != card) // 死亡事件的卡牌必须是该卡牌
                 return Task.CompletedTask;
-            else if (onCheckCondition != null && !onCheckCondition(game, card))
+            if (onCheckConditionBuffed != null && !onCheckConditionBuffed(game, card, buff)) // 增益条件必须满足
                 return Task.CompletedTask;
-            if (onExecuteBuffed != null)
-                return onExecuteBuffed(game, card, buff, deathEvent.infoDic[card].position);
+            else if (onCheckCondition != null && !onCheckCondition(game, card)) // 触发条件必须满足
+                return Task.CompletedTask;
+            if (onExecuteBuffed != null) 
+                return onExecuteBuffed(game, card, buff, deathEvent.position);
             else if (onExecute != null)
-                return onExecute(game, card, deathEvent.infoDic[card].position);
+                return onExecute(game, card, deathEvent.position);
             return Task.CompletedTask;
         }
 
@@ -925,15 +929,17 @@ namespace TouhouHeartstone
 
         public override Task onDisable(CardEngine game, Card card, Buff buff)
         {
-            string triggerName;
-            if (buff == null)
-                triggerName = "DeathTrigger<" + id + ">";
-            else
-                triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
-            Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
-            game.logger.log("Effect", card + "注销亡语" + triggerName);
-            game.triggers.removeAfter(trigger);
-            return card.setProp(game, triggerName, null);
+            isDisabled = true;
+            return Task.CompletedTask;
+            //string triggerName;
+            //if (buff == null)
+            //    triggerName = "DeathTrigger<" + id + ">";
+            //else
+            //    triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
+            //Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
+            //game.logger.log("Effect", card + "注销亡语" + triggerName);
+            //game.triggers.removeAfter(trigger);
+            //return card.setProp(game, triggerName, null);
         }
     }
 

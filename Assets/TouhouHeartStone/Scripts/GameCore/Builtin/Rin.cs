@@ -424,7 +424,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            var choice = await card.getOwner().searchPile(game, card.getOwner().getGrave().Where(c => c.define.isServant() && c.define.getEffects().OfType<DeathRattle>().Count() > 0), title: "复活吧我的勇士");
+            var choice = await card.getOwner().searchPile(game, card.getOwner().getGrave().Where(c => c.define.isServant() && c.define.hasDeathRattles()), title: "复活吧我的勇士");
             if (choice != null)
             {
                 choice.choose.graveToHand(game);
@@ -481,17 +481,16 @@ namespace TouhouHeartstone.Builtin
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PileFlag.field,(g,c,a)=>
+            new THHEffectAfter<THHCard.DeathEventArg>(PileFlag.field,(game,card,arg)=>
             {
-                return !a.infoDic.Any(c1 => c1.Key == c);
-            },async (g, c, a) =>
+                return arg.card != card;
+            },async (game, card, arg) =>
             {
-                foreach(var death in a.infoDic)
+                var owner = card.getOwner();
+                var hand = owner.getHand();
+                if(hand.count < hand.maxCount && arg.card.getOwner() == owner)
                 {
-                    if(c.getOwner().getHand().count<c.getOwner().getHand().maxCount && death.Key.getOwner() == c.getOwner())
-                    {
-                        await c.getOwner().addCardToHand<GhostOfHatred>(g);
-                    }
+                    await owner.addCardToHand<GhostOfHatred>(game);
                 }
             })
         };

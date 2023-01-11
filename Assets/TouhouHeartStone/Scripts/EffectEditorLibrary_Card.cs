@@ -611,10 +611,9 @@ namespace Game
             return cards.silence(game);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DESTROY, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DEATH_EVENT)]
-        public static Task<THHCard.DeathEventArg> destroy(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        public static Task destroy(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
-            return cards.die(game);
+            return cards.kill(game);
         }
 
         /// <summary>

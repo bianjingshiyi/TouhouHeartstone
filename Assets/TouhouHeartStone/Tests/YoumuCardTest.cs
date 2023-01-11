@@ -106,7 +106,7 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 2);
             you.cmdUse(game, you.getHand().getCard<NetherworldInhabitant>());
-            you.getField()[0].die(game);
+            you.getField()[0].destroy(game);
             Assert.True(you.getHand().getCard<Ghost>() != null);
             you.cmdUse(game, you.getHand().getCard<Ghost>());
 

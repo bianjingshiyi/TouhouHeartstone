@@ -1,6 +1,8 @@
 using TouhouCardEngine;
 using System.Linq;
 using System;
+using TouhouCardEngine.Interfaces;
+using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
@@ -162,6 +164,28 @@ namespace TouhouHeartstone
         public static int getCardNumber(this CardDefine card)
         {
             return getCardNumber(card.id);
+        }
+        
+        public static IEffect[] getDeathRattles(this CardDefine card)
+        {
+            var results = new List<IEffect>();
+            var effects = card.getEffects();
+            results.AddRange(effects.OfType<DeathRattle>());
+            results.AddRange(effects.OfType<GeneratedEffect>().Where(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)));
+            return results.ToArray();
+        }
+        public static bool hasDeathRattles(this CardDefine card)
+        {
+            var effects = card.getEffects();
+            if (effects.OfType<DeathRattle>().Any())
+            {
+                return true;
+            }
+            if (effects.OfType<GeneratedEffect>().Any(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

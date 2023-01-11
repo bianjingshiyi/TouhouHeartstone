@@ -98,6 +98,29 @@ namespace TouhouHeartstone
             return false;
         }
         /// <summary>
+        /// 杀死一张卡牌。
+        /// 实际作用为将其设置为已死亡。
+        /// </summary>
+        /// <param name="card">卡牌。</param>
+        /// <param name="game">游戏对象。</param>
+        public static async Task kill(this Card card, IGame game)
+        {
+            await setDead(card, game, true);
+        }
+        /// <summary>
+        /// 杀死多张卡牌。
+        /// 实际作用为将其设置为已死亡。
+        /// </summary>
+        /// <param name="cards">卡牌列表。</param>
+        /// <param name="game">游戏对象。</param>
+        public static async Task kill(this IEnumerable<Card> cards, IGame game)
+        {
+            foreach (var card in cards)
+            {
+                await card.kill(game);
+            }
+        }
+        /// <summary>
         /// 设置为true则随从会在下一次死亡结算中视作阵亡。
         /// </summary>
         /// <param name="card"></param>
@@ -638,23 +661,49 @@ namespace TouhouHeartstone
             return card.getProp<bool>(game, CARD.SILENCE);
         }
 
-        public static bool hasDeathRattle(this Card card, IGame game)
+        public static IEffect[] getDeathRattles(this Card card, IGame game)
         {
-            if (card.define.getEffects().OfType<DeathRattle>().Count() > 0 && !card.getProp<bool>(game, CARD.SILENCE))
+            List<IEffect> results = new List<IEffect>();
+            if (!card.getProp<bool>(game, CARD.SILENCE))
             {
-                return true;
+                results.AddRange(card.define.getDeathRattles());
             }
             else
             {
                 foreach (var buff in card.getBuffs())
                 {
-                    if (buff.getEffects(game as CardEngine).OfType<DeathRattle>().Count() > 0)
+                    var effects = buff.getEffects(game as CardEngine);
+                    results.AddRange(effects.OfType<DeathRattle>());
+                    results.AddRange(effects.OfType<GeneratedEffect>().Where(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)));
+                }
+            }
+            return results.ToArray();
+        }
+        public static bool hasDeathRattle(this Card card, IGame game)
+        {
+            if (!card.getProp<bool>(game, CARD.SILENCE))
+            {
+                if (card.define.hasDeathRattles())
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                foreach (var buff in card.getBuffs())
+                {
+                    var effects = buff.getEffects(game as CardEngine);
+                    if (effects.OfType<DeathRattle>().Any())
+                    {
+                        return true;
+                    }
+                    if (effects.OfType<GeneratedEffect>().Any(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)))
                     {
                         return true;
                     }
                 }
-                return false;
             }
+            return false;
         }
         public static bool hasTag(this Card card, IGame game, string tag)
         {
@@ -1023,29 +1072,17 @@ namespace TouhouHeartstone
         }
         public static async Task triggerDeathRattles(this Card card, CardEngine game)
         {
-            //首先触发本体亡语
-            foreach (var deathRattle in card.define.getEffects().OfType<DeathRattle>())
+            var deathRattles = getDeathRattles(card, game);
+
+            foreach (var effect in deathRattles)
             {
-                await deathRattle.execute(game, card, null, new DeathEventArg()
+                if (effect is GeneratedEffect gen)
                 {
-                    infoDic = new Dictionary<Card, DeathEventArg.Info>()
-                    {
-                        { card, new DeathEventArg.Info(){ player = card.getOwner(), position = card.getOwner().getField().indexOf(card) } }
-                    }
-                });
-            }
-            //然后触发buff亡语
-            foreach (var buff in card.getBuffs())
-            {
-                foreach (var deathRattle in buff.getEffects(game).OfType<DeathRattle>())
+                    await gen.execute(game, card, null, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                }
+                else if (effect is DeathRattle rattle)
                 {
-                    await deathRattle.execute(game, card, buff, new DeathEventArg()
-                    {
-                        infoDic = new Dictionary<Card, DeathEventArg.Info>()
-                        {
-                            { card, new DeathEventArg.Info(){ player = card.getOwner(), position = card.getOwner().getField().indexOf(card) } }
-                        }
-                    });
+                    await rattle.execute(game, card, null, new DeathEventArg(card));
                 }
             }
         }
@@ -1544,55 +1581,62 @@ namespace TouhouHeartstone
             //    };
             //}
         }
-        public static Task die(this Card card, CardEngine game)
+        /// <summary>
+        /// 将单个卡牌移除并将其置入墓地，然后触发它的遗言。
+        /// </summary>
+        /// <param name="card">卡牌。</param>
+        /// <param name="game">游戏对象。</param>
+        /// <returns>死亡事件。</returns>
+        public static async Task<DeathEventArg> destroy(this Card card, CardEngine game)
         {
-            return die(new Card[] { card }, game);
+            var args = await new Card[] { card }.destroy(game);
+            return args[0];
         }
-        public static async Task<DeathEventArg> die(this IEnumerable<Card> cards, CardEngine game)
+
+        /// <summary>
+        /// 将多个卡牌移除并将其置入墓地，然后触发它们的遗言。
+        /// </summary>
+        /// <param name="cards">卡牌列表。</param>
+        /// <param name="game">游戏对象。</param>
+        /// <returns>死亡事件。</returns>
+        public static async Task<DeathEventArg[]> destroy(this IEnumerable<Card> cards, CardEngine game)
         {
             List<Player> remainPlayerList = new List<Player>(game.players);
-            var eventArg = await game.triggers.doEvent(new DeathEventArg() { infoDic = cards.ToDictionary(c => c, c => default(DeathEventArg.Info)) }, onDie);
-            async Task onDie(DeathEventArg arg)
+            List<DeathEventArg> eventArgs = new List<DeathEventArg>();
+            foreach (Card card in cards)
             {
-                Dictionary<Card, DeathEventArg.Info> infoDic = new Dictionary<Card, DeathEventArg.Info>();
-                foreach (var card in arg.infoDic.Keys)
+                var eventArg = await game.triggers.doEvent(new DeathEventArg(card), onDie);
+                async Task onDie(DeathEventArg arg)
                 {
-                    if (card.pile.name == PILE.MASTER)//英雄阵亡
+                    Card death = arg.card;
+                    if (death.pile.name == PILE.MASTER)//英雄阵亡
                     {
-                        infoDic.Add(card, new DeathEventArg.Info()
-                        {
-                            player = card.getOwner(),
-                            position = card.pile.indexOf(card)
-                        });
-                        remainPlayerList.Remove(card.getOwner());
-                        game.logger.log(card.getOwner() + "失败");
+                        remainPlayerList.Remove(death.getOwner());
+                        game.logger.log(death.getOwner() + "失败");
                     }
-                    else if (card.pile.name == PILE.FIELD)//随从阵亡
+                    else if (death.pile.name == PILE.FIELD)//随从阵亡
                     {
-                        infoDic.Add(card, new DeathEventArg.Info()
-                        {
-                            player = card.getOwner(),
-                            position = card.pile.indexOf(card)
-                        });
-                        await card.pile.moveTo(game, card, card.getOwner().getGrave());
-                        game.logger.log(card + "阵亡");
+                        await death.pile.moveTo(game, death, death.getOwner().getGrave());
+                        game.logger.log(death + "阵亡");
                     }
-                    else if (card.pile.name == PILE.ITEM)//装备摧毁
+                    else if (death.pile.name == PILE.ITEM)//装备摧毁
                     {
-                        infoDic.Add(card, new DeathEventArg.Info()
-                        {
-                            player = card.getOwner(),
-                            position = card.pile.indexOf(card)
-                        });
-                        await card.pile.moveTo(game, card, card.getOwner().getGrave());
-                        game.logger.log(card + "摧毁");
+                        await death.pile.moveTo(game, death, death.getOwner().getGrave());
+                        game.logger.log(death + "摧毁");
                     }
                 }
-                arg.infoDic = infoDic;
-            }
-            foreach (var card in eventArg.infoDic.Keys)
-            {
                 await card.resetCard(game);
+                eventArgs.Add(eventArg);
+            }
+
+            // 触发遗言。
+            foreach (Card card in cards)
+            {
+                // 只在战场、墓地或武器栏位触发遗言。
+                if ((card.pile?.name == PILE.GRAVE || card.pile?.name == PILE.FIELD || card.pile?.name == PILE.ITEM) && card.hasDeathRattle(game))
+                {
+                    card.triggerDeathRattles(game);
+                }
             }
             if (remainPlayerList.Count != game.players.Length)
             {
@@ -1601,34 +1645,37 @@ namespace TouhouHeartstone
                 else
                     await game.getRule().gameEnd(game, new Player[0]);//TODO: 把这个方法移动到HearthStoneRule之后记得把getRule删了
             }
-            return eventArg;
+            return eventArgs.ToArray();
         }
         public class DeathEventArg : EventArg, IDescribableEventArg
         {
-            public Dictionary<Card, Info> infoDic;
 
+            public DeathEventArg()
+            {
+            }
+            public DeathEventArg(Card card)
+            {
+                this.card = card;
+                player = card.getOwner();
+                position = card.pile.indexOf(card);
+            }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                return infoDic.Count > 1 ? null : infoDic.First().Key;
+                return card;
             }
 
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
+                return card;
             }
 
-            public class Info
-            {
-                public Player player;
-                public int position;
-            }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
-            [MukioI18n.TranslateMsg("{0}是卡牌列表")]
+            [TranslateMsg("{0}是卡牌列表")]
             const string TEMPLATE = "{0} 死亡";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
@@ -1637,26 +1684,43 @@ namespace TouhouHeartstone
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
                 return new object[] {
-                    string.Join("，", infoDic.Keys.Select(c => c.getFormatString()))
+                    card.getFormatString()
                 };
             }
 
-            //public override EventVariableInfo[] getBeforeEventVarInfos()
-            //{
-            //    return new EventVariableInfo[]
-            //    {
-            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
-            //        new EventVariableInfo(){name = "Index",type=typeof(int)}
-            //    };
-            //}
-            //public override EventVariableInfo[] getAfterEventVarInfos()
-            //{
-            //    return new EventVariableInfo[]
-            //    {
-            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
-            //        new EventVariableInfo(){name = "Index",type=typeof(int)}
-            //    };
-            //}
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "位置",type=typeof(int)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
+                    new EventVariableInfo(){name = "位置",type=typeof(int)}
+                };
+            }
+            public Card card
+            {
+                get => getVar<Card>("卡牌");
+                set => setVar("卡牌", value);
+            }
+            public Player player
+            {
+                get => getVar<Player>("玩家");
+                set => setVar("玩家", value);
+            }
+            public int position
+            {
+                get => getVar<int>("位置");
+                set => setVar("位置", value);
+            }
         }
         public static Card[] getNearbyCards(this Card card)
         {

@@ -431,8 +431,7 @@ namespace TouhouHeartstone.Builtin
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new THHEffectAfter<THHCard.DeathEventArg>(PileFlag.grave, (game, card, arg) => { return true; },
-                async (game, card, arg) =>
+            new DeathRattle(ID, async (game, card, arg) =>
                 {
                     Player opponent = game.getOpponent(card.owner as Player);
                     await opponent.setMaxGem(game, opponent.getMaxGem() + 1);
@@ -2708,7 +2707,7 @@ namespace TouhouHeartstone.Builtin
             {
                 if (recorded[i] is THHCard.DeathEventArg)
                 {
-                    count += (recorded[i] as THHCard.DeathEventArg).infoDic.Count;
+                    count++;//+= (recorded[i] as THHCard.DeathEventArg).infoDic.Count;
                 }
 
                 if (recorded[i] is HearthStoneRule.TurnStartEventArg)

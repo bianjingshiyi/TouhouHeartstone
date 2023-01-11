@@ -441,7 +441,7 @@ namespace Tests
             you.cmdUse(game, you.getHand().getCard<DefaultServant>());
             game.skipUntilCanUse<BurgeoningRise>(you);
             you.cmdUse(game, you.getHand().getCard<BurgeoningRise>(), targets: you.getField()[0]);
-            you.getField()[0].die(game);
+            you.getField()[0].destroy(game);
             Assert.AreEqual(1, you.getField().count);
             var dead = you.getField()[0];
             Assert.IsInstanceOf<DefaultServant>(dead.define);
@@ -686,7 +686,7 @@ namespace Tests
             you.cmdUse(game, you.getHand().getCard<BurgeoningRise>(), targets: you.getField()[0]);
             game.skipUntilCanUse<BurgeoningRise>(you);
             you.cmdUse(game, you.getHand().getCard<BurgeoningRise>(), targets: you.getField()[0]);
-            you.getField()[0].die(game);
+            you.getField()[0].destroy(game);
             Assert.AreEqual(2, you.getField().count);
             var dead = you.getField()[0];
             Assert.IsInstanceOf<DefaultServant>(dead.define);

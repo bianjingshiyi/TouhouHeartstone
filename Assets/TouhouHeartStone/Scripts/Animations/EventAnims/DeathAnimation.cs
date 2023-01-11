@@ -18,28 +18,26 @@ namespace Game
         /// <returns></returns>
         public override bool update(TableManager table, THHCard.DeathEventArg eventArg, float time)
         {
+            var card = eventArg.card;
             if (_animList == null)
             {
                 _animList = new List<AnimAnim>();
-                foreach (var card in eventArg.infoDic.Keys)//列举所有死亡的信息
+                if (table.tryGetServant(card, out var serv))//尝试获取死亡的随从的随从UI
                 {
-                    if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
-                    {
-                        servant.onDeath.invokeBeforeAnim();
-                        _animList.Add(new AnimAnim(servant.servantAnimator, servant.onDeath.animName));
-                        //table.ui.SelfFieldList.removeItem(servant);//从自己的场上移除随从UI
-                        //table.ui.EnemyFieldList.removeItem(servant);//从敌人的场上移除随从UI
-                    }
-                    else if (table.tryGetMaster(card, out var master))
-                    {
-                        master.onDeath.invokeBeforeAnim();
-                        _animList.Add(new AnimAnim(master.animator, master.onDeath.animName));
-                    }
-                    else if (table.tryGetItem(card, out var item))
-                    {
-                        item.onDestroy.invokeBeforeAnim();
-                        _animList.Add(new AnimAnim(item.animator, item.onDestroy.animName));
-                    }
+                    serv.onDeath.invokeBeforeAnim();
+                    _animList.Add(new AnimAnim(serv.servantAnimator, serv.onDeath.animName));
+                    //table.ui.SelfFieldList.removeItem(servant);//从自己的场上移除随从UI
+                    //table.ui.EnemyFieldList.removeItem(servant);//从敌人的场上移除随从UI
+                }
+                else if (table.tryGetMaster(card, out var master))
+                {
+                    master.onDeath.invokeBeforeAnim();
+                    _animList.Add(new AnimAnim(master.animator, master.onDeath.animName));
+                }
+                else if (table.tryGetItem(card, out var item))
+                {
+                    item.onDestroy.invokeBeforeAnim();
+                    _animList.Add(new AnimAnim(item.animator, item.onDestroy.animName));
                 }
             }
             bool isAllAnimDone = true;
@@ -50,27 +48,29 @@ namespace Game
             }
             if (!isAllAnimDone)
                 return false;
-            foreach (var card in eventArg.infoDic.Keys)//列举所有死亡的信息
+            if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
             {
-                if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
-                {
-                    servant.onDeath.invokeAfterAnim();
-                    table.ui.SelfFieldList.removeItem(servant,true);//从自己的场上移除随从UI
-                    table.ui.EnemyFieldList.removeItem(servant,true);//从敌人的场上移除随从UI
-                }
-                else if (table.tryGetMaster(card, out var master))
-                {
-                    master.onDeath.invokeAfterAnim();
-                }
-                else if (card.isItem())
-                {
-                    Item item = card.getOwner() == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
-                    item.onDestroy.invokeAfterAnim();
-                    item.hide();
-                }
+                servant.onDeath.invokeAfterAnim();
+                table.ui.SelfFieldList.removeItem(servant,true);//从自己的场上移除随从UI
+                table.ui.EnemyFieldList.removeItem(servant,true);//从敌人的场上移除随从UI
+            }
+            else if (table.tryGetMaster(card, out var master))
+            {
+                master.onDeath.invokeAfterAnim();
+            }
+            else if (card.isItem())
+            {
+                Item item = card.getOwner() == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
+                item.onDestroy.invokeAfterAnim();
+                item.hide();
             }
             table.setSkill(table.ui.SelfSkill, table.player.getSkill());
             return true;
+        }
+
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            return false;
         }
     }
 }

@@ -267,7 +267,7 @@ namespace TouhouHeartstone
         public static Task destroyItem(this Player player, CardEngine game)
         {
             if (player[PILE.ITEM].count > 0 && player[PILE.ITEM][0] is Card item)
-                return item.die(game);
+                return item.destroy(game);
             return Task.CompletedTask;
         }
         /// <summary>
@@ -517,10 +517,13 @@ namespace TouhouHeartstone
                 game.logger.logTrace(arg.player + "复活" + arg.card.define.GetType().Name + "位于" + position);
                 await arg.player.tryEnterField(game, arg.player.getGrave(), arg.card, arg.position);
                 //亡语随从在墓地与场上移动时不会进行效果的激活与禁用
-                foreach (IPassiveEffect effect in arg.card.define.getEffects().OfType<DeathRattle>())
+                foreach (IEffect effect in arg.card.define.getDeathRattles())
                 {
-                    await effect.onDisable(game, card, null);
-                    await effect.onEnable(game, card, null);
+                    if (effect is IPassiveEffect passive)
+                    {
+                        await passive.onDisable(game, card, null);
+                        await passive.onEnable(game, card, null);
+                    }
                 }
             });
             return eventArg;

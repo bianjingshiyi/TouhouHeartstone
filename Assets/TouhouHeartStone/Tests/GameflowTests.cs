@@ -289,7 +289,6 @@ namespace Tests
             Assert.AreEqual(2, d2.infoDic.First().Value.damagedValue);
             THHCard.DeathEventArg d3 = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DeathEventArg) as THHCard.DeathEventArg;
             Assert.NotNull(d3);
-            Assert.AreEqual(2, d3.infoDic.Count);
 
             game.Dispose();
         }

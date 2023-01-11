@@ -175,12 +175,12 @@ namespace TouhouHeartstone
         internal static Task surrender(this CardEngine game, Player player)
         {
             game.logger.logTrace(player + "投降");
-            return player.getMaster().die(game);
+            return player.getMaster().kill(game);
         }
 
         public async static Task leave(this CardEngine game, Player player)
         {
-            await player.getMaster().die(game);
+            await player.getMaster().kill(game);
         }
 
         public static event Action<int, IResponse> onPlayerResponse;
@@ -771,7 +771,7 @@ namespace TouhouHeartstone
                 return;
             game.logger.logTrace("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
             game.close();
-            await game.triggers.doEvent(new HearthStoneRule.GameEndEventArg() { winners = winners });
+            await game.triggers.doEvent(new GameEndEventArg() { winners = winners });
         }
 
         /// <summary>
@@ -804,7 +804,7 @@ namespace TouhouHeartstone
 
             if (deathList.Count > 0)
             {
-                return deathList.die(game);
+                return deathList.destroy(game);
             }
             else
                 return Task.CompletedTask;

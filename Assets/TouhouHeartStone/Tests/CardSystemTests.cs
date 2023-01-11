@@ -295,7 +295,7 @@ namespace Tests
             task = card.pile.moveTo(game, card, game.players[0].getGrave());//把火球送入墓地
             yield return TestHelper.waitTask(task);
             Assert.AreEqual(4, card.getCost(game));
-            yield return game.players[0].getField()[0].die(game).wait();//杀死哀绿
+            yield return game.players[0].getField()[0].destroy(game).wait();//杀死哀绿
             Assert.True(game.players[0].getHand().getCards<FireBall>().All(c => c.getCost(game) == 4));
             yield return game.players[0].draw(game).wait();//再抽一张火球术
             Assert.True(game.players[0].getHand().getCards<FireBall>().All(c => c.getCost(game) == 4));
@@ -560,7 +560,7 @@ namespace Tests
             you.cmdUse(game, you.getHand().getCard<SorcererApprentice>());
             you.cmdUse(game, you.getHand().getCard<SorcererApprentice>());
             Assert.AreEqual(game.getDefine<FireBall>().cost - 2, you.getHand().getCard<FireBall>().getCost(game));
-            you.getField().getCard<SorcererApprentice>().die(game);
+            you.getField().getCard<SorcererApprentice>().destroy(game);
             game.updateDeath();
             Assert.AreEqual(game.getDefine<FireBall>().cost - 1, you.getHand().getCard<FireBall>().getCost(game));
         }

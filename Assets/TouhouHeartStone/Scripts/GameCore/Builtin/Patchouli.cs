@@ -669,7 +669,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().silence(game);
-            await game.getOpponent(card.getOwner()).getField().die(game);
+            await game.getOpponent(card.getOwner()).getField().kill(game);
         }
     }
     /// <summary>

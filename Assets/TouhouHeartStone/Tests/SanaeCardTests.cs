@@ -268,7 +268,7 @@ namespace Tests
             you.cmdUse<GodSummon>(game);
             kanako = you.getField()[0];
             Assert.True(kanako.canAttack(game));
-            kanako.die(game);
+            kanako.destroy(game);
             you.cmdTurnEnd(game);
             Assert.False(you.getDeck().Contains(kanako));
             Assert.AreEqual(0, you.getField().count);

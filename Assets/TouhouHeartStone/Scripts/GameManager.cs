@@ -556,8 +556,8 @@ namespace Game
                 case THHCard.DeathEventArg death:
                     item.IconImage.sprite = item.deathIcon;
                     item.Text.text = lang._(GAME_MANAGER_DEATH);
-                    item.Image.sprite = getManager<TableManager>().getSkin(death.infoDic.First().Key).image;
-                    item.BorderImage.sprite = death.infoDic.First().Key.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
+                    item.Image.sprite = getManager<TableManager>().getSkin(death.card).image;
+                    item.BorderImage.sprite = death.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHPlayer.DiscoverEventArg discover:
                     item.Text.text = lang._(GAME_MANAGER_DISCOVER);
