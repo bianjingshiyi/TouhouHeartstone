@@ -854,7 +854,6 @@ namespace TouhouHeartstone
     public class DeathRattle : PassiveEffect
     {
         public int id { get; }
-        public bool isDisabled { get; private set; } = false;
         public override string[] piles { get; } = new string[] { PILE.FIELD, PILE.GRAVE };
         public CheckConditionDelegate onCheckCondition { get; }
 
@@ -890,25 +889,15 @@ namespace TouhouHeartstone
             return onEnable(game as CardEngine, card as Card, buff as Buff);
         }
 
-        public override Task onEnable(CardEngine game, Card card, Buff buff)
+        public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
-            isDisabled = false;
-            return Task.CompletedTask;
-            //string triggerName;
-            //if (buff == null)
-            //    triggerName = "DeathTrigger<" + id + ">";
-            //else
-            //    triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
-            //game.logger.log("Effect", card + "注册亡语" + triggerName);
-            //var trigger = new Trigger<THHCard.DeathEventArg>(action: arg => execute(game, card, buff, arg));
-            //await card.setProp(game, triggerName, trigger);
-            //game.triggers.registerAfter(trigger);
+            string propName = getPropName(buff);
+            game.logger.log("Effect", card + "启用亡语" + propName);
+            await card.setProp(game, propName, false);
         }
 
         public Task execute(CardEngine game, Card card, Buff buff, THHCard.DeathEventArg deathEvent)
         {
-            if (isDisabled) // 被禁用之后不能触发
-                return Task.CompletedTask;
             if (deathEvent.card != card) // 死亡事件的卡牌必须是该卡牌
                 return Task.CompletedTask;
             if (onCheckConditionBuffed != null && !onCheckConditionBuffed(game, card, buff)) // 增益条件必须满足
@@ -929,17 +918,22 @@ namespace TouhouHeartstone
 
         public override Task onDisable(CardEngine game, Card card, Buff buff)
         {
-            isDisabled = true;
-            return Task.CompletedTask;
-            //string triggerName;
-            //if (buff == null)
-            //    triggerName = "DeathTrigger<" + id + ">";
-            //else
-            //    triggerName = "DeathTrigger<" + id + ">(" + buff + ")";
-            //Trigger<THHCard.DeathEventArg> trigger = card.getProp<Trigger<THHCard.DeathEventArg>>(game, triggerName);
-            //game.logger.log("Effect", card + "注销亡语" + triggerName);
-            //game.triggers.removeAfter(trigger);
-            //return card.setProp(game, triggerName, null);
+            string propName = getPropName(buff);
+            game.logger.log("Effect", card + "禁用亡语" + propName);
+            return card.setProp(game, propName, true);
+        }
+        public bool isDisabled(IGame game, ICard card, IBuff buff)
+        {
+            string propName = getPropName(buff);
+            return card.getProp<bool>(game, propName);
+        }
+
+        private string getPropName(IBuff buff)
+        {
+            if (buff == null)
+                return "DeathRattleDisabled<" + id + ">";
+            else
+                return "DeathRattleDisabled<" + id + ">(" + buff.instanceID + ")";
         }
     }
 

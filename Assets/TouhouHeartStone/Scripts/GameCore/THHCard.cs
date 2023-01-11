@@ -661,23 +661,34 @@ namespace TouhouHeartstone
             return card.getProp<bool>(game, CARD.SILENCE);
         }
 
-        public static IEffect[] getDeathRattles(this Card card, IGame game)
+        public static (IEffect effect, Buff buff)[] getDeathRattles(this Card card, IGame game)
         {
-            List<IEffect> results = new List<IEffect>();
+            List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
             if (!card.getProp<bool>(game, CARD.SILENCE))
             {
-                results.AddRange(card.define.getDeathRattles());
+                results.AddRange(card.define.getDeathRattles()
+                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
             }
-            else
+            foreach (var buff in card.getBuffs())
             {
-                foreach (var buff in card.getBuffs())
-                {
-                    var effects = buff.getEffects(game as CardEngine);
-                    results.AddRange(effects.OfType<DeathRattle>());
-                    results.AddRange(effects.OfType<GeneratedEffect>().Where(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)));
-                }
+                var effects = buff.getEffects(game as CardEngine);
+                results.AddRange(effects.OfType<DeathRattle>()
+                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+                results.AddRange(effects.OfType<GeneratedEffect>()
+                    .Where(e => e.tagList.Contains(KEYWORD.DEATHRATTLE))
+                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
-            return results.ToArray();
+            return results.Where(e => {
+                if (e.effect is DeathRattle rattle)
+                {
+                    return !rattle.isDisabled(game, card, e.buff);
+                }
+                else if (e.effect is GeneratedEffect gen)
+                {
+                    return !gen.isDisabled(game, card, e.buff);
+                }
+                return false;
+            }).ToArray();
         }
         public static bool hasDeathRattle(this Card card, IGame game)
         {
@@ -1074,15 +1085,15 @@ namespace TouhouHeartstone
         {
             var deathRattles = getDeathRattles(card, game);
 
-            foreach (var effect in deathRattles)
+            foreach (var deathRattle in deathRattles)
             {
-                if (effect is GeneratedEffect gen)
+                if (deathRattle.effect is GeneratedEffect gen)
                 {
-                    await gen.execute(game, card, null, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                    await gen.execute(game, card, deathRattle.buff, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
                 }
-                else if (effect is DeathRattle rattle)
+                else if (deathRattle.effect is DeathRattle rattle)
                 {
-                    await rattle.execute(game, card, null, new DeathEventArg(card));
+                    await rattle.execute(game, card, deathRattle.buff, new DeathEventArg(card));
                 }
             }
         }
@@ -1625,7 +1636,6 @@ namespace TouhouHeartstone
                         game.logger.log(death + "摧毁");
                     }
                 }
-                await card.resetCard(game);
                 eventArgs.Add(eventArg);
             }
 
@@ -1635,8 +1645,9 @@ namespace TouhouHeartstone
                 // 只在战场、墓地或武器栏位触发遗言。
                 if ((card.pile?.name == PILE.GRAVE || card.pile?.name == PILE.FIELD || card.pile?.name == PILE.ITEM) && card.hasDeathRattle(game))
                 {
-                    card.triggerDeathRattles(game);
+                    await card.triggerDeathRattles(game);
                 }
+                await card.resetCard(game);
             }
             if (remainPlayerList.Count != game.players.Length)
             {
