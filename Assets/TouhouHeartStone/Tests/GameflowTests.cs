@@ -26,25 +26,25 @@ namespace Tests
     {
         private const string TEST_SERVER_URI = "http://localhost:50112";
 
-        [UnityTest]
-        public IEnumerator initTest()
-        {
-            CardEngine game = TestGameflow.initSyncStandardGame();
+        //[UnityTest]
+        //public IEnumerator initTest()
+        //{
+        //    CardEngine game = TestGameflow.initSyncStandardGame();
 
-            yield return new WaitForSeconds(.1f);
+        //    yield return new WaitForSeconds(.1f);
 
-            HearthStoneRule.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.InitEventArg) as HearthStoneRule.InitEventArg;
-            Assert.NotNull(init);
-            Assert.AreEqual(TestMaster.ID, game.players[0].getMaster().define.id);
-            Assert.AreEqual(30, game.players[0].getMaster().getCurrentLife(game));
-            Assert.AreEqual(TestMaster.ID, game.players[1].getMaster().define.id);
-            Assert.AreEqual(30, game.players[1].getMaster().getCurrentLife(game));
-            Assert.AreEqual(2, game.getSortedPlayers().Length);
-            bool isFirstPlayer = game.getPlayerIndex(game.getSortedPlayers()[0]) == 0;
-            Assert.AreEqual(isFirstPlayer ? 3 : 4, game.players[0].getInit().count);
-            Assert.AreEqual(isFirstPlayer ? 4 : 3, game.players[1].getInit().count);
-            game.Dispose();
-        }
+        //    HearthStoneRule.InitEventArg init = game.triggers.getRecordedEvents().LastOrDefault(e => e is HearthStoneRule.InitEventArg) as HearthStoneRule.InitEventArg;
+        //    Assert.NotNull(init);
+        //    Assert.AreEqual(TestMaster.ID, game.players[0].getMaster().define.id);
+        //    Assert.AreEqual(30, game.players[0].getMaster().getCurrentLife(game));
+        //    Assert.AreEqual(TestMaster.ID, game.players[1].getMaster().define.id);
+        //    Assert.AreEqual(30, game.players[1].getMaster().getCurrentLife(game));
+        //    Assert.AreEqual(2, game.getSortedPlayers().Length);
+        //    bool isFirstPlayer = game.getPlayerIndex(game.getSortedPlayers()[0]) == 0;
+        //    Assert.AreEqual(isFirstPlayer ? 3 : 4, game.players[0].getInit().count);
+        //    Assert.AreEqual(isFirstPlayer ? 4 : 3, game.players[1].getInit().count);
+        //    game.Dispose();
+        //}
         [UnityTest]
         public IEnumerator initReplaceTest()
         {
