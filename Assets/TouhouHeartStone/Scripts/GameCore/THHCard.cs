@@ -1610,6 +1610,25 @@ namespace TouhouHeartstone
         public static async Task<DeathEventArg[]> destroy(this IEnumerable<Card> cards, CardEngine game)
         {
             List<Player> remainPlayerList = new List<Player>(game.players);
+
+            // 禁用卡牌不在墓地中触发的效果。
+            foreach (Card card in cards)
+            {
+                // 卡牌定义自带的效果。
+                foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>().Where(e => !e.piles.Contains(PILE.GRAVE)))
+                {
+                    await effect.onDisable(game, card, null);
+                }
+                // BUFF给予的效果。
+                foreach (var buff in card.getBuffs())
+                {
+                    foreach (var effect in buff.getEffects(game).OfType<IPassiveEffect>().Where(e => !e.piles.Contains(PILE.GRAVE)))
+                    {
+                        await effect.onDisable(game, card, buff);
+                    }
+                }
+            }
+            // 触发死亡事件。
             List<DeathEventArg> eventArgs = new List<DeathEventArg>();
             foreach (Card card in cards)
             {
