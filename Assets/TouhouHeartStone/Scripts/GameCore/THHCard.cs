@@ -699,19 +699,16 @@ namespace TouhouHeartstone
                     return true;
                 }
             }
-            else
+            foreach (var buff in card.getBuffs())
             {
-                foreach (var buff in card.getBuffs())
+                var effects = buff.getEffects(game as CardEngine);
+                if (effects.OfType<DeathRattle>().Any())
                 {
-                    var effects = buff.getEffects(game as CardEngine);
-                    if (effects.OfType<DeathRattle>().Any())
-                    {
-                        return true;
-                    }
-                    if (effects.OfType<GeneratedEffect>().Any(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)))
-                    {
-                        return true;
-                    }
+                    return true;
+                }
+                if (effects.OfType<GeneratedEffect>().Any(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)))
+                {
+                    return true;
                 }
             }
             return false;
