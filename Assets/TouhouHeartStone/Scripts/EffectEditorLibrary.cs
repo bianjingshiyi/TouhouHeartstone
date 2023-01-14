@@ -36,11 +36,11 @@ namespace Game
         {
             if (action == null)
                 return;
-            Scope childScope = new Scope(scope);
+            //Scope childScope = new Scope(scope);
             for (int i = 1; i <= count; i++)
             {
                 scope.setOutParamValue(0, i);
-                await game.doActionsAsync(card, buff, eventArg, action, childScope);
+                await game.doActionsAsync(card, buff, eventArg, action);
             }
         }
 
@@ -63,16 +63,21 @@ namespace Game
             if (maxRepeatTime <= 0)
                 return;
             int times = 0;
-            Scope childScope = new Scope(scope);
-            bool shouldBreak;
+            //Scope childScope = new Scope(scope);
             do
             {
                 times++;
                 scope.setOutParamValue(0, times);
-                await game.doActionsAsync(card, buff, eventArg, action, childScope);
-                shouldBreak = await game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition);
+                await game.doActionsAsync(card, buff, eventArg, action);
+                if (condition != null)
+                {
+                    if (await game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition))
+                    {
+                        break;
+                    }
+                }
             }
-            while (!shouldBreak && times < maxRepeatTime);
+            while (times < maxRepeatTime);
         }
         //  把这个“玩家”逐步移到下面几个去
         #region 玩家
@@ -649,11 +654,11 @@ namespace Game
         {
             if (action == null)
                 return;
-            Scope childScope = new Scope(scope);
+            //Scope childScope = new Scope(scope);
             foreach (object ele in array)
             {
                 scope.setOutParamValue(0, ele);
-                await game.doActionsAsync(card, buff, eventArg, action, childScope);
+                await game.doActionsAsync(card, buff, eventArg, action);
             }
         }
         #endregion
