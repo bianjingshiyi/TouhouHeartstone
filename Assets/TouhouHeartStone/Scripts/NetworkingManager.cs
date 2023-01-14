@@ -635,6 +635,7 @@ namespace Game
             roomCtrl.display(roomData, false);
             roomCtrl.SetMode(isServerMode ? RoomMode.NetworkingClient : RoomMode.NetworkingHost);
             roomCtrl.SetIPText("IP：" + string.Join(", ", addresses));
+            roomCtrl.UpdateRoomData(roomData);
             //  加载聊天框
             _sceneCtrl.chatCtrl.display(roomData);
         }
