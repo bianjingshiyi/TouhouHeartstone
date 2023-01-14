@@ -155,7 +155,11 @@ namespace Game
             }
             for (int i = 0; i < savedPathSpritePairList.Count; i++)
             {
-                _externalSpriteCacheDict.Add(savedPathSpritePairList[i].Key, savedPathSpritePairList[i].Value);
+                string path = savedPathSpritePairList[i].Key;
+                if (!_externalSpriteCacheDict.ContainsKey(path))
+                {
+                    _externalSpriteCacheDict.Add(path, savedPathSpritePairList[i].Value);
+                }
             }
         }
         public async Task<string> saveImage(long cardPoolId, Texture2D texture)

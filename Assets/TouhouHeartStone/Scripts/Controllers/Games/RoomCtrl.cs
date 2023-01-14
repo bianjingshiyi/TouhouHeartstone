@@ -428,17 +428,17 @@ namespace Controllers
         private CardPoolInfoPack[] getDeckCardPools(Deck deck)
         {
             long[] poolsId = deck.getCardPools();
-            CardPoolInfoPack[] packs = new CardPoolInfoPack[poolsId.Length];
+            List<CardPoolInfoPack> packs = new List<CardPoolInfoPack>();
             for (int i = 0; i < poolsId.Length; i++)
             {
                 long id = poolsId[i];
                 var poolInfo = game.card.getCardPoolInfo(id);
                 if (poolInfo != null)
                 {
-                    packs[i] = new CardPoolInfoPack(id, poolInfo.cardPoolName, poolInfo.editTime);
+                    packs.Add(new CardPoolInfoPack(id, poolInfo.cardPoolName, poolInfo.editTime));
                 }
             }
-            return packs;
+            return packs.ToArray();
         }
         /// <summary>
         /// 指定的卡池列表是否不在房间卡池列表中
@@ -980,7 +980,24 @@ namespace Controllers
                 viewData[i].name = deck.name;
                 viewData[i].image = await game.card.loadCardImage(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId);
 
-                bool warning = false;
+                // 如果卡组内有不存在的卡池，加载卡池。
+                foreach (long cardPoolId in deck.getCardPools())
+                {
+                    if (!game.card.tryGetCardPool(cardPoolId, out _))
+                    {
+                        var poolInfo = game.card.getCardPoolInfo(cardPoolId);
+                        if (poolInfo != null)
+                        {
+                            var path = game.card.getCardPoolPath(poolInfo);
+                            if (path is string)
+                            {
+                                await game.card.loadCardPool(path);
+                            }
+                        }
+                    }
+                }
+
+                bool warning;
                 // 判断牌组是否合法。
                 if (_isLocalGame)
                 {

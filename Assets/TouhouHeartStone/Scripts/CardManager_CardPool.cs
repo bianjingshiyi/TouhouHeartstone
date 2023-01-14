@@ -869,6 +869,10 @@ namespace Game
         public Task<Sprite> loadCardImage(long cardPoolId, int cardId)
         {
             CardSkinData skin = getCardSkin(cardPoolId, cardId);
+            if (skin == null)
+            {
+                return getDefaultSprite();
+            }
             if (skin.image != null)
                 return Task.FromResult(skin.image);
             else

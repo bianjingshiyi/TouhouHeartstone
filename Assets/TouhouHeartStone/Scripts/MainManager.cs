@@ -239,18 +239,18 @@ namespace Game
                 false
             );
             //加载外部卡片数据
-            var cardPoolInfos = await card.loadCardPoolInfosAsync();
-            foreach (var pair in cardPoolInfos)
-            {
-                try
-                {
-                    await card.loadCardPool(pair.Key);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("加载外部卡池" + pair.Key + "失败：" + e);
-                }
-            }
+            await card.loadCardPoolInfosAsync();
+            //foreach (var pair in cardPoolInfos)
+            //{
+            //    try
+            //    {
+            //        await card.loadCardPool(pair.Key);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Debug.LogError("加载外部卡池" + pair.Key + "失败：" + e);
+            //    }
+            //}
             if (_loadCardTask != null)
                 await _loadCardTask;
             if (_mainSceneCtrl != null)
