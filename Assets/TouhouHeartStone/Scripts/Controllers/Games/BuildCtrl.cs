@@ -633,6 +633,17 @@ namespace Controllers
                 _deck.id = (int)game.deck.CreateDeck(_deck.name, _deck.masterCardRef);
                 deckList.Add(_deck);
             }
+            // 排序卡牌。
+            _deck.cardList.Sort((a, b) =>
+            {
+                var defineA = game.card.getCardDefine(a.cardRef);
+                var defineB = game.card.getCardDefine(b.cardRef);
+                if (defineA != null && defineB != null)
+                {
+                    return defineA.getCost().CompareTo(defineB.getCost());
+                }
+                return 0;
+            });
             foreach (var cardRef in _deck.toDefRefArray(includeMasterCard: false))
             {
                 game.deck.AddCard(_deck.id, cardRef);
