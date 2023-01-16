@@ -1096,6 +1096,9 @@ namespace TouhouHeartstone
                 setVar("目标卡牌", targets != null && targets.Length > 0 ? targets[0] : null);
                 setVar("Targets", targets);
             }
+            public ActiveEventArg(): this(null, null, new object[0])
+            {
+            }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;

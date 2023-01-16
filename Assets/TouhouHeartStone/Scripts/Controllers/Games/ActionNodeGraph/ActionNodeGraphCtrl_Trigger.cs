@@ -129,7 +129,7 @@ namespace Controllers
                 getTranslatedTargetCheckerTypes(),
                 triggerIndex,
                 getTriggerTargetCheckerViewData());
-            if (_entryType == nameof(GeneratedBattlecry.activeTrigger))
+            if (_entryType == nameof(GeneratedBattlecry.activeTrigger) || _entryType == nameof(GeneratedDeathRattle.activeTrigger))
             {
                 //战吼类型节点图隐藏事件类型
                 _entryNodeItem.displayEventType(false);

@@ -660,7 +660,22 @@ namespace TouhouHeartstone
         {
             return card.getProp<bool>(game, CARD.SILENCE);
         }
-
+        public static (IEffect effect, Buff buff)[] getBattlecries(this Card card, IGame game)
+        {
+            List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
+            if (!card.getProp<bool>(game, CARD.SILENCE))
+            {
+                results.AddRange(card.define.getBattlecries()
+                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
+            }
+            foreach (var buff in card.getBuffs())
+            {
+                var effects = buff.getEffects(game as CardEngine);
+                results.AddRange(effects.Where(e => e.isBattlecry())
+                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+            }
+            return results.ToArray();
+        }
         public static (IEffect effect, Buff buff)[] getDeathRattles(this Card card, IGame game)
         {
             List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
@@ -672,10 +687,7 @@ namespace TouhouHeartstone
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects(game as CardEngine);
-                results.AddRange(effects.OfType<DeathRattle>()
-                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
-                results.AddRange(effects.OfType<GeneratedEffect>()
-                    .Where(e => e.tagList.Contains(KEYWORD.DEATHRATTLE))
+                results.AddRange(effects.Where(e => e.isDeathRattle())
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
             return results.Where(e => {
@@ -702,11 +714,7 @@ namespace TouhouHeartstone
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects(game as CardEngine);
-                if (effects.OfType<DeathRattle>().Any())
-                {
-                    return true;
-                }
-                if (effects.OfType<GeneratedEffect>().Any(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)))
+                if (effects.Any(e => e.isDeathRattle()))
                 {
                     return true;
                 }
@@ -1062,11 +1070,7 @@ namespace TouhouHeartstone
             }
             if (card.isServant() || card.isItem() || card.isMaster())
             {
-                var effect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault(e => e.tagList.Contains(KEYWORD.BATTLECRY)); ;
-                if (effect != null)
-                {
-                    return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
-                }
+                return triggerBattlecries(card, game, player, targets);
             }
             else if (card.isSpell() || card.isSkill())
             {
@@ -1078,13 +1082,32 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
+        public static async Task triggerBattlecries(this Card card, CardEngine game, Player player, Card[] targets)
+        {
+            var battlecries = getBattlecries(card, game);
+            foreach (var battlecry in battlecries)
+            {
+                if (battlecry.effect is GeneratedBattlecry cry)
+                {
+                    await cry.execute(game, card, battlecry.buff, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                }
+                else if (battlecry.effect is GeneratedEffect gen)
+                {
+                    await gen.execute(game, card, battlecry.buff, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                }
+            }
+        }
         public static async Task triggerDeathRattles(this Card card, CardEngine game)
         {
             var deathRattles = getDeathRattles(card, game);
 
             foreach (var deathRattle in deathRattles)
             {
-                if (deathRattle.effect is GeneratedEffect gen)
+                if (deathRattle.effect is GeneratedDeathRattle genRattle)
+                {
+                    await genRattle.execute(game, card, deathRattle.buff, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                }
+                else if (deathRattle.effect is GeneratedEffect gen)
                 {
                     await gen.execute(game, card, deathRattle.buff, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
                 }
@@ -1615,14 +1638,14 @@ namespace TouhouHeartstone
             foreach (Card card in cards)
             {
                 // 卡牌定义自带的效果。
-                foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>().Where(e => !e.piles.Contains(PILE.GRAVE)))
+                foreach (var effect in card.define.getEffects().OfType<GeneratedEffect>().Where(e => !e.pileList.Contains(PILE.GRAVE) && !e.isDeathRattle()))
                 {
                     await effect.onDisable(game, card, null);
                 }
                 // BUFF给予的效果。
                 foreach (var buff in card.getBuffs())
                 {
-                    foreach (var effect in buff.getEffects(game).OfType<IPassiveEffect>().Where(e => !e.piles.Contains(PILE.GRAVE)))
+                    foreach (var effect in buff.getEffects(game).OfType<GeneratedEffect>().Where(e => !e.pileList.Contains(PILE.GRAVE) && !e.isDeathRattle()))
                     {
                         await effect.onDisable(game, card, buff);
                     }

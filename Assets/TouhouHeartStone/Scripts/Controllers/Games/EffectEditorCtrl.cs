@@ -562,6 +562,7 @@ namespace Controllers
             { nameof(GeneratedHalo.affectCondition), StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
             { nameof(GeneratedHalo.getHaloBuffDefine), StringTable.EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE },
             { nameof(GeneratedBattlecry.activeTrigger), StringTable.EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER }
+            //{ nameof(GeneratedDeathRattle.activeTrigger), StringTable.EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER }
         };
         readonly Dictionary<string, string> _pileOptionNameDict = new Dictionary<string, string>()
         {

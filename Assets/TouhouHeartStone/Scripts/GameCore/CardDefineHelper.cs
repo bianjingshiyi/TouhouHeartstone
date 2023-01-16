@@ -165,27 +165,18 @@ namespace TouhouHeartstone
         {
             return getCardNumber(card.id);
         }
-        
+
+        public static IEffect[] getBattlecries(this CardDefine card)
+        {
+            return card.getEffects().Where(e => e.isBattlecry()).ToArray();
+        }
         public static IEffect[] getDeathRattles(this CardDefine card)
         {
-            var results = new List<IEffect>();
-            var effects = card.getEffects();
-            results.AddRange(effects.OfType<DeathRattle>());
-            results.AddRange(effects.OfType<GeneratedEffect>().Where(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)));
-            return results.ToArray();
+            return card.getEffects().Where(e => e.isDeathRattle()).ToArray();
         }
         public static bool hasDeathRattles(this CardDefine card)
         {
-            var effects = card.getEffects();
-            if (effects.OfType<DeathRattle>().Any())
-            {
-                return true;
-            }
-            if (effects.OfType<GeneratedEffect>().Any(e => e.tagList.Contains(KEYWORD.DEATHRATTLE)))
-            {
-                return true;
-            }
-            return false;
+            return card.getEffects().Any(e => e.isDeathRattle());
         }
     }
 }

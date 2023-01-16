@@ -46,8 +46,7 @@ namespace TouhouHeartstone
         }
         static EffectPropertyInfo[] propertyInfos = new EffectPropertyInfo[]
         {
-            new EffectPropertyInfo(typeof(TriggerGraph), nameof(activeTrigger)),
-            new EffectPropertyInfo(typeof(EffectTagCollection), nameof(tagList))
+            new EffectPropertyInfo(typeof(TriggerGraph), nameof(activeTrigger))
         };
         #endregion
     }

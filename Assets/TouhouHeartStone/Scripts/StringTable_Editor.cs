@@ -32,6 +32,8 @@ namespace Game
         public const string EDITOR_EFFECT_NAME_HALO_EFFECT = "光环效果";
         [TranslateMsg("编辑器中效果类型名称之宣言效果")]
         public const string EDITOR_EFFECT_NAME_BATTLECRY_EFFECT = "宣言效果";
+        [TranslateMsg("编辑器中效果类型名称之遗言效果")]
+        public const string EDITOR_EFFECT_NAME_DEATH_RATTLE_EFFECT = "遗言效果";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中常量分类的名字")]
         public const string EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST = "Const";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中的返回上一层选项")]
@@ -585,8 +587,10 @@ namespace Game
         public const string EDITOR_TYPE_NAME_EFFECT = "效果";
         [TranslateMsg("编辑器中的光环效果的名称")]
         public const string EDITOR_TYPE_NAME_HALO_EFFECT = "光环效果";
-        [TranslateMsg("编辑器中的战吼效果的名称")]
-        public const string EDITOR_TYPE_NAME_BATTLECRAY_EFFECT = "战吼效果";
+        [TranslateMsg("编辑器中的宣言效果的名称")]
+        public const string EDITOR_TYPE_NAME_BATTLECRAY_EFFECT = "宣言效果";
+        [TranslateMsg("编辑器中的遗言效果的名称")]
+        public const string EDITOR_TYPE_NAME_DEATH_RATTLE_EFFECT = "遗言效果";
         [TranslateMsg("编辑器中的效果标签的名称")]
         public const string EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION = "效果标签";
         [TranslateMsg("编辑器中的事件的名称")]
