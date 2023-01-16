@@ -224,18 +224,20 @@ namespace Game
             //加载外部卡牌
             HashSet<long> cardPoolIdSet = new HashSet<long>() { 0 };
             Dictionary<long, Dictionary<int, CardDefine>> cardDict;
-			if (mode == GameMode.local)
-			{
+            if (mode == GameMode.local)
+            {
                 // 本地模式，使用玩家本地的卡池。
-	            foreach (var player in playerList)
-	            {
-	                Deck deck = player.getDeck();
-	                foreach (var cardRef in deck.toDefRefArray(true))
-
-                    if (cardManager.isExternalCard(cardRef) &&
-                        !cardPoolIdSet.Contains(cardRef.cardPoolId))
+                foreach (var player in playerList)
+                {
+                    Deck deck = player.getDeck();
+                    foreach (var cardRef in deck.toDefRefArray(true))
                     {
-                        cardPoolIdSet.Add(cardRef.cardPoolId);
+                        if (cardRef.cardPoolId == 0)
+                            continue;
+                        if (!cardPoolIdSet.Contains(cardRef.cardPoolId))
+                        {
+                            cardPoolIdSet.Add(cardRef.cardPoolId);
+                        }
                     }
                 }
                 cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
@@ -613,8 +615,9 @@ namespace Game
             {
                 ui.LogScrollView.LogInfoHorizantal.display();
                 string info = lang._(describable.localizeTemplateString(game, localPlayer), describable.localizeStringArgs(game, localPlayer));
-                info = Regex.Replace(info, @"{card:(?<poolId>-?\d+),(?<id>-?\d+)}", 
-                    m => {
+                info = Regex.Replace(info, @"{card:(?<poolId>-?\d+),(?<id>-?\d+)}",
+                    m =>
+                    {
                         if (int.TryParse(m.Groups["id"].Value, out var id) && long.TryParse(m.Groups["poolId"].Value, out var poolId))
                         {
                             return getManager<CardManager>().getDefaultSkin(poolId, id).name;

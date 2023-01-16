@@ -661,6 +661,14 @@ namespace Game
                 await game.doActionsAsync(card, buff, eventArg, action);
             }
         }
+        public const string EDITOR_NODE_NAME_GET_RANDOM_ELEMENT = "获取集合中的随机元素";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_RANDOM_ELEMENT, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)]
+        public static object getRandomElement(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection)
+        {
+            return collection[game.randomInt(0, collection.Length - 1)];
+        }
         #endregion
 
         //  事件处理
@@ -702,7 +710,7 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
         {
-            if(eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length>0)
+            if (eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length > 0)
                 eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
         }
         #endregion

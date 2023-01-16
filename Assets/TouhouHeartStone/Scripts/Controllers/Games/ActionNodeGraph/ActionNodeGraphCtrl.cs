@@ -1511,44 +1511,8 @@ namespace Controllers
                 }
                 inputActionNode.inputs = inputs;
             }
-            //建立新的连接，一个输出值可以与多个输入相连
-            //要从当前叶子节点出发，寻找父节点直到根
-            //如果这个输出节点是第一次被引用，那么保存它的完整对象
-            //否则保存它的id，然后从环境中获取它的输出值。
-            //对于包含多个分支的动作，这里会有一个作用域的问题。
-            //就像是在if的分支里面声明一个变量，在后续动作作用域中这个变量不一定都存在。
-            //目前选择的解决方法是对于超出作用域的节点是无法通过id引用的。
-            //这种解决方案会导致一个问题，那就是在ui上显示为一个的节点，实际上可能是多个不同的节点。
             ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
             ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
-            //因为动作的序列化类型和运行时类型彻底分开，所以不再需要维持动作节点在树状结构中的唯一实例存在
-            //if (!isActionNodeValueRefedInPrevNodes(outputActionNode, inputActionNode, inputIndex))
-            //{
-            //    inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
-            //    //遍历子节点，使其中所有对相同值输出的引用从直接引用变为id引用
-            //    traverseActionNode(inputActionNode, false, a =>
-            //    {
-            //        if (a == inputActionNode)
-            //            return;
-            //        if (a.inputs != null && a.inputs.Length > 0)
-            //        {
-            //            for (int i = 0; i < a.inputs.Length; i++)
-            //            {
-            //                if (a.inputs[i] == null)
-            //                    continue;
-            //                if (a.inputs[i].action == outputActionNode)
-            //                {
-            //                    a.inputs[i].action = null;
-            //                    a.inputs[i].actionNodeId = outputActionNode.id;
-            //                }
-            //            }
-            //        }
-            //    });
-            //}
-            //else
-            //{
-            //    inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode.id, outputIndex);
-            //}
             inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
             if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length - 1)
             {
