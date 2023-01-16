@@ -770,7 +770,13 @@ namespace Controllers
                             int skinCount = pool.cardSkinList.Count;
                             for (int s = 0; s < skinCount; s++)
                             {
+                                _ui.SetCardPoolLoadProgress((i + progress) / count);
+                                progress += 0.5f * ((float)s / skinCount);
                                 var skin = pool.cardSkinList[s];
+                                if (string.IsNullOrEmpty(skin.imagePath))
+                                {
+                                    continue;
+                                }
                                 string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
                                 // todo: 资源下载失败或没有资源时候的异常处理
                                 if (!game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
@@ -789,8 +795,6 @@ namespace Controllers
                                         Debug.LogWarning($"尝试下载未找到的图片资源：{cardPoolResId}");
                                     }
                                 }
-                                progress += 0.5f * ((float)s / skinCount);
-                                _ui.SetCardPoolLoadProgress((i + progress) / count);
                             }
                         }
                     }
@@ -799,7 +803,10 @@ namespace Controllers
                         string title = game.lang._(StringTable.ERROR);
                         game.ui.dialog.ShowConfirm(title, e.Message);
                         Debug.LogError(e);
-                        _ui.SetCardPoolLoadProgress(0);
+                    }
+                    finally
+                    {
+                        _ui.SetCardPoolLoadProgress((i + 1) / count);
                     }
                 }
                 transferringCardPools = false;
