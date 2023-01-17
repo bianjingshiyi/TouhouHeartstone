@@ -14,18 +14,19 @@ namespace Game
     public static partial class EffectEditorLibrary
     {
         [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION, null)]
-        public static Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg,
+        public static Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)] bool isTrue,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ActionNode thenAction,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELSE_ACTION, isOut: true)] ActionNode elseAction)
         {
+            Scope newScope = new Scope(scope);
             if (isTrue)
             {
-                return thenAction != null ? game.doActionsAsync(card, buff, eventArg, thenAction) : Task.CompletedTask;
+                return thenAction != null ? game.doActionsAsync(card, buff, eventArg, thenAction, newScope) : Task.CompletedTask;
             }
             else
             {
-                return elseAction != null ? game.doActionsAsync(card, buff, eventArg, elseAction) : Task.CompletedTask;
+                return elseAction != null ? game.doActionsAsync(card, buff, eventArg, elseAction, newScope) : Task.CompletedTask;
             }
         }
         [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_FOR_ACTION, null)]
@@ -36,11 +37,11 @@ namespace Game
         {
             if (action == null)
                 return;
-            //Scope childScope = new Scope(scope);
             for (int i = 1; i <= count; i++)
             {
                 scope.setOutParamValue(0, i);
-                await game.doActionsAsync(card, buff, eventArg, action);
+                Scope newScope = new Scope(scope);
+                await game.doActionsAsync(card, buff, eventArg, action, newScope);
             }
         }
 
@@ -63,15 +64,15 @@ namespace Game
             if (maxRepeatTime <= 0)
                 return;
             int times = 0;
-            //Scope childScope = new Scope(scope);
             do
             {
                 times++;
                 scope.setOutParamValue(0, times);
-                await game.doActionsAsync(card, buff, eventArg, action);
+                Scope newScope = new Scope(scope);
+                await game.doActionsAsync(card, buff, eventArg, action, newScope);
                 if (condition != null)
                 {
-                    if (await game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition))
+                    if (await game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope))
                     {
                         break;
                     }
@@ -239,8 +240,9 @@ namespace Game
             List<Card> cardList = new List<Card>();
             for (int i = 0; i < cards.Length; i++)
             {
-                scope.localVarDict[scope.getLocalVarName(0)] = cards[i];
-                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: new Scope(scope)).Result;
+                scope.setOutParamValue(0, cards[i]);
+                Scope newScope = new Scope(scope);
+                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope).Result;
                 if (result)
                 {
                     cardList.Add(cards[i]);
@@ -568,8 +570,8 @@ namespace Game
             {
                 object obj = array.GetValue(i);
                 scope.setOutParamValue(0, obj);
-                Scope childScope = new Scope() { parentScope = scope };
-                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: childScope).Result;
+                Scope newScope = new Scope(scope);
+                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope).Result;
                 if (result)
                 {
                     objList.Add(obj);
@@ -610,11 +612,11 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_NAME_ORDER_KEY)] ActionNode condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
-            Scope childScope = new Scope() { parentScope = scope };
             object func(object obj)
             {
                 scope.setOutParamValue(0, obj);
-                return game.getActionReturnValueAsync<object>(card, buff, eventArg, condition, scope: childScope).Result;
+                Scope newScope = new Scope(scope);
+                return game.getActionReturnValueAsync<object>(card, buff, eventArg, condition, scope: newScope).Result;
             }
             if (!descending)
             {
@@ -654,11 +656,11 @@ namespace Game
         {
             if (action == null)
                 return;
-            //Scope childScope = new Scope(scope);
             foreach (object ele in array)
             {
                 scope.setOutParamValue(0, ele);
-                await game.doActionsAsync(card, buff, eventArg, action);
+                Scope newScope = new Scope(scope);
+                await game.doActionsAsync(card, buff, eventArg, action, newScope);
             }
         }
         public const string EDITOR_NODE_NAME_GET_RANDOM_ELEMENT = "获取集合中的随机元素";
