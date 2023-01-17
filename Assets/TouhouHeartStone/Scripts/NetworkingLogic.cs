@@ -284,7 +284,7 @@ namespace Game
 
         public Task SetRoomProp(string name, object val)
         {
-            return localLanLogic.curNetwork.SetRoomProp(name, val);
+            return localLanLogic.setRoomProp(name, val);
         }
 
         public void RemovePlayer(int uid)
@@ -576,8 +576,7 @@ namespace Game
         }
         public static CardPoolInfoPack[] getCardPools(this RoomData roomData)
         {
-            var pools = roomData.getOption<CardPoolInfoPack[]>(Option.CardPools);
-            if (pools != null)
+            if (roomData.getOption<CardPoolInfoPack[]>(Option.CardPools) is CardPoolInfoPack[] pools)
             {
                 return pools;
             }
