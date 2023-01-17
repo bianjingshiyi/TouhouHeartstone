@@ -1056,10 +1056,13 @@ namespace Controllers
                     ActionNode nextActionNode = actionNode.branches[i];
                     if (sizeDict == null)
                         sizeDict = new Dictionary<ActionNode, Vector2>();
-                    ActionNodeItem nextActionNodeItem = await createGraph4ActionNode(nextActionNode,
-                        prevNodeItem: actionNodeItem,
-                        startPosOffset: lastNodeOffset,
-                        sizeDict: sizeDict);
+                    if (!tryGetActionNodeItem(nextActionNode, out ActionNodeItem nextActionNodeItem))
+                    {
+                        nextActionNodeItem = await createGraph4ActionNode(nextActionNode,
+                            prevNodeItem: actionNodeItem,
+                            startPosOffset: lastNodeOffset,
+                            sizeDict: sizeDict);
+                    }
                     Vector2 size = calcActionNodeGraphSize(nextActionNode, sizeDict);
                     lastNodeOffset -= size.y;
                     _ui.connectNode(actionNodeItem, i, nextActionNodeItem, 0, ActionNodeConnectionType.action);
