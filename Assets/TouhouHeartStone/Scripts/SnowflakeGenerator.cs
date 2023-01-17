@@ -25,7 +25,9 @@ namespace Game
                 throw new SnowflakeException("尝试在生成的1秒冷却中再次生成一个Id。");
             }
             lastTimestamp = timestamp;
-            return ((playerKey << playerKeyShift) & playerKeyMask) | (timestamp & timestampMask);
+            long playerKeyPart = (((long)playerKey) << playerKeyShift) & playerKeyMask;
+            long timestampPart = timestamp & timestampMask;
+            return playerKeyPart | timestampPart;
         }
         #endregion
 
@@ -46,7 +48,7 @@ namespace Game
         private const int playerKeyBits = 32;
         //玩家Key的位数偏移。
         private const int playerKeyShift = timestampBits;
-        private const long playerKeyMask = 0xFFFFFFFF << playerKeyShift;
+        private const long playerKeyMask = (long)0xFFFFFFFF << playerKeyShift;
         private readonly DateTime startTime = new DateTime(2022, 11, 11, 0, 0, 0, 0);
         #endregion
     }
