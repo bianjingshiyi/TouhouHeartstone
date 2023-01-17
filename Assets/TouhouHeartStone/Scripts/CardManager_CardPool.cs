@@ -562,6 +562,7 @@ namespace Game
             }
             if (path != null)
             {
+                _cardPoolInfoDict.Remove(path);
                 game.fileManager.deleteFile(path);
                 return true;
             }
