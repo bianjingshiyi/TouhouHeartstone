@@ -230,6 +230,10 @@ namespace TouhouHeartstone
         public static async Task<CardDefine> askSelect(this CardEngine game, Player player, IEnumerable<CardDefine> cards,
             int count = 3, string title = null)
         {
+            if (cards.Count() < 1)
+                return null;
+            if (count > 0)
+                cards = cards.randomTake(game, count).ToArray();
             game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
             var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => new DefineReference(c.cardPoolId, c.id)).ToArray(), title), float.MaxValue);
             CardDefine selectedCard = cards.First(c =>
