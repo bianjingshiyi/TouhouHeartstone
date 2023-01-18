@@ -1638,14 +1638,14 @@ namespace TouhouHeartstone
             foreach (Card card in cards)
             {
                 // 卡牌定义自带的效果。
-                foreach (var effect in card.define.getEffects().OfType<GeneratedEffect>().Where(e => !e.pileList.Contains(PILE.GRAVE) && !e.isDeathRattle()))
+                foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>().Where(e => !e.piles.Contains(PILE.GRAVE) && !e.isDeathRattle()))
                 {
                     await effect.onDisable(game, card, null);
                 }
                 // BUFF给予的效果。
                 foreach (var buff in card.getBuffs())
                 {
-                    foreach (var effect in buff.getEffects(game).OfType<GeneratedEffect>().Where(e => !e.pileList.Contains(PILE.GRAVE) && !e.isDeathRattle()))
+                    foreach (var effect in buff.getEffects(game).OfType<IPassiveEffect>().Where(e => !e.piles.Contains(PILE.GRAVE) && !e.isDeathRattle()))
                     {
                         await effect.onDisable(game, card, buff);
                     }
