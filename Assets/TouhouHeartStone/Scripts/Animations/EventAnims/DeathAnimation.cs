@@ -70,6 +70,10 @@ namespace Game
 
         public override bool blockAnim(UIAnimation nextAnim)
         {
+            if (nextAnim is EnterFieldAnim)
+                return true;
+            if (nextAnim is ReBornAnim)
+                return true;
             return false;
         }
     }
