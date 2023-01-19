@@ -98,7 +98,7 @@ namespace UI
                 InitReplacementContainerGameOptionItemText.InputField.text = room.getTimeoutForInitReplace().ToString();
                 TurnTimeContainerGameOptionItemText.InputField.text = room.getTimeoutForTurn().ToString();
                 IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getSortedPlayers() != null;
-                _allowCustomCardsToggle.isOn = room.getAllowCustomCards();
+                //_allowCustomCardsToggle.isOn = room.getAllowCustomCards();
             }
             catch (Exception e)
             {
@@ -224,14 +224,14 @@ namespace UI
         {
             _disableRandomPlayerActOrderToggle.interactable = value;
         }
-        public void setAllowCustomCards(bool value)
-        {
-            _allowCustomCardsToggle.SetIsOnWithoutNotify(value);
-        }
-        public void enableAllowCustomCards(bool value)
-        {
-            _allowCustomCardsToggle.interactable = value;
-        }
+        //public void setAllowCustomCards(bool value)
+        //{
+        //    _allowCustomCardsToggle.SetIsOnWithoutNotify(value);
+        //}
+        //public void enableAllowCustomCards(bool value)
+        //{
+        //    _allowCustomCardsToggle.interactable = value;
+        //}
         public void updateLocalPlayerDeck(string deckName, Sprite deckImage)
         {
             _localPlayerDeckNameText.text = deckName;
@@ -263,18 +263,43 @@ namespace UI
         {
             _cancleReadyButton.gameObject.SetActive(value);
         }
+
+        /// <summary>
+        /// 查看房间卡池
+        /// </summary>
+        /// <param name="cards"></param>
+        public void viewCardPools(CardPoolInfoPack[] pools, long[] enabledPools)
+        {
+            (string name, Sprite image, bool isWarning, bool hasPrivatePools) getPoolData(CardPoolInfoPack pool)
+            {
+                bool disabled = !enabledPools.Contains(pool.cardPoolId);
+                return (pool.cardPoolName, null, false, disabled);
+            }
+            List<(string name, Sprite image, bool isWarning, bool hasPrivatePools)> list = new List<(string name, Sprite image, bool isWarning, bool hasPrivatePools)>();
+
+            foreach (var pool in pools)
+            {
+                list.Add(getPoolData(pool));
+            }
+            var viewData = list.ToArray();
+            _cardPoolsViewPanel.update(viewData);
+            _cardPoolsPanel.SetActive(true);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
         partial void onAwake()
         {
-            _closeDeckPanelButton.asButton.onClick.AddListener(onClickCloseDeckPanelButtonCallback);
-            _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
             StartButtonButtonBlack.asButton.setSelectable(false);
             DeckSelectionDeckListItem.SetMode(DeckListItem.Mode.DeckSelect);
 
+            _closeDeckPanelButton.asButton.onClick.AddListener(onClickCloseDeckPanelButtonCallback);
+            _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
+            _closeCardPoolsPanelButton.asButton.onClick.AddListener(onClickCloseCardPoolsPanelButtonCallback);
+
             _deckPanel.SetActive(false);
             _cardPanel.SetActive(false);
+            _cardPoolsPanel.SetActive(false);
             if (_playerTemplate.transform.parent == _playerRoot)
             {
                 _playerTemplate.gameObject.SetActive(false);
@@ -283,6 +308,7 @@ namespace UI
             _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
             //DeckPanelMasterCardSelection.onClickItem += onClickDeckSelectItemCallback;
             _deckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
+            _cardPoolsViewPanel.onClickDeckListItem += onClickCardPoolsSelectItemCallback;
             //_randomSeedInputField.onValueChanged.AddListener(onRandomSeedInputFieldValueChangedCallback);
 
             // 选项
@@ -291,7 +317,8 @@ namespace UI
             _initReplaceTimeInputField.onEndEdit.AddListener(onInitReplaceTimeInputFieldValueChangedCallback);
             _turnTimeInputField.onEndEdit.AddListener(onTurnTimeInputFieldValueChangedCallback);
             _disableRandomPlayerActOrderToggle.onValueChanged.AddListener(onDisableRandomPlayerActOrderValueChangedCallback);
-            _allowCustomCardsToggle.onValueChanged.AddListener(onCustomCardsValueChangedCallback);
+            _viewCardPoolsButton.onClick.AddListener(onViewCardPoolsClickCallback);
+            //_allowCustomCardsToggle.onValueChanged.AddListener(onCustomCardsValueChangedCallback);
 
             // 按钮
             _startButton.onClick.AddListener(onClickStartButtonCallback);
@@ -329,6 +356,10 @@ namespace UI
         {
             onClickDeckSelectPanelItem?.Invoke(index);
         }
+        private void onClickCardPoolsSelectItemCallback(int index)
+        {
+            onClickCardPoolsSelectPanelItem?.Invoke(index);
+        }
         private void onRandomSeedInputFieldValueChangedCallback(string value)
         {
             onRandomSeedInputFieldValueChanged?.Invoke(value);
@@ -349,10 +380,9 @@ namespace UI
         {
             onDisableRandomPlayerActOrderToggleValueChanged?.Invoke(value);
         }
-
-        private void onCustomCardsValueChangedCallback(bool value)
+        private void onViewCardPoolsClickCallback()
         {
-            onCustomCardsToggleValueChanged?.Invoke(value);
+            onViewCardPoolsClick?.Invoke();
         }
         private void onClickStartButtonCallback()
         {
@@ -380,6 +410,10 @@ namespace UI
         private void onClickCloseCardPanelButtonCallback()
         {
             _cardPanel.SetActive(false);
+        }
+        private void onClickCloseCardPoolsPanelButtonCallback()
+        {
+            _cardPoolsPanel.SetActive(false);
         }
 
 
@@ -411,30 +445,10 @@ namespace UI
             _cardViewPanel.update(viewData);
             _cardPanel.SetActive(true);
         }
-
         #endregion
         void updateButtonStates()
         {
             onUpdateButtons?.Invoke();
-        }
-        void showDeckSelectionPanel(Action<int> onDeckSelect)
-        {
-            var decks = deckManager.GetDecks();
-            var viewData = decks.Select((define =>
-            {
-                // 只有30张卡的卡组才能选择
-                return (define.Name, cardManager.getCardSkin(define.MasterCardRef).image, (deckManager.GetDeckCards(define.ID).Count >= 30), false);
-            })).ToArray();
-            _deckViewPanel.update(viewData);
-            _deckPanel.SetActive(true);
-            _deckViewPanel.onClickDeckListItem -= onSelectCallback;
-            _deckViewPanel.onClickDeckListItem += onSelectCallback;
-            void onSelectCallback(int id)
-            {
-                _deckPanel.SetActive(false);
-                onDeckSelect(id);
-                _deckViewPanel.onClickDeckListItem -= onSelectCallback;
-            }
         }
         #endregion
         #region 事件
@@ -456,6 +470,7 @@ namespace UI
         public event Action onClickAddAIPlayerButton;
         public event Action onClickSelectDeckButton;
         public event Action<int> onClickDeckSelectPanelItem;
+        public event Action<int> onClickCardPoolsSelectPanelItem;
         /// <summary>
         /// 当房主更改房间随机种子，参数为更改后的随机种子值
         /// </summary>
@@ -464,7 +479,8 @@ namespace UI
         public event Action<string> onInitReplaceTimeInputFieldValueChanged;
         public event Action<string> onTurnTimeInputFieldValueChanged;
         public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
-        public event Action<bool> onCustomCardsToggleValueChanged;
+        public event Action onViewCardPoolsClick;
+        //public event Action<bool> onCustomCardsToggleValueChanged;
         public event Action onClickStartButton;
         public event Action onClickReadyButton;
         public event Action onClickCancleReadyButton;
@@ -509,8 +525,11 @@ namespace UI
         InputField _turnTimeInputField;
         [SerializeField]
         Toggle _disableRandomPlayerActOrderToggle;
+        [Obsolete]
         [SerializeField]
         Toggle _allowCustomCardsToggle;
+        [SerializeField]
+        Button _viewCardPoolsButton;
 
         [Header("卡组")]
         [SerializeField]
@@ -532,18 +551,29 @@ namespace UI
 
 
         [Header("ViewPanels")]
+        [Header("Deck Selection")]
         [SerializeField]
         private GameObject _deckPanel;
         [SerializeField]
         private DeckViewPanel _deckViewPanel;
         [SerializeField]
         private ButtonBlack _closeDeckPanelButton;
+
+        [Header("View Cards")]
         [SerializeField]
         private GameObject _cardPanel;
         [SerializeField]
         private DeckViewPanel _cardViewPanel;
         [SerializeField]
         private ButtonBlack _closeCardPanelButton;
+
+        [Header("View Card Pools")]
+        [SerializeField]
+        private GameObject _cardPoolsPanel;
+        [SerializeField]
+        private DeckViewPanel _cardPoolsViewPanel;
+        [SerializeField]
+        private ButtonBlack _closeCardPoolsPanelButton;
 
 
         DeckManager deckManager => this.findInstance<DeckManager>();

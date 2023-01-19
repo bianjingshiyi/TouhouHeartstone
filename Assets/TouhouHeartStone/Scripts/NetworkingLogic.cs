@@ -171,6 +171,7 @@ namespace Game
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForTurn), (int)option.timeoutForTurn);
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.AllowCustomCards), option.allowCustomCards);
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.CardPools), option.cardPools);
+            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.EnabledCardPools), option.enabledCardPools);
 
             isInitialRoomOwner = true;
         }
@@ -494,6 +495,7 @@ namespace Game
             StartGem,
             AllowCustomCards,
             CardPools,
+            EnabledCardPools
         }
 
         [Obsolete]
@@ -516,7 +518,8 @@ namespace Game
                 timeoutForInitReplace = room.getTimeoutForInitReplace(),
                 timeoutForTurn = room.getTimeoutForTurn(),
                 allowCustomCards = room.getAllowCustomCards(),
-                cardPools = room.getCardPools()
+                cardPools = room.getCardPools(),
+                enabledCardPools = room.getEnabledCardPools()
             };
         }
 
@@ -535,6 +538,8 @@ namespace Game
             room.setOption(Option.TimeoutForInitReplace, (int)value.timeoutForInitReplace);
             room.setOption(Option.TimeoutForTurn, (int)value.timeoutForTurn);
             room.setOption(Option.StartGem, value.startGem);
+            room.setOption(Option.CardPools, value.cardPools);
+            room.setOption(Option.EnabledCardPools, value.enabledCardPools);
         }
 
         /// <summary>
@@ -596,6 +601,14 @@ namespace Game
                 return pools;
             }
             return new CardPoolInfoPack[0];
+        }
+        public static long[] getEnabledCardPools(this RoomData roomData)
+        {
+            if (roomData.getOption<long[]>(Option.EnabledCardPools) is long[] pools)
+            {
+                return pools;
+            }
+            return new long[0];
         }
     }
 }
