@@ -169,7 +169,6 @@ namespace Game
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.StartGem), option.startGem);
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForInitReplace), (int)option.timeoutForInitReplace);
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForTurn), (int)option.timeoutForTurn);
-            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.AllowCustomCards), option.allowCustomCards);
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.CardPools), option.cardPools);
             await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.EnabledCardPools), option.enabledCardPools);
 
@@ -517,7 +516,6 @@ namespace Game
                 startGem = room.getStartGem(),
                 timeoutForInitReplace = room.getTimeoutForInitReplace(),
                 timeoutForTurn = room.getTimeoutForTurn(),
-                allowCustomCards = room.getAllowCustomCards(),
                 cardPools = room.getCardPools(),
                 enabledCardPools = room.getEnabledCardPools()
             };

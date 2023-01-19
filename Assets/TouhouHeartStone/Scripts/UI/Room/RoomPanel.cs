@@ -98,7 +98,6 @@ namespace UI
                 InitReplacementContainerGameOptionItemText.InputField.text = room.getTimeoutForInitReplace().ToString();
                 TurnTimeContainerGameOptionItemText.InputField.text = room.getTimeoutForTurn().ToString();
                 IsSortedToggleGameOptionItemToggle.Toggle.isOn = room.getSortedPlayers() != null;
-                //_allowCustomCardsToggle.isOn = room.getAllowCustomCards();
             }
             catch (Exception e)
             {
@@ -224,14 +223,6 @@ namespace UI
         {
             _disableRandomPlayerActOrderToggle.interactable = value;
         }
-        //public void setAllowCustomCards(bool value)
-        //{
-        //    _allowCustomCardsToggle.SetIsOnWithoutNotify(value);
-        //}
-        //public void enableAllowCustomCards(bool value)
-        //{
-        //    _allowCustomCardsToggle.interactable = value;
-        //}
         public void updateLocalPlayerDeck(string deckName, Sprite deckImage)
         {
             _localPlayerDeckNameText.text = deckName;
@@ -306,10 +297,8 @@ namespace UI
             }
             _addAIPlayerButton.onClick.AddListener(onClickAddAIPlayerButtonCallback);
             _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
-            //DeckPanelMasterCardSelection.onClickItem += onClickDeckSelectItemCallback;
             _deckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
             _cardPoolsViewPanel.onClickDeckListItem += onClickCardPoolsSelectItemCallback;
-            //_randomSeedInputField.onValueChanged.AddListener(onRandomSeedInputFieldValueChangedCallback);
 
             // 选项
             _randomSeedInputField.onEndEdit.AddListener(onRandomSeedInputFieldValueChangedCallback);
@@ -318,7 +307,6 @@ namespace UI
             _turnTimeInputField.onEndEdit.AddListener(onTurnTimeInputFieldValueChangedCallback);
             _disableRandomPlayerActOrderToggle.onValueChanged.AddListener(onDisableRandomPlayerActOrderValueChangedCallback);
             _viewCardPoolsButton.onClick.AddListener(onViewCardPoolsClickCallback);
-            //_allowCustomCardsToggle.onValueChanged.AddListener(onCustomCardsValueChangedCallback);
 
             // 按钮
             _startButton.onClick.AddListener(onClickStartButtonCallback);
@@ -480,7 +468,6 @@ namespace UI
         public event Action<string> onTurnTimeInputFieldValueChanged;
         public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
         public event Action onViewCardPoolsClick;
-        //public event Action<bool> onCustomCardsToggleValueChanged;
         public event Action onClickStartButton;
         public event Action onClickReadyButton;
         public event Action onClickCancleReadyButton;
@@ -525,9 +512,6 @@ namespace UI
         InputField _turnTimeInputField;
         [SerializeField]
         Toggle _disableRandomPlayerActOrderToggle;
-        [Obsolete]
-        [SerializeField]
-        Toggle _allowCustomCardsToggle;
         [SerializeField]
         Button _viewCardPoolsButton;
 

@@ -98,10 +98,6 @@ namespace Controllers
                 _isDisplay = true;
 
                 _ui.display();
-                //_ui.SetMode(RoomPanel.Mode.Local);
-                //_ui.SetSelfID(scene.game.network.logic.localPlayer.id);
-                //_ui.SetRightText("");
-                //_ui.SetInfo(roomData, true);
                 List<CardPoolInfoPack> cardPools = new List<CardPoolInfoPack>() { new CardPoolInfoPack(0, StringTable.CARDPOOL_NAME_BUILTIN, 0) };
                 List<long> enabledCardPools = new List<long>() { 0 };
                 if (_isLocalGame)
@@ -121,7 +117,6 @@ namespace Controllers
                 _ui.setInitReplaceTime(_currentRoomData.getTimeoutForInitReplace());
                 _ui.setTurnTime(_currentRoomData.getTimeoutForTurn());
                 _ui.setDisableRandomPlayerActOrder(_currentRoomData.getSortedPlayers() != null);
-                _ui.setAllowCustomCards(_currentRoomData.getAllowCustomCards());
 
                 if (cardPoolManager == null)
                 {
@@ -213,7 +208,6 @@ namespace Controllers
             _ui.onTurnTimeInputFieldValueChanged += onTurnTimeInputFieldValueChanged;
             _ui.onDisableRandomPlayerActOrderToggleValueChanged += onDisableRandomPlayerActOrderToggleValueChanged;
             _ui.onViewCardPoolsClick += onViewCardPoolsClick;
-            //_ui.onCustomCardsToggleValueChanged += onCustomCardsToggleValueChanged;
             _ui.onClickPlayerItemViewDeckButton += onClickPlayerListItemViewDeckButton;
             _ui.onClickPlayerItemSetDeckButton += onClickPlayerListItemSetDeckButton;
             _ui.onClickPlayerItemRemoveButton += onClickPlayerListItemRemoveButton;
@@ -1119,39 +1113,6 @@ namespace Controllers
             }
             return false;
         }
-        /// <summary>
-        /// 是否有任意玩家中的卡组中包含自定义卡牌。
-        /// </summary>
-        /// <returns></returns>
-        private bool isAnyHasCustomCard()
-        {
-            var players = _currentRoomData.playerDataList;
-            foreach (var player in players)
-            {
-                Deck deck = player.getDeck();
-                if (deckHasCustomCard(deck))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        public bool deckHasCustomCard(Deck deck)
-        {
-            if (deck == null)
-            {
-                return false;
-            }
-            //检查是否有自定义卡牌，
-            for (int i = 0; i < deck.cardList.Count; i++)
-            {
-                if (game.card.isExternalCard(deck.cardList[i].cardRef.cardPoolId, deck.cardList[i].cardRef.defineId))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
         private RoomPlayerData getLocalPlayerData()
         {
             if (_currentRoomData == null || _currentRoomData.playerDataList == null)
@@ -1199,7 +1160,6 @@ namespace Controllers
         {
             List<Deck> deckList = game.deck.getOrLoadDeckList();
             (string name, Sprite image, bool isWarning, bool hasPrivatePools)[] viewData = new (string name, Sprite image, bool isWarning, bool hasPrivatePools)[deckList.Count];
-            bool allowCustomCards = _currentRoomData.getAllowCustomCards();
             long[] enabledCardPools = _currentRoomData.getEnabledCardPools();
 
             for (int i = 0; i < viewData.Length; i++)

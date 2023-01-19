@@ -258,8 +258,6 @@ namespace TouhouHeartstone
         // public int randomSeed = 0;
         public int[] sortedPlayers = null;
         public bool shuffle = true;
-        [Obsolete]
-        public bool allowCustomCards = true;
         public float timeoutForInitReplace = 30;
         public float timeoutForTurn = 75;
         public int startGem = 0;
@@ -275,7 +273,6 @@ namespace TouhouHeartstone
             randomSeed = copyTarget.randomSeed;
             sortedPlayers = copyTarget.sortedPlayers;
             shuffle = copyTarget.shuffle;
-            allowCustomCards = copyTarget.allowCustomCards;
             timeoutForInitReplace = copyTarget.timeoutForInitReplace;
             timeoutForTurn = copyTarget.timeoutForTurn;
             cardPools = copyTarget.cardPools;
