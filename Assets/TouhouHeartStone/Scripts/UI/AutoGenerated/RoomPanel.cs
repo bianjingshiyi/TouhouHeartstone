@@ -41,7 +41,6 @@ namespace UI
             this._QuitButtonButtonBlack = this.transform.Find("Container").Find("QuitButton").GetComponent<ButtonBlack>();
             this._StartButtonButtonBlack = this.transform.Find("Container").Find("StartButton").GetComponent<ButtonBlack>();
             this._DeckSelectionDeckListItem = this.transform.Find("Container").Find("DeckSelection").GetComponent<DeckListItem>();
-            this.loadingCircle = this.transform.Find("Container").Find("LoadingCircle").GetComponent<LoadingCircle>();
             //this._DeckPanelMasterCardSelection = this.transform.Find("Container").Find("DeckPanel").GetComponent<MasterCardSelection>();
             //this._DeckViewMasterCardSelection = this.transform.Find("Container").Find("DeckView").GetComponent<MasterCardSelection>();
         }

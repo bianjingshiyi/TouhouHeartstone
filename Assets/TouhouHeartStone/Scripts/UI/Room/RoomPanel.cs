@@ -257,22 +257,6 @@ namespace UI
         {
             _cancleReadyButton.gameObject.SetActive(value);
         }
-        /// <summary>
-        /// 当进度条推进时调用此方法
-        /// </summary>
-        /// <param name="loading"></param>
-        public void UpdateDownloadingUI(float loading)
-        {
-            loadingCircle.LoadingUpdate(loading);
-        }
-        public void DisplayDownloadingUI()
-        {
-            loadingCircle.Display();
-        }
-        public void HideDownloadingUI()
-        {
-            loadingCircle.Hide();
-        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -554,8 +538,6 @@ namespace UI
         private DeckViewPanel _cardViewPanel;
         [SerializeField]
         private ButtonBlack _closeCardPanelButton;
-        [SerializeField]
-        private LoadingCircle loadingCircle;
 
 
         DeckManager deckManager => this.findInstance<DeckManager>();
