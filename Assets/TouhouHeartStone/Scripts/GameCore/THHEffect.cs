@@ -854,7 +854,7 @@ namespace TouhouHeartstone
     public class DeathRattle : PassiveEffect
     {
         public int id { get; }
-        public override string[] piles { get; } = new string[] { PILE.FIELD, PILE.GRAVE };
+        public override string[] piles { get; } = new string[0];
         public CheckConditionDelegate onCheckCondition { get; }
 
         public delegate Task ExecuteDelegate(CardEngine game, Card card, int position);
