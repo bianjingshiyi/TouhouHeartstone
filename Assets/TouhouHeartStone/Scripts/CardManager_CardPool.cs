@@ -585,17 +585,26 @@ namespace Game
             return (defineList.ToArray(), skinList.ToArray());
         }
 
-        public async Task<(CardDefine[] defines, CardSkinData[] skins)> loadCachedCardDefinesAsync(long cardPoolId, int version)
+        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(long cardPoolId, int version)
         {
-            List<CardDefine> defineList = new List<CardDefine>();
-            List<CardSkinData> skinList = new List<CardSkinData>();
-
             string resID = CardPoolInfoPack.GetResourceID(cardPoolId, version);
             if (game.cache.FileExists(game.fileManager, ResourceType.CardDefine, resID))
             {
                 string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
                 var cardPoolData = await loadCardPool(path);
-                var cardPool = cardPoolData.cardPool;
+                return cardPoolData;
+            }
+            return (null, null);
+        }
+        public async Task<(CardDefine[] defines, CardSkinData[] skins)> loadCachedCardDefinesAsync(long cardPoolId, int version)
+        {
+            List<CardDefine> defineList = new List<CardDefine>();
+            List<CardSkinData> skinList = new List<CardSkinData>();
+
+            var cardPoolData = await loadCachedCardPoolAsync(cardPoolId, version);
+            var cardPool = cardPoolData.cardPool;
+            if (cardPool != null)
+            {
                 defineList.AddRange(cardPool.cardDefineList);
                 skinList.AddRange(cardPool.cardSkinList);
             }
