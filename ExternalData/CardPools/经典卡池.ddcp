@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 3 }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 51 }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -6,7 +6,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 3,
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -52,7 +56,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [1],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 1
+                    }],
                   "regVar" : []
                 }]
             }],
@@ -64,7 +72,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 5,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : [null, "Fire"]
@@ -102,7 +114,11 @@
       "_id" : -2147418109,
       "type" : "Spell",
       "propDict" : {
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "cost" : 2
       },
       "effectList" : [{
@@ -169,7 +185,11 @@
       "_id" : -2147418108,
       "type" : "Spell",
       "propDict" : {
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "cost" : 5,
         "tags" : {
           "_t" : "System.String[]",
@@ -217,7 +237,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [4],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 4
+                    }],
                   "regVar" : []
                 }]
             }],
@@ -229,7 +253,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 5,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : [null, "Metal"]
@@ -270,7 +298,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 5,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : [null, "Water"]
@@ -308,7 +340,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [8],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 8
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -320,7 +356,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 5,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : [null, "Earth"]
@@ -369,7 +409,11 @@
         "cost" : 1,
         "attack" : 1,
         "life" : 1,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : [null]
@@ -410,22 +454,22 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
+                      "_t" : "TouhouCardEngine.DefineReference[], TouhouCardEngine",
                       "_v" : [{
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418103
+                          "defineId" : -2147418103
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418102
+                          "defineId" : -2147418102
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418099
+                          "defineId" : -2147418099
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418100
+                          "defineId" : -2147418100
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418098
+                          "defineId" : -2147418098
                         }]
                     }],
                   "regVar" : [false]
@@ -439,7 +483,11 @@
       "type" : "Spell",
       "propDict" : {
         "isToken" : true,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "cost" : 0,
         "tags" : {
           "_t" : "System.String[]",
@@ -481,7 +529,11 @@
       "type" : "Spell",
       "propDict" : {
         "isToken" : true,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : [null, "Wood"]
@@ -527,7 +579,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [5],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 5
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -538,7 +594,11 @@
       "_id" : -2147418101,
       "type" : "Spell",
       "propDict" : {
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "cost" : 1
       },
       "effectList" : [{
@@ -640,7 +700,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [6],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 6
+                    }],
                   "regVar" : [false]
                 }, {
                   "_id" : 5,
@@ -767,7 +831,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Fire"]
         },
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -809,7 +877,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [7],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 7
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -825,7 +897,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Water"]
         },
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -874,7 +950,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Earth"]
         },
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -924,7 +1004,11 @@
           "_t" : "System.String[]",
           "_v" : ["Element"]
         },
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : []
     }, {
@@ -934,7 +1018,11 @@
         "cost" : 4,
         "attack" : 0,
         "life" : 5,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "keywords" : {
           "_t" : "System.String[]",
           "_v" : ["unique"]
@@ -959,7 +1047,7 @@
                       "actionNodeId" : 2
                     }],
                   "consts" : [],
-                  "regVar" : []
+                  "regVar" : [true]
                 }, {
                   "_id" : 2,
                   "defineName" : "获取随机卡牌定义",
@@ -975,33 +1063,33 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
+                      "_t" : "TouhouCardEngine.DefineReference[], TouhouCardEngine",
                       "_v" : [{
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418107
+                          "defineId" : -2147418107
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418108
+                          "defineId" : -2147418108
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418106
+                          "defineId" : -2147418106
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418110
+                          "defineId" : -2147418110
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418105
+                          "defineId" : -2147418105
                         }]
                     }],
                   "regVar" : [false]
                 }, {
                   "_id" : 4,
-                  "defineName" : "对目标造成固定法术伤害",
+                  "defineName" : "造成伤害或法伤",
                   "branches" : [0],
-                  "inputs" : [{
-                      "eventVarName" : "卡牌"
+                  "inputs" : [null, {
+                      "actionNodeId" : 1
                     }],
-                  "consts" : [1],
+                  "consts" : [null, 1],
                   "regVar" : []
                 }]
             }],
@@ -1018,7 +1106,7 @@
                 "actionNodeId" : 6
               },
               "targetCheckerList" : [],
-              "actionId" : 1,
+              "actionId" : 8,
               "actionList" : [{
                   "_id" : 6,
                   "defineName" : "Compare",
@@ -1047,58 +1135,13 @@
                   "consts" : [],
                   "regVar" : [false]
                 }, {
-                  "_id" : 1,
-                  "defineName" : "创建衍生卡并置入手牌",
-                  "branches" : [8],
-                  "inputs" : [{
-                      "eventVarName" : "玩家"
-                    }, {
-                      "actionNodeId" : 2
-                    }],
-                  "consts" : [],
-                  "regVar" : []
-                }, {
-                  "_id" : 2,
-                  "defineName" : "获取随机卡牌定义",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "actionNodeId" : 3
-                    }],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 3,
-                  "defineName" : "获取卡牌定义列表",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [{
-                      "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
-                      "_v" : [{
-                          "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418107
-                        }, {
-                          "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418108
-                        }, {
-                          "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418106
-                        }, {
-                          "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418110
-                        }, {
-                          "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418105
-                        }]
-                    }],
-                  "regVar" : [false]
-                }, {
                   "_id" : 8,
-                  "defineName" : "对目标造成固定法术伤害",
+                  "defineName" : "触发卡牌宣言",
                   "branches" : [0],
                   "inputs" : [{
                       "actionNodeId" : 7
-                    }],
-                  "consts" : [1],
+                    }, null],
+                  "consts" : [],
                   "regVar" : []
                 }, {
                   "_id" : 7,
@@ -1124,7 +1167,11 @@
           "_t" : "System.String[]",
           "_v" : ["taunt", "cantattack"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : ["Element"]
@@ -1138,7 +1185,11 @@
         "cost" : 6,
         "attack" : 6,
         "life" : 6,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "keywords" : {
           "_t" : "System.String[]",
           "_v" : ["unique"]
@@ -1221,7 +1272,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [19],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 19
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -1238,7 +1293,11 @@
           "_t" : "System.String[]",
           "_v" : ["unique"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : ["Sun"]
@@ -1296,7 +1355,11 @@
           "_t" : "System.String[]",
           "_v" : ["unique"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : ["Moon"]
@@ -1348,7 +1411,11 @@
         "cost" : 7,
         "attack" : 7,
         "life" : 7,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : ["Machine"]
@@ -1447,7 +1514,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [9],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 9
+                    }],
                   "regVar" : [false]
                 }, {
                   "_id" : 9,
@@ -1472,7 +1543,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [9],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 9
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -1490,7 +1565,11 @@
           "_t" : "System.String[]",
           "_v" : ["taunt"]
         },
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -1518,7 +1597,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [11],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 11
+                    }],
                   "regVar" : [false]
                 }, {
                   "_id" : 3,
@@ -1582,7 +1665,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Metal", "Fire"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "isToken" : false
       },
       "effectList" : [{
@@ -1658,7 +1745,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Water", "Fire"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "cost" : 4,
         "isToken" : false
       },
@@ -1697,7 +1788,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 4,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : [null, "Water", "Earth"]
@@ -1763,7 +1858,11 @@
         "cost" : 2,
         "attack" : 2,
         "life" : 2,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "keywords" : {
           "_t" : "System.String[]",
           "_v" : ["taunt"]
@@ -1784,7 +1883,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Metal", "Wood"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "isToken" : false
       },
       "effectList" : [{
@@ -1906,7 +2009,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [13],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 13
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -1917,21 +2024,79 @@
       "_id" : -2147418084,
       "type" : "Spell",
       "propDict" : {
-        "cost" : 99,
+        "cost" : 4,
         "tags" : {
           "_t" : "System.String[]",
           "_v" : ["Wood", "Earth"]
         },
-        "characterId" : 4194304,
-        "isToken" : true
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
+        "isToken" : false
       },
-      "effectList" : []
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [{
+                  "targetType" : "Servant",
+                  "condition" : {
+                    "actionNodeId" : 1
+                  },
+                  "errorTip" : ""
+                }],
+              "actionId" : 2,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "卡牌类型判断",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [1],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 26
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
     }, {
       "_id" : -2147418083,
       "type" : "Spell",
       "propDict" : {
         "cost" : 6,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : [null, "Wood", "Fire"]
@@ -2043,7 +2208,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [12],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 12
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -2055,7 +2224,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 6,
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : ["Metal", "Water"]
@@ -2093,7 +2266,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [10],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 10
+                    }],
                   "regVar" : [false]
                 }, {
                   "_id" : 4,
@@ -2158,7 +2335,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 4,
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -2228,7 +2409,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Metal", "Earth"]
         },
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -2295,7 +2480,7 @@
       "_id" : -2147418079,
       "type" : "Servant",
       "propDict" : {
-        "cost" : 3,
+        "cost" : 2,
         "attack" : 3,
         "life" : 1,
         "isToken" : true,
@@ -2303,7 +2488,11 @@
           "_t" : "System.String[]",
           "_v" : ["rush"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : ["Element"]
@@ -2319,7 +2508,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Wood", "Water"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "isToken" : false
       },
       "effectList" : [{
@@ -2382,7 +2575,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [14],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 14
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -2400,7 +2597,11 @@
           "_t" : "System.String[]",
           "_v" : [null]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "keywords" : {
           "_t" : "System.String[]",
           "_v" : ["rush"]
@@ -2505,7 +2706,11 @@
           "_t" : "System.String[]",
           "_v" : [null, "Fire", "Earth"]
         },
-        "characterId" : 4194304,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        },
         "isToken" : false
       },
       "effectList" : [{
@@ -2576,7 +2781,11 @@
           "_t" : "System.String[]",
           "_v" : ["taunt"]
         },
-        "characterId" : 4194304
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 4194304
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -2739,22 +2948,13 @@
                   "regVar" : [false]
                 }, {
                   "_id" : 4,
-                  "defineName" : "添加增益",
+                  "defineName" : "禁锢",
                   "branches" : [0],
                   "inputs" : [{
                       "eventVarName" : "目标卡牌"
-                    }, {
-                      "actionNodeId" : 5
                     }],
                   "consts" : [],
                   "regVar" : []
-                }, {
-                  "_id" : 5,
-                  "defineName" : "获取增益定义",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [26],
-                  "regVar" : [false]
                 }]
             }],
           "tagList" : ["battleCry"],
@@ -2780,7 +2980,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 2,
-        "characterId" : 6291456
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 6291456
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -2830,7 +3034,11 @@
         "cost" : 3,
         "attack" : 3,
         "life" : 4,
-        "characterId" : 6291456,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 6291456
+        },
         "tags" : {
           "_t" : "System.String[]",
           "_v" : ["Beast"]
@@ -2900,7 +3108,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [20],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 20
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -3198,7 +3410,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [21],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 21
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -3315,63 +3531,7 @@
           "_v" : ["Beast", "Bug"]
         }
       },
-      "effectList" : [{
-          "typeName" : "GeneratedEffect",
-          "pileList" : [],
-          "onEnableActionList" : [],
-          "onDisalbeActionList" : [],
-          "triggerList" : [{
-              "eventName" : "ActiveEvent",
-              "targetCheckerList" : [],
-              "actionId" : 1,
-              "actionList" : [{
-                  "_id" : 1,
-                  "defineName" : "抽目标卡牌",
-                  "branches" : [4],
-                  "inputs" : [{
-                      "actionNodeId" : 2
-                    }],
-                  "consts" : [],
-                  "regVar" : []
-                }, {
-                  "_id" : 2,
-                  "defineName" : "获取随机卡牌",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "actionNodeId" : 3
-                    }],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 3,
-                  "defineName" : "获取玩家牌库中的卡牌",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "eventVarName" : "玩家"
-                    }],
-                  "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 4,
-                  "defineName" : "添加增益",
-                  "branches" : [0],
-                  "inputs" : [null, {
-                      "actionNodeId" : 5
-                    }],
-                  "consts" : [],
-                  "regVar" : []
-                }, {
-                  "_id" : 5,
-                  "defineName" : "获取增益定义",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [22],
-                  "regVar" : [false]
-                }]
-            }],
-          "tagList" : ["battleCry"],
-          "propDict" : { }
-        }]
+      "effectList" : []
     }, {
       "_id" : -2147418061,
       "type" : "Servant",
@@ -3435,7 +3595,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [23],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 23
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -4015,7 +4179,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [24],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 24
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -4031,7 +4199,7 @@
         "life" : 6,
         "tags" : {
           "_t" : "System.String[]",
-          "_v" : ["Beast"]
+          "_v" : ["Beast", "God"]
         },
         "keywords" : {
           "_t" : "System.String[]",
@@ -4146,25 +4314,16 @@
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [],
-              "actionId" : 3,
+              "actionId" : 2,
               "actionList" : [{
-                  "_id" : 3,
-                  "defineName" : "对目标造成固定法术伤害",
-                  "branches" : [0],
-                  "inputs" : [{
-                      "actionNodeId" : 2
-                    }],
-                  "consts" : [1],
-                  "regVar" : []
-                }, {
                   "_id" : 2,
-                  "defineName" : "获取随机卡牌",
+                  "defineName" : "对固定数量的随机目标造成伤害或法伤",
                   "branches" : [0],
-                  "inputs" : [{
+                  "inputs" : [null, null, {
                       "actionNodeId" : 1
                     }],
-                  "consts" : [],
-                  "regVar" : [false]
+                  "consts" : [null, 1, 1],
+                  "regVar" : []
                 }, {
                   "_id" : 1,
                   "defineName" : "获取敌方随从",
@@ -4182,7 +4341,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 1,
-        "characterId" : 3145728
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 3145728
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -4256,7 +4419,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 2,
-        "characterId" : 3145728,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 3145728
+        },
         "isToken" : true
       },
       "effectList" : [{
@@ -4309,7 +4476,11 @@
       "_id" : -2147418047,
       "type" : "Spell",
       "propDict" : {
-        "characterId" : 3145728,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 3145728
+        },
         "isToken" : true,
         "cost" : 2
       },
@@ -4356,7 +4527,11 @@
       "_id" : -2147418046,
       "type" : "Spell",
       "propDict" : {
-        "characterId" : 3145728,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 3145728
+        },
         "isToken" : true,
         "cost" : 2
       },
@@ -4402,7 +4577,11 @@
       "_id" : -2147418045,
       "type" : "Spell",
       "propDict" : {
-        "characterId" : 3145728,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 3145728
+        },
         "isToken" : true,
         "cost" : 2
       },
@@ -4449,7 +4628,11 @@
       "type" : "Spell",
       "propDict" : {
         "cost" : 2,
-        "characterId" : 3145728
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 3145728
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -4486,19 +4669,19 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [{
-                      "_t" : "TouhouCardEngine.CardReference[], TouhouCardEngine",
+                      "_t" : "TouhouCardEngine.DefineReference[], TouhouCardEngine",
                       "_v" : [{
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418046
+                          "defineId" : -2147418048
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418047
+                          "defineId" : -2147418047
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418048
+                          "defineId" : -2147418046
                         }, {
                           "cardPoolId" : NumberLong(1),
-                          "cardId" : -2147418045
+                          "defineId" : -2147418045
                         }]
                     }],
                   "regVar" : [false]
@@ -4511,7 +4694,11 @@
       "_id" : -2147418043,
       "type" : "Servant",
       "propDict" : {
-        "characterId" : 6291456,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 6291456
+        },
         "cost" : 3,
         "attack" : 4,
         "life" : 3,
@@ -4610,7 +4797,12 @@
           "_t" : "System.String[]",
           "_v" : ["Beast"]
         },
-        "cost" : 1
+        "cost" : 1,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 6291456
+        }
       },
       "effectList" : [{
           "typeName" : "GeneratedEffect",
@@ -4694,7 +4886,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [25],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 25
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -4712,7 +4908,12 @@
           "_t" : "System.String[]",
           "_v" : ["taunt"]
         },
-        "isToken" : true
+        "isToken" : true,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 6291456
+        }
       },
       "effectList" : []
     }, {
@@ -4726,7 +4927,12 @@
           "_t" : "System.String[]",
           "_v" : ["taunt"]
         },
-        "isToken" : true
+        "isToken" : true,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 3145728
+        }
       },
       "effectList" : []
     }, {
@@ -4841,7 +5047,7 @@
           "triggerList" : [{
               "eventName" : "ActiveEvent",
               "targetCheckerList" : [{
-                  "targetType" : "Character",
+                  "targetType" : "Servant",
                   "condition" : {
                     "actionNodeId" : 3
                   },
@@ -4859,12 +5065,10 @@
                   "regVar" : []
                 }, {
                   "_id" : 4,
-                  "defineName" : "添加增益",
+                  "defineName" : "禁锢",
                   "branches" : [0],
                   "inputs" : [{
                       "actionNodeId" : 2
-                    }, {
-                      "actionNodeId" : 5
                     }],
                   "consts" : [],
                   "regVar" : []
@@ -4876,13 +5080,6 @@
                       "eventVarName" : "目标卡牌"
                     }],
                   "consts" : [],
-                  "regVar" : [false]
-                }, {
-                  "_id" : 5,
-                  "defineName" : "获取增益定义",
-                  "branches" : [0],
-                  "inputs" : [],
-                  "consts" : [26],
                   "regVar" : [false]
                 }]
             }],
@@ -5030,7 +5227,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [22],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 22
+                    }],
                   "regVar" : [false]
                 }]
             }],
@@ -5081,6 +5282,2199 @@
           "tagList" : ["battleCry"],
           "propDict" : { }
         }]
+    }, {
+      "_id" : 1,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 5,
+        "attack" : 4,
+        "life" : 1
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong("381111799151965820"),
+                      "defineId" : 2
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 2,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 3,
+        "attack" : 4,
+        "life" : 3,
+        "isToken" : true
+      },
+      "effectList" : []
+    }, {
+      "_id" : 3,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 1,
+        "attack" : 1,
+        "life" : 2,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Beast"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 3,
+              "actionList" : [{
+                  "_id" : 3,
+                  "defineName" : "创建衍生卡并置入手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取随机卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取卡牌定义列表",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "TouhouCardEngine.DefineReference[], TouhouCardEngine",
+                      "_v" : [{
+                          "cardPoolId" : NumberLong(1),
+                          "defineId" : -2147418072
+                        }, {
+                          "cardPoolId" : NumberLong(1),
+                          "defineId" : -2147418062
+                        }, {
+                          "cardPoolId" : NumberLong(1),
+                          "defineId" : -2147418058
+                        }]
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 4,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 3,
+        "attack" : 2,
+        "life" : 4
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : ["Hand"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "BeforeTurnEndEvent",
+              "condition" : {
+                "actionNodeId" : 3
+              },
+              "targetCheckerList" : [],
+              "actionId" : 5,
+              "actionList" : [{
+                  "_id" : 3,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "变形为卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 5
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }, {
+          "typeName" : "GeneratedBattlecry",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 6,
+              "actionList" : [{
+                  "_id" : 6,
+                  "defineName" : "卡牌洗入牌库",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取第X个元素",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2,
+                      "index" : 1
+                    }, {
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "排序",
+                  "branches" : [0, 3],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [true],
+                  "regVar" : [false, false, false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取玩家的墓地卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取花费",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [0],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["battleCry"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 5,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 4,
+        "attack" : 4,
+        "life" : 4,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Beast"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : ["Hand"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "BeforeTurnEndEvent",
+              "condition" : {
+                "actionNodeId" : 1
+              },
+              "targetCheckerList" : [],
+              "actionId" : 5,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "变形为卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 4
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }, {
+          "typeName" : "GeneratedBattlecry",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 3,
+              "actionList" : [{
+                  "_id" : 3,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 2],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [3],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "卡牌置入墓地",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 7
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "获取第X个元素",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5,
+                      "index" : 1
+                    }, {
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "排序",
+                  "branches" : [0, 6],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [null],
+                  "regVar" : [false, false, false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取玩家牌库中的卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取花费",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 8,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["battleCry"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 6,
+      "type" : "Servant",
+      "propDict" : {
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Beast"]
+        },
+        "cost" : 3,
+        "attack" : 4,
+        "life" : 2
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [],
+              "actionId" : 2,
+              "actionList" : [{
+                  "_id" : 2,
+                  "defineName" : "从一定数量的卡牌中选择一张",
+                  "branches" : [1],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [3],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取玩家牌库中的卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "卡牌洗入牌库",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [true],
+                  "regVar" : []
+                }]
+            }],
+          "tagList" : ["battleCry"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 7,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 10,
+        "attack" : 8,
+        "life" : 8,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["unique"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [{
+                  "targetType" : "Character",
+                  "condition" : {
+                    "actionNodeId" : 6
+                  },
+                  "errorTip" : ""
+                }],
+              "actionId" : 2,
+              "actionList" : [{
+                  "_id" : 6,
+                  "defineName" : "卡牌类型判断",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [3],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "从一定数量的卡牌定义中选择一张",
+                  "branches" : [3],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [2],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取卡牌定义列表",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "TouhouCardEngine.DefineReference[], TouhouCardEngine",
+                      "_v" : [{
+                          "cardPoolId" : NumberLong(1),
+                          "defineId" : 8
+                        }, {
+                          "cardPoolId" : NumberLong(1),
+                          "defineId" : 9
+                        }]
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "分支动作",
+                  "branches" : [0, 12, 18],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 8
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 12,
+                  "defineName" : "分支动作",
+                  "branches" : [0, 15, 17],
+                  "inputs" : [{
+                      "actionNodeId" : 10
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 10,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 8
+                    }, {
+                      "actionNodeId" : 11
+                    }],
+                  "consts" : [2],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 8,
+                  "defineName" : "IntegerOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }, {
+                      "actionNodeId" : 9
+                    }, null],
+                  "consts" : [2],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "获取当前生命值",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 9,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [2],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 11,
+                  "defineName" : "获取最大生命值",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 15,
+                  "defineName" : "设置属性",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 16
+                    }, {
+                      "actionNodeId" : 11
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 16,
+                  "defineName" : "StringConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["currentLife"],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 17,
+                  "defineName" : "设置属性",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 16
+                    }, {
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 18,
+                  "defineName" : "设置属性",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }, {
+                      "actionNodeId" : 16
+                    }, {
+                      "actionNodeId" : 13
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 13,
+                  "defineName" : "IntegerOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }, {
+                      "actionNodeId" : 14
+                    }, null],
+                  "consts" : [3],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 14,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [2],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["battleCry"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 8,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 10,
+        "isToken" : true
+      },
+      "effectList" : []
+    }, {
+      "_id" : 9,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 10,
+        "isToken" : true
+      },
+      "effectList" : []
+    }, {
+      "_id" : 10,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 10,
+        "attack" : 5,
+        "life" : 10,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["unique"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "从一定数量的卡牌定义中选择一张",
+                  "branches" : [3],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [2],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌定义列表",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "TouhouCardEngine.DefineReference[], TouhouCardEngine",
+                      "_v" : [{
+                          "cardPoolId" : NumberLong(1),
+                          "defineId" : 11
+                        }, {
+                          "cardPoolId" : NumberLong(1),
+                          "defineId" : 12
+                        }]
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "分支动作",
+                  "branches" : [0, 17, 22],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }, {
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 11
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 17,
+                  "defineName" : "设置属性",
+                  "branches" : [6],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }, {
+                      "actionNodeId" : 18
+                    }, {
+                      "actionNodeId" : 16
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "获取玩家英雄",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 18,
+                  "defineName" : "StringConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Eternal"],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 16,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [2],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "添加增益",
+                  "branches" : [27],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }, {
+                      "actionNodeId" : 10
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 10,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 28
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 27,
+                  "defineName" : "设置属性",
+                  "branches" : [28],
+                  "inputs" : [{
+                      "actionNodeId" : 9
+                    }, {
+                      "actionNodeId" : 18
+                    }, {
+                      "actionNodeId" : 16
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 9,
+                  "defineName" : "获取玩家英雄",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 8,
+                  "defineName" : "获取玩家对手",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 28,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 9
+                    }, {
+                      "actionNodeId" : 29
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 29,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 28
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 22,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 24],
+                  "inputs" : [{
+                      "actionNodeId" : 23
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 23,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [5],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 24,
+                  "defineName" : "简单抽牌",
+                  "branches" : [26],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 26,
+                  "defineName" : "简单抽牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }]
+            }],
+          "tagList" : ["battleCry"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 11,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 5,
+        "isToken" : true
+      },
+      "effectList" : []
+    }, {
+      "_id" : 12,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 5,
+        "isToken" : true
+      },
+      "effectList" : []
+    }, {
+      "_id" : 13,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 8,
+        "attack" : 7,
+        "life" : 3,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["rush", "unique"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 2,
+              "actionList" : [{
+                  "_id" : 2,
+                  "defineName" : "造成伤害或法伤",
+                  "branches" : [3],
+                  "inputs" : [null, {
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [null, 2],
+                  "regVar" : []
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取所有随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "卡牌洗入牌库",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "eventVarName" : "卡牌"
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 14,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 10,
+        "attack" : 8,
+        "life" : 8,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["God"]
+        },
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["unique"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [],
+              "actionId" : 8,
+              "actionList" : [{
+                  "_id" : 8,
+                  "defineName" : "卡牌洗入牌库",
+                  "branches" : [7],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 2,
+                      "index" : 1
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "筛选",
+                  "branches" : [0, 3],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false, true, false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取玩家的手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 9
+                    }],
+                  "consts" : [3],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取花费",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 9,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [5],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 6],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "获取元素数量",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2,
+                      "index" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 10
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 10,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : -2147418040
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["battleCry"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 15,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 6,
+        "attack" : 4,
+        "life" : 4,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["God"]
+        },
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["rush", "unique"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 3,
+              "actionList" : [{
+                  "_id" : 3,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 4],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取元素数量",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取敌方随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 16
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 16,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 2,
+        "attack" : 2,
+        "life" : 2,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Beast"]
+        },
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["rush"]
+        },
+        "isToken" : true
+      },
+      "effectList" : []
+    }, {
+      "_id" : 17,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 2,
+        "attack" : 2,
+        "life" : 2,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["taunt"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : ["Hand"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "AfterUseEvent",
+              "condition" : {
+                "actionNodeId" : 2
+              },
+              "targetCheckerList" : [],
+              "actionId" : 5,
+              "actionList" : [{
+                  "_id" : 2,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }, {
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [0],
+                  "regVar" : []
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取玩家对手",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "分支动作",
+                  "branches" : [0, 9, 0],
+                  "inputs" : [{
+                      "actionNodeId" : 10
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 10,
+                  "defineName" : "LogicOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 7
+                    }, {
+                      "actionNodeId" : 11
+                    }, null],
+                  "consts" : [1],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 6
+                    }, {
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [3],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取花费",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 8,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [4],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 11,
+                  "defineName" : "卡牌类型判断",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "卡牌"
+                    }],
+                  "consts" : [1],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 9,
+                  "defineName" : "卡牌置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [true]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 18,
+      "type" : "Servant",
+      "propDict" : {
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        },
+        "cost" : 1,
+        "attack" : 1,
+        "life" : 1,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Fairy"]
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 19
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 19,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 1,
+        "attack" : 2,
+        "life" : 2,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        },
+        "isToken" : true
+      },
+      "effectList" : []
+    }, {
+      "_id" : 20,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 2,
+        "attack" : 3,
+        "life" : 1,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 3,
+              "actionList" : [{
+                  "_id" : 3,
+                  "defineName" : "造成伤害或法伤",
+                  "branches" : [0],
+                  "inputs" : [null, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [null, 2],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取玩家英雄",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取玩家对手",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 21,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 1,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [],
+              "actionId" : 2,
+              "actionList" : [{
+                  "_id" : 2,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }, {
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取友方随从",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 29
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 22,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 5,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [],
+              "actionId" : 8,
+              "actionList" : [{
+                  "_id" : 8,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 7],
+                  "inputs" : [{
+                      "actionNodeId" : 9
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 9,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [3],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "卡牌置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 6,
+                  "defineName" : "获取随机卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2,
+                      "index" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "筛选",
+                  "branches" : [0, 10],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [true, false, false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取玩家的墓地卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 10,
+                  "defineName" : "LogicOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 11
+                    }, null],
+                  "consts" : [1],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [5],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取花费",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [3],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 11,
+                  "defineName" : "卡牌类型判断",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [1],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 23,
+      "type" : "Servant",
+      "propDict" : {
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        },
+        "cost" : 3,
+        "attack" : 2,
+        "life" : 2
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedBattlecry",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [{
+                  "targetType" : "Servant",
+                  "condition" : {
+                    "actionNodeId" : 2
+                  },
+                  "errorTip" : ""
+                }],
+              "actionId" : 5,
+              "actionList" : [{
+                  "_id" : 2,
+                  "defineName" : "LogicOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }, {
+                      "actionNodeId" : 3
+                    }, null],
+                  "consts" : [1],
+                  "regVar" : []
+                }, {
+                  "_id" : 1,
+                  "defineName" : "卡牌类型判断",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [1],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "消灭",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "目标卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }]
+            }],
+          "tagList" : ["battleCry"],
+          "propDict" : { }
+        }, {
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 3],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [2],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 19
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 24,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 1,
+        "attack" : 1,
+        "life" : 3,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : ["Field"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "AfterAttackEvent",
+              "condition" : {
+                "actionNodeId" : 4
+              },
+              "targetCheckerList" : [],
+              "actionId" : 9,
+              "actionList" : [{
+                  "_id" : 4,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "eventVarName" : "卡牌"
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取玩家英雄",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 9,
+                  "defineName" : "抽目标卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 8,
+                  "defineName" : "获取随机卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 6,
+                      "index" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "筛选",
+                  "branches" : [0, 7],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : [false, false, false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "获取玩家牌库中的卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "卡牌类型判断",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [1],
+                  "regVar" : []
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 25,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 3,
+        "attack" : 2,
+        "life" : 4,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Beast"]
+        },
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : ["Field"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "AfterDeathEvent",
+              "condition" : {
+                "actionNodeId" : 5
+              },
+              "targetCheckerList" : [],
+              "actionId" : 6,
+              "actionList" : [{
+                  "_id" : 5,
+                  "defineName" : "LogicOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "actionNodeId" : 4
+                    }, null],
+                  "consts" : [1],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "卡牌类型判断",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "卡牌"
+                    }],
+                  "consts" : [1],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "创建衍生卡并置入手牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 7
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 7,
+                  "defineName" : "获取卡牌定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 19
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 26,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 1,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 7340032
+        }
+      },
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "targetCheckerList" : [],
+              "actionId" : 11,
+              "actionList" : [{
+                  "_id" : 11,
+                  "defineName" : "添加增益",
+                  "branches" : [7],
+                  "inputs" : [{
+                      "actionNodeId" : 12
+                    }, {
+                      "actionNodeId" : 13
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 12,
+                  "defineName" : "获取玩家英雄",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 13,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 30
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "重复动作",
+                  "branches" : [0, 9],
+                  "inputs" : [{
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 8,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [3],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 9,
+                  "defineName" : "卡牌置入墓地",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 10
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 10,
+                  "defineName" : "获取随机卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3,
+                      "index" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "筛选",
+                  "branches" : [0, 4],
+                  "inputs" : [{
+                      "actionNodeId" : 14
+                    }],
+                  "consts" : [],
+                  "regVar" : [false, false, false]
+                }, {
+                  "_id" : 14,
+                  "defineName" : "获取玩家牌库中的卡牌",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "卡牌类型判断",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }],
+                  "consts" : [1],
+                  "regVar" : []
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
     }],
   "cardSkinList" : [{
       "_id" : -2147418111,
@@ -5100,7 +7494,7 @@
       "_id" : -2147418109,
       "_name" : "大图书馆*",
       "_imagePath" : "560d58711a8b3583137faca6eeb64ed9c705e7b24c878b0570d5306a4f04010a.jpg",
-      "_desc" : "检视牌库中的五张法术牌，选择一张并抽取。\r",
+      "_desc" : "检视你牌库中的五张法术牌，选择一张并抽取。\r",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418108,
@@ -5192,7 +7586,7 @@
       "_name" : "贤者之石*",
       "_subname" : "",
       "_imagePath" : "4d3aa528037da7c419afefec606f0fc3e12a75660c8462669e513a5afbe561e8.jpg",
-      "_desc" : "<b>唯一，宣言</b>和你的回合结束时，失去1点耐久，将一张灵力值消耗大于(0)的元素法术置入你的手牌。",
+      "_desc" : "<b>唯一，宣言</b>和你的回合结束时，失去1点耐久，获得一张灵力值消耗大于(0)的元素法术。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418095,
@@ -5270,7 +7664,7 @@
       "_name" : "木土符【抽芽复行】*",
       "_subname" : "",
       "_imagePath" : "0adea969d4450357f084380c638c94884808bceca72a1ee5292dc8413420b688.jpg",
-      "_desc" : "<b>元素法术:木、土</b>\r\n使一个仆从获得“<b>遗言</b>：召唤一个目标仆从的复制并使其获得+3/+3”。",
+      "_desc" : "<b>元素法术:木、土</b>\r\n使一个仆从获得“<b>遗言</b>：召唤一个自身的复制并使其获得+3/+3”。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418083,
@@ -5288,7 +7682,7 @@
       "_id" : -2147418081,
       "_name" : "奥术知识*",
       "_imagePath" : "f375e7bf10ef7fb154fd6fc261d2d70444639c427404407fae06291636edb101.jpg",
-      "_desc" : "检视牌库中五张牌，选择一张抽取，触发两次。",
+      "_desc" : "检视你牌库中的五张牌，选择一张抽取。触发两次。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418080,
@@ -5331,13 +7725,13 @@
       "_name" : "西行寺幽幽子*",
       "_subname" : "华胥的亡灵",
       "_imagePath" : "8b52343f6f2b5accc93821052349a30aad23d771d6b9f8c6f772cab83d0350f9.jpg",
-      "_desc" : "<b>唯一</b>\r\n<b>宣言</b>:消灭一个仆从。",
+      "_desc" : "<b>唯一</b>\r\n<b>宣言</b>：消灭一个仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418073,
       "_name" : "琪露诺*",
       "_imagePath" : "368195bc3c7a1660376adfe65dba0a96b041369ac11dd4adca2fa33fd271c080.jpg",
-      "_desc" : "<b>宣言:禁锢</b>一个敌人。",
+      "_desc" : "<b>宣言：禁锢</b>一个敌人。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418072,
@@ -5361,13 +7755,13 @@
       "_id" : -2147418069,
       "_name" : "橙*",
       "_imagePath" : "8ee8202b93f51d9ff833c8abde34fca9f9b3f24db37a0d2e5b701985dcb12503.jpg",
-      "_desc" : "<b>宣言</b>:获得<b>增益</b>:+2攻击力和<b>速攻</b>。\r\n",
+      "_desc" : "<b>宣言</b>：获得<b>增益</b>:+2攻击力和<b>速攻</b>。\r\n",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418068,
       "_name" : "小恶魔*",
       "_imagePath" : "89daac95f389e8b33106ca8296e6269d32cb8c05597c89e179573f43b82da9ef.jpg",
-      "_desc" : "<b>宣言</b>:随机将一张墓地中的法术置入你的手牌。\r\n",
+      "_desc" : "<b>宣言</b>：随机将一张墓地中的法术置入你的手牌。\r\n",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418067,
@@ -5386,7 +7780,7 @@
       "_id" : -2147418065,
       "_name" : "莉莉白*",
       "_imagePath" : "7549b49bfd34d6d5878c4650087de885c97970b3a92b70023c2b06499f7d86c0.jpg",
-      "_desc" : "每当你的回合开始后，使你的其它仆从获得：+1/+1。\r\n",
+      "_desc" : "每当你的回合开始后，使其它友方仆从获得：+1/+1。\r\n",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418064,
@@ -5398,7 +7792,7 @@
       "_id" : -2147418063,
       "_name" : "铃仙·优昙华院·因幡*",
       "_imagePath" : "711cc6a0aa3ab02438773f6af1c70dd96c58775a13419da1464e2eaa7409b1c1.jpg",
-      "_desc" : "<b>宣言</b>:对敌方英雄造成2点伤害，触发两次。",
+      "_desc" : "<b>宣言</b>：对敌方英雄造成2点伤害，触发两次。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418062,
@@ -5410,21 +7804,21 @@
       "_id" : -2147418061,
       "_name" : "八云蓝*",
       "_imagePath" : "b356127d3865b031548eea34e19ac85844165bc8890edd186b0017394f0aa19c.jpg",
-      "_desc" : "<b>速攻</b>\r\n<b>宣言</b>:召唤橙并增益她：+3/+1和<b>速攻</b>",
+      "_desc" : "<b>速攻</b>\r\n<b>宣言</b>：召唤橙并增益其：+3/+1和<b>速攻</b>",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418060,
       "_name" : "蕾米莉亚·斯卡蕾特*",
       "_subname" : "永远鲜红的幼月",
       "_imagePath" : "343fb03bda73ee6f8b9c05e1df4dc3a805dc53f8c3c362d990a71d1180734dd3.jpg",
-      "_desc" : "<b>唯一</b>，<b>吸血</b>\r\n<b>宣言</b>:随机弃三张牌，然后抽三张牌。",
+      "_desc" : "<b>唯一</b>，<b>吸血</b>\r\n<b>宣言</b>：随机弃三张牌，然后抽三张牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418059,
       "_name" : "芙兰朵露·斯卡蕾特*",
       "_subname" : "恶魔之妹",
       "_imagePath" : "8634eeb75939dfcda6a13569a2d4a3bd1cfc92ecd7f37c24460a8a5d5f1c1d82.jpg",
-      "_desc" : "<b>唯一</b>，<b>吸血</b>\r\n<b>宣言</b>:随机弃一张牌，然后随机消灭一个敌方仆从。",
+      "_desc" : "<b>唯一</b>，<b>吸血</b>\r\n<b>宣言</b>：随机弃一张牌，然后随机消灭一个敌方仆从。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418058,
@@ -5484,7 +7878,7 @@
       "_id" : -2147418049,
       "_name" : "妖力掠夺*",
       "_imagePath" : "dfb12bf3b7438e10f49719a926f80f9d534da7efac957979b604e58d55099561.jpg",
-      "_desc" : "<b>封印</b>一个仆从，为你的英雄<b>治愈</b>等同于其灵力值消耗的生命值。",
+      "_desc" : "<b>封印</b>一个仆从，为你的英雄治愈等同于其灵力值消耗的生命值。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418048,
@@ -5546,7 +7940,7 @@
       "_name" : "八云紫*",
       "_subname" : "神隐的主犯",
       "_imagePath" : "1b7853b2b03541f991209e9b8db5086425f6606681e4b714bd81687f6d9506c5.jpg",
-      "_desc" : "<b>唯一</b>\r\n<b>宣言</b>:将其它仆从移回其所有者的手牌。",
+      "_desc" : "<b>唯一</b>\r\n<b>宣言</b>：将其它仆从移回其所有者的手牌。",
       "_language" : "zh-Hans"
     }, {
       "_id" : -2147418038,
@@ -5578,6 +7972,169 @@
       "_name" : "键山雏*",
       "_imagePath" : "c87c9077df29ed1b753b9c53eaf3bca72fdb6b1109d83f9c6714e5d3002aec53.jpg",
       "_desc" : "<b>宣言：封印</b>相邻的仆从。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 1,
+      "_name" : "迷失亡灵*",
+      "_imagePath" : "5b39c424f32d3cd4d40de56830f9815137502f1f817902b2f1dfe859a8056924.jpg",
+      "_desc" : "<b>遗言：</b>召唤一个4/3的失落亡灵。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 2,
+      "_name" : "失落亡灵*",
+      "_imagePath" : "35779094e3fc16bab05abfcb5cb22463f90fedfffe453b9ac3381758c2f13fea.jpg",
+      "_desc" : "",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 3,
+      "_name" : "莉格露·奈特巴格*",
+      "_imagePath" : "42219dab41062e240ac4ee05a3b20eacd5d19361db8e5e528875e9435523223d.jpg",
+      "_desc" : "<b>遗言</b>：随机将一只昆虫置入你的手牌。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 4,
+      "_name" : "上白泽慧音*",
+      "_imagePath" : "d15c2e46c3b07aa5845eee8cd945b51884d096b53baa91586c79512ad4c211e0.jpg",
+      "_desc" : "你的回合结束时，如果该牌在你的手牌中，变形为白泽形态。\n<b>宣言</b>：随机将一张你墓地中灵力值消耗最高的牌洗入你的牌库。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 5,
+      "_name" : "上白泽慧音*",
+      "_imagePath" : "da485c13e0d4d69e9c15826d8b79c0b8c4e35ebc3187367dd5cdb32d2d9ed1af.jpg",
+      "_desc" : "你的回合结束时，如果该牌在你的手牌中，变形为人类形态。\r\n<b>宣言</b>：随机将三张你牌库中灵力值消耗最低的牌洗入你的墓地。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 6,
+      "_name" : "因幡帝*",
+      "_imagePath" : "dd6b5ef5ddc18cc032de2d82b1cd46bdb0b53a93f5665feb6b8eedff829fea46.jpg",
+      "_desc" : "<b>宣言</b>：检视你牌库中的三张牌，选择一张并将其置于你的牌库顶。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 7,
+      "_name" : "八意永琳*",
+      "_subname" : "月之头脑",
+      "_imagePath" : "9029ac99cfbe932a2424a0d1635db94d0226a547db809fd45aac03fa18c8f19a.jpg",
+      "_desc" : "<b>唯一</b>\r\n<b>宣言</b>：选择一个英雄，然后选择一项：使其剩余生命值翻倍；或者减半。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 8,
+      "_name" : "生命游戏-苏活*",
+      "_imagePath" : "674c00513749a1c742c8ace08f1cda47a2933ff18d45f42cf634cb34f7ff0fad.jpg",
+      "_desc" : "使一个英雄生命值翻倍。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 9,
+      "_name" : "生命游戏-衰亡*",
+      "_imagePath" : "d86885ddd6c8e72bcd7355832a0781952b377e7d769ef0f802ab37fe3f0fb28d.jpg",
+      "_desc" : "使一个英雄生命值减半。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 10,
+      "_name" : "蓬莱山辉夜*",
+      "_subname" : "永远和须臾的罪人",
+      "_imagePath" : "8d1662b3ae7bc4f4da0db9d12ce3648b61bddc4f9ebb202a62cad9aa9d639b1c.jpg",
+      "_desc" : "<b>唯一</b>\r\n<b>宣言</b>：选择一项:每个玩家禁止抽牌两个回合；或者每个玩家抽五张牌。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 11,
+      "_name" : "永夜归-永恒*",
+      "_imagePath" : "6e181c613de71299a93d7830cc1d7001b198aaa7164c51157b1a3877d76be6d7.jpg",
+      "_desc" : "每个玩家禁止抽牌两回合。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 12,
+      "_name" : "永夜返-须臾*",
+      "_subname" : "",
+      "_imagePath" : "128b8db574068b9dd964630dae128224b5b540de9c6bf9f58443eca7f4eb6bfe.jpg",
+      "_desc" : "每个玩家抽五张牌。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 13,
+      "_name" : "藤原妹红*",
+      "_subname" : "蓬莱的人之形",
+      "_imagePath" : "b535fd64cc24ba085dfb7c506c03b612acdce9d9c4683cc6f138a11466de19b4.jpg",
+      "_desc" : "<b>唯一，速攻</b>\r\n<b>遗言</b>：对所有仆从造成2点伤害，然后将该牌从墓地洗入你的牌库。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 14,
+      "_name" : "八坂神奈子*",
+      "_subname" : "山坂与湖水的化身",
+      "_imagePath" : "36cbabaf892753a463a325ed37ebde90876e0102eb6608cf5d95ac50714b46e4.jpg",
+      "_desc" : "<b>唯一</b>\r\n<b>宣言</b>：将手牌中所有灵力值消耗不小于(5)点的牌洗入牌库，每洗入一张便召唤一个4/4并具有<b>守卫</b>的御柱。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 15,
+      "_name" : "洩矢诹访子*",
+      "_subname" : "土著神的顶点",
+      "_imagePath" : "f6e9a09d7410f956bb57606054dd1490693a84adbc3fefbaf39e5ce79fdad28e.jpg",
+      "_desc" : "<b>唯一，速攻</b>\r\n<b>遗言</b>：每有一个敌方仆从，便召唤一只2/2并具有<b>速攻</b>的青蛙。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 16,
+      "_name" : "青蛙*",
+      "_imagePath" : "e0e3a8a8301bd0012a3c5aa87ccee216f64f875fb4817a43554108a0e0234591.jpg",
+      "_desc" : "<b>速攻</b>",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 17,
+      "_name" : "琪斯美*",
+      "_imagePath" : "90fae31b3241711bc810af7ff76099edd4ef7f9598ea46bc2e5288c3c45f579a.jpg",
+      "_desc" : "<b>守卫</b>\r\n在对手使用一张灵力值消耗不低于(4)的仆从后，将该牌从你的手牌置入战场。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 18,
+      "_name" : "丧尸妖精*",
+      "_imagePath" : "6cd313d62ac775540e743fe55981706b4aa4e9115a69f813a44762ae642dcd8f.jpg",
+      "_desc" : "<b>遗言</b>：召唤一个2/2的怨灵。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 19,
+      "_name" : "怨灵*",
+      "_imagePath" : "f47ccb90f6517dfd6a033fdb64ba6cc0f0a8d6d1a8c3bd5890203cc4785da903.jpg",
+      "_desc" : "",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 20,
+      "_name" : "磷火*",
+      "_imagePath" : "693e1b5e30d2559806c2a859d365b60923ed5e08b71b1f5128e95f223f98320c.jpg",
+      "_desc" : "<b>遗言</b>：对敌方英雄造成2点伤害。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 21,
+      "_name" : "旧地狱的针山*",
+      "_imagePath" : "62771449af63d37f957e8f599e2232ac225bd0dcfbb8e44d52651be1af386aa4.jpg",
+      "_desc" : "使所有友方仆从获得<b>遗言</b>：对敌方英雄造成1点伤害。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 22,
+      "_name" : "尸体旅行*",
+      "_imagePath" : "b5b841d531ee433f5a36bdc54f12d6e07aaef75517454907454b9848891b8bc8.jpg",
+      "_desc" : "复活三个灵力值消耗不大于(3)的仆从。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 23,
+      "_name" : "食人怨灵*",
+      "_imagePath" : "e4ef8551aa882ceee2540d8f7a4d88e521bdcede0dc4bc117632b0125a1373ba.jpg",
+      "_desc" : "<b>宣言</b>：消灭一个友方仆从。\r\n<b>遗言</b>：召唤两个2/2的怨灵。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 24,
+      "_name" : "运尸车*",
+      "_imagePath" : "73279356d0ce836b8b3f89c716a7df027e50efc8f2f6f7c17497b01d203db293.jpg",
+      "_desc" : "每当你的英雄进行攻击后，抽一张仆从牌。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 25,
+      "_name" : "脾脏蛀食者*",
+      "_imagePath" : "58cf4c7aaa4bd4bbe78fdae4d320620b9dba7a3355985b87ba1f91807577d31a.jpg",
+      "_desc" : "每当一个友方仆从死亡后，将一个2/2的怨灵置入你的手牌。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 26,
+      "_name" : "醉猫乱步*",
+      "_subname" : "",
+      "_imagePath" : "ddf4acc759e770a01b2aa409286136d4919ae0849909f8aa1e4d29313c8ffedb.jpg",
+      "_desc" : "随机将你牌库中的三张仆从牌置入你的墓地，本回合中，你的英雄获得+3攻击力。",
       "_language" : "zh-Hans"
     }],
   "actionNodeGraphInfoList" : [{
@@ -5767,12 +8324,12 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "2" : {
-          "posX" : 707.1536865234375,
-          "posY" : 39.999725341796875
+          "posX" : 632.6268310546875,
+          "posY" : 29.35302734375
         },
         "3" : {
-          "posX" : -366.29327392578125,
-          "posY" : -1006.516357421875
+          "posX" : -304.54251098632813,
+          "posY" : -1004.386962890625
         },
         "4" : {
           "posX" : 204.98443603515625,
@@ -6010,20 +8567,20 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 646.2796630859375,
-          "posY" : 75.5557861328125
+          "posX" : 651.1468505859375,
+          "posY" : 87.723388671875
         },
         "2" : {
-          "posX" : 213.76177978515625,
-          "posY" : -378.978759765625
+          "posX" : 191.86004638671875,
+          "posY" : -359.51055908203125
         },
         "3" : {
-          "posX" : -349.38906860351563,
-          "posY" : -1029.783935546875
+          "posX" : -381.02493286132813,
+          "posY" : -998.1480712890625
         },
         "4" : {
-          "posX" : 1198.0118408203125,
-          "posY" : 78.295013427734375
+          "posX" : 1235.3486328125,
+          "posY" : 30.406600952148438
         }
       },
       "freeActionNodeList" : []
@@ -6062,18 +8619,6 @@
       "effectIndex" : 1,
       "entryType" : "triggerList",
       "actionInfoDict" : {
-        "1" : {
-          "posX" : 613.976318359375,
-          "posY" : 5.220611572265625
-        },
-        "2" : {
-          "posX" : 89.71673583984375,
-          "posY" : -277.1727294921875
-        },
-        "3" : {
-          "posX" : -116.69894409179688,
-          "posY" : -1200.5302734375
-        },
         "4" : {
           "posX" : -756.9041748046875,
           "posY" : 272.114990234375
@@ -6087,12 +8632,12 @@
           "posY" : 390.56161499023438
         },
         "7" : {
-          "posX" : 722.70733642578125,
-          "posY" : -267.69091796875
+          "posX" : 250.84613037109375,
+          "posY" : -262.58050537109375
         },
         "8" : {
-          "posX" : 1140.18359375,
-          "posY" : 6.0955047607421875
+          "posX" : 588.8482666015625,
+          "posY" : -33.959014892578125
         }
       },
       "freeActionNodeList" : []
@@ -6461,8 +9006,8 @@
           "posY" : 141.55352783203125
         },
         "2" : {
-          "posX" : 1276.4835205078125,
-          "posY" : 233.9324951171875
+          "posX" : 1477.492919921875,
+          "posY" : 143.64859008789063
         },
         "3" : {
           "posX" : 707.1851806640625,
@@ -6477,20 +9022,7 @@
           "posY" : 168.67018127441406
         }
       },
-      "freeActionNodeList" : [{
-          "_id" : 5,
-          "defineName" : "卡牌类型判断",
-          "branches" : [null],
-          "inputs" : [{
-              "action" : null,
-              "index" : 0,
-              "actionNodeId" : 0,
-              "eventVarName" : "目标卡牌",
-              "argIndex" : 0
-            }],
-          "consts" : [1],
-          "regVar" : []
-        }]
+      "freeActionNodeList" : []
     }, {
       "cardId" : -2147418088,
       "entryType" : "triggerList",
@@ -7221,20 +9753,16 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "4" : {
-          "posX" : 837.197021484375,
-          "posY" : 23.886177062988281
+          "posX" : 708.0914306640625,
+          "posY" : 25.662445068359375
         },
         "2" : {
-          "posX" : -927.8616943359375,
-          "posY" : 440.5643310546875
+          "posX" : -621.237060546875,
+          "posY" : 525.73779296875
         },
         "3" : {
-          "posX" : -469.41961669921875,
-          "posY" : 435.41317749023438
-        },
-        "5" : {
-          "posX" : 213.84671020507813,
-          "posY" : -629.921142578125
+          "posX" : -63.99383544921875,
+          "posY" : 472.88958740234375
         }
       },
       "freeActionNodeList" : []
@@ -7673,8 +10201,8 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : -735.2607421875,
-          "posY" : 125.72825622558594
+          "posX" : -76.01788330078125,
+          "posY" : 427.24249267578125
         },
         "2" : {
           "posX" : 759.708251953125,
@@ -7823,16 +10351,12 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 323.72503662109375,
-          "posY" : -331.7354736328125
+          "posX" : 289.65557861328125,
+          "posY" : -312.99725341796875
         },
         "2" : {
-          "posX" : 603.336669921875,
-          "posY" : -333.919921875
-        },
-        "3" : {
-          "posX" : 780.278564453125,
-          "posY" : 59.28399658203125
+          "posX" : 805.189208984375,
+          "posY" : 10.33123779296875
         }
       },
       "freeActionNodeList" : []
@@ -7961,8 +10485,8 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "1" : {
-          "posX" : 101.6978759765625,
-          "posY" : -808.8834228515625
+          "posX" : -15.841552734375,
+          "posY" : -837.8424072265625
         },
         "2" : {
           "posX" : 655.7633056640625,
@@ -8205,20 +10729,16 @@
       "entryType" : "triggerList",
       "actionInfoDict" : {
         "4" : {
-          "posX" : 1088.6712646484375,
-          "posY" : 122.54269409179688
+          "posX" : 931.2459716796875,
+          "posY" : 82.302825927734375
         },
         "2" : {
-          "posX" : 580.318603515625,
-          "posY" : -65.182357788085938
+          "posX" : 581.5960693359375,
+          "posY" : -96.696517944335938
         },
         "3" : {
           "posX" : -94.1624755859375,
           "posY" : 466.4283447265625
-        },
-        "5" : {
-          "posX" : 438.74029541015625,
-          "posY" : -632.6026611328125
         }
       },
       "freeActionNodeList" : []
@@ -8334,8 +10854,8 @@
           "posY" : 30.59356689453125
         },
         "3" : {
-          "posX" : 528.99273681640625,
-          "posY" : -564.0179443359375
+          "posX" : 476.18524169921875,
+          "posY" : -599.79083251953125
         }
       },
       "freeActionNodeList" : []
@@ -8350,6 +10870,1148 @@
         "2" : {
           "posX" : 874.08660888671875,
           "posY" : 19.669921875
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : -2147418084,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : -20.99371337890625,
+          "posY" : 434.4952392578125
+        },
+        "2" : {
+          "posX" : 656.79541015625,
+          "posY" : 68.230758666992188
+        },
+        "3" : {
+          "posX" : 81.87432861328125,
+          "posY" : -580.50738525390625
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "buffId" : 26,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 565.94390869140625,
+          "posY" : -272.46316528320313
+        },
+        "2" : {
+          "posX" : 882.5050048828125,
+          "posY" : 29.9027099609375
+        },
+        "3" : {
+          "posX" : 1245.9119873046875,
+          "posY" : 62.552597045898438
+        },
+        "4" : {
+          "posX" : 628.4041748046875,
+          "posY" : -821.83209228515625
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 1,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 690.86474609375,
+          "posY" : 10.028900146484375
+        },
+        "2" : {
+          "posX" : 52.0634765625,
+          "posY" : 411.76385498046875
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 3,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 13.64349365234375,
+          "posY" : -664.43218994140625
+        },
+        "2" : {
+          "posX" : 531.2476806640625,
+          "posY" : -325.4293212890625
+        },
+        "3" : {
+          "posX" : 612.09503173828125,
+          "posY" : 26.350692749023438
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 4,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : -147.05047607421875,
+          "posY" : 335.69403076171875
+        },
+        "2" : {
+          "posX" : 116.98738098144531,
+          "posY" : 333.99057006835938
+        },
+        "3" : {
+          "posX" : 559.88958740234375,
+          "posY" : 301.62457275390625
+        },
+        "4" : {
+          "posX" : 232.34747314453125,
+          "posY" : -252.58930969238281
+        },
+        "5" : {
+          "posX" : 720.675537109375,
+          "posY" : -28.299110412597656
+        },
+        "6" : {
+          "posX" : 36.448394775390625,
+          "posY" : -581.92681884765625
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 4,
+      "effectIndex" : 1,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 534.5213623046875,
+          "posY" : -93.049423217773438
+        },
+        "2" : {
+          "posX" : 910.42034912109375,
+          "posY" : -156.64564514160156
+        },
+        "3" : {
+          "posX" : 1270.4200439453125,
+          "posY" : -170.27336120605469
+        },
+        "4" : {
+          "posX" : 1299.94677734375,
+          "posY" : -453.04940795898438
+        },
+        "5" : {
+          "posX" : 869.53680419921875,
+          "posY" : -464.40585327148438
+        },
+        "6" : {
+          "posX" : 1752.31787109375,
+          "posY" : 39.290283203125
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 5,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 122.09780883789063,
+          "posY" : 349.32177734375
+        },
+        "2" : {
+          "posX" : -499.66876220703125,
+          "posY" : 386.79815673828125
+        },
+        "3" : {
+          "posX" : -278.2176513671875,
+          "posY" : 386.79815673828125
+        },
+        "4" : {
+          "posX" : 265.18917846679688,
+          "posY" : -257.113525390625
+        },
+        "5" : {
+          "posX" : 774.52667236328125,
+          "posY" : -69.731842041015625
+        },
+        "6" : {
+          "posX" : 178.31219482421875,
+          "posY" : -582.47637939453125
+        }
+      },
+      "freeActionNodeList" : [{
+          "_id" : 1,
+          "defineName" : "Compare",
+          "branches" : [null],
+          "inputs" : [{
+              "action" : {
+                "_id" : 3,
+                "defineName" : "获取卡牌拥有者",
+                "branches" : [null],
+                "inputs" : [{
+                    "action" : {
+                      "_id" : 2,
+                      "defineName" : "这张卡牌",
+                      "branches" : [null],
+                      "inputs" : [],
+                      "consts" : [],
+                      "regVar" : [false]
+                    },
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : null,
+                    "argIndex" : 0
+                  }],
+                "consts" : [],
+                "regVar" : [false]
+              },
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : null,
+              "argIndex" : 0
+            }, {
+              "action" : null,
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : "玩家",
+              "argIndex" : 0
+            }],
+          "consts" : [null],
+          "regVar" : []
+        }]
+    }, {
+      "cardId" : 5,
+      "effectIndex" : 1,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 565.0,
+          "posY" : -206.00946044921875
+        },
+        "2" : {
+          "posX" : 1137.365966796875,
+          "posY" : 66.545745849609375
+        },
+        "3" : {
+          "posX" : 633.138916015625,
+          "posY" : 136.38800048828125
+        },
+        "4" : {
+          "posX" : 151.05682373046875,
+          "posY" : 344.21133422851563
+        },
+        "5" : {
+          "posX" : 925.09197998046875,
+          "posY" : -302.27386474609375
+        },
+        "6" : {
+          "posX" : 1316.8900146484375,
+          "posY" : -310.79119873046875
+        },
+        "7" : {
+          "posX" : 1331.0855712890625,
+          "posY" : -618.83538818359375
+        },
+        "8" : {
+          "posX" : 839.91845703125,
+          "posY" : -635.87005615234375
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 6,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 1403.2431640625,
+          "posY" : 30.944412231445313
+        },
+        "2" : {
+          "posX" : 754.7447509765625,
+          "posY" : 59.713470458984375
+        },
+        "3" : {
+          "posX" : 429.666015625,
+          "posY" : -350.53890991210938
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 7,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 41.423492431640625,
+          "posY" : -519.75933837890625
+        },
+        "2" : {
+          "posX" : 818.1317138671875,
+          "posY" : 59.528228759765625
+        },
+        "3" : {
+          "posX" : 1641.0732421875,
+          "posY" : 80.136337280273438
+        },
+        "4" : {
+          "posX" : 1253.6011962890625,
+          "posY" : 451.63067626953125
+        },
+        "5" : {
+          "posX" : 647.4803466796875,
+          "posY" : 412.91534423828125
+        },
+        "6" : {
+          "posX" : 32.320083618164063,
+          "posY" : 383.97134399414063
+        },
+        "7" : {
+          "posX" : 567.332275390625,
+          "posY" : -182.3427734375
+        },
+        "8" : {
+          "posX" : 1733.1378173828125,
+          "posY" : -435.8330078125
+        },
+        "9" : {
+          "posX" : 1072.9053955078125,
+          "posY" : -649.8729248046875
+        },
+        "10" : {
+          "posX" : 2367.034423828125,
+          "posY" : -418.40921020507813
+        },
+        "11" : {
+          "posX" : 563.78961181640625,
+          "posY" : -457.34567260742188
+        },
+        "12" : {
+          "posX" : 2155.317626953125,
+          "posY" : 92.6318359375
+        },
+        "13" : {
+          "posX" : 1897.3638916015625,
+          "posY" : -892.94732666015625
+        },
+        "14" : {
+          "posX" : 1062.6630859375,
+          "posY" : -1031.658447265625
+        },
+        "15" : {
+          "posX" : 2684.404296875,
+          "posY" : 53.371536254882813
+        },
+        "16" : {
+          "posX" : 1059.7198486328125,
+          "posY" : -210.66635131835938
+        },
+        "17" : {
+          "posX" : 2987.583984375,
+          "posY" : -323.50155639648438
+        },
+        "18" : {
+          "posX" : 2673.3427734375,
+          "posY" : -861.73529052734375
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 10,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 752.381591796875,
+          "posY" : -23.738143920898438
+        },
+        "2" : {
+          "posX" : 70.993621826171875,
+          "posY" : -538.18609619140625
+        },
+        "3" : {
+          "posX" : 1324.4375,
+          "posY" : -11.039581298828125
+        },
+        "4" : {
+          "posX" : 1027.613525390625,
+          "posY" : -344.72061157226563
+        },
+        "5" : {
+          "posX" : 743.8641357421875,
+          "posY" : -756.2303466796875
+        },
+        "6" : {
+          "posX" : 2274.181396484375,
+          "posY" : 49.68310546875
+        },
+        "7" : {
+          "posX" : 588.8480224609375,
+          "posY" : 480.48895263671875
+        },
+        "8" : {
+          "posX" : 616.1036376953125,
+          "posY" : 233.48580932617188
+        },
+        "9" : {
+          "posX" : 910.8038330078125,
+          "posY" : 233.48580932617188
+        },
+        "10" : {
+          "posX" : 1684.9615478515625,
+          "posY" : 683.5999755859375
+        },
+        "18" : {
+          "posX" : 1598.75537109375,
+          "posY" : -288.65606689453125
+        },
+        "17" : {
+          "posX" : 1862.197509765625,
+          "posY" : 47.387222290039063
+        },
+        "27" : {
+          "posX" : 2452.61767578125,
+          "posY" : -384.58395385742188
+        },
+        "16" : {
+          "posX" : 1654.65625,
+          "posY" : -523.7958984375
+        },
+        "28" : {
+          "posX" : 2914.852783203125,
+          "posY" : -277.10308837890625
+        },
+        "26" : {
+          "posX" : 2654.1904296875,
+          "posY" : -932.28924560546875
+        },
+        "22" : {
+          "posX" : 1806.5115966796875,
+          "posY" : -899.43682861328125
+        },
+        "23" : {
+          "posX" : 1304.799072265625,
+          "posY" : -1146.034423828125
+        },
+        "24" : {
+          "posX" : 2223.86181640625,
+          "posY" : -929.04486083984375
+        },
+        "29" : {
+          "posX" : 2466.80859375,
+          "posY" : 705.880859375
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "buffId" : 28,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : -368.5015869140625,
+          "posY" : 408.94326782226563
+        },
+        "2" : {
+          "posX" : -141.9400634765625,
+          "posY" : 410.646728515625
+        },
+        "3" : {
+          "posX" : 270.29974365234375,
+          "posY" : 352.72872924804688
+        },
+        "4" : {
+          "posX" : 561.7203369140625,
+          "posY" : -6.4668922424316406
+        },
+        "5" : {
+          "posX" : 243.30259704589844,
+          "posY" : -246.2630615234375
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "buffId" : 28,
+      "entryType" : "triggerList",
+      "triggerIndex" : 1,
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 125.50469970703125,
+          "posY" : 328.880126953125
+        },
+        "2" : {
+          "posX" : -566.10406494140625,
+          "posY" : 395.3154296875
+        },
+        "3" : {
+          "posX" : -339.54257202148438,
+          "posY" : 391.90850830078125
+        },
+        "4" : {
+          "posX" : 494.06231689453125,
+          "posY" : -326.66455078125
+        },
+        "5" : {
+          "posX" : 207.01176452636719,
+          "posY" : -297.232666015625
+        },
+        "6" : {
+          "posX" : 80.025787353515625,
+          "posY" : -546.5587158203125
+        },
+        "7" : {
+          "posX" : 721.14996337890625,
+          "posY" : -720.0029296875
+        },
+        "8" : {
+          "posX" : 132.67854309082031,
+          "posY" : -865.57220458984375
+        },
+        "9" : {
+          "posX" : 903.8858642578125,
+          "posY" : -61.8441162109375
+        },
+        "10" : {
+          "posX" : 1347.7772216796875,
+          "posY" : -50.602828979492188
+        },
+        "11" : {
+          "posX" : 1273.6435546875,
+          "posY" : -379.763427734375
+        },
+        "12" : {
+          "posX" : 1914.148193359375,
+          "posY" : -136.16719055175781
+        },
+        "13" : {
+          "posX" : 1668.787353515625,
+          "posY" : -457.9215087890625
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 13,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 293.76449584960938,
+          "posY" : -313.3648681640625
+        },
+        "2" : {
+          "posX" : 790.0419921875,
+          "posY" : -6.7402763366699219
+        },
+        "3" : {
+          "posX" : 1545.802001953125,
+          "posY" : -1.22540283203125
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 14,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 532.5523681640625,
+          "posY" : -171.1080322265625
+        },
+        "2" : {
+          "posX" : 832.61846923828125,
+          "posY" : -244.93389892578125
+        },
+        "3" : {
+          "posX" : 1545.87109375,
+          "posY" : -261.60418701171875
+        },
+        "4" : {
+          "posX" : 1127.921630859375,
+          "posY" : -242.55230712890625
+        },
+        "5" : {
+          "posX" : 1156.4993896484375,
+          "posY" : -11.54913330078125
+        },
+        "6" : {
+          "posX" : 1668.51708984375,
+          "posY" : 119.43218994140625
+        },
+        "7" : {
+          "posX" : 1320.8214111328125,
+          "posY" : 268.27450561523438
+        },
+        "8" : {
+          "posX" : 826.664794921875,
+          "posY" : 264.70230102539063
+        },
+        "9" : {
+          "posX" : 923.11468505859375,
+          "posY" : -577.14996337890625
+        },
+        "10" : {
+          "posX" : 1325.0621337890625,
+          "posY" : 609.2130126953125
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 15,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 383.71005249023438,
+          "posY" : -321.14111328125
+        },
+        "2" : {
+          "posX" : 612.3319091796875,
+          "posY" : -328.28561401367188
+        },
+        "3" : {
+          "posX" : 712.3538818359375,
+          "posY" : 22.982376098632813
+        },
+        "4" : {
+          "posX" : 1149.35498046875,
+          "posY" : -59.178604125976563
+        },
+        "5" : {
+          "posX" : 607.56884765625,
+          "posY" : 398.06503295898438
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 17,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : -167.60195922851563,
+          "posY" : 539.76300048828125
+        },
+        "2" : {
+          "posX" : 276.54351806640625,
+          "posY" : 473.08160400390625
+        },
+        "3" : {
+          "posX" : -667.71221923828125,
+          "posY" : 558.81475830078125
+        },
+        "4" : {
+          "posX" : -447.42559814453125,
+          "posY" : 545.716552734375
+        },
+        "5" : {
+          "posX" : 1053.054931640625,
+          "posY" : 57.850982666015625
+        },
+        "6" : {
+          "posX" : 517.22247314453125,
+          "posY" : -286.470947265625
+        },
+        "7" : {
+          "posX" : 929.0196533203125,
+          "posY" : -372.50173950195313
+        },
+        "8" : {
+          "posX" : 342.58087158203125,
+          "posY" : -547.441162109375
+        },
+        "9" : {
+          "posX" : 1469.4393310546875,
+          "posY" : -38.251220703125
+        },
+        "10" : {
+          "posX" : 1601.908935546875,
+          "posY" : -417.79913330078125
+        },
+        "11" : {
+          "posX" : 950.501708984375,
+          "posY" : -672.408935546875
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 18,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 719.498291015625,
+          "posY" : 12.265701293945313
+        },
+        "2" : {
+          "posX" : 107.45864868164063,
+          "posY" : -378.29653930664063
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 20,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 564.702392578125,
+          "posY" : -52.034149169921875
+        },
+        "2" : {
+          "posX" : 858.814697265625,
+          "posY" : -55.606399536132813
+        },
+        "3" : {
+          "posX" : 971.9349365234375,
+          "posY" : 244.45973205566406
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 21,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 164.61407470703125,
+          "posY" : -293.75408935546875
+        },
+        "2" : {
+          "posX" : 698.06500244140625,
+          "posY" : 0.3583221435546875
+        },
+        "3" : {
+          "posX" : 19.93939208984375,
+          "posY" : -795.05517578125
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "buffId" : 29,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 580.181884765625,
+          "posY" : -133.00436401367188
+        },
+        "2" : {
+          "posX" : 895.7276611328125,
+          "posY" : -138.95809936523438
+        },
+        "3" : {
+          "posX" : 861.1961669921875,
+          "posY" : 183.73208618164063
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 22,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 533.7431640625,
+          "posY" : -140.14881896972656
+        },
+        "2" : {
+          "posX" : 839.762939453125,
+          "posY" : -221.1190185546875
+        },
+        "3" : {
+          "posX" : 1141.0201416015625,
+          "posY" : -485.46307373046875
+        },
+        "4" : {
+          "posX" : 1556.5875244140625,
+          "posY" : -415.20941162109375
+        },
+        "5" : {
+          "posX" : 1011.2293701171875,
+          "posY" : -729.564453125
+        },
+        "6" : {
+          "posX" : 1161.2626953125,
+          "posY" : -72.27667236328125
+        },
+        "7" : {
+          "posX" : 1464.901123046875,
+          "posY" : 134.91183471679688
+        },
+        "8" : {
+          "posX" : 982.31170654296875,
+          "posY" : 298.04302978515625
+        },
+        "9" : {
+          "posX" : 458.04647827148438,
+          "posY" : 352.81704711914063
+        },
+        "10" : {
+          "posX" : 2224.591796875,
+          "posY" : -250.8875732421875
+        },
+        "11" : {
+          "posX" : 1563.73193359375,
+          "posY" : -684.31640625
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 23,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : -89.013214111328125,
+          "posY" : 667.17193603515625
+        },
+        "2" : {
+          "posX" : 839.762939453125,
+          "posY" : 601.681396484375
+        },
+        "3" : {
+          "posX" : 134.84555053710938,
+          "posY" : 379.01327514648438
+        },
+        "4" : {
+          "posX" : -371.21829223632813,
+          "posY" : 421.87985229492188
+        },
+        "5" : {
+          "posX" : 581.37261962890625,
+          "posY" : 93.235931396484375
+        }
+      },
+      "freeActionNodeList" : [{
+          "_id" : 2,
+          "defineName" : "LogicOperation",
+          "branches" : [null],
+          "inputs" : [{
+              "action" : {
+                "_id" : 1,
+                "defineName" : "卡牌类型判断",
+                "branches" : [null],
+                "inputs" : [{
+                    "action" : null,
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : "目标卡牌",
+                    "argIndex" : 0
+                  }],
+                "consts" : [1],
+                "regVar" : [false]
+              },
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : null,
+              "argIndex" : 0
+            }, {
+              "action" : {
+                "_id" : 3,
+                "defineName" : "Compare",
+                "branches" : [null],
+                "inputs" : [{
+                    "action" : {
+                      "_id" : 4,
+                      "defineName" : "获取卡牌拥有者",
+                      "branches" : [null],
+                      "inputs" : [{
+                          "action" : null,
+                          "index" : 0,
+                          "actionNodeId" : 0,
+                          "eventVarName" : "目标卡牌",
+                          "argIndex" : 0
+                        }],
+                      "consts" : [],
+                      "regVar" : [false]
+                    },
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : null,
+                    "argIndex" : 0
+                  }, {
+                    "action" : null,
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : "玩家",
+                    "argIndex" : 0
+                  }],
+                "consts" : [null],
+                "regVar" : [false]
+              },
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : null,
+              "argIndex" : 0
+            }, null],
+          "consts" : [1],
+          "regVar" : []
+        }]
+    }, {
+      "cardId" : 23,
+      "effectIndex" : 1,
+      "entryType" : "activeTrigger",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 625.429931640625,
+          "posY" : 102.76187133789063
+        },
+        "2" : {
+          "posX" : 187.23814392089844,
+          "posY" : 351.62625122070313
+        },
+        "3" : {
+          "posX" : 1001.703369140625,
+          "posY" : 33.699028015136719
+        },
+        "4" : {
+          "posX" : 450.39126586914063,
+          "posY" : -375.9151611328125
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "cardId" : 24,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : -317.63507080078125,
+          "posY" : 392.11138916015625
+        },
+        "2" : {
+          "posX" : -97.348419189453125,
+          "posY" : 388.5391845703125
+        },
+        "3" : {
+          "posX" : 174.14004516601563,
+          "posY" : 381.39474487304688
+        },
+        "4" : {
+          "posX" : 588.51702880859375,
+          "posY" : 355.198486328125
+        },
+        "5" : {
+          "posX" : 277.73419189453125,
+          "posY" : -302.08926391601563
+        },
+        "6" : {
+          "posX" : 577.80029296875,
+          "posY" : -371.15216064453125
+        },
+        "7" : {
+          "posX" : 1045.760498046875,
+          "posY" : -361.62612915039063
+        },
+        "8" : {
+          "posX" : 876.675537109375,
+          "posY" : -599.77392578125
+        },
+        "9" : {
+          "posX" : 605.18731689453125,
+          "posY" : -0.8323516845703125
+        }
+      },
+      "freeActionNodeList" : [{
+          "_id" : 4,
+          "defineName" : "Compare",
+          "branches" : [null],
+          "inputs" : [{
+              "action" : {
+                "_id" : 3,
+                "defineName" : "获取玩家英雄",
+                "branches" : [null],
+                "inputs" : [{
+                    "action" : {
+                      "_id" : 2,
+                      "defineName" : "获取卡牌拥有者",
+                      "branches" : [null],
+                      "inputs" : [{
+                          "action" : {
+                            "_id" : 1,
+                            "defineName" : "这张卡牌",
+                            "branches" : [null],
+                            "inputs" : [],
+                            "consts" : [],
+                            "regVar" : [false]
+                          },
+                          "index" : 0,
+                          "actionNodeId" : 0,
+                          "eventVarName" : null,
+                          "argIndex" : 0
+                        }],
+                      "consts" : [],
+                      "regVar" : [true]
+                    },
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : null,
+                    "argIndex" : 0
+                  }],
+                "consts" : [],
+                "regVar" : [false]
+              },
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : null,
+              "argIndex" : 0
+            }, {
+              "action" : null,
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : "卡牌",
+              "argIndex" : 0
+            }],
+          "consts" : [null],
+          "regVar" : []
+        }]
+    }, {
+      "cardId" : 25,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : -309.29986572265625,
+          "posY" : 637.403564453125
+        },
+        "2" : {
+          "posX" : -84.250274658203125,
+          "posY" : 629.06842041015625
+        },
+        "3" : {
+          "posX" : 323.3792724609375,
+          "posY" : 646.929443359375
+        },
+        "4" : {
+          "posX" : 301.019775390625,
+          "posY" : 356.91854858398438
+        },
+        "5" : {
+          "posX" : 944.2833251953125,
+          "posY" : 527.723388671875
+        },
+        "6" : {
+          "posX" : 699.80230712890625,
+          "posY" : 30.067230224609375
+        },
+        "7" : {
+          "posX" : 115.3482666015625,
+          "posY" : -417.4520263671875
+        }
+      },
+      "freeActionNodeList" : [{
+          "_id" : 5,
+          "defineName" : "LogicOperation",
+          "branches" : [null],
+          "inputs" : [{
+              "action" : {
+                "_id" : 3,
+                "defineName" : "Compare",
+                "branches" : [null],
+                "inputs" : [{
+                    "action" : {
+                      "_id" : 2,
+                      "defineName" : "获取卡牌拥有者",
+                      "branches" : [null],
+                      "inputs" : [{
+                          "action" : {
+                            "_id" : 1,
+                            "defineName" : "这张卡牌",
+                            "branches" : [null],
+                            "inputs" : [],
+                            "consts" : [],
+                            "regVar" : [false]
+                          },
+                          "index" : 0,
+                          "actionNodeId" : 0,
+                          "eventVarName" : null,
+                          "argIndex" : 0
+                        }],
+                      "consts" : [],
+                      "regVar" : [false]
+                    },
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : null,
+                    "argIndex" : 0
+                  }, {
+                    "action" : null,
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : "玩家",
+                    "argIndex" : 0
+                  }],
+                "consts" : [null],
+                "regVar" : [false]
+              },
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : null,
+              "argIndex" : 0
+            }, {
+              "action" : {
+                "_id" : 4,
+                "defineName" : "卡牌类型判断",
+                "branches" : [null],
+                "inputs" : [{
+                    "action" : null,
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : "卡牌",
+                    "argIndex" : 0
+                  }],
+                "consts" : [1],
+                "regVar" : [false]
+              },
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : null,
+              "argIndex" : 0
+            }, null],
+          "consts" : [1],
+          "regVar" : []
+        }]
+    }, {
+      "cardId" : 26,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "14" : {
+          "posX" : 607.60162353515625,
+          "posY" : -224.51907348632813
+        },
+        "12" : {
+          "posX" : 795.47369384765625,
+          "posY" : 397.31100463867188
+        },
+        "3" : {
+          "posX" : 906.528076171875,
+          "posY" : -288.45556640625
+        },
+        "4" : {
+          "posX" : 1563.7493896484375,
+          "posY" : -276.21734619140625
+        },
+        "10" : {
+          "posX" : 1224.139404296875,
+          "posY" : -563.2183837890625
+        },
+        "11" : {
+          "posX" : 728.6597900390625,
+          "posY" : 113.38595581054688
+        },
+        "7" : {
+          "posX" : 1244.7391357421875,
+          "posY" : 282.20660400390625
+        },
+        "8" : {
+          "posX" : 262.37979125976563,
+          "posY" : 350.92926025390625
+        },
+        "9" : {
+          "posX" : 1258.2532958984375,
+          "posY" : -21.034835815429688
+        },
+        "13" : {
+          "posX" : 534.503173828125,
+          "posY" : 1015.2713623046875
+        }
+      },
+      "freeActionNodeList" : []
+    }, {
+      "buffId" : 30,
+      "entryType" : "triggerList",
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : 592.08929443359375,
+          "posY" : -15.121307373046875
+        },
+        "2" : {
+          "posX" : 213.43431091308594,
+          "posY" : -400.920654296875
+        },
+        "3" : {
+          "posX" : -43.765243530273438,
+          "posY" : -309.23382568359375
         }
       },
       "freeActionNodeList" : []
@@ -8373,7 +12035,11 @@
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
-                  "consts" : [2],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 2
+                    }],
                   "regVar" : []
                 }]
             },
@@ -9157,19 +12823,92 @@
       "effectList" : []
     }, {
       "_id" : 26,
-      "propModifierList" : [{
-          "_t" : "KeywordsModifier",
-          "propertyName" : "keywords",
-          "value" : ["freezed"],
-          "modifyType" : 0
-        }],
+      "propModifierList" : [],
       "effectList" : [{
-          "typeName" : "GeneratedEffect",
-          "pileList" : ["Field"],
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
           "onEnableActionList" : [],
           "onDisalbeActionList" : [],
           "triggerList" : [{
-              "eventName" : "BeforeTurnEndEvent",
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 2,
+              "actionList" : [{
+                  "_id" : 2,
+                  "defineName" : "创建衍生卡并置入战场",
+                  "branches" : [3],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }, {
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取单张卡牌的定义",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "卡牌"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "actionNodeId" : 4
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 27
+                    }],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 27,
+      "propModifierList" : [{
+          "_t" : "AttackModifier",
+          "propertyName" : "attack",
+          "value" : 3,
+          "isSet" : false,
+          "minValue" : 0,
+          "maxValue" : 2147483647
+        }, {
+          "_t" : "LifeModifier",
+          "propertyName" : "life",
+          "value" : 3,
+          "isSet" : false,
+          "minValue" : 0,
+          "maxValue" : 2147483647
+        }],
+      "effectList" : []
+    }, {
+      "_id" : 28,
+      "propModifierList" : [],
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : ["Master"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "BeforeDrawEvent",
               "condition" : {
                 "actionNodeId" : 3
               },
@@ -9204,12 +12943,65 @@
                   "regVar" : [false]
                 }, {
                   "_id" : 4,
-                  "defineName" : "移除增益",
+                  "defineName" : "阻止事件",
                   "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "当前事件",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
+            }, {
+              "eventName" : "BeforeTurnEndEvent",
+              "condition" : {
+                "actionNodeId" : 1
+              },
+              "targetCheckerList" : [],
+              "actionId" : 9,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 9,
+                  "defineName" : "设置属性",
+                  "branches" : [10],
                   "inputs" : [{
                       "actionNodeId" : 5
                     }, {
                       "actionNodeId" : 6
+                    }, {
+                      "actionNodeId" : 7
                     }],
                   "consts" : [],
                   "regVar" : []
@@ -9219,9 +13011,170 @@
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [],
-                  "regVar" : [false]
+                  "regVar" : [true]
                 }, {
                   "_id" : 6,
+                  "defineName" : "StringConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : ["Eternal"],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 7,
+                  "defineName" : "IntegerOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 8
+                    }, null],
+                  "consts" : [1],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取属性",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }, {
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 8,
+                  "defineName" : "IntegerConst",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [1],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 10,
+                  "defineName" : "分支动作",
+                  "branches" : [0, 12, 0],
+                  "inputs" : [{
+                      "actionNodeId" : 11
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 11,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4
+                    }, {
+                      "actionNodeId" : 8
+                    }],
+                  "consts" : [4],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 12,
+                  "defineName" : "移除增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }, {
+                      "actionNodeId" : 13
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 13,
+                  "defineName" : "该增益",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : [],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 29,
+      "propModifierList" : [],
+      "effectList" : [{
+          "typeName" : "GeneratedDeathRattle",
+          "pileList" : [],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "ActiveEvent",
+              "condition" : { },
+              "targetCheckerList" : [],
+              "actionId" : 3,
+              "actionList" : [{
+                  "_id" : 3,
+                  "defineName" : "造成伤害或法伤",
+                  "branches" : [0],
+                  "inputs" : [null, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [null, 1],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取玩家英雄",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "获取玩家对手",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
+            }],
+          "tagList" : ["deathRattle"],
+          "propDict" : { }
+        }]
+    }, {
+      "_id" : 30,
+      "propModifierList" : [{
+          "_t" : "AttackModifier",
+          "propertyName" : "attack",
+          "value" : 3,
+          "isSet" : false,
+          "minValue" : 0,
+          "maxValue" : 2147483647
+        }],
+      "effectList" : [{
+          "typeName" : "GeneratedEffect",
+          "pileList" : ["Master"],
+          "onEnableActionList" : [],
+          "onDisalbeActionList" : [],
+          "triggerList" : [{
+              "eventName" : "BeforeTurnEndEvent",
+              "targetCheckerList" : [],
+              "actionId" : 1,
+              "actionList" : [{
+                  "_id" : 1,
+                  "defineName" : "移除增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 3
+                    }, {
+                      "actionNodeId" : 2
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 3,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
                   "defineName" : "该增益",
                   "branches" : [0],
                   "inputs" : [],
@@ -9383,9 +13336,15 @@
     }, {
       "buffId" : 26,
       "language" : "zh-Hans",
-      "name" : "冰封",
-      "desc" : "禁锢一回合",
-      "imagePath" : "e36b091247b4543128a4be6bcb27d640bc4a9633e6417cd80595a22764372aae.jpg"
+      "name" : "抽芽复行",
+      "desc" : "遗言：召唤自身复制并+3/+3",
+      "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg"
+    }, {
+      "buffId" : 27,
+      "language" : "zh-Hans",
+      "name" : "抽芽",
+      "desc" : "+3/+3",
+      "imagePath" : "1cb59acc395a5f42fbcbb0730446dfeec0930399f1c5ebc1b9e137f27a2db3cd.jpg"
     }, {
       "buffId" : 27,
       "language" : "zh-Hans"
@@ -9396,8 +13355,35 @@
       "buffId" : 27,
       "language" : "zh-Hans"
     }, {
+      "buffId" : 26,
+      "language" : "zh-Hans"
+    }, {
+      "buffId" : 26,
+      "language" : "zh-Hans"
+    }, {
       "buffId" : 27,
       "language" : "zh-Hans"
+    }, {
+      "buffId" : 28,
+      "language" : "zh-Hans",
+      "name" : "永恒",
+      "desc" : "每个玩家禁止抽牌2回合",
+      "imagePath" : "6e181c613de71299a93d7830cc1d7001b198aaa7164c51157b1a3877d76be6d7.jpg"
+    }, {
+      "buffId" : 29,
+      "language" : "zh-Hans",
+      "name" : "针山",
+      "desc" : "遗言：对敌方英雄造成1点伤害",
+      "imagePath" : "62771449af63d37f957e8f599e2232ac225bd0dcfbb8e44d52651be1af386aa4.jpg"
+    }, {
+      "buffId" : 29,
+      "language" : "zh-Hans"
+    }, {
+      "buffId" : 30,
+      "language" : "zh-Hans",
+      "name" : "乱步",
+      "desc" : "本回合中，获得+3攻击力",
+      "imagePath" : "ddf4acc759e770a01b2aa409286136d4919ae0849909f8aa1e4d29313c8ffedb.jpg"
     }],
   "actionDefineList" : [{
       "_id" : 1,
