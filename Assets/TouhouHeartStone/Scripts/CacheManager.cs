@@ -123,6 +123,55 @@ namespace Game
             }
             return false;
         }
+        public bool GetResourceInfo(TouhouCardEngine.ResourceType resType, string id, out long size)
+        {
+            return GetResourceInfo(resType.ToString(), id, out size);
+        }
+        public bool GetResourceInfo(string resType, string resID, out long size)
+        {
+            size = 0;
+            if (!ResourceIsValid(resType))
+            {
+                return false;
+            }
+
+            // 查找本地的卡池。
+            if (resType == "card")
+            {
+                if (TryParseCardPool(resID, out long cardPoolId, out int cardPoolVersion))
+                {
+                    var cardPoolInfo = card.getCardPoolInfo(cardPoolId);
+                    if (cardPoolInfo != null && cardPoolInfo.editTime == cardPoolVersion)
+                    {
+                        string deckPath = card.getCardPoolPath(cardPoolInfo);
+                        var deckFileInfo = new FileInfo(deckPath);
+                        size = deckFileInfo.Length;
+                        return true;
+                    }
+                }
+            }
+            else if (resType == "pic")
+            {
+                // 查找本地的图片资源。
+                string fileName = string.Format("{0}.jpg", resID);
+                var picPath = card.getExternalImagePath(fileName);
+                if (File.Exists(picPath))
+                {
+                    var picFileInfo = new FileInfo(picPath);
+                    size = picFileInfo.Length;
+                    return true;
+                }
+            }
+            //查找上传的别人的卡池缓存。
+            var path = GetCachePath(resType, resID);
+
+            if (!File.Exists(path))
+                return false;
+
+            var info = new FileInfo(path);
+            size = info.Length;
+            return true;
+        } 
         #endregion
 
         #region LRU
@@ -302,45 +351,7 @@ namespace Game
 
         bool IResourceProvider.ResourceInfo(string resType, string resID, out long size)
         {
-            size = 0;
-            if (!ResourceIsValid(resType))
-            {
-                return false;
-            }
-
-            // 查找本地的卡池。
-            if (resType == "card")
-            {
-                if (TryParseCardPool(resID, out long cardPoolId, out int cardPoolVersion))
-                {
-                    var cardPoolInfo = card.getCardPoolInfo(cardPoolId);
-                    if (cardPoolInfo != null && cardPoolInfo.editTime == cardPoolVersion)
-                    {
-                        string deckPath = card.getCardPoolPath(cardPoolInfo);
-                        var deckFileInfo = new FileInfo(deckPath);
-                        size = deckFileInfo.Length;
-                        return true;
-                    }
-                }
-            }
-            else if (resType == "pic")
-            {
-                // 查找本地的图片资源。
-                string fileName = string.Format("{0}.jpg", resID);
-                if (card.isExternalImageExists(fileName))
-                {
-                    return true;
-                }
-            }
-            //查找上传的别人的卡池缓存。
-            var path = GetCachePath(resType, resID);
-
-            if (!File.Exists(path))
-                return false;
-            
-            var info = new FileInfo(path);
-            size = info.Length;
-            return true;
+            return GetResourceInfo(resType, resID, out size);
         }
         #endregion
 

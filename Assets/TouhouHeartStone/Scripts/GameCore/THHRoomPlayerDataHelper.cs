@@ -6,6 +6,7 @@ namespace TouhouHeartstone
     public enum PlayerLoadState
     {
         None,
+        Checking,
         Upload,
         Download
     }

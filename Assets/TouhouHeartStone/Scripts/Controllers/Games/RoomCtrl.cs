@@ -36,7 +36,7 @@ namespace Controllers
         #region 公有方法
         public void SetRoomData(RoomData room)
         {
-            _ui.UpdateRoomData(room, _currentMode, GetSelfID());
+             _ui.UpdateRoomData(room, _currentMode, GetSelfID());
         }
         public void SetMode(RoomMode mode)
         {
@@ -59,26 +59,27 @@ namespace Controllers
             }
             string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED, playerName, poolsString);
 
-            game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+            game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, async () =>
             {
                 AddCardPools(suggestion.cardPools);
                 game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
+                await cardPoolManager.CheckUpdate(suggestion.cardPools);
             }, () =>
             {
                 game.network.AnwserCardPoolsSuggestion(playerId, suggestion, false);
             });
         }
-        public void ReceiveCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
+        public async void ReceiveCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
         {
             string desc = game.lang._(agree ? ROOM_CARD_POOLS_SUGGESTION_AGREED : ROOM_CARD_POOLS_SUGGESTION_REFUSED);
             game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
 
             if (agree)
             {
-                UploadCardPools(suggestion.cardPools);
+                await cardPoolManager.CheckUpdate(suggestion.cardPools);
             }
         }
-        public Task display(UIDisplayInfo displayInfo)
+        public async Task display(UIDisplayInfo displayInfo)
         {
             if (displayInfo is DisplayInfo info)
             {
@@ -102,17 +103,31 @@ namespace Controllers
                 _ui.setTurnTime(_currentRoomData.getTimeoutForTurn());
                 _ui.setDisableRandomPlayerActOrder(_currentRoomData.getSortedPlayers() != null);
                 _ui.setAllowCustomCards(_currentRoomData.getAllowCustomCards());
-                updateUIStateForRoomOwner();
-                updateStartAndReadyButton();
+
+                if (cardPoolManager == null)
+                {
+                    cardPoolManager = new RoomCardPoolManager(game);
+                    cardPoolManager.onProgressChanged += onCardPoolProgressChanged;
+                    cardPoolManager.onLoadStateChanged += onCardPoolStateChanged;
+                    cardPoolManager.onOutOfRetry += onOutOfRetry;
+                }
+                cardPoolManager.Reset();
+
                 SetRoomData(_currentRoomData);
+                updateUIStateForRoomOwner();
+
+                if (!_isLocalGame)
+                {
+                    await cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                }
+                updateStartAndReadyButton();
                 updatePlayerListUI();
             }
-            return Task.CompletedTask;
         }
 
-        public void display(RoomData roomData, bool isLocalGame)
+        public Task display(RoomData roomData, bool isLocalGame)
         {
-            display(new DisplayInfo(roomData, isLocalGame));
+            return display(new DisplayInfo(roomData, isLocalGame));
         }
         public UIDisplayInfo getCurrentDisplayInfo()
         {
@@ -132,26 +147,25 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
         }
+        public async void ReceiveRoomPropChanged(string key, object value)
+        {
+            if (key == RoomDataPropName.Option.CardPools.ToString())
+            {
+                if (!_isLocalGame && value is CardPoolInfoPack[] pools)
+                {
+                    await cardPoolManager.CheckUpdate(pools);
+                }
+            }
+        }
         public async void UpdateRoomData(RoomData roomData)
         {
             _currentRoomData = roomData;
-            if (!_isLocalGame)
+            if (_currentRoomData == null)
             {
-                if (cardPoolTransferRetryCountdown <= 0)
-                {
-                    var result = await CheckCardPoolsUpdate();
-                    if (result.state == PlayerLoadState.Download)
-                    {
-                        DownloadCardPools(result.pools);
-                    }
-                    else if (result.state == PlayerLoadState.Upload)
-                    {
-                        UploadCardPools(result.pools);
-                    }
-                }
+                return;
             }
-            LoadRoomCardPoolsFromCache();
             updateStartAndReadyButton();
+            updatePlayerListUI();
         }
         public void ResetEvents()
         {
@@ -194,29 +208,6 @@ namespace Controllers
             _ui.onPlayerRemove += onPlayerRemove;
         }
 
-        private async void Update()
-        {
-            // 如果卡池有更改，并且没有下载卡池，重试下载卡池。
-            if (cardPoolChanged && !transferringCardPools)
-            {
-                if (cardPoolTransferRetryCountdown > 0)
-                {
-                    cardPoolTransferRetryCountdown -= Time.deltaTime;
-                }
-                else
-                {
-                    var result = await CheckCardPoolsUpdate();
-                    if (result.state == PlayerLoadState.Download)
-                    {
-                        DownloadCardPools(result.pools);
-                    }
-                    else if (result.state == PlayerLoadState.Upload)
-                    {
-                        UploadCardPools(result.pools);
-                    }
-                }
-            }
-        }
         #endregion
         #region 事件回调
         private void onRandomSeedInputFieldValueChanged(string value)
@@ -329,14 +320,11 @@ namespace Controllers
                         string poolsString = PoolsToString(packs);
                         string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL_HOST, poolsString);
 
-                        game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+                        game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, async () =>
                         {
                             AddCardPools(packs);
                             SetPlayerDeck(_selectDeckPlayerId, deck);
-                            if (!game.network.logic.isLanHost)
-                            {
-                                UploadCardPools(packs);
-                            }
+                            await cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
                         });
                     }
                     // 否则，向房主提议加入卡池。
@@ -411,6 +399,12 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             scene.menu.display();
 
+
+            if (cardPoolManager != null && cardPoolManager.running)
+            {
+                cardPoolManager.Cancel();
+            }
+
             onQuitClick?.Invoke();
         }
         private void onUpdateButtons()
@@ -421,6 +415,36 @@ namespace Controllers
             _ui.enableTurnTime(isRoomOwner);
             _ui.enableDisableRandomPlayerActOrder(isRoomOwner);
             updateStartAndReadyButton();
+        }
+        private void onCardPoolProgressChanged(float value)
+        {
+            _ui.SetCardPoolLoadProgress(value);
+        }
+        private void onCardPoolStateChanged(PlayerLoadState state)
+        {
+            var localPlayer = getLocalPlayerData();
+            if (localPlayer == null)
+            {
+                return;
+            }
+            if (state != localPlayer.getLoadState())
+            {
+                localPlayer.setLoadState(state);
+                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
+            }
+            if (localPlayer.getReady())
+            {
+                localPlayer.setReady(false);
+                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
+            }
+            updateStartAndReadyButton();
+            updatePlayerListUI();
+        }
+        private void onOutOfRetry(Exception e)
+        {
+            string title = game.lang._(StringTable.ERROR);
+
+            game.ui.dialog.ShowConfirm(title, e.Message);
         }
         #endregion
 
@@ -527,312 +551,11 @@ namespace Controllers
             CardPoolInfoPack[] cardPools = newList.ToArray();
             setNotifyRoomSetting(Option.CardPools, cardPools);
         }
-        private async Task<(PlayerLoadState state, CardPoolInfoPack[] pools)> CheckCardPoolsUpdate()
-        {
-            var cardPools = _currentRoomData.getCardPools();
-            List<CardPoolInfoPack> uploadPools = new List<CardPoolInfoPack>();
-            List<CardPoolInfoPack> downloadPools = new List<CardPoolInfoPack>();
-            foreach (CardPoolInfoPack roomPool in cardPools)
-            {
-                try
-                {
-                    string id = roomPool.GetResourceID();
-                    bool hasLocalPool = game.card.isBuiltinCardPool(roomPool.cardPoolId) || game.card.getCardPoolInfo(roomPool.cardPoolId) != null || game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id);
-                    bool remotePoolExists = await game.network.ResourceExistsAsync(ResourceType.CardDefine, id);
-
-                    // 上传卡池。
-                    // 本地存在该房间指定的卡池
-                    if (hasLocalPool)
-                    {
-                        if (!remotePoolExists)
-                        {
-                            // 远端没有该卡池信息，上传该卡池。
-                            uploadPools.Add(roomPool);
-                            break;
-                        }
-                        else
-                        {
-                            // 远端已经有该卡池的信息，检测卡图上传。
-                            if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
-                            {
-                                int skinCount = cardPool.cardSkinList.Count;
-                                // 遍历卡池内的所有卡牌皮肤，如果有远端不存在的卡图，将该卡池标记为需要上传。
-                                for (int s = 0; s < skinCount; s++)
-                                {
-                                    var skin = cardPool.cardSkinList[s];
-                                    string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
-                                    if (!string.IsNullOrEmpty(picId) &&
-                                        !await game.network.ResourceExistsAsync(ResourceType.Picture, picId))
-                                    {
-                                        uploadPools.Add(roomPool);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    // 下载卡池。
-                    // 如果本地不存在该卡池，加入到下载列表中。
-                    if (!hasLocalPool)
-                    {
-                        downloadPools.Add(roomPool);
-                        break;
-                    }
-                    // 如果本地存在该卡池，且远端已经有该卡池的信息，检测卡图下载。
-                    else if (remotePoolExists)
-                    {
-                        // 检测卡池内的图片是否被下载。
-                        // 获取卡池。
-                        LoadRoomCardPoolsFromCache();
-
-                        if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
-                        {
-                            int skinCount = cardPool.cardSkinList.Count;
-                            // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，将该卡池标记为需要下载。
-                            for (int s = 0; s < skinCount; s++)
-                            {
-                                var skin = cardPool.cardSkinList[s];
-                                string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
-                                if (!string.IsNullOrEmpty(picId) &&
-                                    !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
-                                    !game.card.isExternalImageExists(skin.imagePath))
-                                {
-                                    downloadPools.Add(roomPool);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"检查房间卡池时出现异常：{e}");
-                }
-            }
-
-            (PlayerLoadState state, CardPoolInfoPack[] pools) result = (PlayerLoadState.None, null);
-            if (uploadPools.Count > 0)
-            {
-                cardPoolChanged = true;
-                cardPoolTransferRetryCountdown = 1;
-                result.pools = downloadPools.ToArray();
-                result.state = PlayerLoadState.Upload;
-            }
-            else if (downloadPools.Count > 0)
-            {
-                cardPoolChanged = true;
-                cardPoolTransferRetryCountdown = 1;
-                result.pools = downloadPools.ToArray();
-                result.state = PlayerLoadState.Download;
-            }
-            else
-            {
-                cardPoolChanged = false;
-                cardPoolTransferRetryCountdown = 0;
-                result.state = PlayerLoadState.None;
-            }
-            updateStartAndReadyButton();
-            return result;
-        }
-        private async void LoadRoomCardPoolsFromCache()
-        {
-            var cardPools = _currentRoomData.getCardPools();
-            foreach (var cardPool in cardPools)
-            {
-                CardPoolInfo info = game.card.getCardPoolInfo(cardPool.cardPoolId);
-                if (info == null || info.editTime != cardPool.version)
-                {
-                    await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
-                }
-            }
-            updatePlayerListUI();
-        }
-        private async void UploadCardPools(CardPoolInfoPack[] cardPools)
-        {
-            if (!transferringCardPools)
-            {
-                var localPlayer = getLocalPlayerData();
-                localPlayer.setLoadState(PlayerLoadState.Upload);
-                localPlayer.setReady(false);
-                transferringCardPools = true;
-                updateStartAndReadyButton();
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)PlayerLoadState.Upload);
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
-
-                int count = cardPools.Length;
-                try
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        float progress = 0;
-                        _ui.SetCardPoolLoadProgress((i + progress) / count);
-                        var poolPack = cardPools[i];
-                        string cardPoolId = poolPack.GetResourceID();
-
-                        bool shouldUpload = !await game.network.ResourceExistsAsync(ResourceType.CardDefine, cardPoolId);
-
-                        if (shouldUpload)
-                        {
-                            byte[] bytes = await game.fileManager.readBinaryFile(game.card.getCardPoolPath(poolPack.cardPoolId));
-                            await game.network.UploadResourceAsync(ResourceType.CardDefine, cardPoolId, bytes);
-                            progress = progress + 0.5f;
-                            _ui.SetCardPoolLoadProgress((i + progress) / count);
-                        }
-                        // 读取卡池。
-                        if (game.card.tryGetCardPool(poolPack.cardPoolId, out CardPool cardPool))
-                        {
-                            // 遍历卡池内的皮肤列表。
-                            int skinCount = cardPool.cardSkinList.Count;
-                            for (int s = 0; s < skinCount; s++)
-                            {
-                                // 设置进度条进度。
-                                progress = progress + 0.5f * ((float)s / skinCount);
-                                _ui.SetCardPoolLoadProgress((i + progress) / count);
-                                // 读取皮肤。
-                                var skin = cardPool.cardSkinList[s];
-                                if (skin.imagePath == null)
-                                    continue;
-
-                                // 读取皮肤的图像字节数组。
-                                Sprite spr = await game.card.loadImage(skin.imagePath, poolPack.cardPoolId);
-                                // 图像资源的资源ID。
-                                string pictureId = Path.GetFileNameWithoutExtension(skin.imagePath);
-                                if (spr == null)
-                                    continue;
-
-                                byte[] bytes = spr.texture.EncodeToJPG();
-                                // 上传图片资源。
-                                await game.network.UploadResourceAsync(ResourceType.Picture, pictureId, bytes);
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    string title = game.lang._(StringTable.ERROR);
-                    game.ui.dialog.ShowConfirm(title, e.Message);
-                    Debug.LogError(e);
-                    _ui.SetCardPoolLoadProgress(0);
-                }
-                transferringCardPools = false;
-                updateStartAndReadyButton();
-
-
-                localPlayer.setLoadState(PlayerLoadState.None);
-                localPlayer.setReady(false);
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)PlayerLoadState.None);
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
-            }
-        }
-        private async void DownloadCardPools(CardPoolInfoPack[] cardPools)
-        {
-            if (!transferringCardPools)
-            {
-                var localPlayer = getLocalPlayerData();
-                localPlayer.setLoadState(PlayerLoadState.Download);
-                localPlayer.setReady(false);
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)PlayerLoadState.Download);
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
-                transferringCardPools = true;
-                updateStartAndReadyButton();
-
-
-                int count = cardPools.Length;
-                for (int i = 0; i < count; i++)
-                {
-                    try
-                    {
-                        float progress = 0;
-                        _ui.SetCardPoolLoadProgress((i + progress) / count);
-                        var poolPack = cardPools[i];
-                        string cardPoolResId = poolPack.GetResourceID();
-
-                        // 下载卡组资源。
-                        if (!game.cache.FileExists(game.fileManager, ResourceType.CardDefine, cardPoolResId))
-                        {
-                            try
-                            {
-                                byte[] bytes = await game.network.GetResourceAsync(ResourceType.CardDefine, cardPoolResId);
-                                if (bytes != null)
-                                {
-                                    await game.cache.SaveCache(game.fileManager, ResourceType.CardDefine, cardPoolResId, bytes);
-                                }
-                            }
-                            catch (FileNotFoundException)
-                            {
-                                Debug.LogWarning($"尝试下载未找到的卡组资源：{cardPoolResId}");
-                            }
-                        }
-                        progress += 0.5f;
-                        _ui.SetCardPoolLoadProgress((i + progress) / count);
-
-
-                        // 下载卡图资源。
-                        if (!game.card.tryGetCardPool(poolPack.cardPoolId, out _))
-                        {
-                            await game.card.loadCachedCardDefinesAsync(poolPack.cardPoolId, poolPack.version);
-                        }
-                        if (game.card.tryGetCardPool(poolPack.cardPoolId, out CardPool pool))
-                        {
-                            int skinCount = pool.cardSkinList.Count;
-                            for (int s = 0; s < skinCount; s++)
-                            {
-                                _ui.SetCardPoolLoadProgress((i + progress) / count);
-                                progress += 0.5f * ((float)s / skinCount);
-                                var skin = pool.cardSkinList[s];
-                                if (string.IsNullOrEmpty(skin.imagePath))
-                                {
-                                    continue;
-                                }
-                                string picId = Path.GetFileNameWithoutExtension(skin.imagePath);
-                                // todo: 资源下载失败或没有资源时候的异常处理
-                                if (!game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
-                                    !game.card.isExternalImageExists(skin.imagePath))
-                                {
-                                    try
-                                    {
-                                        byte[] bytes = await game.network.GetResourceAsync(ResourceType.Picture, picId);
-                                        if (bytes != null)
-                                        {
-                                            await game.cache.SaveCache(game.fileManager, ResourceType.Picture, picId, bytes);
-                                        }
-                                    }
-                                    catch (FileNotFoundException)
-                                    {
-                                        Debug.LogWarning($"尝试下载未找到的图片资源：{cardPoolResId}");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        string title = game.lang._(StringTable.ERROR);
-                        game.ui.dialog.ShowConfirm(title, e.Message);
-                        Debug.LogError(e);
-                    }
-                    finally
-                    {
-                        _ui.SetCardPoolLoadProgress((i + 1) / count);
-                    }
-                }
-                transferringCardPools = false;
-                LoadRoomCardPoolsFromCache();
-
-
-                localPlayer.setLoadState(PlayerLoadState.None);
-                localPlayer.setReady(false);
-                updateStartAndReadyButton();
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)PlayerLoadState.None);
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
-            }
-        }
         private string PoolsToString(CardPoolInfoPack[] packs)
         {
             const int MAX_DISPLAY_POOL_COUNT = 10;
             int count = Mathf.Min(packs.Length, MAX_DISPLAY_POOL_COUNT);
-            string poolsString = string.Join(", ", packs.Select(p =>
+            string poolsString = string.Join(", ", packs.Select(p => 
             {
                 if (p == null)
                 {
@@ -862,6 +585,8 @@ namespace Controllers
         }
         private void updateStartAndReadyButton()
         {
+            if (_currentRoomData == null)
+                return;
             if (isRoomOwner)
             {
                 _ui.displayStartButton(true);
@@ -891,7 +616,7 @@ namespace Controllers
         }
         private bool isAbleToReady(RoomPlayerData player)
         {
-            if (cardPoolChanged)
+            if (cardPoolManager.state != PlayerLoadState.None)
             {
                 return false;
             }
@@ -947,10 +672,17 @@ namespace Controllers
         }
         private RoomPlayerData getLocalPlayerData()
         {
+            if (_currentRoomData == null || _currentRoomData.playerDataList == null)
+            {
+                return null;
+            }
             return _currentRoomData.playerDataList.Find(p => p.id == game.network.logic.localPlayer.id);
         }
         private void updatePlayerListUI()
         {
+            if (_currentRoomData == null)
+                return;
+
             (string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[] viewData =
                 new (string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[_currentRoomData.playerDataList.Count];
             for (int i = 0; i < viewData.Length; i++)
@@ -1079,18 +811,7 @@ namespace Controllers
         [SerializeField]
         int _selectDeckPlayerId = 0;
 
-        /// <summary>
-        /// 房间卡池是否被更改。
-        /// </summary>
-        bool cardPoolChanged = false;
-        /// <summary>
-        /// 传输卡池的重试倒计时。
-        /// </summary>
-        float cardPoolTransferRetryCountdown = 0;
-        /// <summary>
-        /// 是否正在传输卡池。
-        /// </summary>
-        bool transferringCardPools = false;
+        private RoomCardPoolManager cardPoolManager;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo

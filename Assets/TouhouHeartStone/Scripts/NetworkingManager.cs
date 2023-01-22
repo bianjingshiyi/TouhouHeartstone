@@ -209,6 +209,7 @@ namespace Game
 
             logic.onRoomListChange += NetworkingLogic_onRoomListChange;
             logic.OnRoomDataChange += NetworkingLogic_OnRoomDataChange;
+            logic.OnRoomPropChange += NetworkingLogic_OnRoomPropChange;
             logic.OnPlayerDataChange += NetworkingLogic_OnPlayerDataChange;
             logic.onGameStart += Logic_onGameStart;
             logic.OnSuggestCardPools += NetworkingLogic_OnSuggestCardPools;
@@ -658,6 +659,10 @@ namespace Game
         private void NetworkingLogic_OnRoomDataChange(RoomData obj)
         {
             setRoomData(obj);
+        }
+        private void NetworkingLogic_OnRoomPropChange(string key, object value)
+        {
+            roomCtrl.ReceiveRoomPropChanged(key, value);
         }
 
         private void NetworkingLogic_OnPlayerDataChange(RoomPlayerData[] obj)
