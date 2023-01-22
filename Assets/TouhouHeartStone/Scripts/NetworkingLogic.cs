@@ -31,7 +31,7 @@ namespace Game
             localLanLogic.onGameStart += onGameStartEvtHandler;
             localLanLogic.OnPlayerDataChange += roomPlayerDataChangeEvtHandler;
             localLanLogic.OnRoomDataChange += roomDataChangeEvtHandler;
-            localLanLogic.OnRoomPropChange += roomPropChangeEvtHandler;
+            localLanLogic.PostRoomPropChange += roomPropChangeEvtHandler;
             localLanLogic.OnReceiveData += roomReceiveEvtHandler;
             localLanLogic.OnRecvChat += roomReceiveChatEvtHandler;
             localLanLogic.OnSuggestCardPools += roomReceiveCardPoolSuggestionHandler;
@@ -66,10 +66,10 @@ namespace Game
             OnRoomDataChange?.Invoke(obj);
         }
 
-        public event Action<string, object> OnRoomPropChange;
+        public event Action<string, object> PostRoomPropChange;
         private void roomPropChangeEvtHandler(string key, object value)
         {
-            OnRoomPropChange?.Invoke(key, value);
+            PostRoomPropChange?.Invoke(key, value);
         }
 
         private Task roomReceiveEvtHandler(int clientID, object obj)
