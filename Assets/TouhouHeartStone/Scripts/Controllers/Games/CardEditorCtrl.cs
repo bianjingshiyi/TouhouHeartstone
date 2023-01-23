@@ -404,17 +404,20 @@ namespace Controllers
 
         private void onChangeTag(string text)
         {
+            scene.editor.hasUnsavedChanges = true;
             _cardDefine.setTags(text.Split(',', ' ', '，'));
         }
         private void onChangeSkillID(string text)
         {
             if (int.TryParse(text, out int result))
             {
+                scene.editor.hasUnsavedChanges = true;
                 _cardDefine.setSkillId(result);
             }
         }
         private void onChangeSpellDamage(int value)
         {
+            scene.editor.hasUnsavedChanges = true;
             _cardDefine.setSpellDamage(value);
         }
         /// <summary>
