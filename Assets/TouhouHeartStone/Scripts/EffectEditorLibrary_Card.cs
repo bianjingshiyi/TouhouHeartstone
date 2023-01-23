@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
-using MukioI18n;
 
 namespace Game
 {
@@ -46,6 +46,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TAG)] string tag)
         {
+            if (cardDefine == null)
+                return false;
             return cardDefine.hasTag(tag);
         }
         ///获取随机卡牌定义
@@ -71,6 +73,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_TYPE, isConst: true)] CardDefineSelect select)
         {
+            if (card == null)
+                return false;
             switch (select)
             {
                 case CardDefineSelect.Spell:
@@ -99,6 +103,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE, isConst: true)] string select)
         {
+            if (card == null)
+                return false;
             return card.hasKeyword(game, select);
         }
         /// <summary>
@@ -132,6 +138,8 @@ namespace Game
         public static CardDefine getSpecificCardDefine(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return null;
             return card.define;
         }
         /// <summary>
@@ -148,7 +156,13 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine define,
             [ActionNodeParam(EDITOR_NODE_CARD_IS_RESET, isConst: true)] bool isreset)
         {
-            var setDefineEvent = await card.setDefine(game, define);
+            if (card == null)
+                return null;
+            Card.SetDefineEventArg setDefineEvent = null;
+            if (define != null)
+            {
+                setDefineEvent = await card.setDefine(game, define);
+            }
             if (isreset) { await card.resetCard(game); }
             return setDefineEvent?.card;
         }
@@ -161,6 +175,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card getRandomCard(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return null;
             return cards.random(game);
         }
         /// <summary>
@@ -176,6 +192,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
+            if (player == null || cardDefine == null)
+                return null;
             var createTokenEvent = await player.createToken(game, cardDefine);
             return createTokenEvent?.card;
         }
@@ -189,6 +207,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
+            if (player == null || cardDefine == null)
+                return null;
             if (player.getHand().isFull)
                 return null;
             Card createdCard = game.createCard(cardDefine);
@@ -208,6 +228,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
+            if (player == null || cardDefine == null)
+                return null;
             Card createdCard = game.createCard(cardDefine);
 
             await player.getDeck().insert(game, createdCard, game.randomInt(0, player.getDeck().count));
@@ -231,6 +253,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
+            if (card == null)
+                return null;
             return card.getProp(game, propName);
         }
         /// <summary>
@@ -243,7 +267,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
-            return card.setProp(game, propName, value);
+            if (card != null)
+                return card.setProp(game, propName, value);
+            return Task.FromResult<IPropChangeEventArg>(null);
         }
         /// <summary>
         /// 获取花费
@@ -253,6 +279,8 @@ namespace Game
         public static int getCost(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return 0;
             return card.getCost(game);
         }
         /// <summary>
@@ -263,6 +291,8 @@ namespace Game
         public static int getAttack(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return 0;
             return card.getAttack(game);
         }
         /// <summary>
@@ -273,6 +303,8 @@ namespace Game
         public static int getMaxLife(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return 0;
             return card.getLife(game);
         }
         /// <summary>
@@ -285,6 +317,8 @@ namespace Game
         public static int getLife(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return 0;
             return card.getCurrentLife(game);
         }
 
@@ -320,6 +354,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
         public static Player getOwner([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return null;
             return card.owner;
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "GetSpellDamage")]
@@ -328,6 +364,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BASE_DAMAGE)] int baseDamage)
         {
+            if (player == null)
+                return 0;
             return player.getSpellDamage(game, baseDamage);
         }
         /// <summary>
@@ -340,6 +378,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool isSpell([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return false;
             return card.define.type == DEFINE.SPELL;
         }
         /// <summary>
@@ -349,6 +389,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool isToken([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
+            if (cardDefine == null)
+                return false;
             return cardDefine.isToken();
         }
         [TranslateMsg]
@@ -371,6 +413,9 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
+            if (targets == null)
+                return default;
+
             if (damagetype)
             {
                 return targets.damage(game, card, card.owner.getSpellDamage(game, damage + damage2));
@@ -393,6 +438,9 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
+            if (targets == null)
+                return Task.FromResult(Array.Empty<THHCard.DamageEventArg>());
+
             if (damagetype)
             {
                 return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage + damage2));
@@ -417,6 +465,9 @@ namespace Game
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int count2,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
+            if (targets == null)
+                return default;
+
             if (damagetype)
             {
                 return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage + damage2), count + count2);
@@ -441,6 +492,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
+            if (targets == null)
+                return default;
+
             return targets.damage(game, card, card.owner.getSpellDamage(game, damage));
         }
         /// <summary>
@@ -460,6 +514,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
+            if (targets == null)
+                return default;
             return targets.damage(game, card, card.owner.getSpellDamage(game, damage));
         }
         /// <summary>
@@ -477,6 +533,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
+            if (targets == null)
+                return default;
             return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage));
         }
         /// <summary>
@@ -495,6 +553,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
+            if (targets == null)
+                return default;
             return targets.damageByRandomCount(game, card, damage, count);
         }
         /// <summary>
@@ -513,6 +573,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
+            if (targets == null)
+                return default;
             return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage), count);
         }
         #endregion
@@ -525,6 +587,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
+            if (targets == null)
+                return default;
             return targets.heal(game, card, value);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
@@ -533,6 +597,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE, isConst: true)] int value)
         {
+            if (targets == null)
+                return default;
             return targets.heal(game, card, value);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ALL_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
@@ -596,6 +662,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static Task<IPropChangeEventArg> freeze(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return Task.FromResult<IPropChangeEventArg>(null);
             return card.setFreeze(game, true);
         }
         /// <summary>
@@ -608,11 +676,15 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_SILENCE_EVENT)]
         public static Task<THHCard.SilenceEventArg> silence(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return Task.FromResult<THHCard.SilenceEventArg>(default);
             return cards.silence(game);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DESTROY, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         public static Task destroy(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return Task.CompletedTask;
             return cards.kill(game);
         }
 
@@ -628,10 +700,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getFriendlyServants(CardEngine game, Card card)
         {
-            {
-                Card[] servants = card.owner.getField();
-                return servants;
-            }
+            Card[] servants = card.owner.getField();
+            return servants;
         }
         /// <summary>
         /// 获取护甲
@@ -643,6 +713,8 @@ namespace Game
         public static int getArmor(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
+            if (card == null)
+                return 0;
             return card.getArmor(game);
         }
         /// <summary>
@@ -655,7 +727,10 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
-            await player.getMaster().gainArmor(game, count);
+            if (player != null)
+            {
+                await player.getMaster().gainArmor(game, count);
+            }
         }
         /// <summary>
         /// 增加护甲
@@ -667,7 +742,10 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
              [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
-            await player.getMaster().gainArmor(game, count);
+            if (player != null)
+            {
+                await player.getMaster().gainArmor(game, count);
+            }
         }
         /// <summary>
         /// 失去护甲
@@ -679,7 +757,10 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
-            await player.getMaster().loseArmor(game, count);
+            if (player != null)
+            {
+                await player.getMaster().loseArmor(game, count);
+            }
         }
         /// <summary>
         /// 获取延迟区
@@ -691,6 +772,8 @@ namespace Game
         public static Card[] getHead(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return Array.Empty<Card>();
             return player.getHead();
         }
         /// <summary>
@@ -703,6 +786,8 @@ namespace Game
         public static Card getSkill(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return null;
             return player.getSkill();
         }
         /// <summary>
@@ -714,7 +799,7 @@ namespace Game
         public static async Task resetSkill(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
-            if (player.getSkill().isUsed(game))
+            if ((player != null) && player.getSkill().isUsed(game))
             {
                 await player.getSkill().setUsed(game, false);
             }
@@ -729,6 +814,8 @@ namespace Game
         public static Card getItem(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return null;
             return player.getItem();
         }
         /// <summary>
@@ -740,7 +827,10 @@ namespace Game
         public static async Task destroyItem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
-            await player.destroyItem(game);
+            if (player != null)
+            {
+                await player.destroyItem(game);
+            }
         }
         /// <summary>
         /// 获取暂存区
@@ -752,6 +842,8 @@ namespace Game
         public static Card[] getWarp(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return Array.Empty<Card>();
             return player.getWarp();
         }
         /// <summary>
@@ -764,6 +856,8 @@ namespace Game
         public static Card[] getNearbyCards(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
         {
+            if (card == null)
+                return Array.Empty<Card>();
             return card.getNearbyCards();
         }
         /// <summary>
@@ -779,6 +873,8 @@ namespace Game
         public static int getGem(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return 0;
             return player.getGem();
         }
         /// <summary>
@@ -794,6 +890,8 @@ namespace Game
         public static int getMaxGem(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return 0;
             return player.getMaxGem();
         }
         /// <summary>
@@ -806,7 +904,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
-            await player.setGem(game, count);
+            if (player != null)
+                await player.setGem(game, count);
         }
         /// <summary>
         /// 增加当前灵力值
@@ -818,7 +917,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
-            await player.setGem(game, player.getGem() + count);
+            if (player != null)
+                await player.setGem(game, player.getGem() + count);
         }
         /// <summary>
         /// 设置灵力上限
@@ -830,7 +930,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
-            await player.setMaxGem(game, count);
+            if (player != null)
+                await player.setMaxGem(game, count);
         }
         /// <summary>
         /// 增加灵力上限
@@ -842,7 +943,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
-            await player.setMaxGem(game, player.getMaxGem() + count);
+            if (player != null)
+                await player.setMaxGem(game, player.getMaxGem() + count);
         }
         /// <summary>
         /// 触发卡牌宣言
@@ -854,8 +956,12 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
+            if (cards == null)
+                return;
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 await card.activeEffect(game, card.getOwner(), targets);
             }
         }
@@ -868,8 +974,12 @@ namespace Game
         public static async Task triggerDeathRattles(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return;
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 await card.triggerDeathRattles(game);
             }
         }
@@ -882,8 +992,12 @@ namespace Game
         public static async Task resetCards(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return;
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 await card.resetCard(game);
             }
         }
@@ -956,10 +1070,16 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_FORCE_ATTACKER)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
+            if (cards == null || targets == null)
+                return;
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 foreach (var target in targets)
                 {
+                    if (target == null)
+                        continue;
                     await card.forceAttack(game, card.getOwner(), target);
                 }
             }
@@ -971,11 +1091,14 @@ namespace Game
         public const string EDITOR_NODE_EXTRA_ATTACK = "本回合攻击次数增加一次";
         [ActionNodeMethod(EDITOR_NODE_EXTRA_ATTACK, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         public static async Task extraAttack(CardEngine game,
-            [ActionNodeParam(EDITOR_NODE_FORCE_ATTACKER)]Card[] cards)
+            [ActionNodeParam(EDITOR_NODE_FORCE_ATTACKER)] Card[] cards)
         {
+            if (cards == null)
+                return;
             foreach (var card in cards)
             {
-                //await card.setAttackTimes(game, 0);
+                if (card == null)
+                    continue;
                 await card.setAttackTimes(game, card.getAttackTimes(game) - 1);
             }
         }
@@ -991,6 +1114,8 @@ namespace Game
         public static Card[] getAllLegalCardTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
         {
+            if (card == null)
+                return Array.Empty<Card>();
             var legalTargets = card.getAvaliableTargets(game).Where(c => c != card).ToArray();
 
             return legalTargets;
@@ -1007,6 +1132,8 @@ namespace Game
         public static Card[] getAllLegalAttackTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
         {
+            if (card == null)
+                return Array.Empty<Card>();
             var oppo = game.getOpponent(card.getOwner());
             var legalTargets = oppo.getField().ToList().Append(oppo.getMaster())
                 .Where(c => !c.isStealth(game)).ToArray();

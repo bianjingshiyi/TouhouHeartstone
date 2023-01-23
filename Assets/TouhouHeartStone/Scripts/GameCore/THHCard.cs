@@ -117,6 +117,8 @@ namespace TouhouHeartstone
         {
             foreach (var card in cards)
             {
+                if (cards == null)
+                    continue;
                 await card.kill(game);
             }
         }
@@ -592,6 +594,8 @@ namespace TouhouHeartstone
                 cards = arg.cards;
                 foreach (var card in cards)
                 {
+                    if (card == null)
+                        continue;
                     await card.setProp(game, CARD.SILENCE, true);
                     await card.removeBuff(game, card.getBuffs());
                     foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>())
@@ -1275,7 +1279,7 @@ namespace TouhouHeartstone
         #endregion
         public static Task<DamageEventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
-            return damage(game, cards.ToDictionary(c => c, c => new DamageEventArg.Info(value, source)));
+            return damage(game, cards.Where(p => p != null).ToDictionary(c => c, c => new DamageEventArg.Info(value, source)));
         }
         public static Task<DamageEventArg> damage(CardEngine game, Dictionary<Card, DamageEventArg.Info> damageInfoDic)
         {
@@ -1518,6 +1522,10 @@ namespace TouhouHeartstone
                  value = arg.value;
                  foreach (Card card in cards)
                  {
+                     if (card == null)
+                         continue;
+
+
                      if (card.getCurrentLife(game) + value < card.getLife(game))
                      {
                          await card.setCurrentLife(game, card.getCurrentLife(game) + value);

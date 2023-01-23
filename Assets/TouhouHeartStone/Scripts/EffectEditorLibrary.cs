@@ -94,7 +94,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName)
         {
-            return player.getProp(propName);
+            return player != null ? player.getProp(propName): null;
         }
         /// <summary>
         /// 设置玩家属性
@@ -108,18 +108,23 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
-            player.setProp(propName, value);
+            if (player != null)
+                player.setProp(propName, value);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_OPPONENT, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_OPPONENT_PLAYER)]
         public static Player getPlayerOpponent(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return null;
             return game.getOpponent(player);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_MASTER, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "GetMaster")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card getMaster([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return null;
             return player.getMaster();
         }
         /// <summary>
@@ -133,6 +138,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getHandCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return Array.Empty<Card>();
             return player.getHand();
         }
         /// <summary>
@@ -143,12 +150,16 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getPlayerGraveCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return Array.Empty<Card>();
             return player.getGrave();
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_DECK_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getPlayerDeckCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
+            if (player == null)
+                return Array.Empty<Card>();
             return player.getDeck();
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
@@ -157,6 +168,12 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BURN_EVENT)] out HearthStoneRule.BurnEventArg burnEvent)
         {
+            if (targetCard == null)
+            {
+                drawEvent = null;
+                burnEvent = null;
+                return Task.CompletedTask;
+            }
             return card.owner.draw(game, targetCard, out drawEvent, out burnEvent);
         }
         ///从一定数量卡牌中选一张
@@ -166,6 +183,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count)
         {
+            if (cards == null)
+                return null;
             return game.askSelect(card.owner, cards, count);
         }
         ///从一定数量卡牌定义中选一张
@@ -176,6 +195,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count/*,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_STRING, isConst: true)] string title = "选择一项"*/)
         {
+            if (defines == null)
+                return null;
             return game.askSelect(card.owner, defines, count);
         }
         /// <summary>
@@ -186,6 +207,8 @@ namespace Game
         public static Task<HearthStoneRule.DiscardEventArg> discard(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HANDS)] Card[] hands)
         {
+            if (hands == null)
+                return null;
             return card.owner.discard(game, hands);
         }
         #endregion
@@ -215,14 +238,19 @@ namespace Game
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card,
+        public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, Scope scope,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION, isConst: true)] ActionValueRef condition)
         {
             Pile deck = card.owner.getDeck();
             List<Card> cardList = new List<Card>();
             for (int i = 0; i < deck.count; i++)
             {
-                bool result = await game.getActionReturnValueAsync<bool>(deck[i], null, null, condition.action, condition.index);
+                Scope newScope = new Scope(scope);
+                bool result = true;
+                if (condition != null)
+                {
+                    await game.getActionReturnValueAsync<bool>(deck[i], null, null, condition.action, condition.index, newScope);
+                }
                 if (result)
                 {
                     cardList.Add(deck[i]);
@@ -237,12 +265,19 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_FILTERING_CARD, isOut: true)] Card filteringCard)
         {
+            if (cards == null)
+                return Array.Empty<Card>();
+
             List<Card> cardList = new List<Card>();
             for (int i = 0; i < cards.Length; i++)
             {
                 scope.setOutParamValue(0, cards[i]);
                 Scope newScope = new Scope(scope);
-                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope).Result;
+                bool result = true;
+                if (condition != null)
+                {
+                    result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope).Result;
+                }
                 if (result)
                 {
                     cardList.Add(cards[i]);
@@ -254,6 +289,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)]
         public static int getCardsCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return 0;
             return cards.Length;
         }
 
@@ -278,9 +315,14 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)] BuffDefine buffDefine)
         {
+            if (cards == null || buffDefine == null)
+                return Array.Empty<Buff>();
+
             List<Buff> buffList = new List<Buff>();
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 Buff buff = new GeneratedBuff(buffDefine);
                 buffList.Add(buff);
                 await card.addBuff(game, buff);
@@ -293,6 +335,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
         {
+            if (card == null || buff == null)
+                return Task.FromResult(false);
+
             return card.removeBuff(game, buff);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HAS_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF)]
@@ -301,6 +346,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)] BuffDefine buffDefine)
         {
+            if (card == null || buffDefine == null)
+                return false;
             return card.hasBuff(buffDefine);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SET_BUFF_PROP, StringTable.EDITOR_NODE_CATEGORY_BUFF)]
@@ -309,6 +356,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
+            if (buffs == null)
+                return;
+
             for (int i = 0; i < buffs.Length; i++)
             {
                 await buffs[i].setProp(game, propName, value);
@@ -331,6 +381,8 @@ namespace Game
         public static Card simpleDrawCard(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player)
         {
+            if (player == null)
+                return null;
             player.draw(game, out var drawEvent);
             return drawEvent?.card;
         }
@@ -345,9 +397,16 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return Array.Empty<Card>();
+            if (player == null)
+                return cards;
+
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 if (card.isServant())
                 {
                     if (player.getField().isFull)
@@ -384,9 +443,16 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return Array.Empty<Card>();
+            if (player == null)
+                return cards;
+
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 int restCount = player.getHand().maxCount - player.getHand().count;
                 if (restCount > 0)
                 {
@@ -414,9 +480,16 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP, isConst: true)] bool top)
         {
+            if (cards == null)
+                return Array.Empty<Card>();
+            if (player == null)
+                return cards;
+
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 int position = top ? player.getDeck().count : game.randomInt(0, player.getDeck().count);
                 game.logger.log("将" + string.Join("，", card) + "洗入" + player + "的牌库");
                 await card.resetCard(game);
@@ -436,9 +509,16 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return Array.Empty<Card>();
+            if (player == null)
+                return cards;
+
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 game.logger.log("将" + string.Join("，", card) + "置入" + player + "的墓地");
                 await card.resetCard(game);
                 await card.pile.moveTo(game, card, player.getGrave());
@@ -457,10 +537,16 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
-            Card[] movelist;
+            if (cards == null)
+                return Array.Empty<Card>();
+            if (player == null)
+                return cards;
+
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 if (card.hasKeyword(game, KEYWORD.SECRET) || card.hasKeyword(game, KEYWORD.MISSION))
                 {
                     if (player.getHead().isFull)
@@ -492,6 +578,11 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card card)
         {
+            if (card == null)
+                return null;
+            if (player == null)
+                return card;
+
             if (card.isItem())
             {
                 if (player[PILE.ITEM].isFull)
@@ -521,9 +612,16 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
         {
+            if (cards == null)
+                return Array.Empty<Card>();
+            if (player == null)
+                return cards;
+
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
+                if (card == null)
+                    continue;
                 game.logger.log("将" + string.Join("，", card) + "置入" + player + "的暂存区");
                 //await card.resetCard(game);
                 await card.pile.moveTo(game, card, player.getWarp());
@@ -537,6 +635,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
         public static Array createArray([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isParams: true)] object[] elements)
         {
+            if (elements == null)
+                return Array.Empty<object>();
             return elements;
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_ADD_ELEMENT_TO_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
@@ -545,8 +645,14 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isParams: true)] object[] elements)
         {
+            if (array == null)
+                array = Array.Empty<object>();
+
             object[] newArray = new object[array.Length + elements.Length];
             Array.Copy(array, 0, newArray, 0, array.Length);
+
+            if (elements == null)
+                return newArray;
             Array.Copy(elements, 0, newArray, array.Length, elements.Length);
             return newArray;
         }
@@ -564,6 +670,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
+            if (array == null)
+                return Array.Empty<object>();
+
             List<object> objList = new List<object>();
             List<object> negList = new List<object>();
             for (int i = 0; i < array.Length; i++)
@@ -571,7 +680,8 @@ namespace Game
                 object obj = array.GetValue(i);
                 scope.setOutParamValue(0, obj);
                 Scope newScope = new Scope(scope);
-                bool result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope).Result;
+                bool result = condition != null ? game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope).Result : true;
+
                 if (result)
                 {
                     objList.Add(obj);
@@ -592,6 +702,8 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)]
         public static int getCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection)
         {
+            if (collection == null)
+                return 0;
             return collection.Length;
         }
 
@@ -612,6 +724,11 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_NAME_ORDER_KEY)] ActionNode condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
+            if (array == null)
+                return Array.Empty<object>();
+            if (condition == null)
+                return array;
+
             object func(object obj)
             {
                 scope.setOutParamValue(0, obj);
@@ -641,7 +758,9 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(EDITOR_PARAM_NAME_INDEX)] int index)
         {
-            return array[index];
+            if (index >= 0 && index < array.Length)
+                return array[index];
+            return null;
         }
         [TranslateMsg("编辑器_动作节点_遍历")]
         public const string EDITOR_NODE_NAME_FOREACH = "遍历";
@@ -654,6 +773,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION)] ActionNode action,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
+            if (array == null)
+                return;
             if (action == null)
                 return;
             foreach (object ele in array)
@@ -669,6 +790,8 @@ namespace Game
         public static object getRandomElement(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection)
         {
+            if (collection == null)
+                return null;
             return collection[game.randomInt(0, collection.Length - 1)];
         }
         #endregion
@@ -690,6 +813,8 @@ namespace Game
         [ActionNodeMethod(EDITOR_NODE_EVENT_STOP_EVENT, EDITOR_NODE_EVENT)]
         public static void stopEvent([ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg)
         {
+            if (eventArg == null)
+                return;
             eventArg.isCanceled = true;
         }
 
