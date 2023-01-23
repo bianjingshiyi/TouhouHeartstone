@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 51 }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 53 }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -11259,16 +11259,16 @@
           "posY" : -288.65606689453125
         },
         "17" : {
-          "posX" : 1862.197509765625,
-          "posY" : 47.387222290039063
+          "posX" : 1857.330322265625,
+          "posY" : 37.653121948242188
         },
         "27" : {
           "posX" : 2452.61767578125,
           "posY" : -384.58395385742188
         },
         "16" : {
-          "posX" : 1654.65625,
-          "posY" : -523.7958984375
+          "posX" : 1622.7158203125,
+          "posY" : -532.3133544921875
         },
         "28" : {
           "posX" : 2914.852783203125,
@@ -11340,8 +11340,8 @@
           "posY" : 391.90850830078125
         },
         "4" : {
-          "posX" : 494.06231689453125,
-          "posY" : -326.66455078125
+          "posX" : 564.63470458984375,
+          "posY" : -458.0750732421875
         },
         "5" : {
           "posX" : 207.01176452636719,
@@ -11352,32 +11352,36 @@
           "posY" : -546.5587158203125
         },
         "7" : {
-          "posX" : 721.14996337890625,
-          "posY" : -720.0029296875
+          "posX" : 796.58929443359375,
+          "posY" : -846.54638671875
         },
         "8" : {
           "posX" : 132.67854309082031,
           "posY" : -865.57220458984375
         },
         "9" : {
-          "posX" : 903.8858642578125,
-          "posY" : -61.8441162109375
+          "posX" : 715.8956298828125,
+          "posY" : -59.410552978515625
         },
         "10" : {
-          "posX" : 1347.7772216796875,
-          "posY" : -50.602828979492188
+          "posX" : 1541.5469970703125,
+          "posY" : 2.9347991943359375
         },
         "11" : {
-          "posX" : 1273.6435546875,
-          "posY" : -379.763427734375
+          "posX" : 1474.4091796875,
+          "posY" : -447.90216064453125
         },
         "12" : {
-          "posX" : 1914.148193359375,
-          "posY" : -136.16719055175781
+          "posX" : 2065.02685546875,
+          "posY" : -138.60066223144531
         },
         "13" : {
-          "posX" : 1668.787353515625,
-          "posY" : -457.9215087890625
+          "posX" : 1861.0361328125,
+          "posY" : -491.990966796875
+        },
+        "14" : {
+          "posX" : 975.05609130859375,
+          "posY" : -469.51327514648438
         }
       },
       "freeActionNodeList" : []
@@ -12015,6 +12019,72 @@
         }
       },
       "freeActionNodeList" : []
+    }, {
+      "buffId" : 28,
+      "entryType" : "triggerList",
+      "triggerIndex" : 2,
+      "actionInfoDict" : {
+        "1" : {
+          "posX" : -290.14199829101563,
+          "posY" : 376.57730102539063
+        },
+        "2" : {
+          "posX" : -60.17352294921875,
+          "posY" : 369.76336669921875
+        },
+        "3" : {
+          "posX" : 365.6939697265625,
+          "posY" : 318.6593017578125
+        },
+        "4" : {
+          "posX" : 551.37225341796875,
+          "posY" : -57.807548522949219
+        },
+        "5" : {
+          "posX" : 280.52056884765625,
+          "posY" : -255.41009521484375
+        }
+      },
+      "freeActionNodeList" : [{
+          "_id" : 3,
+          "defineName" : "Compare",
+          "branches" : [null],
+          "inputs" : [{
+              "action" : {
+                "_id" : 2,
+                "defineName" : "获取卡牌拥有者",
+                "branches" : [null],
+                "inputs" : [{
+                    "action" : {
+                      "_id" : 1,
+                      "defineName" : "这张卡牌",
+                      "branches" : [null],
+                      "inputs" : [],
+                      "consts" : [],
+                      "regVar" : [false]
+                    },
+                    "index" : 0,
+                    "actionNodeId" : 0,
+                    "eventVarName" : null,
+                    "argIndex" : 0
+                  }],
+                "consts" : [],
+                "regVar" : [false]
+              },
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : null,
+              "argIndex" : 0
+            }, {
+              "action" : null,
+              "index" : 0,
+              "actionNodeId" : 0,
+              "eventVarName" : "玩家",
+              "argIndex" : 0
+            }],
+          "consts" : [null],
+          "regVar" : []
+        }]
     }],
   "buffDefineList" : [{
       "_id" : 1,
@@ -13040,7 +13110,7 @@
                       "actionNodeId" : 6
                     }],
                   "consts" : [],
-                  "regVar" : [true]
+                  "regVar" : [false]
                 }, {
                   "_id" : 8,
                   "defineName" : "IntegerConst",
@@ -13062,11 +13132,22 @@
                   "defineName" : "Compare",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 4
+                      "actionNodeId" : 14
                     }, {
                       "actionNodeId" : 8
                     }],
                   "consts" : [4],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 14,
+                  "defineName" : "获取属性",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }, {
+                      "actionNodeId" : 6
+                    }],
+                  "consts" : [],
                   "regVar" : [false]
                 }, {
                   "_id" : 12,
@@ -13082,6 +13163,57 @@
                 }, {
                   "_id" : 13,
                   "defineName" : "该增益",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }]
+            }, {
+              "eventName" : "BeforeFatigueEvent",
+              "condition" : {
+                "actionNodeId" : 3
+              },
+              "targetCheckerList" : [],
+              "actionId" : 4,
+              "actionList" : [{
+                  "_id" : 3,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2
+                    }, {
+                      "eventVarName" : "玩家"
+                    }],
+                  "consts" : [null],
+                  "regVar" : []
+                }, {
+                  "_id" : 2,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "阻止事件",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5
+                    }],
+                  "consts" : [],
+                  "regVar" : []
+                }, {
+                  "_id" : 5,
+                  "defineName" : "当前事件",
                   "branches" : [0],
                   "inputs" : [],
                   "consts" : [],
