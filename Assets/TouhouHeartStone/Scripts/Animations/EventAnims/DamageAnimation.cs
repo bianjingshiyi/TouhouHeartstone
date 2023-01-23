@@ -16,23 +16,27 @@ namespace Game
                 _animList = new List<AnimAnim>();
                 foreach (var card in eventArg.infoDic.Keys)
                 {
+                    if (!eventArg.infoDic.TryGetValue(card, out var info))
+                    {
+                        continue;
+                    }
                     if (table.tryGetServant(card, out var servant))
                     {
-                        servant.damageText.text = "-" + eventArg.infoDic[card].damagedValue;
-                        servant.lifePropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
+                        servant.damageText.text = "-" + info.damagedValue;
+                        servant.lifePropNumber.text.text = info.currentLife.ToString();
                         servant.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(servant.servantAnimator, servant.onDamage.animName));
                     }
                     else if (table.tryGetMaster(card, out Master master))
                     {
-                        master.DamageText.text = "-" + eventArg.infoDic[card].damagedValue;
-                        master.LifePropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
+                        master.DamageText.text = "-" + info.damagedValue;
+                        master.LifePropNumber.text.text = info.currentLife.ToString();
                         master.onDamage.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(master.animator, master.onDamage.animName));
                     }
                     else if (table.tryGetItem(card, out var item))
                     {
-                        item.DurabilityPropNumber.text.text = eventArg.infoDic[card].currentLife.ToString();
+                        item.DurabilityPropNumber.text.text = info.currentLife.ToString();
                         item.onLifeDown.invokeBeforeAnim();
                         _animList.Add(new AnimAnim(item.animator, item.onLifeDown.animName));
                     }
