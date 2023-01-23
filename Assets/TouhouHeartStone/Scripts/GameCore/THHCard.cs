@@ -1044,6 +1044,10 @@ namespace TouhouHeartstone
             await card.setReady(game, false);
             await card.setAttackTimes(game, 0);
             await card.setProp(game, CARD.SILENCE, false);
+            if (card.isServant() && card.pile.name == PILE.FIELD)
+            {
+                card.InitConsumableKeywords(game);
+            }
         }
         public static async Task resetCard(this IEnumerable<Card> cards, CardEngine game)
         {
