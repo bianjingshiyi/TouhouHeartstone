@@ -25,7 +25,14 @@ namespace Controllers
             _deck = null;
             _isDeckChanged = false;
 
-            _selectableMasters = game.card.findCardDefines(c => c.isMaster());
+            _selectableMasters = game.card.findCardDefines(c => {
+                if (c.isMaster())
+                {
+                    long cardPoolId = c.cardPoolId;
+                    return game.card.isOwnedCardPool(cardPoolId);
+                }
+                return false;
+            }) ;
 
             //UI更新
             _ui.gameObject.SetActive(true);

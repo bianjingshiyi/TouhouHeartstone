@@ -1012,6 +1012,32 @@ namespace Game
         {
             return _standardCardPoolsId.Contains(cardPoolId);
         }
+        /// <summary>
+        /// 判断卡池是否是本人拥有的卡池。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <returns>是否是本人拥有的卡池？</returns>
+        public bool isOwnedCardPool(long cardPoolId)
+        {
+            // 内置和经典卡池肯定是本人拥有的。
+            if (isBuiltinCardPool(cardPoolId) || isStandardCardPool(cardPoolId))
+            {
+                return true;
+            }
+            string path = getCardPoolPath(cardPoolId);
+            if (string.IsNullOrEmpty(path))
+                return false;
+
+            // 如果路径以本地卡池的路径开头，说明是本身拥有的卡池。
+            string startPath = Path.Combine(Application.persistentDataPath, cardPoolDirName);
+            path = path.Replace("/", "\\");
+            startPath = startPath.Replace("/", "\\");
+            if (path.StartsWith(startPath) || path.StartsWith("sa:") || path.StartsWith("res:") || path.StartsWith(cardPoolDirName))
+            {
+                return true;
+            }
+            return false;
+        }
         #endregion
         #region 私有方法
         private void onAwake_CardPool()
