@@ -70,7 +70,6 @@ namespace UI
         /// <param name="data"></param>
         public void SetCardData(BuildCardViewData data)
         {
-            Card.isFaceup = true; // Animator默认状态是false，重置之后得还原
             Card.setCard(data.define, data.skin);
             setRemainText(data.useCount, data.maxCount);
             CardID = data.define.id;

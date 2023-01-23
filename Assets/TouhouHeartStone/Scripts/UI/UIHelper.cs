@@ -6,26 +6,25 @@ using UnityEngine;
 using UICard = UI.Card;
 using Card = TouhouCardEngine.Card;
 using System.Linq;
-using BJSYGameCore;
 using UnityEngine.UI;
 
 namespace Game
 {
     static class UIHelper
     {
-        public static void setUnknownCard(this UICard ui)
+        public static void setUnknownCard(this UICard ui, bool isFaceUp = true)
         {
             setImage(ui, null);
             setName(ui, StringTable.BUILD_UNKNOW_CARD_NAME);
             setSubname(ui, string.Empty);
             setDesc(ui, string.Empty);
-            ui.isFaceup = true;
+            ui.isFaceup = isFaceUp;
             setCost(ui, "0");
             ui.type = CATEGORY.SERVANT;
             setAttack(ui, "0");
             setLife(ui, "0");
         }
-        public static void setCard(this UICard ui, CardDefine card, CardSkinData skin)
+        public static void setCard(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
         {
             if (skin != null)
             {
@@ -41,7 +40,7 @@ namespace Game
                 setSubname(ui, string.Empty);
                 setDesc(ui, string.Empty);
             }
-            ui.isFaceup = true;
+            ui.isFaceup = isFaceUp;
             setCost(ui, card.getCost().ToString());
             if (card.type == DEFINE.MASTER)
             {
@@ -74,7 +73,7 @@ namespace Game
                 setTag(ui, card.getTags().FirstOrDefault());
             }
         }
-        public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin)
+        public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, bool isFaceUp = true)
         {
             if (skin != null)
             {
@@ -90,7 +89,7 @@ namespace Game
                 setSubname(ui, string.Empty);
                 setDesc(ui, string.Empty);
             }
-            ui.isFaceup = true;
+            ui.isFaceup = isFaceUp;
             setCost(ui, card.getCost(game).ToString());
             if (card.define.type == DEFINE.MASTER)
             {

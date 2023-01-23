@@ -711,13 +711,11 @@ namespace Controllers
                     await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
                 if (_curEditActionNodeConstItemIndex < 0)
                 {
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.isFaceup = true;
                     actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setCard(cardDefine, skin);
                     actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setImage(sprite);
                 }
                 else
                 {
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.isFaceup = true;
                     actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setCard(cardDefine, skin);
                     actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setImage(sprite);
                 }
@@ -726,13 +724,11 @@ namespace Controllers
             {
                 if (_curEditActionNodeConstItemIndex < 0)
                 {
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.isFaceup = false;
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setCard(null, null);
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setCard(null, null, false);
                 }
                 else
                 {
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.isFaceup = false;
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setCard(null, null);
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setCard(null, null, false);
                 }
             }
             //重置字段
@@ -1213,7 +1209,6 @@ namespace Controllers
                         }
                         if (cardDefine != null)
                         {
-                            actionNodeItem.getConstInputField(i).card.isFaceup = true;
                             CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
                             actionNodeItem.getConstInputField(i).card.setCard(cardDefine, cardSkin);
                             Sprite sprite = cardSkin.image != null ?
@@ -1239,7 +1234,6 @@ namespace Controllers
                                 }
                                 if (cardDefine != null)
                                 {
-                                    actionNodeItem.getConstInputField(i).getItemAt(j).card.isFaceup = true;
                                     CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
                                     actionNodeItem.getConstInputField(i).getItemAt(j).card.setCard(cardDefine, cardSkin);
                                     Sprite sprite = cardSkin.image != null ?

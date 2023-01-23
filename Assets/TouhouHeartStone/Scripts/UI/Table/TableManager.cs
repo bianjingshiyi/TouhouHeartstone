@@ -1051,9 +1051,8 @@ namespace Game
         /// <param name="isFaceup"></param>
         public async void setCard(UCard ui, Card card, bool isFaceup = true)
         {
-            ui.isFaceup = isFaceup;//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
             CardSkinData skin = getSkin(card);
-            ui.setCard(game, card, skin);
+            ui.setCard(game, card, skin, isFaceup);
             if (skin.image == null)
             {
                 ui.setImage(await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id));
@@ -1098,8 +1097,7 @@ namespace Game
         public async void setCard(UCard ui, CardDefine define, int cost, int attack, int life, bool isFaceUp = true)
         {
             CardSkinData skin = getSkin(define);
-            ui.isFaceup = isFaceUp;//因为isFaceup控制了很多GameObject的Active，所以它必须放在最上面。
-            ui.setCard(define, skin);
+            ui.setCard(define, skin, isFaceUp);
             if (skin.image == null)
             {
                 ui.setImage(await getManager<CardManager>().loadCardImage(define.cardPoolId, define.id));
