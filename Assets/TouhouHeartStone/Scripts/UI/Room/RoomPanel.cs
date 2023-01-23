@@ -180,6 +180,8 @@ namespace UI
         }
         public void setRandomSeed(int value)
         {
+            if (_randomSeedInputField.isFocused)
+                return;
             _randomSeedInputField.SetTextWithoutNotify(value.ToString());
         }
         public void enableRandomSeed(bool value)
@@ -196,6 +198,8 @@ namespace UI
         }
         public void setInitReplaceTime(float value)
         {
+            if (_initReplaceTimeInputField.isFocused)
+                return;
             _initReplaceTimeInputField.SetTextWithoutNotify(value.ToString());
         }
         public void enableInitReplaceTime(bool value)
@@ -204,6 +208,8 @@ namespace UI
         }
         public void setTurnTime(float value)
         {
+            if (_turnTimeInputField.isFocused)
+                return;
             _turnTimeInputField.SetTextWithoutNotify(value.ToString());
         }
         public void enableTurnTime(bool value)

@@ -43,9 +43,6 @@ namespace Controllers
             currentRoomData.maxPlayerCount = 2; // 炉石两个人
 
             HearthstoneOption option = new HearthstoneOption();
-            var rand = new byte[4];
-            System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
-            option.randomSeed = BitConverter.ToInt32(rand, 0);
             currentRoomData.setOption(option);
 
             hide();

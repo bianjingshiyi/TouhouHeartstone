@@ -7,11 +7,11 @@ using BJSYGameCore.UI;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using Deck = TouhouHeartstone.Deck;
+using Option = Game.RoomDataPropName.Option;
 
 namespace Controllers
 {
@@ -36,7 +36,7 @@ namespace Controllers
         #region 公有方法
         public void SetRoomData(RoomData room)
         {
-             _ui.UpdateRoomData(room, _currentMode, GetSelfID());
+            _ui.UpdateRoomData(room, _currentMode, GetSelfID());
         }
         public void SetMode(RoomMode mode)
         {
@@ -223,13 +223,13 @@ namespace Controllers
         {
             if (string.IsNullOrEmpty(value))
             {
-                setNotifyRoomSetting(RoomDataPropName.Option.RandomSeed, 0);
+                setNotifyRoomSetting(Option.RandomSeed, 0);
                 return;
             }
 
             if (int.TryParse(value, out int i))
             {
-                setNotifyRoomSetting(RoomDataPropName.Option.RandomSeed, i);
+                setNotifyRoomSetting(Option.RandomSeed, i);
             }
             else
             {
@@ -238,13 +238,13 @@ namespace Controllers
         }
         private void onShuffleToggleValueChanged(bool value)
         {
-            setNotifyRoomSetting(RoomDataPropName.Option.Shuffle, value);
+            setNotifyRoomSetting(Option.Shuffle, value);
         }
         private void onInitReplaceTimeInputFieldValueChanged(string value)
         {
             if (int.TryParse(value, out int i) && 5 < i)
             {
-                setNotifyRoomSetting(RoomDataPropName.Option.TimeoutForInitReplace, i);
+                setNotifyRoomSetting(Option.TimeoutForInitReplace, i);
             }
             else
             {
@@ -255,7 +255,7 @@ namespace Controllers
         {
             if (int.TryParse(value, out int i) && 5 < i)
             {
-                setNotifyRoomSetting(RoomDataPropName.Option.TimeoutForTurn, i);
+                setNotifyRoomSetting(Option.TimeoutForTurn, i);
             }
             else
             {
@@ -266,17 +266,17 @@ namespace Controllers
         {
             if (value)
             {
-                setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
+                setNotifyRoomSetting(Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
             }
             else
             {
-                setNotifyRoomSetting(RoomDataPropName.Option.SortedPlayers, null);
+                setNotifyRoomSetting(Option.SortedPlayers, null);
             }
         }
 
         private void onCustomCardsToggleValueChanged(bool value)
         {
-            setNotifyRoomSetting(RoomDataPropName.Option.AllowCustomCards, value);
+            setNotifyRoomSetting(Option.AllowCustomCards, value);
             updateStartAndReadyButton();
         }
         private void onClickPlayerListItemViewDeckButton(int index)
@@ -367,8 +367,17 @@ namespace Controllers
             if (players != null &&
                 players.Length != _currentRoomData.playerDataList.Count)
             {
-                _currentRoomData.setOption(RoomDataPropName.Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
+                setNotifyRoomSetting(Option.SortedPlayers, _currentRoomData.playerDataList.Select(p => p.id).ToArray());
             }
+
+            // 处理数值为0的种子。
+            if (_currentRoomData.getRandomSeed() == 0)
+            {
+                var rand = new byte[4];
+                System.Security.Cryptography.RandomNumberGenerator.Create().GetBytes(rand);
+                setNotifyRoomSetting(Option.RandomSeed, BitConverter.ToInt32(rand, 0));
+            }
+
             if (_isLocalGame)
             {
                 await game.game.startLocalGame(_currentRoomData);
@@ -420,7 +429,7 @@ namespace Controllers
         /// </summary>
         /// <param name="prop"></param>
         /// <param name="value"></param>
-        void setNotifyRoomSetting(RoomDataPropName.Option prop, object value)
+        void setNotifyRoomSetting(Option prop, object value)
         {
             _currentRoomData?.setOption(prop, value);
             onRoomPropChanged?.Invoke(prop.ToString(), value);
@@ -516,8 +525,7 @@ namespace Controllers
                 }
             }
             CardPoolInfoPack[] cardPools = newList.ToArray();
-            _currentRoomData.setOption(RoomDataPropName.Option.CardPools, cardPools);
-            game.network.SetRoomProp(RoomDataPropName.Option.CardPools.ToString(), cardPools);
+            setNotifyRoomSetting(Option.CardPools, cardPools);
         }
         private async Task<(PlayerLoadState state, CardPoolInfoPack[] pools)> CheckCardPoolsUpdate()
         {
@@ -597,7 +605,7 @@ namespace Controllers
                         }
                     }
                 }
-                catch (Exception e) 
+                catch (Exception e)
                 {
                     Debug.LogError($"检查房间卡池时出现异常：{e}");
                 }
@@ -824,7 +832,7 @@ namespace Controllers
         {
             const int MAX_DISPLAY_POOL_COUNT = 10;
             int count = Mathf.Min(packs.Length, MAX_DISPLAY_POOL_COUNT);
-            string poolsString = string.Join(", ", packs.Select(p => 
+            string poolsString = string.Join(", ", packs.Select(p =>
             {
                 if (p == null)
                 {
