@@ -138,9 +138,7 @@ namespace Game
         public static CardDefine getSpecificCardDefine(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
-            if (card == null)
-                return null;
-            return card.define;
+            return card?.define;
         }
         /// <summary>
         /// 变形为卡牌定义
@@ -175,9 +173,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card getRandomCard(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
-            if (cards == null)
-                return null;
-            return cards.random(game);
+            return cards?.random(game);
         }
         /// <summary>
         /// 创建衍生物并置入战场
@@ -253,9 +249,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
-            if (card == null)
-                return null;
-            return card.getProp(game, propName);
+            return card?.getProp(game, propName);
         }
         /// <summary>
         /// 设置属性
@@ -354,9 +348,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
         public static Player getOwner([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
-            if (card == null)
-                return null;
-            return card.owner;
+            return card?.owner;
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "GetSpellDamage")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
@@ -786,9 +778,7 @@ namespace Game
         public static Card getSkill(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
-            if (player == null)
-                return null;
-            return player.getSkill();
+            return player?.getSkill();
         }
         /// <summary>
         /// 复原技能
@@ -814,9 +804,7 @@ namespace Game
         public static Card getItem(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
-            if (player == null)
-                return null;
-            return player.getItem();
+            return player?.getItem();
         }
         /// <summary>
         /// 摧毁道具

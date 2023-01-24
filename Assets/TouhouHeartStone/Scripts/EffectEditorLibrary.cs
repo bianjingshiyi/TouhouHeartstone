@@ -94,7 +94,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName)
         {
-            return player != null ? player.getProp(propName): null;
+            return player?.getProp(propName);
         }
         /// <summary>
         /// 设置玩家属性
@@ -108,8 +108,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
-            if (player != null)
-                player.setProp(propName, value);
+            player?.setProp(propName, value);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_OPPONENT, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_OPPONENT_PLAYER)]
@@ -123,9 +122,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card getMaster([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
-            if (player == null)
-                return null;
-            return player.getMaster();
+            return player?.getMaster();
         }
         /// <summary>
         /// 获取玩家手牌
@@ -361,6 +358,8 @@ namespace Game
 
             for (int i = 0; i < buffs.Length; i++)
             {
+                if (buffs[i] == null)
+                    continue;
                 await buffs[i].setProp(game, propName, value);
             }
         }
@@ -790,9 +789,7 @@ namespace Game
         public static object getRandomElement(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection)
         {
-            if (collection == null)
-                return null;
-            return collection[game.randomInt(0, collection.Length - 1)];
+            return collection?[game.randomInt(0, collection.Length - 1)];
         }
         #endregion
 
