@@ -526,10 +526,23 @@ namespace Game
                     item.BorderImage.sprite = attack.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.DamageEventArg damage:
-                    item.IconImage.sprite = item.damageIcon;
-                    item.Text.text = "-" + damage.infoDic.First().Value.damagedValue;
-                    item.Image.sprite = getManager<TableManager>().getSkin(damage.infoDic.First().Key).image;
-                    item.BorderImage.sprite = damage.infoDic.First().Key.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
+                    if (damage.infoDic.Count > 0)
+                    {
+                        item.IconImage.sprite = item.damageIcon;
+                        var firstDamage = damage.infoDic.First();
+                        var card = firstDamage.Key;
+                        var damageInfo = firstDamage.Value;
+                        item.Text.text = "-" + damageInfo.damagedValue;
+                        item.Image.sprite = getManager<TableManager>().getSkin(card).image;
+                        item.BorderImage.sprite = card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
+                    }
+                    else
+                    {
+                        item.IconImage.sprite = item.damageIcon;
+                        item.Text.text = "-0";
+                        item.Image.sprite = null;
+                        item.BorderImage.sprite = null;
+                    }
                     break;
                 case THHCard.SetArmorEventArg armor:
                     item.IconImage.sprite = item.armorIcon;
@@ -538,10 +551,23 @@ namespace Game
                     item.BorderImage.sprite = armor.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.HealEventArg heal:
-                    item.IconImage.sprite = item.healIcon;
-                    item.Text.text = "+" + heal.infoDic.First().Value.healedValue;
-                    item.Image.sprite = getManager<TableManager>().getSkin(heal.infoDic.First().Key).image;
-                    item.BorderImage.sprite = heal.infoDic.First().Key.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
+                    if (heal.infoDic.Count > 0)
+                    {
+                        var firstHeal = heal.infoDic.First();
+                        var card = firstHeal.Key;
+                        var healInfo = firstHeal.Value;
+                        item.IconImage.sprite = item.healIcon;
+                        item.Text.text = "+" + healInfo.healedValue;
+                        item.Image.sprite = getManager<TableManager>().getSkin(card).image;
+                        item.BorderImage.sprite = card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
+                    }
+                    else
+                    {
+                        item.IconImage.sprite = item.healIcon;
+                        item.Text.text = "+0";
+                        item.Image.sprite = null;
+                        item.BorderImage.sprite = null;
+                    }
                     break;
                 case THHCard.SilenceEventArg silence:
                     item.IconImage.sprite = item.silenceIcon;
