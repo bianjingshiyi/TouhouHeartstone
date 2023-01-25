@@ -580,7 +580,8 @@ namespace UI
 
             _uploadIconImage.gameObject.SetActive(false);
             _downloadIconImage.gameObject.SetActive(false);
-            _checkIconImage.gameObject.SetActive(false);
+            _readyIconImage.gameObject.SetActive(false);
+            _checkingIconImage.gameObject.SetActive(false);
             PlayerLoadState loadState = data.getLoadState();
             switch (loadState)
             {
@@ -590,8 +591,11 @@ namespace UI
                 case PlayerLoadState.Download:
                     _downloadIconImage.gameObject.SetActive(true);
                     break;
+                case PlayerLoadState.Checking:
+                    _checkingIconImage.gameObject.SetActive(true);
+                    break;
                 default:
-                    _checkIconImage.gameObject.SetActive(data.getReady());
+                    _readyIconImage.gameObject.SetActive(data.getReady());
                     break;
             }
             _progressBar.gameObject.SetActive(loadState != PlayerLoadState.None);
@@ -702,11 +706,13 @@ namespace UI
         [TranslateMsg("房间显示之未知角色")]
         private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
         [SerializeField]
-        private Image _checkIconImage;
+        private Image _readyIconImage;
         [SerializeField]
         private Image _uploadIconImage;
         [SerializeField]
         private Image _downloadIconImage;
+        [SerializeField]
+        private Image _checkingIconImage;
         [SerializeField]
         private Image _progressBar;
         #endregion
