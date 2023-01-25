@@ -105,15 +105,9 @@ namespace Controllers
         /// <param name="trigger"></param>
         private async Task openTriggerGraph(TriggerGraph trigger, string entryType)
         {
-            _actionNodeList.Clear();
-            _actionNodeItemList.Clear();
+            resetEditObjects();
             _entryType = entryType;
-            _effect = null;
-            _valueRef = null;
-            _targetChecker = null;
             _trigger = trigger;
-            //显示UI
-            _ui.clearGraph();
             //转成index
             int triggerIndex = getEventTypeIndex(_trigger.eventName);
             if (triggerIndex < 0)
@@ -129,9 +123,10 @@ namespace Controllers
                 getTranslatedTargetCheckerTypes(),
                 triggerIndex,
                 getTriggerTargetCheckerViewData());
-            if (_entryType == nameof(GeneratedBattlecry.activeTrigger) || _entryType == nameof(GeneratedDeathRattle.activeTrigger))
+            //宣言、遗言、光环的影响类型节点图隐藏事件类型
+            if (_entryType == nameof(GeneratedBattlecry.activeTrigger) || 
+                _entryType == nameof(GeneratedDeathRattle.activeTrigger))
             {
-                //战吼类型节点图隐藏事件类型
                 _entryNodeItem.displayEventType(false);
             }
             else
@@ -170,20 +165,7 @@ namespace Controllers
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.action);
                 _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
             }
-            //创建离散节点
-            for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
-            {
-                if (_graphInfo.freeActionNodeList[i] == null)
-                    continue;
-                if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
-                {
-                    //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
-                    _graphInfo.freeActionNodeList.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-                await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
-            }
+            await createFreeNodes();
             updateContentSize();
         }
         private (int typeIndex, string name, string errorTip)[] getTriggerTargetCheckerViewData()
@@ -247,6 +229,20 @@ namespace Controllers
                 };
             }
         }
+
+        private void validateConnection4TriggerOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        {
+            // 尝试连接：触发器的值----动作节点的前置动作
+            if (inputIndex < inputActionNode.branches.Length)
+            {
+                //值输出只能与值输入相互连接
+                throw new ActionNodeGraphException(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
+            }
+            Type outputType = getEventVarInfo(outputIndex - 1).type;
+            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - inputActionNode.branches.Length].type;
+            validateConnectionType(outputType, inputType);
+        }
+        #region 节点连接
         /// <summary>
         /// 将事件节点的输出值连接到输入上
         /// </summary>
@@ -395,6 +391,8 @@ namespace Controllers
                 }
             }
         }
+        #endregion
+        #region 事件类型
         private int getEventTypeIndex(string eventName)
         {
             return _eventTypeInfoList.FindIndex(e => e.eventName == eventName);
@@ -458,6 +456,7 @@ namespace Controllers
             }
             return null;
         }
+        #endregion
         #endregion
         #region 属性字段
         List<EventTypeInfo> _eventTypeInfoList = new List<EventTypeInfo>();
@@ -536,8 +535,6 @@ namespace Controllers
             _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterDamageEvent");
             _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeHealEvent");
             _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterHealEvent");
-            //_eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeDeathEvent");
-            //_eventTypeInfoList.RemoveAll(e => e.eventName == "AfterDeathEvent");
             //_eventTypeInfoList.Find(e => e.eventName == "BeforeDamageEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DAMAGE;
             //_eventTypeInfoList.Find(e => e.eventName == "AfterDamageEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DAMAGE;
             //_eventTypeInfoList.Find(e => e.eventName == "BeforeHealEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_HEAL;

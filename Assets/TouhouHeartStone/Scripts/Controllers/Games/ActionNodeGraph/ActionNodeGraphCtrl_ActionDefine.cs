@@ -45,11 +45,7 @@ namespace Controllers
         {
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
-            _entryType = null;
-            _effect = null;
-            _valueRef = null;
-            _targetChecker = null;
-            _trigger = null;
+            resetEditObjects();
             _generatedActionDefine = generatedActionDefine;
             //显示UI
             _ui.clearGraph();
@@ -91,20 +87,7 @@ namespace Controllers
                 }
                 _ui.connectNode(outputActionNodeItem, outputIndex, _returnNodeItem, returnValueRef.returnIndex, ActionNodeConnectionType.value);
             }
-            //创建离散节点
-            for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
-            {
-                if (_graphInfo.freeActionNodeList[i] == null)
-                    continue;
-                if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
-                {
-                    //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
-                    _graphInfo.freeActionNodeList.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-                await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
-            }
+            await createFreeNodes();
             updateContentSize();
         }
         private void updateActionDefineReturnNodes()
@@ -134,7 +117,31 @@ namespace Controllers
             }
             _entryNodeItem.setOutputs(viewData);
         }
-
+        private void validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        {
+            // 尝试连接：自定义动作入口节点（值输出）----出口节点（前置动作）
+            if (inputIndex < inputActionNode.branches.Length)
+            {
+                //值输出只能与值输入相互连接
+                throw new ActionNodeGraphException(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
+            }
+            Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
+            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - inputActionNode.branches.Length].type;
+            validateConnectionType(outputType, inputType);
+        }
+        private void validateConnection4ActionDefineReturn(int outputIndex, int inputIndex)
+        {
+            // 尝试连接：入口节点（动作）----出口节点
+            if (outputIndex < 1)
+            {
+                //值输出只能与值输入相互连接
+                throw new ActionNodeGraphException(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
+            }
+            Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
+            Type inputType = _generatedActionDefine.outputList[inputIndex].type;
+            validateConnectionType(outputType, inputType);
+        }
+        #region 节点连接
         /// <summary>
         /// 将输入节点的输出值连接到输入上
         /// </summary>
@@ -223,6 +230,8 @@ namespace Controllers
                 }
             }
         }
+        #endregion
+        #region 动作定义
         private Type getActionDefineInputTypeAt(int index)
         {
             if (index < _generatedActionDefine.inputList.Count)
@@ -255,6 +264,40 @@ namespace Controllers
             actionDefineList.AddRange(game.card.getActionDefines(_curCardPoolId));
             return actionDefineList.ToArray();
         }
+        private IGrouping<string, ActionDefine>[] getActionDefineGroups()
+        {
+            return getAllActionDefines().GroupBy(actionDefine =>
+            {
+                string name;
+                if (actionDefine is MethodActionDefine methodActionDefine)
+                {
+                    if (string.IsNullOrEmpty(methodActionDefine.category))
+                        name = methodActionDefine.defineName;
+                    else
+                        name = methodActionDefine.category;
+                }
+                else if (actionDefine is GeneratedActionDefine generatedActionDefine)
+                {
+                    if (string.IsNullOrEmpty(generatedActionDefine.category))
+                        name = generatedActionDefine.defineName;
+                    else
+                        name = generatedActionDefine.category;
+                }
+                else if (actionDefine.defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST))
+                {
+                    //以Const结尾的类型是常量
+                    name = StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST;
+                }
+                else
+                {
+                    name = actionDefine.defineName;
+                }
+                if (_nameTextDict.ContainsKey(name))
+                    name = _nameTextDict[name];
+                return game.langManager.getString(name);
+            }, a => a).OrderBy(g => g.Count() > 1).ThenBy(g => g.Key).ToArray();
+        }
+        #endregion
         #endregion
         #region 属性字段
         Dictionary<string, ActionDefine> _actionDefineDict;
