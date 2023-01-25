@@ -91,7 +91,6 @@ namespace TouhouHeartstone
                     p.setFatigue(p.getFatigue() + 1);
                     game.logger.logTrace(p + "已经没有卡牌了，当前疲劳值：" + p.getFatigue());
                     var damage = await p.getMaster().damage(game, null, p.getFatigue());
-                    await game.updateDeath();
                 }
             }
             else
@@ -248,7 +247,6 @@ namespace TouhouHeartstone
                     await card.activeEffect(game, p, targets);
                 }
             });
-            await game.updateDeath();
             return true;
         }
         public static async Task equip(this Player player, CardEngine game, Card item)

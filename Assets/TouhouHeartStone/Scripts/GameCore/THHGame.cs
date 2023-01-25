@@ -468,36 +468,45 @@ namespace TouhouHeartstone
         /// 死亡结算，清理战场上死亡的随从
         /// </summary>
         /// <returns></returns>
-        public Task updateDeath(CardEngine game)
+        public async Task updateDeath(CardEngine game)
         {
+            const int MAX_UPDATE_TIMES = 30;
             List<Card> deathList = new List<Card>();
-            foreach (Player player in game.players)
+            int updateTimes = 0;
+            do
             {
-                if (player.getMaster().isDead(game))
+                deathList.Clear();
+                foreach (Player player in game.players)
                 {
-                    deathList.Add(player.getMaster());
-                }
-
-                if (player.getItem() != null && player.getItem().isDead(game))
-                {
-                    deathList.Add(player.getItem());
-                }
-
-                foreach (Card card in player.getField())
-                {
-                    if (card.isDead(game))
+                    if (player.getMaster().isDead(game))
                     {
-                        deathList.Add(card);
+                        deathList.Add(player.getMaster());
+                    }
+
+                    if (player.getItem() != null && player.getItem().isDead(game))
+                    {
+                        deathList.Add(player.getItem());
+                    }
+
+                    foreach (Card card in player.getField())
+                    {
+                        if (card.isDead(game))
+                        {
+                            deathList.Add(card);
+                        }
                     }
                 }
-            }
 
-            if (deathList.Count > 0)
-            {
-                return deathList.destroy(game);
+                if (deathList.Count <= 0)
+                {
+                    break;
+                }
+                await deathList.destroy(game);
+                updateTimes++;
             }
-            else
-                return Task.CompletedTask;
+            // 受不了了，什么寄吧卡能让死亡结算运行30多次，跳了
+            while (updateTimes < MAX_UPDATE_TIMES);
+
         }
         #endregion
 
@@ -702,6 +711,7 @@ namespace TouhouHeartstone
                         await game.surrender(player);
                         return;
                 }
+                await game.updateDeath();
             }
         }
 
@@ -739,6 +749,7 @@ namespace TouhouHeartstone
                 game.answers.cancel(game.answers.getRequests(player.id));
                 return Task.CompletedTask;
             });
+            await game.updateDeath();
             game.time.cancel(getTurnTimer(game));
             setTurnTimer(game, null);
         }

@@ -1697,16 +1697,6 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID, async (game, card, arg) =>
             {
                 await game.getAllServants().damage(game, card, 2);
-                await game.updateDeath();
-                // await card.getOwner().master.addBuff(game, new GeneratedBuff(ID,
-                //     new THHEffectBefore<THHGame.TurnStartEventArg>(PILE.MASTER,
-                //         (g, c, a) => { return a.player == c.getOwner(); },
-                //         null,
-                //         async (g, c, a) =>
-                //         {
-                //             await card.fieldToDeck(game, true);
-                //             await card.getOwner().master.removeBuff(game, ID);
-                //         })));
                 await card.graveToDeck(game, true);
             })
         };
@@ -2742,7 +2732,6 @@ namespace TouhouHeartstone.Builtin
                 var targets = game.getAllCharacters().ToList();
                 targets.Remove(card);
                 targets.damage(game, card, 3);
-                game.updateDeath();
                 return Task.CompletedTask;
             })
         };

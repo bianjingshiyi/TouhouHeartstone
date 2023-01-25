@@ -155,7 +155,6 @@ namespace TouhouHeartstone.Builtin
             new DeathRattle(ID,async(g1,c1,p)=>
             {
                 await g1.getOpponent(c1.getOwner()).getMaster().damage(g1,c1,2);
-                await g1.updateDeath();
             })
         };
 
@@ -201,7 +200,6 @@ namespace TouhouHeartstone.Builtin
                 await c1.addBuff(game, new CodeBuff(ID, new DeathRattle(ID, async (g, c, b, p) =>
                 {
                     await g.getOpponent(c.getOwner()).getMaster().damage(g, c, 1);
-                    await g.updateDeath();
                 })));
             }
         }
@@ -307,7 +305,7 @@ namespace TouhouHeartstone.Builtin
             }),
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
-                await target.setDead(game,true);
+                await target.kill(game);
                 await game.updateDeath();
             },PileFlag.self | PileFlag.field)
         };
@@ -543,8 +541,7 @@ namespace TouhouHeartstone.Builtin
                         return a.player == c.getOwner() && c.pile.name == PILE.FIELD;
                     }, async (g, c, a) =>
                     {
-                        await c.setDead(g, true);
-                        await g.updateDeath();
+                        await c.kill(g);
                     })));
                 }
             };

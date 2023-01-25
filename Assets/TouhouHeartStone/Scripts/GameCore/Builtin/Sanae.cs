@@ -462,7 +462,6 @@ namespace TouhouHeartstone.Builtin
                     .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
 
                 await game.getAllServants().damage(game, card, count);
-                await game.updateDeath();
             })
         };
 
@@ -512,8 +511,7 @@ namespace TouhouHeartstone.Builtin
                     })),
             new LambdaSingleTargetEffect(async (g, c, t) =>
             {
-                await t.setDead(g, true);
-                await g.updateDeath();
+                await t.kill(g);
             }, PileFlag.oppo | PileFlag.field)
         };
 
@@ -827,7 +825,6 @@ namespace TouhouHeartstone.Builtin
                 await target.setDead(game, true);
                 await card.getOwner().getMaster().damage(game, card,
                     card.getOwner().getSpellDamage(game, target.getCurrentLife(game)));
-                await game.updateDeath();
             }, PileFlag.oppo | PileFlag.field)
         };
 

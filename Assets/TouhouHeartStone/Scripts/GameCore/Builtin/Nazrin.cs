@@ -664,7 +664,6 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.setDead(game, true);
-                await game.updateDeath();
                 await card.getOwner().createToken(game, game.getDefine<Nazrin_00>());
             }, PileFlag.both | PileFlag.field)
         };

@@ -1185,7 +1185,6 @@ namespace TouhouHeartstone
                     }
                 }
             });
-            await game.updateDeath();
             return eventArg;
         }
         public class AttackEventArg : EventArg, IDescribableEventArg
@@ -1702,14 +1701,21 @@ namespace TouhouHeartstone
             }
 
             // 触发遗言。
-            foreach (Card card in cards)
+            try
             {
-                // 只在战场、墓地或武器栏位触发遗言。
-                if ((card.pile?.name == PILE.GRAVE || card.pile?.name == PILE.FIELD || card.pile?.name == PILE.ITEM) && card.hasDeathRattle(game))
+                foreach (Card card in cards)
                 {
-                    await card.triggerDeathRattles(game);
+                    // 只在战场、墓地或武器栏位触发遗言。
+                    if ((card.pile?.name == PILE.GRAVE || card.pile?.name == PILE.FIELD || card.pile?.name == PILE.ITEM) && card.hasDeathRattle(game))
+                    {
+                        await card.triggerDeathRattles(game);
+                    }
+                    await card.resetCard(game);
                 }
-                await card.resetCard(game);
+            }
+            catch (Exception e)
+            {
+                game.logger?.logError("Effect", "触发遗言时引发异常：" + e);
             }
             if (remainPlayerList.Count != game.players.Length)
             {
@@ -1859,7 +1865,6 @@ namespace TouhouHeartstone
                     await toGrave.setDead(game, true);
                 }
             }
-            await game.updateDeath();
         }
 
         /// <summary>

@@ -624,7 +624,6 @@ namespace TouhouHeartstone.Builtin
                     if (!target.isDead(game))
                     {
                         await c.forceAttack(game, card.getOwner(), target);
-                        await game.updateDeath();
                     }
                 }
             })
