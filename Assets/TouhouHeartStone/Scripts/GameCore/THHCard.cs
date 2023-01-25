@@ -1277,9 +1277,13 @@ namespace TouhouHeartstone
             });
         }
         #endregion
-        public static Task<DamageEventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        public static async Task<DamageEventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
-            return damage(game, cards.Where(p => p != null).ToDictionary(c => c, c => new DamageEventArg.Info(value, source)));
+            if (!cards.Any())
+            {
+                return default;
+            }
+            return await damage(game, cards.Where(p => p != null).ToDictionary(c => c, c => new DamageEventArg.Info(value, source)));
         }
         public static Task<DamageEventArg> damage(CardEngine game, Dictionary<Card, DamageEventArg.Info> damageInfoDic)
         {
