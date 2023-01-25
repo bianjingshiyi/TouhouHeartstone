@@ -1329,6 +1329,10 @@ namespace UI
         /// 关键词
         /// </summary>
         keywords,
+        /// <summary>
+        /// 函数节点
+        /// </summary>
+        functionNode,
     }
     public enum ActionNodeConnectionType
     {

@@ -398,6 +398,7 @@ namespace UI
             }
             //按钮
             if (_valueInfo.type == ActionNodeValueType.actionNode ||
+                _valueInfo.type == ActionNodeValueType.functionNode ||
                 _valueInfo.type == ActionNodeValueType.actionValueRef ||
                 _valueInfo.type == ActionNodeValueType.trigger)
             {

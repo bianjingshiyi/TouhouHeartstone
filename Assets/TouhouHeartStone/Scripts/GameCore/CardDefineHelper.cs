@@ -166,6 +166,10 @@ namespace TouhouHeartstone
             return getCardNumber(card.id);
         }
 
+        public static IEffect[] getAuras(this CardDefine card)
+        {
+            return card.getEffects().Where(e => e.isAura()).ToArray();
+        }
         public static IEffect[] getBattlecries(this CardDefine card)
         {
             return card.getEffects().Where(e => 

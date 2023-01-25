@@ -147,6 +147,7 @@ namespace Game
             new EditorTypeInfo() { type = typeof(Effect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
             new EditorTypeInfo() { type = typeof(GeneratedEffect), typeName = StringTable.EDITOR_TYPE_NAME_HALO_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
             new EditorTypeInfo() { type = typeof(GeneratedHalo), typeName = StringTable.EDITOR_TYPE_NAME_HALO_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
+            new EditorTypeInfo() { type = typeof(GeneratedAura), typeName = StringTable.EDITOR_TYPE_NAME_HALO_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
             new EditorTypeInfo() { type = typeof(GeneratedBattlecry), typeName = StringTable.EDITOR_TYPE_NAME_BATTLECRAY_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
             new EditorTypeInfo() { type = typeof(GeneratedDeathRattle), typeName = StringTable.EDITOR_TYPE_NAME_DEATH_RATTLE_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },
             new EditorTypeInfo() { type = typeof(EffectTagCollection), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION, isConstType = true, color = new Color(.2f, .5f, .5f, 1) },

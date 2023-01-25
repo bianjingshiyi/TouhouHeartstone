@@ -23,10 +23,18 @@ namespace Controllers
                 BsonClassMap.RegisterClassMap<ObjectProxy>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(ActionValueRef)))
                 BsonClassMap.RegisterClassMap<ActionValueRef>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(FunctionNode)))
+                BsonClassMap.RegisterClassMap<FunctionNode>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActionValueRef)))
+                BsonClassMap.RegisterClassMap<SerializableActionValueRef>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableFunctionNode)))
+                BsonClassMap.RegisterClassMap<SerializableFunctionNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedEffect)))
                 BsonClassMap.RegisterClassMap<GeneratedEffect>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedHalo)))
                 BsonClassMap.RegisterClassMap<GeneratedHalo>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedAura)))
+                BsonClassMap.RegisterClassMap<GeneratedAura>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(CompareOperator)))
                 BsonClassMap.RegisterClassMap<CompareOperator>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(IntegerOperator)))

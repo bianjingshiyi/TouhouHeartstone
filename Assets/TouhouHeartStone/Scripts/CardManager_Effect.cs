@@ -36,7 +36,7 @@ namespace Game
             else if (index == 2)
                 return new GeneratedBattlecry();
             else if (index == 1)
-                return new GeneratedHalo();
+                return new GeneratedAura();
             else
                 return new GeneratedEffect();
         }
@@ -46,7 +46,7 @@ namespace Game
                 return 3;
             else if (effect is GeneratedBattlecry)
                 return 2;
-            else if (effect is GeneratedHalo)
+            else if (effect is GeneratedAura || effect is GeneratedHalo)
                 return 1;
             else
                 return 0;

@@ -68,6 +68,8 @@ namespace Controllers
                     return openTriggerGraph(trigger, info.entryType);
                 else if (info.editObject is TargetChecker targetChecker)
                     return openTargetCheckerGraph(targetChecker);
+                else if (info.editObject is FunctionNode funcNode)
+                    return openFunctionNodeGraph(funcNode);
                 else if (info.editObject is ActionValueRef valueRef)
                     return openValueRefGraph(valueRef);
                 else if (info.editObject is GeneratedEffect effect)
@@ -86,6 +88,8 @@ namespace Controllers
                 editObject = _targetChecker;
             else if (_valueRef != null)
                 editObject = _valueRef;
+            else if (_functionNode != null)
+                editObject = _functionNode;
             else if (_effect != null)
                 editObject = _effect;
             else
@@ -308,11 +312,22 @@ namespace Controllers
                 // 连接的输出节点是出口节点
                 if (inputActionNodeItem == _returnNodeItem)
                 {
-                    // 检测自定义动作的连接合法性。
-                    if (!validateConnection4ActionDefineArgToReturn(outputIndex, inputIndex))
-                        return;
-                    // 自定义动作参数返回连接
-                    connectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
+                    if (_generatedActionDefine != null)
+                    {
+                        // 检测自定义动作的连接合法性。
+                        if (!validateConnection4ActionDefineArgToReturn(outputIndex, inputIndex))
+                            return;
+                        // 自定义动作参数返回连接
+                        connectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
+                    }
+                    else if (_functionNode != null)
+                    {
+                        // 检测函数节点的连接合法性。
+                        if (!validateConnection4FunctionNodeOutput2Return(outputIndex, inputIndex))
+                            return;
+                        // 自定义动作参数返回连接
+                        connectNode4FunctionNodeOutput2Return(outputIndex - 1, inputIndex);
+                    }
                 }
                 // 连接的输出节点是普通的动作节点。
                 else if (getActionNode(inputActionNodeItem) is ActionNode inputActionNode)
@@ -348,6 +363,14 @@ namespace Controllers
                             if (!validateConnection4ActionDefineEntryOutput(outputIndex, inputActionNode, inputIndex))
                                 return;
                             connectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - 1);
+                        }
+                        // 连接：自定义动作入口节点（输出值）----动作节点
+                        else if (_functionNode != null)
+                        {
+                            //检查合法性
+                            if (!validateConnection4FunctionNodeOutput(outputIndex, inputActionNode, inputIndex))
+                                return;
+                            connectNode4FunctionNodeOutput(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
                         }
                     }
                 }
@@ -451,7 +474,14 @@ namespace Controllers
                 if (inputActionNodeItem == _returnNodeItem)
                 {
                     //自定义动作参数返回连接
-                    unconnectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
+                    if (_generatedActionDefine != null)
+                    {
+                        unconnectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
+                    }
+                    else if (_functionNode != null)
+                    {
+                        unconnectNode4FunctionNodeOutput2Return(outputIndex - 1, inputIndex);
+                    }
                 }
                 // 断开的输入节点不是返回节点，是普通的动作节点
                 else if (getActionNode(inputActionNodeItem) is ActionNode inputActionNode)
@@ -473,6 +503,11 @@ namespace Controllers
                         else if (_generatedActionDefine != null)
                         {
                             unconnectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - 1);
+                        }
+                        // 断开函数节点对这个节点的输出。
+                        else if (_functionNode != null)
+                        {
+                            unconnectNode4FunctionNodeOutput(outputIndex - 1, inputActionNode, inputIndex - 1);
                         }
                     }
                 }
@@ -1293,6 +1328,10 @@ namespace Controllers
             {
                 _generatedActionDefine.traverse(act, traversedNodes);
             }
+            else if (_functionNode != null)
+            {
+                _functionNode.traverse(act);
+            }
             else if (_effect != null)
             {
                 if (rootActionNode != null)
@@ -1379,6 +1418,10 @@ namespace Controllers
                 updateRegVar(outputActionNode);
                 //更新ui
                 _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _returnNodeItem, inputIndex, ActionNodeConnectionType.value);
+            }
+            else if (_functionNode != null)
+            {
+                connectNode4FunctionNodeReturn(outputActionNode, outputIndex, 0);
             }
             else if (_valueRef != null)
             {
@@ -1579,6 +1622,10 @@ namespace Controllers
                 updateRegVar(outputActionNode);
                 _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex + 1, _returnNodeItem, 0);
             }
+            else if (_functionNode != null)
+            {
+                unconnectNode4FunctionNodeReturn(outputActionNode, outputIndex, inputIndex);
+            }
             else
                 throw new NotImplementedException();
         }
@@ -1698,7 +1745,16 @@ namespace Controllers
             if (inputActionNode == null)
             {
                 if (outputActionNode == null)
-                    unconnectNode4ActionDefineArgToReturn(outputIndex, inputIndex);
+                {
+                    if (_generatedActionDefine != null)
+                    {
+                        unconnectNode4ActionDefineArgToReturn(outputIndex, inputIndex);
+                    }
+                    else if (_functionNode != null)
+                    {
+                        unconnectNode4FunctionNodeOutput2Return(outputIndex, inputIndex);
+                    }
+                }
                 else
                     unconnectNode4ReturnValueRef(outputActionNode, outputIndex, inputIndex);
             }
@@ -1776,6 +1832,19 @@ namespace Controllers
                         {
                             unconnectNode4ReturnValueRef(actionNode, returnRef.valueRef.index, returnRef.returnIndex);
                         }
+                    }
+                }
+            }
+            else if (_functionNode != null)
+            {
+                // 函数节点的“返回值”。
+                foreach (var returnRef in _functionNode.returns)
+                {
+                    if (returnRef != null &&
+                        returnRef.valueRef != null &&
+                        returnRef.valueRef.action == actionNode)
+                    {
+                        unconnectNode4FunctionNodeReturn(actionNode, returnRef.valueRef.index, returnRef.returnIndex);
                     }
                 }
             }
@@ -2116,7 +2185,7 @@ namespace Controllers
                     }
                 }
             }
-            // 自定义的出口节点的输出值连接的是该节点的输出值。
+            // 自定义的出口节点的返回值连接的是该节点的输出值。
             else if (_generatedActionDefine != null)
             {
                 foreach (var returnValueRef in _generatedActionDefine.returnValueRefList)
@@ -2131,7 +2200,21 @@ namespace Controllers
                     }
                 }
             }
-            // TODO: FunctionNode的输出节点连接判断。
+            // 函数节点的出口节点的返回值连接的是该节点的输出值。
+            else if (_functionNode != null)
+            {
+                foreach (var returnValueRef in _functionNode.returns)
+                {
+                    if (returnValueRef == null || returnValueRef.valueRef == null)
+                        continue;
+                    var valueRef = returnValueRef.valueRef;
+                    if ((valueRef.action == actionNode || valueRef.actionNodeId == actionNode.id) &&
+                        valueRef.index == outputIndex)
+                    {
+                        count++;
+                    }
+                }
+            }
             return count;
         }
         /// <summary>
@@ -2541,6 +2624,7 @@ namespace Controllers
             _targetChecker = null;
             _trigger = null;
             _generatedActionDefine = null;
+            _functionNode = null;
         }
         /// <summary>
         /// 将当前正在编辑的对象入栈
@@ -2553,6 +2637,8 @@ namespace Controllers
                 _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _targetChecker, null, _graphInfo));
             else if (_valueRef != null)
                 _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _valueRef, null, _graphInfo));
+            else if (_functionNode != null)
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _functionNode, null, _graphInfo));
             else
                 _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _effect, null, _graphInfo));
             _ui.setReturnButtonActive(true);
@@ -2599,6 +2685,11 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
+        [TranslateMsg("编辑器-参数名称-作用条件（自定义光环-作用条件-输出值）")]
+        public const string EDITOR_PARAM_NAME_AFFECT_CONDITION = "作用条件";
+        [TranslateMsg("编辑器-参数名称-目标增益（自定义光环-更新动作-输出值）")]
+        public const string EDITOR_PARAM_NAME_TARGETS_BUFF = "目标增益";
+        
         [Obsolete]
         public IAppManager app { get; }
         [Obsolete]
@@ -2632,6 +2723,8 @@ namespace Controllers
                 }
                 if (_trigger != null)
                     return _trigger.action;
+                if (_functionNode != null)
+                    return _functionNode.action;
                 if (valueRef != null)
                     return valueRef.action;
                 return null;
@@ -2652,6 +2745,8 @@ namespace Controllers
                 }
                 else if (_trigger != null)
                     _trigger.action = value;
+                if (_functionNode != null)
+                    _functionNode.action = value;
                 else if (valueRef != null)
                     valueRef.action = value;
             }
@@ -2816,6 +2911,28 @@ namespace Controllers
             { "TouhouCardEngine.CompareOperator.greaterEquals", EDITOR_ENUM_CMP_OPERATOR_GREATER_EQUAL },
             { "TouhouCardEngine.CompareOperator.less", EDITOR_ENUM_CMP_OPERATOR_LESS },
             { "TouhouCardEngine.CompareOperator.lessEquals", EDITOR_ENUM_CMP_OPERATOR_LESS_EQUAL },
+        };
+        readonly Dictionary<string, FunctionDefine> _functionDefineDict = new Dictionary<string, FunctionDefine>
+        {
+            { GeneratedAura.FUNCTION_DEFINE_NAME_AFFECT_CONDITION, new FunctionDefine()
+            {
+                parameters = new ValueDefine[1]
+                {
+                    new ValueDefine(typeof(Card), StringTable.EDITOR_PARAM_NAME_TARGET_CARD, false, false)
+                },
+                returns = new ValueDefine[1]
+                {
+                    new ValueDefine(typeof(bool), EDITOR_PARAM_NAME_AFFECT_CONDITION, false, false)
+                },
+            }},
+            { GeneratedAura.FUNCTION_DEFINE_NAME_UPDATE_ACTION, new FunctionDefine()
+            {
+                parameters = new ValueDefine[]
+                {
+                    new ValueDefine(typeof(Card), StringTable.EDITOR_PARAM_NAME_TARGET_CARD, false, false),
+                    new ValueDefine(typeof(Buff), EDITOR_PARAM_NAME_TARGETS_BUFF, false, false)
+                }
+            }}
         };
         #endregion
         #region 内部类

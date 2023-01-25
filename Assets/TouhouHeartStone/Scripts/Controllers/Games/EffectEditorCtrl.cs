@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
 using System.Threading.Tasks;
+using MukioI18n;
 
 namespace Controllers
 {
@@ -166,6 +167,19 @@ namespace Controllers
                     game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
                     game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
                 scene.actionNodeGraphCtrl.openActionGraph(_cardPoolId, _effect, propInfos[index].name, graphInfo);
+            }
+            else if (propInfos[index].type == typeof(FunctionNode))
+            {
+                FunctionNode condition = _effect.getProp<FunctionNode>(propInfos[index].name);
+                if (condition == null)
+                {
+                    condition = new FunctionNode();
+                    _effect.setProp(propInfos[index].name, condition);
+                }
+                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
+                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
+                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
+                scene.actionNodeGraphCtrl.openFunctionNodeGraph(_cardPoolId, condition, graphInfo);
             }
             else if (propInfos[index].type == typeof(ActionValueRef))
             {
@@ -459,6 +473,10 @@ namespace Controllers
                 {
                     item.setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_ACTION));
                 }
+                else if (valueInfos[i].type == ActionNodeValueType.functionNode)
+                {
+                    item.setButtonText(game.langManager.getString(EDITOR_BUTTON_EDIT_FUNCTION));
+                }
                 else if (valueInfos[i].type == ActionNodeValueType.actionValueRef)
                 {
                     item.setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_RETURN_VALUE));
@@ -495,6 +513,8 @@ namespace Controllers
                 return ActionNodeValueType.effectTagCollection;
             else if (type == typeof(ActionNode))
                 return ActionNodeValueType.actionNode;
+            else if (type == typeof(FunctionNode))
+                return ActionNodeValueType.functionNode;
             else if (type == typeof(ActionValueRef))
                 return ActionNodeValueType.actionValueRef;
             else if (type == typeof(TriggerGraph))
@@ -546,6 +566,11 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
+        [TranslateMsg("编辑器-效果-属性名称-更新动作（光环效果）")]
+        private const string EDITOR_EFFECT_PROP_NAME_UPDATE_ACTION = "更新动作";
+        [TranslateMsg("编辑器-效果-按钮提示-编辑函数")]
+        private const string EDITOR_BUTTON_EDIT_FUNCTION = "编辑函数";
+        
         [SerializeField]
         EffectEditorPanel _ui;
         [Obsolete("使用game作为替代")]
@@ -571,6 +596,12 @@ namespace Controllers
             { nameof(GeneratedHalo.rangeList), StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST },
             { nameof(GeneratedHalo.affectCondition), StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
             { nameof(GeneratedHalo.getHaloBuffDefine), StringTable.EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE },
+
+            //{ nameof(GeneratedAura.rangeList), StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST },
+            //{ nameof(GeneratedAura.affectCondition), StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
+            { nameof(GeneratedAura.getAuraBuffDefine), StringTable.EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE },
+            { nameof(GeneratedAura.updateAction), EDITOR_EFFECT_PROP_NAME_UPDATE_ACTION },
+
             { nameof(GeneratedBattlecry.activeTrigger), StringTable.EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER }
             //{ nameof(GeneratedDeathRattle.activeTrigger), StringTable.EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER }
         };

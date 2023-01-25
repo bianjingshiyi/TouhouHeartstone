@@ -740,6 +740,28 @@ namespace TouhouHeartstone
                 return false;
             }).ToArray();
         }
+        public static (IEffect effect, Buff buff)[] getAuras(this Card card, IGame game)
+        {
+            List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
+            if (!card.getProp<bool>(game, CARD.SILENCE))
+            {
+                results.AddRange(card.define.getAuras()
+                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
+            }
+            foreach (var buff in card.getBuffs())
+            {
+                var effects = buff.getEffects(game as CardEngine);
+                results.AddRange(effects.Where(e => e.isAura())
+                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+            }
+            return results.Where(e => {
+                if (e.effect is GeneratedAura gen)
+                {
+                    return !gen.isDisabled(game, card, e.buff);
+                }
+                return false;
+            }).ToArray();
+        }
         public static bool hasDeathRattle(this Card card, IGame game)
         {
             if (!card.getProp<bool>(game, CARD.SILENCE))
@@ -2121,6 +2143,35 @@ namespace TouhouHeartstone
             foreach (var card in cards)
             {
                 await card.removeBuff(game, card.getBuffs(b => b.id == buffId));
+            }
+        }
+        public static async Task updateBuff(this Card card, CardEngine game, Buff buff)
+        {
+            buff.updateModifierProps(game);
+            var propModis = buff.getPropertyModifiers(game);
+            if (propModis != null)
+            {
+                foreach (var modifier in propModis)
+                {
+                    object value = card.getProp(game, modifier.getPropName());
+                    await game.triggers.doEvent(new Card.PropChangeEventArg()
+                    {
+                        game = game,
+                        card = card,
+                        propName = modifier.getPropName(),
+                        beforeValue = value,
+                        value = value
+                    });
+                }
+            }
+            var effects = buff.getEffects(game);
+            if (effects != null)
+            {
+                foreach (var effect in effects)
+                {
+                    await effect.onDisable(game, card, buff);
+                    await effect.onEnable(game, card, buff);
+                }
             }
         }
         /// <summary>

@@ -484,23 +484,15 @@ namespace TouhouHeartstone
                 deathList.Clear();
                 foreach (Player player in game.players)
                 {
-                    if (player.getMaster().isDead(game))
-                    {
-                        deathList.Add(player.getMaster());
-                    }
+                    deathList.AddRange(player.getField().Where(s => s != null && s.isDead(game)));
 
-                    if (player.getItem() != null && player.getItem().isDead(game))
-                    {
-                        deathList.Add(player.getItem());
-                    }
+                    var item = player.getItem();
+                    if (item != null && item.isDead(game))
+                        deathList.Add(item);
 
-                    foreach (Card card in player.getField())
-                    {
-                        if (card.isDead(game))
-                        {
-                            deathList.Add(card);
-                        }
-                    }
+                    var master = player.getMaster();
+                    if (master != null && master.isDead(game))
+                        deathList.Add(master);
                 }
 
                 if (deathList.Count <= 0)
@@ -513,6 +505,19 @@ namespace TouhouHeartstone
             // 受不了了，什么寄吧卡能让死亡结算运行30多次，跳了
             while (updateTimes < MAX_UPDATE_TIMES);
 
+            // 更新光环。
+            var auras = game.players.SelectMany(p => p.getPiles().SelectMany(pile => pile)).ToDictionary(c => c, c => c.getAuras(game));
+            foreach (var pair in auras)
+            {
+                var card = pair.Key;
+                foreach (var (effect, buff) in pair.Value)
+                {
+                    if (effect is GeneratedAura gen)
+                    {
+                        await gen.execute(game, card, buff, null);
+                    }
+                }
+            }
         }
         #endregion
 
