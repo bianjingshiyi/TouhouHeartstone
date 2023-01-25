@@ -1090,6 +1090,30 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
+        /// <summary>
+        /// 触发一个特定卡牌定义自带的宣言。
+        /// </summary>
+        /// <param name="card">施放宣言的仆从。</param>
+        /// <param name="game">游戏对象。</param>
+        /// <param name="player">施放宣言的玩家。</param>
+        /// <param name="define">要施放宣言的卡牌定义。</param>
+        /// <param name="targets">宣言的目标。</param>
+        /// <returns></returns>
+        public static async Task triggerCardDefineBattlecries(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
+        {
+            var battlecries = define.getBattlecries();
+            foreach (var battlecry in battlecries)
+            {
+                if (battlecry is GeneratedBattlecry cry)
+                {
+                    await cry.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                }
+                else if (battlecry is GeneratedEffect gen)
+                {
+                    await gen.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                }
+            }
+        }
         public static async Task triggerBattlecries(this Card card, CardEngine game, Player player, Card[] targets)
         {
             var battlecries = getBattlecries(card, game);
@@ -1102,6 +1126,33 @@ namespace TouhouHeartstone
                 else if (battlecry.effect is GeneratedEffect gen)
                 {
                     await gen.execute(game, card, battlecry.buff, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                }
+            }
+        }
+        /// <summary>
+        /// 触发一个特定卡牌定义自带的遗言。
+        /// </summary>
+        /// <param name="card">触发遗言的仆从。</param>
+        /// <param name="game">游戏对象。</param>
+        /// <param name="define">要触发遗言的卡牌定义。</param>
+        /// <returns></returns>
+        public static async Task triggerCardDefineDeathRattles(this Card card, CardEngine game, CardDefine define)
+        {
+            var deathRattles = define.getDeathRattles();
+
+            foreach (var deathRattle in deathRattles)
+            {
+                if (deathRattle is GeneratedDeathRattle genRattle)
+                {
+                    await genRattle.execute(game, card, null, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                }
+                else if (deathRattle is GeneratedEffect gen)
+                {
+                    await gen.execute(game, card, null, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                }
+                else if (deathRattle is DeathRattle rattle)
+                {
+                    await rattle.execute(game, card, null, new DeathEventArg(card));
                 }
             }
         }
