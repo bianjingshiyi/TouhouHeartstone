@@ -85,15 +85,21 @@ namespace TouhouHeartstone
         /// <summary>
         /// 一个随从/物品/英雄是否已经死了？除了生命值小于等于0以外，还有一个isDead的属性来控制卡片是否在死亡结算当中。
         /// </summary>
-        /// <param name="card"></param>
+        /// <param name="card">目标卡牌。</param>
+        /// <param name="game">游戏对象。</param>
+        /// <param name="checkHealth">是否检查卡牌生命值小于等于0？</param>
+        /// <param name="checkKilled">是否检查卡牌处于待摧毁状态？</param>
         /// <returns></returns>
-        public static bool isDead(this Card card, IGame game)
+        public static bool isDead(this Card card, IGame game, bool checkHealth = true, bool checkKilled = true)
         {
-            if (card.getCurrentLife(game) <= 0)
-                return true;
-            if (card.getLife(game) <= 0)
-                return true;
-            if (card.getProp<bool>(game, CARD.ISDEAD))
+            if (checkHealth)
+            {
+                if (card.getCurrentLife(game) <= 0)
+                    return true;
+                if (card.getLife(game) <= 0)
+                    return true;
+            }
+            if (checkKilled && card.getProp<bool>(game, CARD.ISDEAD))
                 return true;
             return false;
         }

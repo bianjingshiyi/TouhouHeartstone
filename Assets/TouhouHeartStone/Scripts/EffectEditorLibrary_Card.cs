@@ -562,6 +562,26 @@ namespace Game
             return cards.kill(game);
         }
 
+        [TranslateMsg("节点名称")]
+        private const string EDITOR_NODE_NAME_IS_DEAD = "是否濒死";
+        [TranslateMsg("是否濒死节点-常量")]
+        private const string EDITOR_PARAM_NAME_CHECK_HEALTH_ZERO = "检查生命值<=0";
+        [TranslateMsg("是否濒死节点-常量")]
+        private const string EDITOR_PARAM_NAME_CHECK_DESTROYED = "检查待摧毁";
+        [TranslateMsg("是否濒死节点-返回值")]
+        private const string EDITOR_PARAM_NAME_IS_DEAD = "濒死";
+        [ActionNodeMethod(EDITOR_NODE_NAME_IS_DEAD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return : ActionNodeParam(EDITOR_PARAM_NAME_IS_DEAD)]
+        public static bool isDead(CardEngine game, 
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_PARAM_NAME_CHECK_HEALTH_ZERO, isConst: true)] bool checkHealth,
+            [ActionNodeParam(EDITOR_PARAM_NAME_CHECK_DESTROYED, isConst: true)] bool checkKilled)
+        {
+            if (card == null)
+                return false;
+            return card.isDead(game, checkHealth, checkKilled);
+        }
+
         /// <summary>
         /// 获取所有友方随从
         /// </summary>
