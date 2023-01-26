@@ -168,7 +168,14 @@ namespace TouhouHeartstone
 
         public static IEffect[] getBattlecries(this CardDefine card)
         {
-            return card.getEffects().Where(e => e.isBattlecry()).ToArray();
+            return card.getEffects().Where(e => 
+            {
+                if (e.isBattlecry())
+                    return true;
+                if (e is ActiveEffect && (card.isServant() || card.isItem()))
+                    return true;
+                return false;
+            }).ToArray();
         }
         public static IEffect[] getDeathRattles(this CardDefine card)
         {

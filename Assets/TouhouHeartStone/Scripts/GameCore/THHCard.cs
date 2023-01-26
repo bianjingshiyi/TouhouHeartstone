@@ -675,7 +675,14 @@ namespace TouhouHeartstone
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects(game as CardEngine);
-                results.AddRange(effects.Where(e => e.isBattlecry())
+                results.AddRange(effects.Where(e =>
+                {
+                    if (e.isBattlecry())
+                        return true;
+                    if (e is ActiveEffect && (card.isServant() || card.isItem()))
+                        return true;
+                    return false;
+                })
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
             return results.ToArray();
@@ -1112,6 +1119,10 @@ namespace TouhouHeartstone
                 {
                     await gen.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
                 }
+                else if (battlecry is ActiveEffect active)
+                {
+                    await active.execute(game, card, new object[0], targets);
+                }
             }
         }
         public static async Task triggerBattlecries(this Card card, CardEngine game, Player player, Card[] targets)
@@ -1126,6 +1137,10 @@ namespace TouhouHeartstone
                 else if (battlecry.effect is GeneratedEffect gen)
                 {
                     await gen.execute(game, card, battlecry.buff, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                }
+                else if (battlecry.effect is ActiveEffect active)
+                {
+                    await active.execute(game, card, new object[0], targets);
                 }
             }
         }
