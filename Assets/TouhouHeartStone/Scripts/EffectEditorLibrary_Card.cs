@@ -35,6 +35,8 @@ namespace Game
             CardDefine[] cardDefines = new CardDefine[cardRefs.Length];
             for (int i = 0; i < cardRefs.Length; i++)
             {
+                if (cardRefs[i] == null)
+                    continue;
                 cardDefines[i] = game.getDefine(cardRefs[i].cardPoolId, cardRefs[i].defineId);
             }
             return cardDefines;
@@ -124,6 +126,8 @@ namespace Game
             CardDefine[] cardDefines = new CardDefine[cards.Length];
             for (int i = 0; i < cards.Length; i++)
             {
+                if (cards[i] == null)
+                    continue;
                 cardDefines[i] = cards[i].define;
             }
             return cardDefines;
