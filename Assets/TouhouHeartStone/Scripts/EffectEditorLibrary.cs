@@ -789,7 +789,11 @@ namespace Game
         public static object getRandomElement(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection)
         {
-            return collection?[game.randomInt(0, collection.Length - 1)];
+            if (collection == null || collection.Length <= 0)
+                return null;
+            if (collection.Length == 1)
+                return collection[0];
+            return collection[game.randomInt(0, collection.Length - 1)];
         }
         #endregion
 
