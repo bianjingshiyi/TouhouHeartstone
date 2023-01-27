@@ -928,13 +928,6 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public HandListItem tryGetHand(Card card)
-        {
-            var hand = getHand(card);
-            if (hand == null)
-                throw new ActorNotFoundException(card);
-            return hand;
-        }
         public bool tryGetHand(Card card, out HandListItem hand)
         {
             if (cardHandDic.ContainsKey(card))

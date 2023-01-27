@@ -13,7 +13,10 @@ namespace Game
             {
                 if (eventArg.from?.name == PILE.HAND)
                 {
-                    table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));//移除手牌
+                    if (table.tryGetHand(eventArg.card, out var hand))
+                    {
+                        table.ui.SelfHandList.removeItem(hand);//移除手牌
+                    }
                 }
             }
             if (!table.tryGetServant(eventArg.card, out var servant))
