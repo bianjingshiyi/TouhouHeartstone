@@ -685,19 +685,11 @@ namespace Controllers
             }
             if (_curEditActionNodeConstItemIndex < 0)
             {
-                _curEditActionNode.consts[_curEditActionNodeConstIndex] = new DefineReference()
-                {
-                    cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
-                    defineId = cardDefine.id
-                };
+                _curEditActionNode.consts[_curEditActionNodeConstIndex] = cardDefine.getDefineRef();
             }
             else
             {
-                (_curEditActionNode.consts[_curEditActionNodeConstIndex] as DefineReference[])[_curEditActionNodeConstItemIndex] = new DefineReference()
-                {
-                    cardPoolId = game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo1 ? cardPoolInfo1.cardPoolId : 0,
-                    defineId = cardDefine.id
-                };
+                (_curEditActionNode.consts[_curEditActionNodeConstIndex] as DefineReference[])[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
             }
             ActionNodeItem actionNodeItem = getActionNodeItem(_curEditActionNode);
             if (cardDefine != null)
@@ -728,6 +720,7 @@ namespace Controllers
                     actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setCard(null, null, false);
                 }
             }
+            OnEdited();
             //重置字段
             _curEditActionNode = null;
             _curEditActionNodeConstIndex = -1;
