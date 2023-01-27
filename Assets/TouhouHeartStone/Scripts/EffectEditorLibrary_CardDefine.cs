@@ -284,7 +284,7 @@ namespace Game
         [TranslateMsg("编辑器-动作节点-获取英雄牌技能")]
         public const string EDITOR_NODE_CARD_DEFINE_GET_SKILL = "获取英雄牌技能";
         [ActionNodeMethod(EDITOR_NODE_CARD_DEFINE_GET_SKILL, EDITOR_NODE_CATEGORY_CARD_DEFINE)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getSkill(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
         {
@@ -299,6 +299,40 @@ namespace Game
             {
                 return null;
             }
+        }
+        /// <summary>
+        /// 获取对应角色（职业）
+        /// </summary>
+        [TranslateMsg("编辑器-动作节点-获取卡牌定义对应角色")]
+        public const string EDITOR_NODE_CARD_DEFINE_GET_CHARACTER = "获取卡牌定义对应角色";
+        [ActionNodeMethod(EDITOR_NODE_CARD_DEFINE_GET_CHARACTER, EDITOR_NODE_CATEGORY_CARD_DEFINE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
+        public static CardDefine getCardDefineCharacter(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
+        {
+            var characterRef = card?.getCharacterRef();
+            if (characterRef == null)
+                return null;
+            try
+            {
+                return game.getDefine(characterRef);
+            }
+            catch (UnknowDefineException)
+            {
+                return null;
+            }
+        }
+
+        [TranslateMsg("编辑器-动作节点-卡牌是否可收藏")]
+        public const string EDITOR_NODE_CARD_DEFINE_COLLECTIBLE = "卡牌是否可收藏";
+        [TranslateMsg("编辑器-参数类型-可收藏")]
+        public const string EDITOR_NODE_PARAM_NAME_COLLECTIBLE = "可收藏";
+        [ActionNodeMethod(EDITOR_NODE_CARD_DEFINE_COLLECTIBLE, EDITOR_NODE_CATEGORY_CARD_DEFINE)]
+        [return: ActionNodeParam(EDITOR_NODE_PARAM_NAME_COLLECTIBLE)]
+        public static bool isCardDefineCollectible(
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
+        {
+            return !card.isMaster() && !card.isSkill() && !card.isToken();
         }
         /// <summary>
         /// 触发卡牌宣言
