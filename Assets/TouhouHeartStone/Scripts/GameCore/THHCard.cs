@@ -1384,9 +1384,17 @@ namespace TouhouHeartstone
             {
                 if (s != null)
                 {
-                    if (s.isPoisonous(g) && !g.players.Any(p => p.getMaster() == c))
-                        await c.setDead(game, true);
-                    if (s.isDrain(g))
+                    bool poisonous = s.isPoisonous(g);
+                    bool lifesteal = s.isDrain(g);
+                    if (s.isMaster())
+                    {
+                        var item = s.getOwner().getItem();
+                        poisonous |= item.isPoisonous(g);
+                        lifesteal |= item.isDrain(g);
+                    }
+                    if (poisonous && !c.isMaster())
+                        await c.kill(game);
+                    if (lifesteal)
                         await s.getOwner().getMaster().heal(g, c, d);
                 }
             }
