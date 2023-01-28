@@ -367,12 +367,12 @@ namespace Controllers
                         connectNode4TriggerCondition(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
                     }
                 }
-                // 连接的输入节点是自定义动作的出口节点。
+                // 连接的输入节点是出口节点。
                 else if (inputActionNodeItem == _returnNodeItem)
                 {
                     ActionNode outputActionNode = getActionNode(outputActionNodeItem);
                     // 检查连接合法性
-                    // 尝试连接：动作节点（后续动作）----自定义动作出口节点（值输入）
+                    // 尝试连接：动作节点（后续动作）----出口节点（值输入）
                     if (outputIndex < outputActionNode.branches.Length)
                     {
                         //值输出只能与值输入相互连接
@@ -491,10 +491,10 @@ namespace Controllers
                     unconnectNode4TriggerCondition(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
                 }
             }
-            else if (inputActionNodeItem == _returnNodeItem && valueRef != null)
+            else if (inputActionNodeItem == _returnNodeItem)
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                unconnectNode4ReturnValueRef(outputActionNode, valueRef.index, 0);
+                unconnectNode4ReturnValueRef(outputActionNode, outputIndex - 1, 0);
             }
             else
             {
@@ -929,6 +929,15 @@ namespace Controllers
         /// <param name="actionNode"></param>
         private async Task<ActionNodeItem> createGraph4ActionNode(ActionNode actionNode, ActionNodeItem prevNodeItem = null, ActionNodeItem nextNodeItem = null, float startPosOffset = 0, Dictionary<ActionNode, Vector2> sizeDict = null)
         {
+            // 同一个节点不添加两次。
+            if (_actionNodeList.Contains(actionNode))
+            {
+                if (tryGetActionNodeItem(actionNode, out var item))
+                {
+                    return item;
+                }
+                return null;
+            }
             _actionNodeList.Add(actionNode);
             ActionNodeItem actionNodeItem;
             ActionNodeGraphNodeInfo nodeInfo =
@@ -1290,7 +1299,7 @@ namespace Controllers
                 if (rootActionNode != null)
                     rootActionNode.traverse(act);
             }
-            if (valueRef != null)
+            else if (valueRef != null)
             {
                 valueRef.traverse(act);
             }
@@ -1535,7 +1544,7 @@ namespace Controllers
             _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0);
         }
         /// <summary>
-        /// 断开：动作节点（值输出）----自定义动作出口节点（值输入）
+        /// 断开：动作节点（值输出）----出口节点（值输入）
         /// </summary>
         /// <param name="outputActionNode">动作节点（值输出）</param>
         /// <param name="outputIndex">输出索引</param>
@@ -1557,7 +1566,7 @@ namespace Controllers
                 }
                 //更新输出变量状态
                 updateRegVar(outputActionNode);
-                _ui.unconnectNode(getActionNodeItem(outputActionNode), valueRef.index + 1, _returnNodeItem, 0);
+                _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex + 1, _returnNodeItem, 0);
             }
             else if (_valueRef != null)
             {
@@ -1568,7 +1577,7 @@ namespace Controllers
                 }
                 //更新输出变量状态
                 updateRegVar(outputActionNode);
-                _ui.unconnectNode(getActionNodeItem(outputActionNode), valueRef.index + 1, _returnNodeItem, 0);
+                _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex + 1, _returnNodeItem, 0);
             }
             else
                 throw new NotImplementedException();
@@ -1743,13 +1752,13 @@ namespace Controllers
                     }
                 }
             }
-            // 断开所有该节点输出到其他入口节点的输出连接。
+            // 断开所有该节点输出到其他入口/出口节点的输出连接。
             if (_trigger != null)
             {
                 // 触发器的“触发条件”。
                 if (_trigger.condition != null && _trigger.condition.action == actionNode)
                 {
-                    unconnectNode4TriggerCondition(actionNode, actionNode.branches.Length + _trigger.condition.index, 0);
+                    unconnectNode4TriggerCondition(actionNode, _trigger.condition.index, 0);
                 }
             }
 

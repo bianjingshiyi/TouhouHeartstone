@@ -43,8 +43,6 @@ namespace Controllers
         #endregion
         private async Task openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
         {
-            _actionNodeList.Clear();
-            _actionNodeItemList.Clear();
             resetEditObjects();
             _generatedActionDefine = generatedActionDefine;
             //显示UI

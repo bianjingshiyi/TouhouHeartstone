@@ -292,7 +292,7 @@ namespace Controllers
                     {
                         //与其他节点相连，先断开连接
                         ActionNode prevActionNode = _trigger.condition.action;
-                        unconnectNode4TriggerCondition(prevActionNode, prevActionNode.branches.Length + _trigger.condition.index, 0);
+                        unconnectNode4TriggerCondition(prevActionNode, _trigger.condition.index, 0);
                     }
                 }
                 //建立新的连接
