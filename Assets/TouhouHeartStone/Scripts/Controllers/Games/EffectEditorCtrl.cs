@@ -417,6 +417,7 @@ namespace Controllers
         }
         private async void onClickReturnButton()
         {
+            scene.actionNodeGraphCtrl.quitGraph();
             await game.ui.returnPrevUI(() =>
             {
                 _ui.gameObject.SetActive(false);

@@ -32,10 +32,19 @@ namespace Controllers
         {
             return display(new DisplayInfo(cardPoolId, null, valueRef, null, graphInfo));
         }
+        /// <summary>
+        /// 退出节点图。
+        /// </summary>
+        public void quitGraph()
+        {
+            evaluateFreeNodes();
+        }
         public Task display(UIDisplayInfo uiDisplayInfo)
         {
             if (uiDisplayInfo is DisplayInfo info)
             {
+                quitGraph();
+
                 _editObjectStack.Clear();
                 if (info.editObjectStack != null)
                 {
@@ -1183,7 +1192,6 @@ namespace Controllers
             {
                 _actionNodeList.Add(actionNode);
                 actionNode.id = allocActionNodeId();
-                _graphInfo.freeActionNodeList.Add(actionNode);
                 setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(posX, posY));
             }
             return actionNodeItem;
@@ -1196,7 +1204,6 @@ namespace Controllers
                 null, new ActionNode[actionDefine.getActionOutputs().Length + 1]);
             _actionNodeList.Add(actionNode);
             actionNode.id = allocActionNodeId();
-            _graphInfo.freeActionNodeList.Add(actionNode);
             setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(_curPosX, _curPosY));
             ActionNodeItem actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, _curPosX, _curPosY);
             updateContentSize();
@@ -1233,7 +1240,6 @@ namespace Controllers
             _actionNodeItemList.RemoveAt(actionNodeIndex);
             //从编辑器信息中删除
             removeNodeInfo(actionNode);
-            _graphInfo.freeActionNodeList.Remove(actionNode);
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
             updateContentSize();
@@ -1258,6 +1264,41 @@ namespace Controllers
             }
         }
         #endregion
+
+        private void evaluateFreeNodes()
+        {
+            if (_graphInfo == null)
+                return;
+            HashSet<ActionNode> traversedNodes = new HashSet<ActionNode>();
+            Action<ActionNode> act = a => traversedNodes.Add(a);
+            if (_trigger != null)
+            {
+                _trigger.traverse(act);
+            }
+            else if (_generatedActionDefine != null)
+            {
+                traverseActionNode(_generatedActionDefine.action, true, act);
+                foreach (var returnRef in _generatedActionDefine.returnValueRefList)
+                {
+                    if (returnRef == null || returnRef.valueRef == null)
+                        continue;
+                    traverseActionNode(returnRef.valueRef.action, true, act);
+                }
+            }
+            else if (_effect != null)
+            {
+                if (rootActionNode != null)
+                    rootActionNode.traverse(act);
+            }
+            if (valueRef != null)
+            {
+                valueRef.traverse(act);
+            }
+
+            var freeNodes = _actionNodeList.Except(traversedNodes);
+            _graphInfo.freeActionNodeList.Clear();
+            _graphInfo.freeActionNodeList.AddRange(freeNodes);
+        }
         #region 节点连接
         /// <summary>
         /// 连接：入口节点（后续动作）----动作节点（前置动作）
@@ -1292,8 +1333,6 @@ namespace Controllers
             }
             //建立新的连接
             rootActionNode = inputActionNode;
-            //从离散节点列表中去掉被连接的节点
-            _graphInfo.freeActionNodeList.Remove(inputActionNode);
             //更新输入节点的输出变量状态
             updateRegVar(inputActionNode);
             //更新ui
@@ -1328,8 +1367,6 @@ namespace Controllers
                 }
                 //建立新的连接
                 _generatedActionDefine.returnValueRefList.Add(new ReturnValueRef(outputActionNode, outputIndex, inputIndex));
-                //从离散节点列表中去掉被连接的节点
-                _graphInfo.freeActionNodeList.Remove(outputActionNode);
                 //更新输出节点的输出变量状态
                 updateRegVar(outputActionNode);
                 //更新ui
@@ -1350,8 +1387,6 @@ namespace Controllers
                 }
                 //建立新的连接
                 rootActionNode = outputActionNode;
-                //从离散节点列表中去掉被连接的节点
-                _graphInfo.freeActionNodeList.Remove(outputActionNode);
                 //更新输出节点的输出变量状态
                 updateRegVar(outputActionNode);
                 //更新ui
@@ -1417,8 +1452,6 @@ namespace Controllers
             }
             //建立新的连接
             outputActionNode.branches[outputIndex] = inputActionNode;
-            //从离散节点列表中去掉被连接的节点
-            _graphInfo.freeActionNodeList.Remove(inputActionNode);
             //更新输入节点的输出变量状态
             updateRegVar(inputActionNode);
             //更新ui
@@ -1481,8 +1514,6 @@ namespace Controllers
             }
             //更新输出节点的输出变量状态
             updateRegVar(outputActionNode);
-            //从离散节点列表中去掉被连接的节点
-            _graphInfo.freeActionNodeList.Remove(outputActionNode);
             //更新ui
             _ui.connectNode(getActionNodeItem(outputActionNode), getBranchesCount(outputActionDefine) + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex, ActionNodeConnectionType.action);
         }
@@ -1499,9 +1530,6 @@ namespace Controllers
                 //断开与入口动作节点的连接
                 rootActionNode = null;
             }
-            //输入节点一定会变得离散
-            if (!_graphInfo.freeActionNodeList.Contains(inputActionNode))
-                _graphInfo.freeActionNodeList.Add(inputActionNode);
             //更新输入节点的输出变量状态
             updateRegVar(inputActionNode);
             _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0);
@@ -1529,8 +1557,6 @@ namespace Controllers
                 }
                 //更新输出变量状态
                 updateRegVar(outputActionNode);
-                if (!_graphInfo.freeActionNodeList.Contains(outputActionNode))
-                    _graphInfo.freeActionNodeList.Add(outputActionNode);
                 _ui.unconnectNode(getActionNodeItem(outputActionNode), valueRef.index + 1, _returnNodeItem, 0);
             }
             else if (_valueRef != null)
@@ -1542,8 +1568,6 @@ namespace Controllers
                 }
                 //更新输出变量状态
                 updateRegVar(outputActionNode);
-                if (!_graphInfo.freeActionNodeList.Contains(outputActionNode))
-                    _graphInfo.freeActionNodeList.Add(outputActionNode);
                 _ui.unconnectNode(getActionNodeItem(outputActionNode), valueRef.index + 1, _returnNodeItem, 0);
             }
             else
@@ -1563,10 +1587,6 @@ namespace Controllers
             {
                 outputActionNode.branches[outputIndex] = null;
             }
-            //更新节点是否离散
-            //输入节点一定会变得离散
-            if (!_graphInfo.freeActionNodeList.Contains(inputActionNode))
-                _graphInfo.freeActionNodeList.Add(inputActionNode);
             //更新输入节点的输出变量状态
             updateRegVar(inputActionNode);
             //更新ui
@@ -1654,19 +1674,8 @@ namespace Controllers
             //        return false;
             //    });
             //}
-            //更新离散和输出状态
-            if (isFreeActionNode(outputActionNode))
-            {
-                outputActionNode.regVar = null;
-                //如果输出节点变为离散节点，将其添加进入列表
-                if (!_graphInfo.freeActionNodeList.Contains(outputActionNode))
-                    _graphInfo.freeActionNodeList.Add(outputActionNode);
-            }
-            else
-            {
-                //更新输出变量状态
-                updateRegVar(outputActionNode);
-            }
+            //更新输出变量状态
+            updateRegVar(outputActionNode);
         }
         /// <summary>
         /// 断开：动作节点（任意输出）----动作节点（任意输入）
@@ -1738,7 +1747,7 @@ namespace Controllers
             if (_trigger != null)
             {
                 // 触发器的“触发条件”。
-                if (_trigger.condition.action == actionNode)
+                if (_trigger.condition != null && _trigger.condition.action == actionNode)
                 {
                     unconnectNode4TriggerCondition(actionNode, actionNode.branches.Length + _trigger.condition.index, 0);
                 }
