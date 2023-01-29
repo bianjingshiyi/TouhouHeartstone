@@ -378,6 +378,10 @@ namespace UI
         {
             _actionNodeItemTemplate.initEffectTags(effectTagNames, effectTagValues);
         }
+        public void initEventNames(string[] eventNames, string[] eventValues)
+        {
+            _actionNodeItemTemplate.initEventNames(eventNames, eventValues);
+        }
         public void resetView()
         {
             _currentSelectedKnob = default;
@@ -1689,7 +1693,11 @@ namespace UI
         /// <summary>
         /// 单个效果标签
         /// </summary>
-        effectTag
+        effectTag,
+        /// <summary>
+        /// 事件引用
+        /// </summary>
+        eventReference
     }
     public enum ActionNodeConnectionType
     {

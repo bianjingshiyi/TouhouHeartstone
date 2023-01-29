@@ -22,6 +22,8 @@ namespace Controllers
                 BsonClassMap.RegisterClassMap<CardReference>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(EffectTag)))
                 BsonClassMap.RegisterClassMap<EffectTag>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(EventArgReference)))
+                BsonClassMap.RegisterClassMap<EventArgReference>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(ObjectProxy)))
                 BsonClassMap.RegisterClassMap<ObjectProxy>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(ActionValueRef)))

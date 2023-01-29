@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BJSYGameCore;
 using Game;
 using TouhouCardEngine;
-using TouhouHeartstone;
-using UI;
 using UnityEngine;
-using Card = TouhouCardEngine.Card;
 
 namespace Controllers
 {
@@ -19,25 +17,25 @@ namespace Controllers
         private void loadEventTypes()
         {
             _eventTypeInfoList.Clear();
-            _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventTypes());
+            _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventDefines());
+            _eventTypeNames.AddRange(EventTypeInfoLoader.getOrLoadEventNames());
         }
         #endregion
         #region 属性字段
         EventTypeInfoCollection _eventTypeInfoList = new EventTypeInfoCollection();
+        List<string> _eventTypeNames = new List<string>();
         #endregion
     }
     public class EventTypeInfoLoader
     {
 
         #region 公有方法
-        /// <summary>
-        /// 获取所有事件类型，如果未加载则进行加载
-        /// </summary>
-        public static EventDefine[] getOrLoadEventTypes()
+        private static void loadEventTypes()
         {
-            if (_eventTypeInfoList != null)
-                return _eventTypeInfoList.ToArray();
-            _eventTypeInfoList = new List<EventDefine>();
+            _eventDefineList = new List<EventDefine>();
+            _eventDefineBeforeTranslations = new Dictionary<string, string>();
+            _eventDefineAfterTranslations = new Dictionary<string, string>();
+            _eventNames = new List<string>();
             //通过反射加载硬编码的事件类型
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -57,143 +55,61 @@ namespace Controllers
                             Debug.LogWarning("无法加载事件类型" + type.FullName + "：" + e);
                             continue;
                         }
-                        //发生时事件
-                        _eventTypeInfoList.Add(new EventDefine()
+                        var eventName = EventHelper.getName(eventArg);
+                        if (_hiddenEvents.Contains(eventName)) //隐藏的事件忽略掉。
+                            continue;
+
+                        _eventNames.Add(eventName);
+
+                        string editorName;
+                        if (!_eventNameTranslations.TryGetValue(eventName, out editorName))
                         {
-                            eventName = EventHelper.getNameBefore(eventArg),
+                            editorName = eventName;
+                        }
+
+                        //发生时事件
+                        string beforeName = EventHelper.getNameBefore(eventArg);
+                        _eventDefineList.Add(new EventDefine()
+                        {
+                            eventName = beforeName,
                             variableInfos = eventArg.getBeforeEventVarInfos()
                         });
+                        _eventDefineBeforeTranslations.Add(beforeName, editorName);
+
                         //发生后事件
-                        _eventTypeInfoList.Add(new EventDefine()
+                        string afterName = EventHelper.getNameAfter(eventArg);
+                        _eventDefineList.Add(new EventDefine()
                         {
-                            eventName = EventHelper.getNameAfter(eventArg),
+                            eventName = afterName,
                             variableInfos = eventArg.getAfterEventVarInfos()
                         });
+                        _eventDefineAfterTranslations.Add(afterName, editorName);
                     }
                 }
             }
-            //一些无法通过反射加载的事件类型
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeTurnStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_TURN_START;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterTurnStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TURN_START;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeUseEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_USE;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterUseEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_USE;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeSetArmorEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ARMOR_CHANGE;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterSetArmorEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ARMOR_CHANGE;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeTurnEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_TURN_END;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterTurnEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TURN_END;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeSilenceEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SILENCE;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterSilenceEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SILENCE;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeAttackEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ATTACK;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterAttackEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ATTACK;
-            //_eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeDamageEvent");
-            //_eventTypeInfoList.RemoveAll(e => e.eventName == "AfterDamageEvent");
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeDamageEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DAMAGE;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterDamageEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DAMAGE;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeHealEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterHealEvent");
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeHealEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_HEAL;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterHealEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_HEAL;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeDeathEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DEATH;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterDeathEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DEATH;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeSecretTriggerEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterSecretTriggerEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeMissionCompleteEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterMissionCompleteEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeComeOnStageEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterComeOnStageEvent");
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeSecreTriggerEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SECRETRIGGER;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterSecreTriggerEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SECRETRIGGER;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeMissionCompleteEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_MISSIONCOMPLETE;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterMissionCompleteEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_MISSIONCOMPLETE;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeComeOnStageEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_COMEONSTAGE;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterComeOnStageEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_COMEONSTAGE;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeInitEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_INIT;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterInitEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_INIT;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_START;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_START;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeGameEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_GAMEEND;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterGameEndEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_GAMEEND;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeInitReplaceEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_INITREPLACE;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterInitReplaceEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_INITREPLACE;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeSetMaxGemEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SETMAXGEM;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterSetMaxGemEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SETMAXGEM;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeBurnEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_BURN;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterBurnEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_BURN;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeEnterFieldEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ENTERFIELD;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterEnterFieldEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ENTERFIELD;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeRebornEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterRebornEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeRevealEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterRevealEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeRevealDuelEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterRevealDuelEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeChooseOneEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterChooseOneEvent");
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeChooseOneEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_CHOOSEONE;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterChooseOneEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_CHOOSEONE;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeRebornEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_REBORN;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterRebornEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_REBORN;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeRevealEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_REVEAL;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterRevealEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_REVEAL;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeSetGemEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SETGEM;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterSetGemEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SETGEM;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeDrawEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DRAW;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterDrawEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DRAW;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeFatigueEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_FATIGUE;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterFatigueEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_FATIGUE;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeSearchPileEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterSearchPileEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeActiveEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterActiveEvent");
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeSearchiPileEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SEARCHPILE;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterSearchiPileEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SEARCHPILE;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeActiveEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ACTIVE;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterActiveEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ACTIVE;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeDiscardEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DISCARD;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterDiscardEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DISCARD;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeCreateTokenEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_CREATETOKEN;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterCreateTokenEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_CREATETOKEN;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeBeChargedEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterBeChargedEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeTestEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterTestEvent");
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeSetDefineEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SETDEFINE;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterSetDefineEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SETDEFINE;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeAddModiEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ADDMODI;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterAddModiEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ADDMODI;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeRemoveModiEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_REMOVEMODI;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterRemoveModiEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_REMOVEMODI;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforePropChangeEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_PROPCHANGE;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterPropChangeEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_PROPCHANGE;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeCommandEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_COMMAND;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterCommandEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_COMMAND;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeTestEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_TEST;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterTestEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TEST;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeAddModiEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterAddModiEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeRemoveModiEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterRemoveModiEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforePropChangeEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterPropChangeEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeCommandEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterCommandEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeTestEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterTestEvent");
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeDiscoverEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DISCOVER;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterDiscoverEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DISCOVER;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeSelectEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SELECT;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterSelectEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SELECT;
-            _eventTypeInfoList.Find(e => e.eventName == "BeforeEquipItemEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_EQUIP;
-            _eventTypeInfoList.Find(e => e.eventName == "AfterEquipItemEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_EQUIP;
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeElementEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ELEMENT;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterElementEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ELEMENT;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeElementMixEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterElementMixEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeLastwordEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterLastwordEvent");
-            _eventTypeInfoList.Sort((a, b) => a.eventName.CompareTo(b.eventName));
+            _eventDefineList.Sort((a, b) => a.eventName.CompareTo(b.eventName));
+            _eventNames.Sort((a, b) => a.CompareTo(b));
             //以后可能有自定义的事件类型，不过先不管
-            return _eventTypeInfoList.ToArray();
+        }
+        /// <summary>
+        /// 获取所有事件定义（事件时/事件后），如果未加载则进行加载
+        /// </summary>
+        public static EventDefine[] getOrLoadEventDefines()
+        {
+            if (_eventDefineList != null)
+                return _eventDefineList.ToArray();
+            loadEventTypes();
+            return _eventDefineList.ToArray();
+        }
+        /// <summary>
+        /// 获取所有事件名，如果未加载则进行加载
+        /// </summary>
+        public static string[] getOrLoadEventNames()
+        {
+            if (_eventNames != null)
+                return _eventNames.ToArray();
+            loadEventTypes();
+            return _eventNames.ToArray();
         }
         public static bool isValidEventTypeName(string eventTypeName)
         {
@@ -201,12 +117,97 @@ namespace Controllers
         }
         public static EventDefine FindEventTypeInfo(string eventTypeName)
         {
-            if (_eventTypeInfoList == null)
-                getOrLoadEventTypes();
-            return _eventTypeInfoList.Find(e => e.eventName == eventTypeName || (e.obsoleteNames != null && e.obsoleteNames.Contains(eventTypeName)));
+            if (_eventDefineList == null)
+                getOrLoadEventDefines();
+            return _eventDefineList.Find(e => e.eventName == eventTypeName || (e.obsoleteNames != null && e.obsoleteNames.Contains(eventTypeName)));
+        }
+        public static string translateEventTypeNameForEditor(LangManager lang, string eventName)
+        {
+            if (_eventDefineBeforeTranslations.TryGetValue(eventName, out string beforeEditorName))
+            {
+                var name = lang._(beforeEditorName);
+                return lang._(StringTable.EDITOR_EVENT_NAME_BEFORE_TEMPLATE, name);
+            }
+            else if (_eventDefineAfterTranslations.TryGetValue(eventName, out string afterEditorName))
+            {
+                var name = lang._(afterEditorName);
+                return lang._(StringTable.EDITOR_EVENT_NAME_AFTER_TEMPLATE, name);
+            }
+            else if (_eventNameTranslations.TryGetValue(eventName, out string eventEditorName))
+            {
+                return lang._(eventEditorName);
+            }
+            return eventName;
         }
         #endregion
-        static List<EventDefine> _eventTypeInfoList = null;
+        static string[] _hiddenEvents =
+        {
+            "HealEvent",
+            "SecretTriggerEvent",
+            "MissionCompleteEvent",
+            "ComeOnStageEvent",
+            "RebornEvent",
+            "RevealEvent",
+            "RevealDuelEvent",
+            "ChooseOneEvent",
+            "SearchPileEvent",
+            "ActiveEvent",
+            "BeChargedEvent",
+            "TestEvent",
+            "AddModiEvent",
+            "RemoveModiEvent",
+            "PropChangeEvent",
+            "CommandEvent",
+            "TestEvent",
+            "ElementMixEvent",
+            "LastwordEvent",
+        };
+        static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
+        {
+            { "TurnStartEvent", StringTable.EDITOR_EVENT_NAME_TURN_START },
+            { "UseEvent", StringTable.EDITOR_EVENT_NAME_USE },
+            { "SetArmorEvent", StringTable.EDITOR_EVENT_NAME_ARMOR_CHANGE },
+            { "TurnEndEvent", StringTable.EDITOR_EVENT_NAME_TURN_END },
+            { "SilenceEvent", StringTable.EDITOR_EVENT_NAME_SILENCE },
+            { "AttackEvent", StringTable.EDITOR_EVENT_NAME_ATTACK },
+            { "DamageEvent", StringTable.EDITOR_EVENT_NAME_DAMAGE },
+            //{ "HealEvent", StringTable.EDITOR_EVENT_NAME_HEAL },
+            { "DeathEvent", StringTable.EDITOR_EVENT_NAME_DEATH },
+            //{ "SecreTriggerEvent", StringTable.EDITOR_EVENT_NAME_SECRETRIGGER },
+            //{ "MissionCompleteEvent", StringTable.EDITOR_EVENT_NAME_MISSIONCOMPLETE },
+            //{ "ComeOnStageEvent", StringTable.EDITOR_EVENT_NAME_COMEONSTAGE },
+            { "InitEvent", StringTable.EDITOR_EVENT_NAME_INIT },
+            { "StartEvent", StringTable.EDITOR_EVENT_NAME_START },
+            { "GameEndEvent", StringTable.EDITOR_EVENT_NAME_GAMEEND },
+            { "InitReplaceEvent", StringTable.EDITOR_EVENT_NAME_INITREPLACE },
+            { "SetMaxGemEvent", StringTable.EDITOR_EVENT_NAME_SETMAXGEM },
+            { "BurnEvent", StringTable.EDITOR_EVENT_NAME_BURN },
+            { "EnterFieldEvent", StringTable.EDITOR_EVENT_NAME_ENTERFIELD },
+            //{ "ChooseOneEvent", StringTable.EDITOR_EVENT_NAME_CHOOSEONE },
+            //{ "RebornEvent", StringTable.EDITOR_EVENT_NAME_REBORN },
+            //{ "RevealEvent", StringTable.EDITOR_EVENT_NAME_REVEAL },
+            { "SetGemEvent", StringTable.EDITOR_EVENT_NAME_SETGEM },
+            { "DrawEvent", StringTable.EDITOR_EVENT_NAME_DRAW },
+            { "FatigueEvent", StringTable.EDITOR_EVENT_NAME_FATIGUE },
+            //{ "SearchiPileEvent", StringTable.EDITOR_EVENT_NAME_SEARCHPILE },
+            //{ "ActiveEvent", StringTable.EDITOR_EVENT_NAME_ACTIVE },
+            { "DiscardEvent", StringTable.EDITOR_EVENT_NAME_DISCARD },
+            { "CreateTokenEvent", StringTable.EDITOR_EVENT_NAME_CREATETOKEN },
+            { "SetDefineEvent", StringTable.EDITOR_EVENT_NAME_SETDEFINE },
+            //{ "AddModiEvent", StringTable.EDITOR_EVENT_NAME_ADDMODI },
+            //{ "RemoveModiEvent", StringTable.EDITOR_EVENT_NAME_REMOVEMODI },
+            //{ "PropChangeEvent", StringTable.EDITOR_EVENT_NAME_PROPCHANGE },
+            //{ "CommandEvent", StringTable.EDITOR_EVENT_NAME_COMMAND },
+            //{ "TestEvent", StringTable.EDITOR_EVENT_NAME_TEST },
+            { "DiscoverEvent", StringTable.EDITOR_EVENT_NAME_DISCOVER },
+            //{ "SelectEvent", StringTable.EDITOR_EVENT_NAME_SELECT },
+            { "EquipItemEvent", StringTable.EDITOR_EVENT_NAME_EQUIP },
+            //{ "ElementEvent", StringTable.EDITOR_EVENT_NAME_ELEMENT },
+        };
+        static List<EventDefine> _eventDefineList = null;
+        static List<string> _eventNames = null;
+        static Dictionary<string, string> _eventDefineBeforeTranslations = null;
+        static Dictionary<string, string> _eventDefineAfterTranslations = null;
     }
     public class EventTypeInfoCollection : List<EventDefine>
     {
@@ -264,12 +265,12 @@ namespace Controllers
             }
             return eventNames;
         }
-        public string[] getEventTypeNamesForEditor()
+        public string[] getEventTypeNamesForEditor(LangManager lang)
         {
             string[] eventNames = new string[Count];
             for (int i = 0; i < eventNames.Length; i++)
             {
-                eventNames[i] = string.IsNullOrEmpty(this[i].editorName) ? this[i].eventName : this[i].editorName;
+                eventNames[i] = EventTypeInfoLoader.translateEventTypeNameForEditor(lang, this[i].eventName);
             }
             return eventNames;
         }

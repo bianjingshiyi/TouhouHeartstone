@@ -124,6 +124,15 @@ namespace UI
             return _valueList[index].GetComponent<ValueInputField>();
         }
         /// <summary>
+        /// 初始化事件名称
+        /// </summary>
+        /// <param name="eventNames"></param>
+        public void initEventNames(string[] eventNames, string[] eventValues)
+        {
+            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            item.initEventNames(eventNames, eventValues);
+        }
+        /// <summary>
         /// 初始化事件类型名称
         /// </summary>
         /// <param name="eventNames"></param>

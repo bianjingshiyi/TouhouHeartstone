@@ -387,172 +387,92 @@ namespace Game
         #endregion
         #endregion
         #region 事件类型
+        [TranslateMsg("编辑器/事件类型/XX事件时模板（{0}为事件名）")]
+        public const string EDITOR_EVENT_NAME_BEFORE_TEMPLATE = "{0}时";
+        [TranslateMsg("编辑器/事件类型/XX事件后模板（{0}为事件名）")]
+        public const string EDITOR_EVENT_NAME_AFTER_TEMPLATE = "{0}后";
         [TranslateMsg("编辑器中的事件类型之回合开始时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_TURN_START = "回合开始时";
-        [TranslateMsg("编辑器中的事件类型之回合开始后")]
-        public const string EDITOR_EVENT_NAME_AFTER_TURN_START = "回合开始后";
+        public const string EDITOR_EVENT_NAME_TURN_START = "回合开始";
         [TranslateMsg("编辑器中的事件类型之使用卡牌时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_USE = "使用卡牌时";
-        [TranslateMsg("编辑器中的事件类型之使用卡牌后")]
-        public const string EDITOR_EVENT_NAME_AFTER_USE = "使用卡牌后";
+        public const string EDITOR_EVENT_NAME_USE = "使用卡牌";
         [TranslateMsg("编辑器中的事件类型之发动事件")]
         public const string EDITOR_EVENT_NAME_ACTIVE = "发动事件";
         [TranslateMsg("编辑器中的事件类型之护甲改变时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_ARMOR_CHANGE = "护甲改变时";
-        [TranslateMsg("编辑器中的事件类型之护甲改变后")]
-        public const string EDITOR_EVENT_NAME_AFTER_ARMOR_CHANGE = "护甲改变后";
+        public const string EDITOR_EVENT_NAME_ARMOR_CHANGE = "护甲改变";
         [TranslateMsg("编辑器中的事件类型之回合结束时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_TURN_END = "回合结束时";
-        [TranslateMsg("编辑器中的事件类型之回合结束后")]
-        public const string EDITOR_EVENT_NAME_AFTER_TURN_END = "回合结束后";
+        public const string EDITOR_EVENT_NAME_TURN_END = "回合结束";
         [TranslateMsg("编辑器中的事件类型之沉默时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_SILENCE = "沉默时";
-        [TranslateMsg("编辑器中的事件类型之沉默后")]
-        public const string EDITOR_EVENT_NAME_AFTER_SILENCE = "沉默后";
+        public const string EDITOR_EVENT_NAME_SILENCE = "沉默";
         [TranslateMsg("编辑器中的事件类型之攻击时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_ATTACK = "攻击时";
-        [TranslateMsg("编辑器中的事件类型之攻击后")]
-        public const string EDITOR_EVENT_NAME_AFTER_ATTACK = "攻击后";
+        public const string EDITOR_EVENT_NAME_ATTACK = "攻击";
         [TranslateMsg("编辑器中的事件类型之伤害时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_DAMAGE = "伤害时";
-        [TranslateMsg("编辑器中的事件类型之伤害后")]
-        public const string EDITOR_EVENT_NAME_AFTER_DAMAGE = "伤害后";
+        public const string EDITOR_EVENT_NAME_DAMAGE = "伤害";
         [TranslateMsg("编辑器中的事件类型之攻击时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_HEAL = "治疗时";
-        [TranslateMsg("编辑器中的事件类型之攻击后")]
-        public const string EDITOR_EVENT_NAME_AFTER_HEAL = "治疗后";
+        public const string EDITOR_EVENT_NAME_HEAL = "治疗";
         [TranslateMsg("编辑器中的事件类型之死亡/摧毀时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_DEATH = "死亡/摧毀时";
-        [TranslateMsg("编辑器中的事件类型之死亡/摧毀后")]
-        public const string EDITOR_EVENT_NAME_AFTER_DEATH = "死亡/摧毀后";
+        public const string EDITOR_EVENT_NAME_DEATH = "死亡/摧毀";
         [TranslateMsg("编辑器中的事件类型之奥秘触发时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_SECRETTRIGGER = "奥秘触发时";
-        [TranslateMsg("编辑器中的事件类型之奥秘触发后")]
-        public const string EDITOR_EVENT_NAME_AFTER_SECRETTRIGGER = "奥秘触发后";
+        public const string EDITOR_EVENT_NAME_SECRETTRIGGER = "奥秘触发";
         [TranslateMsg("编辑器中的事件类型之任务完成时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_MISSIONCOMPLETE = "任务完成时";
-        [TranslateMsg("编辑器中的事件类型之任务完成后")]
-        public const string EDITOR_EVENT_NAME_AFTER_MISSIONCOMPLETE = "任务完成后";
+        public const string EDITOR_EVENT_NAME_MISSIONCOMPLETE = "任务完成";
         [TranslateMsg("编辑器中的事件类型之宣言时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_COMEONSTAGE = "宣言时";
-        [TranslateMsg("编辑器中的事件类型之宣言后")]
-        public const string EDITOR_EVENT_NAME_AFTER_COMEONSTAGE = "宣言后";
+        public const string EDITOR_EVENT_NAME_COMEONSTAGE = "宣言";
         [TranslateMsg("编辑器中的事件类型之初始化时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_INIT = "初始化时";
-        [TranslateMsg("编辑器中的事件类型之初始化后")]
-        public const string EDITOR_EVENT_NAME_AFTER_INIT = "初始化后";
+        public const string EDITOR_EVENT_NAME_INIT = "初始化";
         [TranslateMsg("编辑器中的事件类型之对战开始时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_START = "对战开始时";
-        [TranslateMsg("编辑器中的事件类型之对战开始后")]
-        public const string EDITOR_EVENT_NAME_AFTER_START = "对战开始后";
+        public const string EDITOR_EVENT_NAME_START = "对战开始";
         [TranslateMsg("编辑器中的事件类型之回合结束时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_TURNEND = "回合结束时";
-        [TranslateMsg("编辑器中的事件类型之回合结束后")]
-        public const string EDITOR_EVENT_NAME_AFTER_TURNEND = "回合结束后";
+        public const string EDITOR_EVENT_NAME_TURNEND = "回合结束";
         [TranslateMsg("编辑器中的事件类型之游戏结束时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_GAMEEND = "游戏结束时";
-        [TranslateMsg("编辑器中的事件类型之游戏结束后")]
-        public const string EDITOR_EVENT_NAME_AFTER_GAMEEND = "游戏结束后";
+        public const string EDITOR_EVENT_NAME_GAMEEND = "游戏结束";
         [TranslateMsg("编辑器中的事件类型之初始手牌替换时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_INITREPLACE = "初始手牌替换时";
-        [TranslateMsg("编辑器中的事件类型之初始手牌替换后")]
-        public const string EDITOR_EVENT_NAME_AFTER_INITREPLACE = "初始手牌替换后";
+        public const string EDITOR_EVENT_NAME_INITREPLACE = "初始手牌替换";
         [TranslateMsg("编辑器中的事件类型之设置最大灵力时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_SETMAXGEM = "设置最大灵力时";
-        [TranslateMsg("编辑器中的事件类型之设置最大灵力后")]
-        public const string EDITOR_EVENT_NAME_AFTER_SETMAXGEM = "设置最大灵力后";
+        public const string EDITOR_EVENT_NAME_SETMAXGEM = "设置最大灵力";
         [TranslateMsg("编辑器中的事件类型之爆牌时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_BURN = "爆牌时";
-        [TranslateMsg("编辑器中的事件类型之爆牌后")]
-        public const string EDITOR_EVENT_NAME_AFTER_BURN = "爆牌后";
+        public const string EDITOR_EVENT_NAME_BURN = "爆牌";
         [TranslateMsg("编辑器中的事件类型之选择一项时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_CHOOSEONE = "选择一项时";
-        [TranslateMsg("编辑器中的事件类型之选择一项后")]
-        public const string EDITOR_EVENT_NAME_AFTER_CHOOSEONE = "选择一项后";
+        public const string EDITOR_EVENT_NAME_CHOOSEONE = "选择一项";
         [TranslateMsg("编辑器中的事件类型之复生时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_REBORN = "复生时";
-        [TranslateMsg("编辑器中的事件类型之复生后")]
-        public const string EDITOR_EVENT_NAME_AFTER_REBORN = "复生后";
+        public const string EDITOR_EVENT_NAME_REBORN = "复生";
         [TranslateMsg("编辑器中的事件类型之入场时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_ENTERFIELD = "入场时";
-        [TranslateMsg("编辑器中的事件类型之入场后")]
-        public const string EDITOR_EVENT_NAME_AFTER_ENTERFIELD = "入场后";
+        public const string EDITOR_EVENT_NAME_ENTERFIELD = "入场";
         [TranslateMsg("编辑器中的事件类型之揭示时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_REVEAL = "揭示时";
-        [TranslateMsg("编辑器中的事件类型之揭示后")]
-        public const string EDITOR_EVENT_NAME_AFTER_REVEAL = "揭示后";
+        public const string EDITOR_EVENT_NAME_REVEAL = "揭示";
         [TranslateMsg("编辑器中的事件类型之抽卡时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_DRAW = "抽卡时";
-        [TranslateMsg("编辑器中的事件类型之抽卡后")]
-        public const string EDITOR_EVENT_NAME_AFTER_DRAW = "抽卡后";
+        public const string EDITOR_EVENT_NAME_DRAW = "抽卡";
         [TranslateMsg("编辑器中的事件类型之疲劳时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_FATIGUE = "疲劳时";
-        [TranslateMsg("编辑器中的事件类型之疲劳后")]
-        public const string EDITOR_EVENT_NAME_AFTER_FATIGUE = "疲劳后";
+        public const string EDITOR_EVENT_NAME_FATIGUE = "疲劳";
         [TranslateMsg("编辑器中的事件类型之检视时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_SEARCHPILE = "检视时";
-        [TranslateMsg("编辑器中的事件类型之检视后")]
-        public const string EDITOR_EVENT_NAME_AFTER_SEARCHPILE = "检视后";
-        [TranslateMsg("编辑器中的事件类型之激活时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_ACTIVE = "激活时";
-        [TranslateMsg("编辑器中的事件类型之激活后")]
-        public const string EDITOR_EVENT_NAME_AFTER_ACTIVE = "激活后";
+        public const string EDITOR_EVENT_NAME_SEARCHPILE = "检视";
         [TranslateMsg("编辑器中的事件类型之弃牌时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_DISCARD = "弃牌时";
-        [TranslateMsg("编辑器中的事件类型之弃牌后")]
-        public const string EDITOR_EVENT_NAME_AFTER_DISCARD = "弃牌后";
+        public const string EDITOR_EVENT_NAME_DISCARD = "弃牌";
         [TranslateMsg("编辑器中的事件类型之设置灵力时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_SETGEM = "设置灵力时";
-        [TranslateMsg("编辑器中的事件类型之设置灵力后")]
-        public const string EDITOR_EVENT_NAME_AFTER_SETGEM = "设置灵力后";
+        public const string EDITOR_EVENT_NAME_SETGEM = "设置灵力";
         [TranslateMsg("编辑器中的事件类型之召唤衍生物时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_CREATETOKEN = "召唤衍生物时";
-        [TranslateMsg("编辑器中的事件类型之召唤衍生物后")]
-        public const string EDITOR_EVENT_NAME_AFTER_CREATETOKEN = "召唤衍生物后";
+        public const string EDITOR_EVENT_NAME_CREATETOKEN = "召唤衍生物";
         [TranslateMsg("编辑器中的事件类型之添加修改器时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_ADDMODI = "添加修改器时";
-        [TranslateMsg("编辑器中的事件类型之添加修改器后")]
-        public const string EDITOR_EVENT_NAME_AFTER_ADDMODI = "添加修改器后";
+        public const string EDITOR_EVENT_NAME_ADDMODI = "添加修改器";
         [TranslateMsg("编辑器中的事件类型之变形时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_SETDEFINE = "变形时";
-        [TranslateMsg("编辑器中的事件类型之变形后")]
-        public const string EDITOR_EVENT_NAME_AFTER_SETDEFINE = "变形后";
+        public const string EDITOR_EVENT_NAME_SETDEFINE = "变形";
         [TranslateMsg("编辑器中的事件类型之移除修改器时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_REMOVEMODI = "移除修改器时";
-        [TranslateMsg("编辑器中的事件类型之移除修改器后")]
-        public const string EDITOR_EVENT_NAME_AFTER_REMOVEMODI = "移除修改器后";
+        public const string EDITOR_EVENT_NAME_REMOVEMODI = "移除修改器";
         [TranslateMsg("编辑器中的事件类型之属性修改时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_PROPCHANGE = "属性修改时";
-        [TranslateMsg("编辑器中的事件类型之属性修改后")]
-        public const string EDITOR_EVENT_NAME_AFTER_PROPCHANGE = "属性修改后";
+        public const string EDITOR_EVENT_NAME_PROPCHANGE = "属性修改";
         [TranslateMsg("编辑器中的事件类型之指令时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_COMMAND = "指令时";
-        [TranslateMsg("编辑器中的事件类型之指令后")]
-        public const string EDITOR_EVENT_NAME_AFTER_COMMAND = "指令后";
+        public const string EDITOR_EVENT_NAME_COMMAND = "指令";
         [TranslateMsg("编辑器中的事件类型之测试时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_TEST = "测试时";
-        [TranslateMsg("编辑器中的事件类型之测试后")]
-        public const string EDITOR_EVENT_NAME_AFTER_TEST = "测试后";
+        public const string EDITOR_EVENT_NAME_TEST = "测试";
         [TranslateMsg("编辑器中的事件类型之信仰对决时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_REVEALDUEL = "信仰对决时";
-        [TranslateMsg("编辑器中的事件类型之信仰对决后")]
-        public const string EDITOR_EVENT_NAME_AFTER_REVEALDUEL = "信仰对决后";
+        public const string EDITOR_EVENT_NAME_REVEALDUEL = "信仰对决";
         [TranslateMsg("编辑器中的事件类型之发现时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_DISCOVER = "发现时";
-        [TranslateMsg("编辑器中的事件类型之发现后")]
-        public const string EDITOR_EVENT_NAME_AFTER_DISCOVER = "发现后";
+        public const string EDITOR_EVENT_NAME_DISCOVER = "发现";
         [TranslateMsg("编辑器中的事件类型之选择时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_SELECT = "选择时";
-        [TranslateMsg("编辑器中的事件类型之选择后")]
-        public const string EDITOR_EVENT_NAME_AFTER_SELECT = "选择后";
+        public const string EDITOR_EVENT_NAME_SELECT = "选择";
         [TranslateMsg("编辑器中的事件类型之元素融合时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_ELEMENT = "元素融合时";
-        [TranslateMsg("编辑器中的事件类型之元素融合后")]
-        public const string EDITOR_EVENT_NAME_AFTER_ELEMENT = "元素融合后";
+        public const string EDITOR_EVENT_NAME_ELEMENT = "元素融合";
         [TranslateMsg("编辑器中的事件类型之装备武器时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_EQUIP = "装备道具时";
-        [TranslateMsg("编辑器中的事件类型之装备武器后")]
-        public const string EDITOR_EVENT_NAME_AFTER_EQUIP = "装备道具后";
+        public const string EDITOR_EVENT_NAME_EQUIP = "装备道具";
         #endregion
         #region 类型
         [TranslateMsg("编辑器中的任意类型的名称")]

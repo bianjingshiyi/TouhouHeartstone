@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using BJSYGameCore.UI;
@@ -96,8 +97,8 @@ namespace Controllers
         public void Awake()
         {
             _eventTypeInfoList.Clear();
-            _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventTypes());
-            _ui.setEventTypeNames(_eventTypeInfoList.getEventTypeNamesForEditor());
+            _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventDefines());
+            _ui.setEventTypeNames(_eventTypeInfoList.getEventTypeNamesForEditor(game.lang));
             _ui.onConfirmCreateEventEffect += onConfirmCreateEventEffectCallback;
             _actionNodeGraphCtrl.OnGraphEdited += OnGraphEditedCallback;
         }

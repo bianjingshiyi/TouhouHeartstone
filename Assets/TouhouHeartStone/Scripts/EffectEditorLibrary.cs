@@ -1005,4 +1005,49 @@ namespace Game
         }
         #endregion
     }
+    [Serializable]
+    public class EventArgReference
+    {
+        public string eventName;
+        public EventArgReference(string name)
+        {
+            eventName = name;
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is EventArgReference eventArg)
+            {
+                return eventName == eventArg.eventName;
+            }
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return eventName.GetHashCode();
+        }
+        public override string ToString()
+        {
+            return eventName;
+        }
+        public static implicit operator EventArgReference(string str)
+        {
+            return new EventArgReference(str);
+        }
+        public static bool operator ==(EventArgReference lhs, EventArgReference rhs)
+        {
+            if (lhs is null)
+            {
+                return rhs is null;
+            }
+            return lhs.Equals(rhs);
+        }
+        public static bool operator !=(EventArgReference lhs, EventArgReference rhs)
+        {
+            if (lhs is null)
+            {
+                return !(rhs is null);
+            }
+            return !lhs.Equals(rhs);
+        }
+    }
 }

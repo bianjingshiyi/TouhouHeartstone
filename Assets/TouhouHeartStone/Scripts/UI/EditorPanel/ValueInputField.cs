@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EventArgReference = Game.EventArgReference;
+using System;
 using System.Collections.Generic;
 using Game;
 using TouhouCardEngine;
@@ -44,6 +45,11 @@ namespace UI
         public ValueInputField getItemAt(int index)
         {
             return _list[index].GetComponent<ValueInputField>();
+        }
+        public void initEventNames(string[] eventNames, string[] eventValues)
+        {
+            _eventNames = eventNames;
+            _eventValues = eventValues;
         }
         public void initPileNames(string[] pileNames, string[] pileValues)
         {
@@ -111,7 +117,14 @@ namespace UI
         }
         private void onDropdownValueChangedCallback(int index)
         {
-            onValueChanged?.Invoke(this, _valueInfo.optionalValues[index]);
+            if (_valueInfo.type == ActionNodeValueType.enumValue)
+            {
+                onValueChanged?.Invoke(this, _valueInfo.optionalValues[index]);
+            }
+            else
+            {
+                onValueChanged?.Invoke(this, _eventValues[index]);
+            }
         }
         private void onInputDropdownValueChangedCallback(string value)
         {
@@ -393,6 +406,29 @@ namespace UI
                     index = 0;
                 _dropdown.SetValueWithoutNotify(index);
             }
+            else if (_valueInfo.type == ActionNodeValueType.eventReference)
+            {
+                _dropdown.gameObject.SetActive(true);
+                _dropdown.ClearOptions();
+                _dropdown.AddOptions(new List<string>(_eventNames));
+                int index = 0;
+                if (_valueInfo.value is int intValue)
+                {
+                    //如果value为int，那有可能是枚举值序列化之后变成了整数再反序列化的结果，直接使用。
+                    index = intValue;
+                }
+                else if (_valueInfo.value is string str)
+                {
+                    index = Array.IndexOf(_eventValues, str);
+                }
+                else if (_valueInfo.value is EventArgReference evtRef)
+                {
+                    index = Array.IndexOf(_eventValues, evtRef.eventName);
+                }
+                if (index < 0)
+                    index = 0;
+                _dropdown.SetValueWithoutNotify(index);
+            }
             else
             {
                 _dropdown.gameObject.SetActive(false);
@@ -617,6 +653,10 @@ namespace UI
         private string[] _keywordNames;
         [SerializeField]
         private string[] _keywordValues;
+        [SerializeField]
+        private string[] _eventNames;
+        [SerializeField]
+        private string[] _eventValues;
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
         [SerializeField]

@@ -239,6 +239,9 @@ namespace Controllers
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
             _ui.initPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
+            _ui.initEventNames(
+                _eventTypeNames.Select(n => EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, n)).ToArray(), 
+                _eventTypeNames.ToArray());
             var keywords = CardEditorCtrl.getKeywords();
             _ui.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
             var effectTagNames = _activeEffectTagNames.Union(_passiveEffectTagNames).ToArray();
@@ -775,6 +778,13 @@ namespace Controllers
                             }
                         }
                     }
+                    else if (constInfo.type == ActionNodeValueType.eventReference)
+                    {
+                        if (actionNode.getConst(name) == null)
+                        {
+                            actionNode.setConst(name, new EventArgReference(_eventTypeNames[0]));
+                        }
+                    }
                 }
             }
             else
@@ -803,7 +813,7 @@ namespace Controllers
             if (passiveEntry is EventEntryNode eventEntry)
             {
                 var typeIndex = _eventTypeInfoList.getEventTypeIndex(eventEntry.eventName);
-                var editorNames = _eventTypeInfoList.getEventTypeNamesForEditor();
+                var editorNames = _eventTypeInfoList.getEventTypeNamesForEditor(game.lang);
                 nodeName = editorNames[typeIndex];
                 constViewData = new ActionNodeValueInfo[]
                 {
@@ -1473,6 +1483,8 @@ namespace Controllers
                     infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileNameCollection, value);
                 else if (type == typeof(KeywordCollection))
                     infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.keywords, value);
+                else if (type == typeof(EventArgReference))
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventReference, value);
                 else
                     throw new NotImplementedException("没有" + type + "对应的常数类型");
             }
@@ -1540,7 +1552,7 @@ namespace Controllers
             if (_curCategroy == game.lang._(EDITOR_CATEGORY_EVENT_ENTRY_NODE))
             {
                 // 事件入口。
-                nodeOptions = _eventTypeInfoList.getEventTypeNamesForEditor().Select(g => tryTranslateWithDict(g));
+                nodeOptions = _eventTypeInfoList.getEventTypeNamesForEditor(game.lang);
             }
             else
             {
