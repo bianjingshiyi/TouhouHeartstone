@@ -1279,7 +1279,7 @@ namespace TouhouHeartstone
         #endregion
         public static async Task<DamageEventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
-            if (!cards.Any())
+            if (cards.Count() <= 0)
             {
                 return default;
             }
