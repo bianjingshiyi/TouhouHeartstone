@@ -1386,11 +1386,14 @@ namespace TouhouHeartstone
                 {
                     bool poisonous = s.isPoisonous(g);
                     bool lifesteal = s.isDrain(g);
-                    if (s.isMaster())
+                    if (s.isMaster() && g.getCurrentPlayer() == s.getOwner())
                     {
                         var item = s.getOwner().getItem();
-                        poisonous |= item.isPoisonous(g);
-                        lifesteal |= item.isDrain(g);
+                        if (item != null)
+                        {
+                            poisonous |= item.isPoisonous(g);
+                            lifesteal |= item.isDrain(g);
+                        }
                     }
                     if (poisonous && !c.isMaster())
                         await c.kill(game);
