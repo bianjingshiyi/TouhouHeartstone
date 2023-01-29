@@ -18,8 +18,6 @@ namespace Game
         private const string EDIOTR_NODE_NAME_SET_TEMP_VARIABLE = "设置临时变量";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDIOTR_NODE_NAME_GET_TEMP_VARIABLE = "获取临时变量";
-        [TranslateMsg("编辑器-临时变量节点-参数名称")]
-        private const string EDITOR_PARAM_NAME_VARIABLE_NAME = "变量名称";
         /// <summary>
         /// 设置临时变量
         /// </summary>

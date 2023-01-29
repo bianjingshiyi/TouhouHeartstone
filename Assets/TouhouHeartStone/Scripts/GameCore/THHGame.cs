@@ -167,6 +167,10 @@ namespace TouhouHeartstone
             return game.getRule().updateDeath(game);
         }
 
+        public static int getTurnCount(this CardEngine game)
+        {
+            return game.getRule().getTurnCount(game);
+        }
         public static ITimer getTurnTimer(this CardEngine game)
         {
             return game.getRule().getTurnTimer(game);
@@ -508,6 +512,10 @@ namespace TouhouHeartstone
         {
             game.setProp(GAME.TURNTIMER, value);
         }
+        public int getTurnCount(CardEngine game)
+        {
+            return game.getProp<int>(GAME.TURNCOUNT);
+        }
         public ITimer getTurnTimer(CardEngine game)
         {
             return game.getProp<ITimer>(GAME.TURNTIMER);
@@ -603,6 +611,7 @@ namespace TouhouHeartstone
             setCurrentPlayer(game, game.getSortedPlayers()[0]);
             for (int i = 0; i < 100; i++)
             {
+                game.setProp(GAME.TURNCOUNT, i);
                 await turnStart(game, game.getCurrentPlayer());
                 await turnLoop(game, game.getCurrentPlayer());
                 await turnEnd(game, game.getCurrentPlayer());
