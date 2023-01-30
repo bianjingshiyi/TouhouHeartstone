@@ -1675,6 +1675,7 @@ namespace TouhouHeartstone
             }
             // 触发死亡事件。
             List<DeathEventArg> eventArgs = new List<DeathEventArg>();
+            List<Card> successfullyDied = new List<Card>();
             foreach (Card card in cards)
             {
                 var eventArg = await game.triggers.doEvent(new DeathEventArg(card), onDie);
@@ -1696,6 +1697,7 @@ namespace TouhouHeartstone
                         await death.pile.moveTo(game, death, death.getOwner().getGrave());
                         game.logger.log(death + "摧毁");
                     }
+                    successfullyDied.Add(death);
                 }
                 eventArgs.Add(eventArg);
             }
@@ -1703,14 +1705,14 @@ namespace TouhouHeartstone
             // 触发遗言。
             try
             {
-                foreach (Card card in cards)
+                foreach (Card card in successfullyDied)
                 {
                     // 只在战场、墓地或武器栏位触发遗言。
                     if ((card.pile?.name == PILE.GRAVE || card.pile?.name == PILE.FIELD || card.pile?.name == PILE.ITEM) && card.hasDeathRattle(game))
                     {
                         await card.triggerDeathRattles(game);
+                        await card.resetCard(game);
                     }
-                    await card.resetCard(game);
                 }
             }
             catch (Exception e)
