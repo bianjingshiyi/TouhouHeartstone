@@ -1136,7 +1136,21 @@ namespace Controllers
                         CardDefine cardDefine = null;
                         if (actionNode.consts[i] is DefineReference cardReference)
                         {
-                            cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.defineId);
+                            long cardPoolId = cardReference.cardPoolId;
+                            // 只有本地拥有的卡池才能被使用。
+                            if (game.card.isOwnedCardPool(cardPoolId))
+                            {
+                                // 如果卡池没有被加载，加载卡池。
+                                if (!game.card.tryGetCardPool(cardPoolId, out _))
+                                {
+                                    var path = game.card.getCardPoolPath(cardPoolId);
+                                    if (path != null)
+                                    {
+                                        await game.card.loadCardPool(path);
+                                    }
+                                }
+                                cardDefine = game.card.getCardDefine(cardPoolId, cardReference.defineId);
+                            }
                         }
                         if (cardDefine != null)
                         {
