@@ -59,12 +59,14 @@ namespace UI
                     item.onBeginDragNode += onBeginDragInputNodeCallback;
                     item.onDragNode += onDragInputNodeCallback;
                     item.onEndDragNode += onEndDragInputNodeCallback;
+                    item.onClickNode += onClickInputNodeCallback;
                 }, itemRect =>
                 {
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
                     item.onBeginDragNode -= onBeginDragInputNodeCallback;
                     item.onDragNode -= onDragInputNodeCallback;
                     item.onEndDragNode -= onEndDragInputNodeCallback;
+                    item.onClickNode -= onClickInputNodeCallback;
                 });
             }
         }
@@ -177,12 +179,14 @@ namespace UI
                     item.onBeginDragNode += onBeginDragOutputNodeCallback;
                     item.onDragNode += onDragOutputNodeCallback;
                     item.onEndDragNode += onEndDragOutputNodeCallback;
+                    item.onClickNode += onClickOutputNodeCallback;
                 }, itemRect =>
                 {
                     ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();
                     item.onBeginDragNode -= onBeginDragOutputNodeCallback;
                     item.onDragNode -= onDragOutputNodeCallback;
                     item.onEndDragNode -= onEndDragOutputNodeCallback;
+                    item.onClickNode -= onClickOutputNodeCallback;
                 });
             }
         }
@@ -210,12 +214,14 @@ namespace UI
                     item.onBeginDragNode += onBeginDragOutputNodeCallback;
                     item.onDragNode += onDragOutputNodeCallback;
                     item.onEndDragNode += onEndDragOutputNodeCallback;
+                    item.onClickNode += onClickOutputNodeCallback;
                 }, itemRect =>
                 {
                     ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();
                     item.onBeginDragNode -= onBeginDragOutputNodeCallback;
                     item.onDragNode -= onDragOutputNodeCallback;
                     item.onEndDragNode -= onEndDragOutputNodeCallback;
+                    item.onClickNode -= onClickOutputNodeCallback;
                 });
             }
         }
@@ -342,6 +348,10 @@ namespace UI
         {
             onEndDragInputNode?.Invoke(this, item, eventData);
         }
+        private void onClickInputNodeCallback(ActionNodeItemInput item, BaseEventData eventData)
+        {
+            onClickInputNode?.Invoke(this, item, eventData);
+        }
         private void onBeginDragOutputNodeCallback(ActionNodeItemOutput item, BaseEventData eventData)
         {
             onBeginDragOutputNode?.Invoke(this, item, eventData);
@@ -353,6 +363,10 @@ namespace UI
         private void onEndDragOutputNodeCallback(ActionNodeItemOutput item, BaseEventData eventData)
         {
             onEndDragOutputNode?.Invoke(this, item, eventData);
+        }
+        private void onClickOutputNodeCallback(ActionNodeItemOutput item, BaseEventData eventData)
+        {
+            onClickOutputNode?.Invoke(this, item, eventData);
         }
         private void onConstValueChangedCallback(ValueInputField item, object value)
         {
@@ -442,9 +456,11 @@ namespace UI
         public event Action<ActionNodeItem, ActionNodeItemInput, BaseEventData> onBeginDragInputNode;
         public event Action<ActionNodeItem, ActionNodeItemInput, BaseEventData> onDragInputNode;
         public event Action<ActionNodeItem, ActionNodeItemInput, BaseEventData> onEndDragInputNode;
+        public event Action<ActionNodeItem, ActionNodeItemInput, BaseEventData> onClickInputNode;
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onBeginDragOutputNode;
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onDragOutputNode;
         public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onEndDragOutputNode;
+        public event Action<ActionNodeItem, ActionNodeItemOutput, BaseEventData> onClickOutputNode;
         public event Action<ActionNodeItem, int, object> onConstValueChanged;
         public event Action<ActionNodeItem, int> onClickConstValueButton;
         public event Action<ActionNodeItem, int, int> onClickConstValueItemButton;

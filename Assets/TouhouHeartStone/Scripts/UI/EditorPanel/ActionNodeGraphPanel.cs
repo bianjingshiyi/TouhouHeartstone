@@ -83,9 +83,11 @@ namespace UI
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;
+            actionNodeItem.onClickInputNode += onClickInputNode;
             actionNodeItem.onBeginDragOutputNode += onBeginDragOutputNode;
             actionNodeItem.onDragOutputNode += onDragOutputNode;
             actionNodeItem.onEndDragOutputNode += onEndDragOutputNode;
+            actionNodeItem.onClickOutputNode += onClickOutputNode;
             actionNodeItem.onPointerDown += onPointerDownActionNodeItem;
             actionNodeItem.onPointerUp += onPointerUpActionNodeItem;
             actionNodeItem.onBeginDrag += onBeginDragActionNodeItem;
@@ -357,6 +359,7 @@ namespace UI
         }
         public void resetView()
         {
+            _currentSelectedKnob = default;
             _backgroundImage.transform.localPosition = Vector3.zero;
             _backgroundImage.transform.localScale = Vector3.one;
         }
@@ -638,6 +641,55 @@ namespace UI
                 _connectionList[index].inputNode, _connectionList[index].inputIndex);
         }
         /// <summary>
+        /// 点击输入接口，如果是原本的接口则取消选择，如果在另外一个接口上则触发事件
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="input"></param>
+        /// <param name="eventData"></param>
+        private void onClickInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
+        {
+            int inputIndex = item.indexOfInput(input);
+            if (_currentSelectedKnob.inputNode == item && _currentSelectedKnob.inputIndex == inputIndex)
+            {
+                // 点击的输入点是本身。
+                // 取消选择。
+                input?.setSelected(false);
+                _currentSelectedKnob = default;
+                return;
+            }
+            else if(_currentSelectedKnob.outputNode != null && _currentSelectedKnob.outputIndex >= 0)
+            {
+                // 选择的输出点存在。
+                var output = _currentSelectedKnob.outputNode;
+                var outputIndex = _currentSelectedKnob.outputIndex;
+                bool connected = _connectionList.Any(c => c.inputNode == item && c.inputIndex == inputIndex && c.outputNode == output && c.outputIndex == outputIndex);
+
+                if (connected)
+                {
+                    // 已经连接，断开连接。
+                    onUnconnectNodes?.Invoke(output, outputIndex, item, inputIndex);
+                }
+                else
+                {
+                    // 连接输入点与输出点。
+                    onConnectNodes?.Invoke(output, outputIndex, item, inputIndex);
+                }
+                _currentSelectedKnob.outputKnob?.setSelected(false);
+                _currentSelectedKnob = default;
+                return;
+            }
+            else
+            {
+                // 点击的输入点不是本身，并且当前选择的输出点不存在。
+                // 选择新的输入点。
+                _currentSelectedKnob.inputKnob?.setSelected(false);
+                _currentSelectedKnob.inputNode = item;
+                _currentSelectedKnob.inputIndex = inputIndex;
+                _currentSelectedKnob.inputKnob = input;
+                _currentSelectedKnob.inputKnob?.setSelected(true);
+            }
+        }
+        /// <summary>
         /// 开始拖拽输入接口，创建一根跟着鼠标移动的连线
         /// </summary>
         /// <param name="item"></param>
@@ -721,6 +773,55 @@ namespace UI
                 return;
             onUnconnectNodes?.Invoke(_connectionList[index].outputNode, _connectionList[index].outputIndex,
                 _connectionList[index].inputNode, _connectionList[index].inputIndex);
+        }
+        /// <summary>
+        /// 点击输出接口，如果是原本的接口则取消选择，如果在另外一个接口上则触发事件
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="input"></param>
+        /// <param name="eventData"></param>
+        private void onClickOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
+        {
+            int outputIndex = item.indexOfOutput(output);
+            if (_currentSelectedKnob.outputNode == item && _currentSelectedKnob.outputIndex == outputIndex)
+            {
+                // 点击的输出点是本身。
+                // 取消选择。
+                output?.setSelected(false);
+                _currentSelectedKnob = default;
+                return;
+            }
+            else if (_currentSelectedKnob.inputNode != null && _currentSelectedKnob.inputIndex >= 0)
+            {
+                // 选择的输入点存在。
+                var input = _currentSelectedKnob.inputNode;
+                var inputIndex = _currentSelectedKnob.inputIndex;
+                bool connected = _connectionList.Any(c => c.inputNode == input && c.inputIndex == inputIndex && c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
+
+                if (connected)
+                {
+                    // 已经连接，断开连接。
+                    onUnconnectNodes?.Invoke(item, outputIndex, input, inputIndex);
+                }
+                else
+                {
+                    // 连接输入点与输出点。
+                    onConnectNodes?.Invoke(item, outputIndex, input, inputIndex);
+                }
+                _currentSelectedKnob.inputKnob?.setSelected(false);
+                _currentSelectedKnob = default;
+                return;
+            }
+            else
+            {
+                // 没有选择输入点，并且输出点也不是本身。
+                // 选择新的输出点。
+                _currentSelectedKnob.outputKnob?.setSelected(false);
+                _currentSelectedKnob.outputNode = item;
+                _currentSelectedKnob.outputIndex = outputIndex;
+                _currentSelectedKnob.outputKnob = output;
+                _currentSelectedKnob.outputKnob?.setSelected(true);
+            }
         }
         private void onPointerDownActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
@@ -872,9 +973,11 @@ namespace UI
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
             actionNodeItem.onEndDragInputNode += onEndDragInputNode;
+            actionNodeItem.onClickInputNode += onClickInputNode;
             actionNodeItem.onBeginDragOutputNode += onBeginDragOutputNode;
             actionNodeItem.onDragOutputNode += onDragOutputNode;
             actionNodeItem.onEndDragOutputNode += onEndDragOutputNode;
+            actionNodeItem.onClickOutputNode += onClickOutputNode;
             actionNodeItem.onPointerDown += onPointerDownActionNodeItem;
             actionNodeItem.onPointerUp += onPointerUpActionNodeItem;
             actionNodeItem.onBeginDrag += onBeginDragActionNodeItem;
@@ -1084,6 +1187,7 @@ namespace UI
         [SerializeField]
         float _minScale = 0.3f;
         private bool _isTouchZooming;
+        private ActionNodeSelectedKnob _currentSelectedKnob;
 
 
         #endregion
@@ -1128,6 +1232,15 @@ namespace UI
         public int inputIndex;
         public ActionNodeGraphLine line;
         //public ActionNodeGraphLine line;        
+    }
+    struct ActionNodeSelectedKnob
+    {
+        public ActionNodeItem outputNode;
+        public ActionNodeItemOutput outputKnob;
+        public int outputIndex;
+        public ActionNodeItem inputNode;
+        public ActionNodeItemInput inputKnob;
+        public int inputIndex;
     }
     public enum ActionNodeValueType
     {
