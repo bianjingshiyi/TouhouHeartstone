@@ -155,7 +155,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             if (card != null)
-            return card.setProp(game, propName, value);
+                return card.setProp(game, propName, value);
             return Task.FromResult<IPropChangeEventArg>(null);
         }
         /// <summary>
@@ -574,9 +574,9 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getFriendlyServants(CardEngine game, Card card)
         {
-                Card[] servants = card.owner.getField();
-                return servants;
-            }
+            Card[] servants = card.owner.getField();
+            return servants;
+        }
         /// <summary>
         /// 获取护甲
         /// </summary>
@@ -602,9 +602,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
             if (player != null)
-            {
-            await player.getMaster().gainArmor(game, count);
-        }
+                await player.getMaster().gainArmor(game, count);
         }
         /// <summary>
         /// 增加护甲
@@ -617,9 +615,7 @@ namespace Game
              [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
             if (player != null)
-            {
-            await player.getMaster().gainArmor(game, count);
-        }
+                await player.getMaster().gainArmor(game, count);
         }
         /// <summary>
         /// 失去护甲
@@ -632,9 +628,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
             if (player != null)
-            {
-            await player.getMaster().loseArmor(game, count);
-        }
+                await player.getMaster().loseArmor(game, count);
         }
         /// <summary>
         /// 获取延迟区
@@ -698,9 +692,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
             if (player != null)
-            {
-            await player.destroyItem(game);
-        }
+                await player.destroyItem(game);
         }
         /// <summary>
         /// 获取暂存区
@@ -775,7 +767,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
             if (player != null)
-            await player.setGem(game, count);
+                await player.setGem(game, count);
         }
         /// <summary>
         /// 增加当前灵力值
@@ -788,7 +780,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
             if (player != null)
-            await player.setGem(game, player.getGem() + count);
+                await player.setGem(game, player.getGem() + count);
         }
         /// <summary>
         /// 设置灵力上限
@@ -801,7 +793,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
             if (player != null)
-            await player.setMaxGem(game, count);
+                await player.setMaxGem(game, count);
         }
         /// <summary>
         /// 增加灵力上限
@@ -814,7 +806,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
         {
             if (player != null)
-            await player.setMaxGem(game, player.getMaxGem() + count);
+                await player.setMaxGem(game, player.getMaxGem() + count);
         }
         /// <summary>
         /// 触发卡牌宣言
