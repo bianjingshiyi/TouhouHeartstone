@@ -249,17 +249,17 @@ namespace TouhouHeartstone
             });
             return true;
         }
-        public static async Task<HearthStoneRule.EquipItemEventArg> equip(this Player player, CardEngine game, Pile from, Card item)
+        public static Task<HearthStoneRule.EquipItemEventArg> equip(this Player player, CardEngine game, Pile from, Card item)
         {
-            if (player[PILE.ITEM].isFull)
-            {
-                game.logger.logTrace("由于" + player + "的道具栏已满，摧毁当前道具");
-                await player.destroyItem(game);
-            }
-
-            return await game.triggers.doEvent(new HearthStoneRule.EquipItemEventArg() { player = player, from = from, card = item }, onEquipItem);
+            return game.triggers.doEvent(new HearthStoneRule.EquipItemEventArg() { player = player, from = from, card = item }, onEquipItem);
             async Task onEquipItem(HearthStoneRule.EquipItemEventArg arg)
             {
+                if (player[PILE.ITEM].isFull)
+                {
+                    game.logger.logTrace("由于" + player + "的道具栏已满，摧毁当前道具");
+                    await player.destroyItem(game);
+                }
+
                 player = arg.player;
                 from = arg.from;
                 var card = arg.card;

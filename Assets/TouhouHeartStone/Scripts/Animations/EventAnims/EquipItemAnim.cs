@@ -18,7 +18,7 @@ namespace Game
             }
             table.setMaster(table.ui.SelfMaster, table.player.getMaster());
             if (!table.tryGetItem(eventArg.card, out var item))
-                return false;
+                return true;
 
             item.AttackPropNumber.text.text = eventArg.card.getAttack(table.game).ToString();
             item.DurabilityPropNumber.text.text = eventArg.card.getCurrentLife(table.game).ToString();
@@ -27,12 +27,6 @@ namespace Game
             if (!SimpleAnimHelper.update(table, ref _anim, item.onEquip, item.animator, time))
                 return false;
             return true;
-        }
-        public override bool blockAnim(UIAnimation nextAnim)
-        {
-            if (nextAnim is EquipItemAnim enter && enter.tEventArg.card != tEventArg.card)
-                return false;
-            return base.blockAnim(nextAnim);
         }
     }
 }

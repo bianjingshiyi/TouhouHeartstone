@@ -75,8 +75,8 @@ namespace Game
                     if (await game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope))
                     {
                         break;
-            }
-        }
+                    }
+                }
             }
             while (times < maxRepeatTime);
         }
@@ -569,15 +569,21 @@ namespace Game
         /// <summary>
         /// 卡牌装备到道具栏(有显示问题）
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入道具栏")]
+        [TranslateMsg]
         public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
+        [TranslateMsg("动作图编辑器中参数名称之装备事件")]
+        public const string EDITOR_PARAM_NAME_EQUIP_EVENT = "装备事件";
         [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card> moveToItem(CardEngine game,
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EQUIP_EVENT)]
+        public static async Task<HearthStoneRule.EquipItemEventArg> moveToItem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card card)
         {
-            return (await player.equip(game, card.pile, card)).card;
+            if (card == null)
+                return null;
+            if (player == null)
+                return null;
+            return await player.equip(game, card.pile, card);
         }
         /// <summary>
         /// 卡牌移动到暂存区(有显示问题）
@@ -737,7 +743,7 @@ namespace Game
             [ActionNodeParam(EDITOR_PARAM_NAME_INDEX)] int index)
         {
             if (index >= 0 && index < array.Length)
-            return array[index];
+                return array[index];
             return null;
         }
         [TranslateMsg("编辑器_动作节点_遍历")]
@@ -817,7 +823,7 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
         {
-            if(eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length>0)
+            if (eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length > 0)
                 eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
         }
         #endregion
