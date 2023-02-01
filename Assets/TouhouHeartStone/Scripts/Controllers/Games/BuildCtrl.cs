@@ -29,6 +29,8 @@ namespace Controllers
                 if (c.isMaster())
                 {
                     long cardPoolId = c.cardPoolId;
+                    // 组卡界面能使用的英雄，必须是玩家自己有的卡池里面的
+                    // 缓存卡池里面的英雄不能算进去。
                     return game.card.isOwnedCardPool(cardPoolId);
                 }
                 return false;

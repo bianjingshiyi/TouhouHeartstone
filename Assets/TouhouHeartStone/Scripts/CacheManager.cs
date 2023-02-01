@@ -125,7 +125,7 @@ namespace Game
         }
         public bool GetResourceInfo(TouhouCardEngine.ResourceType resType, string id, out long size)
         {
-            return GetResourceInfo(resType.ToString(), id, out size);
+            return GetResourceInfo(resType.GetString(), id, out size);
         }
         public bool GetResourceInfo(string resType, string resID, out long size)
         {
@@ -293,7 +293,7 @@ namespace Game
         {
             // 检查资源类型
             if (!ResourceIsValid(resType))
-                return null;
+                throw new InvalidDataException();
 
             var folder = Path.Combine(CacheDir, resType);
             var path = Path.Combine(folder, resID);
@@ -313,7 +313,7 @@ namespace Game
         {
             // 资源类型
             if (!ResourceIsValid(resType))
-                return null;
+                throw new InvalidDataException();
 
             // 查找本地的卡池。
             if (resType == "card")
@@ -341,7 +341,7 @@ namespace Game
             //查找上传的别人的卡池缓存。
             var path = GetCachePath(resType, resID);
             if (!File.Exists(path))
-                return null;
+                throw new FileNotFoundException();
 
             // 更新LRU
             visitLRU(path);

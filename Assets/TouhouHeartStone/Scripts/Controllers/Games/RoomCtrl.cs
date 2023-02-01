@@ -118,7 +118,7 @@ namespace Controllers
 
                 if (!_isLocalGame)
                 {
-                    await cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                    _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
                 }
                 updateStartAndReadyButton();
                 updatePlayerListUI();
@@ -149,7 +149,7 @@ namespace Controllers
         }
         public async void ReceiveRoomPropChanged(string key, object value)
         {
-            if (key == RoomDataPropName.Option.CardPools.ToString())
+            if (key == Option.CardPools.ToString())
             {
                 if (!_isLocalGame && value is CardPoolInfoPack[] pools)
                 {
@@ -437,6 +437,9 @@ namespace Controllers
                 localPlayer.setReady(false);
                 game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
             }
+            // 玩家状态更新后，读取缓存中的卡池。
+            // 用于局域网联机，比如客场玩家向房主上传完卡池后，不需要下载卡池的场合。
+            cardPoolManager.LoadRoomCardPoolsFromCache(_currentRoomData.getCardPools());
             updateStartAndReadyButton();
             updatePlayerListUI();
         }

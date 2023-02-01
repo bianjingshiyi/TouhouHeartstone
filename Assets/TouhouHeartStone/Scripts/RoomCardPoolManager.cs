@@ -47,7 +47,7 @@ namespace Game
                         token.ThrowIfCancellationRequested();
                         string id = roomPool.GetResourceID();
                         // 已经在计划中的卡池，或者已经检查为上传完毕的卡池直接跳过。
-                        if (IsCardPoolInPlan(roomPool.cardPoolId, roomPool.version) || readyUploadPools.Contains(id))
+                        if (IsCardPoolInPlan(roomPool.cardPoolId, roomPool.version) || uploadedPools.Contains(id))
                         {
                             continue;
                         }
@@ -119,7 +119,7 @@ namespace Game
                             }
                             if (poolReady)
                             {
-                                readyUploadPools.Add(id);
+                                uploadedPools.Add(id);
                             }
                         }
 
@@ -200,13 +200,17 @@ namespace Game
                     continue;
                 }
                 var cardPoolPlan = new CardPoolFilePlan(pool);
-                cardPoolPlan.size = GetPlanFileSize(cardPoolPlan);
 
                 var plans = new List<ResourcePlan>
                 {
                     cardPoolPlan
                 };
-                plans.AddRange(GetCardPoolPicturePlans(pool.cardPoolId));
+                var picPlans = GetCardPoolPicturePlans(pool.cardPoolId);
+                foreach (var p in picPlans)
+                {
+                    p.size = GetPlanFileSize(p);
+                    plans.Add(p);
+                }
                 var plan = new CardPoolPlan(pool, plans);
                 uploadPlans.Add(plan);
             }
@@ -245,7 +249,7 @@ namespace Game
             Clear();
             uploadPlans.Clear();
             downloadPlans.Clear();
-            readyUploadPools.Clear();
+            uploadedPools.Clear();
         }
         /// <summary>
         /// 清除状态和进度。
@@ -275,75 +279,101 @@ namespace Game
             {
                 const int MAX_RETRY_COUNT = 16;
                 int retryCounts = 0;
-                while (uploadPlans.Any(p => !p.completed))
+                var uploadList = uploadPlans.Where(p => !p.completed);
+                if (uploadList.Count() > 0)
                 {
-                    bool allSuccess = true;
-                    foreach (var plan in uploadPlans.Where(p => !p.completed))
+                    ChangeLoadState(PlayerLoadState.Upload);
+                    do
                     {
-                        token.ThrowIfCancellationRequested();
-                        ChangeLoadState(PlayerLoadState.Upload);
-                        bool success = await UploadCardPoolPlan(plan);
-                        if (!success)
+                        bool allSuccess = true;
+
+                        _totalSize = uploadList.Sum(plan => plan.resPlans.Sum(p => GetPlanFileSize(p)));
+                        _transmitedSize = 0;
+
+                        foreach (var plan in uploadList)
                         {
-                            allSuccess = false;
+                            token.ThrowIfCancellationRequested();
+                            bool success = await UploadCardPoolPlan(plan);
+                            if (!success)
+                            {
+                                allSuccess = false;
+                            }
+                            else
+                            {
+                                onUploadCompleted?.Invoke(plan);
+                            }
                         }
-                        else
+                        if (!allSuccess)
                         {
-                            onUploadCompleted?.Invoke(plan);
+                            retryCounts++;
+                            ChangeProgress(0);
+                            if (retryCounts > MAX_RETRY_COUNT)
+                            {
+                                throw new TaskNotCompleteException("重试次数过多，上传卡池失败。");
+                            }
+                            await Task.Delay(retryCooldown);
                         }
+                        uploadList = uploadPlans.Where(p => !p.completed);
                     }
-                    if (!allSuccess)
-                    {
-                        retryCounts++;
-                        if (retryCounts > MAX_RETRY_COUNT)
-                        {
-                            throw new TaskNotCompleteException("重试次数过多，上传卡池失败。");
-                        }
-                        await Task.Delay(retryCooldown);
-                    }
+                    while (uploadList.Count() > 0);
+
+                    ChangeLoadState(PlayerLoadState.None);
                 }
-                ChangeLoadState(PlayerLoadState.None);
 
 
                 token.ThrowIfCancellationRequested();
 
                 retryCounts = 0;
-                while (downloadPlans.Any(p => !p.completed))
+                var downloadList = downloadPlans.Where(p => !p.completed);
+                if (downloadList.Count() > 0)
                 {
-                    bool allSuccess = true;
-                    foreach (var plan in downloadPlans.Where(p => !p.completed))
+                    ChangeLoadState(PlayerLoadState.Download);
+                    do
                     {
-                        token.ThrowIfCancellationRequested();
-                        ChangeLoadState(PlayerLoadState.Download);
+                        bool allSuccess = true;
 
-                        // 首先下载并读取卡池。
-                        bool poolLoaded = await DownloadPlanCardPool(plan);
-                        // 如果卡池读取失败，则不读取卡图。
-                        if (poolLoaded)
+                        // 下载卡池的时候包含会临时加入到计划中的卡图，会导致进度条往会跳
+                        // 所以进度条只表示下载的卡池数量。
+                        _totalSize = downloadList.Count();
+                        _transmitedSize = 0;
+
+                        foreach (var plan in downloadList)
                         {
-                            bool success = await DownloadPlan(plan);
-                            if (success)
+                            token.ThrowIfCancellationRequested();
+
+                            // 首先下载并读取卡池。
+                            bool poolLoaded = await DownloadPlanCardPool(plan);
+                            // 如果卡池读取失败，则不读取卡图。
+                            if (poolLoaded)
                             {
-                                onDownloadCompleted?.Invoke(plan);
-                            }
-                            else
-                            {
-                                allSuccess = false;
+                                bool success = await DownloadPlan(plan);
+                                if (success)
+                                {
+                                    onDownloadCompleted?.Invoke(plan);
+                                }
+                                else
+                                {
+                                    allSuccess = false;
+                                }
                             }
                         }
-                    }
 
-                    if (!allSuccess)
-                    {
-                        retryCounts++;
-                        if (retryCounts > MAX_RETRY_COUNT)
+                        if (!allSuccess)
                         {
-                            throw new TaskNotCompleteException("重试次数过多，下载卡池失败。");
+                            retryCounts++;
+                            ChangeProgress(0);
+                            if (retryCounts > MAX_RETRY_COUNT)
+                            {
+                                throw new TaskNotCompleteException("重试次数过多，下载卡池失败。");
+                            }
+                            await Task.Delay(retryCooldown);
                         }
-                        await Task.Delay(retryCooldown);
+                        downloadList = downloadPlans.Where(p => !p.completed);
                     }
+                    while (downloadList.Count() > 0);
+
+                    ChangeLoadState(PlayerLoadState.None);
                 }
-                ChangeLoadState(PlayerLoadState.None);
             }
             catch (OperationCanceledException)
             {
@@ -364,16 +394,7 @@ namespace Game
             return uploadPlans.Any(p => p.poolPack.cardPoolId == cardPoolId && p.poolPack.version == version) ||
                 downloadPlans.Any(p => p.poolPack.cardPoolId == cardPoolId && p.poolPack.version == version);
         }
-        #endregion
-        #region 构造器
-        public RoomCardPoolManager(MainManager main)
-        {
-            game = main;
-            logger = new ULogger("RoomCardPool");
-        }
-        #endregion
-        #region 私有方法
-        private async void LoadRoomCardPoolsFromCache(CardPoolInfoPack[] pools)
+        public async void LoadRoomCardPoolsFromCache(CardPoolInfoPack[] pools)
         {
             foreach (var cardPool in pools)
             {
@@ -384,6 +405,15 @@ namespace Game
                 }
             }
         }
+        #endregion
+        #region 构造器
+        public RoomCardPoolManager(MainManager main)
+        {
+            game = main;
+            logger = new ULogger("RoomCardPool");
+        }
+        #endregion
+        #region 私有方法
         /// <summary>
         /// 获取卡池内的所有图片路径。
         /// </summary>
@@ -473,8 +503,6 @@ namespace Game
             try
             {
                 byte[] bytes = await plan.GetBytes(game);
-                if (bytes == null)
-                    return;
                 await game.network.UploadResourceAsync(plan.type, plan.id, bytes);
                 plan.completed = true;
             }
@@ -522,8 +550,6 @@ namespace Game
             }
             // 获取资源的大小，以评估上传的进度。
             var notCompleted = plan.resPlans.Where(p => !p.completed);
-            long totalSize = plan.resPlans.Sum(p => p.size);
-            long uploadedSize = 0;
 
             // 上传这些ResourcePlan。
             foreach (var resPlan in notCompleted)
@@ -531,9 +557,9 @@ namespace Game
                 _cts.Token.ThrowIfCancellationRequested();
 
                 await UploadResourcePlan(resPlan);
-                uploadedSize += resPlan.size;
-                if (totalSize > 0)
-                    ChangeProgress((float)((double)uploadedSize / totalSize));
+                _transmitedSize += resPlan.size;
+                if (_totalSize > 0)
+                    ChangeProgress((float)((double)_transmitedSize / _totalSize));
             }
 
             // 如果所有ResourcePlan都已完成，将该卡池计划设置为完成。
@@ -588,8 +614,6 @@ namespace Game
         {
             // 获取资源的大小，以评估下载的进度。
             var notCompleted = plan.resPlans.Where(p => !p.completed);
-            int totalCount = notCompleted.Count();
-            int downloadedCount = 0;
 
             // 下载这些ResourcePlan。
             foreach (var resPlan in notCompleted)
@@ -599,10 +623,13 @@ namespace Game
                 byte[] downloaded = await DownloadResourcePlan(resPlan);
                 if (downloaded != null)
                     await game.cache.SaveCache(game.fileManager, resPlan.type, resPlan.id, downloaded);
-                downloadedCount ++;
-                if (totalCount > 0)
-                    ChangeProgress((float)downloadedCount / totalCount);
             }
+
+            // 下载卡池的时候包含会临时加入到计划中的卡图，会导致进度条往会跳
+            // 所以进度条只表示下载的卡池数量。
+            _transmitedSize++;
+            if (_totalSize > 0)
+                ChangeProgress((float)((double)_transmitedSize / _totalSize));
 
             // 如果所有计划都已完成，将该卡池计划设置为完成。
             if (!notCompleted.Any(p => !p.completed))
@@ -640,12 +667,20 @@ namespace Game
         /// 上传完毕，且卡图也完全上传完毕的卡池列表。
         /// 用于防止再次进行大量远端资源的判断，浪费时间。
         /// </summary>
-        private List<string> readyUploadPools = new List<string>();
+        private HashSet<string> uploadedPools = new HashSet<string>();
         /// <summary>
         /// 卡池传输的进度。
         /// </summary>
         private float _progress;
         public float progress => _progress;
+        /// <summary>
+        /// 当前传输中已传输的文件大小。
+        /// </summary>
+        private long _transmitedSize;
+        /// <summary>
+        /// 当前传输中需要传输的文件总大小。
+        /// </summary>
+        private long _totalSize;
         /// <summary>
         /// 取消计划所用的标记。
         /// </summary>
@@ -726,22 +761,22 @@ namespace Game
         public async override Task<byte[]> GetBytes(MainManager game)
         {
             if (path == null)
-                return null;
+                throw new FileNotFoundException();
 
             var fileManager = game.fileManager;
-            path = Path.Combine(game.card.textureDirName, path);
-            bool fullPath = Path.GetFullPath(path) == path;
-            if (fullPath && fileManager.isFileExist(path))
+            var picPath = Path.Combine(game.card.textureDirName, path);
+            bool isFullPath = Path.GetFullPath(path) == picPath;
+            if (isFullPath && fileManager.isFileExist(picPath))
             {
                 //如果直接给出完整路径就直接从完整路径上读
-                return await fileManager.readBinaryFile(path);
+                return await fileManager.readBinaryFile(picPath);
             }
-            else if (fileManager.isPersistentFileExist(path))
+            else if (fileManager.isPersistentFileExist(picPath))
             {
                 // 从外部图片路径读取图片。
-                return await fileManager.readPersistentBinaryFile(path);
+                return await fileManager.readPersistentBinaryFile(picPath);
             }
-            return null;
+            throw new FileNotFoundException();
         }
     }
 }
