@@ -510,12 +510,12 @@ namespace Game
                 item = null;
                 return false;
             }
-            if (player.getItem() == card)
+            if (_selfItemCard == card)
             {
                 item = ui.SelfItem;
                 return true;
             }
-            else if (game.getOpponent(player).getItem() == card)
+            else if (_enemyItemCard == card)
             {
                 item = ui.EnemyItem;
                 return true;
@@ -531,9 +531,17 @@ namespace Game
             if (card == null)
             {
                 item.hide();
+                if (item == ui.SelfItem)
+                    _selfItemCard = null;
+                else if (item == ui.EnemyItem)
+                    _enemyItemCard = null;
                 return;
             }
             item.display();
+            if (item == ui.SelfItem)
+                _selfItemCard = card;
+            else if (item == ui.EnemyItem)
+                _enemyItemCard = card;
 
             if (card.getOwner() == currentAnimPlayer)
             {
@@ -1871,6 +1879,10 @@ namespace Game
                 };
             }
         }
+        #endregion
+        #region 属性字段
+        Card _selfItemCard;
+        Card _enemyItemCard;
         #endregion
     }
 }

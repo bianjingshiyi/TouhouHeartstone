@@ -1,4 +1,5 @@
-﻿using TouhouHeartstone;
+﻿using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 using TouhouCardEngine;
 using UnityEngine;
@@ -253,6 +254,89 @@ namespace Game
                                     //创建卡牌
                                     if (_card == null)
                                         _card = table.createCard(eventArg.card, servant.transform.position, servant.rectTransform.rect.height);
+                                    //播放动画
+                                    if (_anim == null)
+                                    {
+                                        UDeck targetDeck = eventArg.to == table.player.getDeck() ? table.ui.SelfDeck : table.ui.EnemyDeck;
+                                        _anim = new CardTransAnim(_card,
+                                            targetDeck.transform,
+                                            targetDeck.bottom.rect.height * targetDeck.bottom.lossyScale / _card.rectTransform.rect.height,
+                                            table.fieldToDeckCurve);
+                                    }
+
+                                    if (!_anim.update(table, time))//没放完动画就让它接着放
+                                        return false;
+                                    //摧毁卡牌
+                                    Object.Destroy(_card.gameObject);
+                                    return true;//放完了
+                                }
+                            default:
+                                return true;
+                        }
+                    }
+                case PILE.ITEM:
+                    {
+                        switch (eventArg.to.name)
+                        {
+                            case PILE.HAND:
+                                {
+                                    //回手
+                                    if (table.tryGetItem(eventArg.card, out var item))//尝试获取将要回手的武器
+                                    {
+                                        if (item == table.ui.SelfItem)
+                                            table.ui.SelfItem.hide();
+                                        else if (item == table.ui.EnemyItem)
+                                            table.ui.EnemyItem.hide();
+                                    }
+                                    if (!table.tryGetHand(eventArg.card, out var hand))
+                                    {
+                                        hand = table.createHand(eventArg.card);
+                                        hand.rectTransform.position = item.rectTransform.position;
+                                        hand.GetComponentInChildren<PositionLerp>().setTarget(hand.rectTransform);
+                                    }
+                                    if (!SimpleAnimHelper.update(table, ref _anim, hand.onDraw, hand.animator, time))
+                                        return false;
+                                    return true;
+                                }
+                            case PILE.ITEM:
+                                {
+                                    //获得控制权
+                                    if (_anim == null)
+                                    {
+                                        if (table.tryGetItem(eventArg.card, out var item))
+                                        {
+                                            if (item == table.ui.SelfItem)
+                                                table.ui.SelfItem.hide();
+                                            else if (item == table.ui.EnemyItem)
+                                                table.ui.EnemyItem.hide();
+
+                                            var target = eventArg.to == table.player.getPile(PILE.ITEM) ? table.ui.SelfItem : table.ui.EnemyItem;
+                                            table.setItem(target, eventArg.card);
+                                        }
+                                        else
+                                            throw new ActorNotFoundException(eventArg.card);
+                                    }
+                                    if (!_anim.update(table, time))
+                                        return false;
+                                    return true;
+                                }
+                            case PILE.DECK:
+                                {
+                                    //洗回牌库
+                                    Vector3 itemPosition = Vector3.zero;
+                                    float itemHeight = -1;
+                                    if (table.tryGetItem(eventArg.card, out var item))
+                                    {
+                                        if (item == table.ui.SelfItem)
+                                            table.ui.SelfItem.hide();
+                                        else if (item == table.ui.EnemyItem)
+                                            table.ui.EnemyItem.hide();
+                                        itemPosition = item.transform.position;
+                                        itemHeight = item.rectTransform.rect.height;
+                                    }
+                                    //创建卡牌
+                                    if (_card == null)
+                                        _card = table.createCard(eventArg.card, itemPosition, itemHeight);
                                     //播放动画
                                     if (_anim == null)
                                     {

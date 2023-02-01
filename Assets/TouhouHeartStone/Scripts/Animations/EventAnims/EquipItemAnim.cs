@@ -13,16 +13,18 @@ namespace Game
             {
                 if (eventArg.from?.name == PILE.HAND)
                 {
-                    table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));//移除手牌
+                    if (table.tryGetHand(eventArg.card, out var handItem)) 
+                    {
+                        table.ui.SelfHandList.removeItem(handItem);//移除手牌
+                        table.ui.EnemyHandList.removeItem(handItem);//移除手牌
+                    }
                 }
             }
             table.setMaster(table.ui.SelfMaster, table.player.getMaster());
-            if (!table.tryGetItem(eventArg.card, out var item))
-                return true;
-
+            var item = eventArg.player == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
+            table.setItem(item, eventArg.card);
             item.AttackPropNumber.text.text = eventArg.card.getAttack(table.game).ToString();
             item.DurabilityPropNumber.text.text = eventArg.card.getCurrentLife(table.game).ToString();
-            table.setItem(item, eventArg.card);
 
             if (!SimpleAnimHelper.update(table, ref _anim, item.onEquip, item.animator, time))
                 return false;
