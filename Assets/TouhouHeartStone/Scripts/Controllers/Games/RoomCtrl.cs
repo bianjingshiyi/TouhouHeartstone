@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
 using Game;
@@ -32,6 +33,14 @@ namespace Controllers
         public const string ROOM_UNKNOWN_PLAYER = "未知玩家";
         [TranslateMsg("房间-未知卡组")]
         public const string ROOM_UNKNOWN_DECK = "未知卡组";
+        [TranslateMsg("房间-玩家-无法上传卡组的提示")]
+        public const string ROOM_ERROR_CANNOT_UPLOAD_CARD_POOLS = "无法上传该卡池：";
+        [TranslateMsg("房间-玩家-无法上传卡组的提示（{0}：卡池名称列表）")]
+        public const string ROOM_ERROR_MISSING_CARD_POOL = "卡池不存在：{0}";
+        [TranslateMsg("房间-玩家-无法上传卡组的提示（{0}：卡牌皮肤名称列表）")]
+        public const string ROOM_ERROR_MISSING_CARD_IMAGE = "卡图丢失：{0}";
+        [TranslateMsg("房间-玩家-无法上传卡组的提示（{0}：增益皮肤名称列表）")]
+        public const string ROOM_ERROR_MISSING_BUFF_IMAGE = "增益图片丢失：{0}";
         #endregion
         #region 公有方法
         public void SetRoomData(RoomData room)
@@ -322,9 +331,17 @@ namespace Controllers
 
                         game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, async () =>
                         {
-                            AddCardPools(packs);
-                            SetPlayerDeck(_selectDeckPlayerId, deck);
-                            await cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                            if (CanUploadCardPools(packs, out string errorMessage))
+                            {
+                                AddCardPools(packs);
+                                SetPlayerDeck(_selectDeckPlayerId, deck);
+                                _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                            }
+                            else
+                            {
+                                string title = game.lang._(StringTable.ERROR);
+                                game.ui.dialog.ShowConfirm(title, errorMessage);
+                            }
                         });
                     }
                     // 否则，向房主提议加入卡池。
@@ -573,6 +590,96 @@ namespace Controllers
             return poolsString;
         }
 
+
+        /// <summary>
+        /// 检查卡池是否能上传。
+        /// </summary>
+        /// <param name="cardPools">卡池列表。</param>
+        /// <param name="errorMessage">错误信息。</param>
+        /// <returns>能否上传。</returns>
+        private bool CanUploadCardPools(CardPoolInfoPack[] cardPools, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+            bool valid = true;
+            List<CardSkinData> missingCardSkins = new List<CardSkinData>();
+            List<BuffSkin> missingBuffSkins = new List<BuffSkin>();
+            List<CardPoolInfoPack> missingCardPools = new List<CardPoolInfoPack>();
+            foreach (var poolInfoPack in cardPools)
+            {
+                if (game.card.tryGetCardPool(poolInfoPack.cardPoolId, out CardPool pool))
+                {
+                    foreach (var skin in pool.cardSkinList)
+                    {
+                        if (skin == null || (skin.imagePath != null && !game.card.isExternalImageExists(skin.imagePath)))
+                        {
+                            missingCardSkins.Add(skin);
+                            valid = false;
+                        }
+                    }
+                    foreach (var skin in pool.buffSkinList)
+                    {
+                        if (skin == null || (skin.imagePath != null && !game.card.isExternalImageExists(skin.imagePath)))
+                        {
+                            missingBuffSkins.Add(skin);
+                            valid = false;
+                        }
+                    }
+                }
+                else
+                {
+                    missingCardPools.Add(poolInfoPack);
+                    valid = false;
+                }
+            }
+            if (!valid)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(game.lang._(ROOM_ERROR_CANNOT_UPLOAD_CARD_POOLS));
+                const int MAX_DISPLAY_COUNT = 5;
+                if (missingCardSkins.Count > 0)
+                {
+                    var cardNames = missingCardSkins.Select(s => s.name).ToArray();
+                    var cardNamesStr = string.Join(",", cardNames, 0, Mathf.Min(MAX_DISPLAY_COUNT, cardNames.Length));
+                    if (missingCardSkins.Count > MAX_DISPLAY_COUNT)
+                        cardNamesStr += "...";
+
+                    sb.AppendLine(game.lang._(ROOM_ERROR_MISSING_CARD_IMAGE, cardNamesStr));
+                }
+                if (missingBuffSkins.Count > 0)
+                {
+                    var buffNames = missingBuffSkins.Select(s => s.name).ToArray();
+                    var buffNamesStr = string.Join(",", buffNames, 0, Mathf.Min(MAX_DISPLAY_COUNT, buffNames.Length));
+                    if (missingBuffSkins.Count > MAX_DISPLAY_COUNT)
+                        buffNamesStr += "...";
+
+                    sb.AppendLine(game.lang._(ROOM_ERROR_MISSING_BUFF_IMAGE, buffNamesStr));
+                }
+                if (missingCardPools.Count > 0)
+                {
+                    var poolNames = missingCardPools.Select(s => s.cardPoolName).ToArray();
+                    var poolNamesStr = string.Join(",", poolNames, 0, Mathf.Min(MAX_DISPLAY_COUNT, poolNames.Length));
+                    if (missingCardPools.Count > MAX_DISPLAY_COUNT)
+                        poolNamesStr += "...";
+
+                    sb.AppendLine(game.lang._(ROOM_ERROR_MISSING_CARD_POOL, poolNamesStr));
+                }
+                errorMessage = sb.ToString();
+            }
+            return valid;
+        }
+        private void SuggestCardPools(CardPoolSuggestion suggestion)
+        {
+            if (CanUploadCardPools(suggestion.cardPools, out string errorMessage))
+            {
+                game.network.SuggestCardPools(suggestion);
+            }
+            else
+            {
+                string title = game.lang._(StringTable.ERROR);
+                game.ui.dialog.ShowConfirm(title, errorMessage);
+            }
+        }
+
         /// <summary>
         /// 是否为房主
         /// </summary>
@@ -767,11 +874,6 @@ namespace Controllers
                 viewData[i].hasPrivatePools = HasNotSharedPools(cardPoolList, out _);
             }
             _ui.displayDeckSelectPanel(viewData);
-        }
-
-        private void SuggestCardPools(CardPoolSuggestion suggestion)
-        {
-            game.network.SuggestCardPools(suggestion);
         }
         #endregion
         #region 事件
