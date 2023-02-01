@@ -37,6 +37,7 @@ namespace Game
                             table.setServant(servant, card);
                         }
                     }
+                    table.setItem(player == table.player ? table.ui.SelfItem : table.ui.EnemyItem, player.getItem());
                     table.setMaster(player == table.player ? table.ui.SelfMaster: table.ui.EnemyMaster, player.getMaster());
                 }
             }

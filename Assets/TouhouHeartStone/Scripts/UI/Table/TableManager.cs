@@ -460,22 +460,6 @@ namespace Game
                 master.onSelectableFalse.invokeBeforeAnim();
                 master.onSelectableFalse.invokeAfterAnim();
             }
-            if (card.getOwner() == player && currentAnimPlayer == player)
-            {
-                if (GetRelatedItem(card).animator.gameObject.activeSelf)
-                {
-                    GetRelatedItem(card).onItemON.invokeBeforeAnim();
-                    GetRelatedItem(card).onItemON.invokeAfterAnim();
-                }
-            }
-            else
-            {
-                if (GetRelatedItem(card).animator.gameObject.activeSelf)
-                {
-                    GetRelatedItem(card).onItemOff.invokeBeforeAnim();
-                    GetRelatedItem(card).onItemOff.invokeAfterAnim();
-                }
-            }
             if (card.getOwner() == player && currentAnimPlayer == player && card.canAttack(game))
             {
                 // master.HighlightController = Master.Highlight.Green;
@@ -550,6 +534,24 @@ namespace Game
                 return;
             }
             item.display();
+
+            if (card.getOwner() == currentAnimPlayer)
+            {
+                if (item.animator.gameObject.activeSelf)
+                {
+                    item.onItemON.invokeBeforeAnim();
+                    item.onItemON.invokeAfterAnim();
+                }
+            }
+            else
+            {
+                if (item.animator.gameObject.activeSelf)
+                {
+                    item.onItemOff.invokeBeforeAnim();
+                    item.onItemOff.invokeAfterAnim();
+                }
+            }
+
             CardSkinData skin = getSkin(card);
             if (skin.image != null)
             {
