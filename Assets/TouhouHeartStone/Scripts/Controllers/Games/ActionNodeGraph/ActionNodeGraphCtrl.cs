@@ -1299,13 +1299,7 @@ namespace Controllers
             }
             else if (_generatedActionDefine != null)
             {
-                traverseActionNode(_generatedActionDefine.action, true, act);
-                foreach (var returnRef in _generatedActionDefine.returnValueRefList)
-                {
-                    if (returnRef == null || returnRef.valueRef == null)
-                        continue;
-                    traverseActionNode(returnRef.valueRef.action, true, act);
-                }
+                _generatedActionDefine.traverse(act);
             }
             else if (_effect != null)
             {

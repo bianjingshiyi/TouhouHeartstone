@@ -270,12 +270,21 @@ namespace Game
                     cardDict.Add(poolId, cardDefines.ToDictionary(c => c.id));
                 }
             }
+            var cardPools = cardManager.getCardPools(cardPoolIdSet);
             Rule rule = new HearthStoneRule(
                     cardDict,
-                    cardManager.getCardPools(cardPoolIdSet).ToDictionary(
+                    cardPools.ToDictionary(
                         p => p.Key,
                         p => p.Value.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine)));
 
+            // 加载自定义动作定义。
+            foreach (var cardPool in cardPools.Values)
+            {
+                foreach (var define in cardPool.actionDefineList)
+                {
+                    game.addActionDefine(define.defineName, define);
+                }
+            }
             await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
                 rule,
                 option,

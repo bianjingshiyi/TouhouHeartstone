@@ -16,8 +16,7 @@ namespace Game
         public List<ActionNodeGraphInfo> actionNodeGraphInfoList = new List<ActionNodeGraphInfo>();
         public List<GeneratedBuffDefine> buffDefineList = new List<GeneratedBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
-        public List<SerializableActionDefine> actionDefineList = new List<SerializableActionDefine>();
-        public List<GeneratedActionDefine> generatedActionDefineList = new List<GeneratedActionDefine>();
+        public List<GeneratedActionDefine> actionDefineList = new List<GeneratedActionDefine>();
     }
     [Serializable]
     public class SerializableCardPool
@@ -34,9 +33,7 @@ namespace Game
             buffDefineList = cardPool.buffDefineList.ConvertAll(b => new SerializableBuffDefine(b));
             buffSkinList = cardPool.buffSkinList;
             if (cardPool.actionDefineList.Count > 0)
-                actionDefineList = cardPool.actionDefineList;
-            else if (cardPool.generatedActionDefineList.Count > 0)
-                actionDefineList = cardPool.generatedActionDefineList.ConvertAll(a => new SerializableActionDefine(a));
+                actionDefineList = cardPool.actionDefineList.ConvertAll(a => new SerializableActionDefine(a));
             else
                 actionDefineList = new List<SerializableActionDefine>();
         }
@@ -60,6 +57,7 @@ namespace Game
                 generatedActionDefineList = genActionDefines,
                 cardSkinList = cardSkinList,
                 buffSkinList = buffSkinList,
+                actionDefineList = actionDefineList.ConvertAll(a => a.toGeneratedActionDefine(typeFinder))
                 actionNodeGraphInfoList = nodeGraphs,
             };
         }

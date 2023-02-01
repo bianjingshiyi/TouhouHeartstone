@@ -1,5 +1,7 @@
 ﻿using Controllers;
 using System.Collections.Generic;
+using TouhouCardEngine;
+
 namespace Game
 {
     partial class CardManager
@@ -63,7 +65,8 @@ namespace Game
                 {
                     info = new ActionNodeGraphInfo()
                     {
-                        actionDefineId = actionDefineId
+                        actionDefineId = actionDefineId,
+                        entryType = "actionDefine" // 为了防止错误修复把这玩意的entryNode改成triggerList
                     };
                     cardPool.actionNodeGraphInfoList.Add(info);
                 }

@@ -44,12 +44,12 @@ namespace Controllers
                 _effect = info.effect;
                 _actionDefine = info.actionDefine;
                 _ui.gameObject.SetActive(true);
-                if (_actionDefine == null)
+                if (_effect != null)
                 {
                     //更新效果属性
                     updateEffectPropList();
                 }
-                else
+                else if (_actionDefine != null)
                 {
                     //更新自定义动作属性
                     updateActionDefinePropList();
