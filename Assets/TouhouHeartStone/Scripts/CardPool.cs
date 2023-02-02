@@ -8,6 +8,7 @@ namespace Game
     [Serializable]
     public class CardPool
     {
+        public List<long> otherPoolReferences = new List<long>();
         public List<CardDefine> cardDefineList = new List<CardDefine>();
         public List<CardSkinData> cardSkinList = new List<CardSkinData>();
         public List<ActionNodeGraphInfo> actionNodeGraphInfoList = new List<ActionNodeGraphInfo>();
@@ -26,6 +27,7 @@ namespace Game
             if (cardPool == null)
                 throw new ArgumentNullException(nameof(cardPool));
             cardDefineList = cardPool.cardDefineList.ConvertAll(c => new SerializableCardDefine(c));
+            otherPoolReferences = cardPool.otherPoolReferences;
             cardSkinList = cardPool.cardSkinList;
             actionNodeGraphInfoList = cardPool.actionNodeGraphInfoList;
             buffDefineList = cardPool.buffDefineList.ConvertAll(b => new SerializableBuffDefine(b));
@@ -42,6 +44,7 @@ namespace Game
         {
             return new CardPool()
             {
+                otherPoolReferences = otherPoolReferences ?? new List<long>(),
                 cardDefineList = cardDefineList.ConvertAll(c => c.toCardDefine(typeFinder)),
                 cardSkinList = cardSkinList,
                 actionNodeGraphInfoList = actionNodeGraphInfoList,
@@ -58,6 +61,7 @@ namespace Game
         public List<SerializableBuffDefine> buffDefineList = new List<SerializableBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
         public List<SerializableActionDefine> actionDefineList;
+        public List<long> otherPoolReferences;
         #endregion
     }
 }

@@ -35,8 +35,8 @@ namespace Controllers
         public const string ROOM_UNKNOWN_DECK = "未知卡组";
         [TranslateMsg("房间-玩家-无法上传卡组的提示")]
         public const string ROOM_ERROR_CANNOT_UPLOAD_CARD_POOLS = "无法上传该卡池：";
-        [TranslateMsg("房间-玩家-无法上传卡组的提示（{0}：卡池名称列表）")]
-        public const string ROOM_ERROR_MISSING_CARD_POOL = "卡池不存在：{0}";
+        [TranslateMsg("房间-玩家-无法上传卡组的提示")]
+        public const string ROOM_ERROR_MISSING_CARD_POOL = "卡组内的卡牌属于不存在的卡池，或引用了不存在的卡池。";
         [TranslateMsg("房间-玩家-无法上传卡组的提示（{0}：卡牌皮肤名称列表）")]
         public const string ROOM_ERROR_MISSING_CARD_IMAGE = "卡图丢失：{0}";
         [TranslateMsg("房间-玩家-无法上传卡组的提示（{0}：增益皮肤名称列表）")]
@@ -318,7 +318,18 @@ namespace Controllers
             if (!_isLocalGame)
             {
                 // 检测deck是否有房间没有的卡池。
-                CardPoolInfoPack[] pools = getDeckCardPools(deck);
+                CardPoolInfoPack[] pools = getDeckCardPools(deck, out var missingPools);
+                // 如果卡组内的卡牌属于或引用了丢失的卡池，弹出错误。
+                if (missingPools.Length > 0)
+                {
+                    string title = game.lang._(StringTable.ERROR);
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine(game.lang._(ROOM_ERROR_CANNOT_UPLOAD_CARD_POOLS));
+                    sb.AppendLine(game.lang._(ROOM_ERROR_MISSING_CARD_POOL));
+
+                    game.ui.dialog.ShowConfirm(title, sb.ToString());
+                    return;
+                }
                 // 如果有房间没有的卡池，提议加入该卡池。
                 if (HasNotSharedPools(pools, out var privatePools))
                 {
@@ -478,9 +489,12 @@ namespace Controllers
             _currentRoomData?.setOption(prop, value);
             onRoomPropChanged?.Invoke(prop.ToString(), value);
         }
-        private CardPoolInfoPack[] getDeckCardPools(Deck deck)
+        private CardPoolInfoPack[] getDeckCardPools(Deck deck, out long[] missingPools)
         {
-            long[] poolsId = deck.getCardPools();
+            List<long> missingPoolList = new List<long>();
+            long[] poolsId = deck.getFullCardPools(game.card);
+
+            // 根据卡池ID获取卡池信息
             List<CardPoolInfoPack> packs = new List<CardPoolInfoPack>();
             for (int i = 0; i < poolsId.Length; i++)
             {
@@ -490,7 +504,13 @@ namespace Controllers
                 {
                     packs.Add(new CardPoolInfoPack(id, poolInfo.cardPoolName, poolInfo.editTime));
                 }
+                else
+                {
+                    // 未知卡组。
+                    missingPoolList.Add(id);
+                }
             }
+            missingPools = missingPoolList.ToArray();
             return packs.ToArray();
         }
         /// <summary>
@@ -603,7 +623,6 @@ namespace Controllers
             bool valid = true;
             List<CardSkinData> missingCardSkins = new List<CardSkinData>();
             List<BuffSkin> missingBuffSkins = new List<BuffSkin>();
-            List<CardPoolInfoPack> missingCardPools = new List<CardPoolInfoPack>();
             foreach (var poolInfoPack in cardPools)
             {
                 if (game.card.tryGetCardPool(poolInfoPack.cardPoolId, out CardPool pool))
@@ -624,11 +643,6 @@ namespace Controllers
                             valid = false;
                         }
                     }
-                }
-                else
-                {
-                    missingCardPools.Add(poolInfoPack);
-                    valid = false;
                 }
             }
             if (!valid)
@@ -653,15 +667,6 @@ namespace Controllers
                         buffNamesStr += "...";
 
                     sb.AppendLine(game.lang._(ROOM_ERROR_MISSING_BUFF_IMAGE, buffNamesStr));
-                }
-                if (missingCardPools.Count > 0)
-                {
-                    var poolNames = missingCardPools.Select(s => s.cardPoolName).ToArray();
-                    var poolNamesStr = string.Join(",", poolNames, 0, Mathf.Min(MAX_DISPLAY_COUNT, poolNames.Length));
-                    if (missingCardPools.Count > MAX_DISPLAY_COUNT)
-                        poolNamesStr += "...";
-
-                    sb.AppendLine(game.lang._(ROOM_ERROR_MISSING_CARD_POOL, poolNamesStr));
                 }
                 errorMessage = sb.ToString();
             }
@@ -832,10 +837,9 @@ namespace Controllers
             for (int i = 0; i < viewData.Length; i++)
             {
                 Deck deck = deckList[i];
-                CardPoolInfoPack[] cardPoolList = getDeckCardPools(deck);
+                CardPoolInfoPack[] cardPoolList = getDeckCardPools(deck, out _);
 
                 viewData[i].name = deck.name;
-                viewData[i].image = await game.card.loadCardImage(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId);
 
                 // 如果卡组内有不存在的卡池，加载卡池。
                 foreach (long cardPoolId in deck.getCardPools())
@@ -853,6 +857,7 @@ namespace Controllers
                         }
                     }
                 }
+                viewData[i].image = await game.card.loadCardImage(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId);
 
                 bool warning;
                 // 判断牌组是否合法。

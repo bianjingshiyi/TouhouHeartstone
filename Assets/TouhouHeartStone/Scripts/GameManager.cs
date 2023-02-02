@@ -230,14 +230,11 @@ namespace Game
                 foreach (var player in playerList)
                 {
                     Deck deck = player.getDeck();
-                    foreach (var cardRef in deck.toDefRefArray(true))
+
+                    var poolRefs = deck.getFullCardPools(cards);
+                    foreach (var poolId in poolRefs)
                     {
-                        if (cardRef.cardPoolId == 0)
-                            continue;
-                        if (!cardPoolIdSet.Contains(cardRef.cardPoolId))
-                        {
-                            cardPoolIdSet.Add(cardRef.cardPoolId);
-                        }
+                        cardPoolIdSet.Add(poolId);
                     }
                 }
                 cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
@@ -257,10 +254,14 @@ namespace Game
                     cardPoolIdSet.Add(poolId);
 
                     IEnumerable<CardDefine> cardDefines;
-                    if (cards.tryGetCardPool(poolId, out CardPool cardPool))
+                    var localDefines = await cards.getOrLoadCardDefines(pool.cardPoolId);
+                    var poolInfo = cards.getCardPoolInfo(pool.cardPoolId);
+                    // 尝试获取本地卡池的卡牌定义（要求版本正确）。
+                    if (localDefines.Length > 0 && poolInfo != null && poolInfo.editTime == pool.version)
                     {
-                        cardDefines = cardPool.cardDefineList;
+                        cardDefines = localDefines;
                     }
+                    // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
                     else
                     {
                         var defines = await cards.loadCachedCardDefinesAsync(pool.cardPoolId, pool.version);

@@ -148,7 +148,12 @@ namespace Game
                 cardPoolPath = allocCardPoolPath(cardPoolInfo);
                 _cardPoolInfoDict.Add(cardPoolPath, cardPoolInfo);
             }
-            SerializableCardPool cardPool = new SerializableCardPool(_cardPoolDict[cardPoolInfo.cardPoolId]);
+            var cardPool = _cardPoolDict[cardPoolInfo.cardPoolId];
+            // 获取卡池中对其他卡池的卡牌的引用。
+            cardPool.otherPoolReferences.Clear();
+            cardPool.otherPoolReferences.AddRange(getCardPoolReferences(cardPoolInfo.cardPoolId));
+
+            SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
             //对缓存的图片进行保存
             await saveExternalImages(cardPoolInfo.cardPoolId);
             //保存文件
@@ -174,7 +179,7 @@ namespace Game
             await game.fileManager.saveFile(path, new string[]
             {
                 cardPoolInfo.toJson(),//文件头信息
-                cardPool.toJson(true)//内容对象
+                seriCardPool.toJson(true)//内容对象
             });
             Debug.Log("保存卡池" + path + "成功");
             return true;
@@ -1037,6 +1042,52 @@ namespace Game
                 return true;
             }
             return false;
+        }
+        /// <summary>
+        /// 获取一个卡池内对其他卡池的引用。
+        /// </summary>
+        /// <param name="cardPoolId">要检查的卡池ID。</param>
+        /// <returns>引用的其他卡池列表。</returns>
+        public long[] getCardPoolReferences(long cardPoolId)
+        {
+            HashSet<long> poolList = new HashSet<long>();
+            if (!tryGetCardPool(cardPoolId, out var cardPool))
+            {
+                return new long[0];
+            }
+            foreach (var card in cardPool.cardDefineList)
+            {
+                foreach (GeneratedEffect effect in card.getGeneratedEffects())
+                {
+                    effect.traverseActionNode(addCardPool);
+                }
+            }
+            foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
+            {
+                foreach (var actionNode in graphInfo.freeActionNodeList)
+                {
+                    actionNode.traverse(addCardPool);
+                }
+            }
+            foreach (var buff in cardPool.buffDefineList)
+            {
+                foreach (var effect in buff.effectList)
+                {
+                    effect.traverseActionNode(addCardPool);
+                }
+            }
+            return poolList.ToArray();
+
+            void addCardPool(ActionNode node)
+            {
+                foreach (var valueConst in node.consts)
+                {
+                    if (valueConst is DefineReference defRef && defRef.cardPoolId != cardPoolId)
+                    {
+                        poolList.Add(defRef.cardPoolId);
+                    }
+                }
+            }
         }
         #endregion
         #region 私有方法
