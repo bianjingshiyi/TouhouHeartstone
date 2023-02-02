@@ -144,9 +144,12 @@ namespace Game
                     if (cardPoolInfo != null && cardPoolInfo.editTime == cardPoolVersion)
                     {
                         string deckPath = card.getCardPoolPath(cardPoolInfo);
-                        var deckFileInfo = new FileInfo(deckPath);
-                        size = deckFileInfo.Length;
-                        return true;
+                        if (File.Exists(deckPath))
+                        {
+                            var deckFileInfo = new FileInfo(deckPath);
+                            size = deckFileInfo.Length;
+                            return true;
+                        }
                     }
                 }
             }
