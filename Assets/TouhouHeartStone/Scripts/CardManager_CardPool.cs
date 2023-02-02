@@ -693,15 +693,7 @@ namespace Game
         }
         public CardPoolInfo getCardPoolOfCard(CardDefine card)
         {
-            foreach (var cardPool in _cardPoolDict.Values)
-            {
-                if (cardPool.cardDefineList.Contains(card))
-                {
-                    CardPoolInfo cardPoolInfo = getCardPoolInfo(getCardPoolId(cardPool));
-                    return cardPoolInfo;
-                }
-            }
-            return null;
+            return getCardPoolInfo(card.cardPoolId);
         }
         public string getCardPoolPath(CardPoolInfo cardPoolInfo)
         {
