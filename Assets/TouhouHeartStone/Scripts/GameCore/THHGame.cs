@@ -262,7 +262,6 @@ namespace TouhouHeartstone
         public float timeoutForTurn = 75;
         public int startGem = 0;
         public CardPoolInfoPack[] cardPools = new CardPoolInfoPack[0];
-        public long[] enabledCardPools = new long[0];
 
         public HearthstoneOption()
         {
@@ -276,7 +275,6 @@ namespace TouhouHeartstone
             timeoutForInitReplace = copyTarget.timeoutForInitReplace;
             timeoutForTurn = copyTarget.timeoutForTurn;
             cardPools = copyTarget.cardPools;
-            enabledCardPools = copyTarget.enabledCardPools;
         }
     }
 

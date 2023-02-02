@@ -45,6 +45,10 @@ namespace Game
                     try
                     {
                         token.ThrowIfCancellationRequested();
+                        if (game.card.isBuiltinCardPool(roomPool.cardPoolId) || game.card.isStandardCardPool(roomPool.cardPoolId))
+                        {
+                            continue;
+                        }
                         string id = roomPool.GetResourceID();
                         // 已经在计划中的卡池，或者已经检查为上传完毕的卡池直接跳过。
                         if (IsCardPoolInPlan(roomPool.cardPoolId, roomPool.version) || uploadedPools.Contains(id))
@@ -66,8 +70,7 @@ namespace Game
                         }
 
                         // 这个卡池是否存在于玩家本地或者缓存中。
-                        bool hasLocalPool = game.card.isBuiltinCardPool(roomPool.cardPoolId) ||
-                            game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) ||
+                        bool hasLocalPool = game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) ||
                             (localPoolInfo != null && localPoolInfo.editTime == roomPool.version);
 
                         // 远端是否有该卡池。

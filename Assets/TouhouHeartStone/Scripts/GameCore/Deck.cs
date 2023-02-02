@@ -97,13 +97,13 @@ namespace TouhouHeartstone
 
             void addDefineRef(DefineReference defRef)
             {
-                if (defRef.cardPoolId != 0)
-                {
-                    poolList.Add(defRef.cardPoolId);
-                }
-                else if (defRef.defineId < 0)
+                if (defRef.defineId < 0)
                 {
                     poolList.Add(CardDefineHelper.getCardPoolId(defRef.defineId));
+                }
+                else
+                {
+                    poolList.Add(defRef.cardPoolId);
                 }
             }
         }

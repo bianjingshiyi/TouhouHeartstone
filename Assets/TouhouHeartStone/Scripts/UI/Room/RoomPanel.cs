@@ -259,12 +259,11 @@ namespace UI
         /// 查看房间卡池
         /// </summary>
         /// <param name="cards"></param>
-        public void viewCardPools(CardPoolInfoPack[] pools, long[] enabledPools)
+        public void viewCardPools(CardPoolInfoPack[] pools)
         {
             (string name, Sprite image, bool isWarning, bool hasPrivatePools) getPoolData(CardPoolInfoPack pool)
             {
-                bool disabled = !enabledPools.Contains(pool.cardPoolId);
-                return (pool.cardPoolName, null, false, disabled);
+                return (pool.cardPoolName, null, false, false);
             }
             List<(string name, Sprite image, bool isWarning, bool hasPrivatePools)> list = new List<(string name, Sprite image, bool isWarning, bool hasPrivatePools)>();
 
@@ -275,6 +274,10 @@ namespace UI
             var viewData = list.ToArray();
             _cardPoolsViewPanel.update(viewData);
             _cardPoolsPanel.SetActive(true);
+        }
+        public bool isViewingCardPools()
+        {
+            return _cardPoolsPanel.activeSelf;
         }
         #endregion
         #region 私有方法
