@@ -32,9 +32,10 @@ namespace Game
                     return;
 
                 targetPools.Add(poolId);
-                if (cardManager.tryGetCardPool(poolId, out CardPool pool))
+                var poolInfo = cardManager.getCardPoolInfo(poolId);
+                if (poolInfo != null && poolInfo.dependencies != null)
                 {
-                    foreach (var poolRef in pool.otherPoolReferences)
+                    foreach (var poolRef in poolInfo.dependencies)
                     {
                         addCardPoolRefs(poolRef);
                     }

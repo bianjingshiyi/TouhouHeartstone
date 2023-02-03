@@ -150,8 +150,7 @@ namespace Game
             }
             var cardPool = _cardPoolDict[cardPoolInfo.cardPoolId];
             // 获取卡池中对其他卡池的卡牌的引用。
-            cardPool.otherPoolReferences.Clear();
-            cardPool.otherPoolReferences.AddRange(getCardPoolReferences(cardPoolInfo.cardPoolId));
+            cardPoolInfo.dependencies = getCardPoolReferences(cardPoolInfo.cardPoolId);
 
             SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
             //对缓存的图片进行保存

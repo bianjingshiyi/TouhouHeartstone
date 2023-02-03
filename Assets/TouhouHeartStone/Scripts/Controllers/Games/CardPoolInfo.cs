@@ -11,5 +11,6 @@ namespace Controllers
         public float version;
         public int versionNumber;
         public int editTime;
+        public long[] dependencies;
     }
 }
