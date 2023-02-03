@@ -472,7 +472,7 @@ namespace Game
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        /// <exception cref="FormatException">不是完整的Base64字符串</exception>
+        /// <exception cref="FormatException">不是完整的Base64字符串，或无法找到头，或版本不正确</exception>
         /// <exception cref="IOException">无法以Gzip方式解压</exception>
         public DefineReference[] StringToDeckWithCardPoolID(string str)
         {
@@ -484,20 +484,25 @@ namespace Game
             if (compressdData[0] == ZMHeaderByte1 && compressdData[1] == ZMHeaderByte2)
             {
                 // 版本号
-                var version = compressdData[2];
+                var version = compressdData[2] & 0x0F;
                 if (version == 2)
                 {
                     return toDefineRefs(Byte2DeckV2(compressdData));
                 }
                 if (version == 3)
                 {
+                    // 修正上一个版本导出的时候长度出现错误的问题，0x74 应该为 0x174 = 31*12
+                    // 0x74 = 116, 版本3代码长度以12为单位所以不会出现误匹配的问题
+                    if (compressdData[2] == 0x03 && compressdData[3] == 0x74)
+                        compressdData[2] = 0x13;
+
                     var rawData = decodeShareBytesV2(compressdData);
                     return rawBytesToDefineRef(rawData);
                 }
 
-                throw new Exception("无法识别的组卡代码版本");
+                throw new FormatException();
             }
-            throw new Exception("无法辨认的格式");
+            throw new FormatException();
         }
 
         /// <summary>
@@ -635,7 +640,7 @@ namespace Game
 
             result[0] = ZMHeaderByte1;
             result[1] = ZMHeaderByte2;
-            result[2] = version; // Version
+            result[2] = (byte)(version | ((bytes[srcLen - 3] << 4) & 0xFF)); // Version
             result[3] = bytes[srcLen - 4]; // Len的MSB。因为它不会大于256，所以直接使用
 
             Array.Copy(bytes, 10, result, 4, srcLen - 10 - 4);
@@ -668,8 +673,9 @@ namespace Game
             Array.Copy(data, 4, bytes, 10, data.Length - 4);
             i += data.Length - 4;
 
-            bytes[i++] = data[3]; // Length
-            bytes[i++] = 0;
+            // Length
+            bytes[i++] = data[3]; 
+            bytes[i++] = (byte)((data[2] & 0xF0) >> 4);
             bytes[i++] = 0;
             bytes[i++] = 0;
             return bytes;

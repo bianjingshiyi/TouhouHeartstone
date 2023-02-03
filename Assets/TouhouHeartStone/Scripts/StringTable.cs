@@ -28,7 +28,7 @@ namespace Game
         [TranslateMsg]
         public const string BUILD_DECK_DOWNLOAD_COMPLETE = "卡组下载完毕";
         [TranslateMsg]
-        public const string BUILD_ERROR_DECKCODE_FORMATE_ERROR = "卡组代码格式错误";
+        public const string BUILD_ERROR_DECKCODE_FORMATE_ERROR = "卡组代码格式错误或与此版本不兼容。\n请检查组卡代码是否复制完整，或卡组是否使用了新版本游戏导出。";
         [TranslateMsg]
         public const string BUILD_ERROR_IMPORT_FAILED = "导入失败\n{0}";
         [TranslateMsg]

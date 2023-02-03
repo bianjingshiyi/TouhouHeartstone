@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Game;
+using MukioI18n;
+using NitoriNetwork.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Game;
-using MukioI18n;
-using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -420,15 +420,28 @@ namespace Controllers
         {
             // 解析数据
             string clipboardString = GUIUtility.systemCopyBuffer.Trim();
-            if (!clipboardString.StartsWith(exportStringHeader))
+
+            var lines = clipboardString.Split(new string[] {"\r", "\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+
+            string deckName = "", deckContent = "";
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("#"))
+                {
+                    if (line.StartsWith(exportStringHeader))
+                        deckName = line.Substring(exportStringHeader.Length + 1, line.Length - exportStringHeader.Length - 1).Trim();
+                }
+                else
+                {
+                    deckContent = line.Trim();
+                }
+            }
+
+            if (string.IsNullOrEmpty(deckContent))
             {
                 game.ui.dialog.ShowConfirm(game.lang._(StringTable.ERROR), game.lang._(NO_PILE_AVALIABLE), null);
                 return;
             }
-
-            var lbIndex = clipboardString.IndexOf("\n");
-            var deckName = clipboardString.Substring(exportStringHeader.Length + 1, lbIndex - exportStringHeader.Length - 1).Trim();
-            var deckContent = clipboardString.Substring(lbIndex + 1).Trim();
 
             try
             {
