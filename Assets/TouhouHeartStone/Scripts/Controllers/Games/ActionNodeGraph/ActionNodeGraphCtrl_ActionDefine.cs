@@ -115,29 +115,31 @@ namespace Controllers
             }
             _entryNodeItem.setOutputs(viewData);
         }
-        private void validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        private bool validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
             // 尝试连接：自定义动作入口节点（值输出）----出口节点（前置动作）
             if (inputIndex < inputActionNode.branches.Length)
             {
                 //值输出只能与值输入相互连接
-                throw new ActionNodeGraphException(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
+                ShowValueConnectActionError();
+                return false;
             }
             Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
             Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - inputActionNode.branches.Length].type;
-            validateConnectionType(outputType, inputType);
+            return validateConnectionType(outputType, inputType);
         }
-        private void validateConnection4ActionDefineReturn(int outputIndex, int inputIndex)
+        private bool validateConnection4ActionDefineReturn(int outputIndex, int inputIndex)
         {
             // 尝试连接：入口节点（动作）----出口节点
             if (outputIndex < 1)
             {
                 //值输出只能与值输入相互连接
-                throw new ActionNodeGraphException(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
+                ShowValueConnectActionError();
+                return false;
             }
             Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
             Type inputType = _generatedActionDefine.outputList[inputIndex].type;
-            validateConnectionType(outputType, inputType);
+            return validateConnectionType(outputType, inputType);
         }
         #region 节点连接
         /// <summary>

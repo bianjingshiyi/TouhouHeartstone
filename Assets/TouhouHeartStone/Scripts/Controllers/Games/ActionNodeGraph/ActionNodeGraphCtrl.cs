@@ -302,146 +302,147 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onConnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
-            try
+            // 连接的输出节点是入口节点。
+            if (outputActionNodeItem == _entryNodeItem)
             {
-                // 连接的输出节点是入口节点。
-                if (outputActionNodeItem == _entryNodeItem)
+                // 连接的输出节点是出口节点
+                if (inputActionNodeItem == _returnNodeItem)
                 {
-                    // 连接的输出节点是出口节点
-                    if (inputActionNodeItem == _returnNodeItem)
-                    {
-                        // 检测自定义动作的连接合法性。
-                        validateConnection4ActionDefineReturn(outputIndex, inputIndex);
-                        // 自定义动作参数返回连接
-                        connectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
-                    }
-                    // 连接的输出节点是普通的动作节点。
-                    else if (getActionNode(inputActionNodeItem) is ActionNode inputActionNode)
-                    {
-                        // 尝试连接输出节点的0号位输出（动作节点）
-                        if (outputIndex < 1)
-                        {
-                            //动作连接
-                            //检查合法性
-                            if (inputIndex > 0)
-                            {
-                                //值输出只能与值输入相互连接
-                                throwValueConnectActionException();
-                            }
-                            connectNode4RootAction(inputActionNode);
-                        }
-                        // 不是0号位输出，值连接。
-                        else
-                        {
-                            // 连接：触发器（输出值）----动作节点
-                            if (_trigger != null)
-                            {
-                                //检查合法性
-                                validateConnection4TriggerOutput(outputIndex, inputActionNode, inputIndex);
-                                connectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
-                            }
-                            // 连接：自定义动作入口节点（输出值）----动作节点
-                            else if (_generatedActionDefine != null)
-                            {
-                                //检查合法性
-                                validateConnection4ActionDefineEntryOutput(outputIndex, inputActionNode, inputIndex);
-                                connectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
-                            }
-                        }
-                    }
+                    // 检测自定义动作的连接合法性。
+                    if (!validateConnection4ActionDefineReturn(outputIndex, inputIndex))
+                        return;
+                    // 自定义动作参数返回连接
+                    connectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
                 }
-                // 连接的输入节点是入口节点。
-                else if (inputActionNodeItem == _entryNodeItem)
+                // 连接的输出节点是普通的动作节点。
+                else if (getActionNode(inputActionNodeItem) is ActionNode inputActionNode)
                 {
-                    ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                    // 检查连接合法性
-                    // 尝试连接：动作节点（后续动作）----入口节点（值输入）
-                    if (outputIndex < outputActionNode.branches.Length)
-                    {
-                        //值输出只能与值输入相互连接
-                        throwValueConnectActionException();
-                    }
-                    // 连接触发器的“触发条件”（值输入）
-                    if (_trigger != null)
-                    {
-                        connectNode4TriggerCondition(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
-                    }
-                }
-                // 连接的输入节点是出口节点。
-                else if (inputActionNodeItem == _returnNodeItem)
-                {
-                    ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                    // 检查连接合法性
-                    // 尝试连接：动作节点（后续动作）----出口节点（值输入）
-                    if (outputIndex < outputActionNode.branches.Length)
-                    {
-                        //值输出只能与值输入相互连接
-                        throwValueConnectActionException();
-                    }
-                    connectNode4ReturnValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, 0);
-                }
-                // 普通的动作节点连接。
-                else
-                {
-                    ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                    ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
-                    int outputBranchesCount = getBranchesCount(outputActionDefine);
-                    ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                    // 连接：动作节点----动作节点（前置动作）
-                    if (inputIndex == 0)
+                    // 尝试连接输出节点的0号位输出（动作节点）
+                    if (outputIndex < 1)
                     {
                         //动作连接
-                        if (outputActionNode.branches == null)
-                        {
-                            outputActionNode.branches = new ActionNode[outputBranchesCount];
-                        }
-                        // 检查合法性
-                        // 尝试连接：动作节点（值输出）----动作节点（前置动作）
-                        if (outputIndex >= outputBranchesCount)
+                        //检查合法性
+                        if (inputIndex > 0)
                         {
                             //值输出只能与值输入相互连接
-                            throwValueConnectActionException();
-                        }
-                        connectNode4Action(outputActionNode, outputIndex, inputActionNode);
-                    }
-                    // 连接：动作节点----动作节点（值输入）
-                    else
-                    {
-                        if (outputActionNode.branches == null)
-                        {
-                            outputActionNode.branches = new ActionNode[outputBranchesCount];
-                        }
-                        // 检查合法性
-                        // 连接：动作节点（后续动作）----动作节点（值输入）
-                        if (outputIndex < outputBranchesCount)
-                        {
-                            //值输出只能与值输入相互连接
-                            throwValueConnectActionException();
+                            ShowValueConnectActionError();
                             return;
                         }
-                        //检查类型合法性，获取输入输出类型
-                        Type outputType = outputActionDefine.getValueOutputAt(outputIndex - outputBranchesCount).type;
-                        ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
-                        Type inputType;
-                        if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length)
+                        connectNode4RootAction(inputActionNode);
+                    }
+                    // 不是0号位输出，值连接。
+                    else
+                    {
+                        // 连接：触发器（输出值）----动作节点
+                        if (_trigger != null)
                         {
-                            //多参数，获取最后一个参数类型
-                            inputType = inputActionDefine.inputs.Last().type;
+                            //检查合法性
+                            if (!validateConnection4TriggerOutput(outputIndex, inputActionNode, inputIndex))
+                                return;
+                            connectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
                         }
-                        else
+                        // 连接：自定义动作入口节点（输出值）----动作节点
+                        else if (_generatedActionDefine != null)
                         {
-                            inputType = inputActionDefine.inputs[inputIndex - 1].type;
+                            //检查合法性
+                            if (!validateConnection4ActionDefineEntryOutput(outputIndex, inputActionNode, inputIndex))
+                                return;
+                            connectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
                         }
-                        validateConnectionType(outputType, inputType);
-                        connectNode4ValueRef(outputActionNode, outputIndex - outputBranchesCount, inputActionNode, inputIndex - 1);
                     }
                 }
-                OnEdited();
             }
-            catch (ActionNodeGraphException e)
+            // 连接的输入节点是入口节点。
+            else if (inputActionNodeItem == _entryNodeItem)
             {
-                _ui.showErrorTip(game.lang._(e.Message));
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                // 检查连接合法性
+                // 尝试连接：动作节点（后续动作）----入口节点（值输入）
+                if (outputIndex < outputActionNode.branches.Length)
+                {
+                    //值输出只能与值输入相互连接
+                    ShowValueConnectActionError();
+                    return;
+                }
+                // 连接触发器的“触发条件”（值输入）
+                if (_trigger != null)
+                {
+                    connectNode4TriggerCondition(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
+                }
             }
+            // 连接的输入节点是出口节点。
+            else if (inputActionNodeItem == _returnNodeItem)
+            {
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                // 检查连接合法性
+                // 尝试连接：动作节点（后续动作）----出口节点（值输入）
+                if (outputIndex < outputActionNode.branches.Length)
+                {
+                    //值输出只能与值输入相互连接
+                    ShowValueConnectActionError();
+                    return;
+                }
+                connectNode4ReturnValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, 0);
+            }
+            // 普通的动作节点连接。
+            else
+            {
+                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
+                ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
+                int outputBranchesCount = getBranchesCount(outputActionDefine);
+                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                // 连接：动作节点----动作节点（前置动作）
+                if (inputIndex == 0)
+                {
+                    //动作连接
+                    if (outputActionNode.branches == null)
+                    {
+                        outputActionNode.branches = new ActionNode[outputBranchesCount];
+                    }
+                    // 检查合法性
+                    // 尝试连接：动作节点（值输出）----动作节点（前置动作）
+                    if (outputIndex >= outputBranchesCount)
+                    {
+                        //值输出只能与值输入相互连接
+                        ShowValueConnectActionError();
+                        return;
+                    }
+                    connectNode4Action(outputActionNode, outputIndex, inputActionNode);
+                }
+                // 连接：动作节点----动作节点（值输入）
+                else
+                {
+                    if (outputActionNode.branches == null)
+                    {
+                        outputActionNode.branches = new ActionNode[outputBranchesCount];
+                    }
+                    // 检查合法性
+                    // 连接：动作节点（后续动作）----动作节点（值输入）
+                    if (outputIndex < outputBranchesCount)
+                    {
+                        //值输出只能与值输入相互连接
+                        ShowValueConnectActionError();
+                        return;
+                    }
+                    //检查类型合法性，获取输入输出类型
+                    Type outputType = outputActionDefine.getValueOutputAt(outputIndex - outputBranchesCount).type;
+                    ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
+                    Type inputType;
+                    if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length)
+                    {
+                        //多参数，获取最后一个参数类型
+                        inputType = inputActionDefine.inputs.Last().type;
+                    }
+                    else
+                    {
+                        inputType = inputActionDefine.inputs[inputIndex - 1].type;
+                    }
+                    if (!validateConnectionType(outputType, inputType))
+                        return;
+                    connectNode4ValueRef(outputActionNode, outputIndex - outputBranchesCount, inputActionNode, inputIndex - 1);
+                }
+            }
+            OnEdited();
         }
         /// <summary>
         /// 当用户断开节点连接
@@ -1833,17 +1834,19 @@ namespace Controllers
             }
             return false;
         }
-        private void validateConnectionType(Type outputType, Type inputType)
+        private bool validateConnectionType(Type outputType, Type inputType)
         {
             if (!isValidTypeForConnection(outputType, inputType))
             {
                 //相互连接的输入输出类型必须可以相互转化
-                throw new ActionNodeGraphException(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT);
+                _ui.showErrorTip(game.lang._(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                return false;
             }
+            return true;
         }
-        private void throwValueConnectActionException()
+        private void ShowValueConnectActionError()
         {
-            throw new ActionNodeGraphException(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
+            _ui.showErrorTip(game.lang._(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
         }
         #endregion
         #region 节点操作
@@ -2640,15 +2643,5 @@ namespace Controllers
             public ActionNodeGraphInfo graphInfo;
         }
         #endregion
-    }
-
-    public class ActionNodeGraphException : Exception
-    {
-        public ActionNodeGraphException(string message)
-        {
-            this.message = message;
-        }
-        public override string Message => message;
-        private string message;
     }
 }

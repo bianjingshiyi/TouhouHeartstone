@@ -230,17 +230,18 @@ namespace Controllers
             }
         }
 
-        private void validateConnection4TriggerOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        private bool validateConnection4TriggerOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
             // 尝试连接：触发器的值----动作节点的前置动作
             if (inputIndex < inputActionNode.branches.Length)
             {
                 //值输出只能与值输入相互连接
-                throw new ActionNodeGraphException(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT);
+                ShowValueConnectActionError();
+                return false;
             }
             Type outputType = getEventVarInfo(outputIndex - 1).type;
             Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - inputActionNode.branches.Length].type;
-            validateConnectionType(outputType, inputType);
+            return validateConnectionType(outputType, inputType);
         }
         #region 节点连接
         /// <summary>
