@@ -301,6 +301,8 @@ namespace Controllers
                 }
                 //建立新的连接
                 _trigger.condition = new ActionValueRef(outputActionNode, outputIndex);
+                //更新输出节点的输出变量状态
+                updateRegVar(outputActionNode);
                 //更新UI
                 _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, 0, ActionNodeConnectionType.value);
             }
@@ -329,6 +331,8 @@ namespace Controllers
                 }
                 //建立新的连接
                 _trigger.targetCheckerList[targetCheckerIndex].condition = new ActionValueRef(outputActionNode, outputIndex);
+                //更新输出节点的输出变量状态
+                updateRegVar(outputActionNode);
                 //更新UI
                 _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex, ActionNodeConnectionType.value);
             }
@@ -346,6 +350,8 @@ namespace Controllers
                     //相连，断开连接
                     _trigger.condition.action = null;
                     _trigger.condition.index = 0;
+                    //更新输出节点的输出变量状态
+                    updateRegVar(outputActionNode);
                     //更新ui
                     _ui.unconnectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex);
                 }
@@ -365,6 +371,8 @@ namespace Controllers
                     //相连，断开连接
                     _trigger.targetCheckerList[targetCheckerIndex].condition.action = null;
                     _trigger.targetCheckerList[targetCheckerIndex].condition.index = 0;
+                    //更新输出节点的输出变量状态
+                    updateRegVar(outputActionNode);
                     //更新UI
                     _ui.unconnectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex);
                 }

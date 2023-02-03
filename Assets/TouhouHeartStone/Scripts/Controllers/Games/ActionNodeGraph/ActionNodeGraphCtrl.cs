@@ -1348,6 +1348,8 @@ namespace Controllers
             rootActionNode = inputActionNode;
             //从离散节点列表中去掉被连接的节点
             _graphInfo.freeActionNodeList.Remove(inputActionNode);
+            //更新输入节点的输出变量状态
+            updateRegVar(inputActionNode);
             //更新ui
             _ui.connectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
         }
@@ -1382,6 +1384,8 @@ namespace Controllers
                 _generatedActionDefine.returnValueRefList.Add(new ReturnValueRef(outputActionNode, outputIndex, inputIndex));
                 //从离散节点列表中去掉被连接的节点
                 _graphInfo.freeActionNodeList.Remove(outputActionNode);
+                //更新输出节点的输出变量状态
+                updateRegVar(outputActionNode);
                 //更新ui
                 _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _returnNodeItem, 0, ActionNodeConnectionType.value);
             }
@@ -1402,6 +1406,8 @@ namespace Controllers
                 rootActionNode = outputActionNode;
                 //从离散节点列表中去掉被连接的节点
                 _graphInfo.freeActionNodeList.Remove(outputActionNode);
+                //更新输出节点的输出变量状态
+                updateRegVar(outputActionNode);
                 //更新ui
                 _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _returnNodeItem, 0, ActionNodeConnectionType.value);
             }
@@ -1466,6 +1472,8 @@ namespace Controllers
             outputActionNode.branches[outputIndex] = inputActionNode;
             //从离散节点列表中去掉被连接的节点
             _graphInfo.freeActionNodeList.Remove(inputActionNode);
+            //更新输入节点的输出变量状态
+            updateRegVar(inputActionNode);
             //更新ui
             _ui.connectNode(getActionNodeItem(outputActionNode), outputIndex, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
         }
@@ -1541,6 +1549,8 @@ namespace Controllers
             //输入节点一定会变得离散
             if (!_graphInfo.freeActionNodeList.Contains(inputActionNode))
                 _graphInfo.freeActionNodeList.Add(inputActionNode);
+            //更新输入节点的输出变量状态
+            updateRegVar(inputActionNode);
             _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0);
         }
         private void unconnectNode4ReturnValueRef(ActionNode outputActionNode, int outputIndex, int inputIndex)
@@ -1558,7 +1568,8 @@ namespace Controllers
                     //断开与返回值节点的连接
                     _generatedActionDefine.returnValueRefList.Remove(returnValueRef);
                 }
-                //输出节点一定会变得离散
+                //更新输出变量状态
+                updateRegVar(outputActionNode);
                 if (!_graphInfo.freeActionNodeList.Contains(outputActionNode))
                     _graphInfo.freeActionNodeList.Add(outputActionNode);
                 _ui.unconnectNode(getActionNodeItem(outputActionNode), valueRef.index + 1, _returnNodeItem, 0);
@@ -1570,7 +1581,8 @@ namespace Controllers
                     //断开与返回值节点的连接
                     rootActionNode = null;
                 }
-                //输出节点一定会变得离散
+                //更新输出变量状态
+                updateRegVar(outputActionNode);
                 if (!_graphInfo.freeActionNodeList.Contains(outputActionNode))
                     _graphInfo.freeActionNodeList.Add(outputActionNode);
                 _ui.unconnectNode(getActionNodeItem(outputActionNode), valueRef.index + 1, _returnNodeItem, 0);
@@ -1596,6 +1608,8 @@ namespace Controllers
             //输入节点一定会变得离散
             if (!_graphInfo.freeActionNodeList.Contains(inputActionNode))
                 _graphInfo.freeActionNodeList.Add(inputActionNode);
+            //更新输入节点的输出变量状态
+            updateRegVar(inputActionNode);
             //更新ui
             _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex, getActionNodeItem(inputActionNode), 0);
         }
@@ -1931,6 +1945,13 @@ namespace Controllers
                 }
             }
         }
+        /// <summary>
+        /// 获取一个节点的一个输出点被引用的次数。
+        /// 为（该节点作为后续动作的连接数量 + 该节点输出值连接其他节点的输入值数量）。
+        /// </summary>
+        /// <param name="actionNode">目标动作节点。</param>
+        /// <param name="outputIndex">输出值的索引。</param>
+        /// <returns>被引用的次数。</returns>
         private int getActionNodeRefCount(ActionNode actionNode, int outputIndex)
         {
             int count = 0;
@@ -1941,34 +1962,68 @@ namespace Controllers
             }
             for (int i = 0; i < _actionNodeList.Count; i++)
             {
-                if (_actionNodeList[i].branches != null && _actionNodeList[i].branches.Length > 0)
+                var curNode = _actionNodeList[i];
+                var branches = curNode.branches;
+                if (branches != null && branches.Length > 0)
                 {
-                    for (int j = 0; j < _actionNodeList[i].branches.Length; j++)
+                    for (int j = 0; j < branches.Length; j++)
                     {
-                        if (_actionNodeList[i].branches[j] == null)
+                        var branch = branches[j];
+                        if (branch == null)
                             continue;
                         //节点本身作为动作分支被引用
-                        if (_actionNodeList[i].branches[j] == actionNode)
+                        if (branch == actionNode)
                         {
                             count++;
                         }
                     }
                 }
-                if (_actionNodeList[i].inputs != null && _actionNodeList[i].inputs.Length > 0)
+                var inputs = curNode.inputs;
+                if (inputs != null && inputs.Length > 0)
                 {
-                    for (int j = 0; j < _actionNodeList[i].inputs.Length; j++)
+                    for (int j = 0; j < inputs.Length; j++)
                     {
-                        if (_actionNodeList[i].inputs[j] == null)
+                        var input = inputs[j];
+                        if (input == null)
                             continue;
                         //节点的输出值被引用
-                        if ((_actionNodeList[i].inputs[j].action == actionNode || _actionNodeList[i].inputs[j].actionNodeId == actionNode.id) &&
-                            _actionNodeList[i].inputs[j].index == outputIndex)
+                        if ((input.action == actionNode || input.actionNodeId == actionNode.id) &&
+                            input.index == outputIndex)
                         {
                             count++;
                         }
                     }
                 }
             }
+            // 检测入口节点和出口节点的连接。
+            // 触发器入口节点的条件连接的是该节点的输出值。
+            if (_trigger != null)
+            {
+                var valueRef = _trigger.condition;
+                if (valueRef != null)
+                {
+                    if ((valueRef.action == actionNode || valueRef.actionNodeId == actionNode.id) && valueRef.index == outputIndex)
+                    {
+                        count++;
+                    }
+                }
+            }
+            // 自定义的出口节点的输出值连接的是该节点的输出值。
+            else if (_generatedActionDefine != null)
+            {
+                foreach (var returnValueRef in _generatedActionDefine.returnValueRefList)
+                {
+                    if (returnValueRef == null || returnValueRef.valueRef == null)
+                        continue;
+                    var valueRef = returnValueRef.valueRef;
+                    if ((valueRef.action == actionNode || valueRef.actionNodeId == actionNode.id) &&
+                        valueRef.index == outputIndex)
+                    {
+                        count++;
+                    }
+                }
+            }
+            // TODO: FunctionNode的输出节点连接判断。
             return count;
         }
         /// <summary>
@@ -2087,9 +2142,10 @@ namespace Controllers
             return count;
         }
         /// <summary>
-        /// 更新动作节点的变量注册状态
+        /// 更新动作节点的变量注册状态，会使得动作节点在同一个作用域内不触发两次。
+        /// ！！！需要在连接/断开动作节点的前置动作（左，红线），或连接动作节点的输出值（右，非红线）时调用该方法！！！
         /// </summary>
-        /// <param name="actionNode"></param>
+        /// <param name="actionNode">要更新变量注册状态的动作节点。</param>
         private void updateRegVar(ActionNode actionNode)
         {
             int outputCount = getOutputCount(actionNode);
