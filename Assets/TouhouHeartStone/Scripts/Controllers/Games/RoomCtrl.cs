@@ -499,6 +499,9 @@ namespace Controllers
             for (int i = 0; i < poolsId.Length; i++)
             {
                 long id = poolsId[i];
+                // 忽略内置和经典卡池。
+                if (game.card.isBuiltinCardPool(id) || game.card.isStandardCardPool(id))
+                    continue;
                 var poolInfo = game.card.getCardPoolInfo(id);
                 if (poolInfo != null)
                 {

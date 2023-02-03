@@ -1009,11 +1009,11 @@ namespace Game
             return _standardCardPoolsId.Contains(cardPoolId);
         }
         /// <summary>
-        /// 判断卡池是否是本人拥有的卡池。
+        /// 判断卡池是否是可用卡池（即内置、经典卡池，或卡池文件位于普通卡池目录内，而不属于缓存的卡池）。
         /// </summary>
         /// <param name="cardPoolId">卡池ID。</param>
-        /// <returns>是否是本人拥有的卡池？</returns>
-        public bool isOwnedCardPool(long cardPoolId)
+        /// <returns>是否是可用卡池？</returns>
+        public bool isUsableCardPool(long cardPoolId)
         {
             // 内置和经典卡池肯定是本人拥有的。
             if (isBuiltinCardPool(cardPoolId) || isStandardCardPool(cardPoolId))

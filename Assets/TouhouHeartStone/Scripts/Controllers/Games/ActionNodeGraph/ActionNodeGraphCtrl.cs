@@ -1137,8 +1137,8 @@ namespace Controllers
                         if (actionNode.consts[i] is DefineReference cardReference)
                         {
                             long cardPoolId = cardReference.cardPoolId;
-                            // 只有本地拥有的卡池才能被使用。
-                            if (game.card.isOwnedCardPool(cardPoolId))
+                            // 只有可用的卡池才能被选择。
+                            if (game.card.isUsableCardPool(cardPoolId))
                             {
                                 // 如果卡池没有被加载，加载卡池。
                                 if (!game.card.tryGetCardPool(cardPoolId, out _))
