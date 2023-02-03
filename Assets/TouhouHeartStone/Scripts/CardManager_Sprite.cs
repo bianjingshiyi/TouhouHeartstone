@@ -187,7 +187,15 @@ namespace Game
             }
             return path;
         }
-        public async Task<Sprite> loadImage(string path, long cardPoolId)
+        /// <summary>
+        /// 加载指定卡池，指定路径的图片并转换为Sprite。
+        /// </summary>
+        /// <param name="path">图片路径（要求是相对路径）。</param>
+        /// <param name="cardPoolId">卡池的ID。</param>
+        /// <param name="useFallbackSprite">如果加载失败，是否应该使用默认的丢失贴图。</param>
+        /// <returns>读取到的Sprite。</returns>
+        /// <exception cref="KeyNotFoundException">不存在卡池时抛出该异常。</exception>
+        public async Task<Sprite> loadImage(string path, long cardPoolId, bool useFallbackSprite = true)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -257,7 +265,15 @@ namespace Game
                         //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
                         //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
                         string absPath = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName, path);
-                        bytes = await game.fileManager.readBinaryFile(absPath);
+                        try
+                        {
+                            bytes = await game.fileManager.readBinaryFile(absPath);
+                        }
+                        catch (FileNotFoundException)
+                        {
+                            Debug.LogWarning($"读取外部卡池的图片{absPath}时遇到问题：无法找到该图片文件。");
+                            return useFallbackSprite ? await getDefaultSprite() : null;
+                        }
                     }
                 }
                 else
@@ -267,7 +283,7 @@ namespace Game
                 // 如果是空数组，返回默认Sprite.
                 if (bytes.Length <= 0)
                 {
-                    return getDefaultSprite().Result;
+                    return useFallbackSprite ? await getDefaultSprite() : null;
                 }
                 Texture2D texture = new Texture2D(512, 512);
                 texture.LoadImage(bytes);

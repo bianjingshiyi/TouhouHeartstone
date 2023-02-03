@@ -394,9 +394,13 @@ namespace Game
                 if (!string.IsNullOrEmpty(skin.imagePath) && !isHashNamedJPG(skin.imagePath))
                 {
                     //图片地址必须是32位哈希.jpg
-                    Sprite sprite = await loadImage(skin.imagePath, cardPoolInfo.cardPoolId);
-                    skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                    hasUnsavedFix = true;
+                    Sprite sprite = await loadImage(skin.imagePath, cardPoolInfo.cardPoolId, false);
+                    // 不保存丢失的贴图。
+                    if (sprite != null)
+                    {
+                        skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                        hasUnsavedFix = true;
+                    }
                 }
             }
             foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
@@ -431,9 +435,13 @@ namespace Game
                 if (!isHashNamedJPG(buffSkin.imagePath))
                 {
                     //图片地址必须是32位哈希.jpg
-                    Sprite sprite = await loadImage(buffSkin.imagePath, cardPoolInfo.cardPoolId);
-                    buffSkin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                    hasUnsavedFix = true;
+                    Sprite sprite = await loadImage(buffSkin.imagePath, cardPoolInfo.cardPoolId, false);
+                    // 不保存丢失的贴图。
+                    if (sprite != null)
+                    {
+                        buffSkin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                        hasUnsavedFix = true;
+                    }
                 }
             }
             if (hasUnsavedFix)
