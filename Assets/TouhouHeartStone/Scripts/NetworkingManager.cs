@@ -167,6 +167,7 @@ namespace Game
                 mainUI.loginPanel.setCaptcha(await getCaptchaImage());
             });
             mainUI.loginPanel.LoginButtonBlack.asButton.onClick.set(onLoginClick);
+            mainUI.loginPanel.GuestLoginBtn.onClick.set(onGuestLoginClick);
             mainUI.loginPanel.TextButton.onClick.AddListener(async () =>
             {
                 await ShowPanel(mainUI, Panel.Recover);
@@ -289,8 +290,16 @@ namespace Game
 
         async Task startSequence()
         {
-            await logic.AutoLogin();
+            await autoLogin();
             updateAccountPanel();
+        }
+        async Task autoLogin()
+        {
+            // 更新Panel状态，进入加载模式
+            var playerInfoPanel = getManager<UIManager>().findInstance<PlayerInfoPanel>();
+            playerInfoPanel?.EnterAutoLoginState();
+
+            await logic.AutoLogin();
         }
 
         #region Logic
@@ -439,6 +448,7 @@ namespace Game
 
         #endregion
         #region UI
+
         void updateAccountPanel()
         {
             var playerInfoPanel = getManager<UIManager>().findInstance<PlayerInfoPanel>();
@@ -702,6 +712,8 @@ namespace Game
         const string NETMANAGER_RECOVER_CODE_NULL = "密码找回代码不能为空";
         [TranslateMsg]
         const string INVALID_USERNAME_OR_PASSWORD = "用户名或密码不正确";
+        [TranslateMsg]
+        const string GUEST_LOGIN_FAILED = "游客登录失败，服务器压力过大";
         async void onRegisterClick()
         {
             var ui = getManager<UIManager>().getObject<RegisterPanel>();
@@ -796,6 +808,29 @@ namespace Game
             {
                 panel.ShowMessage(e.Message);
                 panel.setCaptcha(await getCaptchaImage());
+            }
+        }
+
+        async void onGuestLoginClick()
+        {
+            var panel = getManager<UIManager>().getObject<LoginPanel>();
+            panel.HideMessage();
+            try
+            {
+                bool success = await logic.GuestLogin();
+                if (success)
+                {
+                    panel.hide();
+                    updateAccountPanel();
+                }
+                else
+                {
+                    panel.ShowMessage(lang._(GUEST_LOGIN_FAILED));
+                }
+            }
+            catch (NetClientException e)
+            {
+                panel.ShowMessage(e.Message);
             }
         }
 

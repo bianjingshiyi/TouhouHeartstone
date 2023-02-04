@@ -2,41 +2,69 @@
 using Game;
 using NitoriNetwork.Common;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
     partial class PlayerInfoPanel : MonoBehaviour
     {
+        [SerializeField]
+        GameObject _loadingImage;
+
         void Awake()
         {
             autoInit();
         }
         
+        enum LoginState
+        {
+            NotLogin,
+            AutoLogin,
+            Logined
+        }
+
+        /// <summary>
+        /// 设置当前状态为正在自动登录
+        /// </summary>
+        public void EnterAutoLoginState()
+        {
+            toggleLoginStatus(LoginState.AutoLogin);
+        }
+
         public void SetPlayerInfo(PublicBasicUserInfo info)
         {
-            if (info == null || info.UID >= 1000000000)
+            // 未登录状态
+            if (info == null)
             {
-                // 未登录或是游客状态
-                toggleLoginStatus(false);
+                toggleLoginStatus(LoginState.NotLogin);
+                return;
             }
-            else
+            // 游客
+            if (info.UID >= 1000000000)
             {
-                nickNameText.text = info.Name;
-                emailText.text = "UID: " + info.UID;
-                // todo: 加载头像
-                toggleLoginStatus(true);
+               // todo: 本地化游客名称
             }
+            nickNameText.text = info.Name;
+            emailText.text = "UID: " + info.UID;
+            // todo: 加载头像
+            toggleLoginStatus(LoginState.Logined);
         }
-        private void toggleLoginStatus(bool logined)
+        private void toggleLoginStatus(LoginState state)
         {
-            loginButton.gameObject.SetActive(!logined);
-            headImage.gameObject.SetActive(logined);
-            infoContainerImage.gameObject.SetActive(logined);
+            loginButton.gameObject.SetActive(state == LoginState.NotLogin);
+            headImage.gameObject.SetActive(state != LoginState.NotLogin);
+            infoContainerImage.gameObject.SetActive(state == LoginState.Logined);
+            _loadingImage.SetActive(state == LoginState.AutoLogin);
         }
     }
 
     partial class LoginPanel
     {
+        [SerializeField]
+        Button _guestLoginBtn;
+
+        public Button GuestLoginBtn => _guestLoginBtn;
+
         public event Action OnRegisterClick;
         [Obsolete("Use Display + SetContent instead")]
         public void display(bool rememberUserName, string userName, bool rememberPassword, string password, Sprite captcha)

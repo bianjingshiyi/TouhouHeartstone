@@ -46,8 +46,8 @@ namespace UI
             this._RememberAccountUIToggle = this.transform.Find("Container").Find("Options").Find("RememberAccount").GetComponent<UIToggle>();
             this._RememberPasswordUIToggle = this.transform.Find("Container").Find("Options").Find("RememberPassword").GetComponent<UIToggle>();
             this._TextButton = this.transform.Find("Container").Find("Options").Find("Text").GetComponent<Button>();
-            this._RegisterButtonBlack = this.transform.Find("Register").GetComponent<ButtonBlack>();
-            this._LoginButtonBlack = this.transform.Find("Login").GetComponent<ButtonBlack>();
+            this._RegisterButtonBlack = this.transform.Find("Buttons").Find("Register").GetComponent<ButtonBlack>();
+            this._LoginButtonBlack = this.transform.Find("Buttons").Find("Login").GetComponent<ButtonBlack>();
         }
         [SerializeField()]
         private Image m_as_Image;

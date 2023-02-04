@@ -339,20 +339,7 @@ namespace Game
             }
             catch (NetClientException e1)
             {
-                Debug.Log($"自动登录失败，{e1}，尝试使用游客身份登录.");
-
-                try
-                {
-                    await ServerClient.GuestLoginAsync();
-                    userInfo = await ServerClient.GetUserInfoAsync();
-                    // 游客不需要手动更新Session，因为在登录的时候默认换取的是Session
-                    isGuest = true;
-                }
-                catch (NetClientException e2)
-                {
-                    Debug.Log($"游客身份登录失败，{e2}.");
-                    userInfo = null;
-                }
+                Debug.Log($"自动登录失败: {e1}");
             }
         }
 
@@ -425,6 +412,27 @@ namespace Game
         public string GetUserName(int uid)
         {
             return ServerClient.GetUserInfo(uid).Name;
+        }
+
+        /// <summary>
+        /// 以游客身份登录
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> GuestLogin()
+        {
+            bool success = await ServerClient.GuestLoginAsync();
+            if (success)
+            {
+                userInfo = await ServerClient.GetUserInfoAsync();
+                // 游客不需要手动更新Session，因为在登录的时候默认换取的是Session
+                isGuest = true;
+            }
+            else
+            {
+                userInfo = null;
+            }
+
+            return success;
         }
         #endregion
 
