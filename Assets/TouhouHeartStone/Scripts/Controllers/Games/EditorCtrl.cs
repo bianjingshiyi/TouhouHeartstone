@@ -121,8 +121,8 @@ namespace Controllers
                         hasUnsavedChanges = false;
                     }, async () =>
                     {
-                        hasUnsavedChanges = false;
                         await returnToView();
+                        hasUnsavedChanges = false;
                     });
             }
             else
