@@ -469,6 +469,12 @@ namespace TouhouHeartstone
         }
         public static bool isWindfury(this Card card, IGame game)
         {
+            if (card.isMaster())
+            {
+                var item = card.getOwner().getItem();
+                if (item != null && item.isWindfury(game))
+                    return true;
+            }
             return card.hasKeyword(game, KEYWORD.WINDFURY);
         }
         public static void setWindfury(this Card card, IGame game, bool value)
