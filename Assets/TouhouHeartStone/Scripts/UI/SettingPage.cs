@@ -72,6 +72,14 @@ namespace UI
                 langItemList.Add(culture.Name);
                 langDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(culture.NativeName));
             }
+            _clearCacheButton.onClick.AddListener(() =>
+            {
+                main.ui.dialog.ShowQuestion(main.lang._(StringTable.WARNING), main.lang._(SETTING_CLEAR_CACHE_WARNING), () =>
+                {
+                    main.cache.ClearCache(main.fileManager);
+                    main.ui.dialog.ShowConfirm(main.lang._(StringTable.HINT_TITLE), main.lang._(SETTING_CACHE_CLEARED));
+                });
+            });
         }
 
         private void updateLabels()
@@ -130,5 +138,13 @@ namespace UI
         const string OPTIONS_CACHE_UNLIMITED = "无限制";
         [TranslateMsg("缓存大小单位")]
         const string CACHE_SIZE = "{0}G";
+        [TranslateMsg("设置界面-删除缓存前提示")]
+        const string SETTING_CLEAR_CACHE_WARNING = "你确定要清除所有的卡池缓存文件吗？\n清除之后需要重新下载来自网络的卡池文件";
+        [TranslateMsg("设置界面-删除缓存后提示")]
+        const string SETTING_CACHE_CLEARED = "缓存文件已清除";
+
+        [SerializeField]
+        private Button _clearCacheButton;
+        MainManager main => this.findInstance<MainManager>();
     }
 }
