@@ -18,7 +18,7 @@ namespace Game
         /// <summary>
         /// 让用户选择一张外部图片，然后读取并返回选择的贴图。如果图片已经读取过，则返回其在内存中的副本。
         /// </summary>
-        public Task<Sprite> selectExternalImage()
+        public Task<Sprite> selectExternalImage(int width = 512, int height = 512)
         {
             TaskCompletionSource<Sprite> tcs = new TaskCompletionSource<Sprite>();
             if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
@@ -32,6 +32,7 @@ namespace Game
                         if (sprite == null)
                         {
                             Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
+                            texture = ResizeImage(texture, width, height);
                             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
                             //缓存外部图片
                             addSpriteToCache(path, sprite);
@@ -76,6 +77,7 @@ namespace Game
                         if (sprite == null)
                         {
                             Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+                            texture = ResizeImage(texture, width, height);
                             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
                             //缓存外部图片
                             addSpriteToCache(path, sprite);
@@ -105,7 +107,7 @@ namespace Game
             foreach (var pair in _externalSpriteCacheDict)
             {
                 //已经存在的资源图片不需要保存
-                if (isHashNamedJPG(pair.Key))
+                if (isHashNamedImage(pair.Key))
                     continue;
                 //获取使用这张图片的第一个皮肤
                 CardSkinData cardSkin = cardPool.cardSkinList.FirstOrDefault(s => s.imagePath == pair.Key);
@@ -162,11 +164,11 @@ namespace Game
                 }
             }
         }
-        public async Task<string> saveImage(long cardPoolId, Texture2D texture)
+        public async Task<string> saveImage(long cardPoolId, Texture2D texture, bool saveAsJpg = false, int jpgQuality = 80)
         {
-            byte[] bytes = texture.EncodeToJPG();
+            byte[] bytes = saveAsJpg ? texture.EncodeToJPG(jpgQuality) : texture.EncodeToPNG();
             string hash = calcHashString(bytes);
-            string path = string.Format("{0}.jpg", hash);
+            string path = saveAsJpg ? string.Format("{0}.jpg", hash) : string.Format("{0}.png", hash);
             if (isStandardCardPool(cardPoolId))
             {
                 string filePath = Path.Combine(editorTextureDirName, path);
@@ -361,12 +363,90 @@ namespace Game
             byte[] hash = _hashProvider.ComputeHash(bytes);
             return string.Join(string.Empty, Array.ConvertAll(hash, b => b.ToString("x2")));
         }
-        public static bool isHashNamedJPG(string imagePath)
+        /// <summary>
+        /// 判断文件名是否为32bytes的小写hex哈希值，并且以jpg或png作为文件扩展名
+        /// </summary>
+        /// <param name="imagePath"></param>
+        /// <returns></returns>
+        public static bool isHashNamedImage(string imagePath)
         {
             return 
                 imagePath.Length == 68 &&
-                imagePath.EndsWith(".jpg") &&
+                (imagePath.EndsWith(".jpg") || imagePath.EndsWith(".png")) &&
                 imagePath.Substring(0, 32).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'z'));
+        }
+
+        /// <summary>
+        /// 每次缩小1/2，快速将图像分辨率降低到指定分辨率以下
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <param name="maxWidth"></param>
+        /// <param name="maxHeight"></param>
+        /// <param name="times">缩小次数。输出分辨率 = 输入分辨率 / (2 ^ times)</param>
+        /// <returns></returns>
+        static Texture2D RapidDownscale(Texture2D texture, int maxWidth, int maxHeight, out int times)
+        {
+            times = 0;
+            while(texture.width > maxWidth && texture.height > maxHeight)
+            {
+                times++;
+                Texture2D txt = new Texture2D(texture.width / 2, texture.height / 2);
+                for (int i = 0; i < txt.height; ++i)
+                {
+                    for (int j = 0; j < txt.width; ++j)
+                    {
+                        int u0 = j * 2, v0 = i * 2;
+                        int u1 = u0 + 1, v1 = v0 + 1;
+                        Color c = texture.GetPixel(u0, v0) / 4 + texture.GetPixel(u1, v0) / 4 + texture.GetPixel(u0, v1) / 4 + texture.GetPixel(u1, v1) / 4;
+                        txt.SetPixel(j, i, c);
+                    }
+                }
+                texture = txt;
+            }
+            return texture;
+        }
+        
+        /// <summary>
+        /// 保持比例，将图像缩小到指定大小
+        /// </summary>
+        /// <remarks>
+        /// 会保证图片高度/宽度有一边等于设置值，另一边大于设置值
+        /// </remarks>
+        /// <param name="original"></param>
+        /// <param name="maxWidth"></param>
+        /// <param name="maxHeight"></param>
+        /// <returns></returns>
+        public static Texture2D ResizeImage(Texture2D original, int maxWidth, int maxHeight)
+        {
+            float factorW = maxWidth == 0 ? 1 : ((float)original.width / maxWidth);
+            float factorH = maxHeight == 0 ? 1 : ((float)original.height / maxHeight);
+
+            float factor = Math.Min(factorH, factorW);
+
+            // 有一边小于最大值，返回
+            if (factor <= 1)
+                return original;
+
+            // 缩放大于两倍，为保证图像质量需要预缩放
+            if (factor >= 2)
+            {
+                original = RapidDownscale(original, maxWidth * 2, maxHeight * 2, out int times);
+                while (times-- > 0)
+                    factor /= 2;
+            }
+
+            // 缩放图像
+            Texture2D result = new Texture2D((int)(original.width / factor), (int)(original.height / factor));
+            for (int i = 0; i < result.height; ++i)
+            {
+                for (int j = 0; j < result.width; ++j)
+                {
+                    Color newColor = original.GetPixelBilinear((float)j / (float)result.width, (float)i / (float)result.height);
+                    result.SetPixel(j, i, newColor);
+                }
+            }
+            result.Apply();
+            return result;
         }
         #endregion
         #region 私有方法
