@@ -68,6 +68,8 @@ namespace Game
         {
             return cards?.random(game);
         }
+
+        #region 创建衍生卡
         /// <summary>
         /// 创建衍生物并置入战场
         /// </summary>
@@ -124,6 +126,32 @@ namespace Game
             await player.getDeck().insert(game, createdCard, game.randomInt(0, player.getDeck().count));
             return createdCard;
         }
+
+
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_CREATE_TOKEN_CARD_EQUIP_TO_ITEM = "创建衍生卡并装备到道具栏";
+        /// <summary>
+        /// 创建衍生卡并装备到道具栏
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="cardDefine"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(EDITOR_NODE_NAME_CREATE_TOKEN_CARD_EQUIP_TO_ITEM, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task<Card> createTokenCardEquipToItem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            if (player == null || cardDefine == null)
+                return null;
+            Card createdCard = game.createCard(cardDefine);
+
+            await player.equip(game, null, createdCard);
+            return createdCard;
+        }
+        #endregion
+
         /// <summary>
         /// 这张卡牌
         /// </summary>
@@ -475,6 +503,9 @@ namespace Game
                 return default;
             return targets.heal(game, card, value);
         }
+
+
+        #region 获取场上的卡牌
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ALL_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getAllServants(CardEngine game)
@@ -485,40 +516,6 @@ namespace Game
                 cardList.AddRange(player.getField());
             }
             return cardList.ToArray();
-        }
-        /// <summary>
-        /// 获取敌方随从
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="card"></param>
-        /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ENEMY_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Card[] getEnemyServants(CardEngine game, Card card)
-        {
-            return game.getOpponent(card.owner).getField();
-        }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_FRIEND_CHARACTERS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Card[] getFriendCharacters(Card card)
-        {
-            Card master = card.owner.getMaster();
-            Card[] servants = card.owner.getField();
-            Card[] characters = new Card[servants.Length + 1];
-            characters[0] = master;
-            Array.Copy(servants, 0, characters, 1, servants.Length);
-            return characters;
-        }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ENEMY_CHARACTERS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Card[] getEnemyCharacters(CardEngine game, Card card)
-        {
-            Card master = game.getOpponent(card.owner).getMaster();
-            Card[] servants = game.getOpponent(card.owner).getField();
-            Card[] characters = new Card[servants.Length + 1];
-            characters[0] = master;
-            Array.Copy(servants, 0, characters, 1, servants.Length);
-            return characters;
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ALL_CHARACTERS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
@@ -532,6 +529,56 @@ namespace Game
             }
             return cardList.ToArray();
         }
+        /// <summary>
+        /// 获取所有友方随从
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [TranslateMsg("动作图编辑器中动作节点名称之获取友方随从")]
+        public const string EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS = "获取友方随从";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getFriendlyServants(CardEngine game, Card card)
+        {
+            Card[] servants = card.owner.getField();
+            return servants;
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_FRIEND_CHARACTERS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getFriendCharacters(Card card)
+        {
+            Card master = card.owner.getMaster();
+            Card[] servants = card.owner.getField();
+            Card[] characters = new Card[servants.Length + 1];
+            characters[0] = master;
+            Array.Copy(servants, 0, characters, 1, servants.Length);
+            return characters;
+        }
+        /// <summary>
+        /// 获取敌方随从
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ENEMY_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getEnemyServants(CardEngine game, Card card)
+        {
+            return game.getOpponent(card.owner).getField();
+        }
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_ENEMY_CHARACTERS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getEnemyCharacters(CardEngine game, Card card)
+        {
+            Card master = game.getOpponent(card.owner).getMaster();
+            Card[] servants = game.getOpponent(card.owner).getField();
+            Card[] characters = new Card[servants.Length + 1];
+            characters[0] = master;
+            Array.Copy(servants, 0, characters, 1, servants.Length);
+            return characters;
+        }
+        #endregion
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FREEZE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static Task<IPropChangeEventArg> freeze(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -562,6 +609,14 @@ namespace Game
             return cards.kill(game);
         }
 
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_UPDATE_CARDS_STATE = "强制更新所有卡牌状态";
+        [ActionNodeMethod(EDITOR_NODE_NAME_UPDATE_CARDS_STATE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static Task forceUpdateCardsState(CardEngine game)
+        {
+            return game.updateDeath();
+        }
+
         [TranslateMsg("节点名称")]
         private const string EDITOR_NODE_NAME_IS_DEAD = "是否濒死";
         [TranslateMsg("是否濒死节点-常量")]
@@ -580,22 +635,6 @@ namespace Game
             if (card == null)
                 return false;
             return card.isDead(game, checkHealth, checkKilled);
-        }
-
-        /// <summary>
-        /// 获取所有友方随从
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="card"></param>
-        /// <returns></returns>
-        [TranslateMsg("动作图编辑器中动作节点名称之获取友方随从")]
-        public const string EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS = "获取友方随从";
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static Card[] getFriendlyServants(CardEngine game, Card card)
-        {
-            Card[] servants = card.owner.getField();
-            return servants;
         }
         /// <summary>
         /// 获取护甲
@@ -702,6 +741,20 @@ namespace Game
         {
             return player?.getItem();
         }
+
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_PLAYER_HAS_ITEM = "玩家是否装备道具";
+        /// <summary>
+        /// 玩家是否装备道具
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_NAME_PLAYER_HAS_ITEM, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool playerHasItem(
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player?.getItem() != null;
+        }
+
         /// <summary>
         /// 摧毁道具
         /// </summary>
@@ -742,6 +795,8 @@ namespace Game
                 return Array.Empty<Card>();
             return card.getNearbyCards();
         }
+
+        #region 玩家分类
         /// <summary>
         /// 获取当前灵力值
         /// </summary>
@@ -828,6 +883,23 @@ namespace Game
             if (player != null)
                 await player.setMaxGem(game, player.getMaxGem() + count);
         }
+        #endregion
+
+        #region 宣言/遗言
+        /// <summary>
+        /// 卡牌具有宣言
+        /// </summary>
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_CARD_HAS_BATTLECRY = "卡牌具有宣言";
+        [ActionNodeMethod(EDITOR_NODE_CARD_HAS_BATTLECRY, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardHasBattlecry(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            if (card == null)
+                return false;
+            return card.hasBattlecry(game);
+        }
         /// <summary>
         /// 触发卡牌宣言
         /// </summary>
@@ -847,6 +919,21 @@ namespace Game
                 await card.activeEffect(game, card.getOwner(), targets);
             }
         }
+
+        /// <summary>
+        /// 卡牌具有遗言
+        /// </summary>
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_CARD_HAS_DEATHRATTLE = "卡牌具有遗言";
+        [ActionNodeMethod(EDITOR_NODE_CARD_HAS_DEATHRATTLE, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardHasDeathrattle(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            if (card == null)
+                return false;
+            return card.hasDeathRattle(game);
+        }
         /// <summary>
         /// 触发卡牌遗言
         /// </summary>
@@ -865,12 +952,16 @@ namespace Game
                 await card.triggerDeathRattles(game);
             }
         }
+        #endregion
+
+
         /// <summary>
         /// 重置卡牌
         /// </summary>
         [TranslateMsg("动作图编辑器中动作节点名称之重置卡牌")]
         public const string EDITOR_NODE_RESET_CARD = "重置卡牌";
         [ActionNodeMethod(EDITOR_NODE_RESET_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+
         public static async Task resetCards(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {

@@ -340,7 +340,7 @@ namespace Game
         [TranslateMsg("编辑器-动作节点-触发卡牌定义宣言")]
         public const string EDITOR_NODE_TRIGGER_CARD_DEFINE_BATTLECRY = "触发卡牌定义宣言";
         [ActionNodeMethod(EDITOR_NODE_TRIGGER_CARD_DEFINE_BATTLECRY, EDITOR_NODE_CATEGORY_CARD_DEFINE)]
-        public static async Task triggerActiveEffect(CardEngine game,
+        public static async Task triggerCardDefineBattlecry(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
@@ -353,6 +353,20 @@ namespace Game
                     continue;
                 await card.triggerCardDefineBattlecries(game, card.getOwner(), cardDefine, targets);
             }
+        }
+        /// <summary>
+        /// 卡牌定义具有宣言
+        /// </summary>
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_CARD_DEFINE_HAS_BATTLECRY = "卡牌定义具有宣言";
+        [ActionNodeMethod(EDITOR_NODE_CARD_DEFINE_HAS_BATTLECRY, EDITOR_NODE_CATEGORY_CARD_DEFINE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardDefineHasBattlecry(
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            if (cardDefine == null)
+                return false;
+            return cardDefine.hasBattlecry();
         }
         /// <summary>
         /// 触发卡牌遗言
@@ -372,6 +386,20 @@ namespace Game
                     continue;
                 await card.triggerCardDefineDeathRattles(game, cardDefine);
             }
+        }
+        /// <summary>
+        /// 卡牌定义具有遗言
+        /// </summary>
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE = "卡牌定义具有遗言";
+        [ActionNodeMethod(EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE, EDITOR_NODE_CATEGORY_CARD_DEFINE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardDefineHasDeathrattle(
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            if (cardDefine == null)
+                return false;
+            return cardDefine.hasDeathRattles();
         }
     }
     public enum CardDefineSelect

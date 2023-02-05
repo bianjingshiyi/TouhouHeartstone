@@ -699,6 +699,21 @@ namespace TouhouHeartstone
             }
             return results.ToArray();
         }
+        public static bool hasBattlecry(this Card card, IGame game)
+        {
+            if (!card.getProp<bool>(game, CARD.SILENCE))
+            {
+                if (card.define.hasBattlecry())
+                    return true;
+            }
+            foreach (var buff in card.getBuffs())
+            {
+                var effects = buff.getEffects(game as CardEngine);
+                if (effects.Any(e => e.isBattlecry()))
+                    return true;
+            }
+            return false;
+        }
         public static (IEffect effect, Buff buff)[] getDeathRattles(this Card card, IGame game)
         {
             List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
