@@ -1088,12 +1088,18 @@ namespace TouhouHeartstone
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
             if (triggerEffect != null)
             {
-                return triggerEffect.execute(game, card, null, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
+                var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                var vars = new object[] { eventArg };
+                if (triggerEffect.checkCondition(game, card, null, vars))
+                    return triggerEffect.execute(game, card, null, vars, targets);
             }
             IActiveEffect activeEffect = card.define.getActiveEffect();
             if (activeEffect != null)
             {
-                return activeEffect.execute(game, card, new object[] { new HearthStoneRule.ActiveEventArg(player, card, targets) }, targets);
+                var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                var vars = new object[] { eventArg };
+                if (activeEffect.checkCondition(game, card, vars))
+                    return activeEffect.execute(game, card, vars, targets);
             }
             if (card.isServant() || card.isItem() || card.isMaster())
             {
@@ -1104,7 +1110,9 @@ namespace TouhouHeartstone
                 var effect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
                 if (effect != null)
                 {
-                    return effect.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    if (effect.checkCondition(game, card, null, eventArg))
+                        return effect.execute(game, card, null, eventArg);
                 }
             }
             return Task.CompletedTask;
@@ -1125,34 +1133,44 @@ namespace TouhouHeartstone
             {
                 if (battlecry is GeneratedBattlecry cry)
                 {
-                    await cry.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    if (cry.checkCondition(game, card, null, eventArg))
+                        await cry.execute(game, card, null, eventArg);
                 }
                 else if (battlecry is GeneratedEffect gen)
                 {
-                    await gen.execute(game, card, null, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    if (gen.checkCondition(game, card, null, eventArg))
+                        await gen.execute(game, card, null, eventArg);
                 }
                 else if (battlecry is ActiveEffect active)
                 {
-                    await active.execute(game, card, new object[0], targets);
+                    if (active.checkCondition(game, card))
+                        await active.execute(game, card, new object[0], targets);
                 }
             }
         }
         public static async Task triggerBattlecries(this Card card, CardEngine game, Player player, Card[] targets)
         {
             var battlecries = getBattlecries(card, game);
-            foreach (var battlecry in battlecries)
+            foreach (var (effect, buff) in battlecries)
             {
-                if (battlecry.effect is GeneratedBattlecry cry)
+                if (effect is GeneratedBattlecry cry)
                 {
-                    await cry.execute(game, card, battlecry.buff, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    if (cry.checkCondition(game, card, buff, eventArg))
+                        await cry.execute(game, card, buff, eventArg);
                 }
-                else if (battlecry.effect is GeneratedEffect gen)
+                else if (effect is GeneratedEffect gen)
                 {
-                    await gen.execute(game, card, battlecry.buff, new HearthStoneRule.ActiveEventArg(player, card, targets));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    if (gen.checkCondition(game, card, buff, eventArg))
+                        await gen.execute(game, card, buff, eventArg);
                 }
-                else if (battlecry.effect is ActiveEffect active)
+                else if (effect is ActiveEffect active)
                 {
-                    await active.execute(game, card, new object[0], targets);
+                    if (active.checkCondition(game, card))
+                        await active.execute(game, card, new object[0], targets);
                 }
             }
         }
@@ -1166,40 +1184,48 @@ namespace TouhouHeartstone
         public static async Task triggerCardDefineDeathRattles(this Card card, CardEngine game, CardDefine define)
         {
             var deathRattles = define.getDeathRattles();
-
             foreach (var deathRattle in deathRattles)
             {
                 if (deathRattle is GeneratedDeathRattle genRattle)
                 {
-                    await genRattle.execute(game, card, null, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
+                    if (genRattle.checkCondition(game, card, null, eventArg))
+                        await genRattle.execute(game, card, null, eventArg);
                 }
                 else if (deathRattle is GeneratedEffect gen)
                 {
-                    await gen.execute(game, card, null, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
+                    if (gen.checkCondition(game, card, null, eventArg))
+                        await gen.execute(game, card, null, eventArg);
                 }
                 else if (deathRattle is DeathRattle rattle)
                 {
-                    await rattle.execute(game, card, null, new DeathEventArg(card));
+                    if (rattle.checkCondition(game, card, new object[0]))
+                        await rattle.execute(game, card, null, new DeathEventArg(card));
                 }
             }
         }
         public static async Task triggerDeathRattles(this Card card, CardEngine game)
         {
             var deathRattles = getDeathRattles(card, game);
-
-            foreach (var deathRattle in deathRattles)
+            foreach (var (effect, buff) in deathRattles)
             {
-                if (deathRattle.effect is GeneratedDeathRattle genRattle)
+                if (effect is GeneratedDeathRattle genRattle)
                 {
-                    await genRattle.execute(game, card, deathRattle.buff, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
+                    if (genRattle.checkCondition(game, card, null, eventArg))
+                        await genRattle.execute(game, card, buff, eventArg);
                 }
-                else if (deathRattle.effect is GeneratedEffect gen)
+                else if (effect is GeneratedEffect gen)
                 {
-                    await gen.execute(game, card, deathRattle.buff, new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card }));
+                    var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
+                    if (gen.checkCondition(game, card, null, eventArg))
+                        await gen.execute(game, card, buff, eventArg);
                 }
-                else if (deathRattle.effect is DeathRattle rattle)
+                else if (effect is DeathRattle rattle)
                 {
-                    await rattle.execute(game, card, deathRattle.buff, new DeathEventArg(card));
+                    if (rattle.checkCondition(game, card, new object[0]))
+                        await rattle.execute(game, card, buff, new DeathEventArg(card));
                 }
             }
         }
