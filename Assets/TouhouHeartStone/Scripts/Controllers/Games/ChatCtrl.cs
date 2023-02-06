@@ -86,6 +86,7 @@ namespace Controllers
                 Debug.LogError("发送失败");
                 updateChatPanel();
             }
+            ui.EmptyInputField();
         }
 
         private void onReceiveMessage(DateTime time, string message, string player)
@@ -105,6 +106,7 @@ namespace Controllers
         private void resetChatPanel()
         {
             updateChatPanel();
+            ui.EmptyInputField();
         }
 
         /// <summary>
@@ -121,7 +123,6 @@ namespace Controllers
             }
             ui.SetContent(text);
             ui.ScrollToEnd();
-            ui.EmptyInputField();
         }
 
         /// <summary>

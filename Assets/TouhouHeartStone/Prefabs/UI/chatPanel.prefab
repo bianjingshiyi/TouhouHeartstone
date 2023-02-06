@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bea0af8ac2bf1cc4883f92f47fb3ada1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _chatInputFieldSubmit: {fileID: 3151838029158975984}
   _chatInputField: {fileID: 8528412412740723491}
   _displayText: {fileID: 2924036076749928602}
   _sendButton: {fileID: 2423202793856584804}
@@ -409,6 +410,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 0
+--- !u!114 &3151838029158975984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8528412412740723501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 947d4f1c86ee0d04a988afbcaf64293a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  onSubmit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &5923349130604070399
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using System.Collections;
 
 namespace UI
@@ -12,6 +11,7 @@ namespace UI
         protected void Awake() 
         {
             _sendButton.onClick.AddListener(onClickSendButton);
+            _chatInputFieldSubmit.onSubmit.AddListener(onSubmit);
         }
 
         #endregion
@@ -23,6 +23,11 @@ namespace UI
         private void onClickSendButton()
         {
             var text = _chatInputField.text;
+            onSendButtonClicked?.Invoke(text);
+        }
+
+        private void onSubmit(string text)
+        {
             onSendButtonClicked?.Invoke(text);
         }
 
@@ -56,6 +61,8 @@ namespace UI
 
         #endregion
         #region 属性字段
+        [SerializeField]
+        private InputFieldSubmit _chatInputFieldSubmit;
         [SerializeField]
         private InputField _chatInputField;
         [SerializeField]
