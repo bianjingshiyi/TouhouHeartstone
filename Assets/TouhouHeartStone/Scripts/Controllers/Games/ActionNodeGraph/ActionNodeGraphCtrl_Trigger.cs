@@ -240,7 +240,7 @@ namespace Controllers
                 return false;
             }
             Type outputType = getEventVarInfo(outputIndex - 1).type;
-            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - 1].type;
+            Type inputType = getActionDefine(inputActionNode.defineName).getValueInputAt(inputIndex - 1).type;
             return validateConnectionType(outputType, inputType);
         }
         #region 节点连接
@@ -258,7 +258,8 @@ namespace Controllers
                 inputActionNode.inputs.Length > inputIndex &&
                 inputActionNode.inputs[inputIndex] != null)
             {
-                if (inputActionNode.inputs[inputIndex].eventVarName == curEventVarNames[outputIndex])
+                var input = inputActionNode.inputs[inputIndex];
+                if (input.eventVarName == curEventVarNames[outputIndex])
                 {
                     //已经相连，什么也不做
                     return;
@@ -266,7 +267,7 @@ namespace Controllers
                 else
                 {
                     //相连的是其他输入节点，断开连接
-                    unconnectNode4AnyType(null, outputIndex, inputActionNode, inputIndex);
+                    unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, inputActionNode, inputIndex);
                 }
             }
             //建立新的连接

@@ -256,7 +256,7 @@ namespace UI
         }
         private void onConstListItemTypeDropdownValueChangedCallback(EffectEditorValueDefineItem item, int typeIndex)
         {
-            onConstListItemTypeChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), typeIndex);
+            onConstListItemTypeChanged?.Invoke(_constList.IndexOf(item.transform as RectTransform), typeIndex);
         }
         private void onConstListItemNameInputFieldValueChangedCallback(EffectEditorValueDefineItem item, string name)
         {

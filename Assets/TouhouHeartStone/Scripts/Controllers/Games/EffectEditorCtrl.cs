@@ -263,26 +263,28 @@ namespace Controllers
         private void onAddInputButtonClicked()
         {
             scene.editor.hasUnsavedChanges = true;
-            _actionDefine.inputList.Add(new ValueDefine(
+            var valueDefine = new ValueDefine(
                 typeof(int),
                 game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.inputList.Count + 1),
                 false,
-                false));
+                false);
+            scene.actionNodeGraphCtrl.addActionDefineInput(valueDefine);
             updateActionDefinePropList();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemDeleteButtonClicked(int index)
         {
             scene.editor.hasUnsavedChanges = true;
-            _actionDefine.inputList.RemoveAt(index);
+            scene.actionNodeGraphCtrl.deleteActionDefineInput(index);
             updateActionDefinePropList();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemTypeChanged(int index, int typeIndex)
         {
             scene.editor.hasUnsavedChanges = true;
-            _actionDefine.inputList[index].type = game.editor.getEditorVarTypeAt(typeIndex);
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            var targetType = game.editor.getEditorVarTypeAt(typeIndex);
+            var curType = _actionDefine.inputList[index].type;
+            if (curType.IsArray)
+                targetType  = targetType.MakeArrayType();
+            scene.actionNodeGraphCtrl.changeActionDefineInputType(index, targetType);
         }
         private void onInputListItemNameChanged(int index, string name)
         {
@@ -294,11 +296,12 @@ namespace Controllers
         private void onInputListItemIsArrayValueChanged(int index, bool value)
         {
             scene.editor.hasUnsavedChanges = true;
-            if (value)
-                _actionDefine.inputList[index].type = _actionDefine.inputList[index].type.MakeArrayType();
-            else
-                _actionDefine.inputList[index].type = _actionDefine.inputList[index].type.GetElementType();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            var targetType = _actionDefine.inputList[index].type;
+            if (value && !targetType.IsArray)
+                targetType = targetType.MakeArrayType();
+            else if (!value && targetType.IsArray)
+                targetType = targetType.GetElementType();
+            scene.actionNodeGraphCtrl.changeActionDefineInputType(index, targetType);
         }
         private void onInputListItemIsParamsValueChanged(int index, bool value)
         {
@@ -320,15 +323,17 @@ namespace Controllers
         private void onConstListItemDeleteButtonClicked(int index)
         {
             scene.editor.hasUnsavedChanges = true;
-            _actionDefine.constList.RemoveAt(index);
+            scene.actionNodeGraphCtrl.deleteActionDefineConst(index);
             updateActionDefinePropList();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemTypeChanged(int index, int typeIndex)
         {
             scene.editor.hasUnsavedChanges = true;
-            _actionDefine.constList[index].type = game.editor.getEditorConstTypeAt(typeIndex);
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            var targetType = game.editor.getEditorConstTypeAt(typeIndex);
+            var curType = _actionDefine.constList[index].type;
+            if (curType.IsArray)
+                targetType = targetType.MakeArrayType();
+            scene.actionNodeGraphCtrl.changeActionDefineConstType(index, targetType);
         }
         private void onConstListItemNameChanged(int index, string name)
         {
@@ -340,11 +345,12 @@ namespace Controllers
         private void onConstListItemIsArrayValueChanged(int index, bool value)
         {
             scene.editor.hasUnsavedChanges = true;
-            if (value)
-                _actionDefine.constList[index].type = _actionDefine.constList[index].type.MakeArrayType();
-            else
-                _actionDefine.constList[index].type = _actionDefine.constList[index].type.GetElementType();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            var targetType = _actionDefine.constList[index].type;
+            if (value && !targetType.IsArray)
+                targetType = targetType.MakeArrayType();
+            else if (!value && targetType.IsArray)
+                targetType = targetType.GetElementType();
+            scene.actionNodeGraphCtrl.changeActionDefineConstType(index, targetType);
         }
         private void onConstListItemIsParamsValueChanged(int index, bool value)
         {
@@ -366,15 +372,17 @@ namespace Controllers
         private void onOutputListItemDeleteButtonClicked(int index)
         {
             scene.editor.hasUnsavedChanges = true;
-            _actionDefine.outputList.RemoveAt(index);
+            scene.actionNodeGraphCtrl.deleteActionDefineOutput(index);
             updateActionDefinePropList();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemTypeChanged(int index, int typeIndex)
         {
             scene.editor.hasUnsavedChanges = true;
-            _actionDefine.outputList[index].type = game.editor.getEditorVarTypeAt(typeIndex);
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            var targetType = game.editor.getEditorVarTypeAt(typeIndex);
+            var curType = _actionDefine.outputList[index].type;
+            if (curType.IsArray)
+                targetType = targetType.MakeArrayType();
+            scene.actionNodeGraphCtrl.changeActionDefineOutputType(index, targetType);
         }
         private void onOutputListItemNameChanged(int index, string name)
         {
@@ -385,11 +393,12 @@ namespace Controllers
         private void onOutputListItemIsArrayValueChanged(int index, bool value)
         {
             scene.editor.hasUnsavedChanges = true;
-            if (value)
-                _actionDefine.outputList[index].type = _actionDefine.outputList[index].type.MakeArrayType();
-            else
-                _actionDefine.outputList[index].type = _actionDefine.outputList[index].type.GetElementType();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            var targetType = _actionDefine.outputList[index].type;
+            if (value && !targetType.IsArray)
+                targetType = targetType.MakeArrayType();
+            else if (!value && targetType.IsArray)
+                targetType = targetType.GetElementType();
+            scene.actionNodeGraphCtrl.changeActionDefineOutputType(index, targetType);
         }
         private void onOutputListItemIsParamsValueChanged(int index, bool value)
         {

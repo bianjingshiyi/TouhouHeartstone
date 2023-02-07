@@ -309,7 +309,7 @@ namespace Controllers
                 if (inputActionNodeItem == _returnNodeItem)
                 {
                     // 检测自定义动作的连接合法性。
-                    if (!validateConnection4ActionDefineReturn(outputIndex, inputIndex))
+                    if (!validateConnection4ActionDefineArgToReturn(outputIndex, inputIndex))
                         return;
                     // 自定义动作参数返回连接
                     connectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
@@ -382,15 +382,16 @@ namespace Controllers
                     ShowValueConnectActionError();
                     return;
                 }
-                connectNode4ReturnValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, 0);
+                connectNode4ReturnValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
             }
             // 普通的动作节点连接。
             else
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
-                int outputBranchesCount = getBranchesCount(outputActionDefine);
                 ActionNode inputActionNode = getActionNode(inputActionNodeItem);
+                ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
+                ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
+                int outputBranchesCount = getBranchesCount(outputActionDefine);
                 // 连接：动作节点----动作节点（前置动作）
                 if (inputIndex == 0)
                 {
@@ -426,17 +427,7 @@ namespace Controllers
                     }
                     //检查类型合法性，获取输入输出类型
                     Type outputType = outputActionDefine.getValueOutputAt(outputIndex - outputBranchesCount).type;
-                    ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
-                    Type inputType;
-                    if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length)
-                    {
-                        //多参数，获取最后一个参数类型
-                        inputType = inputActionDefine.inputs.Last().type;
-                    }
-                    else
-                    {
-                        inputType = inputActionDefine.inputs[inputIndex - 1].type;
-                    }
+                    Type inputType = inputActionDefine.getValueInputAt(inputIndex - 1).type;
                     if (!validateConnectionType(outputType, inputType))
                         return;
                     connectNode4ValueRef(outputActionNode, outputIndex - outputBranchesCount, inputActionNode, inputIndex - 1);
@@ -479,6 +470,10 @@ namespace Controllers
                         {
                             unconnectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - 1);
                         }
+                        else if (_generatedActionDefine != null)
+                        {
+                            unconnectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - 1);
+                        }
                     }
                 }
             }
@@ -495,7 +490,7 @@ namespace Controllers
             else if (inputActionNodeItem == _returnNodeItem)
             {
                 ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                unconnectNode4ReturnValueRef(outputActionNode, outputIndex - 1, 0);
+                unconnectNode4ReturnValueRef(outputActionNode, outputIndex - 1, inputIndex);
             }
             else
             {
@@ -529,23 +524,7 @@ namespace Controllers
         /// <param name="actionNodeItem"></param>
         private void onRightClickActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
-            //入口节点不能通过长按编辑
-            if (actionNodeItem == _entryNodeItem)
-                return;
-            //出口节点也不行
-            if (actionNodeItem == _returnNodeItem)
-                return;
-            _curEditActionNode = getActionNode(actionNodeItem);
-            Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
-            List<string> optionList = new List<string>()
-            {
-                game.langManager.getString(StringTable.DELETE)//删除
-            };
-            if (getActionDefine(_curEditActionNode.defineName) is GeneratedActionDefine)
-            {
-                optionList.Add(game.langManager.getString(StringTable.EDIT));//编辑
-            }
-            openMenu(position, optionList.ToArray());
+            openMenuForNodeItem(actionNodeItem, pointerPosition);
         }
         /// <summary>
         /// 当用户长按节点，展开节点菜单。
@@ -553,18 +532,7 @@ namespace Controllers
         /// <param name="actionNodeItem"></param>
         private void onLongPressActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
-            //入口节点不能通过长按编辑
-            if (actionNodeItem == _entryNodeItem)
-                return;
-            //出口节点也不行
-            if (actionNodeItem == _returnNodeItem)
-                return;
-            _curEditActionNode = getActionNode(actionNodeItem);
-            Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
-            openMenu(position, new string[]
-            {
-                game.langManager.getString(StringTable.DELETE),//删除
-            });
+            openMenuForNodeItem(actionNodeItem, pointerPosition);
         }
         private void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
@@ -1378,7 +1346,7 @@ namespace Controllers
                     else
                     {
                         //如果输入已经和其他输出连接，则断开。
-                        unconnectNode4AnyType(outputActionNode, outputIndex, null, inputIndex);
+                        unconnectNode4AnyType(returnValueRef.valueRef.action, returnValueRef.valueRef.index, null, inputIndex);
                     }
                 }
                 //建立新的连接
@@ -1386,7 +1354,7 @@ namespace Controllers
                 //更新输出节点的输出变量状态
                 updateRegVar(outputActionNode);
                 //更新ui
-                _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _returnNodeItem, 0, ActionNodeConnectionType.value);
+                _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _returnNodeItem, inputIndex, ActionNodeConnectionType.value);
             }
             else if (_valueRef != null)
             {
@@ -1487,10 +1455,11 @@ namespace Controllers
             if (inputActionNode.inputs != null &&
                 inputActionNode.inputs.Length > inputIndex)
             {
-                if (inputActionNode.inputs[inputIndex] != null)
+                var input = inputActionNode.inputs[inputIndex];
+                if (input != null)
                 {
-                    if ((inputActionNode.inputs[inputIndex].action == outputActionNode || inputActionNode.inputs[inputIndex].actionNodeId == outputActionNode.id) &&
-                        inputActionNode.inputs[inputIndex].index == outputIndex)
+                    if ((input.action == outputActionNode || input.actionNodeId == outputActionNode.id) &&
+                        input.index == outputIndex)
                     {
                         //输入已经与输出相连，什么都不做
                         return;
@@ -1498,7 +1467,7 @@ namespace Controllers
                     else
                     {
                         //输入与其他输出相连，断开
-                        unconnectNode4AnyType(outputActionNode, outputIndex, inputActionNode, inputIndex);
+                        unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, inputActionNode, inputIndex);
                     }
                 }
             }
@@ -1573,7 +1542,7 @@ namespace Controllers
                 }
                 //更新输出变量状态
                 updateRegVar(outputActionNode);
-                _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex + 1, _returnNodeItem, 0);
+                _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex + 1, _returnNodeItem, inputIndex);
             }
             else if (_valueRef != null)
             {
@@ -1667,7 +1636,7 @@ namespace Controllers
                 //更新ui
                 if (tryGetActionNodeItem(outputActionNode, out ActionNodeItem outputActionNodeItem))
                 {
-                    _ui.unconnectNode(outputActionNodeItem, outputActionNode.branches.Length + outputIndex, inputActionNodeItem, inputActionNode.branches.Length + inputIndex);
+                    _ui.unconnectNode(outputActionNodeItem, outputActionNode.branches.Length + outputIndex, inputActionNodeItem, 1 + inputIndex);
                 }
             }
             //因为动作的序列化类型和运行时类型彻底分开，所以动作节点不需要维持树状结构，进而不需要维持每个节点在树中的唯一直接引用
@@ -1727,7 +1696,8 @@ namespace Controllers
             else
             {
                 //与自定义动作参数相连
-                unconnectNode4ActionDefineArg(outputIndex, inputActionNode, inputIndex);
+                var input = inputActionNode.inputs[inputIndex];
+                unconnectNode4ActionDefineArg(input.argIndex, inputActionNode, inputIndex);
             }
         }
         /// <summary>
@@ -1766,6 +1736,23 @@ namespace Controllers
                 if (_trigger.condition != null && _trigger.condition.action == actionNode)
                 {
                     unconnectNode4TriggerCondition(actionNode, _trigger.condition.index, 0);
+                }
+            }
+            else if (_generatedActionDefine != null)
+            {
+                // 自定义动作的“返回值”。
+                var returns = _generatedActionDefine.returnValueRefList;
+                if (returns != null)
+                {
+                    foreach (var returnRef in returns.ToArray())
+                    {
+                        if (returnRef == null || returnRef.valueRef == null)
+                            continue;
+                        if (returnRef.valueRef.action == actionNode)
+                        {
+                            unconnectNode4ReturnValueRef(actionNode, returnRef.valueRef.index, returnRef.returnIndex);
+                        }
+                    }
                 }
             }
 
@@ -2258,14 +2245,17 @@ namespace Controllers
                 // 翻译名称
                 var name = tryTranslateWithDict(actionDefine.consts[i].name);
                 Type type = actionDefine.consts[i].type;
+                object value = null;
+                if (i < actionNode.consts.Length)
+                    value = actionNode.consts[i];
                 if (type == typeof(int))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.integer, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.integer, value);
                 else if (type == typeof(float))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.real, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.real, value);
                 else if (type == typeof(bool))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.boolean, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.boolean, value);
                 else if (type == typeof(string))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.text, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.text, value);
                 else if (type.IsEnum)
                 {
                     var optionalValues = Enum.GetValues(type).Cast<object>().ToArray();
@@ -2284,18 +2274,18 @@ namespace Controllers
                             optionalNames[j] = optName;
                         }
                     }
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.enumValue, actionNode.consts[i], optionalNames, optionalValues);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
                 }
                 else if (type == typeof(ActionValueRef))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.actionValueRef, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.actionValueRef, value);
                 else if (type == typeof(DefineReference))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.cardReference, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.cardReference, value);
                 else if (type == typeof(DefineReference[]))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.cardReferenceCollection, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.cardReferenceCollection, value);
                 else if (type == typeof(PileNameCollection))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.pileNameCollection, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.pileNameCollection, value);
                 else if (type == typeof(KeywordCollection))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.keywords, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.keywords, value);
                 else
                     throw new NotImplementedException("没有" + type + "对应的常数类型");
             }
@@ -2446,6 +2436,26 @@ namespace Controllers
             var options = getActionDefineGroups().Select(g => game.i18n._(g.Key) + (g.Count() > 1 ? " >" : "")).ToList();
             options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
             _ui.updateMenu(options.ToArray());
+        }
+        private void openMenuForNodeItem(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
+        {
+            //入口节点不能通过长按编辑
+            if (actionNodeItem == _entryNodeItem)
+                return;
+            //出口节点也不行
+            if (actionNodeItem == _returnNodeItem)
+                return;
+            _curEditActionNode = getActionNode(actionNodeItem);
+            Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
+            List<string> optionList = new List<string>()
+            {
+                game.langManager.getString(StringTable.DELETE)//删除
+            };
+            if (getActionDefine(_curEditActionNode.defineName) is GeneratedActionDefine)
+            {
+                optionList.Add(game.langManager.getString(StringTable.EDIT));//编辑
+            }
+            openMenu(position, optionList.ToArray());
         }
         /// <summary>
         /// 在对应位置打开菜单

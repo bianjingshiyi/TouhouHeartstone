@@ -27,6 +27,298 @@ namespace Controllers
             updateActionDefineEntryNode();
             updateActionDefineReturnNodes();
         }
+        /// <summary>
+        /// 为自定义动作添加一个输入值，并重新连接所有常量。
+        /// 因为新增输入值会把常量往下顶，所以要单独写一个。
+        /// </summary>
+        /// <param name="valueDef"></param>
+        public void addActionDefineInput(ValueDefine valueDef)
+        {
+            List<ReturnValueRef> reconnectReturnValueRefs = new List<ReturnValueRef>();
+            List<(ActionNode inputNode, int outputIndex, int inputIndex)> reconnectActionNodes = new List<(ActionNode inputNode, int outputIndex, int inputIndex)>();
+            // 断开入口节点的常量输出到出口节点的输出连接。
+            foreach (var returnRef in _generatedActionDefine.returnValueRefList.FindAll(r => r != null && r.valueRef != null && r.valueRef.action == null && r.valueRef.argIndex >= _generatedActionDefine.inputList.Count))
+            {
+                var valueRef = returnRef.valueRef;
+                reconnectReturnValueRefs.Add(returnRef);
+                unconnectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex);
+            }
+
+            //与其他节点断开连接
+            for (int i = 0; i < _actionNodeList.Count; i++)
+            {
+                var node = _actionNodeList[i];
+                if (node == null)
+                    continue;
+                //与输出值断开连接
+                if (node.inputs != null)
+                {
+                    for (int inputIndex = 0; inputIndex < node.inputs.Length; inputIndex++)
+                    {
+                        var input = node.inputs[inputIndex];
+                        if (input == null)
+                            continue;
+                        if (input.action == null && input.argIndex >= _generatedActionDefine.inputList.Count)
+                        {
+                            reconnectActionNodes.Add((node, input.argIndex, inputIndex));
+                            unconnectNode4ActionDefineArg(input.argIndex, node, inputIndex);
+                        }
+                    }
+                }
+            }
+            _generatedActionDefine.inputList.Add(valueDef);
+            updateActionDefineEntryNode();
+
+            // 重新连接入口节点输出到出口节点的输出连接。
+            foreach (var returnRef in reconnectReturnValueRefs)
+            {
+                connectNode4ActionDefineArgToReturn(returnRef.valueRef.argIndex + 1, returnRef.returnIndex);
+            }
+
+            // 重新连接其他节点
+            foreach (var (node, outIndex, inputIndex) in reconnectActionNodes)
+            {
+                connectNode4ActionDefineArg(outIndex + 1, node, inputIndex);
+            }
+        }
+        /// <summary>
+        /// 删除自定义动作的一个输入值，并重新连接所有下方的点。
+        /// </summary>
+        /// <param name="outputIndex"></param>
+        public void deleteActionDefineInput(int outputIndex)
+        {
+            List<ReturnValueRef> reconnectReturnValueRefs = new List<ReturnValueRef>();
+            List<(ActionNode inputNode, int outputIndex, int inputIndex)> reconnectActionNodes = new List<(ActionNode inputNode, int outputIndex, int inputIndex)> ();
+            // 断开入口节点输出到出口节点的输出连接。
+            foreach (var returnRef in _generatedActionDefine.returnValueRefList.ToArray())
+            {
+                if (returnRef == null || returnRef.valueRef == null)
+                    continue;
+                var valueRef = returnRef.valueRef;
+                if (valueRef.action == null)
+                {
+                    if (valueRef.argIndex > outputIndex)
+                        reconnectReturnValueRefs.Add(returnRef);
+                    if (valueRef.argIndex >= outputIndex)
+                        unconnectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex);
+                }
+            }
+
+            //与其他节点断开连接
+            for (int i = 0; i < _actionNodeList.Count; i++)
+            {
+                var node = _actionNodeList[i];
+                if (node == null)
+                    continue;
+                //与输出值断开连接
+                if (node.inputs != null)
+                {
+                    for (int inputIndex = 0; inputIndex < node.inputs.Length; inputIndex++)
+                    {
+                        var input = node.inputs[inputIndex];
+                        if (input == null)
+                            continue;
+                        if (input.action == null && input.actionNodeId == 0)
+                        {
+                            if (input.argIndex > outputIndex)
+                                reconnectActionNodes.Add((node, input.argIndex, inputIndex));
+                            if (input.argIndex >= outputIndex)
+                                unconnectNode4ActionDefineArg(input.argIndex, node, inputIndex);
+                        }
+                    }
+                }
+            }
+            if (outputIndex < _generatedActionDefine.inputList.Count)
+                _generatedActionDefine.inputList.RemoveAt(outputIndex);
+            else
+                _generatedActionDefine.constList.RemoveAt(outputIndex - _generatedActionDefine.inputList.Count);
+            updateActionDefineEntryNode();
+
+            // 重新连接入口节点输出到出口节点的输出连接。
+            foreach (var returnRef in reconnectReturnValueRefs)
+            {
+                connectNode4ActionDefineArgToReturn(returnRef.valueRef.argIndex - 1, returnRef.returnIndex);
+            }
+
+            // 重新连接其他节点
+            foreach (var (node, outIndex, inputIndex) in reconnectActionNodes)
+            {
+                connectNode4ActionDefineArg(outIndex - 1, node, inputIndex);
+            }
+        }
+        /// <summary>
+        /// 删除自定义动作的一个常量值，并重新连接所有下方的点。
+        /// </summary>
+        /// <param name="constIndex"></param>
+        public void deleteActionDefineConst(int constIndex)
+        {
+            int outputIndex = _generatedActionDefine.inputList.Count + constIndex;
+            deleteActionDefineInput(outputIndex);
+        }
+        /// <summary>
+        /// 删除自定义动作的一个返回值，并重新连接所有下方的点。
+        /// </summary>
+        /// <param name="inputIndex"></param>
+        public void deleteActionDefineOutput(int inputIndex)
+        {
+            List<ReturnValueRef> reconnectReturnValueRefs = new List<ReturnValueRef>();
+            // 断开输出到出口节点的连接。
+            var returns = _generatedActionDefine.returnValueRefList;
+            if (returns != null)
+            {
+                foreach (var returnRef in returns.FindAll(r => r.returnIndex >= inputIndex))
+                {
+                    if (returnRef == null || returnRef.valueRef == null)
+                        continue;
+                    if (returnRef.returnIndex > inputIndex)
+                        reconnectReturnValueRefs.Add(returnRef);
+
+                    var valueRef = returnRef.valueRef;
+                    ActionNode actionNode = valueRef.action ?? getActionNode(valueRef.actionNodeId);
+                    if (actionNode != null)
+                    {
+                        unconnectNode4ReturnValueRef(actionNode, valueRef.index, returnRef.returnIndex);
+                    }
+                    else
+                    {
+                        unconnectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex);
+                    }
+                }
+            }
+            _generatedActionDefine.outputList.RemoveAt(inputIndex);
+            updateActionDefineReturnNodes();
+
+
+            // 重新连接输出到断开的点下方的点的连接。
+            foreach (var returnRef in reconnectReturnValueRefs)
+            {
+                var valueRef = returnRef.valueRef;
+                if (valueRef.action != null)
+                {
+                    connectNode4ReturnValueRef(valueRef.action, valueRef.index, returnRef.returnIndex - 1);
+                }
+                else if (valueRef.actionNodeId != 0)
+                {
+                    ActionNode actionNode = getActionNode(valueRef.actionNodeId);
+                    connectNode4ReturnValueRef(actionNode, valueRef.index, returnRef.returnIndex - 1);
+                }
+                else
+                {
+                    connectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex - 1);
+                }
+            }
+        }
+        /// <summary>
+        /// 改变自定义动作的一个输入值的类型，并检查连接到该值的线的合法性。
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="type"></param>
+        public void changeActionDefineInputType(int index, Type type)
+        {
+            var inputList = _generatedActionDefine.inputList;
+            if (index < inputList.Count)
+                _generatedActionDefine.inputList[index].type = type;
+            else
+                _generatedActionDefine.constList[index - inputList.Count].type = type;
+            // 检查连接合法性。
+            // 断开不合法的，连接到返回节点上的连接
+            var returns = _generatedActionDefine.returnValueRefList.FindAll(r => r != null && r.valueRef != null && r.valueRef.action == null && r.valueRef.argIndex == index);
+            foreach (var returnRef in returns)
+            {
+                if (returnRef == null || returnRef.valueRef == null)
+                    continue;
+                bool valid = false;
+
+                // 自定义动作的outputList，在其内部其实是输入值。
+                var inputs = _generatedActionDefine.outputList;
+                if (inputs != null && returnRef.returnIndex >= 0 && returnRef.returnIndex < inputs.Count)
+                    valid = isValidTypeForConnection(type, inputs[returnRef.returnIndex].type);
+
+                if (!valid)
+                {
+                    unconnectNode4ActionDefineArgToReturn(index, returnRef.returnIndex);
+                }
+            }
+
+            // 断开不合法的，连接到其他节点上的连接
+            for (int i = 0; i < _actionNodeList.Count; i++)
+            {
+                var node = _actionNodeList[i];
+                if (node == null || node.inputs == null)
+                    continue;
+                for (int inputIndex = 0; inputIndex < node.inputs.Length; inputIndex++)
+                {
+                    var input = node.inputs[inputIndex];
+                    if (input != null && input.action == null && input.actionNodeId == 0 && input.argIndex == index)
+                    {
+                        bool valid = false;
+
+                        var define = getActionDefine(node.defineName);
+                        if (define == null)
+                            continue;
+                        var inputs = define.inputs;
+                        if (inputs != null && inputIndex >= 0 && inputIndex < inputs.Length)
+                            valid = isValidTypeForConnection(type, inputs[inputIndex].type);
+
+                        if (!valid)
+                        {
+                            unconnectNode4ActionDefineArg(index, node, inputIndex);
+                        }
+                    }
+                }
+            }
+            updateActionDefineEntryNode();
+        }
+        /// <summary>
+        /// 改变自定义动作的一个常量值的类型，并检查连接到该值的线的合法性。
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="type"></param>
+        public void changeActionDefineConstType(int index, Type type)
+        {
+            int outputIndex = _generatedActionDefine.inputList.Count + index;
+            changeActionDefineInputType(outputIndex, type);
+        }
+        /// <summary>
+        /// 改变自定义动作的一个返回值的类型，并检查连接到该值的线的合法性。
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="type"></param>
+        public void changeActionDefineOutputType(int index, Type type)
+        {
+            _generatedActionDefine.outputList[index].type = type;
+            // 断开输出到出口节点的连接。
+            var returns = _generatedActionDefine.returnValueRefList;
+            if (returns != null)
+            {
+                var returnRef = returns.Find(r => r != null && r.returnIndex == index);
+                if (returnRef != null && returnRef.valueRef != null)
+                {
+                    var valueRef = returnRef.valueRef;
+                    ActionNode actionNode = valueRef.action ?? getActionNode(valueRef.actionNodeId);
+                    if (actionNode != null)
+                    {
+                        var valid = false;
+                        var define = getActionDefine(actionNode.defineName);
+                        if (define != null)
+                            valid = isValidTypeForConnection(define.outputs[valueRef.index].type, type);
+                        if (!valid)
+                            unconnectNode4ReturnValueRef(actionNode, valueRef.index, returnRef.returnIndex);
+                    }
+                    else
+                    {
+                        var valid = false;
+                        var inputs = _generatedActionDefine.inputs;
+                        if (valueRef.argIndex >= 0 && valueRef.argIndex < inputs.Length)
+                            valid = isValidTypeForConnection(inputs[valueRef.argIndex].type, type);
+                        if (!valid)
+                            unconnectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex);
+                    }
+                }
+
+            }
+            updateActionDefineReturnNodes();
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -67,15 +359,14 @@ namespace Controllers
                 ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList[i];
                 ActionNodeItem outputActionNodeItem;
                 int outputIndex;
-                if (returnValueRef.valueRef.action != null)
+
+                ActionNode actionNode = returnValueRef.valueRef.action ?? getActionNode(returnValueRef.valueRef.actionNodeId);
+                if (actionNode != null)
                 {
-                    outputActionNodeItem = getActionNodeItem(returnValueRef.valueRef.action);
-                    outputIndex = getBranchesCount(getActionDefine(returnValueRef.valueRef.action.defineName)) + returnValueRef.valueRef.index;
-                }
-                else if (returnValueRef.valueRef.actionNodeId != 0)
-                {
-                    ActionNode actionNode = getActionNode(returnValueRef.valueRef.actionNodeId);
-                    outputActionNodeItem = getActionNodeItem(actionNode);
+                    if (!tryGetActionNodeItem(actionNode, out outputActionNodeItem))
+                    {
+                        outputActionNodeItem = await createGraph4ActionNode(actionNode);
+                    }
                     outputIndex = getBranchesCount(getActionDefine(actionNode.defineName)) + returnValueRef.valueRef.index;
                 }
                 else
@@ -117,7 +408,7 @@ namespace Controllers
         }
         private bool validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
-            // 尝试连接：自定义动作入口节点（值输出）----出口节点（前置动作）
+            // 尝试连接：自定义动作入口节点（值输出）----动作节点（前置动作）
             if (inputIndex < 1)
             {
                 //值输出只能与值输入相互连接
@@ -125,10 +416,10 @@ namespace Controllers
                 return false;
             }
             Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
-            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - 1].type;
+            Type inputType = getActionDefine(inputActionNode.defineName).getValueInputAt(inputIndex - 1).type;
             return validateConnectionType(outputType, inputType);
         }
-        private bool validateConnection4ActionDefineReturn(int outputIndex, int inputIndex)
+        private bool validateConnection4ActionDefineArgToReturn(int outputIndex, int inputIndex)
         {
             // 尝试连接：入口节点（动作）----出口节点
             if (outputIndex < 1)
@@ -155,7 +446,8 @@ namespace Controllers
                 inputActionNode.inputs.Length > inputIndex &&
                 inputActionNode.inputs[inputIndex] != null)
             {
-                if (inputActionNode.inputs[inputIndex].argIndex == outputIndex)
+                var input = inputActionNode.inputs[inputIndex];
+                if (input.argIndex == outputIndex)
                 {
                     //已经相连，什么也不做
                     return;
@@ -163,8 +455,16 @@ namespace Controllers
                 else
                 {
                     //相连的是其他输入节点，断开连接
-                    unconnectNode4AnyType(null, inputActionNode.inputs[inputIndex].argIndex, inputActionNode, inputIndex);
+                    unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, inputActionNode, inputIndex);
                 }
+            }
+            // 新建或扩容动作节点的输入列表。
+            if (inputActionNode.inputs == null || inputActionNode.inputs.Length <= inputIndex)
+            {
+                var newArray = new ActionValueRef[inputIndex + 1];
+                if (inputActionNode.inputs != null)
+                    inputActionNode.inputs.CopyTo(newArray, 0);
+                inputActionNode.inputs = newArray;
             }
             //建立新的连接
             inputActionNode.inputs[inputIndex] = new ActionValueRef(outputIndex);
@@ -179,8 +479,9 @@ namespace Controllers
                 r.returnIndex == inputIndex);
             if (index >= 0)
             {
-                if (_generatedActionDefine.returnValueRefList[index].valueRef != null &&
-                    _generatedActionDefine.returnValueRefList[index].valueRef.argIndex == outputIndex)
+                var returnRef = _generatedActionDefine.returnValueRefList[index];
+                var input = returnRef.valueRef;
+                if (input != null && input.action == null && input.actionNodeId == 0 && input.argIndex == outputIndex)
                 {
                     //已经相连，什么也不做
                     return;
@@ -188,7 +489,7 @@ namespace Controllers
                 else
                 {
                     //相连的是其他输入节点，断开连接
-                    unconnectNode4AnyType(null, _generatedActionDefine.returnValueRefList[index].valueRef.argIndex, null, inputIndex);
+                    unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, null, inputIndex);
                 }
             }
             //建立新的连接
@@ -204,8 +505,8 @@ namespace Controllers
                 r.returnIndex == inputIndex);
             if (index >= 0)
             {
-                if (_generatedActionDefine.returnValueRefList[index].valueRef != null &&
-                    _generatedActionDefine.returnValueRefList[index].valueRef.argIndex == outputIndex)
+                var returnRef = _generatedActionDefine.returnValueRefList[index];
+                if (returnRef.valueRef != null && returnRef.valueRef.action == null && returnRef.valueRef.actionNodeId == 0 && returnRef.valueRef.argIndex == outputIndex)
                 {
                     //相连，断开连接
                     _generatedActionDefine.returnValueRefList.RemoveAt(index);
@@ -226,7 +527,7 @@ namespace Controllers
                     //相连，断开连接
                     inputActionNode.inputs[inputIndex] = null;
                     //更新ui
-                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex);
+                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex);
                 }
             }
         }
