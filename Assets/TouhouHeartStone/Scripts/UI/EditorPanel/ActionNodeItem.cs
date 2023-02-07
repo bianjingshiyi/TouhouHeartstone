@@ -22,6 +22,7 @@ namespace UI
             _inputRoot.gameObject.SetActive(false);
             _valueRoot.gameObject.SetActive(false);
             _outputRoot.gameObject.SetActive(true);
+            SetDirty();
         }
         public void switchToActionNode()
         {
@@ -30,14 +31,17 @@ namespace UI
             _inputRoot.gameObject.SetActive(true);
             _valueRoot.gameObject.SetActive(true);
             _outputRoot.gameObject.SetActive(true);
+            SetDirty();
         }
         public void setName(string name)
         {
             _nameText.text = name;
+            SetDirty();
         }
         public void displayEventType(bool value)
         {
             _eventTypeDropdown.transform.parent.gameObject.SetActive(value);
+            SetDirty();
         }
         public void setInputs((string name, Color color)[] inputViewData)
         {
@@ -69,6 +73,7 @@ namespace UI
                     item.onClickNode -= onClickInputNodeCallback;
                 });
             }
+            SetDirty();
         }
         public void setConsts(ActionNodeValueInfo[] valueInfos)
         {
@@ -104,6 +109,7 @@ namespace UI
                     item.onClickItemButton -= onConstValueItemButtonClickCallback;
                 });
             }
+            SetDirty();
         }
         public ValueInputField getConstInputField(int index)
         {
@@ -189,6 +195,7 @@ namespace UI
                     item.onClickNode -= onClickOutputNodeCallback;
                 });
             }
+            SetDirty();
         }
 
         /// <summary>
@@ -224,6 +231,7 @@ namespace UI
                     item.onClickNode -= onClickOutputNodeCallback;
                 });
             }
+            SetDirty();
         }
         public void setTrigger(string[] targetTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
@@ -272,6 +280,7 @@ namespace UI
                 item.onClickRemoveButton -= onClickRemoveTargetCheckerButtonCallback;
                 item.onErrorTipInputFieldValueChanged -= onTargetCheckerErrorTipValueChangedCallback;
             });
+            SetDirty();
         }
         public int indexOfInput(ActionNodeItemInput input)
         {
@@ -296,6 +305,13 @@ namespace UI
         public ActionNodeItemOutput getOutput(int index)
         {
             return _outputList[index].GetComponent<ActionNodeItemOutput>();
+        }
+        /// <summary>
+        /// 将该节点项设置为不洁净。会在本帧结束时调用onUpdateTransform回调。
+        /// </summary>
+        public void SetDirty()
+        {
+            _dirty = true;
         }
         #endregion
         #region 私有方法
@@ -333,6 +349,15 @@ namespace UI
             _warningObj.onClick.AddListener(onClickObsoleteBtn);
             //增益
             onAwake_Buff();
+        }
+
+        private void LateUpdate()
+        {
+            if (_dirty)
+            {
+                _dirty = false;
+                onUpdateTransform?.Invoke(this);
+            }
         }
         #endregion
         #region 事件回调
@@ -472,6 +497,7 @@ namespace UI
         public event Action<ActionNodeItem, int> onClickEditTargetCheckerButton;
         public event Action<ActionNodeItem, int> onClickRemoveTargetCheckerButton;
         public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
+        public event Action<ActionNodeItem> onUpdateTransform;
         #endregion
         #region 属性字段
         public float posX
@@ -484,6 +510,7 @@ namespace UI
         }
 
         string obsoleteMessage = "";
+        private bool _dirty;
 
         [SerializeField]
         Text _nameText;

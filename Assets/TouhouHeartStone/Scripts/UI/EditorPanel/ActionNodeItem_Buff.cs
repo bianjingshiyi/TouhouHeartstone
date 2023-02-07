@@ -16,15 +16,18 @@ namespace UI
             _inputRoot.gameObject.SetActive(false);
             _valueRoot.gameObject.SetActive(false);
             _outputRoot.gameObject.SetActive(true);
+            SetDirty();
         }
         public void setBuffValues(string[] buffNames)
         {
             _buffDropdown.ClearOptions();
             _buffDropdown.AddOptions(new List<string>(buffNames));
+            SetDirty();
         }
         public void setBuffValue(int index)
         {
             _buffDropdown.SetValueWithoutNotify(index);
+            SetDirty();
         }
         /// <summary>
         /// 设置皮肤语言索引
@@ -33,6 +36,7 @@ namespace UI
         public void setBuffLanguage(int languageIndex)
         {
             _buffLanguageDropdown.SetValueWithoutNotify(languageIndex);
+            SetDirty();
         }
         /// <summary>
         /// 设置皮肤有哪些语言可选
@@ -55,6 +59,7 @@ namespace UI
             _buffNameInputField.SetTextWithoutNotify(buffName);
             _buffDescInputField.SetTextWithoutNotify(buffDesc);
             _buffImage.sprite = buffImage;
+            SetDirty();
         }
         public void setupPropModifierTemplate(string[] propTypes)
         {
@@ -86,11 +91,13 @@ namespace UI
                 item.onValueFieldValueChanged -= onPropertyModifierValueChangedCallback;
                 item.onClickRemoveButton -= onClickRemovePropModifierButtonCallback;
             });
+            SetDirty();
         }
         public void updateEffectList(IEnumerable<string> effectTypeNames, string[] effectNames)
         {
             _effectList.setAddEffectMenu(effectTypeNames);
             _effectList.updateList(effectNames);
+            SetDirty();
         }
         #endregion
         #region 私有方法

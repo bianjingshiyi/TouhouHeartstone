@@ -11,10 +11,6 @@ namespace UI
         private UILineRenderer _uiline;
         public int _length = 50;
         private Transform _fatherObject;
-        void Update()
-        {
-            UpdatePoints();
-        }
         public void setPosition(GameObject _startPoint, GameObject _endPoint)//为线段设置起点终点
         {
             _fatherObject = transform.parent;
@@ -34,7 +30,7 @@ namespace UI
                 if (t.name == "Slot") { _controlPoints[3] = t; }
             }
             _uiline.Points = new Vector2[_length];
-            //Debug.LogError(_controlPoints[0].position);
+            UpdatePoints();
         }
 
 
@@ -42,7 +38,7 @@ namespace UI
         {
             _uiline.color = baseColor;
         }
-        void UpdatePoints()//更新节点
+        public void UpdatePoints()//更新节点
         {
             _uiline.SetAllDirty();
             for (int i = 1; i <= _length; i++)

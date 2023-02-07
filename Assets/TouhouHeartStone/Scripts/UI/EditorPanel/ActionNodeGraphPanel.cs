@@ -103,6 +103,7 @@ namespace UI
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
+            actionNodeItem.onUpdateTransform += onActionNodeItemUpdateTransform;
             return actionNodeItem;
         }
         /// <summary>
@@ -362,6 +363,14 @@ namespace UI
             _currentSelectedKnob = default;
             _backgroundImage.transform.localPosition = Vector3.zero;
             _backgroundImage.transform.localScale = Vector3.one;
+        }
+        public void updateNodeLines(ActionNodeItem item)
+        {
+            var connections = _connectionList.FindAll(c => c.outputNode == item || c.inputNode == item);
+            foreach (var connection in connections)
+            {
+                connection.line.UpdatePoints();
+            }
         }
         #endregion
         #region 私有方法
@@ -869,6 +878,7 @@ namespace UI
                 return;
             Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
             onDragActionNode?.Invoke(item, graphPosition);
+            updateNodeLines(item);
         }
         private void onEndDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
@@ -927,6 +937,10 @@ namespace UI
         {
             onClickCancelSelectButton?.Invoke();
         }
+        private void onActionNodeItemUpdateTransform(ActionNodeItem item)
+        {
+            updateNodeLines(item);
+        }
         #endregion
         /// <summary>
         /// 在指定位置创建连线
@@ -983,6 +997,7 @@ namespace UI
             actionNodeItem.onBeginDrag += onBeginDragActionNodeItem;
             actionNodeItem.onDrag += onDragActionNodeItem;
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
+            actionNodeItem.onUpdateTransform += onActionNodeItemUpdateTransform;
             return actionNodeItem;
         }
         private Vector3 ClampDesiredScale(Vector3 desiredScale)//clamp函数
