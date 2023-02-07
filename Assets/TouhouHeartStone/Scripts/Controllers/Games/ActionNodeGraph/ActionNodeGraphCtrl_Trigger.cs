@@ -233,14 +233,14 @@ namespace Controllers
         private bool validateConnection4TriggerOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
             // 尝试连接：触发器的值----动作节点的前置动作
-            if (inputIndex < inputActionNode.branches.Length)
+            if (inputIndex < 1)
             {
                 //值输出只能与值输入相互连接
                 ShowValueConnectActionError();
                 return false;
             }
             Type outputType = getEventVarInfo(outputIndex - 1).type;
-            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - inputActionNode.branches.Length].type;
+            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - 1].type;
             return validateConnectionType(outputType, inputType);
         }
         #region 节点连接
@@ -272,7 +272,7 @@ namespace Controllers
             //建立新的连接
             inputActionNode.inputs[inputIndex] = new ActionValueRef(curEventVarNames[outputIndex]);
             //更新ui
-            _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.value);
+            _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex, ActionNodeConnectionType.value);
         }
         private void connectNode4TriggerCondition(ActionNode outputActionNode, int outputIndex, int inputIndex)
         {

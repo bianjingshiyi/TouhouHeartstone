@@ -118,14 +118,14 @@ namespace Controllers
         private bool validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
         {
             // 尝试连接：自定义动作入口节点（值输出）----出口节点（前置动作）
-            if (inputIndex < inputActionNode.branches.Length)
+            if (inputIndex < 1)
             {
                 //值输出只能与值输入相互连接
                 ShowValueConnectActionError();
                 return false;
             }
             Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
-            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - inputActionNode.branches.Length].type;
+            Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - 1].type;
             return validateConnectionType(outputType, inputType);
         }
         private bool validateConnection4ActionDefineReturn(int outputIndex, int inputIndex)
@@ -169,7 +169,7 @@ namespace Controllers
             //建立新的连接
             inputActionNode.inputs[inputIndex] = new ActionValueRef(outputIndex);
             //更新ui
-            _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex, ActionNodeConnectionType.value);
+            _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex, ActionNodeConnectionType.value);
         }
         private void connectNode4ActionDefineArgToReturn(int outputIndex, int inputIndex)
         {

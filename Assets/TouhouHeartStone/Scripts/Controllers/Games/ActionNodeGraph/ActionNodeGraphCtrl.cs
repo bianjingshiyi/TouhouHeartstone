@@ -339,7 +339,7 @@ namespace Controllers
                             //检查合法性
                             if (!validateConnection4TriggerOutput(outputIndex, inputActionNode, inputIndex))
                                 return;
-                            connectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
+                            connectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - 1);
                         }
                         // 连接：自定义动作入口节点（输出值）----动作节点
                         else if (_generatedActionDefine != null)
@@ -347,7 +347,7 @@ namespace Controllers
                             //检查合法性
                             if (!validateConnection4ActionDefineEntryOutput(outputIndex, inputActionNode, inputIndex))
                                 return;
-                            connectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
+                            connectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - 1);
                         }
                     }
                 }
