@@ -962,7 +962,15 @@ namespace Controllers
                     if (!string.IsNullOrEmpty(valueRef.eventVarName))
                     {
                         //与触发节点连接
-                        _ui.connectNode(_entryNodeItem, 1 + getEventVarNameIndex(valueRef.eventVarName), actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                        int outputIndex = getEventVarNameIndex(valueRef.eventVarName);
+                        if (validateConnection4TriggerOutput(outputIndex + 1, actionNode, i + 1, false))
+                        {
+                            _ui.connectNode(_entryNodeItem, 1 + outputIndex, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                        }
+                        else
+                        {
+                            unconnectNode4TriggerEventVarRef(outputIndex, actionNode, i);
+                        }
                     }
                     else
                     {
@@ -981,9 +989,16 @@ namespace Controllers
                                     Vector2 size = calcActionNodeGraphSize(inputActionNode, sizeDict);
                                     lastNodeOffset -= size.y;
                                 }
-                                //输出索引要被动作分支占用若干个空位
-                                //输入索引要被前置动作占用一个空位
-                                _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                                if (validateConnection4ActionNodes(inputActionNode, inputActionNode.branches.Length + valueRef.index, actionNode, i + 1))
+                                {
+                                    //输出索引要被动作分支占用若干个空位
+                                    //输入索引要被前置动作占用一个空位
+                                    _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                                }
+                                else
+                                {
+                                    unconnectNode4AnyType(inputActionNode, valueRef.index, actionNode, i);
+                                }
                             }
                             catch (Exception e)
                             {
@@ -993,7 +1008,16 @@ namespace Controllers
                         }
                         else
                         {
-                            _ui.connectNode(_entryNodeItem, 1 + valueRef.argIndex, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                            // 与自定义动作的入口节点连接。
+                            var outputIndex = valueRef.argIndex;
+                            if (validateConnection4ActionDefineEntryOutput(outputIndex + 1, actionNode, i + 1, false))
+                            {
+                                _ui.connectNode(_entryNodeItem, 1 + outputIndex, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                            }
+                            else
+                            {
+                                unconnectNode4ActionDefineArg(outputIndex, actionNode, i);
+                            }
                         }
                     }
                 }
@@ -1827,15 +1851,44 @@ namespace Controllers
             }
             return false;
         }
-        private bool validateConnectionType(Type outputType, Type inputType)
+        private bool validateConnectionType(Type outputType, Type inputType, bool showErrorTip = true)
         {
             if (!isValidTypeForConnection(outputType, inputType))
             {
                 //相互连接的输入输出类型必须可以相互转化
-                _ui.showErrorTip(game.lang._(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                if (showErrorTip)
+                    _ui.showErrorTip(game.lang._(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// 验证连接合法性：动作节点（输出）----动作节点（输入）
+        /// </summary>
+        /// <param name="outputActionNode">动作节点（输出）</param>
+        /// <param name="outputIndex">动作节点输出索引</param>
+        /// <param name="inputActionNode">动作节点（输入）</param>
+        /// <param name="inputIndex">动作节点输入索引</param>
+        /// <returns>是否合法</returns>
+        private bool validateConnection4ActionNodes(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode, int inputIndex)
+        {
+            var outputDefine = getActionDefine(outputActionNode.defineName);
+            var inputDefine = getActionDefine(inputActionNode.defineName);
+            if (outputDefine == null || inputDefine == null)
+                return false;
+
+            try
+            {
+                Type outputType = outputDefine.getValueOutputAt(outputIndex - outputActionNode.branches.Length).type;
+                Type inputType = inputDefine.getValueInputAt(inputIndex - 1).type;
+                return isValidTypeForConnection(outputType, inputType);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"验证动作节点“{outputActionNode.defineName}”和“{inputActionNode.defineName}”的连接合法性时出现异常：{e}");
+                return false;
+            }
         }
         private void ShowValueConnectActionError()
         {

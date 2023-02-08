@@ -406,31 +406,50 @@ namespace Controllers
             }
             _entryNodeItem.setOutputs(viewData);
         }
-        private bool validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
+
+        private bool validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex, bool showErrorTip = true)
         {
             // 尝试连接：自定义动作入口节点（值输出）----动作节点（前置动作）
             if (inputIndex < 1)
             {
                 //值输出只能与值输入相互连接
-                ShowValueConnectActionError();
+                if (showErrorTip)
+                    ShowValueConnectActionError();
                 return false;
             }
-            Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
-            Type inputType = getActionDefine(inputActionNode.defineName).getValueInputAt(inputIndex - 1).type;
-            return validateConnectionType(outputType, inputType);
+            try
+            {
+                Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
+                Type inputType = getActionDefine(inputActionNode.defineName).getValueInputAt(inputIndex - 1).type;
+                return validateConnectionType(outputType, inputType, showErrorTip);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"验证自定义动作入口节点和动作节点“{inputActionNode.defineName}”的连接合法性时出现异常：{e}");
+                return false;
+            }
         }
-        private bool validateConnection4ActionDefineArgToReturn(int outputIndex, int inputIndex)
+        private bool validateConnection4ActionDefineArgToReturn(int outputIndex, int inputIndex, bool showErrorTip = true)
         {
             // 尝试连接：入口节点（动作）----出口节点
             if (outputIndex < 1)
             {
                 //值输出只能与值输入相互连接
-                ShowValueConnectActionError();
+                if (showErrorTip)
+                    ShowValueConnectActionError();
                 return false;
             }
-            Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
-            Type inputType = _generatedActionDefine.outputList[inputIndex].type;
-            return validateConnectionType(outputType, inputType);
+            try
+            {
+                Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
+                Type inputType = _generatedActionDefine.outputList[inputIndex].type;
+                return validateConnectionType(outputType, inputType, showErrorTip);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"验证自定义动作入口节点和自定义动作出口节点的连接合法性时出现异常：{e}");
+                return false;
+            }
         }
         #region 节点连接
         /// <summary>

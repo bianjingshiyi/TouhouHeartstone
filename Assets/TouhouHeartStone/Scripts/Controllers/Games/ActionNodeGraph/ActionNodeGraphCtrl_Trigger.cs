@@ -230,18 +230,27 @@ namespace Controllers
             }
         }
 
-        private bool validateConnection4TriggerOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        private bool validateConnection4TriggerOutput(int outputIndex, ActionNode inputActionNode, int inputIndex, bool showErrorTip = true)
         {
             // 尝试连接：触发器的值----动作节点的前置动作
             if (inputIndex < 1)
             {
                 //值输出只能与值输入相互连接
-                ShowValueConnectActionError();
+                if (showErrorTip)
+                    ShowValueConnectActionError();
                 return false;
             }
-            Type outputType = getEventVarInfo(outputIndex - 1).type;
-            Type inputType = getActionDefine(inputActionNode.defineName).getValueInputAt(inputIndex - 1).type;
-            return validateConnectionType(outputType, inputType);
+            try
+            {
+                Type outputType = getEventVarInfo(outputIndex - 1).type;
+                Type inputType = getActionDefine(inputActionNode.defineName).getValueInputAt(inputIndex - 1).type;
+                return validateConnectionType(outputType, inputType, showErrorTip);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"验证触发器入口节点和动作节点“{inputActionNode.defineName}”的连接合法性时出现异常：{e}");
+                return false;
+            }
         }
         #region 节点连接
         /// <summary>
@@ -269,6 +278,14 @@ namespace Controllers
                     //相连的是其他输入节点，断开连接
                     unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, inputActionNode, inputIndex);
                 }
+            }
+            // 新建或扩容动作节点的输入列表。
+            if (inputActionNode.inputs == null || inputActionNode.inputs.Length <= inputIndex)
+            {
+                var newArray = new ActionValueRef[inputIndex + 1];
+                if (inputActionNode.inputs != null)
+                    inputActionNode.inputs.CopyTo(newArray, 0);
+                inputActionNode.inputs = newArray;
             }
             //建立新的连接
             inputActionNode.inputs[inputIndex] = new ActionValueRef(curEventVarNames[outputIndex]);
@@ -389,7 +406,7 @@ namespace Controllers
                     //相连，断开连接
                     inputActionNode.inputs[inputIndex] = null;
                     //更新ui
-                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), inputActionNode.branches.Length + inputIndex);
+                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex);
                 }
             }
         }
