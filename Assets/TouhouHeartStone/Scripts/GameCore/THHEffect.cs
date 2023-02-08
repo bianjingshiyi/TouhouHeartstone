@@ -335,22 +335,6 @@ namespace TouhouHeartstone
         public string[] events => throw new NotImplementedException();
         public abstract string[] piles { get; }
         public bool enabled { get; set; }
-
-        public bool checkCondition(IGame game, ICard card, object[] vars)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool checkTarget(IGame game, ICard card, object[] vars, object[] targets)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task execute(IGame game, ICard card, object[] vars, object[] targets)
-        {
-            throw new NotImplementedException();
-        }
-
         public string[] getEvents(ITriggerManager manager)
         {
             return new string[0];
@@ -379,9 +363,6 @@ namespace TouhouHeartstone
         {
             _name = name;
         }
-
-        public string[] piles => throw new NotImplementedException();
-        public string[] events => throw new NotImplementedException();
 
         public string[] getEvents(ITriggerManager manager)
         {

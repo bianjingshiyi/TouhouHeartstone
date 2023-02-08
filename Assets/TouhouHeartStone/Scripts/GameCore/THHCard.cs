@@ -1215,8 +1215,7 @@ namespace TouhouHeartstone
                 }
                 else if (deathRattle is DeathRattle rattle)
                 {
-                    if (rattle.checkCondition(game, card, new object[0]))
-                        await rattle.execute(game, card, null, new DeathEventArg(card));
+                    await rattle.execute(game, card, null, new DeathEventArg(card));
                 }
             }
         }
@@ -1239,8 +1238,7 @@ namespace TouhouHeartstone
                 }
                 else if (effect is DeathRattle rattle)
                 {
-                    if (rattle.checkCondition(game, card, new object[0]))
-                        await rattle.execute(game, card, buff, new DeathEventArg(card));
+                    await rattle.execute(game, card, buff, new DeathEventArg(card));
                 }
             }
         }
