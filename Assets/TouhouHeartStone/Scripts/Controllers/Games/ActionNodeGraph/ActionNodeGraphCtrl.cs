@@ -770,7 +770,7 @@ namespace Controllers
             // 效果的启用动作。
             if (_entryType == nameof(GeneratedEffect.onEnableAction))
             {
-                nodeName = game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONENABLE);
+                nodeName = StringTable.EDITOR_NODE_NAME_ONENABLE;
                 outputViewData = new (string name, Color color)[]
                 {
                     (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
@@ -783,7 +783,7 @@ namespace Controllers
             // 效果的禁用动作。
             else if (entryType == nameof(GeneratedEffect.onDisableAction))
             {
-                nodeName = game.langManager.getString(StringTable.EDITOR_NODE_NAME_ONDISABLE);
+                nodeName = StringTable.EDITOR_NODE_NAME_ONDISABLE;
                 outputViewData = new (string name, Color color)[]
                 {
                     (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
@@ -793,7 +793,7 @@ namespace Controllers
                     connectActionNode = await createGraph4ActionNode(_effect.onDisableAction);
                 }
             }
-            _entryNodeItem = _ui.createNode(0, 0, nodeName, inputViewData, constsInfo, outputViewData, obsoleteMsg);
+            _entryNodeItem = _ui.createNode(0, 0, game.langManager.getString(nodeName), inputViewData, constsInfo, outputViewData, obsoleteMsg, nodeName);
             if (connectActionNode != null)
             {
                 _ui.connectNode(_entryNodeItem, 0, connectActionNode, 0, ActionNodeConnectionType.action);
@@ -817,7 +817,9 @@ namespace Controllers
                     (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByType(typeof(object)))
                 },
                 new ActionNodeValueInfo[0],
-                new (string name, Color color)[0]);
+                new (string name, Color color)[0],
+                null,
+                StringTable.EDITOR_NODE_NAME_OUTPUT);
             if (valueRef.action != null)
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
@@ -852,7 +854,9 @@ namespace Controllers
                         value = _targetChecker.errorTip
                     }
                 },
-                new (string name, Color color)[0]);
+                new (string name, Color color)[0],
+                null,
+                StringTable.EDITOR_NODE_NAME_OUTPUT);
             if (targetChecker.condition != null && targetChecker.condition.action != null)
             {
                 ActionNodeItem actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
@@ -1128,7 +1132,8 @@ namespace Controllers
                     getActionNodeInputViewData(actionNode),
                     constsInfo,
                     getActionNodeOutputViewData(actionNode),
-                    getActionNodeObsoleteMsg(actionNode));
+                    getActionNodeObsoleteMsg(actionNode),
+                    actionNode.defineName);
                 for (int i = 0; i < constsInfo.Length; i++)
                 {
                     if (constsInfo[i].type == ActionNodeValueType.cardReference)

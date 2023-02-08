@@ -19,6 +19,9 @@ using UnityEngine.UI;
 using BJSYGameCore;
 using Controllers;
 using Timer = BJSYGameCore.Timer;
+using UIHelper = BJSYGameCore.UI.UIHelper;
+using Game;
+
 namespace UI
 {
     public partial class ActionNodeGraphPanel : MonoBehaviour
@@ -34,7 +37,8 @@ namespace UI
             (string name, Color color)[] inputViewData,
             ActionNodeValueInfo[] constsInfo,
             (string name, Color color)[] outputViewData,
-            string obsoleteMsg = null)
+            string obsoleteMsg = null,
+            string nodeKey = null)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
@@ -48,12 +52,14 @@ namespace UI
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
+            actionNodeItem.onClickHelpButton += onActionNodeClickHelpButton;
             actionNodeItem.switchToActionNode();
             actionNodeItem.setName(nodeName);
             actionNodeItem.setInputs(inputViewData);
             actionNodeItem.setConsts(constsInfo);
             actionNodeItem.setOutputs(outputViewData);
             actionNodeItem.setObsoleteMsg(obsoleteMsg);
+            actionNodeItem.setDocumentKey(nodeKey);
             return actionNodeItem;
         }
         /// <summary>
@@ -129,6 +135,7 @@ namespace UI
             actionNodeItem.setName(nodeName);
             return actionNodeItem;
         }
+
         /// <summary>
         /// 将节点的指定输出连接到目标节点的输入上
         /// </summary>
@@ -941,6 +948,12 @@ namespace UI
         {
             updateNodeLines(item);
         }
+
+        private void onActionNodeClickHelpButton(string key)
+        {
+            _nodeDocument?.Show(key);
+        }
+
         #endregion
         /// <summary>
         /// 在指定位置创建连线
@@ -1204,7 +1217,8 @@ namespace UI
         private bool _isTouchZooming;
         private ActionNodeSelectedKnob _currentSelectedKnob;
 
-
+        [SerializeField]
+        NodeDocument _nodeDocument;
         #endregion
     }
     public struct ActionNodeValueInfo

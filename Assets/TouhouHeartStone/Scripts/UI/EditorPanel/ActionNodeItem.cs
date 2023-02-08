@@ -256,6 +256,16 @@ namespace UI
             }
         }
 
+        /// <summary>
+        /// 设置帮助按钮对应的Key
+        /// </summary>
+        /// <param name="key"></param>
+        public void setDocumentKey(string key)
+        {
+            documentKey = key;
+            _helpBtn.gameObject.SetActive(key != null);
+        }
+
         public void updateTargetCheckerList(string[] targetTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
             UIHelper.updateList(_targetCheckerRoot, _targetCheckerTemplate, _targetCheckerList, targetCheckers.Length, (i, itemRect) =>
@@ -347,6 +357,7 @@ namespace UI
             _effectList.onClickItemRemoveButton += onClickPropertyModifierEffectRemoveButtonCallback;
             _effectList.onClickItemEditButton += onClickPropertyModifierEffectEditButtonCallback;
             _warningObj.onClick.AddListener(onClickObsoleteBtn);
+            _helpBtn.onClick.AddListener(onClickHelpBtn);
             //增益
             onAwake_Buff();
         }
@@ -445,6 +456,12 @@ namespace UI
             var ctrl = gameObject.GetComponentInParent<EffectEditorCtrl>();
             ctrl.game.ui.dialog?.ShowConfirm(ctrl.game.lang._(TITLE_NODE_OBSOLETE), ctrl.game.lang._(MESSAGE_NODE_OBSOLETE, obsoleteMessage));
         }
+
+        private void onClickHelpBtn()
+        {
+            onClickHelpButton?.Invoke(documentKey);
+        }
+
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
             eventData.Use();
@@ -498,6 +515,7 @@ namespace UI
         public event Action<ActionNodeItem, int> onClickRemoveTargetCheckerButton;
         public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         public event Action<ActionNodeItem> onUpdateTransform;
+        public event Action<string> onClickHelpButton;
         #endregion
         #region 属性字段
         public float posX
@@ -510,6 +528,7 @@ namespace UI
         }
 
         string obsoleteMessage = "";
+        string documentKey = "";
         private bool _dirty;
 
         [SerializeField]
@@ -518,6 +537,8 @@ namespace UI
         Image _nameBackground;
         [SerializeField]
         Button _warningObj;
+        [SerializeField]
+        Button _helpBtn;
         [SerializeField]
         RectTransform _inputRoot;
         [SerializeField]
