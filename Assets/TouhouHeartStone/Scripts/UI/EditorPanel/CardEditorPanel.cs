@@ -270,6 +270,7 @@ namespace UI
             _subnameInputField.gameObject.SetActive(false);
             _descInputField.DeactivateInputField();
             _editDescButton.gameObject.SetActive(true);
+            _descEndEditButton.gameObject.SetActive(false);
             _descInputField.gameObject.SetActive(false);
         }
         #region 私有方法
@@ -303,6 +304,7 @@ namespace UI
             _editLifeButton.onClick.AddListener(onEditLifeButtonClicked);
             _nameInputField.onEndEdit.AddListener(onNameInputFieldEndEdit);
             _subnameInputField.onEndEdit.AddListener(onSubNameInputFieldEndEdit);
+            _descEndEditButton.onClick.AddListener(onDescEndEditButtonClicked);
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
             _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChangedCallback);
             _tagInputField.onEndEdit.AddListener(onTagInputFieldEndEdit);
@@ -406,6 +408,7 @@ namespace UI
         private void onEditDescButtonClicked()
         {
             _editDescButton.gameObject.SetActive(false);
+            _descEndEditButton.gameObject.SetActive(true);
             _descInputField.gameObject.SetActive(true);
             _descInputField.SetTextWithoutNotify(_card.getDesc());
             _descInputField.Select();
@@ -493,10 +496,15 @@ namespace UI
             // Show background text
             _card.servantCardFace.subNameText.gameObject.SetActive(true);
         }
+        private void onDescEndEditButtonClicked()
+        {
+            _descInputField.DeactivateInputField();
+        }
         private void onDescInputFieldEndEdit(string text)
         {
-            _descInputField.gameObject.SetActive(false);
             _editDescButton.gameObject.SetActive(true);
+            _descEndEditButton.gameObject.SetActive(false);
+            _descInputField.gameObject.SetActive(false);
             onChangeDesc?.Invoke(text);
 
             // Show background text
@@ -706,6 +714,8 @@ namespace UI
         Dropdown _languageDropdown;
         [SerializeField]
         EffectList _effectList;
+
+        [Header("Edit Buttons")]
         [SerializeField]
         Button _editNameButton;
         [SerializeField]
@@ -722,10 +732,14 @@ namespace UI
         Button _editLifeButton;
         [SerializeField]
         Button _editImageButton;
+
+        [Header("Fields")]
         [SerializeField]
         InputField _nameInputField;
         [SerializeField]
         InputField _subnameInputField;
+        [SerializeField]
+        Button _descEndEditButton;
         [SerializeField]
         InputField _descInputField;
         [SerializeField]
