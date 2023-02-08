@@ -204,12 +204,14 @@ namespace TouhouHeartstone
         public static async Task<Card> askSelect(this CardEngine game, Player player, IEnumerable<Card> cards, int count = 3,
             string title = null)
         {
+            cards = cards.Where(c => c != null);
             if (cards.Count() < 1)
                 return null;
             if (count > 0)
                 cards = cards.randomTake(game, count).ToArray();
             game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => new DefineReference(c.define.cardPoolId, c.define.id)).ToArray(), title), float.MaxValue);
+            DefineReference[] cardArray = cards.Select(c => c.define.getDefineRef()).ToArray();
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
             Card selectedCard = cards.First(c => 
             {
                 var defRef = (res as DiscoverResponse).cardDefRef;
@@ -230,15 +232,19 @@ namespace TouhouHeartstone
         public static async Task<CardDefine> askSelect(this CardEngine game, Player player, IEnumerable<CardDefine> cards,
             int count = 3, string title = null)
         {
+            cards = cards.Where(c => c != null);
             if (cards.Count() < 1)
                 return null;
             if (count > 0)
                 cards = cards.randomTake(game, count).ToArray();
             game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
-            var res = await game.answers.ask(player.id, new DiscoverRequest(cards.Select(c => new DefineReference(c.cardPoolId, c.id)).ToArray(), title), float.MaxValue);
+            DefineReference[] cardArray = cards.Select(c => c.getDefineRef()).ToArray();
+            var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
             CardDefine selectedCard = cards.First(c =>
-                c.cardPoolId == (res as DiscoverResponse).cardDefRef.cardPoolId &&
-                c.id == (res as DiscoverResponse).cardDefRef.defineId);
+            {
+                var defRef = (res as DiscoverResponse).cardDefRef;
+                return c.cardPoolId == defRef.cardPoolId && c.id == defRef.defineId;
+            });
             game.logger.logTrace(player + "选择" + selectedCard);
             return selectedCard;
         }
