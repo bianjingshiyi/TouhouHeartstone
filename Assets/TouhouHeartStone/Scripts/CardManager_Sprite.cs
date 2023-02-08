@@ -31,8 +31,8 @@ namespace Game
                         Sprite sprite = await getSpriteFromCache(path);
                         if (sprite == null)
                         {
-                            Texture2D texture = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
-                            texture = ResizeImage(texture, width, height);
+                            Texture2D orig = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
+                            var texture = ResizeAndCropImage(orig, width, height);
                             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
                             //缓存外部图片
                             addSpriteToCache(path, sprite);
@@ -76,8 +76,8 @@ namespace Game
                         Sprite sprite = await getSpriteFromCache(path);
                         if (sprite == null)
                         {
-                            Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
-                            texture = ResizeImage(texture, width, height);
+                            Texture2D orig = DownloadHandlerTexture.GetContent(uwr);
+                            var texture = ResizeAndCropImage(orig, width, height);
                             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
                             //缓存外部图片
                             addSpriteToCache(path, sprite);
@@ -164,7 +164,7 @@ namespace Game
                 }
             }
         }
-        public async Task<string> saveImage(long cardPoolId, Texture2D texture, bool saveAsJpg = false, int jpgQuality = 80)
+        public async Task<string> saveImage(long cardPoolId, Texture2D texture, bool saveAsJpg = true, int jpgQuality = 90)
         {
             byte[] bytes = saveAsJpg ? texture.EncodeToJPG(jpgQuality) : texture.EncodeToPNG();
             string hash = calcHashString(bytes);
@@ -448,6 +448,51 @@ namespace Game
             result.Apply();
             return result;
         }
+
+        /// <summary>
+        /// 以指定坐标裁剪图像
+        /// </summary>
+        /// <remarks>
+        /// 若裁剪大小大于原图像大小，则会返回小于目标大小的图像
+        /// </remarks>
+        /// <param name="image"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
+        /// <returns></returns>
+        public static Texture2D CropImage(Texture2D image, int x, int y, int w, int h)
+        {
+            if (x + w > image.width)
+                w = image.width - x;
+            if (y + h > image.height)
+                h = image.height - y;
+
+            Texture2D result = new Texture2D(w, h);
+            for (int i = 0; i < h; i++)
+            {
+                for (int j = 0; j < w; j++)
+                {
+                    result.SetPixel(j, i, image.GetPixel(j + x, i + y));
+                }
+            }
+            result.Apply();
+            return result;
+        }
+
+        /// <summary>
+        /// 缩放并裁剪到中间位置
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="maxWidth"></param>
+        /// <param name="maxHeight"></param>
+        /// <returns></returns>
+        public static Texture2D ResizeAndCropImage(Texture2D image, int maxWidth, int maxHeight)
+        {
+            var resized = ResizeImage(image, maxWidth, maxHeight);
+            return CropImage(resized, (resized.width - maxWidth) / 2, (resized.height - maxHeight) / 2, maxWidth, maxHeight);
+        }
+
         #endregion
         #region 私有方法
         private void onAwake_Sprite()
