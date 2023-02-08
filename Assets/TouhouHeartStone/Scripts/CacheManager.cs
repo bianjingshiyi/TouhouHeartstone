@@ -175,6 +175,14 @@ namespace Game
             size = info.Length;
             return true;
         } 
+        /// <summary>
+        /// 获取当前缓存的大小。
+        /// </summary>
+        /// <returns>当前缓存的大小。</returns>
+        public long GetCacheSize()
+        {
+            return totalSize;
+        }
         #endregion
 
         #region LRU

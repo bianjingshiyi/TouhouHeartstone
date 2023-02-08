@@ -74,7 +74,11 @@ namespace UI
             }
             _clearCacheButton.onClick.AddListener(() =>
             {
-                main.ui.dialog.ShowQuestion(main.lang._(StringTable.WARNING), main.lang._(SETTING_CLEAR_CACHE_WARNING), () =>
+                string desc = main.lang._(SETTING_CLEAR_CACHE_WARNING) + "\n" + 
+                main.lang._(SETTING_CLEAR_CACHE_SIZE, (double)main.cache.GetCacheSize() / 1024 / 1024) + "\n" + 
+                main.lang._(SETTING_CLEAR_CACHE_WARNING_2);
+
+                main.ui.dialog.ShowQuestion(main.lang._(StringTable.WARNING), desc, () =>
                 {
                     main.cache.ClearCache(main.fileManager);
                     main.ui.dialog.ShowConfirm(main.lang._(StringTable.HINT_TITLE), main.lang._(SETTING_CACHE_CLEARED));
@@ -139,7 +143,11 @@ namespace UI
         [TranslateMsg("缓存大小单位")]
         const string CACHE_SIZE = "{0}G";
         [TranslateMsg("设置界面-删除缓存前提示")]
-        const string SETTING_CLEAR_CACHE_WARNING = "你确定要清除所有的卡池缓存文件吗？\n清除之后需要重新下载来自网络的卡池文件";
+        const string SETTING_CLEAR_CACHE_WARNING = "你确定要清除所有的卡池缓存文件吗？";
+        [TranslateMsg("设置界面-删除缓存前提示")]
+        const string SETTING_CLEAR_CACHE_WARNING_2 = "清除之后需要重新下载来自网络的卡池文件";
+        [TranslateMsg("设置界面-删除缓存前提示（{0}是当前缓存的大小（单位为GB））")]
+        const string SETTING_CLEAR_CACHE_SIZE = "当前缓存大小：{0:0.00}GB";
         [TranslateMsg("设置界面-删除缓存后提示")]
         const string SETTING_CACHE_CLEARED = "缓存文件已清除";
 
