@@ -12,72 +12,6 @@ namespace Game
 
     public static partial class EffectEditorLibrary
     {
-        private static Dictionary<EditorPileName, string> pileNameDict = new Dictionary<EditorPileName, string>()
-        {
-            { EditorPileName.Master, PILE.MASTER },
-            { EditorPileName.Skill, PILE.SKILL },
-            { EditorPileName.Deck, PILE.DECK },
-            { EditorPileName.Hand, PILE.HAND },
-            { EditorPileName.Init, PILE.INIT },
-            { EditorPileName.Field, PILE.FIELD },
-            { EditorPileName.Grave, PILE.GRAVE },
-            { EditorPileName.Warp, PILE.WARP },
-            { EditorPileName.Head, PILE.HEAD },
-            { EditorPileName.Item, PILE.ITEM },
-        };
-
-
-        [TranslateMsg("编辑器-节点名称")]
-        private const string EDIOTR_NODE_NAME_SET_TEMP_VARIABLE = "设置临时变量";
-        [TranslateMsg("编辑器-节点名称")]
-        private const string EDIOTR_NODE_NAME_GET_TEMP_VARIABLE = "获取临时变量";
-        [TranslateMsg("编辑器-临时变量节点-参数名称")]
-        private const string EDITOR_PARAM_NAME_VARIABLE_NAME = "变量名称";
-        /// <summary>
-        /// 设置临时变量
-        /// </summary>
-        /// <param name="scope"></param>
-        /// <param name="variableName"></param>
-        /// <param name="value"></param>
-        [ActionNodeMethod(EDIOTR_NODE_NAME_SET_TEMP_VARIABLE, null)]
-        public static void setTempVariable(Scope scope,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] string variableName,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
-        {
-            var curScope = scope;
-            var key = "TEMPVAR_" + variableName;
-            while (curScope != null)
-            {
-                if (curScope.localVarDict.ContainsKey(key))
-                {
-                    curScope.localVarDict[key] = value;
-                    return;
-                }
-                curScope = curScope.parentScope;
-            }
-            scope.localVarDict[key] = value;
-        }
-        /// <summary>
-        /// 获取临时变量
-        /// </summary>
-        /// <param name="scope"></param>
-        /// <param name="variableName"></param>
-        /// <param name="value"></param>
-        [ActionNodeMethod(EDIOTR_NODE_NAME_GET_TEMP_VARIABLE, null)]
-        public static object getTempVariable(Scope scope,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] string variableName)
-        {
-            var curScope = scope;
-            var key = "TEMPVAR_" + variableName;
-            while (curScope != null)
-            {
-                if (curScope.localVarDict.TryGetValue(key, out object value))
-                    return value;
-                curScope = curScope.parentScope;
-            }
-            return null;
-        }
-
         [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION, null)]
         public static Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)] bool isTrue,
@@ -367,13 +301,9 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool checkCardPile(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE, isConst: true)] EditorPileName pileName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE, isConst: true)] string pileName)
         {
-            if (pileNameDict.TryGetValue(pileName, out string pile))
-            {
-                return card?.pile?.name == pile;
-            }
-            return false;
+            return card?.pile?.name == pileName;
         }
         #endregion
         //  与增益相关
@@ -901,39 +831,18 @@ namespace Game
         }
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_DISTINCT_COLLECTION = "集合去重";
-        [TranslateMsg("编辑器-集合去重节点-参数名称")]
-        public const string EDITOR_PARAM_NAME_DISTINCT_KEY = "判断依据";
         /// <summary>
-        /// 反转集合
+        /// 集合去重
         /// </summary>
         [ActionNodeMethod(EDITOR_NODE_NAME_DISTINCT_COLLECTION, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
         [return :ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
-        public static Array distinct(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
-            [ActionNodeParam(EDITOR_PARAM_NAME_DISTINCT_KEY)] ActionNode keySelector,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
+        public static Array distinct(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array)
         {
             if (array == null)
                 return null;
-            if (keySelector == null)
-                return array;
 
-
-            object keySelect(object x)
-            {
-                scope.setOutParamValue(0, x);
-                Scope newScope = new Scope(scope);
-                return game.getActionReturnValueAsync<object>(card, buff, eventArg, keySelector, scope: newScope).Result;
-            }
-
-            List<object> results = new List<object>();
-            HashSet<object> hash = new HashSet<object>();
-            foreach (var ele in array)
-            {
-                if (hash.Add(keySelect(ele)))
-                    results.Add(ele);
-            }
-            return results.ToArray();
+            return array.Distinct().ToArray();
         }
         #endregion
 
@@ -982,18 +891,5 @@ namespace Game
                 eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
         }
         #endregion
-    }
-    public enum EditorPileName
-    {
-        Master,
-        Skill,
-        Deck,
-        Hand,
-        Init,
-        Field,
-        Grave,
-        Warp,
-        Head,
-        Item
     }
 }
