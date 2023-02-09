@@ -208,7 +208,6 @@ namespace Game
             {
                 var remain = string.Join("\n", lines.Skip(1));
                 var cardPool = parseCardPool_v0_12(remain);
-                updateActionDefine_v0_2(cardPool, cardPoolId);
                 return (cardPoolInfo, cardPool);
             }
             else if (cardPoolInfo.version == CARD_POOL_VERSION_0_1)
@@ -1144,23 +1143,6 @@ namespace Game
             }
             return cardPool;
         }
-
-        /// <summary>
-        /// 更新自定义ActionDefine的
-        /// </summary>
-        /// <param name="cardPool"></param>
-        /// <param name="cardPoolID"></param>
-        void updateActionDefine_v0_2(CardPool cardPool, long cardPoolID)
-        {
-            if (!_runtimeGenActDefDict.TryGetValue(cardPoolID, out var actionDefineList))
-            {
-                actionDefineList = new List<GeneratedActionDefine>();
-                _runtimeGenActDefDict.Add(cardPoolID, actionDefineList);
-            }
-            actionDefineList.Clear();
-            actionDefineList.AddRange(cardPool.actionDefineList.ConvertAll(s => s.toGeneratedActionDefine(game.editor.getTypeByName)));
-        }
-
         [Obsolete("Use parseCardPool_v1 and addCardPool instead.")]
         private async Task<CardPool> loadCardPool_v1(string path, CardPoolInfo cardPoolInfo)
         {

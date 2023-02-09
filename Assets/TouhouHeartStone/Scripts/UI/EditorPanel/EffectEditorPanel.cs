@@ -260,7 +260,7 @@ namespace UI
         }
         private void onConstListItemNameInputFieldValueChangedCallback(EffectEditorValueDefineItem item, string name)
         {
-            onConstListItemNameChanged?.Invoke(_inputList.IndexOf(item.transform as RectTransform), name);
+            onConstListItemNameChanged?.Invoke(_constList.IndexOf(item.transform as RectTransform), name);
         }
         private void onConstListItemDeleteButtonClickedCallback(EffectEditorValueDefineItem item)
         {

@@ -1287,20 +1287,20 @@ namespace Controllers
             Action<ActionNode> act = a => traversedNodes.Add(a);
             if (_trigger != null)
             {
-                _trigger.traverse(act);
+                _trigger.traverse(act, traversedNodes);
             }
             else if (_generatedActionDefine != null)
             {
-                _generatedActionDefine.traverse(act);
+                _generatedActionDefine.traverse(act, traversedNodes);
             }
             else if (_effect != null)
             {
                 if (rootActionNode != null)
-                    rootActionNode.traverse(act);
+                    rootActionNode.traverse(act, traversedNodes);
             }
             else if (valueRef != null)
             {
-                valueRef.traverse(act);
+                valueRef.traverse(act, traversedNodes);
             }
 
             var freeNodes = _actionNodeList.Except(traversedNodes);
@@ -2235,6 +2235,8 @@ namespace Controllers
         private int getOutputCount(ActionNode actionNode)
         {
             ActionDefine actionDefine = getActionDefine(actionNode.defineName);
+            if (actionDefine == null)
+                return 0;
             return actionDefine.outputs.Length;
         }
         private int getBranchesCount(ActionDefine actionDefine)

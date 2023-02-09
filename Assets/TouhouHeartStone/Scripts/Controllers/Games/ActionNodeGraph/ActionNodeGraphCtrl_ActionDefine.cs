@@ -409,7 +409,7 @@ namespace Controllers
 
         private bool validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex, bool showErrorTip = true)
         {
-            // 尝试连接：自定义动作入口节点（值输出）----动作节点（前置动作）
+            // 尝试连接：自定义动作入口节点（值输出）----出口节点（前置动作）
             if (inputIndex < 1)
             {
                 //值输出只能与值输入相互连接

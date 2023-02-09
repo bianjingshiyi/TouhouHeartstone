@@ -54,10 +54,9 @@ namespace Game
             {
                 cardDefineList = cardDefines,
                 buffDefineList = buffDefines,
-                generatedActionDefineList = genActionDefines,
+                actionDefineList = genActionDefines,
                 cardSkinList = cardSkinList,
                 buffSkinList = buffSkinList,
-                actionDefineList = actionDefineList.ConvertAll(a => a.toGeneratedActionDefine(typeFinder))
                 actionNodeGraphInfoList = nodeGraphs,
             };
         }
