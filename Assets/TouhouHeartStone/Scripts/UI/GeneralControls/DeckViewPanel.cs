@@ -51,6 +51,23 @@ namespace UI
             });
         }
 
+        public void updateCardPools((string name, Sprite image, DeckListItem.Mode mode)[] deckViewData)
+        {
+            UIHelper.updateList(_deckListRoot, _deckListItemTemplate, _deckItemList, deckViewData.Length, (i, item) =>
+            {
+                DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
+                deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
+                deckListItem.SetMode(deckViewData[i].mode);
+            }, item =>
+            {
+                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
+                deckListItem.onClick += onClickDeckListItemCallback;
+            }, item =>
+            {
+                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
+                deckListItem.onClick -= onClickDeckListItemCallback;
+            });
+        }
         #endregion
 
         #region 私有方法

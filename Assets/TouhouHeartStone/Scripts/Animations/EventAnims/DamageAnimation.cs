@@ -1,9 +1,6 @@
 ﻿using TouhouHeartstone;
-using BJSYGameCore;
-using System.Linq;
 using UI;
 using System.Collections.Generic;
-using Card = TouhouCardEngine.Card;
 namespace Game
 {
     class DamageAnimation : EventAnimation<THHCard.DamageEventArg>
@@ -14,32 +11,23 @@ namespace Game
             if (_animList == null)
             {
                 _animList = new List<AnimAnim>();
-                foreach (var card in eventArg.infoDic.Keys)
+                var card = eventArg.target;
+                if (table.tryGetServant(card, out var servant))
                 {
-                    if (!eventArg.infoDic.TryGetValue(card, out var info))
-                    {
-                        continue;
-                    }
-                    if (table.tryGetServant(card, out var servant))
-                    {
-                        servant.damageText.text = "-" + info.damagedValue;
-                        servant.lifePropNumber.text.text = info.currentLife.ToString();
-                        servant.onDamage.invokeBeforeAnim();
-                        _animList.Add(new AnimAnim(servant.servantAnimator, servant.onDamage.animName));
-                    }
-                    else if (table.tryGetMaster(card, out Master master))
-                    {
-                        master.DamageText.text = "-" + info.damagedValue;
-                        master.LifePropNumber.text.text = info.currentLife.ToString();
-                        master.onDamage.invokeBeforeAnim();
-                        _animList.Add(new AnimAnim(master.animator, master.onDamage.animName));
-                    }
-                    else if (table.tryGetItem(card, out var item))
-                    {
-                        item.DurabilityPropNumber.text.text = info.currentLife.ToString();
-                        item.onLifeDown.invokeBeforeAnim();
-                        _animList.Add(new AnimAnim(item.animator, item.onLifeDown.animName));
-                    }
+                    servant.damageText.text = "-" + eventArg.damagedValue;
+                    servant.onDamage.invokeBeforeAnim();
+                    _animList.Add(new AnimAnim(servant.servantAnimator, servant.onDamage.animName));
+                }
+                else if (table.tryGetMaster(card, out Master master))
+                {
+                    master.DamageText.text = "-" + eventArg.damagedValue;
+                    master.onDamage.invokeBeforeAnim();
+                    _animList.Add(new AnimAnim(master.animator, master.onDamage.animName));
+                }
+                else if (table.tryGetItem(card, out var item))
+                {
+                    item.onLifeDown.invokeBeforeAnim();
+                    _animList.Add(new AnimAnim(item.animator, item.onLifeDown.animName));
                 }
             }
             bool isAllAnimDone = true;
@@ -50,20 +38,19 @@ namespace Game
             }
             if (!isAllAnimDone)
                 return false;
-            foreach (var card in eventArg.infoDic.Keys)
+
+            var target = eventArg.target;
+            if (table.tryGetServant(target, out var animServant))
             {
-                if (table.tryGetServant(card, out var servant))
-                {
-                    servant.onDamage.invokeAfterAnim();
-                }
-                else if (table.tryGetMaster(card, out Master master))
-                {
-                    master.onDamage.invokeAfterAnim();
-                }
-                else if (table.tryGetItem(card, out var item))
-                {
-                    item.onLifeDown.invokeAfterAnim();
-                }
+                animServant.onDamage.invokeAfterAnim();
+            }
+            else if (table.tryGetMaster(target, out Master animMaster))
+            {
+                animMaster.onDamage.invokeAfterAnim();
+            }
+            else if (table.tryGetItem(target, out var animItem))
+            {
+                animItem.onLifeDown.invokeAfterAnim();
             }
             return true;
         }

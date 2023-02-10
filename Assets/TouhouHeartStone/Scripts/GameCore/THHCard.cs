@@ -1290,11 +1290,10 @@ namespace TouhouHeartstone
                     card = arg.card;
                     target = arg.target;
                     game.logger.log(card + "攻击" + target);
-                    await damage(game, new Dictionary<Card, DamageEventArg.Info>()
-                    {
-                        { card, new DamageEventArg.Info(target.getAttack(game),target) },
-                        { target, new DamageEventArg.Info(card.getAttack(game),card) }
-                    });
+                    int targetAttack = target.getAttack(game);
+                    int cardAttack = card.getAttack(game);
+                    await card.damage(game, target, targetAttack);
+                    await target.damage(game, card, cardAttack);
                     //消耗耐久
                     foreach (var p in game.players)
                     {
@@ -1389,115 +1388,84 @@ namespace TouhouHeartstone
         #region 动作定义
         [ActionNodeMethod("Damage", "Card")]
         [return: ActionNodeParam("DamageEvent")]
-        public static Task<DamageEventArg> damage([ActionNodeParam("Card")] this Card card, CardEngine game, [ActionNodeParam("DamageSource")] Card source, [ActionNodeParam("Amount")] int value)
+        public static Task<DamageEventArg> damage(
+            [ActionNodeParam("Card")] this Card card, CardEngine game,
+            [ActionNodeParam("DamageSource")] Card source, 
+            [ActionNodeParam("Amount")] int value)
         {
-            return damage(game, new Dictionary<Card, DamageEventArg.Info>()
+            if (card == null || value <= 0)
+                return Task.FromResult<DamageEventArg>(null);
+            var eventArg = new DamageEventArg(card, value, source);
+            return game.triggers.doEvent(eventArg, async arg =>
             {
-                { card, new DamageEventArg.Info(value,source) }
-            });
-        }
-        #endregion
-        public static async Task<DamageEventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
-        {
-            if (cards.Count() <= 0)
-            {
-                return default;
-            }
-            return await damage(game, cards.Where(p => p != null).ToDictionary(c => c, c => new DamageEventArg.Info(value, source)));
-        }
-        public static Task<DamageEventArg> damage(CardEngine game, Dictionary<Card, DamageEventArg.Info> damageInfoDic)
-        {
-            if (!damageInfoDic.Any())
-            {
-                return default;
-            }
-            return game.triggers.doEvent(new DamageEventArg() { infoDic = damageInfoDic }, async arg =>
-            {
-                damageInfoDic = arg.infoDic;
-                List<Card> removeKeys = new List<Card>();
-                foreach (Card card in damageInfoDic.Keys)
+                Card target = arg.target;
+                Card src = arg.source;
+                int dmgValue = arg.damageValue;
+                if (src != null && src.isStealth(game))
                 {
-                    if (card == null)
-                        continue;
-                    DamageEventArg.Info info = damageInfoDic[card];
-                    Card source = info.source;
-                    int value = info.damageValue;
-                    if (source != null && source.isStealth(game))
+                    src.setStealth(game, false);
+                }
+                if (dmgValue < 1)
+                {
+                    arg.isCanceled = true;
+                }
+                else if (target.isImmunity(game))
+                {
+                    arg.isCanceled = true;
+                    game.logger.log(target + "免疫，不受伤害");
+                }
+                else if (target.isShield(game))
+                {
+                    arg.isCanceled = true;
+                    game.logger.log(target + "受到伤害，失去圣盾");
+                    target.setShield(game, false);
+                }
+                else
+                {
+                    int damageReduce = target.getDamageReduce(game);
+                    int damage;
+                    if (damageReduce > 0)
                     {
-                        source.setStealth(game, false);
-                    }
-                    if (value < 1)
-                    {
-                        removeKeys.Add(card);
-                    }
-                    else if (card.isImmunity(game))
-                    {
-                        game.logger.log(card + "免疫，不受伤害");
-                        removeKeys.Add(card);
-                    }
-                    else if (card.isShield(game))
-                    {
-                        game.logger.log(card + "受到伤害，失去圣盾");
-                        card.setShield(game, false);
-                        removeKeys.Add(card);
+                        damage = dmgValue - damageReduce;
+                        game.logger.log(target + "的伤害抵消" + damageReduce + "使伤害" + dmgValue + "=>" + damage);
                     }
                     else
+                        damage = dmgValue;
+                    if (damage > 0)
                     {
-                        int damageReduce = card.getDamageReduce(game);
-                        int damage;
-                        if (damageReduce > 0)
+                        int armor = target.getArmor(game);
+                        if (armor > 0)
                         {
-                            damage = value - damageReduce;
-                            game.logger.log(card + "的伤害抵消" + damageReduce + "使伤害" + value + "=>" + damage);
-                        }
-                        else
-                            damage = value;
-                        if (damage > 0)
-                        {
-                            int armor = card.getArmor(game);
-                            if (armor > 0)
+                            if (armor >= damage)
                             {
-                                if (armor >= damage)
-                                {
-                                    await card.loseArmor(game, damage);
-                                    game.logger.log(card + "受到" + damage + "点伤害，护甲=>" + card.getArmor(game));
-                                    await onDealKeywords(game, source, card, damage);
-                                    info.damagedValue = damage;
-                                    info.currentArmor = card.getArmor(game);
-                                    info.currentLife = card.getCurrentLife(game);
-                                }
-                                else
-                                {
-                                    int leakDamage = damage - armor;
-                                    await card.loseArmor(game, armor);
-                                    await card.setCurrentLife(game, card.getCurrentLife(game) - leakDamage);
-                                    game.logger.log(card + "受到" + damage + "点伤害，护甲=>" + card.getArmor(game) + "，生命值=>" + card.getCurrentLife(game));
-                                    await onDealKeywords(game, source, card, damage);
-                                    info.damagedValue = damage;
-                                    info.currentArmor = card.getArmor(game);
-                                    info.currentLife = card.getLife(game);
-                                }
+                                await target.loseArmor(game, damage);
+                                game.logger.log(target + "受到" + damage + "点伤害，护甲=>" + target.getArmor(game));
+                                await onDealKeywords(game, src, target, damage);
+                                arg.damagedValue = damage;
                             }
                             else
                             {
-                                await card.setCurrentLife(game, card.getCurrentLife(game) - damage);
-                                game.logger.log(card + "受到" + damage + "点伤害，生命值=>" + card.getCurrentLife(game));
-                                await onDealKeywords(game, source, card, damage);
-                                info.damagedValue = damage;
-                                info.currentArmor = card.getArmor(game);
-                                info.currentLife = card.getCurrentLife(game);
+                                int leakDamage = damage - armor;
+                                await target.loseArmor(game, armor);
+                                await target.setCurrentLife(game, target.getCurrentLife(game) - leakDamage);
+                                game.logger.log(target + "受到" + damage + "点伤害，护甲=>" + target.getArmor(game) + "，生命值=>" + target.getCurrentLife(game));
+                                await onDealKeywords(game, src, target, damage);
+                                arg.damagedValue = damage;
                             }
                         }
                         else
                         {
-                            game.logger.log(card + "的伤害" + value + "被减伤" + damageReduce + "抵消");
-                            removeKeys.Add(card);
+                            await target.setCurrentLife(game, target.getCurrentLife(game) - damage);
+                            game.logger.log(target + "受到" + damage + "点伤害，生命值=>" + target.getCurrentLife(game));
+                            await onDealKeywords(game, src, target, damage);
+                            arg.damagedValue = damage;
                         }
                     }
-                }
-                foreach (var key in removeKeys)
-                {
-                    damageInfoDic.Remove(key);
+                    else
+                    {
+                        arg.isCanceled = true;
+                        game.logger.log(target + "的伤害" + dmgValue + "被减伤" + damageReduce + "抵消");
+                    }
                 }
             });
             async Task onDealKeywords(CardEngine g, Card s, Card c, int d)
@@ -1522,6 +1490,24 @@ namespace TouhouHeartstone
                 }
             }
         }
+        #endregion
+        public static async Task<DamageEventArg[]> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        {
+            if (cards.Count() <= 0)
+            {
+                return default;
+            }
+            List<DamageEventArg> args = new List<DamageEventArg>();
+            foreach (var target in cards.Where(p => p != null))
+            {
+                args.Add(await target.damage(game, source, value));
+            }
+            return args.ToArray();
+        }
+        public static Task<DamageEventArg> damage(CardEngine game, DamageEventArg.Info damageInfo)
+        {
+            return damage(damageInfo.target, game, damageInfo.source, damageInfo.damageValue);
+        }
         public static async Task<DamageEventArg[]> damageByRandom(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
             List<DamageEventArg> list = new List<DamageEventArg>();
@@ -1535,7 +1521,7 @@ namespace TouhouHeartstone
             }
             return list.ToArray();
         }
-        public static Task<DamageEventArg> damageByRandomCount(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
+        public static Task<DamageEventArg[]> damageByRandomCount(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
         {
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
@@ -1544,20 +1530,50 @@ namespace TouhouHeartstone
         }
         public class DamageEventArg : EventArg, IDescribableEventArg
         {
-            public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
+            public Card target
+            {
+                get { return getVar<Card>("卡牌"); }
+                set { setVar("卡牌", value); }
+            }
+            public Card source
+            {
+                get { return getVar<Card>("伤害来源"); }
+                set { setVar("伤害来源", value); }
+            }
+            public int damageValue
+            {
+                get { return getVar<int>("伤害值"); }
+                set { setVar("伤害值", value); }
+            }
+            public int damagedValue
+            {
+                get { return getVar<int>("实际伤害值"); }
+                set { setVar("实际伤害值", value); }
+            }
+            public DamageEventArg()
+            {
+
+            }
+            public DamageEventArg(Card target, int value, Card source)
+            {
+                this.target = target;
+                this.source = source;
+                damageValue = value;
+                damagedValue = 0;
+            }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                return infoDic.Count > 0 ? infoDic.First().Value.source : null;
+                return source;
             }
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return infoDic.Keys.ToArray();
+                return new ICard[] { target };
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return string.Join("，", infoDic.Select(p => p.Value.source != null ?
-                    p.Value.source.getFormatString() + "对" + p.Key.getFormatString() + "造成" + p.Value.damagedValue + "点伤害" :
-                    p.Key.getFormatString() + "受到" + p.Value.damagedValue + "点伤害"));
+                return source != null ?
+                    source.getFormatString() + "对" + target.getFormatString() + "造成" + damagedValue + "点伤害" :
+                    target.getFormatString() + "受到" + damagedValue + "点伤害";
             }
 
             [MukioI18n.TranslateMsg("{0}是卡，{1}是伤害值")]
@@ -1566,72 +1582,54 @@ namespace TouhouHeartstone
             const string TEMPLATE_ATK = "{0} 对 {1} 造成 {2} 点伤害";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
-                if (infoDic.Count == 1)
-                {
-                    return infoDic.First().Value.source != null ? TEMPLATE_ATK : TEMPLATE_RECV;
-                }
-                // todo: 暂时不支持列表
-                IDescribableEventArg arg = this;
-                return arg.toString(game, viewer);
+                return source != null ? TEMPLATE_ATK : TEMPLATE_RECV;
             }
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                if (infoDic.Count == 1)
+                if (source != null)
                 {
-                    var kv = infoDic.First();
-                    if (kv.Value.source != null)
-                    {
-                        return new object[] {
-                            kv.Value.source.getFormatString(),
-                            kv.Key.getFormatString(),
-                            kv.Value.damagedValue
-                        };
-                    }
-                    else
-                    {
-                        return new object[] {
-                            kv.Key.getFormatString(),
-                            kv.Value.damagedValue
-                        };
-                    }
+                    return new object[] {
+                        source.getFormatString(),
+                        target.getFormatString(),
+                        damagedValue
+                    };
                 }
-                return new object[0];
+                else
+                {
+                    return new object[] {
+                        target.getFormatString(),
+                        damagedValue
+                    };
+                }
             }
-
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "伤害来源",type=typeof(Card)},
+                    new EventVariableInfo(){name = "伤害值",type=typeof(int)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = "卡牌",type=typeof(Card)},
+                    new EventVariableInfo(){name = "伤害来源",type=typeof(Card)},
+                    new EventVariableInfo(){name = "伤害值",type=typeof(int)},
+                    new EventVariableInfo(){name = "实际伤害值",type=typeof(int)}
+                };
+            }
             public class Info
             {
+                public Card target;
                 public Card source;
                 public int damageValue;
                 public int damagedValue = 0;
                 public int currentArmor = 0;
                 public int currentLife = 0;
-                public Info(int damage, Card source)
-                {
-                    damageValue = damage;
-                    this.source = source;
-                }
             }
-
-            //public override EventVariableInfo[] getBeforeEventVarInfos()
-            //{
-            //    return new EventVariableInfo[]
-            //    {
-            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
-            //        new EventVariableInfo(){name = "BaseValue",type=typeof(int)}
-            //    };
-            //}
-            //public override EventVariableInfo[] getAfterEventVarInfos()
-            //{
-            //    return new EventVariableInfo[]
-            //    {
-            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
-            //        new EventVariableInfo(){name = "BaseValue",type=typeof(int)},
-            //        new EventVariableInfo(){name = "DamagedValue",type=typeof(int)},
-            //        new EventVariableInfo(){name = "CurrentArmor",type=typeof(int)},
-            //        new EventVariableInfo(){name = "CurrentLife",type=typeof(int)}
-            //    };
-            //}
-
         }
 
         public static bool isDamage(this Card card, CardEngine game)

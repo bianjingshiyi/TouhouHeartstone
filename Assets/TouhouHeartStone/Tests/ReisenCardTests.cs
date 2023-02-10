@@ -454,11 +454,11 @@ namespace Tests
             you.cmdUse<FieldUltraRed>(game);
             you.cmdUse<FieldUltraRed>(game);
             you.cmdUse(game, you.getSkill());
-            Assert.AreEqual(8, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic.First().Value.damagedValue);
+            Assert.AreEqual(8, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().damagedValue);
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getSkill());
-            Assert.AreEqual(2, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic.First().Value.damagedValue);
+            Assert.AreEqual(2, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().damagedValue);
         }
     }
 }

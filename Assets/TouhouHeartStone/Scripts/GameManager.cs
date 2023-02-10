@@ -527,23 +527,10 @@ namespace Game
                     item.BorderImage.sprite = attack.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.DamageEventArg damage:
-                    if (damage.infoDic.Count > 0)
-                    {
-                        item.IconImage.sprite = item.damageIcon;
-                        var firstDamage = damage.infoDic.First();
-                        var card = firstDamage.Key;
-                        var damageInfo = firstDamage.Value;
-                        item.Text.text = "-" + damageInfo.damagedValue;
-                        item.Image.sprite = getManager<TableManager>().getSkin(card).image;
-                        item.BorderImage.sprite = card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                    }
-                    else
-                    {
-                        item.IconImage.sprite = item.damageIcon;
-                        item.Text.text = "-0";
-                        item.Image.sprite = null;
-                        item.BorderImage.sprite = null;
-                    }
+                    item.IconImage.sprite = item.damageIcon;
+                    item.Text.text = "-" + damage.damagedValue;
+                    item.Image.sprite = getManager<TableManager>().getSkin(damage.target).image;
+                    item.BorderImage.sprite = damage.target.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.SetArmorEventArg armor:
                     item.IconImage.sprite = item.armorIcon;

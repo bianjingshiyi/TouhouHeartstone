@@ -431,15 +431,10 @@ namespace TouhouHeartstone.Builtin
             new THHEffectBefore<THHCard.DamageEventArg>(PileFlag.field,
                 (g, c, a) =>
                 {
-                    return a.infoDic.Any(p => p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill());
+                    return a.source.getOwner() == c.getOwner() && a.source.isSkill();
                 }, (g, c, a) =>
                 {
-                    foreach (var p in a.infoDic)
-                    {
-                        if (p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill())
-                            p.Value.damageValue *= 2;
-                    }
-
+                    a.damageValue *= 2;
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.HealEventArg>(PileFlag.field,
@@ -670,16 +665,10 @@ namespace TouhouHeartstone.Builtin
                 new THHEffectBefore<THHCard.DamageEventArg>(PileFlag.field,
                     (g, c, b, a) =>
                     {
-                        return a.infoDic.Any(p =>
-                            p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill());
+                        return a.source.getOwner() == c.getOwner() && a.source.isSkill();
                     }, (g, c, b, a) =>
                      {
-                         foreach (var p in a.infoDic)
-                         {
-                             if (p.Value.source.getOwner() == c.getOwner() && p.Value.source.isSkill())
-                                 p.Value.damageValue *= 2;
-                         }
-
+                         a.damageValue *= 2;
                          return Task.CompletedTask;
                      }),
                 new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.master,

@@ -1013,14 +1013,10 @@ namespace Tests
             new THHEffectBefore<THHCard.DamageEventArg>(PileFlag.field,
                 (g, c, a) =>
                 {
-                    return a.infoDic.Any(p=>p.Value.source.getOwner() == c.getOwner() && (p.Value.source.isSkill() || p.Value.source.isSpell()));
+                    return a.source.getOwner() == c.getOwner() && (a.source.isSkill() || a.source.isSpell());
                 },null,(g,c,a, t)=>
                 {
-                    foreach (var p in a.infoDic)
-                    {
-                        if(p.Value.source.getOwner() == c.getOwner() && (p.Value.source.isSkill() || p.Value.source.isSpell()))
-                            p.Value.damageValue *= 2;
-                    }
+                    a.damageValue *= 2;
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.HealEventArg>(PileFlag.field,

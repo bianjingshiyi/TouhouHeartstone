@@ -158,8 +158,7 @@ namespace Tests
             THHCard.DamageEventArg damage =
                 game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as
                     THHCard.DamageEventArg;
-            Assert.AreEqual(3, damage.infoDic.Count);
-            Assert.AreEqual(3, damage.infoDic.First().Value.damagedValue);
+            Assert.AreEqual(3, damage.damagedValue);
             Assert.AreEqual(1, game.getSortedPlayers()[0].getField().count);
         }
 
@@ -191,7 +190,7 @@ namespace Tests
             var damage =
                 game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DamageEventArg) as
                     THHCard.DamageEventArg; //这会产生一个伤害事件
-            Assert.AreEqual(1, damage.infoDic.First().Value.damagedValue); //伤害值为1
+            Assert.AreEqual(1, damage.damagedValue); //伤害值为1
 
             //大概就是这样了，稍微测试一下保证每一张卡都在正常工作吧，能减少很多bug。
             //出了个随从重名的小问题，测试结果看看Log还是挺正常的，那就没有问题了。

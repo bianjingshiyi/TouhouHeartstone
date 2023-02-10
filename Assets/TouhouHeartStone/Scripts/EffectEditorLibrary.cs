@@ -890,6 +890,42 @@ namespace Game
             if (eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length > 0)
                 eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
         }
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET = "伤害/更改受伤卡牌";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET, EDITOR_NODE_EVENT)]
+        public static void damageEvent_changeTarget(
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card target)
+        {
+            if (eventArg is THHCard.DamageEventArg damageArg)
+            {
+                damageArg.target = target;
+            }
+        }
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE = "伤害/更改伤害源";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE, EDITOR_NODE_EVENT)]
+        public static void damageEvent_changeSource(
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card source)
+        {
+            if (eventArg is THHCard.DamageEventArg damageArg)
+            {
+                damageArg.source = source;
+            }
+        }
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE = "伤害/更改伤害值";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE, EDITOR_NODE_EVENT)]
+        public static void damageEvent_changeValue(
+            [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
+        {
+            if (eventArg is THHCard.DamageEventArg damageArg)
+            {
+                damageArg.damageValue = value;
+            }
+        }
         #endregion
     }
 }

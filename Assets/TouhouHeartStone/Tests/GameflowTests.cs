@@ -235,8 +235,8 @@ namespace Tests
             HearthStoneRule.FatigueEventArg fatigue = game.triggers.getRecordedEvents().OfType<HearthStoneRule.FatigueEventArg>().First();
             Assert.AreEqual(you, fatigue.player);
             THHCard.DamageEventArg damage = fatigue.getChildEvents().OfType<THHCard.DamageEventArg>().First();
-            Assert.AreEqual(you.getMaster(), damage.infoDic.First().Key);
-            Assert.AreEqual(1, damage.infoDic.First().Value.damagedValue);
+            Assert.AreEqual(you.getMaster(), damage.target);
+            Assert.AreEqual(1, damage.damagedValue);
             while (you.getMaster().getCurrentLife(game) > 0)
             {
                 you.cmdTurnEnd(game);
@@ -283,10 +283,10 @@ namespace Tests
             Assert.NotNull(attack);
             THHCard.DamageEventArg d1 = attack.getChildEvents()[0] as THHCard.DamageEventArg;
             Assert.NotNull(d1);
-            Assert.AreEqual(2, d1.infoDic.First().Value.damagedValue);
+            Assert.AreEqual(2, d1.damagedValue);
             THHCard.DamageEventArg d2 = attack.getChildEvents()[1] as THHCard.DamageEventArg;
             Assert.NotNull(d2);
-            Assert.AreEqual(2, d2.infoDic.First().Value.damagedValue);
+            Assert.AreEqual(2, d2.damagedValue);
             THHCard.DeathEventArg d3 = game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.DeathEventArg) as THHCard.DeathEventArg;
             Assert.NotNull(d3);
 

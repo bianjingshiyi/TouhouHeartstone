@@ -1962,7 +1962,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
-                (g, c, a) => { return a.infoDic.ContainsKey(c); }, (g, c, a) => { return c.addBuff(g, new CodeBuff(ID, new AttackModifier(3))); })
+                (g, c, a) => { return c == a.target; }, (g, c, a) => { return c.addBuff(g, new CodeBuff(ID, new AttackModifier(3))); })
         };
 
         public override IEffect[] getEffects()
@@ -2419,7 +2419,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<THHCard.DamageEventArg>(PileFlag.field,
-                (game, card, arg) => arg.infoDic.Values.Select(info => info.source).Contains(card),onExecute)
+                (game, card, arg) => arg.source == card && !arg.target.isDead(game) && !arg.target.isMaster(), onExecute)
         };
 
         // public override string[] keywords { get; set; } = {};
@@ -2450,14 +2450,7 @@ namespace TouhouHeartstone.Builtin
 
         public static Task onExecute(CardEngine game, Card card, THHCard.DamageEventArg arg)
         {
-            foreach (var pair in arg.infoDic.Where(info => info.Value.source == card))
-            {
-                if (!pair.Key.isDead(game) && !(pair.Key.isMaster()))
-                {
-                    pair.Key.setCurrentLife(game, 1);
-                }
-            }
-
+            arg.target.setCurrentLife(game, 1);
             return Task.CompletedTask;
         }
     }

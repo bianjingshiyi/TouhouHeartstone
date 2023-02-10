@@ -112,7 +112,7 @@ namespace Tests
             you.cmdTurnEnd(game);
             Assert.AreEqual(1, you.getMaster().getBuffs().Length);
             you.getMaster().damage(game, null, 4);
-            Assert.AreEqual(1, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last().infoDic[you.getMaster()].damagedValue);
+            Assert.AreEqual(1, game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last(a => a.target == you.getMaster()).damagedValue);
             oppo.cmdTurnEnd(game);
             Assert.AreEqual(0, you.getMaster().getBuffs().Length);
 

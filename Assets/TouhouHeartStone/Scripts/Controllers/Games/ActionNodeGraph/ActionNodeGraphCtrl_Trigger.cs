@@ -532,12 +532,12 @@ namespace Controllers
             _eventTypeInfoList.Find(e => e.eventName == "AfterSilenceEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_SILENCE;
             _eventTypeInfoList.Find(e => e.eventName == "BeforeAttackEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_ATTACK;
             _eventTypeInfoList.Find(e => e.eventName == "AfterAttackEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ATTACK;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeDamageEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterDamageEvent");
+            //_eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeDamageEvent");
+            //_eventTypeInfoList.RemoveAll(e => e.eventName == "AfterDamageEvent");
+            _eventTypeInfoList.Find(e => e.eventName == "BeforeDamageEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DAMAGE;
+            _eventTypeInfoList.Find(e => e.eventName == "AfterDamageEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DAMAGE;
             _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeHealEvent");
             _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterHealEvent");
-            //_eventTypeInfoList.Find(e => e.eventName == "BeforeDamageEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DAMAGE;
-            //_eventTypeInfoList.Find(e => e.eventName == "AfterDamageEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DAMAGE;
             //_eventTypeInfoList.Find(e => e.eventName == "BeforeHealEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_HEAL;
             //_eventTypeInfoList.Find(e => e.eventName == "AfterHealEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_HEAL;
             _eventTypeInfoList.Find(e => e.eventName == "BeforeDeathEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_DEATH;
