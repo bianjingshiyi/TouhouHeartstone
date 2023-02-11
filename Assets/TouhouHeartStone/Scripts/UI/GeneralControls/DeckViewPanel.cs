@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Game;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
@@ -51,13 +48,41 @@ namespace UI
             });
         }
 
-        public void updateCardPools((string name, Sprite image, DeckListItem.Mode mode)[] deckViewData)
+        public void updateCardPools((string name, Sprite image)[] cardPoolViewData, Action onAddClick)
+        {
+            int count = cardPoolViewData.Length + 1;
+            UIHelper.updateList(_deckListRoot, _deckListItemTemplate, _deckItemList, count, (i, item) =>
+            {
+                DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
+                if (i < count - 1)
+                {
+                    deckListItem.updateView(cardPoolViewData[i].name, cardPoolViewData[i].image);
+                    deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
+                }
+                else
+                {
+                    deckListItem.SetMode(DeckListItem.Mode.AddCardPool);
+                }
+            }, item =>
+            {
+                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
+                deckListItem.onClick += onClickDeckListItemCallback;
+                deckListItem.onCardPoolAdd += onAddClick;
+            }, item =>
+            {
+                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
+                deckListItem.onClick -= onClickDeckListItemCallback;
+                deckListItem.onCardPoolAdd -= onAddClick;
+            });
+        }
+        public void updateAddCardPools((string name, Sprite image, Color color)[] deckViewData)
         {
             UIHelper.updateList(_deckListRoot, _deckListItemTemplate, _deckItemList, deckViewData.Length, (i, item) =>
             {
                 DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
                 deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
-                deckListItem.SetMode(deckViewData[i].mode);
+                deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
+                deckListItem.HeadImage.color = deckViewData[i].color;
             }, item =>
             {
                 DeckListItem deckListItem = item.GetComponent<DeckListItem>();

@@ -23,22 +23,11 @@ namespace Game
             HashSet<long> targetPools = new HashSet<long>();
             foreach (long poolId in poolsId)
             {
-                addCardPoolRefs(poolId);
-            }
-
-            void addCardPoolRefs(long poolId)
-            {
-                if (targetPools.Contains(poolId))
-                    return;
-
                 targetPools.Add(poolId);
-                var poolInfo = cardManager.getCardPoolInfo(poolId);
-                if (poolInfo != null && poolInfo.dependencies != null)
+                var deps = poolId.GetCardPoolDependencies(cardManager);
+                foreach (var dep in deps)
                 {
-                    foreach (var poolRef in poolInfo.dependencies)
-                    {
-                        addCardPoolRefs(poolRef);
-                    }
+                    targetPools.Add(dep);
                 }
             }
             return targetPools.ToArray();

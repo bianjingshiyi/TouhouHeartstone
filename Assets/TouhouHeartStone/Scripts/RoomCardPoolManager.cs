@@ -58,50 +58,46 @@ namespace Game
                         bool lanHost = game.network.logic.isLanHost;
                         var localPoolInfo = game.card.getCardPoolInfo(roomPool.cardPoolId);
 
-                        // 这个卡池是否是玩家本地就有的。
-                        bool hasOwnedPool = false;
+                        // 这个卡池是否是玩家本地可用的。
+                        bool hasUsablePool = false;
+                        string cardPoolPath = game.card.getCardPoolPath(roomPool.cardPoolId);
                         if (localPoolInfo != null && localPoolInfo.editTime == roomPool.version)
                         {
-                            string path = game.card.getCardPoolPath(localPoolInfo);
-                            if (!string.IsNullOrEmpty(path))
+                            if (!string.IsNullOrEmpty(cardPoolPath))
                             {
-                                hasOwnedPool = game.cache.GetCachePath(ResourceType.CardDefine, id) != path && game.fileManager.isFileExist(path);
+                                hasUsablePool = game.card.isUsableCardPool(roomPool.cardPoolId) && game.fileManager.isFileExist(cardPoolPath);
                             }
                         }
 
                         // 这个卡池是否存在于玩家本地或者缓存中。
-                        bool hasLocalPool = game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) ||
-                            (localPoolInfo != null && localPoolInfo.editTime == roomPool.version);
+                        bool hasLocalPool = game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) || (localPoolInfo != null && localPoolInfo.editTime == roomPool.version);
 
                         // 远端是否有该卡池。
-                        bool hasRemotePool = false;
-                        if (lanHost)
+                        // 局域网房主的远端就是本地。
+                        bool hasRemotePool = lanHost ? hasLocalPool : await game.network.ResourceExistsAsync(ResourceType.CardDefine, id);
+
+                        // 如果没有读取卡池，尝试读取卡池对象。
+                        CardPool localCardPool = null;
+                        if (hasLocalPool && !game.card.tryGetCardPool(roomPool.cardPoolId, out localCardPool))
                         {
-                            // 局域网房主的远端就是本地。
-                            hasRemotePool = hasLocalPool;
-                        }
-                        else
-                        {
-                            // 其他人检查远端是否有卡池资源。
-                            hasRemotePool = await game.network.ResourceExistsAsync(ResourceType.CardDefine, id);
+                            localCardPool = (await game.card.loadCardPool(cardPoolPath)).cardPool;
                         }
 
                         token.ThrowIfCancellationRequested();
                         // 上传卡池。
                         List<ResourcePlan> uploadResources = new List<ResourcePlan>();
                         // 本地存在该房间指定的卡池，且不是缓存。
-                        if (hasOwnedPool && !lanHost)
+                        if (hasUsablePool && !lanHost)
                         {
-                            bool poolReady = true;
                             if (!hasRemotePool)
                             {
                                 // 远端没有该卡池信息，上传该卡池文件。
                                 uploadPools.Add(roomPool);
                                 startPlan = true;
-                                poolReady = false;
+                                break;
                             }
                             // 检测卡图上传。
-                            else if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
+                            else if (localCardPool != null)
                             {
                                 var picturePaths = GetCardPoolPictures(roomPool.cardPoolId);
                                 // 遍历卡池内的所有图片。
@@ -115,15 +111,12 @@ namespace Game
                                     {
                                         uploadPools.Add(roomPool);
                                         startPlan = true;
-                                        poolReady = false;
                                         break;
                                     }
                                 }
                             }
-                            if (poolReady)
-                            {
-                                uploadedPools.Add(id);
-                            }
+                            // 该卡池无需上传，已就绪。
+                            uploadedPools.Add(id);
                         }
 
                         token.ThrowIfCancellationRequested();
@@ -136,25 +129,21 @@ namespace Game
                             startPlan = true;
                         }
                         // 如果本地存在该卡池，检测卡图下载。
-                        else
+                        else if (localCardPool != null)
                         {
-                            // 检测卡池内的图片是否被下载。
-                            if (game.card.tryGetCardPool(roomPool.cardPoolId, out CardPool cardPool))
+                            // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，下载该卡图。
+                            var picturePaths = GetCardPoolPictures(roomPool.cardPoolId);
+                            foreach (var path in picturePaths)
                             {
-                                // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，下载该卡图。
-                                var picturePaths = GetCardPoolPictures(roomPool.cardPoolId);
-                                foreach (var path in picturePaths)
+                                token.ThrowIfCancellationRequested();
+                                string picId = Path.GetFileNameWithoutExtension(path);
+                                if (!string.IsNullOrEmpty(picId) &&
+                                    !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
+                                    !game.card.isExternalImageExists(path))
                                 {
-                                    token.ThrowIfCancellationRequested();
-                                    string picId = Path.GetFileNameWithoutExtension(path);
-                                    if (!string.IsNullOrEmpty(picId) &&
-                                        !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
-                                        !game.card.isExternalImageExists(path))
-                                    {
-                                        downloadPools.Add(roomPool);
-                                        startPlan = true;
-                                        break;
-                                    }
+                                    downloadPools.Add(roomPool);
+                                    startPlan = true;
+                                    break;
                                 }
                             }
                         }
@@ -183,9 +172,6 @@ namespace Game
             catch (OperationCanceledException)
             {
                 logger.logError($"取消检查卡池。");
-            }
-            finally
-            {
                 _cts = null;
             }
 
@@ -631,7 +617,8 @@ namespace Game
                 return false;
             }
             // 获取该卡池的所有卡图和buff图片id，添加ResourcePlan。
-            plan.resPlans.AddRange(GetCardPoolPicturePlans(poolId));
+            var plans = GetCardPoolPicturePlans(poolId).Where(p => !plan.resPlans.Any(rp => rp.id == p.id));
+            plan.resPlans.AddRange(plans);
             return true;
         }
 

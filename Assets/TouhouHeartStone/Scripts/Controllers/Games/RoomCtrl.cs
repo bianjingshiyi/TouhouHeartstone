@@ -19,16 +19,25 @@ namespace Controllers
     class RoomCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 字符串
-        [TranslateMsg("房间-玩家-尝试选择包含未共享卡池的卡组（{0}：卡池名称列表）")]
-        public const string ROOM_DECK_HAS_NOT_SHARED_POOL = "该套牌中包含房间设置之外的卡池：\n{0}\n是否向房主提议使用该卡池？";
-        [TranslateMsg("房间-房主-尝试选择包含未共享卡池的卡组（{0}：卡池名称列表）")]
-        public const string ROOM_DECK_HAS_NOT_SHARED_POOL_HOST = "该套牌中包含房间设置之外的卡池：\n{0}\n是否使用该卡池？";
+        [TranslateMsg("房间-尝试选择包含未共享卡池的卡组（{0}：卡池名称列表）")]
+        public const string ROOM_DECK_HAS_NOT_SHARED_POOL = "该套牌中包含房间设置之外的卡池：\n{0}";
+        [TranslateMsg("房间-尝试添加未共享的卡池（{0}：卡池名称列表）")]
+        public const string ROOM_ADD_SELECTED_CARD_POOL = "你选中了这些卡池：\n{0}";
+        [TranslateMsg("房间-房主-尝试添加未共享的卡池警告")]
+        public const string ROOM_CARD_POOL_WARNING_FOR_OWNER = "是否使用这些卡池？";
+        [TranslateMsg("房间-玩家-尝试添加未共享的卡池警告")]
+        public const string ROOM_CARD_POOL_WARNING_FOR_CUSTOMER = "是否向房主提议使用这些卡池？";
+        [TranslateMsg("房间-玩家-尝试添加未共享的卡池警告")]
+        public const string ROOM_NO_CARD_POOL_SELECTED = "你没有选择任何卡池，请重新选择";
+        
+
         [TranslateMsg("房间-房主-收到来自玩家的上传卡池提议（{0}：玩家名；{1}：卡池名称列表）")]
         public const string ROOM_CARD_POOLS_SUGGESTED = "玩家{0}提议使用卡池：\n{1}\n是否使用？";
         [TranslateMsg("房间-玩家-房主同意上传卡池提议")]
         public const string ROOM_CARD_POOLS_SUGGESTION_AGREED = "房主同意了你的提议。";
         [TranslateMsg("房间-玩家-房主拒绝上传卡池提议")]
         public const string ROOM_CARD_POOLS_SUGGESTION_REFUSED = "房主拒绝了你的提议。";
+
         [TranslateMsg("房间-未知玩家")]
         public const string ROOM_UNKNOWN_PLAYER = "未知玩家";
         [TranslateMsg("房间-未知卡组")]
@@ -102,17 +111,17 @@ namespace Controllers
                 _isDisplay = true;
 
                 _ui.display();
-                List<CardPoolInfoPack> cardPools = new List<CardPoolInfoPack>() { CardPoolHelper.BuiltinCardPoolInfoPack };
+
                 if (_isLocalGame)
                 {
                     _ui.displayIPText(false);
-                    // 本地游戏，将玩家的本地的所有卡池加进去.
-                    var result = await game.card.loadCardPoolInfosAsync();
-                    CardPoolInfoPack[] localPools = result.Values.Select(p => p.ToCardPoolInfoPack()).ToArray();
-                    cardPools.AddRange(localPools);
                 }
-                _currentRoomData.setOption(Option.CardPools, cardPools.ToArray());
-
+                if (isRoomOwner)
+                {
+                    CardPoolInfoPack[] roomPools = _isLocalGame ? await GetLocalCardPools() : new CardPoolInfoPack[] { CardPoolHelper.BuiltinCardPoolInfoPack };
+                    _currentRoomData.setOption(Option.CardPools, roomPools);
+                    setNotifyRoomSetting(Option.CardPools, roomPools);
+                }
                 _ui.setRandomSeed(_currentRoomData.getRandomSeed());
                 _ui.setShuffle(_currentRoomData.getShuffle());
                 _ui.setInitReplaceTime(_currentRoomData.getTimeoutForInitReplace());
@@ -170,8 +179,7 @@ namespace Controllers
                 {
                     if (_ui.isViewingCardPools())
                     {
-                        _viewingCardPools = pools;
-                        _ui.viewCardPools(_viewingCardPools);
+                        viewRoomCardPools();
                     }
                     await cardPoolManager.CheckUpdate(pools);
                 }
@@ -214,6 +222,7 @@ namespace Controllers
             _ui.onTurnTimeInputFieldValueChanged += onTurnTimeInputFieldValueChanged;
             _ui.onDisableRandomPlayerActOrderToggleValueChanged += onDisableRandomPlayerActOrderToggleValueChanged;
             _ui.onViewCardPoolsClick += onViewCardPoolsClick;
+            _ui.onAddCardPoolsClick += onAddCardPoolsClick;
             _ui.onClickPlayerItemViewDeckButton += onClickPlayerListItemViewDeckButton;
             _ui.onClickPlayerItemSetDeckButton += onClickPlayerListItemSetDeckButton;
             _ui.onClickPlayerItemRemoveButton += onClickPlayerListItemRemoveButton;
@@ -222,6 +231,10 @@ namespace Controllers
             _ui.onClickSelectDeckButton += onClickSelectDeckButton;
             _ui.onClickDeckSelectPanelItem += onClickDeckSelectPanelItem;
             _ui.onClickCardPoolsSelectPanelItem += onClickCardPoolSelectPanelItem;
+            _ui.onClickAddCardPoolsSelectPanelItem += onClickAddCardPoolSelectPanelItem;
+
+            _ui.onConfirmAddCardPools += onConfirmAddCardPools;
+            _ui.onCancelAddCardPools += onCancelAddCardPools;
 
             _ui.onClickStartButton += onClickStartButton;
             _ui.onClickReadyButton += onClickReadyButton;
@@ -290,8 +303,15 @@ namespace Controllers
         }
         private void onViewCardPoolsClick()
         {
-            _viewingCardPools = _currentRoomData.getCardPools();
-            _ui.viewCardPools(_viewingCardPools);
+            viewRoomCardPools();
+        }
+        private async void onAddCardPoolsClick()
+        {
+            var roomPools = _currentRoomData.getCardPools();
+            _addingCardPools = (await GetLocalCardPools()).Where(p => !roomPools.Any(r => r.cardPoolId == p.cardPoolId)).ToArray();
+            _selectedAddCardPools = new HashSet<CardPoolInfoPack>();
+            _ui.openAddCardPoolsPanel(_addingCardPools, _selectedAddCardPools.Select(p => p.cardPoolId));
+            _ui.closeViewCardPoolsPanel();
         }
         private void onClickPlayerListItemViewDeckButton(int index)
         {
@@ -352,7 +372,8 @@ namespace Controllers
                     if (isRoomOwner)
                     {
                         string poolsString = PoolsToString(packs);
-                        string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL_HOST, poolsString);
+                        string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
+                        desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_OWNER);
 
                         game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, async () =>
                         {
@@ -374,6 +395,7 @@ namespace Controllers
                     {
                         string poolsString = PoolsToString(packs);
                         string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
+                        desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_CUSTOMER);
 
                         game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
                         {
@@ -415,11 +437,95 @@ namespace Controllers
                 game.ui.dialog.ShowQuestion(title, desc, () =>
                 {
                     RemoveCardPools(pools);
-                    _viewingCardPools = _currentRoomData.getCardPools();
-                    _ui.viewCardPools(_viewingCardPools);
+                    viewRoomCardPools();
                     updateStartAndReadyButton();
                 });
             }
+        }
+        private void onClickAddCardPoolSelectPanelItem(int index)
+        {
+            var pool = _addingCardPools[index];
+            // 已选中，取消选择。
+            if (_selectedAddCardPools.Contains(pool))
+            {
+                _selectedAddCardPools.Remove(pool);
+                // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
+                foreach (var depId in pool.cardPoolId.GetDependedCardPools(game.card, _addingCardPools.Select(p => p.cardPoolId)))
+                {
+                    var dep = _addingCardPools.FirstOrDefault(p => p.cardPoolId == depId);
+                    if (dep == null)
+                        continue;
+                    _selectedAddCardPools.Remove(dep);
+                }
+            }
+            else // 未选中，选择。
+            {
+                _selectedAddCardPools.Add(pool);
+                // 选中一个卡池后，要把它的所有依赖也选中。
+                foreach (var depId in pool.cardPoolId.GetCardPoolDependencies(game.card))
+                {
+                    var dep = _addingCardPools.FirstOrDefault(p => p.cardPoolId == depId);
+                    if (dep == null)
+                        continue;
+                    _selectedAddCardPools.Add(dep);
+                }
+            }
+            _ui.openAddCardPoolsPanel(_addingCardPools, _selectedAddCardPools.Select(p => p.cardPoolId));
+        }
+        private void onConfirmAddCardPools()
+        {
+            // 没有选择任何卡池。
+            if (_selectedAddCardPools.Count <= 0)
+            {
+                string desc = game.lang._(ROOM_NO_CARD_POOL_SELECTED);
+                game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
+                return;
+            }
+            if (_isLocalGame)
+            {
+                AddCardPools(_selectedAddCardPools);
+                closeAddCardPoolsPanel();
+            }
+            else
+            {
+                var packs = _selectedAddCardPools.ToArray();
+                string poolsString = PoolsToString(packs);
+                string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
+                if (isRoomOwner)
+                {
+                    desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_OWNER);
+
+                    game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, async () =>
+                    {
+                        if (CanUploadCardPools(packs, out string errorMessage))
+                        {
+                            AddCardPools(packs);
+                            _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                            closeAddCardPoolsPanel();
+                        }
+                        else
+                        {
+                            string title = game.lang._(StringTable.ERROR);
+                            game.ui.dialog.ShowConfirm(title, errorMessage);
+                        }
+                    });
+                }
+                else
+                {
+                    desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_CUSTOMER);
+
+                    game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+                    {
+                        SuggestCardPools(new CardPoolSuggestion(packs));
+                        //隐藏添加卡池界面
+                        closeAddCardPoolsPanel();
+                    });
+                }
+            }
+        }
+        private void onCancelAddCardPools()
+        {
+            closeAddCardPoolsPanel();
         }
         private async void onClickStartButton()
         {
@@ -646,8 +752,7 @@ namespace Controllers
             setNotifyRoomSetting(Option.CardPools, cardPools);
             if (_ui.isViewingCardPools())
             {
-                _viewingCardPools = cardPools;
-                _ui.viewCardPools(_viewingCardPools);
+                viewRoomCardPools();
             }
         }
         private void RemoveCardPools(IEnumerable<CardPoolInfoPack> packs)
@@ -663,8 +768,7 @@ namespace Controllers
             setNotifyRoomSetting(Option.CardPools, cardPools);
             if (_ui.isViewingCardPools())
             {
-                _viewingCardPools = cardPools;
-                _ui.viewCardPools(_viewingCardPools);
+                viewRoomCardPools();
             }
         }
         private string PoolsToString(CardPoolInfoPack[] packs)
@@ -705,29 +809,29 @@ namespace Controllers
         private CardPoolInfoPack[] GetDependedCardPools(CardPoolInfoPack pool)
         {
             var packs = _currentRoomData.getCardPools();
-            HashSet<CardPoolInfoPack> pools = new HashSet<CardPoolInfoPack>();
-            foreach (var pack in packs)
-            {
-                if (pack.dependencies.Any(p => p == pool.cardPoolId))
-                {
-                    addCardPool(pack);
-                }
-            }
+            return pool.GetDependedCardPools(packs);
+        }
 
-            void addCardPool(CardPoolInfoPack poolPack)
-            {
-                if (pools.Contains(poolPack))
-                    return;
-
-                pools.Add(poolPack);
-                foreach (var pack in packs)
-                {
-                    if (pack.dependencies.Any(p => p == poolPack.cardPoolId))
-                        addCardPool(pack);
-                }
-            }
-
-            return pools.ToArray();
+        private async Task<CardPoolInfoPack[]> GetLocalCardPools()
+        {
+            List<CardPoolInfoPack> cardPools = new List<CardPoolInfoPack>() { CardPoolHelper.BuiltinCardPoolInfoPack };
+            // 本地游戏，将玩家的本地的所有卡池加进去.
+            var result = await game.card.loadCardPoolInfosAsync();
+            CardPoolInfoPack[] localPools = result.Values.Select(p => p.ToCardPoolInfoPack()).ToArray();
+            cardPools.AddRange(localPools);
+            return cardPools.ToArray();
+        }
+        private void viewRoomCardPools()
+        {
+            _viewingCardPools = _currentRoomData.getCardPools();
+            _ui.viewCardPools(_viewingCardPools);
+        }
+        private void closeAddCardPoolsPanel()
+        {
+            _addingCardPools = null;
+            _selectedAddCardPools = null;
+            _ui.closeAddCardPoolsPanel();
+            viewRoomCardPools();
         }
         #endregion
         /// <summary>
@@ -991,6 +1095,14 @@ namespace Controllers
         /// 正在查看的卡池列表。
         /// </summary>
         CardPoolInfoPack[] _viewingCardPools;
+        /// <summary>
+        /// 添加卡池界面中待选的卡池。
+        /// </summary>
+        CardPoolInfoPack[] _addingCardPools;
+        /// <summary>
+        /// 添加卡池界面中已被选中的卡池。
+        /// </summary>
+        HashSet<CardPoolInfoPack> _selectedAddCardPools;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo

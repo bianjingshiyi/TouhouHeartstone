@@ -146,8 +146,8 @@ namespace UI
         const string SETTING_CLEAR_CACHE_WARNING = "你确定要清除所有的卡池缓存文件吗？";
         [TranslateMsg("设置界面-删除缓存前提示")]
         const string SETTING_CLEAR_CACHE_WARNING_2 = "清除之后需要重新下载来自网络的卡池文件";
-        [TranslateMsg("设置界面-删除缓存前提示（{0}是当前缓存的大小（单位为GB））")]
-        const string SETTING_CLEAR_CACHE_SIZE = "当前缓存大小：{0:0.00}GB";
+        [TranslateMsg("设置界面-删除缓存前提示（{0}是当前缓存的大小（单位为MB））")]
+        const string SETTING_CLEAR_CACHE_SIZE = "当前缓存大小：{0:0.00}MB";
         [TranslateMsg("设置界面-删除缓存后提示")]
         const string SETTING_CACHE_CLEARED = "缓存文件已清除";
 

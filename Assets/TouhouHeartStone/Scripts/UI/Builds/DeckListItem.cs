@@ -23,6 +23,7 @@ namespace UI
         {
             NameInputField.onEndEdit.AddListener((s) => { onDeckRename?.Invoke(id, s); });
             AddButtonBlack.asButton.onClick.AddListener(() => { onDeckAdd?.Invoke(); });
+            _addCardPoolButton.onClick.AddListener(() => onCardPoolAdd?.Invoke());
 
             DeleteButtonIconGlass.asButton.onClick.AddListener(() => onFileRemove?.Invoke(key));
             HeadImageButton.onClick.AddListener(() => onFileSelect?.Invoke(key));
@@ -72,17 +73,20 @@ namespace UI
             DeckListItem, // 牌组列表
             DeckTitle, // 当前编辑的牌组
             AddDeck, // 添加牌组按钮
-            DeckSelect // 牌组选择（人物编辑）
+            DeckSelect, // 牌组选择（人物编辑）
+            AddCardPool // 添加卡池按钮
         }
 
         public void SetMode(Mode mode)
         {
-            ImageMask.gameObject.SetActive(mode != Mode.AddDeck);
+            ImageMask.gameObject.SetActive(mode != Mode.AddDeck && mode != Mode.AddCardPool);
             AddButtonBlack.gameObject.SetActive(mode == Mode.AddDeck);
+            _addCardPoolButton.gameObject.SetActive(mode == Mode.AddCardPool);
 
             DeckNameImage.gameObject.SetActive(mode == Mode.DeckListItem || mode == Mode.DeckSelect);
             NameInputField.gameObject.SetActive(mode == Mode.DeckTitle);
             DeleteButtonIconGlass.gameObject.SetActive(mode == Mode.DeckListItem);
+            _mode = mode;
         }
         void onClickCallback()
         {
@@ -100,13 +104,26 @@ namespace UI
         public event Action<DeckListItem> onClick;
         public event Action<DeckListItem> onClickDeleteButton;
         public event Action<DeckListItem, string> onNameInputFieldValueChanged;
+        public event Action onCardPoolAdd;
         #region 属性字段
+
         [SerializeField]
         Text _nameText;
         [SerializeField]
         Image _image;
         [SerializeField]
         Image _cardPoolWarningImage;
+        [SerializeField]
+        Button _addCardPoolButton;
+
+        public Image HeadImage => _image;
+
+        private Mode _mode;
+        public Mode mode 
+        { 
+            get => _mode;
+            set => SetMode(value);
+        }
         #endregion
     }
 }
