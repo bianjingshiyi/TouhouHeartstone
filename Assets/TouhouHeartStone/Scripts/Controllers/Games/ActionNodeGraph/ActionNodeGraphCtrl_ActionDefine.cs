@@ -283,9 +283,9 @@ namespace Controllers
                     else
                         name = generatedActionDefine.category;
                 }
-                else if (actionDefine.defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST))
+                else if (actionDefine.defineName.EndsWith("Const"))
                 {
-                    //以Const结尾的类型是常量
+                    // 以Const结尾的类型是常量
                     name = StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST;
                 }
                 else

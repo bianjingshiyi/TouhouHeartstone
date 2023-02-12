@@ -35,7 +35,7 @@ namespace Game
         [TranslateMsg("编辑器中效果类型名称之遗言效果")]
         public const string EDITOR_EFFECT_NAME_DEATH_RATTLE_EFFECT = "遗言效果";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中常量分类的名字")]
-        public const string EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST = "Const";
+        public const string EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST = "常量";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中的返回上一层选项")]
         public const string EDITOR_ACTIONGRAPH_MENU_RETURN = "返回上一层";
         [TranslateMsg("编辑器中动作图编辑器的背景菜单中的自定义动作")]

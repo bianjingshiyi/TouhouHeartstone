@@ -11,6 +11,7 @@ using UnityEngine;
 using BJSYGameCore.UI;
 using System.Threading.Tasks;
 using Card = TouhouCardEngine.Card;
+using MukioI18n;
 
 namespace Controllers
 {
@@ -253,8 +254,7 @@ namespace Controllers
                             options[0] = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN) + " <";
                             Array.Copy(actions.Select(a =>
                             {
-                                string name = a.defineName.EndsWith(StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST) ?
-                                    a.defineName.Substring(0, a.defineName.Length - 5) : a.defineName;
+                                string name = a.defineName;
                                 if (_nameTextDict.ContainsKey(name))
                                     name = _nameTextDict[name];
                                 return game.langManager.getString(name);
@@ -1899,6 +1899,15 @@ namespace Controllers
                 return game.lang._(actionNode.defineName);
             }
         }
+        private string tryTranslateWithDict(string input)
+        {
+            if (_nameTextDict.TryGetValue(input, out string text))
+            {
+                return game.i18n._(text);
+            }
+            return game.i18n._(input);
+        }
+
         private string getActionNodeObsoleteMsg(ActionNode actionNode)
         {
             ActionDefine actionDefine = getActionDefine(actionNode.defineName);
@@ -2252,28 +2261,47 @@ namespace Controllers
             var infoArray = new ActionNodeValueInfo[actionDefine.consts.Length];
             for (int i = 0; i < infoArray.Length; i++)
             {
-                //TODO:这里应该考虑动作节点常量值的翻译，但是暂时先不这么做。
+                // 翻译名称
+                var name = tryTranslateWithDict(actionDefine.consts[i].name);
                 Type type = actionDefine.consts[i].type;
                 if (type == typeof(int))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.integer, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.integer, actionNode.consts[i]);
                 else if (type == typeof(float))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.real, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.real, actionNode.consts[i]);
                 else if (type == typeof(bool))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.boolean, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.boolean, actionNode.consts[i]);
                 else if (type == typeof(string))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.text, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.text, actionNode.consts[i]);
                 else if (type.IsEnum)
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.enumValue, actionNode.consts[i], type);
+                {
+                    var optionalValues = Enum.GetValues(type).Cast<object>().ToArray();
+                    var optionalNames = new string[optionalValues.Length];
+                    for (int j = 0; j < optionalNames.Length; j++)
+                    {
+                        var optName = Enum.GetName(type, optionalValues[j]);
+                        var indexName = type.FullName + "." + optName;
+                        if (_nameTextDict.TryGetValue(indexName, out string nameText))
+                        {
+                            optionalNames[j] = game.i18n._(nameText);
+                        }
+                        else
+                        {
+                            // todo: Get attribute and translate
+                            optionalNames[j] = optName;
+                        }
+                    }
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.enumValue, actionNode.consts[i], optionalNames, optionalValues);
+                }
                 else if (type == typeof(ActionValueRef))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.actionValueRef, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.actionValueRef, actionNode.consts[i]);
                 else if (type == typeof(DefineReference))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReference, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.cardReference, actionNode.consts[i]);
                 else if (type == typeof(DefineReference[]))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.cardReferenceCollection, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.cardReferenceCollection, actionNode.consts[i]);
                 else if (type == typeof(PileNameCollection))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.pileNameCollection, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.pileNameCollection, actionNode.consts[i]);
                 else if (type == typeof(KeywordCollection))
-                    infoArray[i] = new ActionNodeValueInfo(actionDefine.consts[i].name, ActionNodeValueType.keywords, actionNode.consts[i]);
+                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.keywords, actionNode.consts[i]);
                 else
                     throw new NotImplementedException("没有" + type + "对应的常数类型");
             }
@@ -2325,7 +2353,9 @@ namespace Controllers
             //值输入
             for (int i = 0; i < actionDefine.inputs.Length; i++)
             {
-                viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByType(actionDefine.inputs[i].type)));
+                // 翻译输出节点
+                var inputName = tryTranslateWithDict(actionDefine.inputs[i].name);
+                viewDataList.Add((inputName, game.editor.getColorByType(actionDefine.inputs[i].type)));
                 if (i == actionDefine.inputs.Length - 1 && actionDefine.inputs[i].isParams)
                 {
                     //变长参数，要多已有参数的连接点和一个空的连接点
@@ -2342,11 +2372,11 @@ namespace Controllers
                                 j--;
                                 continue;
                             }
-                            viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByType(actionDefine.inputs[i].type)));
+                            viewDataList.Add((inputName, game.editor.getColorByType(actionDefine.inputs[i].type)));
                         }
                     }
                     else if (i < actionNode.inputs.Length && actionNode.inputs[i] != null)
-                        viewDataList.Add((actionDefine.inputs[i].name, game.editor.getColorByType(actionDefine.inputs[i].type)));
+                        viewDataList.Add((inputName, game.editor.getColorByType(actionDefine.inputs[i].type)));
                 }
             }
             return viewDataList.ToArray();
@@ -2365,7 +2395,9 @@ namespace Controllers
                 }
                 else
                 {
-                    outputNames[i] = actionDefine.outputs[i - actionNode.branches.Length].name;
+                    // 翻译输出节点
+                    var outputName = actionDefine.outputs[i - actionNode.branches.Length].name;
+                    outputNames[i] = tryTranslateWithDict(outputName);
                 }
             }
             return outputNames;
@@ -2380,15 +2412,17 @@ namespace Controllers
             };
             for (int i = 0; i < actionDefine.outputs.Length; i++)
             {
+                // 翻译输出节点
+                var outputName = tryTranslateWithDict(actionDefine.outputs[i].name);
                 if (actionDefine.outputs[i].type == typeof(ActionNode))
                 {
                     //动作分支节点
-                    outputList.Add((actionDefine.outputs[i].name, game.editor.getColorByType(typeof(ActionNode))));
+                    outputList.Add((outputName, game.editor.getColorByType(typeof(ActionNode))));
                 }
                 else
                 {
                     //输出值节点
-                    outputList.Add((actionDefine.outputs[i].name, game.editor.getColorByType(actionDefine.outputs[i].type)));
+                    outputList.Add((outputName, game.editor.getColorByType(actionDefine.outputs[i].type)));
                 }
             }
             return outputList.ToArray();
@@ -2409,19 +2443,15 @@ namespace Controllers
         }
         private void openMenuForCategory(float posX, float posY)
         {
-            string[] categoryNames = getActionDefineGroups().Select(g => g.Key + (g.Count() > 1 ? " >" : "")).ToArray();
-            string[] options = new string[categoryNames.Length + 1];
-            Array.Copy(categoryNames, 0, options, 0, categoryNames.Length);
-            options[options.Length - 1] = StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION;
-            openMenu(posX, posY, options);
+            var options = getActionDefineGroups().Select(g => game.i18n._(g.Key) + (g.Count() > 1 ? " >" : "")).ToList();
+            options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
+            openMenu(posX, posY, options.ToArray());
         }
         private void updateMenuForCategory()
         {
-            string[] categoryNames = getActionDefineGroups().Select(g => g.Key + (g.Count() > 1 ? " >" : "")).ToArray();
-            string[] options = new string[categoryNames.Length + 1];
-            Array.Copy(categoryNames, 0, options, 0, categoryNames.Length);
-            options[options.Length - 1] = StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION;
-            _ui.updateMenu(options);
+            var options = getActionDefineGroups().Select(g => game.i18n._(g.Key) + (g.Count() > 1 ? " >" : "")).ToList();
+            options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
+            _ui.updateMenu(options.ToArray());
         }
         /// <summary>
         /// 在对应位置打开菜单
@@ -2600,6 +2630,41 @@ namespace Controllers
             DEFINE.TARGET_TYPE_CHARACTER,
             DEFINE.TARGET_TYPE_SERVANT
         };
+
+        [TranslateMsg("内置节点参数，通常用于比较和操作，表示操作符，如加、减、或、异或等")]
+        const string EDITOR_PARAM_OPERATOR = "运算符";
+        [TranslateMsg("内置节点参数，通常用于表示计算结果")]
+        const string EDITOR_PARAM_RESULT = "结果";
+        [TranslateMsg("整数运算符，加法 +")]
+        const string EDITOR_ENUM_INT_OPERATOR_ADD = "加";
+        [TranslateMsg("整数运算符，减法 -")]
+        const string EDITOR_ENUM_INT_OPERATOR_SUB = "减";
+        [TranslateMsg("整数运算符，乘法 *")]
+        const string EDITOR_ENUM_INT_OPERATOR_MUL = "乘";
+        [TranslateMsg("整数运算符，除法 /")]
+        const string EDITOR_ENUM_INT_OPERATOR_DIV = "除";
+        [TranslateMsg("整数运算符，取模 %")]
+        const string EDITOR_ENUM_INT_OPERATOR_MOD = "取模";
+        [TranslateMsg("逻辑运算符，取反 !")]
+        const string EDITOR_ENUM_LOGIC_OPERATOR_NOT = "非";
+        [TranslateMsg("逻辑运算符，逻辑与 &&")]
+        const string EDITOR_ENUM_LOGIC_OPERATOR_AND = "与";
+        [TranslateMsg("逻辑运算符，逻辑或 ||")]
+        const string EDITOR_ENUM_LOGIC_OPERATOR_OR = "或";
+
+        [TranslateMsg("比较运算符，等于 ==")]
+        const string EDITOR_ENUM_CMP_OPERATOR_EQUAL = "等于";
+        [TranslateMsg("比较运算符，不等于 !=")]
+        const string EDITOR_ENUM_CMP_OPERATOR_UNEQUAL = "不等于";
+        [TranslateMsg("比较运算符，大于 >")]
+        const string EDITOR_ENUM_CMP_OPERATOR_GREATER = "大于";
+        [TranslateMsg("比较运算符，大于等于 >=")]
+        const string EDITOR_ENUM_CMP_OPERATOR_GREATER_EQUAL = "大于等于";
+        [TranslateMsg("比较运算符，小于 <")]
+        const string EDITOR_ENUM_CMP_OPERATOR_LESS = "小于";
+        [TranslateMsg("比较运算符，小于等于 <=")]
+        const string EDITOR_ENUM_CMP_OPERATOR_LESS_EQUAL = "小于等于";
+
         readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
         {
             { DEFINE.TARGET_TYPE_CHARACTER, StringTable.GAME_TARGET_TYPE_CHARACTER },
@@ -2634,7 +2699,28 @@ namespace Controllers
             { "SetVariable", StringTable.EDITOR_NODE_NAME_SET_VARIABLE },
             { "CollectionOperation", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION },
             { "Except", StringTable.EDITOR_NODE_NAME_EXCEPT },
-            { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT }
+            { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
+            // 内置参数
+            { "value", StringTable.EDITOR_PARAM_NAME_VALUE },
+            { "operator", EDITOR_PARAM_OPERATOR },
+            { "result", EDITOR_PARAM_RESULT },
+            // Enum
+            { "TouhouCardEngine.IntegerOperator.add", EDITOR_ENUM_INT_OPERATOR_ADD },
+            { "TouhouCardEngine.IntegerOperator.sub", EDITOR_ENUM_INT_OPERATOR_SUB },
+            { "TouhouCardEngine.IntegerOperator.mul", EDITOR_ENUM_INT_OPERATOR_MUL },
+            { "TouhouCardEngine.IntegerOperator.div", EDITOR_ENUM_INT_OPERATOR_DIV },
+            { "TouhouCardEngine.IntegerOperator.mod", EDITOR_ENUM_INT_OPERATOR_MOD },
+            
+            { "TouhouCardEngine.LogicOperator.not", EDITOR_ENUM_LOGIC_OPERATOR_NOT },
+            { "TouhouCardEngine.LogicOperator.and", EDITOR_ENUM_LOGIC_OPERATOR_AND },
+            { "TouhouCardEngine.LogicOperator.or", EDITOR_ENUM_LOGIC_OPERATOR_OR },
+            
+            { "TouhouCardEngine.CompareOperator.equals", EDITOR_ENUM_CMP_OPERATOR_EQUAL },
+            { "TouhouCardEngine.CompareOperator.unequals", EDITOR_ENUM_CMP_OPERATOR_UNEQUAL },
+            { "TouhouCardEngine.CompareOperator.greater", EDITOR_ENUM_CMP_OPERATOR_GREATER },
+            { "TouhouCardEngine.CompareOperator.greaterEquals", EDITOR_ENUM_CMP_OPERATOR_GREATER_EQUAL },
+            { "TouhouCardEngine.CompareOperator.less", EDITOR_ENUM_CMP_OPERATOR_LESS },
+            { "TouhouCardEngine.CompareOperator.lessEquals", EDITOR_ENUM_CMP_OPERATOR_LESS_EQUAL },
         };
         #endregion
         #region 内部类
