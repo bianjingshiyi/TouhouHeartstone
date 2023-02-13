@@ -2252,10 +2252,11 @@ namespace TouhouHeartstone
         /// <param name="card"></param>
         /// <param name="game"></param>
         /// <param name="define"></param>
-        public static async Task<Card.SetDefineEventArg> setDefine(this Card card, IGame game, CardDefine define)
+        /// <param name="isreset"></param>
+        public static async Task<Card.SetDefineEventArg> setDefine(this Card card, CardEngine game, CardDefine define, bool isreset = true)
         {
             var eventArg = await card.setDefine(game, define);
-            await card.resetCard(game as CardEngine);//卡牌重置
+            if (isreset) { await card.resetCard(game); }//卡牌重置
             return eventArg;
         }
         /// <summary>

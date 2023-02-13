@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
 namespace Game
@@ -180,8 +181,7 @@ namespace Game
         {
             if (define == null)
                 return card;
-            var setDefineEvent = await card.setDefine(game, define);
-            if (isreset) { await card.resetCard(game); }
+            var setDefineEvent = await card.setDefine(game, define, isreset);
             return setDefineEvent?.card;
         }
 
