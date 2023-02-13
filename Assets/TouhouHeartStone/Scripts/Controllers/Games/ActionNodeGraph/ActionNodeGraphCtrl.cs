@@ -2780,7 +2780,6 @@ namespace Controllers
             { "GetVariable", StringTable.EDITOR_NODE_NAME_GET_VARIABLE },
             { "SetVariable", StringTable.EDITOR_NODE_NAME_SET_VARIABLE },
             { "CollectionOperation", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION },
-            { "Except", StringTable.EDITOR_NODE_NAME_EXCEPT },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
             // 内置参数
             { "value", StringTable.EDITOR_PARAM_NAME_VALUE },

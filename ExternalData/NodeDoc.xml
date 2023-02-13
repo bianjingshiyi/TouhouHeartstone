@@ -262,29 +262,31 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineName>Except</defineName>
-    <obsoleteNames />
-    <category>CollectionOperation</category>
+    <defineName>集合相减</defineName>
+    <obsoleteNames>
+      <string>Except</string>
+    </obsoleteNames>
+    <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Collections.IEnumerable</type>
-        <name>Collection</name>
+        <type>System.Array</type>
+        <name>集合</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>Element</name>
-        <isParams>true</isParams>
+        <type>System.Array</type>
+        <name>减去的集合</name>
+        <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Collections.IEnumerable</type>
-        <name>Collection</name>
+        <type>System.Array</type>
+        <name>集合</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>

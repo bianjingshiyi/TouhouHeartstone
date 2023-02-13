@@ -844,6 +844,26 @@ namespace Game
 
             return array.Distinct().ToArray();
         }
+        [TranslateMsg("编辑器-集合相减-参数名称")]
+        public const string EDITOR_PARAM_NAME_EXCEPTED_COLLECTION = "减去的集合";
+        /// <summary>
+        /// 集合相减
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="elements"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_EXCEPT, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "Except")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
+        public static Array except(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array, 
+            [ActionNodeParam(EDITOR_PARAM_NAME_EXCEPTED_COLLECTION)] object[] excepted)
+        {
+            if (array == null)
+                return null;
+            if (excepted == null)
+                return array;
+            return array.Except(excepted).ToArray();
+        }
         #endregion
 
         //  事件处理
