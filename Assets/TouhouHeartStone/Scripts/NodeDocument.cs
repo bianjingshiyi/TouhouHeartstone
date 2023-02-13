@@ -323,6 +323,11 @@ namespace Game
             for (int i = 0; i < defines.Length; i++)
             {
                 var input = defines[i];
+                if (orig == null)
+                {
+                    list.Add(new ActionParameterComment(input));
+                    continue;
+                }
 
                 bool hasOld = false;
                 foreach (var item in orig)
