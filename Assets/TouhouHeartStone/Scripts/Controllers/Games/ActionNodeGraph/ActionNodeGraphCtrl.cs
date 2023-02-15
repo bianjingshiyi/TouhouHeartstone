@@ -2853,6 +2853,17 @@ namespace Controllers
         [TranslateMsg("比较运算符，小于等于 <=")]
         const string EDITOR_ENUM_CMP_OPERATOR_LESS_EQUAL = "小于等于";
 
+        [TranslateMsg("卡牌类型，法术")]
+        const string EDITOR_ENUM_CARD_TYPE_SPELL = "法术";
+        [TranslateMsg("卡牌类型，仆从")]
+        const string EDITOR_ENUM_CARD_TYPE_SERVANT = "仆从";
+        [TranslateMsg("卡牌类型，英雄")]
+        const string EDITOR_ENUM_CARD_TYPE_MASTER = "英雄";
+        [TranslateMsg("卡牌类型，技能")]
+        const string EDITOR_ENUM_CARD_TYPE_SKILL = "技能";
+        [TranslateMsg("卡牌类型，道具")]
+        const string EDITOR_ENUM_CARD_TYPE_ITEM = "道具";
+
         readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
         {
             { DEFINE.TARGET_TYPE_CHARACTER, StringTable.GAME_TARGET_TYPE_CHARACTER },
@@ -2922,6 +2933,13 @@ namespace Controllers
             { "TouhouCardEngine.CompareOperator.greaterEquals", EDITOR_ENUM_CMP_OPERATOR_GREATER_EQUAL },
             { "TouhouCardEngine.CompareOperator.less", EDITOR_ENUM_CMP_OPERATOR_LESS },
             { "TouhouCardEngine.CompareOperator.lessEquals", EDITOR_ENUM_CMP_OPERATOR_LESS_EQUAL },
+
+
+            { "Game.CardDefineSelect.Spell", EDITOR_ENUM_CARD_TYPE_SPELL },
+            { "Game.CardDefineSelect.Servant", EDITOR_ENUM_CARD_TYPE_SERVANT },
+            { "Game.CardDefineSelect.Skill", EDITOR_ENUM_CARD_TYPE_SKILL },
+            { "Game.CardDefineSelect.Master", EDITOR_ENUM_CARD_TYPE_MASTER },
+            { "Game.CardDefineSelect.Item", EDITOR_ENUM_CARD_TYPE_ITEM },
         };
         readonly Dictionary<string, FunctionDefine> _functionDefineDict = new Dictionary<string, FunctionDefine>
         {

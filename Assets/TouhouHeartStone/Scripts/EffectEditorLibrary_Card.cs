@@ -64,6 +64,7 @@ namespace Game
         /// <returns></returns>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        [Obsolete]
         public static Card getRandomCard(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
             return cards?.random(game);

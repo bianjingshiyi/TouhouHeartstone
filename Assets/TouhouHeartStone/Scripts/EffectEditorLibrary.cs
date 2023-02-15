@@ -234,6 +234,7 @@ namespace Game
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        [Obsolete]
         public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, Scope scope,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION, isConst: true)] ActionValueRef condition)
         {
@@ -256,6 +257,7 @@ namespace Game
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        [Obsolete]
         public static Card[] getCardsWithCondition(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
@@ -283,6 +285,7 @@ namespace Game
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_COUNT, StringTable.EDITOR_NODE_CATEGORY_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)]
+        [Obsolete]
         public static int getCardsCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
             if (cards == null)
