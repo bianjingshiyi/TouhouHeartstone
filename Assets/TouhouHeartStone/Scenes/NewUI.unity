@@ -7521,6 +7521,7 @@ MonoBehaviour:
     masterCardRef:
       cardPoolId: 0
       defineId: 0
+    cardPoolList: []
     cardList: []
   _useTestDeck: 0
   _testDeck:
@@ -7529,6 +7530,7 @@ MonoBehaviour:
     masterCardRef:
       cardPoolId: 0
       defineId: 0
+    cardPoolList: []
     cardList: []
   _deck:
   - cardPoolId: 0
@@ -10281,11 +10283,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2528648385505843789, guid: fde8c54b96186e446ba2f765c6726d7b,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 2863974434785024941, guid: fde8c54b96186e446ba2f765c6726d7b,
         type: 3}

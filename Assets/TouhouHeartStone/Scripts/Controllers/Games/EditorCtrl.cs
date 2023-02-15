@@ -1,6 +1,7 @@
 ﻿using BJSYGameCore;
 using Game;
 using MongoDB.Bson.Serialization;
+using MukioI18n;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -96,6 +97,8 @@ namespace Controllers
             _ui.onClickDeleteCurCardPoolButton += onClickDeleteCurCardPoolButton;
             _ui.onDeckNameInputFieldValueChanged += onDeckNameInputFieldValueChanged;
             _ui.onClickNewCardButton += onClickNewCardButton;
+            _ui.onClickExportCardPoolButton += onClickExportCardPoolButton;
+            _ui.onClickImportCardPoolButton += onClickImportCardPoolButton;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCard;
             _cardPoolViewPanelCtrl.onUpdateCardListItem += onUpdateCardListItem;
@@ -221,6 +224,62 @@ namespace Controllers
                 }
             }
         }
+
+        [TranslateMsg]
+        const string EXPORT_BEFORE_SAVE = "当前卡池含有未保存的修改，请在导出前保存修改";
+
+        [TranslateMsg("{0}是路径")]
+        const string EXPORT_SUCCESS = "卡池已导出至 {0}";
+        [TranslateMsg]
+        const string IMPORT_SUCCESS = "卡池已导入";
+
+        /// <summary>
+        /// 当点击导出按钮，导出当前编辑的卡池
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        private async void onClickExportCardPoolButton()
+        {
+            if (hasUnsavedChanges)
+            {
+                game.ui.dialog.ShowConfirm(
+                    game.i18n._(StringTable.HINT_TITLE),
+                    game.i18n._(EXPORT_BEFORE_SAVE), null);
+                return;
+            }
+            try
+            {
+                var path = await game.card.exportCardPool(_curCardPoolInfo);
+                if (path != null)
+                {
+                    game.ui.dialog.ShowConfirm(game.i18n._(StringTable.HINT_TITLE), game.i18n._(EXPORT_SUCCESS, path));
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), e.Message);
+            }
+        }
+
+        private async void onClickImportCardPoolButton()
+        {
+            try
+            {
+                bool success = await game.card.importCardPool();
+                if (success)
+                {
+                    game.ui.dialog.ShowConfirm(game.i18n._(StringTable.HINT_TITLE), game.i18n._(IMPORT_SUCCESS));
+                    await getCardPoolsInfoAsync();
+                    await updateDeckListUI();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+                game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), e.Message);
+            }
+        }
+
         /// <summary>
         /// 当点击返回浏览卡池按钮，清空字段并切换回浏览卡池状态
         /// </summary>

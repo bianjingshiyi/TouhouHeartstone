@@ -183,6 +183,44 @@ namespace Game
             Debug.Log("保存卡池" + path + "成功");
             return true;
         }
+
+        /// <summary>
+        /// 解析卡池文件
+        /// </summary>
+        /// <param name="lines">文件文本行</param>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
+        public (CardPoolInfo cardPoolInfo, CardPool cardPool) parseCardPool(string[] lines)
+        {
+            string infoJson = lines[0];
+            CardPoolInfo cardPoolInfo = JsonHelper.fromJson<CardPoolInfo>(infoJson);
+
+            var cardPoolId = cardPoolInfo.cardPoolId;
+            if (cardPoolInfo.versionNumber >= CARD_POOL_VERSION_1 || cardPoolInfo.version >= CARD_POOL_VERSION_0_3)
+            {
+                var remain = string.Join("\n", lines.Skip(1));
+                var cardPool = parseCardPool_v1(remain, cardPoolId);
+                return (cardPoolInfo, cardPool);
+            }
+            else if (cardPoolInfo.version >= CARD_POOL_VERSION_0_2)
+            {
+                var remain = string.Join("\n", lines.Skip(1));
+                var cardPool = parseCardPool_v0_12(remain);
+                updateActionDefine_v0_2(cardPool, cardPoolId);
+                return (cardPoolInfo, cardPool);
+            }
+            else if (cardPoolInfo.version == CARD_POOL_VERSION_0_1)
+            {
+                var cardPool = parseCardPool_v0_12(lines[1]);
+                return (cardPoolInfo, cardPool);
+            }
+            else
+            {
+                var cardPool = parseCardPool_v0_0(lines.Skip(1).ToArray());
+                return (cardPoolInfo, cardPool);
+            }
+        }
+
         /// <summary>
         /// 从目标路径上加载卡池
         /// </summary>
@@ -198,171 +236,29 @@ namespace Game
             string[] lines;
             if (path.StartsWith("sa:"))
             {
-                lines = await game.fileManager.readStreamingTextFile(path);
+                lines = await game.fileManager.readStreamingTextFile(path, 0, 0);
             }
             else
             {
-                lines = await game.fileManager.readTextFile(path);
+                lines = await game.fileManager.readTextFile(path, 0, 0);
             }
             if (lines == null || lines.Length < 1)
             {
                 throw new FileLoadException("卡池文件" + path + "为空");
             }
-            string json = lines[0];
-            CardPoolInfo cardPoolInfo = JsonHelper.fromJson<CardPoolInfo>(json);
+            CardPoolInfo cardPoolInfo;
             CardPool cardPool;
-            if (cardPoolInfo.versionNumber >= CARD_POOL_VERSION_1)
+            try
             {
-                cardPool = await loadCardPool_v1(path, cardPoolInfo);
+                (cardPoolInfo, cardPool) = parseCardPool(lines);
             }
-            else if (cardPoolInfo.version >= CARD_POOL_VERSION_0_3)
+            catch (Exception e)
             {
-                cardPool = await loadCardPool_v1(path, cardPoolInfo);
+                throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
             }
-            else if (cardPoolInfo.version >= CARD_POOL_VERSION_0_2)
-            {
-                if (path.StartsWith("sa:"))
-                {
-                    json = await game.fileManager.readStreamingTextFileToEnd(path, 1);
-                }
-                else
-                {
-                    json = await game.fileManager.readTextFileToEnd(path, 1);
-                }
-                try
-                {
-                    cardPool = JsonHelper.fromJson<CardPool>(json);
-                }
-                catch (Exception e)
-                {
-                    throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
-                }
-                _cardPoolInfoDict[path] = cardPoolInfo;
-                _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
-                if (!_runtimeGenActDefDict.TryGetValue(cardPoolInfo.cardPoolId, out var actionDefineList))
-                {
-                    actionDefineList = new List<GeneratedActionDefine>();
-                    _runtimeGenActDefDict.Add(cardPoolInfo.cardPoolId, actionDefineList);
-                }
-                actionDefineList.Clear();
-                actionDefineList.AddRange(cardPool.actionDefineList.ConvertAll(s => s.toGeneratedActionDefine(game.editor.getTypeByName)));
-            }
-            else if (cardPoolInfo.version == CARD_POOL_VERSION_0_1)
-            {
-                if (path.StartsWith("sa:"))
-                {
-                    lines = await game.fileManager.readStreamingTextFile(path, 1, 1);
-                }
-                else
-                {
-                    lines = await game.fileManager.readTextFile(path, 1, 1);
-                }
-                json = lines[0];
-                try
-                {
-                    cardPool = JsonHelper.fromJson<CardPool>(json);
-                }
-                catch (Exception e)
-                {
-                    throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
-                }
-                _cardPoolInfoDict[path] = cardPoolInfo;
-                _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
-            }
-            else
-            {
-                cardPool = new CardPool();
-                if (path.StartsWith("sa:"))
-                {
-                    lines = await game.fileManager.readStreamingTextFile(path, 1, 5);
-                }
-                else
-                {
-                    lines = await game.fileManager.readTextFile(path, 1, 5);
-                }
-                //卡牌
-                if (lines.Length > 0)
-                {
-                    json = lines[0];
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        try
-                        {
-                            cardPool.cardDefineList.AddRange(JsonHelper.fromJson<CardDefine[]>(json));
-                        }
-                        catch (Exception e)
-                        {
-                            throw new FormatException("反序列化卡池" + path + "的卡牌失败：" + e, e);
-                        }
-                    }
-                }
-                //卡牌皮肤
-                if (lines.Length > 1)
-                {
-                    json = lines[1];
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        try
-                        {
-                            cardPool.cardSkinList.AddRange(JsonHelper.fromJson<CardSkinData[]>(json));
-                        }
-                        catch (Exception e)
-                        {
-                            throw new FormatException("反序列化卡池" + path + "的卡牌皮肤失败：" + e, e);
-                        }
-                    }
-                }
-                //编辑器信息
-                if (lines.Length > 2)
-                {
-                    json = lines[2];
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        try
-                        {
-                            cardPool.actionNodeGraphInfoList.AddRange(JsonHelper.fromJson<ActionNodeGraphInfo[]>(json));
-                        }
-                        catch (Exception e)
-                        {
-                            throw new FormatException("反序列化卡池" + path + "的编辑器信息失败：" + e, e);
-                        }
-                    }
-                }
-                //增益
-                if (lines.Length > 3)
-                {
-                    json = lines[3];
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        try
-                        {
-                            cardPool.buffDefineList.AddRange(JsonHelper.fromJson<GeneratedBuffDefine[]>(json));
-                        }
-                        catch (Exception e)
-                        {
-                            throw new FormatException("反序列化卡池" + path + "的增益失败：" + e, e);
-                        }
-                    }
-                }
-                //增益皮肤
-                if (lines.Length > 4)
-                {
-                    json = lines[4];
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        try
-                        {
-                            cardPool.buffSkinList.AddRange(JsonHelper.fromJson<BuffSkin[]>(json));
-                        }
-                        catch (Exception e)
-                        {
-                            throw new FormatException("反序列化卡池" + path + "的增益皮肤失败：" + e, e);
-                        }
-                    }
-                }
-                _cardPoolInfoDict[path] = cardPoolInfo;
-                _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
-            }
+
+            addCardPool(cardPool, cardPoolInfo, path);
+
             //错误信息修复
             bool hasUnsavedFix = false;
             Dictionary<string, ActionDefine> actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
@@ -1108,6 +1004,162 @@ namespace Game
                 }
             }
         }
+
+        /// <summary>
+        /// 向当前卡池信息添加一个卡池
+        /// </summary>
+        /// <param name="cardPool"></param>
+        /// <param name="info"></param>
+        /// <param name="filePath"></param>
+        void addCardPool(CardPool cardPool, CardPoolInfo info, string filePath)
+        {
+            _cardPoolInfoDict[filePath] = info;
+            _cardPoolDict[info.cardPoolId] = cardPool;
+        }
+
+        /// <summary>
+        /// 解析卡池文件，版本0.3-1.0
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="cardPoolID"></param>
+        /// <returns></returns>
+        CardPool parseCardPool_v1(string json, long cardPoolID)
+        {
+            SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
+            CardPool cardPool = serializableCardPool.toCardPool(game.editor.getTypeByName);
+            for (int i = 0; i < cardPool.cardDefineList.Count; i++)
+            {
+                cardPool.cardDefineList[i].cardPoolId = cardPoolID;
+            }
+            for (int i = 0; i < cardPool.buffDefineList.Count; i++)
+            {
+                cardPool.buffDefineList[i].cardPoolId = cardPoolID;
+            }
+            return cardPool;
+        }
+
+        /// <summary>
+        /// 解析卡池文件，版本0.1-0.2
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="cardPoolID"></param>
+        /// <returns></returns>
+        CardPool parseCardPool_v0_12(string json)
+        {
+            var cardPool = JsonHelper.fromJson<CardPool>(json);
+            return cardPool;
+        }
+
+        /// <summary>
+        /// 解析卡池文件，版本0.0
+        /// </summary>
+        /// <param name="lines"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
+        CardPool parseCardPool_v0_0(string[] lines)
+        {
+            var cardPool = new CardPool();
+
+            //卡牌
+            if (lines.Length > 0)
+            {
+                var json = lines[0];
+                if (!string.IsNullOrEmpty(json))
+                {
+                    try
+                    {
+                        cardPool.cardDefineList.AddRange(JsonHelper.fromJson<CardDefine[]>(json));
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException("反序列化卡池卡牌失败：" + e, e);
+                    }
+                }
+            }
+            //卡牌皮肤
+            if (lines.Length > 1)
+            {
+                var json = lines[1];
+                if (!string.IsNullOrEmpty(json))
+                {
+                    try
+                    {
+                        cardPool.cardSkinList.AddRange(JsonHelper.fromJson<CardSkinData[]>(json));
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException("反序列化卡池卡牌皮肤失败：" + e, e);
+                    }
+                }
+            }
+            //编辑器信息
+            if (lines.Length > 2)
+            {
+                var json = lines[2];
+                if (!string.IsNullOrEmpty(json))
+                {
+                    try
+                    {
+                        cardPool.actionNodeGraphInfoList.AddRange(JsonHelper.fromJson<ActionNodeGraphInfo[]>(json));
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException("反序列化卡池编辑器信息失败：" + e, e);
+                    }
+                }
+            }
+            //增益
+            if (lines.Length > 3)
+            {
+                var json = lines[3];
+                if (!string.IsNullOrEmpty(json))
+                {
+                    try
+                    {
+                        cardPool.buffDefineList.AddRange(JsonHelper.fromJson<GeneratedBuffDefine[]>(json));
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException("反序列化卡池增益失败：" + e, e);
+                    }
+                }
+            }
+            //增益皮肤
+            if (lines.Length > 4)
+            {
+                var json = lines[4];
+                if (!string.IsNullOrEmpty(json))
+                {
+                    try
+                    {
+                        cardPool.buffSkinList.AddRange(JsonHelper.fromJson<BuffSkin[]>(json));
+                    }
+                    catch (Exception e)
+                    {
+                        throw new FormatException("反序列化卡池增益皮肤失败：" + e, e);
+                    }
+                }
+            }
+            return cardPool;
+        }
+
+        /// <summary>
+        /// 更新自定义ActionDefine的
+        /// </summary>
+        /// <param name="cardPool"></param>
+        /// <param name="cardPoolID"></param>
+        void updateActionDefine_v0_2(CardPool cardPool, long cardPoolID)
+        {
+            if (!_runtimeGenActDefDict.TryGetValue(cardPoolID, out var actionDefineList))
+            {
+                actionDefineList = new List<GeneratedActionDefine>();
+                _runtimeGenActDefDict.Add(cardPoolID, actionDefineList);
+            }
+            actionDefineList.Clear();
+            actionDefineList.AddRange(cardPool.actionDefineList.ConvertAll(s => s.toGeneratedActionDefine(game.editor.getTypeByName)));
+        }
+
+        [Obsolete("Use parseCardPool_v1 and addCardPool instead.")]
         private async Task<CardPool> loadCardPool_v1(string path, CardPoolInfo cardPoolInfo)
         {
             string json = path.StartsWith("sa:") ?
@@ -1116,29 +1168,16 @@ namespace Game
             CardPool cardPool;
             try
             {
-                //json = json.Replace("CardReference", "DefineReference");
-                //json = Regex.Replace(json,
-                //    "\"cardPoolId\"\\s*:\\s*(?<cardPoolId>-?\\d+)\\s*,\\s*\"(cardId|id)\"\\s*:\\s*(?<defineId>-?\\d+)",
-                //    "\"cardPoolId\" : ${cardPoolId}, \"defineId\" : ${id}");
-                SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
-                cardPool = serializableCardPool.toCardPool(game.editor.getTypeByName);
-                for (int i = 0; i < cardPool.cardDefineList.Count; i++)
-                {
-                    cardPool.cardDefineList[i].cardPoolId = cardPoolInfo.cardPoolId;
-                }
-                for (int i = 0; i < cardPool.buffDefineList.Count; i++)
-                {
-                    cardPool.buffDefineList[i].cardPoolId = cardPoolInfo.cardPoolId;
-                }
+                cardPool = parseCardPool_v1(json, cardPoolInfo.cardPoolId);
             }
             catch (Exception e)
             {
                 throw new FormatException("反序列化卡池" + path + "失败", e);
             }
-            _cardPoolInfoDict[path] = cardPoolInfo;
-            _cardPoolDict[cardPoolInfo.cardPoolId] = cardPool;
+            addCardPool(cardPool, cardPoolInfo, path);
             return cardPool;
         }
+
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
             string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, cardPool.cardPoolName + "." + cardPoolFilePostfix);
@@ -1160,6 +1199,20 @@ namespace Game
                 }
             }
             return path;
+        }
+
+        /// <summary>
+        /// 建立需要的卡池文件夹
+        /// </summary>
+        void prepareCardpoolDir()
+        {
+            var cardPoolDir = Path.Combine(Application.persistentDataPath, cardPoolDirName);
+            if (!Directory.Exists(cardPoolDir))
+                Directory.CreateDirectory(cardPoolDir);
+
+            var picDir = Path.Combine(Application.persistentDataPath, textureDirName);
+            if (!Directory.Exists(picDir))
+                Directory.CreateDirectory(picDir);
         }
         #endregion
         #region 属性字段
