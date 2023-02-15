@@ -273,14 +273,14 @@
         <name>集合</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要保留元素内容的集合]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>System.Array</type>
         <name>减去的集合</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要从“集合”参数中去除的元素]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -289,12 +289,12 @@
         <name>集合</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[集合相减之后的结果]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
-    <example><![CDATA[]]></example>
+    <summary><![CDATA[从“集合”中去除“减去的集合”所包含的元素，并输出一个相减之后的新集合。]]></summary>
+    <example><![CDATA[<ul><li>随机选择一个仆从，消灭除了该仆从之外的所有仆从。</li><li>从四项抉择中选择两项。</li></ul>]]></example>
   </ActionComment>
   <ActionComment>
     <defineName>GetVariable</defineName>
