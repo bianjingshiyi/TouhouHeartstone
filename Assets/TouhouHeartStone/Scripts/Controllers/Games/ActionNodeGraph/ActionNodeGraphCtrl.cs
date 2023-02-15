@@ -2635,6 +2635,29 @@ namespace Controllers
         const string EDITOR_PARAM_OPERATOR = "运算符";
         [TranslateMsg("内置节点参数，通常用于表示计算结果")]
         const string EDITOR_PARAM_RESULT = "结果";
+        [TranslateMsg("节点参数 PropertyName")]
+        const string EDITOR_PARAM_PROPERTY_NAME = "属性名";
+        [TranslateMsg("节点参数 RemoveModifierEvent")]
+        const string EDITOR_PARAM_REMOVE_MODIFIER_EVENT = "移除修改器事件";
+        [TranslateMsg("节点参数 isSet")]
+        const string EDITOR_PARAM_IS_SET = "设置";
+        [TranslateMsg("节点参数 VariableName")]
+        const string EDITOR_PARAM_VARIABLE_NAME = "变量名";
+        [TranslateMsg("节点参数 PileName")]
+        const string EDITOR_PARAM_PILE_NAME = "牌堆名";
+        [TranslateMsg("节点参数 IsChanged")]
+        const string EDITOR_PARAM_IS_CHANGED = "是否已改变";
+        [TranslateMsg("节点参数 DamageEvent")]
+        const string EDITOR_PARAM_DAMAGE_EVENT = "伤害事件";
+        [TranslateMsg("节点参数 DamageSource")]
+        const string EDITOR_PARAM_DAMAGE_SOURCE = "伤害来源";
+        [TranslateMsg("节点参数 Amount")]
+        const string EDITOR_PARAM_DAMAGE_AMOUNT = "伤害量";
+        [TranslateMsg("节点参数 Target")]
+        const string EDITOR_PARAM_TARGET = "目标";
+        [TranslateMsg("节点参数 TargetName")]
+        const string EDITOR_PARAM_TARGET_NAME = "目标名";
+
         [TranslateMsg("整数运算符，加法 +")]
         const string EDITOR_ENUM_INT_OPERATOR_ADD = "加";
         [TranslateMsg("整数运算符，减法 -")]
@@ -2702,8 +2725,22 @@ namespace Controllers
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
             // 内置参数
             { "value", StringTable.EDITOR_PARAM_NAME_VALUE },
+            { "Value", StringTable.EDITOR_PARAM_NAME_VALUE },
             { "operator", EDITOR_PARAM_OPERATOR },
             { "result", EDITOR_PARAM_RESULT },
+            { "PropertyName", EDITOR_PARAM_PROPERTY_NAME },
+            { "RemoveModifierEvent", EDITOR_PARAM_PROPERTY_NAME },
+            { "VariableName", EDITOR_PARAM_VARIABLE_NAME },
+            { "isSet", EDITOR_PARAM_IS_SET },
+            { "Collection", StringTable.EDITOR_PARAM_NAME_COLLECTION },
+            { "PileName", EDITOR_PARAM_PILE_NAME },
+            { "IsChanged", EDITOR_PARAM_IS_CHANGED },
+            { "DamageEvent", EDITOR_PARAM_DAMAGE_EVENT },
+            { "DamageSource", EDITOR_PARAM_DAMAGE_SOURCE },
+            { "Amount", EDITOR_PARAM_DAMAGE_AMOUNT },
+            { "Target", EDITOR_PARAM_TARGET },
+            { "TargetName", EDITOR_PARAM_TARGET_NAME },
+            
             // Enum
             { "TouhouCardEngine.IntegerOperator.add", EDITOR_ENUM_INT_OPERATOR_ADD },
             { "TouhouCardEngine.IntegerOperator.sub", EDITOR_ENUM_INT_OPERATOR_SUB },
