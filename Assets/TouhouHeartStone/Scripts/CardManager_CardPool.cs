@@ -153,8 +153,10 @@ namespace Game
             cardPoolInfo.dependencies = getCardPoolReferences(cardPoolInfo.cardPoolId);
 
             SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
-            //对缓存的图片进行保存
-            await saveExternalImages(cardPoolInfo.cardPoolId);
+            // 检查并修复老旧大卡图
+            await fixLargeImage(cardPoolInfo.cardPoolId, cardPool);
+            // 对缓存的图片进行保存
+            await saveExternalImages(cardPoolInfo.cardPoolId, cardPool);
             //保存文件
             string path = cardPoolPath;
             if (isStandardCardPool(cardPoolInfo))

@@ -94,13 +94,8 @@ namespace Game
         /// 保存外部图片，并将指定卡池中所有对外部图片的引用都替换为保存后的路径。
         /// </summary>
         /// <returns></returns>
-        public async Task saveExternalImages(long cardPoolId)
+        public async Task saveExternalImages(long cardPoolId, CardPool cardPool)
         {
-            CardPoolInfo cardPoolInfo = getCardPoolInfo(cardPoolId);
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
-            {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
-            }
             //对缓存的图片进行保存
             List<string> removeSpritePathList = new List<string>();
             List<KeyValuePair<string, Sprite>> savedPathSpritePairList = new List<KeyValuePair<string, Sprite>>();
@@ -164,6 +159,60 @@ namespace Game
                 }
             }
         }
+
+        /// <summary>
+        /// 保存时修正过大的图片
+        /// </summary>
+        /// <param name="cardPoolId"></param>
+        /// <param name="cardPool"></param>
+        /// <returns></returns>
+        public async Task fixLargeImage(long cardPoolId, CardPool cardPool)
+        {
+            // 已处理的图片列表，若为null则不需要替换
+            Dictionary<string, string> replacedImages = new Dictionary<string, string>();
+
+            Func<string, Task<string>> replaceImage = async (string imagePath) =>
+            {
+                if (string.IsNullOrEmpty(imagePath))
+                    return imagePath;
+
+                if (replacedImages.ContainsKey(imagePath))
+                    return replacedImages[imagePath];
+
+                string newPath = ""; // 加载失败或图像尺寸正常的设定为空
+                var image = await loadImage(imagePath, cardPoolId, false);
+                if (image != null)
+                {
+                    if (image.texture.width > 512 && image.texture.height > 512)
+                    {
+                        var scaledTexture = ResizeImage(image.texture, 512, 512);
+                        newPath = await saveImage(cardPoolId, scaledTexture);
+                        Debug.Log($"卡图 {imagePath} 已缩小，新路径为 {newPath}");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"卡图 {imagePath} 加载失败，跳过缩放检查");
+                }
+
+                replacedImages[imagePath] = newPath;
+                return newPath;
+            };
+
+            foreach (var skin in cardPool.cardSkinList)
+            {
+                var newPath = await replaceImage(skin.imagePath);
+                if (!string.IsNullOrEmpty(newPath))
+                    skin.imagePath = newPath;
+            }
+            foreach (var skin in cardPool.buffSkinList)
+            {
+                var newPath = await replaceImage(skin.imagePath);
+                if (newPath != null)
+                    skin.imagePath = newPath;
+            }
+        }
+
         public async Task<string> saveImage(long cardPoolId, Texture2D texture, bool saveAsJpg = true, int jpgQuality = 90)
         {
             byte[] bytes = saveAsJpg ? texture.EncodeToJPG(jpgQuality) : texture.EncodeToPNG();
@@ -370,7 +419,7 @@ namespace Game
         /// <returns></returns>
         public static bool isHashNamedImage(string imagePath)
         {
-            return 
+            return
                 imagePath.Length == 68 &&
                 (imagePath.EndsWith(".jpg") || imagePath.EndsWith(".png")) &&
                 imagePath.Substring(0, 32).All(c => ('0' <= c && c <= '9') || ('a' <= c && c <= 'z'));
@@ -387,7 +436,7 @@ namespace Game
         static Texture2D RapidDownscale(Texture2D texture, int maxWidth, int maxHeight, out int times)
         {
             times = 0;
-            while(texture.width > maxWidth && texture.height > maxHeight)
+            while (texture.width > maxWidth && texture.height > maxHeight)
             {
                 times++;
                 Texture2D txt = new Texture2D(texture.width / 2, texture.height / 2);
@@ -405,7 +454,7 @@ namespace Game
             }
             return texture;
         }
-        
+
         /// <summary>
         /// 保持比例，将图像缩小到指定大小
         /// </summary>
@@ -463,6 +512,17 @@ namespace Game
         /// <returns></returns>
         public static Texture2D CropImage(Texture2D image, int x, int y, int w, int h)
         {
+            if (x < 0)
+            {
+                w += x;
+                x = 0;
+            }
+            if (y < 0)
+            {
+                h += y;
+                y = 0;
+            }
+
             if (x + w > image.width)
                 w = image.width - x;
             if (y + h > image.height)
