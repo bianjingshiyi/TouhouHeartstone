@@ -78,7 +78,7 @@ namespace Game
 
                         // 如果没有读取卡池，尝试读取卡池对象。
                         CardPool localCardPool = null;
-                        if (hasLocalPool && !game.card.tryGetCardPool(roomPool.cardPoolId, out localCardPool))
+                        if (hasLocalPool && !game.card.tryGetCardPool(roomPool.cardPoolId, out localCardPool) && !string.IsNullOrEmpty(cardPoolPath))
                         {
                             localCardPool = (await game.card.loadCardPool(cardPoolPath)).cardPool;
                         }

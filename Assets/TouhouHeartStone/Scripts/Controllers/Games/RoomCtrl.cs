@@ -185,7 +185,7 @@ namespace Controllers
                 }
             }
         }
-        public async void UpdateRoomData(RoomData roomData)
+        public void UpdateRoomData(RoomData roomData)
         {
             _currentRoomData = roomData;
             if (_currentRoomData == null)
@@ -485,6 +485,7 @@ namespace Controllers
             {
                 AddCardPools(_selectedAddCardPools);
                 closeAddCardPoolsPanel();
+                updateStartAndReadyButton();
             }
             else
             {
