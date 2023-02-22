@@ -290,11 +290,11 @@ namespace UI
         /// 打开添加房间卡池界面
         /// </summary>
         /// <param name="cards"></param>
-        public void openAddCardPoolsPanel(CardPoolInfoPack[] pools, IEnumerable<long> selectedCardPools)
+        public void openAddCardPoolsPanel(CardPoolInfoPack[] pools, IEnumerable<CardPoolReference> selectedCardPools)
         {
             (string name, Sprite image, Color color) getPoolData(CardPoolInfoPack pool)
             {
-                bool selected = selectedCardPools.Contains(pool.cardPoolId);
+                bool selected = selectedCardPools.Contains(pool.GetReference());
                 Color color = selected ? Color.grey : Color.white;
                 return (pool.cardPoolName, null, color);
             }

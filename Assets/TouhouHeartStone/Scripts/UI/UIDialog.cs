@@ -40,6 +40,10 @@ namespace UI
                 gameObject.SetActive(false);
                 onCancle?.Invoke();
             });
+            for (int i = 0; i < btnList.Count; i++)
+            {
+                btnList[i].gameObject.SetActive(false);
+            }
 
             gameObject.SetActive(true);
         }
@@ -64,6 +68,11 @@ namespace UI
 
             cancleButton.gameObject.SetActive(false);
             confirmButton.gameObject.SetActive(true);
+
+            for (int i = 0; i < btnList.Count; i++)
+            {
+                btnList[i].gameObject.SetActive(false);
+            }
 
             gameObject.SetActive(true);
         }

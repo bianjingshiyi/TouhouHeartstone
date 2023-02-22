@@ -1,4 +1,6 @@
 ﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
+using TouhouCardEngine;
 
 namespace Controllers
 {
@@ -11,6 +13,8 @@ namespace Controllers
         public float version;
         public int versionNumber;
         public int editTime;
+        public CardPoolReference[] dependencyRefs;
+        [BsonIgnoreIfNull]
         public long[] dependencies;
     }
 }

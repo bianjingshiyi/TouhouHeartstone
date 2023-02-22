@@ -21,15 +21,15 @@ namespace Game
             void addCardPoolDeps(long poolId)
             {
                 var poolInfo = cardManager.getCardPoolInfo(poolId);
-                if (poolInfo != null && poolInfo.dependencies != null)
+                if (poolInfo != null && poolInfo.dependencyRefs != null)
                 {
-                    foreach (var poolRef in poolInfo.dependencies)
+                    foreach (var poolRef in poolInfo.dependencyRefs)
                     {
-                        if (dependencies.Contains(poolRef))
+                        if (dependencies.Contains(poolRef.cardPoolId))
                             return;
 
-                        dependencies.Add(poolRef);
-                        addCardPoolDeps(poolRef);
+                        dependencies.Add(poolRef.cardPoolId);
+                        addCardPoolDeps(poolRef.cardPoolId);
                     }
                 }
             }
@@ -53,9 +53,9 @@ namespace Game
                 foreach (var checkId in cardPoolFullSet)
                 {
                     var poolInfo = cardManager.getCardPoolInfo(checkId);
-                    if (poolInfo == null || poolInfo.dependencies == null)
+                    if (poolInfo == null || poolInfo.dependencyRefs == null)
                         continue;
-                    if (poolInfo.dependencies.Any(p => p == poolId))
+                    if (poolInfo.dependencyRefs.Any(p => p.cardPoolId == poolId))
                     {
                         if (pools.Contains(checkId))
                             continue;
@@ -83,12 +83,44 @@ namespace Game
             {
                 if (pool != null && pool.dependencies != null)
                 {
-                    foreach (var poolId in pool.dependencies)
+                    foreach (var poolRef in pool.dependencies)
                     {
-                        var poolInfo = cardManager.getCardPoolInfo(poolId);
+                        var poolInfo = cardManager.getCardPoolInfo(poolRef.cardPoolId);
                         if (poolInfo == null)
                             continue;
                         var poolPack = poolInfo.ToCardPoolInfoPack();
+                        if (dependencies.Contains(poolPack))
+                            return;
+
+                        dependencies.Add(poolPack);
+                        addCardPoolDeps(poolPack);
+                    }
+                }
+            }
+            return dependencies.ToArray();
+        }
+
+
+        /// <summary>
+        /// 获取目标卡池依赖的，特定集合内所有卡池。
+        /// </summary>
+        /// <param name="pack">目标卡池。</param>
+        /// <param name="cardPoolFullSet">卡池全集，从这个范围内寻找依赖的卡池。</param>
+        /// <returns>目标卡池依赖的所有卡池（不包括目标卡池）。</returns>
+        public static CardPoolInfoPack[] GetDependenciesInSet(this CardPoolInfoPack pack, IEnumerable<CardPoolInfoPack> cardPoolFullSet)
+        {
+            HashSet<CardPoolInfoPack> dependencies = new HashSet<CardPoolInfoPack>();
+            addCardPoolDeps(pack);
+
+            void addCardPoolDeps(CardPoolInfoPack pool)
+            {
+                if (pool != null && pool.dependencies != null)
+                {
+                    foreach (var poolRef in pool.dependencies)
+                    {
+                        var poolPack = cardPoolFullSet.FirstOrDefault(p => p.IsCardPoolEquals(poolRef));
+                        if (poolPack == null)
+                            continue;
                         if (dependencies.Contains(poolPack))
                             return;
 
@@ -115,7 +147,7 @@ namespace Game
             {
                 foreach (var pack in cardPoolFullSet)
                 {
-                    if (pack.dependencies.Any(p => p == poolPack.cardPoolId))
+                    if (pack.dependencies.Any(r => poolPack.IsCardPoolEquals(r)))
                     {
 
                         if (pools.Contains(pack))
@@ -131,7 +163,7 @@ namespace Game
         }
         public static CardPoolInfoPack ToCardPoolInfoPack(this CardPoolInfo info)
         {
-            return new CardPoolInfoPack(info.cardPoolId, info.cardPoolName, info.editTime, info.dependencies ?? new long[0]);
+            return new CardPoolInfoPack(info.cardPoolId, info.cardPoolName, info.editTime, info.dependencyRefs ?? new CardPoolReference[0]);
         }
         public readonly static CardPoolInfoPack BuiltinCardPoolInfoPack = new CardPoolInfoPack(0, StringTable.CARDPOOL_NAME_BUILTIN, 0);
         

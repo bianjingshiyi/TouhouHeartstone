@@ -46,21 +46,7 @@ namespace Game
                     Debug.LogWarning("读取卡池信息" + path + "为空");
                     continue;
                 }
-                CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(lines[0]);
-                //去重，多份文件中可能包含相同的卡池
-                string conflictCardPoolPath = null;
-                foreach (var pair in _cardPoolInfoDict)
-                {
-                    if (pair.Value.cardPoolId == cardPool.cardPoolId)
-                    {
-                        conflictCardPoolPath = pair.Key;
-                        break;
-                    }
-                }
-                if (conflictCardPoolPath != null)
-                {
-                    _cardPoolInfoDict.Remove(conflictCardPoolPath);
-                }
+                CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
                 _cardPoolInfoDict.Add(path, cardPool);
                 onCardPoolInfoRead?.Invoke(path, cardPool);
                 Debug.Log("读取卡池信息" + path + "完毕");
@@ -150,7 +136,8 @@ namespace Game
             }
             var cardPool = _cardPoolDict[cardPoolInfo.cardPoolId];
             // 获取卡池中对其他卡池的卡牌的引用。
-            cardPoolInfo.dependencies = getCardPoolReferences(cardPoolInfo.cardPoolId);
+            // TODO: 在被引用的卡池有新版本后，卡池保存时会提示玩家需要将卡池引用修改到新版本。
+            cardPoolInfo.dependencyRefs = evaluateCardPoolDependencies(cardPoolInfo.cardPoolId);
 
             SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
             // 检查并修复老旧大卡图
@@ -187,6 +174,45 @@ namespace Game
         }
 
         /// <summary>
+        /// 解析卡池文件的头文件信息，并返回卡池信息。
+        /// </summary>
+        /// <param name="line">文件信息</param>
+        /// <returns>卡池信息。</returns>
+        /// <exception cref="FormatException"></exception>
+        public CardPoolInfo parseCardPoolInfo(string line)
+        {
+            CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(line);
+
+            //去重，多份文件中可能包含相同的卡池
+            string conflictCardPoolPath = null;
+            foreach (var pair in _cardPoolInfoDict)
+            {
+                if (pair.Value.cardPoolId == cardPool.cardPoolId)
+                {
+                    conflictCardPoolPath = pair.Key;
+                    break;
+                }
+            }
+            if (conflictCardPoolPath != null)
+            {
+                _cardPoolInfoDict.Remove(conflictCardPoolPath);
+            }
+            // 旧版本转换
+            // 将dependencies转为dependencyRefs;
+            if (cardPool.dependencyRefs == null && cardPool.dependencies != null)
+            {
+                cardPool.dependencyRefs = new CardPoolReference[cardPool.dependencies.Length];
+                for (int i = 0; i < cardPool.dependencies.Length; i++)
+                {
+                    var depPool = cardPool.dependencies[i];
+                    cardPool.dependencyRefs[i] = new CardPoolReference(depPool, 0);
+                }
+                cardPool.dependencies = null;
+            }
+            return cardPool;
+        }
+
+        /// <summary>
         /// 解析卡池文件
         /// </summary>
         /// <param name="lines">文件文本行</param>
@@ -195,7 +221,7 @@ namespace Game
         public (CardPoolInfo cardPoolInfo, CardPool cardPool) parseCardPool(string[] lines)
         {
             string infoJson = lines[0];
-            CardPoolInfo cardPoolInfo = JsonHelper.fromJson<CardPoolInfo>(infoJson);
+            CardPoolInfo cardPoolInfo = parseCardPoolInfo(infoJson);
 
             var cardPoolId = cardPoolInfo.cardPoolId;
             if (cardPoolInfo.versionNumber >= CARD_POOL_VERSION_1 || cardPoolInfo.version >= CARD_POOL_VERSION_0_3)
@@ -496,7 +522,7 @@ namespace Game
 
         public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(long cardPoolId, int version)
         {
-            string resID = CardPoolInfoPack.GetResourceID(cardPoolId, version);
+            string resID = CardPoolReference.GetResourceID(cardPoolId, version);
             if (game.cache.FileExists(game.fileManager, ResourceType.CardDefine, resID))
             {
                 string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
@@ -940,16 +966,16 @@ namespace Game
             return false;
         }
         /// <summary>
-        /// 获取一个卡池内对其他卡池的引用。
+        /// 重新获取一个卡池内对其他卡池的引用。
         /// </summary>
-        /// <param name="cardPoolId">要检查的卡池ID。</param>
+        /// <param name="cardPoolRef">要检查的卡池ID。</param>
         /// <returns>引用的其他卡池列表。</returns>
-        public long[] getCardPoolReferences(long cardPoolId)
+        public CardPoolReference[] evaluateCardPoolDependencies(long cardPoolId)
         {
-            HashSet<long> poolList = new HashSet<long>();
+            HashSet<CardPoolReference> poolList = new HashSet<CardPoolReference>();
             if (!tryGetCardPool(cardPoolId, out var cardPool))
             {
-                return new long[0];
+                return new CardPoolReference[0];
             }
             foreach (var card in cardPool.cardDefineList)
             {
@@ -980,7 +1006,12 @@ namespace Game
                 {
                     if (valueConst is DefineReference defRef && defRef.cardPoolId != cardPoolId)
                     {
-                        poolList.Add(defRef.cardPoolId);
+                        var depPoolInfo = getCardPoolInfo(defRef.cardPoolId);
+                        if (depPoolInfo != null)
+                        {
+                            CardPoolReference depRef = new CardPoolReference(defRef.cardPoolId, depPoolInfo.editTime);
+                            poolList.Add(depRef);
+                        }
                     }
                 }
             }

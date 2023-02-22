@@ -222,69 +222,48 @@ namespace Game
 
             var cardManager = getManager<CardManager>();
             //加载外部卡牌
-            HashSet<long> cardPoolIdSet = new HashSet<long>() { 0 };
-            Dictionary<long, Dictionary<int, CardDefine>> cardDict;
-            if (mode == GameMode.local)
+            Dictionary<long, Dictionary<int, CardDefine>> cardDict = new Dictionary<long, Dictionary<int, CardDefine>>();
+            Dictionary<long, Dictionary<int, BuffDefine>> buffDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
+            // 尝试从本地获取卡组，否则读取缓存卡组。
+            foreach (var pool in option.cardPools)
             {
-                // 本地模式，使用玩家本地的卡池。
-                foreach (var player in playerList)
-                {
-                    Deck deck = player.getDeck();
+                long poolId = pool.cardPoolId;
 
-                    var poolRefs = deck.getFullCardPools(cards);
-                    foreach (var poolId in poolRefs)
+                if (cards.isBuiltinCardPool(poolId))
+                {
+                    cardDict.Add(poolId, cards.GetCardDefines().ToDictionary(c => c.id));
+                    continue;
+                }
+                CardPool cardPool = null;
+                var poolInfo = cards.getCardPoolInfo(poolId);
+                // 尝试获取本地卡池的卡牌定义（要求版本正确）。
+                if (poolInfo != null && poolInfo.editTime == pool.version)
+                {
+                    if (!cards.tryGetCardPool(poolId, out cardPool))
                     {
-                        cardPoolIdSet.Add(poolId);
+                        if (cards.getCardPoolPath(poolId) is string path)
+                            cardPool = (await cards.loadCardPool(path)).cardPool;
                     }
                 }
-                cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
-            }
-            else
-            {
-                // 网络模式，尝试从本地获取卡组，否则读取缓存卡组。
-                // 内置卡组。
-                cardDict = await cards.reloadCardPoolsAndGetCardDefinesAsync(cardPoolIdSet);
-                foreach (var pool in option.cardPools)
+                // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
+                if (cardPool == null)
                 {
-                    if (pool.cardPoolId == 0)
-                    {
-                        continue;
-                    }
-                    long poolId = pool.cardPoolId;
-                    cardPoolIdSet.Add(poolId);
-
-                    IEnumerable<CardDefine> cardDefines;
-                    var localDefines = await cards.getOrLoadCardDefines(pool.cardPoolId);
-                    var poolInfo = cards.getCardPoolInfo(pool.cardPoolId);
-                    // 尝试获取本地卡池的卡牌定义（要求版本正确）。
-                    if (localDefines.Length > 0 && poolInfo != null && poolInfo.editTime == pool.version)
-                    {
-                        cardDefines = localDefines;
-                    }
-                    // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
-                    else
-                    {
-                        var defines = await cards.loadCachedCardDefinesAsync(pool.cardPoolId, pool.version);
-                        cardDefines = defines.defines;
-                    }
+                    cardPool = (await cards.loadCachedCardPoolAsync(poolId, pool.version)).cardPool;
+                }
+                if (cardPool != null)
+                {
+                    var cardDefines = cardPool.cardDefineList.ToArray();
+                    var buffDefines = cardPool.buffDefineList.ToArray();
                     cardDict.Add(poolId, cardDefines.ToDictionary(c => c.id));
+                    buffDict.Add(poolId, buffDefines.ToDictionary<BuffDefine, int>(c => c.id));
+                    // 加载自定义动作定义。
+                    foreach (var define in cardPool.actionDefineList)
+                    {
+                        game.addActionDefine(define.defineName, define);
+                    }
                 }
             }
-            var cardPools = cardManager.getCardPools(cardPoolIdSet);
-            Rule rule = new HearthStoneRule(
-                    cardDict,
-                    cardPools.ToDictionary(
-                        p => p.Key,
-                        p => p.Value.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine)));
-
-            // 加载自定义动作定义。
-            foreach (var cardPool in cardPools.Values)
-            {
-                foreach (var define in cardPool.actionDefineList)
-                {
-                    game.addActionDefine(define.defineName, define);
-                }
-            }
+            Rule rule = new HearthStoneRule(cardDict,buffDict);
             await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
                 rule,
                 option,
