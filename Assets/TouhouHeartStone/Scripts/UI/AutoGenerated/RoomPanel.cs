@@ -31,13 +31,11 @@ namespace UI
             this._IPText = this.transform.Find("Container").Find("TitleBar").Find("IP").GetComponent<Text>();
             this._RoomPlayerListScrollRect = this.transform.Find("Container").Find("RoomPlayerListScrollRect").GetComponent<ScrollRect>();
             this._RoomPlayerList = this.transform.Find("Container").Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
-            this._GameOptionPanelImage = this.transform.Find("Container").Find("GameOptionPanel").GetComponent<Image>();
-            this._GameOptionPanelVerticalLayoutGroup = this.transform.Find("Container").Find("GameOptionPanel").GetComponent<VerticalLayoutGroup>();
-            this._RandomSeedContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("RandomSeedContainer").GetComponent<GameOptionItemText>();
-            this._ShuffleContainerGameOptionItemToggle = this.transform.Find("Container").Find("GameOptionPanel").Find("ShuffleContainer").GetComponent<GameOptionItemToggle>();
-            this._InitReplacementContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
-            this._TurnTimeContainerGameOptionItemText = this.transform.Find("Container").Find("GameOptionPanel").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
-            this._IsSortedToggleGameOptionItemToggle = this.transform.Find("Container").Find("GameOptionPanel").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
+            this._RandomSeedContainerGameOptionItemText = this.transform.Find("Container/RoomPropScrollView/Viewport/Content").Find("RandomSeedContainer").GetComponent<GameOptionItemText>();
+            this._ShuffleContainerGameOptionItemToggle = this.transform.Find("Container/RoomPropScrollView/Viewport/Content").Find("ShuffleContainer").GetComponent<GameOptionItemToggle>();
+            this._InitReplacementContainerGameOptionItemText = this.transform.Find("Container/RoomPropScrollView/Viewport/Content").Find("InitReplacementContainer").GetComponent<GameOptionItemText>();
+            this._TurnTimeContainerGameOptionItemText = this.transform.Find("Container/RoomPropScrollView/Viewport/Content").Find("TurnTimeContainer").GetComponent<GameOptionItemText>();
+            this._IsSortedToggleGameOptionItemToggle = this.transform.Find("Container/RoomPropScrollView/Viewport/Content").Find("IsSortedToggle").GetComponent<GameOptionItemToggle>();
             this._QuitButtonButtonBlack = this.transform.Find("Container").Find("QuitButton").GetComponent<ButtonBlack>();
             this._StartButtonButtonBlack = this.transform.Find("Container").Find("StartButton").GetComponent<ButtonBlack>();
             this._DeckSelectionDeckListItem = this.transform.Find("Container").Find("DeckSelection").GetComponent<DeckListItem>();
@@ -120,32 +118,6 @@ namespace UI
                     this._RoomPlayerList = this.transform.Find("Container").Find("RoomPlayerListScrollRect").Find("Viewport").Find("RoomPlayerList").GetComponent<RoomPlayerList>();
                 }
                 return this._RoomPlayerList;
-            }
-        }
-        [SerializeField()]
-        private Image _GameOptionPanelImage;
-        public Image GameOptionPanelImage
-        {
-            get
-            {
-                if ((this._GameOptionPanelImage == null))
-                {
-                    this._GameOptionPanelImage = this.transform.Find("Container").Find("GameOptionPanel").GetComponent<Image>();
-                }
-                return this._GameOptionPanelImage;
-            }
-        }
-        [SerializeField()]
-        private VerticalLayoutGroup _GameOptionPanelVerticalLayoutGroup;
-        public VerticalLayoutGroup GameOptionPanelVerticalLayoutGroup
-        {
-            get
-            {
-                if ((this._GameOptionPanelVerticalLayoutGroup == null))
-                {
-                    this._GameOptionPanelVerticalLayoutGroup = this.transform.Find("Container").Find("GameOptionPanel").GetComponent<VerticalLayoutGroup>();
-                }
-                return this._GameOptionPanelVerticalLayoutGroup;
             }
         }
         [SerializeField()]

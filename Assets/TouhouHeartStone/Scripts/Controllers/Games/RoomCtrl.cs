@@ -255,6 +255,7 @@ namespace Controllers
             _ui.onClickDeckSelectPanelItem += onClickDeckSelectPanelItem;
             _ui.onClickCardPoolsSelectPanelItem += onClickCardPoolSelectPanelItem;
             _ui.onClickAddCardPoolsSelectPanelItem += onClickAddCardPoolSelectPanelItem;
+            _ui.onAddCardPoolsSelectItemToggle += onAddCardPoolSelectPanelItemToggle;
 
             _ui.onConfirmAddCardPools += onConfirmAddCardPools;
             _ui.onCancelAddCardPools += onCancelAddCardPools;
@@ -476,20 +477,14 @@ namespace Controllers
         private void onClickAddCardPoolSelectPanelItem(int index)
         {
             var pool = _addingCardPools[index];
-            // 已选中，取消选择。
-            if (_selectedAddCardPools.Contains(pool))
+            onAddCardPoolSelectPanelItemToggle(index, !_selectedAddCardPools.Contains(pool));
+        }
+        private void onAddCardPoolSelectPanelItemToggle(int index, bool value)
+        {
+            var pool = _addingCardPools[index];
+            if (value)
             {
-                _selectedAddCardPools.Remove(pool);
-                // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
-                foreach (var dep in pool.GetDependedCardPools(_addingCardPools))
-                {
-                    if (dep == null)
-                        continue;
-                    _selectedAddCardPools.Remove(dep);
-                }
-            }
-            else // 未选中，选择。
-            {
+                // 未选中，选择
                 _selectedAddCardPools.Add(pool);
                 // 选中一个卡池后，要把它的所有依赖也选中。
                 foreach (var dep in pool.GetDependenciesInSet(_addingCardPools))
@@ -497,6 +492,18 @@ namespace Controllers
                     if (dep == null)
                         continue;
                     _selectedAddCardPools.Add(dep);
+                }
+            }
+            else if (_selectedAddCardPools.Contains(pool))
+            {
+                // 已选中，取消选择。
+                _selectedAddCardPools.Remove(pool);
+                // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
+                foreach (var dep in pool.GetDependedCardPools(_addingCardPools))
+                {
+                    if (dep == null)
+                        continue;
+                    _selectedAddCardPools.Remove(dep);
                 }
             }
             _ui.openAddCardPoolsPanel(_addingCardPools, _selectedAddCardPools.Select(p => p.GetReference()));

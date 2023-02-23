@@ -75,22 +75,24 @@ namespace UI
                 deckListItem.onCardPoolAdd -= onAddClick;
             });
         }
-        public void updateAddCardPools((string name, Sprite image, Color color)[] deckViewData)
+        public void updateAddCardPools((string name, Sprite image, bool selected)[] deckViewData)
         {
             UIHelper.updateList(_deckListRoot, _deckListItemTemplate, _deckItemList, deckViewData.Length, (i, item) =>
             {
                 DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
                 deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
                 deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
-                deckListItem.HeadImage.color = deckViewData[i].color;
+                deckListItem.SetToggleValue(deckViewData[i].selected);
             }, item =>
             {
                 DeckListItem deckListItem = item.GetComponent<DeckListItem>();
                 deckListItem.onClick += onClickDeckListItemCallback;
+                deckListItem.onToggleValueChanged += (value) => onDeckListItemToggleValueChangedCallback(deckListItem, value);
             }, item =>
             {
                 DeckListItem deckListItem = item.GetComponent<DeckListItem>();
                 deckListItem.onClick -= onClickDeckListItemCallback;
+                deckListItem.onToggleValueChanged += (value) => onDeckListItemToggleValueChangedCallback(deckListItem, value);
             });
         }
         #endregion
@@ -115,7 +117,11 @@ namespace UI
         {
             onClickDeckListItem?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
         }
-        
+        private void onDeckListItemToggleValueChangedCallback(DeckListItem item, bool value)
+        {
+            onDeckListItemToggleValueChanged?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform), value);
+        }
+
         #endregion
 
         #endregion
@@ -126,6 +132,10 @@ namespace UI
         /// 当点击右侧卡组列表项，参数为索引
         /// </summary>
         public event Action<int> onClickDeckListItem;
+        /// <summary>
+        /// 当更改卡组列表的勾选框的值，参数为索引、更改的值
+        /// </summary>
+        public event Action<int, bool> onDeckListItemToggleValueChanged;
         
         #endregion
 

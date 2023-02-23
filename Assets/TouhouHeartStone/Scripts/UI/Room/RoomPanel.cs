@@ -292,13 +292,13 @@ namespace UI
         /// <param name="cards"></param>
         public void openAddCardPoolsPanel(CardPoolInfoPack[] pools, IEnumerable<CardPoolReference> selectedCardPools)
         {
-            (string name, Sprite image, Color color) getPoolData(CardPoolInfoPack pool)
+            (string name, Sprite image, bool selected) getPoolData(CardPoolInfoPack pool)
             {
                 bool selected = selectedCardPools.Contains(pool.GetReference());
                 Color color = selected ? Color.grey : Color.white;
-                return (pool.cardPoolName, null, color);
+                return (pool.cardPoolName, null, selected);
             }
-            List<(string name, Sprite image, Color color)> list = new List<(string name, Sprite image, Color color)>();
+            List<(string name, Sprite image, bool selected)> list = new List<(string name, Sprite image, bool selected)>();
 
             foreach (var pool in pools)
             {
@@ -337,6 +337,7 @@ namespace UI
             _deckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
             _cardPoolsViewPanel.onClickDeckListItem += onClickCardPoolsSelectItemCallback;
             _addCardPoolsViewPanel.onClickDeckListItem += onClickAddCardPoolsSelectItemCallback;
+            _addCardPoolsViewPanel.onDeckListItemToggleValueChanged += onAddCardPoolsSelectItemToggleCallback;
 
             // 选项
             _randomSeedInputField.onEndEdit.AddListener(onRandomSeedInputFieldValueChangedCallback);
@@ -391,6 +392,10 @@ namespace UI
         private void onClickAddCardPoolsSelectItemCallback(int index)
         {
             onClickAddCardPoolsSelectPanelItem?.Invoke(index);
+        }
+        private void onAddCardPoolsSelectItemToggleCallback(int index, bool value)
+        {
+            onAddCardPoolsSelectItemToggle?.Invoke(index, value);
         }
         private void onRandomSeedInputFieldValueChangedCallback(string value)
         {
@@ -516,6 +521,7 @@ namespace UI
         public event Action<int> onClickDeckSelectPanelItem;
         public event Action<int> onClickCardPoolsSelectPanelItem;
         public event Action<int> onClickAddCardPoolsSelectPanelItem;
+        public event Action<int, bool> onAddCardPoolsSelectItemToggle;
         /// <summary>
         /// 当房主更改房间随机种子，参数为更改后的随机种子值
         /// </summary>

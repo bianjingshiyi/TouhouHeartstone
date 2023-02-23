@@ -31,6 +31,8 @@ namespace UI
             HeadImageButton.onClick.AddListener(onClickCallback);
             DeleteButtonIconGlass.asButton.onClick.AddListener(onClickDeleteButtonCallback);
             NameInputField.onEndEdit.AddListener(onEndEditNameInputField);
+
+            _toggle?.onValueChanged.AddListener((value) => onToggleValueChanged?.Invoke(value));
         }
         public void updateView(string name, Sprite image)
         {
@@ -68,6 +70,11 @@ namespace UI
         {
             _cardPoolWarningImage.gameObject.SetActive(val);
         }
+        public void SetToggleValue(bool val)
+        {
+            if (_toggle != null)
+                _toggle.isOn = val;
+        }
         public enum Mode
         {
             DeckListItem, // 牌组列表
@@ -104,6 +111,7 @@ namespace UI
         public event Action<DeckListItem> onClick;
         public event Action<DeckListItem> onClickDeleteButton;
         public event Action<DeckListItem, string> onNameInputFieldValueChanged;
+        public event Action<bool> onToggleValueChanged;
         public event Action onCardPoolAdd;
         #region 属性字段
 
@@ -115,6 +123,8 @@ namespace UI
         Image _cardPoolWarningImage;
         [SerializeField]
         Button _addCardPoolButton;
+        [SerializeField]
+        Toggle _toggle;
 
         public Image HeadImage => _image;
 
