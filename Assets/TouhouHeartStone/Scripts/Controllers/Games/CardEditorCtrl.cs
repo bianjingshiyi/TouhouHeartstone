@@ -232,7 +232,7 @@ namespace Controllers
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
             string path = _curCardSkin.imagePath;
-            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolInfoOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
             _ui.setImage(image);
         }
         /// <summary>
@@ -515,7 +515,7 @@ namespace Controllers
             _ui.setName(_curCardSkin.name);
             _ui.setSubName(_curCardSkin.subname);
             _ui.setDesc(_curCardSkin.desc);
-            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolInfoOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
             _ui.setImage(image);
         }
         private int getSkinCount()

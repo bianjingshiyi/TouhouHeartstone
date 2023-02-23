@@ -239,9 +239,9 @@ namespace Game
                 // 尝试获取本地卡池的卡牌定义（要求版本正确）。
                 if (poolInfo != null && poolInfo.editTime == pool.version)
                 {
-                    if (!cards.tryGetCardPool(poolId, out cardPool))
+                    if (!cards.tryGetCardPool(pool.GetReference(), out cardPool))
                     {
-                        if (cards.getCardPoolPath(poolId) is string path)
+                        if (cards.getCardPoolPath(pool.GetReference()) is string path)
                             cardPool = (await cards.loadCardPool(path)).cardPool;
                     }
                 }
@@ -634,7 +634,7 @@ namespace Game
                     CardDefine card = describable.getCard(game, localPlayer).define as CardDefine;
                     ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setCard(card, skin);
                     Sprite sprite = skin.image != null ? skin.image :
-                        await main.card.loadImage(skin.imagePath, main.card.getCardPoolOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+                        await main.card.loadImage(skin.imagePath, main.card.getCardPoolInfoOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
                     ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setImage(sprite);
                 }
                 else
@@ -649,7 +649,7 @@ namespace Game
                         CardSkinData skin = main.card.getDefaultSkin((target as Card).define);
                         targetItem.Card.setCard(card, skin);
                         Sprite sprite = skin.image != null ? skin.image :
-                            await main.card.loadImage(skin.imagePath, main.card.getCardPoolOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+                            await main.card.loadImage(skin.imagePath, main.card.getCardPoolInfoOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
                         targetItem.Card.setImage(sprite);
                     }
                     ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);

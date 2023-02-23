@@ -566,7 +566,7 @@ namespace Controllers
         private bool cardFilter(CardDefine c)
         {
             if (_disableStandardCardPool &&
-                game.card.getCardPoolOfCard(c) is CardPoolInfo cardPoolInfo &&
+                game.card.getCardPoolInfoOfCard(c) is CardPoolInfo cardPoolInfo &&
                 game.card.isStandardCardPool(cardPoolInfo))
             {
                 return false;
@@ -606,7 +606,7 @@ namespace Controllers
             {
                 return game.card.loadImage(skin.imagePath,
                     game.card.getCardDefine(deck.masterCardRef) is CardDefine cardDefine &&
-                    game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ?
+                    game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ?
                     cardPoolInfo.cardPoolId : 0);
             }
         }
@@ -778,7 +778,7 @@ namespace Controllers
                 deckCardsViewData[i].name = skin != null ? skin.name : game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
                 deckCardsViewData[i].image = skin != null ? skin.image != null ?
                     skin.image :
-                    await game.card.loadImage(skin.imagePath, cardDefine != null && game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0) : null;
+                    await game.card.loadImage(skin.imagePath, cardDefine != null && game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0) : null;
                 deckCardsViewData[i].count = cards[i].count;
             }
             _ui.updateDeckCardList(deckCardsViewData);

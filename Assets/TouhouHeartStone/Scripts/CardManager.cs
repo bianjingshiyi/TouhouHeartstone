@@ -538,9 +538,9 @@ namespace Game
             }
             return true;
         }
-        public Dictionary<long, Dictionary<int, CardDefine>> getCardDefines(long[] cardPoolsId)
+        public Dictionary<CardPoolReference, Dictionary<int, CardDefine>> getCardDefines(CardPoolReference[] cardPoolsId)
         {
-            Dictionary<long, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<long, Dictionary<int, CardDefine>>();
+            Dictionary<CardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<CardPoolReference, Dictionary<int, CardDefine>>();
             for (int i = 0; i < cardPoolsId.Length; i++)
             {
                 if (_cardPoolDict.TryGetValue(cardPoolsId[i], out var cardPool))
@@ -551,20 +551,20 @@ namespace Game
             }
             return cardPoolDict;
         }
-        public Dictionary<int, CardDefine> getCardDefines(long cardPoolId)
+        public Dictionary<int, CardDefine> getCardDefines(CardPoolReference cardPoolRef)
         {
-            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
                 return cardPool.cardDefineList.ToDictionary(c => c.id);
             return null;
         }
-        public Dictionary<long, Dictionary<int, CardDefine>> getCardDefines()
+        public Dictionary<CardPoolReference, Dictionary<int, CardDefine>> getCardDefines()
         {
-            Dictionary<long, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<long, Dictionary<int, CardDefine>>();
+            Dictionary<CardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<CardPoolReference, Dictionary<int, CardDefine>>();
             foreach (var cardPool in _cardPoolDict)
             {
                 cardPoolDict.Add(cardPool.Key, cardPool.Value.cardDefineList.ToDictionary(c => c.id));
             }
-            cardPoolDict.Add(0, new Dictionary<int, CardDefine>(defineDic));
+            cardPoolDict.Add(builtinCardPoolReference, new Dictionary<int, CardDefine>(defineDic));
             return cardPoolDict;
         }
         public CardDefine[] findCardDefines(Predicate<CardDefine> filter = null)
@@ -579,14 +579,14 @@ namespace Game
             }
             return cardDefineList.ToArray();
         }
-        public async Task<CardDefine[]> getOrLoadCardDefines(long cardPoolId)
+        public async Task<CardDefine[]> getOrLoadCardDefines(CardPoolReference cardPoolRef)
         {
-            if (_cardPoolDict.TryGetValue(cardPoolId, out var cardPool))
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
                 //已经加载卡池
                 return cardPool.cardDefineList.ToArray();
             }
-            else if (getCardPoolPath(cardPoolId) is string path)
+            else if (getCardPoolPath(cardPoolRef) is string path)
             {
                 //未加载卡池但是存在地址
                 var result = await loadCardPool(path);
@@ -621,14 +621,31 @@ namespace Game
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        [Obsolete]
         public CardSkinData getCardSkin(long cardPoolId, int cardId)
         {
-            if (cardPoolId == 0)
+            if (isBuiltinCardPool(cardPoolId))
             {
                 if (skinDic.TryGetValue(cardId, out CardSkinData builtInSkin))
                     return builtInSkin;
             }
             if (tryGetCardSkin(cardPoolId, cardId, out CardSkinData skin))
+                return skin;
+            return null;
+        }
+        /// <summary>
+        /// 根据id获取卡片皮肤
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public CardSkinData getCardSkin(CardPoolReference cardPoolRef, int cardId)
+        {
+            if (cardPoolRef == builtinCardPoolReference)
+            {
+                if (skinDic.TryGetValue(cardId, out CardSkinData builtInSkin))
+                    return builtInSkin;
+            }
+            if (tryGetCardSkin(cardPoolRef, cardId, out CardSkinData skin))
                 return skin;
             return null;
         }
@@ -638,7 +655,7 @@ namespace Game
         }
         public CardSkinData getCardSkin(CardDefine cardDefine)
         {
-            return getCardSkin(cardDefine.cardPoolId, cardDefine.id);
+            return getCardSkin(getCardPoolReferenceOfCard(cardDefine), cardDefine.id);
         }
         Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();
         /// <summary>

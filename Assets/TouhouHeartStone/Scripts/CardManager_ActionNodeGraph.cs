@@ -8,7 +8,7 @@ namespace Game
     {
         public ActionNodeGraphInfo getOrCreateCardEffectActionNodeGraphInfo(long cardPoolId, int cardDefineId, int effectIndex, string entryType, int triggerIndex)
         {
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 ActionNodeGraphInfo info = cardPool.actionNodeGraphInfoList.Find(a =>
                     a.cardId == cardDefineId &&
@@ -33,7 +33,7 @@ namespace Game
         }
         public ActionNodeGraphInfo getOrCreateBuffEffectActionNodeGraphInfo(long cardPoolId, int buffDefineId, int effectIndex, string entryType, int triggerIndex)
         {
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 ActionNodeGraphInfo info = cardPool.actionNodeGraphInfoList.Find(a =>
                     a.buffId == buffDefineId &&
@@ -58,7 +58,7 @@ namespace Game
         }
         public ActionNodeGraphInfo getOrCreateActionDefineActionNodeGraphInfo(long cardPoolId, int actionDefineId)
         {
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 ActionNodeGraphInfo info = cardPool.actionNodeGraphInfoList.Find(a => a.actionDefineId == actionDefineId);
                 if (info == null)

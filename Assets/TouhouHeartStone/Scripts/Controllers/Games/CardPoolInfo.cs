@@ -16,5 +16,22 @@ namespace Controllers
         public CardPoolReference[] dependencyRefs;
         [BsonIgnoreIfNull]
         public long[] dependencies;
+
+        public CardPoolReference GetReference()
+        {
+            return new CardPoolReference(cardPoolId, editTime);
+        }
+        public bool IsSameCardPool(CardPoolReference other)
+        {
+            if (other == null) 
+                return false;
+            return cardPoolId == other.cardPoolId && editTime == other.version;
+        }
+        public bool IsSameCardPool(CardPoolInfo other)
+        {
+            if (other == null)
+                return false;
+            return cardPoolId == other.cardPoolId && editTime == other.editTime;
+        }
     }
 }

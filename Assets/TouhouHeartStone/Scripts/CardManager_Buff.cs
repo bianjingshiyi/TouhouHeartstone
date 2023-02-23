@@ -10,9 +10,22 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
+        public CardPoolReference getCardPoolReferenceOfBuff(BuffDefine buff)
+        {
+            if (isBuiltinCardPool(buff.cardPoolId))
+                return builtinCardPoolReference;
+            foreach (var pair in _cardPoolDict)
+            {
+                if (pair.Key.cardPoolId == buff.cardPoolId && pair.Value.buffDefineList.Contains(buff))
+                {
+                    return pair.Key;
+                }
+            }
+            return null;
+        }
         public GeneratedBuffDefine createBuffDefine(long cardPoolId)
         {
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
@@ -32,15 +45,24 @@ namespace Game
         }
         public bool removeBuffDefine(long cardPoolId, GeneratedBuffDefine buffDefine)
         {
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
             return cardPool.buffDefineList.Remove(buffDefine);
         }
+        public bool tryGetBuffDefine(CardPoolReference cardPoolRef, int buffDefineId, out GeneratedBuffDefine buffDefine)
+        {
+            if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
+            {
+                throw new KeyNotFoundException("不存在卡池" + cardPoolRef);
+            }
+            buffDefine = cardPool.buffDefineList.Find(b => b.id == buffDefineId);
+            return buffDefine != null;
+        }
         public bool tryGetBuffDefine(long cardPoolId, int buffDefineId, out GeneratedBuffDefine buffDefine)
         {
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
@@ -49,18 +71,26 @@ namespace Game
         }
         public Dictionary<int, BuffDefine> getBuffDefines(long cardPoolId)
         {
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
             return cardPool.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine);
         }
-        public Dictionary<long, Dictionary<int, BuffDefine>> getBuffDefines(IEnumerable<long> cardPoolsId)
+        public Dictionary<int, BuffDefine> getBuffDefines(CardPoolReference cardPoolRef)
         {
-            Dictionary<long, Dictionary<int, BuffDefine>> buffDefDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
-            foreach (var cardPoolId in cardPoolsId)
+            if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                buffDefDict.Add(cardPoolId, getBuffDefines(cardPoolId));
+                throw new KeyNotFoundException("不存在卡池" + cardPoolRef);
+            }
+            return cardPool.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine);
+        }
+        public Dictionary<CardPoolReference, Dictionary<int, BuffDefine>> getBuffDefines(IEnumerable<CardPoolReference> cardPoolsRef)
+        {
+            Dictionary<CardPoolReference, Dictionary<int, BuffDefine>> buffDefDict = new Dictionary<CardPoolReference, Dictionary<int, BuffDefine>>();
+            foreach (var cardPoolRef in cardPoolsRef)
+            {
+                buffDefDict.Add(cardPoolRef, getBuffDefines(cardPoolRef));
             }
             return buffDefDict;
         }
@@ -76,7 +106,7 @@ namespace Game
         }
         public BuffSkin createBuffSkin(long cardPoolId, int buffId, string language)
         {
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
@@ -111,7 +141,7 @@ namespace Game
         public BuffSkin getBuffSkin(BuffDefine buffDefine)
         {
             long cardPoolId = buffDefine.cardPoolId;
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetCardPool(getCardPoolReferenceOfBuff(buffDefine), out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
@@ -123,7 +153,7 @@ namespace Game
         }
         public BuffSkin[] getBuffSkins(long cardPoolId, int buffId)
         {
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
@@ -139,7 +169,7 @@ namespace Game
         }
         public BuffSkin[] getBuffSkins(int cardPoolId)
         {
-            if (!tryGetCardPool(cardPoolId, out CardPool cardPool))
+            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }

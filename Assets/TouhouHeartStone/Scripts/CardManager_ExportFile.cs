@@ -41,14 +41,14 @@ namespace Game
             string cardPoolDefineFile = null;
             foreach (var kv in _cardPoolInfoDict)
             {
-                if (kv.Value.cardPoolId == cardPoolInfo.cardPoolId)
+                if (kv.Value.IsSameCardPool(cardPoolInfo))
                 {
                     cardPoolDefineFile = kv.Key;
                     break;
                 }
             }
 
-            var cardPool = _cardPoolDict[cardPoolInfo.cardPoolId];
+            var cardPool = _cardPoolDict[cardPoolInfo.GetReference()];
             if (cardPoolDefineFile == null)
                 return null;
 

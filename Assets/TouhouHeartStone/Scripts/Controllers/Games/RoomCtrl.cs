@@ -141,7 +141,7 @@ namespace Controllers
                 }
                 if (isRoomOwner)
                 {
-                    CardPoolInfoPack[] roomPools = _isLocalGame ? await GetLocalCardPools() : new CardPoolInfoPack[] { CardPoolHelper.BuiltinCardPoolInfoPack };
+                    CardPoolInfoPack[] roomPools = new CardPoolInfoPack[] { CardPoolHelper.BuiltinCardPoolInfoPack };
                     _currentRoomData.setOption(Option.CardPools, roomPools);
                     setNotifyRoomSetting(Option.CardPools, roomPools);
                 }
@@ -951,7 +951,7 @@ namespace Controllers
             List<BuffSkin> missingBuffSkins = new List<BuffSkin>();
             foreach (var poolInfoPack in cardPools)
             {
-                if (game.card.tryGetCardPool(poolInfoPack.cardPoolId, out CardPool pool))
+                if (game.card.tryGetCardPool(poolInfoPack.GetReference(), out CardPool pool))
                 {
                     foreach (var skin in pool.cardSkinList)
                     {
@@ -1120,9 +1120,10 @@ namespace Controllers
                 // 如果卡组内有不存在的卡池，加载卡池。
                 foreach (CardPoolInfoPack cardPoolPack in cardPoolList)
                 {
-                    if (!game.card.tryGetCardPool(cardPoolPack.cardPoolId, out _))
+                    var cardPoolRef = cardPoolPack.GetReference();
+                    if (!game.card.tryGetCardPool(cardPoolRef, out _))
                     {
-                        var path = game.card.getCardPoolPath(cardPoolPack.cardPoolId);
+                        var path = game.card.getCardPoolPath(cardPoolRef);
                         if (path is string)
                         {
                             await game.card.loadCardPool(path);

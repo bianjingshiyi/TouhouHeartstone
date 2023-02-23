@@ -63,7 +63,7 @@ namespace Controllers
                 for (int i = 0; i < _cardPoolInfoList.Count; i++)
                 {
                     //卡池卡牌
-                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].cardPoolId);
+                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].GetReference());
                     if (!_cardPoolFilterValue[i])
                     {
                         continue;
@@ -111,7 +111,7 @@ namespace Controllers
                     if (_cardPoolFilterValue.Any(v => v))
                     {
                         //有对卡池进行过滤
-                        CardPoolInfo cardPoolInfo = game.card.getCardPoolOfCard(_cardDefineList[i]);
+                        CardPoolInfo cardPoolInfo = game.card.getCardPoolInfoOfCard(_cardDefineList[i]);
                         if (cardPoolInfo != null)
                         {
                             int cardPoolInfoIndex = _cardPoolInfoList.FindIndex(c => c.cardPoolId == cardPoolInfo.cardPoolId);
@@ -397,7 +397,7 @@ namespace Controllers
             item.card.setCard(card, skin);
             Sprite sprite = skin.image != null ?
                 skin.image :
-                await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+                await game.card.loadImage(skin.imagePath, game.card.getCardPoolInfoOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
             item.card.setImage(sprite);
             onUpdateCardListItem?.Invoke(index, item);
         }

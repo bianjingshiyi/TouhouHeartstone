@@ -54,7 +54,7 @@ namespace Controllers
                     //重新加载牌库中的所有卡牌和皮肤
                     if (string.IsNullOrEmpty(_curCardPoolPath))
                     {
-                        await readCardPoolByIdAsync(_curCardPoolInfo.cardPoolId);
+                        await readCardPoolByIdAsync(_curCardPoolInfo.GetReference());
                     }
                     else
                     {
@@ -166,7 +166,7 @@ namespace Controllers
                 game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.i18n._(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
                     hasUnsavedChanges = false;
-                    game.card.removeCardPool(_cardPoolInfoList[index].cardPoolId);
+                    game.card.removeCardPool(_cardPoolInfoList[index].GetReference());
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
                     await updateDeckListUI();
@@ -304,7 +304,7 @@ namespace Controllers
                 {
                     hasUnsavedChanges = false;
                     //删除当前卡池
-                    game.card.removeCardPool(_curCardPoolInfo.cardPoolId);
+                    game.card.removeCardPool(_curCardPoolInfo.GetReference());
                     int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
@@ -363,14 +363,14 @@ namespace Controllers
         /// <summary>
         /// 读取指定id的卡池文件中的所有卡牌
         /// </summary>
-        /// <param name="cardPoolId">卡池id</param>
+        /// <param name="cardPoolRef">卡池引用。</param>
         /// <returns></returns>
         /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
-        private async Task readCardPoolByIdAsync(long cardPoolId)
+        private async Task readCardPoolByIdAsync(CardPoolReference cardPoolRef)
         {
-            if (!game.card.tryGetCardPool(cardPoolId, out _))
+            if (!game.card.tryGetCardPool(cardPoolRef, out _))
             {
-                CardPoolInfo cardPoolInfo = game.card.getCardPoolInfo(cardPoolId);
+                CardPoolInfo cardPoolInfo = game.card.getCardPoolInfo(cardPoolRef);
                 string cardPoolPath = game.card.getCardPoolPath(cardPoolInfo);
                 await game.card.loadCardPool(cardPoolPath);
             }
@@ -414,7 +414,7 @@ namespace Controllers
         }
         private async Task updateDeckCardListUI()
         {
-            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.cardPoolId).Select(p => p.Value).ToArray();
+            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.GetReference()).Select(p => p.Value).ToArray();
             (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[cardDefines.Length];
             for (int i = 0; i < viewData.Length; i++)
             {

@@ -700,7 +700,7 @@ namespace Controllers
                 CardSkinData skin = game.card.getDefaultSkin(cardDefine);
                 Sprite sprite = skin.image != null ?
                     skin.image :
-                    await game.card.loadImage(skin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+                    await game.card.loadImage(skin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
                 if (_curEditActionNodeConstItemIndex < 0)
                 {
                     actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setCard(cardDefine, skin);
@@ -1169,20 +1169,16 @@ namespace Controllers
                         if (actionNode.consts[i] is DefineReference cardReference)
                         {
                             long cardPoolId = cardReference.cardPoolId;
-                            // 只有可用的卡池才能被选择。
-                            if (game.card.isUsableCardPool(cardPoolId))
+                            // 如果卡池没有被加载，加载卡池。
+                            if (!game.card.tryGetUsableCardPool(cardPoolId, out _))
                             {
-                                // 如果卡池没有被加载，加载卡池。
-                                if (!game.card.tryGetCardPool(cardPoolId, out _))
+                                var path = game.card.getUsableCardPoolPath(cardPoolId);
+                                if (path != null)
                                 {
-                                    var path = game.card.getCardPoolPath(cardPoolId);
-                                    if (path != null)
-                                    {
-                                        await game.card.loadCardPool(path);
-                                    }
+                                    await game.card.loadCardPool(path);
                                 }
-                                cardDefine = game.card.getCardDefine(cardPoolId, cardReference.defineId);
                             }
+                            cardDefine = game.card.getCardDefine(cardPoolId, cardReference.defineId);
                         }
                         if (cardDefine != null)
                         {
@@ -1190,7 +1186,7 @@ namespace Controllers
                             actionNodeItem.getConstInputField(i).card.setCard(cardDefine, cardSkin);
                             Sprite sprite = cardSkin.image != null ?
                                 cardSkin.image :
-                                await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+                                await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
                             actionNodeItem.getConstInputField(i).card.setImage(sprite);
                         }
                         else
@@ -1215,7 +1211,7 @@ namespace Controllers
                                     actionNodeItem.getConstInputField(i).getItemAt(j).card.setCard(cardDefine, cardSkin);
                                     Sprite sprite = cardSkin.image != null ?
                                         cardSkin.image :
-                                        await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+                                        await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
                                     actionNodeItem.getConstInputField(i).getItemAt(j).card.setImage(sprite);
                                 }
                                 else

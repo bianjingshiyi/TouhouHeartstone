@@ -199,8 +199,8 @@ namespace Tests
                 foreach (var pair in result)
                 {
                     await cardManager.loadCardPool(pair.Key);
-                    cardDefines.Add(pair.Value.cardPoolId, cardManager.getCardDefines(pair.Value.cardPoolId));
-                    buffDefines.Add(pair.Value.cardPoolId, cardManager.getBuffDefines(pair.Value.cardPoolId));
+                    cardDefines.Add(pair.Value.cardPoolId, cardManager.getCardDefines(pair.Value.GetReference()));
+                    buffDefines.Add(pair.Value.cardPoolId, cardManager.getBuffDefines(pair.Value.GetReference()));
                 }
             }
             game.init(new Assembly[]

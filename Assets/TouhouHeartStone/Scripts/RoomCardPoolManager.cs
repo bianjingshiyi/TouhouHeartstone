@@ -45,6 +45,7 @@ namespace Game
                     try
                     {
                         token.ThrowIfCancellationRequested();
+                        var poolRef = roomPool.GetReference();
                         if (game.card.isBuiltinCardPool(roomPool.cardPoolId) || game.card.isStandardCardPool(roomPool.cardPoolId))
                         {
                             continue;
@@ -56,16 +57,16 @@ namespace Game
                             continue;
                         }
                         bool lanHost = game.network.logic.isLanHost;
-                        var localPoolInfo = game.card.getCardPoolInfo(roomPool.cardPoolId);
+                        var localPoolInfo = game.card.getCardPoolInfo(poolRef);
 
                         // 这个卡池是否是玩家本地可用的。
                         bool hasUsablePool = false;
-                        string cardPoolPath = game.card.getCardPoolPath(roomPool.cardPoolId);
+                        string cardPoolPath = game.card.getCardPoolPath(poolRef);
                         if (localPoolInfo != null && localPoolInfo.editTime == roomPool.version)
                         {
                             if (!string.IsNullOrEmpty(cardPoolPath))
                             {
-                                hasUsablePool = game.card.isUsableCardPool(roomPool.cardPoolId) && game.fileManager.isFileExist(cardPoolPath);
+                                hasUsablePool = game.card.isUsableCardPool(poolRef) && game.fileManager.isFileExist(cardPoolPath);
                             }
                         }
 
@@ -78,7 +79,7 @@ namespace Game
 
                         // 如果没有读取卡池，尝试读取卡池对象。
                         CardPool localCardPool = null;
-                        if (hasLocalPool && !game.card.tryGetCardPool(roomPool.cardPoolId, out localCardPool) && !string.IsNullOrEmpty(cardPoolPath))
+                        if (hasLocalPool && !game.card.tryGetCardPool(roomPool.GetReference(), out localCardPool) && !string.IsNullOrEmpty(cardPoolPath))
                         {
                             localCardPool = (await game.card.loadCardPool(cardPoolPath)).cardPool;
                         }
@@ -99,7 +100,7 @@ namespace Game
                             // 检测卡图上传。
                             else if (localCardPool != null)
                             {
-                                var picturePaths = GetCardPoolPictures(roomPool.cardPoolId);
+                                var picturePaths = GetCardPoolPictures(poolRef);
                                 // 遍历卡池内的所有图片。
                                 foreach (var path in picturePaths)
                                 {
@@ -132,7 +133,7 @@ namespace Game
                         else if (localCardPool != null)
                         {
                             // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，下载该卡图。
-                            var picturePaths = GetCardPoolPictures(roomPool.cardPoolId);
+                            var picturePaths = GetCardPoolPictures(poolRef);
                             foreach (var path in picturePaths)
                             {
                                 token.ThrowIfCancellationRequested();
@@ -194,7 +195,7 @@ namespace Game
                 {
                     cardPoolPlan
                 };
-                var picPlans = GetCardPoolPicturePlans(pool.cardPoolId);
+                var picPlans = GetCardPoolPicturePlans(pool.GetReference());
                 foreach (var p in picPlans)
                 {
                     p.size = GetPlanFileSize(p);
@@ -425,12 +426,12 @@ namespace Game
         /// <summary>
         /// 获取卡池内的所有图片路径。
         /// </summary>
-        /// <param name="cardPoolId">卡池ID。</param>
+        /// <param name="cardPoolRef">卡池引用。</param>
         /// <returns>图片路径数组。</returns>
-        private string[] GetCardPoolPictures(long cardPoolId)
+        private string[] GetCardPoolPictures(CardPoolReference cardPoolRef)
         {
             List<string> paths = new List<string>();
-            if (game.card.tryGetCardPool(cardPoolId, out var cardPool))
+            if (game.card.tryGetCardPool(cardPoolRef, out var cardPool))
             {
                 foreach (var skin in cardPool.cardSkinList)
                 {
@@ -454,11 +455,11 @@ namespace Game
         /// <summary>
         /// 获取卡池内的所有图片，并转换为图片资源计划。
         /// </summary>
-        /// <param name="cardPoolId">卡池ID。</param>
+        /// <param name="cardPoolId">卡池引用。</param>
         /// <returns>图片资源计划数组。</returns>
-        private PictureFilePlan[] GetCardPoolPicturePlans(long cardPoolId)
+        private PictureFilePlan[] GetCardPoolPicturePlans(CardPoolReference cardPoolRef)
         {
-            var paths = GetCardPoolPictures(cardPoolId);
+            var paths = GetCardPoolPictures(cardPoolRef);
             return paths.Select(p =>
             {
                 var plan = new PictureFilePlan(p);
@@ -514,7 +515,7 @@ namespace Game
                 await game.network.UploadResourceAsync(plan.type, plan.id, bytes);
                 plan.completed = true;
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 logger.logWarn($"无法找到要上传的资源：{plan}");
             }
@@ -536,7 +537,7 @@ namespace Game
                 plan.completed = true;
                 return bytes;
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 logger.logWarn($"无法找到要下载的资源：{plan}");
             }
@@ -589,7 +590,7 @@ namespace Game
 
         private async Task<bool> DownloadPlanCardPool(CardPoolPlan plan)
         {
-            long poolId = plan.poolPack.cardPoolId;
+            var poolRef = plan.poolPack.GetReference();
             // 先下载计划中的卡池文件资源。
             if (plan.resPlans.Count <= 0)
                 return false;
@@ -609,7 +610,7 @@ namespace Game
 
 
             // 缓存保存后，读取该卡池。
-            var cardPoolData = await game.card.loadCachedCardPoolAsync(poolId, plan.poolPack.version);
+            var cardPoolData = await game.card.loadCachedCardPoolAsync(poolRef.cardPoolId, poolRef.version);
             CardPool cardPool = cardPoolData.cardPool;
             // 如果获得的卡池对象是null，返回false，下载失败。
             if (cardPool == null)
@@ -617,7 +618,7 @@ namespace Game
                 return false;
             }
             // 获取该卡池的所有卡图和buff图片id，添加ResourcePlan。
-            var plans = GetCardPoolPicturePlans(poolId).Where(p => !plan.resPlans.Any(rp => rp.id == p.id));
+            var plans = GetCardPoolPicturePlans(poolRef).Where(p => !plan.resPlans.Any(rp => rp.id == p.id));
             plan.resPlans.AddRange(plans);
             return true;
         }
@@ -758,7 +759,7 @@ namespace Game
         }
         public async override Task<byte[]> GetBytes(MainManager game)
         {
-            return await game.fileManager.readBinaryFile(game.card.getCardPoolPath(poolPack.cardPoolId));
+            return await game.fileManager.readBinaryFile(game.card.getCardPoolPath(poolPack.GetReference()));
         }
     }
     /// <summary>
