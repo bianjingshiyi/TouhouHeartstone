@@ -51,6 +51,26 @@ namespace Game
                 onCardPoolInfoRead?.Invoke(path, cardPool);
                 Debug.Log("读取卡池信息" + path + "完毕");
             }
+
+
+            // 旧版本转换
+            // 将dependencies转为dependencyRefs;
+            foreach (var pair in _cardPoolInfoDict)
+            {
+                var cardPool = pair.Value;
+                if (cardPool.dependencyRefs == null && cardPool.dependencies != null)
+                {
+                    cardPool.dependencyRefs = new CardPoolReference[cardPool.dependencies.Length];
+                    for (int i = 0; i < cardPool.dependencies.Length; i++)
+                    {
+                        var depPoolId = cardPool.dependencies[i];
+                        var depPoolInfo = _cardPoolInfoDict.Values.FirstOrDefault(p => p.cardPoolId == depPoolId);
+                        cardPool.dependencyRefs[i] = depPoolInfo.GetReference();
+                    }
+                    cardPool.dependencies = null;
+                }
+            }
+
             Debug.Log("卡池信息读取完毕，共" + fileList.Length + "个卡池");
             return new Dictionary<string, CardPoolInfo>(_cardPoolInfoDict);
         }
@@ -188,7 +208,7 @@ namespace Game
             string conflictCardPoolPath = null;
             foreach (var pair in _cardPoolInfoDict)
             {
-                if (pair.Value.cardPoolId == cardPool.cardPoolId)
+                if (pair.Value.IsSameCardPool(cardPool))
                 {
                     conflictCardPoolPath = pair.Key;
                     break;
@@ -197,18 +217,6 @@ namespace Game
             if (conflictCardPoolPath != null)
             {
                 _cardPoolInfoDict.Remove(conflictCardPoolPath);
-            }
-            // 旧版本转换
-            // 将dependencies转为dependencyRefs;
-            if (cardPool.dependencyRefs == null && cardPool.dependencies != null)
-            {
-                cardPool.dependencyRefs = new CardPoolReference[cardPool.dependencies.Length];
-                for (int i = 0; i < cardPool.dependencies.Length; i++)
-                {
-                    var depPool = cardPool.dependencies[i];
-                    cardPool.dependencyRefs[i] = new CardPoolReference(depPool, 0);
-                }
-                cardPool.dependencies = null;
             }
             return cardPool;
         }
@@ -727,6 +735,15 @@ namespace Game
             {
                 if (cardPool.cardPoolId == cardPoolId)
                     return cardPool;
+            }
+            return null;
+        }
+        public CardPoolInfo getUsableCardPoolInfo(long cardPoolId)
+        {
+            foreach (var pair in _cardPoolInfoDict)
+            {
+                if (pair.Value.cardPoolId == cardPoolId && isCardPoolPathUsable(pair.Key))
+                    return pair.Value;
             }
             return null;
         }

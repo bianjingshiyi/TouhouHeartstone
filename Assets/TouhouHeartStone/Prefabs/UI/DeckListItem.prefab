@@ -326,6 +326,7 @@ MonoBehaviour:
   _image: {fileID: 2417525977472639122}
   _cardPoolWarningImage: {fileID: 5008398304331177815}
   _addCardPoolButton: {fileID: 254930035481084216}
+  _toggle: {fileID: 0}
 --- !u!1 &2798740220505841231
 GameObject:
   m_ObjectHideFlags: 0
@@ -1435,7 +1436,7 @@ PrefabInstance:
     - target: {fileID: 223872248146437387, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: comment
-      value: "\u623F\u95F4-\u8BBE\u7F6E\u754C\u9762-\u67E5\u770B\u5361\u6C60\u754C\u9762"
+      value: "\u623F\u95F4-\u8BBE\u7F6E\u754C\u9762-\u67E5\u770B\u5361\u6C60\u754C\u9762-\u7F16\u8F91\u5361\u6C60\u6309\u94AE"
       objectReference: {fileID: 0}
     - target: {fileID: 490584239171898832, guid: 8f87f95af032014448691606aece594a,
         type: 3}
@@ -1555,7 +1556,7 @@ PrefabInstance:
     - target: {fileID: 7178206965447266958, guid: 8f87f95af032014448691606aece594a,
         type: 3}
       propertyPath: m_Text
-      value: "\u6DFB\u52A0\u5361\u6C60"
+      value: "\u7F16\u8F91\u5361\u6C60"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f87f95af032014448691606aece594a, type: 3}

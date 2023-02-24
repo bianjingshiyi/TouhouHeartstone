@@ -27,8 +27,6 @@ namespace Controllers
         public const string ROOM_CARD_POOL_WARNING_FOR_OWNER = "是否使用这些卡池？";
         [TranslateMsg("房间-玩家-尝试添加未共享的卡池警告")]
         public const string ROOM_CARD_POOL_WARNING_FOR_CUSTOMER = "是否向房主提议使用这些卡池？";
-        [TranslateMsg("房间-玩家-尝试添加未共享的卡池警告")]
-        public const string ROOM_NO_CARD_POOL_SELECTED = "你没有选择任何卡池，请重新选择";
         
 
         [TranslateMsg("房间-房主-收到来自玩家的上传卡池提议（{0}：玩家名；{1}：卡池名称列表）")]
@@ -63,6 +61,24 @@ namespace Controllers
         public const string ROOM_CARD_POOLS_USE_POOL_BUTTON = "使用版本{0}";
         [TranslateMsg("房间-卡池冲突警告-取消按钮")]
         public const string ROOM_CARD_POOL_CANCEL = "取消";
+
+        [TranslateMsg("房间-卡池编辑-添加卡池提示模板（{0}：添加卡池提醒，{1}：移除卡池提醒，{2}：是否继续提醒）")]
+        public const string ROOM_EDIT_CARD_POOL_TEMPLATE = "{0}{1}{2}";
+        [TranslateMsg("房间-卡池编辑-添加卡池提示（{0}：卡池名列表）")]
+        public const string ROOM_EDIT_CARD_POOL_ADD = "即将添加卡池：{0}\n";
+        [TranslateMsg("房间-卡池编辑-移除卡池提示（{0}：卡池名列表）")]
+        public const string ROOM_EDIT_CARD_POOL_REMOVE = "即将移除卡池：{0}\n";
+        [TranslateMsg("房间-卡池编辑-是否继续提醒")]
+        public const string ROOM_EDIT_CARD_POOL_CONTINUE = "是否继续？";
+
+        [TranslateMsg("房间-卡池操作失败-标题")]
+        public const string ROOM_CARD_POOL_MODIFY_FAILED = "卡池操作失败";
+        [TranslateMsg("房间-卡池操作失败-卡池依赖不存在（{0}为丢失的必需卡池）")]
+        public const string ROOM_CARD_POOL_DEPENDENCY_MISSING = "修改后的卡池内不包含以下必须包含的卡池：\n{0}";
+        [TranslateMsg("房间-卡池版本后缀（{0}为版本号）")]
+        public const string ROOM_CARD_POOL_VERSION = "（版本{0}）";
+
+
         #endregion
         #region 公有方法
         public void SetRoomData(RoomData room)
@@ -103,9 +119,16 @@ namespace Controllers
 
             async void ConfirmSuggestion()
             {
-                AddCardPools(addPools);
-                game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
-                await cardPoolManager.CheckUpdate(addPools.ToArray());
+                if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
+                {
+                    AddCardPools(addPools);
+                    game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
+                    await cardPoolManager.CheckUpdate(addPools.ToArray());
+                }
+                else
+                {
+                    ShowDependencyMissingDialog(missingDeps);
+                }
             }
 
             void CancelSuggestion()
@@ -332,9 +355,18 @@ namespace Controllers
         private async void onAddCardPoolsClick()
         {
             var roomPools = _currentRoomData.getCardPools();
-            _addingCardPools = (await GetLocalCardPools()).Where(p => !roomPools.Any(r => r != null && r.IsCardPoolEquals(p))).ToArray();
-            _selectedAddCardPools = new HashSet<CardPoolInfoPack>();
-            _ui.openAddCardPoolsPanel(_addingCardPools, _selectedAddCardPools.Select(p => p.GetReference()));
+            _selectedEditCardPools = new HashSet<CardPoolInfoPack>(roomPools);
+            var cardPoolList = new List<CardPoolInfoPack>(roomPools);
+            var localPools = await GetLocalCardPools();
+            foreach (var localPool in localPools)
+            {
+                if (!cardPoolList.Any(p => p.IsCardPoolEquals(localPool)))
+                {
+                    cardPoolList.Add(localPool);
+                }
+            }
+            _editingCardPools = cardPoolList.ToArray();
+            _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
             _ui.closeViewCardPoolsPanel();
         }
         private void onClickPlayerListItemViewDeckButton(int index)
@@ -403,9 +435,16 @@ namespace Controllers
                         List<CardPoolInfoPack> addPools;
                         void ConfirmSuggestion()
                         {
-                            AddCardPools(addPools);
-                            SetPlayerDeck(_selectDeckPlayerId, deck);
-                            _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                            if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
+                            {
+                                AddCardPools(addPools);
+                                SetPlayerDeck(_selectDeckPlayerId, deck);
+                                _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                            }
+                            else
+                            {
+                                ShowDependencyMissingDialog(missingDeps);
+                            }
                         }
 
                         game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
@@ -443,114 +482,119 @@ namespace Controllers
         }
         private void onClickCardPoolSelectPanelItem(int index)
         {
-            if (isRoomOwner && _viewingCardPools != null && index >= 0 && index < _viewingCardPools.Length)
-            {
-                CardPoolInfoPack pool = _viewingCardPools[index];
-
-                CardPoolInfoPack[] dependencies = GetDependedCardPools(pool);
-
-                var pools = new List<CardPoolInfoPack>()
-                {
-                    pool
-                };
-                pools.AddRange(dependencies);
-
-                string title = game.lang._(StringTable.WARNING);
-                string desc = game.lang._(ROOM_REMOVE_CARD_POOL_WARNING, pool.cardPoolName);
-                if (dependencies.Length > 0)
-                {
-                    var deps = dependencies.Select(p => p.cardPoolName ?? game.lang._(ROOM_UNKNOWN_DECK)).ToArray();
-                    var depStr = string.Join(",", deps, 0, Math.Min(5, deps.Length));
-                    if (dependencies.Length > 5)
-                        depStr += "...";
-
-                    desc += "\n" + game.lang._(ROOM_REMOVE_CARD_POOL_WARNING_DEPENDENCIES, depStr);
-                }
-                game.ui.dialog.ShowQuestion(title, desc, () =>
-                {
-                    RemoveCardPools(pools);
-                    viewRoomCardPools();
-                    updateStartAndReadyButton();
-                });
-            }
         }
         private void onClickAddCardPoolSelectPanelItem(int index)
         {
-            var pool = _addingCardPools[index];
-            onAddCardPoolSelectPanelItemToggle(index, !_selectedAddCardPools.Contains(pool));
+            var pool = _editingCardPools[index];
+            onAddCardPoolSelectPanelItemToggle(index, !_selectedEditCardPools.Contains(pool));
         }
         private void onAddCardPoolSelectPanelItemToggle(int index, bool value)
         {
-            var pool = _addingCardPools[index];
+            var pool = _editingCardPools[index];
+            // 不能操作内置卡池。
+            if (game.card.isBuiltinCardPool(pool.cardPoolId))
+                return;
+
             if (value)
             {
                 // 未选中，选择
-                _selectedAddCardPools.Add(pool);
+                _selectedEditCardPools.Add(pool);
                 // 选中一个卡池后，要把它的所有依赖也选中。
-                foreach (var dep in pool.GetDependenciesInSet(_addingCardPools))
+                foreach (var dep in pool.GetDependenciesInSet(_editingCardPools))
                 {
                     if (dep == null)
                         continue;
-                    _selectedAddCardPools.Add(dep);
+                    _selectedEditCardPools.Add(dep);
                 }
             }
-            else if (_selectedAddCardPools.Contains(pool))
+            else if (_selectedEditCardPools.Contains(pool))
             {
                 // 已选中，取消选择。
-                _selectedAddCardPools.Remove(pool);
+                _selectedEditCardPools.Remove(pool);
                 // 取消选中一个卡池后，要把所有依赖它的卡池也取消选中。
-                foreach (var dep in pool.GetDependedCardPools(_addingCardPools))
+                foreach (var dep in pool.GetDependedCardPools(_editingCardPools))
                 {
                     if (dep == null)
                         continue;
-                    _selectedAddCardPools.Remove(dep);
+                    _selectedEditCardPools.Remove(dep);
                 }
             }
-            _ui.openAddCardPoolsPanel(_addingCardPools, _selectedAddCardPools.Select(p => p.GetReference()));
+            _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
         }
         private void onConfirmAddCardPools()
         {
+            var roomPools = _currentRoomData.getCardPools();
+            var addedCardPools = _selectedEditCardPools.Except(roomPools);
+            var removedCardPools = roomPools.Except(_selectedEditCardPools);
+
             // 没有选择任何卡池。
-            if (_selectedAddCardPools.Count <= 0)
+            if (addedCardPools.Count() + removedCardPools.Count() <= 0)
             {
-                string desc = game.lang._(ROOM_NO_CARD_POOL_SELECTED);
-                game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
+                closeAddCardPoolsPanel();
                 return;
             }
+
             if (_isLocalGame)
             {
-                var conflictPools = GetConflictCardPools(_selectedAddCardPools.ToArray(), out var addPools);
+                // 添加卡池
+                var conflictPools = GetConflictCardPools(addedCardPools.ToArray(), out var addPools);
                 ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion);
                 void ConfirmSuggestion()
                 {
-                    AddCardPools(addPools);
-                    closeAddCardPoolsPanel();
-                    updateStartAndReadyButton();
+                    if (CheckRoomPoolsValidation(addPools, removedCardPools, out var missingDeps))
+                    {
+                        AddCardPools(addPools);
+                        RemoveCardPools(removedCardPools);
+                        closeAddCardPoolsPanel();
+                        updateStartAndReadyButton();
+                    }
+                    else
+                    {
+                        ShowDependencyMissingDialog(missingDeps);
+                    }
+
                 }
             }
             else
             {
-                var packs = _selectedAddCardPools.ToArray();
-                string poolsString = PoolsToString(packs);
-                string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
+                string addString = string.Empty;
+                string removeString = string.Empty;
+                var addedArray = addedCardPools.ToArray();
+                if (addedCardPools.Count() > 0)
+                {
+                    string addPoolsString = PoolsToString(addedArray, false, 5);
+                    addString = game.lang._(ROOM_EDIT_CARD_POOL_ADD, addPoolsString);
+                }
+                if (removedCardPools.Count() > 0)
+                {
+                    string removePoolsString = PoolsToString(removedCardPools.ToArray(), false, 5);
+                    removeString = game.lang._(ROOM_EDIT_CARD_POOL_REMOVE, removePoolsString);
+                }
+                string desc = game.lang._(ROOM_EDIT_CARD_POOL_TEMPLATE, addString, removeString, ROOM_EDIT_CARD_POOL_CONTINUE);
                 if (isRoomOwner)
                 {
-                    desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_OWNER);
-
                     List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
                     List<CardPoolInfoPack> addPools;
                     void ConfirmSuggestion()
                     {
-                        AddCardPools(addPools);
-                        _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
-                        closeAddCardPoolsPanel();
+                        if (CheckRoomPoolsValidation(addPools, removedCardPools, out var missingDeps))
+                        {
+                            AddCardPools(addPools);
+                            RemoveCardPools(removedCardPools);
+                            _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                            closeAddCardPoolsPanel();
+                        }
+                        else
+                        {
+                            ShowDependencyMissingDialog(missingDeps);
+                        }
                     }
 
                     game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
                     {
-                        if (CanUploadCardPools(packs, out string errorMessage))
+                        if (CanUploadCardPools(addedArray, out string errorMessage))
                         {
-                            conflictPools = GetConflictCardPools(packs, out addPools);
+                            conflictPools = GetConflictCardPools(addedArray, out addPools);
                             ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion);
                         }
                         else
@@ -558,17 +602,6 @@ namespace Controllers
                             string title = game.lang._(StringTable.ERROR);
                             game.ui.dialog.ShowConfirm(title, errorMessage);
                         }
-                    });
-                }
-                else
-                {
-                    desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_CUSTOMER);
-
-                    game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
-                    {
-                        SuggestCardPools(new CardPoolSuggestion(packs));
-                        //隐藏添加卡池界面
-                        closeAddCardPoolsPanel();
                     });
                 }
             }
@@ -740,7 +773,7 @@ namespace Controllers
                     packs.Add(CardPoolHelper.BuiltinCardPoolInfoPack);
                     continue;
                 }
-                var poolInfo = game.card.getCardPoolInfo(id);
+                var poolInfo = game.card.getUsableCardPoolInfo(id);
                 if (poolInfo != null)
                 {
                     packs.Add(poolInfo.ToCardPoolInfoPack());
@@ -770,17 +803,15 @@ namespace Controllers
             }
 
             List<CardPoolInfoPack> privates = new List<CardPoolInfoPack>();
-            bool hasNotShared = false;
             foreach (CardPoolInfoPack pool in pools)
             {
                 if (!roomCardPools.Any(p => p.IsCardPoolEquals(pool)))
                 {
-                    hasNotShared = true;
                     privates.Add(pool);
                 }
             }
             privatePools = privates.ToArray();
-            return hasNotShared;
+            return privates.Count > 0;
         }
         private void AddCardPools(IEnumerable<CardPoolInfoPack> packs)
         {
@@ -881,19 +912,19 @@ namespace Controllers
                 confirmAction?.Invoke();
             }
         }
-        private string PoolsToString(CardPoolInfoPack[] packs)
+        private string PoolsToString(CardPoolInfoPack[] packs, bool showVersion = false, int maxCount = 10)
         {
-            const int MAX_DISPLAY_POOL_COUNT = 10;
-            int count = Mathf.Min(packs.Length, MAX_DISPLAY_POOL_COUNT);
+            int count = Mathf.Min(packs.Length, maxCount);
             string poolsString = string.Join(", ", packs.Select(p => 
             {
-                if (p == null)
+                string str = p == null ? game.lang._(ROOM_UNKNOWN_DECK) : p.cardPoolName;
+                if (showVersion)
                 {
-                    return game.lang._(ROOM_UNKNOWN_DECK);
+                    str += game.lang._(ROOM_CARD_POOL_VERSION, p.version);
                 }
-                return p.cardPoolName;
+                return str;
             }).ToArray(), 0, count);
-            if (packs.Length > MAX_DISPLAY_POOL_COUNT)
+            if (packs.Length > maxCount)
             {
                 poolsString += "...";
             }
@@ -934,14 +965,50 @@ namespace Controllers
         private void viewRoomCardPools()
         {
             _viewingCardPools = _currentRoomData.getCardPools();
-            _ui.viewCardPools(_viewingCardPools);
+            _ui.viewCardPools(_viewingCardPools, isRoomOwner);
         }
         private void closeAddCardPoolsPanel()
         {
-            _addingCardPools = null;
-            _selectedAddCardPools = null;
+            _editingCardPools = null;
+            _selectedEditCardPools = null;
             _ui.closeAddCardPoolsPanel();
             viewRoomCardPools();
+        }
+        /// <summary>
+        /// 检测房间在添加、删除某些卡池后，卡池的合法性。
+        /// </summary>
+        /// <param name="addCardPools">添加的卡池。</param>
+        /// <param name="removeCardPools">要删除的卡池。</param>
+        /// <param name="missingDeps">丢失的依赖卡池。</param>
+        /// <returns>是否合法。</returns>
+        private bool CheckRoomPoolsValidation(IEnumerable<CardPoolInfoPack> addCardPools, IEnumerable<CardPoolInfoPack> removeCardPools, out CardPoolInfoPack[] missingDeps)
+        {
+            IEnumerable<CardPoolInfoPack> finalPools = _currentRoomData.getCardPools();
+            if (removeCardPools != null)
+                finalPools = finalPools.Except(removeCardPools);
+            if (addCardPools != null)
+                finalPools = finalPools.Union(addCardPools);
+            CardPoolInfoPack[] dependencies = finalPools.GetDependencies(game.card);
+            List<CardPoolInfoPack> missing = new List<CardPoolInfoPack>();
+            foreach (var dep in dependencies) 
+            {
+                if (finalPools.Count(p => p.IsCardPoolEquals(dep)) <= 0)
+                {
+                    missing.Add(dep);
+                }
+            }
+            missingDeps = missing.ToArray();
+            return missing.Count <= 0;
+        }
+        /// <summary>
+        /// 显示卡池依赖丢失的窗口。
+        /// </summary>
+        /// <param name="missingDeps">丢失的依赖卡池。</param>
+        private void ShowDependencyMissingDialog(CardPoolInfoPack[] missingDeps)
+        {
+            string title = game.lang._(ROOM_CARD_POOL_MODIFY_FAILED);
+            string desc = game.lang._(ROOM_CARD_POOL_DEPENDENCY_MISSING, PoolsToString(missingDeps, true));
+            game.ui.dialog.ShowConfirm(title, desc);
         }
         #endregion
         /// <summary>
@@ -1203,13 +1270,13 @@ namespace Controllers
         /// </summary>
         CardPoolInfoPack[] _viewingCardPools;
         /// <summary>
-        /// 添加卡池界面中待选的卡池。
+        /// 编辑卡池界面中待选的卡池。
         /// </summary>
-        CardPoolInfoPack[] _addingCardPools;
+        CardPoolInfoPack[] _editingCardPools;
         /// <summary>
-        /// 添加卡池界面中已被选中的卡池。
+        /// 编辑卡池界面中已被选中的卡池。
         /// </summary>
-        HashSet<CardPoolInfoPack> _selectedAddCardPools;
+        HashSet<CardPoolInfoPack> _selectedEditCardPools;
         /// <summary>
         /// 游戏是否已经开始，用于阻止玩家再次点击开始游戏。
         /// </summary>

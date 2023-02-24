@@ -331,7 +331,7 @@ namespace Controllers
             foreach (var pair in result)
             {
                 CardPoolInfo cardPool = pair.Value;
-                int index = _cardPoolInfoList.FindIndex(p => p.cardPoolId == cardPool.cardPoolId);
+                int index = _cardPoolInfoList.FindIndex(p => p.IsSameCardPool(cardPool));
                 if (index >= 0)
                 {
                     Debug.LogWarning("无法加载卡池" + pair.Key + "，因为" + _cardPoolPathList[index] + "拥有与其相同的Id" + cardPool.cardPoolId);

@@ -76,7 +76,7 @@ namespace Game
         /// <returns>目标卡池依赖的所有卡池（不包括目标卡池）。</returns>
         public static CardPoolInfoPack[] GetDependencies(this CardPoolInfoPack pack, CardManager cardManager)
         {
-            HashSet<CardPoolInfoPack> dependencies = new HashSet<CardPoolInfoPack>();
+            List<CardPoolInfoPack> dependencies = new List<CardPoolInfoPack>();
             addCardPoolDeps(pack);
 
             void addCardPoolDeps(CardPoolInfoPack pool)
@@ -85,11 +85,11 @@ namespace Game
                 {
                     foreach (var poolRef in pool.dependencies)
                     {
-                        var poolInfo = cardManager.getCardPoolInfo(poolRef.cardPoolId);
+                        var poolInfo = cardManager.getCardPoolInfo(poolRef);
                         if (poolInfo == null)
                             continue;
                         var poolPack = poolInfo.ToCardPoolInfoPack();
-                        if (dependencies.Contains(poolPack))
+                        if (dependencies.Count(p => p.IsCardPoolEquals(poolPack)) > 0)
                             return;
 
                         dependencies.Add(poolPack);
@@ -109,7 +109,7 @@ namespace Game
         /// <returns>目标卡池依赖的所有卡池（不包括目标卡池）。</returns>
         public static CardPoolInfoPack[] GetDependenciesInSet(this CardPoolInfoPack pack, IEnumerable<CardPoolInfoPack> cardPoolFullSet)
         {
-            HashSet<CardPoolInfoPack> dependencies = new HashSet<CardPoolInfoPack>();
+            List<CardPoolInfoPack> dependencies = new List<CardPoolInfoPack>();
             addCardPoolDeps(pack);
 
             void addCardPoolDeps(CardPoolInfoPack pool)
@@ -121,7 +121,7 @@ namespace Game
                         var poolPack = cardPoolFullSet.FirstOrDefault(p => p.IsCardPoolEquals(poolRef));
                         if (poolPack == null)
                             continue;
-                        if (dependencies.Contains(poolPack))
+                        if (dependencies.Count(p => p.IsCardPoolEquals(poolPack)) > 0)
                             return;
 
                         dependencies.Add(poolPack);
@@ -140,7 +140,7 @@ namespace Game
         /// <returns>依赖于目标卡池的所有卡池（不包括目标卡池）。</returns>
         public static CardPoolInfoPack[] GetDependedCardPools(this CardPoolInfoPack pool, IEnumerable<CardPoolInfoPack> cardPoolFullSet)
         {
-            HashSet<CardPoolInfoPack> pools = new HashSet<CardPoolInfoPack>();
+            List<CardPoolInfoPack> pools = new List<CardPoolInfoPack>();
             addCardPoolDeps(pool);
 
             void addCardPoolDeps(CardPoolInfoPack poolPack)
@@ -149,8 +149,7 @@ namespace Game
                 {
                     if (pack.dependencies.Any(r => poolPack.IsCardPoolEquals(r)))
                     {
-
-                        if (pools.Contains(pack))
+                        if (pools.Count(p => p.IsCardPoolEquals(pack)) > 0)
                             return;
 
                         pools.Add(pack);
@@ -160,6 +159,27 @@ namespace Game
             }
 
             return pools.ToArray();
+        }
+
+        /// <summary>
+        /// 获取目标卡池列表依赖的所有卡池。
+        /// </summary>
+        /// <param name="pools">目标卡池列表。</param>
+        /// <param name="cardManager">卡牌管理器。</param>
+        /// <returns>卡尺列表依赖的所有卡池（不包括目标卡池）。</returns>
+        public static CardPoolInfoPack[] GetDependencies(this IEnumerable<CardPoolInfoPack> pools, CardManager cardManager)
+        {
+            List<CardPoolInfoPack> dependencies = new List<CardPoolInfoPack>();
+            List<CardPoolInfoPack> missing = new List<CardPoolInfoPack>();
+            foreach (var pool in pools)
+            {
+                foreach (var dep in pool.GetDependencies(cardManager))
+                {
+                    if (dependencies.Count(d => d.IsCardPoolEquals(dep)) <= 0)
+                        dependencies.Add(dep);
+                }
+            }
+            return dependencies.ToArray();
         }
         public static CardPoolInfoPack ToCardPoolInfoPack(this CardPoolInfo info)
         {

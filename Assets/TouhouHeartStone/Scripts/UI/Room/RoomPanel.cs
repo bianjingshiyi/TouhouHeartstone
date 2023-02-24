@@ -259,7 +259,7 @@ namespace UI
         /// 查看房间卡池
         /// </summary>
         /// <param name="cards"></param>
-        public void viewCardPools(CardPoolInfoPack[] pools)
+        public void viewCardPools(CardPoolInfoPack[] pools, bool showEditButton)
         {
             (string name, Sprite image) getPoolData(CardPoolInfoPack pool)
             {
@@ -272,7 +272,7 @@ namespace UI
                 list.Add(getPoolData(pool));
             }
             var viewData = list.ToArray();
-            _cardPoolsViewPanel.updateCardPools(viewData, () =>
+            _cardPoolsViewPanel.updateCardPools(viewData, showEditButton, () =>
             {
                 onAddCardPoolsClickCallback();
             });
@@ -296,7 +296,10 @@ namespace UI
             {
                 bool selected = selectedCardPools.Contains(pool.GetReference());
                 Color color = selected ? Color.grey : Color.white;
-                return (pool.cardPoolName, null, selected);
+                string name = pool.cardPoolName;
+                if (pools.Count(p => p.cardPoolId == pool.cardPoolId) >= 2)
+                    name += lang._(ROOM_CARD_POOL_VERSION_SUFFIX, pool.version);
+                return (name, null, selected);
             }
             List<(string name, Sprite image, bool selected)> list = new List<(string name, Sprite image, bool selected)>();
 
@@ -552,6 +555,8 @@ namespace UI
         public event Action onUpdateButtons;
         #endregion
         #region 属性字段
+        [TranslateMsg("房间显示-卡池显示界面-版本后缀（{0}为版本号）")]
+        private const string ROOM_CARD_POOL_VERSION_SUFFIX = "({0})";
         RoomPlayerData aiPlayerData;
 
         [SerializeField]

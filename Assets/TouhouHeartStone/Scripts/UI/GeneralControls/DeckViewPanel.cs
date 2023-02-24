@@ -48,13 +48,15 @@ namespace UI
             });
         }
 
-        public void updateCardPools((string name, Sprite image)[] cardPoolViewData, Action onAddClick)
+        public void updateCardPools((string name, Sprite image)[] cardPoolViewData, bool showEditButton, Action onAddClick)
         {
-            int count = cardPoolViewData.Length + 1;
+            int count = cardPoolViewData.Length;
+            if (showEditButton)
+                count++;
             UIHelper.updateList(_deckListRoot, _deckListItemTemplate, _deckItemList, count, (i, item) =>
             {
                 DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
-                if (i < count - 1)
+                if (!showEditButton || i < count - 1)
                 {
                     deckListItem.updateView(cardPoolViewData[i].name, cardPoolViewData[i].image);
                     deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
