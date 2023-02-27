@@ -21,7 +21,6 @@ namespace Controllers
         public async void display(bool switchToView = true, bool reloadCardPoolInfos = true, int cardPoolIndex = -1, bool reloadCardPool = true)
         {
             //显示界面
-            gameObject.SetActive(true);
             //切换模式
             if (switchToView)
             {
@@ -32,6 +31,7 @@ namespace Controllers
                     //重新加载所有牌库信息
                     await getCardPoolsInfoAsync();
                 }
+                gameObject.SetActive(true);
                 _ui.setDeckListActive(true);
                 _ui.setEditDeckPanelActive(false);
                 await _cardPoolViewPanelCtrl.hide();
@@ -62,6 +62,7 @@ namespace Controllers
                     }
                 }
                 //更新UI
+                gameObject.SetActive(true);
                 _ui.setDeckListActive(false);
                 _ui.setEditDeckPanelActive(true);
                 _ui.updateCurCardPoolInfo(_curCardPoolInfo.cardPoolName, image);

@@ -124,6 +124,7 @@ namespace Game
             cardPool = new CardPool();
             CardPoolReference cardPoolRef = new CardPoolReference(cardPoolId, 0);
             _cardPoolDict[cardPoolRef] = cardPool;
+            _creatingCardPoolId = cardPoolId;
         }
         /// <summary>
         /// 保存卡池，如果卡池没有被保存过那么会被分配一个新的地址，否则会覆盖已经保存的文件。
@@ -153,12 +154,15 @@ namespace Game
             {
                 //没有指定地址
                 cardPoolPath = allocCardPoolPath(cardPoolInfo);
-                _cardPoolInfoDict.Add(cardPoolPath, cardPoolInfo);
             }
-            var cardPool = _cardPoolDict[cardPoolInfo.GetReference()];
+            var cardPoolRef = cardPoolInfo.GetReference();
+            var cardPool = _cardPoolDict[cardPoolRef];
             // 获取卡池中对其他卡池的卡牌的引用。
             // TODO: 在被引用的卡池有新版本后，卡池保存时会提示玩家需要将卡池引用修改到新版本。
             cardPoolInfo.dependencyRefs = evaluateCardPoolDependencies(cardPoolInfo.GetReference());
+            // 如果该卡池正在被创建，将正在创建的卡池设为空。
+            if (_creatingCardPoolId == cardPoolInfo.cardPoolId)
+                _creatingCardPoolId = -1;
 
             SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
             // 检查并修复老旧大卡图
@@ -177,14 +181,19 @@ namespace Game
                 //如果是StreamingAssets，那要转存成可持续化文件
                 path = path.Substring(3, path.Length - 3);
             }
-            cardPoolInfo.version = 0;
             cardPoolInfo.versionNumber = CARD_POOL_VERSION_1;
             //初始化JSON
             if (!JsonHelper.isInited)
             {
                 JsonHelper.init();
             }
+
+            // 卡池版本+1。
             cardPoolInfo.editTime++;
+            _cardPoolInfoDict[cardPoolPath] = cardPoolInfo;
+            _cardPoolDict.Remove(cardPoolRef);
+            _cardPoolDict.Add(cardPoolInfo.GetReference(), cardPool);
+
             await game.fileManager.saveFile(path, new string[]
             {
                 cardPoolInfo.toJson(),//文件头信息
@@ -953,11 +962,11 @@ namespace Game
             dirInfo = dirInfo.Parent;
             return dirInfo.FullName;
         }
-
+        [Obsolete]
         public bool tryGetCardSkin(long cardPoolId, int cardId, out CardSkinData skin)
         {
             skin = null;
-            if (tryGetUsableCardPool(cardPoolId, out var cardPool))
+            if (tryGetCardPool(cardPoolId, out var cardPool))
             {
                 //查找所有皮肤
                 var skinGroups = cardPool.cardSkinList.Where(s => s.id == cardId).GroupBy(s => s.skinId).OrderBy(g => g.Key);
@@ -1102,9 +1111,9 @@ namespace Game
         {
             // 内置和经典卡池肯定是本人拥有的。
             if (isBuiltinCardPool(cardPoolId) || isStandardCardPool(cardPoolId))
-            {
                 return true;
-            }
+            if (isCreatingCardPool(cardPoolId))
+                return true;
             string path = getCardPoolPath(cardPoolId);
             return isCardPoolPathUsable(path);
         }
@@ -1112,22 +1121,11 @@ namespace Game
         {
             // 内置和经典卡池肯定是本人拥有的。
             if (isBuiltinCardPool(cardPoolRef.cardPoolId) || isStandardCardPool(cardPoolRef.cardPoolId))
-            {
                 return true;
-            }
+            if (isCreatingCardPool(cardPoolRef.cardPoolId))
+                return true;
             string path = getCardPoolPath(cardPoolRef);
-            if (string.IsNullOrEmpty(path))
-                return false;
-
-            // 如果路径以本地卡池的路径开头，说明是本身拥有的卡池。
-            string startPath = Path.Combine(Application.persistentDataPath, cardPoolDirName);
-            path = path.Replace("/", "\\");
-            startPath = startPath.Replace("/", "\\");
-            if (path.StartsWith(startPath) || path.StartsWith("sa:") || path.StartsWith("res:") || path.StartsWith(cardPoolDirName))
-            {
-                return true;
-            }
-            return false;
+            return isCardPoolPathUsable(path);
         }
         /// <summary>
         /// 重新获取一个卡池内对其他卡池的引用。
@@ -1179,6 +1177,10 @@ namespace Game
                     }
                 }
             }
+        }
+        public bool isCreatingCardPool(long cardPoolId)
+        {
+            return _creatingCardPoolId == cardPoolId;
         }
         #endregion
         #region 私有方法
@@ -1409,6 +1411,7 @@ namespace Game
         /// 键为卡池Id，值为卡池
         /// </summary>
         Dictionary<CardPoolReference, CardPool> _cardPoolDict = new Dictionary<CardPoolReference, CardPool>();
+        private long _creatingCardPoolId = -1;
         [Header("卡池")]
         [SerializeField]
         bool _enableStreamingAssetsInEditor = false;
