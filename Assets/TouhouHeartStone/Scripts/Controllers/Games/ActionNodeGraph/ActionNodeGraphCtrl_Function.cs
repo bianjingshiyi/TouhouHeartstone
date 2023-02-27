@@ -124,18 +124,19 @@ namespace Controllers
             Type inputType = getFunctionNodeReturnTypeAt(inputIndex);
             return validateConnectionType(outputType, inputType);
         }
-        private bool validateConnection4FunctionNodeOutput(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        private bool validateConnection4FunctionNodeOutput(int outputIndex, ActionNode inputActionNode, int inputIndex, bool showErrorTip = true)
         {
             // 尝试连接：函数节点（值）----动作节点（前置动作）
             if (inputIndex < 1)
             {
                 //值输出只能与值输入相互连接
-                ShowValueConnectActionError();
+                if (showErrorTip)
+                    ShowValueConnectActionError();
                 return false;
             }
             Type outputType = getFunctionNodeParameterTypeAt(outputIndex - 1);
             Type inputType = getActionDefine(inputActionNode.defineName).inputs[inputIndex - 1].type;
-            return validateConnectionType(outputType, inputType);
+            return validateConnectionType(outputType, inputType, showErrorTip);
         }
         /// <summary>
         /// 将输入节点的输出值连接到输入上

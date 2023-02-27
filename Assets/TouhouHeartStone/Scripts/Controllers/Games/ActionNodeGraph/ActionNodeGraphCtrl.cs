@@ -1041,7 +1041,7 @@ namespace Controllers
                                 continue;
                             }
                         }
-                        else
+                        else if (_generatedActionDefine != null)
                         {
                             // 与自定义动作的入口节点连接。
                             var outputIndex = valueRef.argIndex;
@@ -1052,6 +1052,19 @@ namespace Controllers
                             else
                             {
                                 unconnectNode4ActionDefineArg(outputIndex, actionNode, i);
+                            }
+                        }
+                        else if (_functionNode != null)
+                        {
+                            // 与自定义动作的入口节点连接。
+                            var outputIndex = valueRef.argIndex;
+                            if (validateConnection4FunctionNodeOutput(outputIndex + 1, actionNode, i + 1, false))
+                            {
+                                _ui.connectNode(_entryNodeItem, 1 + outputIndex, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
+                            }
+                            else
+                            {
+                                unconnectNode4FunctionNodeOutput(outputIndex, actionNode, i);
                             }
                         }
                     }
