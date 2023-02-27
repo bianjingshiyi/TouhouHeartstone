@@ -17,6 +17,7 @@ namespace TouhouHeartstone
         {
             value = origin.value;
             modifyType = origin.modifyType;
+            propertyName = origin.propertyName;
         }
         public override Task afterAdd(IGame game, Card card)
         {
