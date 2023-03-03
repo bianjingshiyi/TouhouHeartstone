@@ -661,7 +661,7 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_ADD_ELEMENT_TO_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
         public static Array addElementToArray(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isParams: true)] object[] elements)
         {
             if (array == null)
@@ -685,7 +685,7 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_WHERE, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
         public static Array where(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Array array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
