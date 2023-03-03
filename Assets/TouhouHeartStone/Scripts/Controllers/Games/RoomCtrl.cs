@@ -146,7 +146,7 @@ namespace Controllers
                 await cardPoolManager.CheckUpdate(suggestion.cardPools);
             }
         }
-        public async Task display(UIDisplayInfo displayInfo)
+        public Task display(UIDisplayInfo displayInfo)
         {
             if (displayInfo is DisplayInfo info)
             {
@@ -193,6 +193,7 @@ namespace Controllers
                 updateStartAndReadyButton();
                 updatePlayerListUI();
             }
+            return Task.CompletedTask;
         }
 
         public Task display(RoomData roomData, bool isLocalGame)
@@ -223,10 +224,7 @@ namespace Controllers
             {
                 if (!_isLocalGame && value is CardPoolInfoPack[] pools)
                 {
-                    if (_ui.isViewingCardPools())
-                    {
-                        viewRoomCardPools();
-                    }
+                    _cardPoolPanelDirty = true;
                     await cardPoolManager.CheckUpdate(pools);
                 }
             }
@@ -292,6 +290,14 @@ namespace Controllers
             _ui.onPlayerRemove += onPlayerRemove;
         }
 
+        private async void Update()
+        {
+            if (_cardPoolPanelDirty)
+            {
+                _cardPoolPanelDirty = false;
+                await RefreshRoomCardPoolPanels();
+            }
+        }
         #endregion
         #region 事件回调
         private void onRandomSeedInputFieldValueChanged(string value)
@@ -354,20 +360,10 @@ namespace Controllers
         }
         private async void onAddCardPoolsClick()
         {
-            var roomPools = _currentRoomData.getCardPools();
-            _selectedEditCardPools = new HashSet<CardPoolInfoPack>(roomPools);
-            var cardPoolList = new List<CardPoolInfoPack>(roomPools);
-            var localPools = await GetLocalCardPools();
-            foreach (var localPool in localPools)
-            {
-                if (!cardPoolList.Any(p => p.IsCardPoolEquals(localPool)))
-                {
-                    cardPoolList.Add(localPool);
-                }
-            }
-            _editingCardPools = cardPoolList.ToArray();
-            _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
-            _ui.closeViewCardPoolsPanel();
+            await UpdateEditingCardPools();
+            _selectedEditCardPools?.Clear();
+            AddSelectedEditingCardPools(_currentRoomData.getCardPools());
+            openEditCardPoolsPanel();
         }
         private void onClickPlayerListItemViewDeckButton(int index)
         {
@@ -801,19 +797,10 @@ namespace Controllers
                 // 修正没有设置的情况下无法使用任何卡的问题
                 roomCardPools = new CardPoolInfoPack[0];
             }
-
-            List<CardPoolInfoPack> privates = new List<CardPoolInfoPack>();
-            foreach (CardPoolInfoPack pool in pools)
-            {
-                if (!roomCardPools.Any(p => p.IsCardPoolEquals(pool)))
-                {
-                    privates.Add(pool);
-                }
-            }
-            privatePools = privates.ToArray();
-            return privates.Count > 0;
+            privatePools = pools.Where(pool => !roomCardPools.Contains(pool)).ToArray();
+            return privatePools.Length > 0;
         }
-        private void AddCardPools(IEnumerable<CardPoolInfoPack> packs)
+        private async void AddCardPools(IEnumerable<CardPoolInfoPack> packs)
         {
             var roomPools = _currentRoomData.getCardPools();
             var newList = new List<CardPoolInfoPack>(roomPools);
@@ -828,25 +815,19 @@ namespace Controllers
             }
             CardPoolInfoPack[] cardPools = newList.ToArray();
             setNotifyRoomSetting(Option.CardPools, cardPools);
-            if (_ui.isViewingCardPools())
-            {
-                viewRoomCardPools();
-            }
+            _cardPoolPanelDirty = true;
         }
-        private void RemoveCardPools(IEnumerable<CardPoolInfoPack> packs)
+        private async void RemoveCardPools(IEnumerable<CardPoolInfoPack> packs)
         {
             var roomPools = _currentRoomData.getCardPools();
             var newList = new List<CardPoolInfoPack>(roomPools);
             foreach (var pack in packs)
             {
-                newList.RemoveAll(roomPool => roomPool.IsCardPoolEquals(pack));
+                newList.Remove(pack);
             }
             CardPoolInfoPack[] cardPools = newList.ToArray();
             setNotifyRoomSetting(Option.CardPools, cardPools);
-            if (_ui.isViewingCardPools())
-            {
-                viewRoomCardPools();
-            }
+            _cardPoolPanelDirty = true;
         }
 
         private List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> GetConflictCardPools(CardPoolInfoPack[] comingPools, out List<CardPoolInfoPack> addPools)
@@ -962,18 +943,90 @@ namespace Controllers
             cardPools.AddRange(localPools);
             return cardPools.ToArray();
         }
+
+        private async Task RefreshRoomCardPoolPanels()
+        {
+            if (_ui.isEditingCardPools())
+            {
+                var modifies = await UpdateEditingCardPools();
+                AddSelectedEditingCardPools(modifies.addedPools);
+                RemoveSelectedEditingCardPools(modifies.removedPools);
+                openEditCardPoolsPanel();
+            }
+            else if (_ui.isViewingCardPools())
+            {
+                viewRoomCardPools();
+            }
+        }
         private void viewRoomCardPools()
         {
             _viewingCardPools = _currentRoomData.getCardPools();
             _ui.viewCardPools(_viewingCardPools, isRoomOwner);
         }
+        #region 编辑卡池界面
+        private async Task<(IEnumerable<CardPoolInfoPack> addedPools, IEnumerable<CardPoolInfoPack> removedPools)> UpdateEditingCardPools()
+        {
+            var roomPools = _currentRoomData.getCardPools();
+            var localPools = await GetLocalCardPools();
+
+            var newCardPools = localPools.Union(roomPools);
+
+            IEnumerable<CardPoolInfoPack> addedPools, removedPools;
+            if (_editingCardPools == null)
+            {
+                addedPools = newCardPools;
+                removedPools = Array.Empty<CardPoolInfoPack>();
+            }
+            else
+            {
+                addedPools = newCardPools.Except(_editingCardPools);
+                removedPools = _editingCardPools.Except(newCardPools);
+            }
+            _editingCardPools = newCardPools.ToArray();
+
+            return (addedPools, removedPools);
+        }
+        private void AddSelectedEditingCardPools(IEnumerable<CardPoolInfoPack> addPools)
+        {
+            if (addPools == null)
+            {
+                return;
+            }
+
+            if (_selectedEditCardPools == null)
+            {
+                _selectedEditCardPools = new HashSet<CardPoolInfoPack>();
+            }
+            foreach (var pool in addPools)
+            {
+                _selectedEditCardPools.Add(pool);
+            }
+        }
+        private void RemoveSelectedEditingCardPools(IEnumerable<CardPoolInfoPack> removePools)
+        {
+            if (removePools == null || _selectedEditCardPools == null)
+            {
+                return;
+            }
+
+            foreach (var pool in removePools)
+            {
+                _selectedEditCardPools.Remove(pool);
+            }
+        }
+        private void openEditCardPoolsPanel()
+        {
+            _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
+            _ui.closeViewCardPoolsPanel();
+        }
         private void closeAddCardPoolsPanel()
         {
             _editingCardPools = null;
-            _selectedEditCardPools = null;
+            _selectedEditCardPools?.Clear();
             _ui.closeAddCardPoolsPanel();
             viewRoomCardPools();
         }
+        #endregion
         /// <summary>
         /// 检测房间在添加、删除某些卡池后，卡池的合法性。
         /// </summary>
@@ -992,7 +1045,7 @@ namespace Controllers
             List<CardPoolInfoPack> missing = new List<CardPoolInfoPack>();
             foreach (var dep in dependencies) 
             {
-                if (finalPools.Count(p => p.IsCardPoolEquals(dep)) <= 0)
+                if (!finalPools.Contains(dep))
                 {
                     missing.Add(dep);
                 }
@@ -1281,6 +1334,10 @@ namespace Controllers
         /// 游戏是否已经开始，用于阻止玩家再次点击开始游戏。
         /// </summary>
         bool _gameStarted;
+        /// <summary>
+        /// 卡池显示面板是否需要更新。
+        /// </summary>
+        bool _cardPoolPanelDirty;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo

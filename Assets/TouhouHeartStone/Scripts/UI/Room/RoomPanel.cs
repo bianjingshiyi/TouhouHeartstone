@@ -282,6 +282,7 @@ namespace UI
         {
             return _cardPoolsPanel.activeSelf;
         }
+        
         public void closeViewCardPoolsPanel()
         {
             _cardPoolsPanel.SetActive(false);
@@ -290,7 +291,7 @@ namespace UI
         /// 打开添加房间卡池界面
         /// </summary>
         /// <param name="cards"></param>
-        public void openAddCardPoolsPanel(CardPoolInfoPack[] pools, IEnumerable<CardPoolReference> selectedCardPools)
+        public void openAddCardPoolsPanel(IEnumerable<CardPoolInfoPack> pools, IEnumerable<CardPoolReference> selectedCardPools)
         {
             (string name, Sprite image, bool selected) getPoolData(CardPoolInfoPack pool)
             {
@@ -298,7 +299,9 @@ namespace UI
                 Color color = selected ? Color.grey : Color.white;
                 string name = pool.cardPoolName;
                 if (pools.Count(p => p.cardPoolId == pool.cardPoolId) >= 2)
-                    name += lang._(ROOM_CARD_POOL_VERSION_SUFFIX, pool.version);
+                {
+                    name = lang._(ROOM_CARD_POOL_VERSION_TEMPLATE, name, pool.version);
+                }
                 return (name, null, selected);
             }
             List<(string name, Sprite image, bool selected)> list = new List<(string name, Sprite image, bool selected)>();
@@ -310,6 +313,10 @@ namespace UI
             var viewData = list.ToArray();
             _addCardPoolsViewPanel.updateAddCardPools(viewData);
             _addCardPoolsPanel.SetActive(true);
+        }
+        public bool isEditingCardPools()
+        {
+            return _addCardPoolsPanel.activeSelf;
         }
         public void closeAddCardPoolsPanel()
         {
@@ -555,8 +562,8 @@ namespace UI
         public event Action onUpdateButtons;
         #endregion
         #region 属性字段
-        [TranslateMsg("房间显示-卡池显示界面-版本后缀（{0}为版本号）")]
-        private const string ROOM_CARD_POOL_VERSION_SUFFIX = "({0})";
+        [TranslateMsg("房间显示-卡池显示界面-名称版本模板（{0}为卡池名称，{1}为版本号）")]
+        private const string ROOM_CARD_POOL_VERSION_TEMPLATE = "{0}({1})";
         RoomPlayerData aiPlayerData;
 
         [SerializeField]

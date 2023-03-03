@@ -2,6 +2,7 @@
 using System.Linq;
 using Controllers;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 
 namespace Game
 {
@@ -25,11 +26,10 @@ namespace Game
                 {
                     foreach (var poolRef in poolInfo.dependencyRefs)
                     {
-                        if (dependencies.Contains(poolRef.cardPoolId))
-                            return;
-
-                        dependencies.Add(poolRef.cardPoolId);
-                        addCardPoolDeps(poolRef.cardPoolId);
+                        if (dependencies.Add(poolRef.cardPoolId))
+                        {
+                            addCardPoolDeps(poolRef.cardPoolId);
+                        }
                     }
                 }
             }
@@ -57,11 +57,10 @@ namespace Game
                         continue;
                     if (poolInfo.dependencyRefs.Any(p => p.cardPoolId == poolId))
                     {
-                        if (pools.Contains(checkId))
-                            continue;
-
-                        pools.Add(checkId);
-                        addDependedCardPool(checkId);
+                        if (pools.Add(checkId))
+                        {
+                            addDependedCardPool(checkId);
+                        }
                     }
                 }
             }
@@ -76,7 +75,7 @@ namespace Game
         /// <returns>目标卡池依赖的所有卡池（不包括目标卡池）。</returns>
         public static CardPoolInfoPack[] GetDependencies(this CardPoolInfoPack pack, CardManager cardManager)
         {
-            List<CardPoolInfoPack> dependencies = new List<CardPoolInfoPack>();
+            HashSet<CardPoolInfoPack> dependencies = new HashSet<CardPoolInfoPack>();
             addCardPoolDeps(pack);
 
             void addCardPoolDeps(CardPoolInfoPack pool)
@@ -89,11 +88,11 @@ namespace Game
                         if (poolInfo == null)
                             continue;
                         var poolPack = poolInfo.ToCardPoolInfoPack();
-                        if (dependencies.Count(p => p.IsCardPoolEquals(poolPack)) > 0)
-                            return;
 
-                        dependencies.Add(poolPack);
-                        addCardPoolDeps(poolPack);
+                        if (dependencies.Add(poolPack))
+                        {
+                            addCardPoolDeps(poolPack);
+                        }
                     }
                 }
             }
@@ -109,7 +108,7 @@ namespace Game
         /// <returns>目标卡池依赖的所有卡池（不包括目标卡池）。</returns>
         public static CardPoolInfoPack[] GetDependenciesInSet(this CardPoolInfoPack pack, IEnumerable<CardPoolInfoPack> cardPoolFullSet)
         {
-            List<CardPoolInfoPack> dependencies = new List<CardPoolInfoPack>();
+            HashSet<CardPoolInfoPack> dependencies = new HashSet<CardPoolInfoPack>();
             addCardPoolDeps(pack);
 
             void addCardPoolDeps(CardPoolInfoPack pool)
@@ -118,14 +117,14 @@ namespace Game
                 {
                     foreach (var poolRef in pool.dependencies)
                     {
-                        var poolPack = cardPoolFullSet.FirstOrDefault(p => p.IsCardPoolEquals(poolRef));
+                        var poolPack = cardPoolFullSet.FirstOrDefault(p => p.CompareCardPool(poolRef));
                         if (poolPack == null)
                             continue;
-                        if (dependencies.Count(p => p.IsCardPoolEquals(poolPack)) > 0)
-                            return;
 
-                        dependencies.Add(poolPack);
-                        addCardPoolDeps(poolPack);
+                        if (dependencies.Add(poolPack))
+                        {
+                            addCardPoolDeps(poolPack);
+                        }
                     }
                 }
             }
@@ -140,20 +139,22 @@ namespace Game
         /// <returns>依赖于目标卡池的所有卡池（不包括目标卡池）。</returns>
         public static CardPoolInfoPack[] GetDependedCardPools(this CardPoolInfoPack pool, IEnumerable<CardPoolInfoPack> cardPoolFullSet)
         {
-            List<CardPoolInfoPack> pools = new List<CardPoolInfoPack>();
+            HashSet<CardPoolInfoPack> pools = new HashSet<CardPoolInfoPack>();
             addCardPoolDeps(pool);
 
             void addCardPoolDeps(CardPoolInfoPack poolPack)
             {
                 foreach (var pack in cardPoolFullSet)
                 {
-                    if (pack.dependencies.Any(r => poolPack.IsCardPoolEquals(r)))
+                    if (pack.dependencies.Any(r => poolPack.CompareCardPool(r)))
                     {
-                        if (pools.Count(p => p.IsCardPoolEquals(pack)) > 0)
+                        if (pools.Contains(pack))
                             return;
 
-                        pools.Add(pack);
-                        addCardPoolDeps(pack);
+                        if (pools.Add(pack))
+                        {
+                            addCardPoolDeps(pack);
+                        }
                     }
                 }
             }
@@ -169,14 +170,12 @@ namespace Game
         /// <returns>卡尺列表依赖的所有卡池（不包括目标卡池）。</returns>
         public static CardPoolInfoPack[] GetDependencies(this IEnumerable<CardPoolInfoPack> pools, CardManager cardManager)
         {
-            List<CardPoolInfoPack> dependencies = new List<CardPoolInfoPack>();
-            List<CardPoolInfoPack> missing = new List<CardPoolInfoPack>();
+            HashSet<CardPoolInfoPack> dependencies = new HashSet<CardPoolInfoPack>();
             foreach (var pool in pools)
             {
                 foreach (var dep in pool.GetDependencies(cardManager))
                 {
-                    if (dependencies.Count(d => d.IsCardPoolEquals(dep)) <= 0)
-                        dependencies.Add(dep);
+                    dependencies.Add(dep);
                 }
             }
             return dependencies.ToArray();

@@ -60,14 +60,10 @@ namespace Game
                 var cardPool = pair.Value;
                 if (cardPool.dependencyRefs == null && cardPool.dependencies != null)
                 {
-                    cardPool.dependencyRefs = new CardPoolReference[cardPool.dependencies.Length];
-                    for (int i = 0; i < cardPool.dependencies.Length; i++)
-                    {
-                        var depPoolId = cardPool.dependencies[i];
-                        var depPoolInfo = _cardPoolInfoDict.Values.FirstOrDefault(p => p.cardPoolId == depPoolId);
-                        cardPool.dependencyRefs[i] = depPoolInfo.GetReference();
-                    }
+                    var depInfos = cardPool.dependencies.SelectMany(depPoolId => _cardPoolInfoDict.Values.Where(p => p.cardPoolId == depPoolId));
+                    var depRefs = depInfos.Select(poolInfo => poolInfo.GetReference());
                     cardPool.dependencies = null;
+                    cardPool.dependencyRefs = depRefs.ToArray();
                 }
             }
 
@@ -181,6 +177,7 @@ namespace Game
                 //如果是StreamingAssets，那要转存成可持续化文件
                 path = path.Substring(3, path.Length - 3);
             }
+            cardPoolInfo.version = 0;
             cardPoolInfo.versionNumber = CARD_POOL_VERSION_1;
             //初始化JSON
             if (!JsonHelper.isInited)
