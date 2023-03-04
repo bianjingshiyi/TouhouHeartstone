@@ -70,7 +70,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2019.4.31f1-windows-mono-0', 'win64-debug')
+                    unitybuilder.buildPlatform('2019.4.40f1-windows-mono-1', 'win64-debug')
                 }
             }
         }
@@ -81,7 +81,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2019.4.31f1-windows-mono-0', 'win64-release;win32-release')
+                    unitybuilder.buildPlatform('2019.4.40f1-windows-mono-1', 'win64-release;win32-release')
                 }
             }
         }
@@ -89,7 +89,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER, 'zmcs_android')
-                    unitybuilder.buildPlatform('2019.4.31f1-android-0', 'android-debug')
+                    unitybuilder.buildPlatform('2019.4.40f1-android-1', 'android-debug')
                 }
             }
         }
@@ -100,7 +100,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER, 'zmcs_android')
-                    unitybuilder.buildPlatform('2019.4.31f1-android-0', 'android-release')
+                    unitybuilder.buildPlatform('2019.4.40f1-android-1', 'android-release')
                 }
             }
         }
@@ -111,7 +111,7 @@ pipeline {
             steps {
                 script {
                     UnityBuilder unitybuilder = new UnityBuilder(this, 'sample', 'unity_license', env.UNITY_CACHE_SERVER)
-                    unitybuilder.buildPlatform('2019.4.31f1-android-0', 'linux-debug;linux-release')
+                    unitybuilder.buildPlatform('2019.4.40f1-android-1', 'linux-debug;linux-release')
                 }
             }
         }
@@ -152,7 +152,7 @@ pipeline {
                 script {
                     // Upload test package to TencentCloud
                     TencentCOS cos = new TencentCOS(this, 'sample', 'cos_igsk', 'igensoukyo-1251923006', 'ap-nanjing')
-                    cos.upload("${env.WORKSPACE}/Build/_artifact", '*android_debug*', 'thg/nightly/')
+                    cos.upload("${env.WORKSPACE}/Build/_artifact", '*android_release*', 'thg/nightly/')
                 }
             }
         }
@@ -221,8 +221,10 @@ pipeline {
                     def cols = lines[i].split(': ')
                     if (cols.size() == 2) {
                         description += '<li><a href="' + cols[1] + '" target="_blank">' + cols[0] + '</a></li>\n'
-                        wecomContents += Wecom.contentItem('成品', cols[0], cols[1])
                         downloadMaps[cols[0]] = cols[1]
+                        if (i < 6) {
+                            wecomContents += Wecom.contentItem('成品', cols[0], cols[1])
+                        }
                     }
                 }
                 description += '</ul>'
