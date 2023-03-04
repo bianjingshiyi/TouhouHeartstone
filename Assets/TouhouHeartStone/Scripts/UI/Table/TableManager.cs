@@ -496,7 +496,9 @@ namespace Game
             }
             else
             {
-                master.Image.sprite = await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id);
+                var cards = getManager<CardManager>();
+                var poolRef = cards.getCardPoolReferenceOfCard(card.define);
+                master.Image.sprite = await cards.loadCardImage(poolRef, card.define.id);
             }
         }
 
@@ -567,7 +569,9 @@ namespace Game
             }
             else
             {
-                item.Image.sprite = await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id);
+                var cards = getManager<CardManager>();
+                var poolRef = cards.getCardPoolReferenceOfCard(card.define);
+                item.Image.sprite = await cards.loadCardImage(poolRef, card.define.id);
             }
         }
         private void onItemPointerExit(Item item, PointerEventData pointer)
@@ -1058,7 +1062,9 @@ namespace Game
             ui.setCard(game, card, skin, isFaceup);
             if (skin.image == null)
             {
-                ui.setImage(await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id));
+                var cards = getManager<CardManager>();
+                var poolRef = cards.getCardPoolReferenceOfCard(card.define);
+                ui.setImage(await cards.loadCardImage(poolRef, card.define.id));
             }
             //if (card.define.type == DEFINE.SERVANT)
             //{
@@ -1103,7 +1109,9 @@ namespace Game
             ui.setCard(define, skin, isFaceUp);
             if (skin.image == null)
             {
-                ui.setImage(await getManager<CardManager>().loadCardImage(define.cardPoolId, define.id));
+                var cards = getManager<CardManager>();
+                var poolRef = cards.getCardPoolReferenceOfCard(define);
+                ui.setImage(await getManager<CardManager>().loadCardImage(poolRef, define.id));
             }
             //if (define.type == DEFINE.SERVANT)
             //{
@@ -1351,7 +1359,11 @@ namespace Game
                 servant.image.sprite = skin.image;
             }
             else
-                servant.image.sprite = await getManager<CardManager>().loadCardImage(card.define.cardPoolId, card.define.id);
+            {
+                var cards = getManager<CardManager>();
+                var poolRef = cards.getCardPoolReferenceOfCard(card.define);
+                servant.image.sprite = await cards.loadCardImage(poolRef, card.define.id);
+            }
         }
         [SerializeField]
         BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
@@ -1577,8 +1589,12 @@ namespace Game
             {
                 servant.image.sprite = skin.image;
             }
-            else
-                servant.image.sprite = await getManager<CardManager>().loadCardImage(cardDefine.cardPoolId, cardDefine.id);
+            else 
+            {
+                var cards = getManager<CardManager>();
+                var poolRef = cards.getCardPoolReferenceOfCard(cardDefine);
+                servant.image.sprite = await cards.loadCardImage(poolRef, cardDefine.id);
+            }
         }
         /// <summary>
         /// 从随从获取对应的卡

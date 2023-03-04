@@ -13,8 +13,8 @@ namespace UI
         }
         public void updateView(ReplayItemViewData viewData)
         {
-            _playerAImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerAMasterDefRef).image;
-            _playerBImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerBMasterDefRef).image;
+            //_playerAImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerAMasterDefRef).image;
+            //_playerBImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerBMasterDefRef).image;
             _nameText.text = viewData.name;
         }
 

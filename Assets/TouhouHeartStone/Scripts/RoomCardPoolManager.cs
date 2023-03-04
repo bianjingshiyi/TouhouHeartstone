@@ -407,8 +407,8 @@ namespace Game
         {
             foreach (var cardPool in pools)
             {
-                CardPoolInfo info = game.card.getCardPoolInfo(cardPool.cardPoolId);
-                if (info == null || info.editTime != cardPool.version)
+                CardPoolInfo info = game.card.getCardPoolInfo(cardPool);
+                if (info == null)
                 {
                     await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
                 }

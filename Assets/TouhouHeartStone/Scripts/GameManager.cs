@@ -622,7 +622,8 @@ namespace Game
                     {
                         if (int.TryParse(m.Groups["id"].Value, out var id) && long.TryParse(m.Groups["poolId"].Value, out var poolId))
                         {
-                            return getManager<CardManager>().getDefaultSkin(poolId, id).name;
+                            var cardPoolRef = cards.getCardPoolReferenceInSet(poolId, game?.getOption()?.cardPools);
+                            return getManager<CardManager>().getDefaultSkin(cardPoolRef, id).name;
                         }
                         return "未知卡牌";
                     });

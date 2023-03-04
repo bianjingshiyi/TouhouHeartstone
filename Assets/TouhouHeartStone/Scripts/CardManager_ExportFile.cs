@@ -13,6 +13,7 @@ using MukioI18n;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
+using TouhouCardEngine.Shared;
 
 namespace Game
 {
@@ -41,14 +42,14 @@ namespace Game
             string cardPoolDefineFile = null;
             foreach (var kv in _cardPoolInfoDict)
             {
-                if (kv.Value.IsSameCardPool(cardPoolInfo))
+                if (kv.Value.CompareCardPool(cardPoolInfo))
                 {
                     cardPoolDefineFile = kv.Key;
                     break;
                 }
             }
 
-            var cardPool = _cardPoolDict[cardPoolInfo.GetReference()];
+            var cardPool = _cardPoolDict[cardPoolInfo.ToReference()];
             if (cardPoolDefineFile == null)
                 return null;
 

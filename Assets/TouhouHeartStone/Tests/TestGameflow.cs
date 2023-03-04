@@ -8,6 +8,7 @@ using NitoriNetwork.Common;
 using System.Reflection;
 using Game;
 using System.Threading.Tasks;
+using TouhouCardEngine.Shared;
 
 namespace Tests
 {
@@ -199,8 +200,8 @@ namespace Tests
                 foreach (var pair in result)
                 {
                     await cardManager.loadCardPool(pair.Key);
-                    cardDefines.Add(pair.Value.cardPoolId, cardManager.getCardDefines(pair.Value.GetReference()));
-                    buffDefines.Add(pair.Value.cardPoolId, cardManager.getBuffDefines(pair.Value.GetReference()));
+                    cardDefines.Add(pair.Value.cardPoolId, cardManager.getCardDefines(pair.Value.ToReference()));
+                    buffDefines.Add(pair.Value.cardPoolId, cardManager.getBuffDefines(pair.Value.ToReference()));
                 }
             }
             game.init(new Assembly[]

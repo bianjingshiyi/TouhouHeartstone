@@ -51,7 +51,28 @@ namespace UI
 
                 var item = RoomPlayerList.addItem();
                 _playerList.Add(item.rectTransform);
-                item.SetPlayerInfo(player);
+
+                // 设置套牌的英雄名称。
+                string characterText = string.Empty;
+                DefineReference[] deck = player.getDeck()?.toDefRefArray(true);
+                if (deck != null)
+                {
+                    var cardManager = this.findInstance<CardManager>();
+                    DefineReference masterRef = deck[0];
+                    var cardPoolRef = cardManager.getCardPoolReferenceInSet(masterRef.cardPoolId, room.getCardPools());
+                    var skin = cardManager.getCardSkin(cardPoolRef, masterRef.defineId);
+                    if (skin != null)
+                    {
+                        characterText = skin.name;
+                    }
+                    else
+                    {
+                        characterText = ROOM_UNKNOWN_CHARACTER_NAME;
+                    }
+                }
+                item.SetPlayerInfo(player, characterText);
+
+
                 item.OnPlayerViewDeck += onViewDeck;
 
                 // 顺便获取自己的引用
@@ -255,6 +276,11 @@ namespace UI
             _cancleReadyButton.gameObject.SetActive(value);
         }
 
+        public void updateViewCardPanel((string name, Sprite image)[] viewData)
+        {
+            _cardViewPanel.update(viewData);
+            _cardPanel.SetActive(true);
+        }
         /// <summary>
         /// 查看房间卡池
         /// </summary>
@@ -282,7 +308,6 @@ namespace UI
         {
             return _cardPoolsPanel.activeSelf;
         }
-        
         public void closeViewCardPoolsPanel()
         {
             _cardPoolsPanel.SetActive(false);
@@ -480,29 +505,9 @@ namespace UI
         /// 查看卡组
         /// </summary>
         /// <param name="cards"></param>
-        private async void onViewDeck(DefineReference[] cards)
+        private void onViewDeck(DefineReference[] cards)
         {
-            //_cardViewPanel.setItems(cardManager,cards);
-            async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
-            {
-                var card = cardManager.getCardDefine(cardRef.cardPoolId, cardRef.defineId);
-                var skin = cardManager.getCardSkin(cardRef.cardPoolId, cardRef.defineId);
-                Sprite image = null;
-                if (card != null)
-                {
-                    var path = skin?.imagePath;
-                    image = await cardManager.loadCardImage(cardRef.cardPoolId, cardRef.defineId);
-                }
-                return (skin?.name, image);
-            }
-            List<(string name, Sprite image)> list = new List<(string name, Sprite image)>();
-            foreach (var cardRef in cards)
-            {
-                list.Add(await getCardData(cardRef));
-            }
-            var viewData = list.ToArray();
-            _cardViewPanel.update(viewData);
-            _cardPanel.SetActive(true);
+            onViewDeckClick?.Invoke(cards);
         }
         #endregion
         void updateButtonStates()
@@ -541,6 +546,7 @@ namespace UI
         public event Action<string> onTurnTimeInputFieldValueChanged;
         public event Action<bool> onDisableRandomPlayerActOrderToggleValueChanged;
         public event Action onViewCardPoolsClick;
+        public event Action<DefineReference[]> onViewDeckClick;
         public event Action onAddCardPoolsClick;
         public event Action onConfirmAddCardPools;
         public event Action onCancelAddCardPools;
@@ -564,6 +570,8 @@ namespace UI
         #region 属性字段
         [TranslateMsg("房间显示-卡池显示界面-名称版本模板（{0}为卡池名称，{1}为版本号）")]
         private const string ROOM_CARD_POOL_VERSION_TEMPLATE = "{0}({1})";
+        [TranslateMsg("房间显示之未知角色")]
+        private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
         RoomPlayerData aiPlayerData;
 
         [SerializeField]
@@ -672,12 +680,11 @@ namespace UI
         /// 设置当前的玩家信息
         /// </summary>
         /// <param name="data"></param>
-        public void SetPlayerInfo(RoomPlayerData data)
+        public void SetPlayerInfo(RoomPlayerData data, string characterText)
         {
             playerData = data;
             NameText.text = data.name;
 
-            DefineReference[] deck = data.getDeck()?.toDefRefArray(true);
 
             _uploadIconImage.gameObject.SetActive(false);
             _downloadIconImage.gameObject.SetActive(false);
@@ -700,25 +707,7 @@ namespace UI
                     break;
             }
             _progressBar.gameObject.SetActive(loadState != PlayerLoadState.None);
-
-            if (deck != null)
-            {
-                var cardManager = this.findInstance<CardManager>();
-                DefineReference masterRef = deck[0];
-                var skin = cardManager.getCardSkin(masterRef);
-                if (skin != null)
-                {
-                    CharacterText.text = skin.name;
-                }
-                else
-                {
-                    CharacterText.text = ROOM_UNKNOWN_CHARACTER_NAME;
-                }
-            }
-            else
-            {
-                CharacterText.text = string.Empty;
-            }
+            CharacterText.text = characterText;
         }
 
         /// <summary>
@@ -804,8 +793,6 @@ namespace UI
         public event Action<RoomPlayerListItem> onClickRemoveButton;
         #endregion
         #region 属性字段
-        [TranslateMsg("房间显示之未知角色")]
-        private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
         [SerializeField]
         private Image _readyIconImage;
         [SerializeField]

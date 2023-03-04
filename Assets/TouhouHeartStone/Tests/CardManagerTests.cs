@@ -80,7 +80,7 @@ namespace Tests
             Assert.IsNull(task.Exception);
 
             // 一定会有的卡
-            var cd = cm.getCardDefine(0, ExistsCardID);
+            var cd = cm.getCardDefine(CardManager.builtinCardPoolReference, ExistsCardID);
             Assert.NotNull(cd);
             Assert.AreEqual(cd.id, ExistsCardID);
 
@@ -99,7 +99,7 @@ namespace Tests
             var cm = task.Result;
 
             // 一定会有的卡
-            var cd = cm.getCardDefine(0, ExistsCardID);
+            var cd = cm.getCardDefine(CardManager.builtinCardPoolReference, ExistsCardID);
             Assert.NotNull(cd);
             Assert.AreEqual(cd.id, ExistsCardID);
         }
@@ -142,7 +142,7 @@ namespace Tests
             var cm = task.Result;
 
             cm.AddCardSkinTemp(new UI.CardSkinData { id = NonExistsCardID });
-            var skin = cm.getCardSkin(0, NonExistsCardID);
+            var skin = cm.getCardSkin(CardManager.builtinCardPoolReference, NonExistsCardID);
             Assert.NotNull(skin);
             Assert.AreEqual(skin.id, NonExistsCardID);
         }

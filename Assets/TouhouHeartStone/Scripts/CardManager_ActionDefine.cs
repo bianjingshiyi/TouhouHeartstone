@@ -8,7 +8,8 @@ namespace Game
         #region 公有方法
         public GeneratedActionDefine createActionDefine(long cardPoolId, string name)
         {
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
                 var actDefList = cardPool.actionDefineList;
                 //分配Id
@@ -30,7 +31,8 @@ namespace Game
         }
         public bool removeActionDefine(long cardPoolId, GeneratedActionDefine actionDefine)
         {
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
                 return cardPool.actionDefineList.Remove(actionDefine);
             }
@@ -38,7 +40,8 @@ namespace Game
         }
         public bool getActionDefine(long cardPoolId, string name, out GeneratedActionDefine actionDefine)
         {
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
                 actionDefine = cardPool.actionDefineList.Find(g => g.defineName == name);
                 return actionDefine != null;
@@ -48,7 +51,8 @@ namespace Game
         }
         public GeneratedActionDefine[] getActionDefines(long cardPoolId)
         {
-            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
                 return cardPool.actionDefineList.ToArray();
             }

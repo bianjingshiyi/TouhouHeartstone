@@ -16,6 +16,7 @@ using ILogger = TouhouCardEngine.Shared.ILogger;
 using IGensoukyo;
 using System.Text.RegularExpressions;
 using Controllers;
+using TouhouCardEngine.Shared;
 
 namespace Game
 {
@@ -459,22 +460,25 @@ namespace Game
         ExcelDataSetList excelList => ExcelDataSetList.Instance;
 
         Dictionary<int, CardDefine> defineDic { get; set; } = new Dictionary<int, CardDefine>();
+
         /// <summary>
         /// 根据id获取卡片定义
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="cardPoolRef">卡池引用。</param>
+        /// <param name="cardId">卡牌ID。</param>
         /// <returns></returns>
-        public CardDefine getCardDefine(long cardPoolId, int cardId)
+        public CardDefine getCardDefine(ICardPoolReference cardPoolRef, int cardId)
         {
-            if (tryGetCardDefine(cardPoolId, cardId, out var cardDefine))
+            if (tryGetCardDefine(cardPoolRef, cardId, out var cardDefine))
             {
                 return cardDefine;
             }
             return null;
         }
-        public CardDefine getCardDefine(DefineReference defRef)
+        public CardDefine getLocalCardDefine(DefineReference defRef)
         {
-            return getCardDefine(defRef.cardPoolId, defRef.defineId);
+            var poolRef = game.card.getLocalCardPoolReference(defRef.cardPoolId);
+            return getCardDefine(poolRef, defRef.defineId);
         }
         /// <summary>
         /// 根据条件获取卡片定义
@@ -557,9 +561,9 @@ namespace Game
                 return cardPool.cardDefineList.ToDictionary(c => c.id);
             return null;
         }
-        public Dictionary<CardPoolReference, Dictionary<int, CardDefine>> getCardDefines()
+        public Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> getCardDefines()
         {
-            Dictionary<CardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<CardPoolReference, Dictionary<int, CardDefine>>();
+            Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<ICardPoolReference, Dictionary<int, CardDefine>>();
             foreach (var cardPool in _cardPoolDict)
             {
                 cardPoolDict.Add(cardPool.Key, cardPool.Value.cardDefineList.ToDictionary(c => c.id));
@@ -599,11 +603,11 @@ namespace Game
         }
         public CardSkinData getDefaultSkin(CardDefine cardDefine)
         {
-            return getDefaultSkin(cardDefine.cardPoolId, cardDefine.id);
+            return getDefaultSkin(getCardPoolReferenceOfCard(cardDefine), cardDefine.id);
         }
-        public CardSkinData getDefaultSkin(long cardPoolId, int id)
+        public CardSkinData getDefaultSkin(ICardPoolReference cardPoolRef, int id)
         {
-            var skinGroup = getAllSkins(cardPoolId, id).GroupBy(s => s.skinId).FirstOrDefault();
+            var skinGroup = getAllSkins(cardPoolRef, id).GroupBy(s => s.skinId).FirstOrDefault();
             if (skinGroup == null)
             {
                 //卡牌没有任何皮肤
@@ -621,26 +625,9 @@ namespace Game
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Obsolete]
-        public CardSkinData getCardSkin(long cardPoolId, int cardId)
+        public CardSkinData getCardSkin(ICardPoolReference cardPoolRef, int cardId)
         {
-            if (isBuiltinCardPool(cardPoolId))
-            {
-                if (skinDic.TryGetValue(cardId, out CardSkinData builtInSkin))
-                    return builtInSkin;
-            }
-            if (tryGetCardSkin(cardPoolId, cardId, out CardSkinData skin))
-                return skin;
-            return null;
-        }
-        /// <summary>
-        /// 根据id获取卡片皮肤
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public CardSkinData getCardSkin(CardPoolReference cardPoolRef, int cardId)
-        {
-            if (cardPoolRef == builtinCardPoolReference)
+            if (cardPoolRef.CompareCardPool(builtinCardPoolReference))
             {
                 if (skinDic.TryGetValue(cardId, out CardSkinData builtInSkin))
                     return builtInSkin;
@@ -648,10 +635,6 @@ namespace Game
             if (tryGetCardSkin(cardPoolRef, cardId, out CardSkinData skin))
                 return skin;
             return null;
-        }
-        public CardSkinData getCardSkin(DefineReference defRef)
-        {
-            return getCardSkin(defRef.cardPoolId, defRef.defineId);
         }
         public CardSkinData getCardSkin(CardDefine cardDefine)
         {

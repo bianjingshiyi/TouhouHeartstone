@@ -528,7 +528,7 @@ namespace Controllers
         }
         private CardSkinData[] getCurrentCardSkins()
         {
-            return game.card.getAllSkins(_cardDefine.cardPoolId, _cardDefine.id);
+            return game.card.getAllLocalSkins(_cardDefine.cardPoolId, _cardDefine.id);
         }
         [Obsolete]
         public IAppManager app { get; }

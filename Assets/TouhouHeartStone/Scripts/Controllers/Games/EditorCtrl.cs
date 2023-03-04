@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UI;
@@ -54,7 +55,7 @@ namespace Controllers
                     //重新加载牌库中的所有卡牌和皮肤
                     if (string.IsNullOrEmpty(_curCardPoolPath))
                     {
-                        await readCardPoolByIdAsync(_curCardPoolInfo.GetReference());
+                        await readCardPoolByIdAsync(_curCardPoolInfo.ToReference());
                     }
                     else
                     {
@@ -167,7 +168,7 @@ namespace Controllers
                 game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.i18n._(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
                     hasUnsavedChanges = false;
-                    game.card.removeCardPool(_cardPoolInfoList[index].GetReference());
+                    game.card.removeCardPool(_cardPoolInfoList[index].ToReference());
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
                     await updateDeckListUI();
@@ -305,7 +306,7 @@ namespace Controllers
                 {
                     hasUnsavedChanges = false;
                     //删除当前卡池
-                    game.card.removeCardPool(_curCardPoolInfo.GetReference());
+                    game.card.removeCardPool(_curCardPoolInfo.ToReference());
                     int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
                     _cardPoolPathList.RemoveAt(index);
                     _cardPoolInfoList.RemoveAt(index);
@@ -332,7 +333,7 @@ namespace Controllers
             foreach (var pair in result)
             {
                 CardPoolInfo cardPool = pair.Value;
-                int index = _cardPoolInfoList.FindIndex(p => p.IsSameCardPool(cardPool));
+                int index = _cardPoolInfoList.FindIndex(p => p.CompareCardPool(cardPool));
                 if (index >= 0)
                 {
                     Debug.LogWarning("无法加载卡池" + pair.Key + "，因为" + _cardPoolPathList[index] + "拥有与其相同的Id" + cardPool.cardPoolId);
@@ -384,7 +385,8 @@ namespace Controllers
             // 退出时重新加载牌库信息，防止出现临时卡牌变更。
             if (hasUnsavedChanges)
             {
-                await game.card.reloadCardPoolsAndGetCardDefinesAsync(new long[] { _curCardPoolInfo.cardPoolId });
+                var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolInfo.cardPoolId);
+                await game.card.reloadCardPoolsAndGetCardDefinesAsync(new ICardPoolReference[] { cardPoolRef });
             }
             _curCardPoolPath = null;
             _curCardPoolInfo = null;
@@ -415,7 +417,7 @@ namespace Controllers
         }
         private async Task updateDeckCardListUI()
         {
-            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.GetReference()).Select(p => p.Value).ToArray();
+            CardDefine[] cardDefines = game.card.getCardDefines(_curCardPoolInfo.ToReference()).Select(p => p.Value).ToArray();
             (string name, Sprite image, int count)[] viewData = new (string name, Sprite image, int count)[cardDefines.Length];
             for (int i = 0; i < viewData.Length; i++)
             {

@@ -140,8 +140,8 @@ namespace Game
             {
                 if (TryParseCardPool(resID, out long cardPoolId, out int cardPoolVersion))
                 {
-                    var cardPoolInfo = card.getCardPoolInfo(cardPoolId);
-                    if (cardPoolInfo != null && cardPoolInfo.editTime == cardPoolVersion)
+                    var cardPoolInfo = card.getCardPoolInfo(new CardPoolReference(cardPoolId, cardPoolVersion));
+                    if (cardPoolInfo != null)
                     {
                         string deckPath = card.getCardPoolPath(cardPoolInfo);
                         if (File.Exists(deckPath))
@@ -331,8 +331,8 @@ namespace Game
             {
                 if (TryParseCardPool(resID, out long cardPoolId, out int cardPoolVersion))
                 {
-                    var cardPoolInfo = card.getCardPoolInfo(cardPoolId);
-                    if (cardPoolInfo != null && cardPoolInfo.editTime == cardPoolVersion)
+                    var cardPoolInfo = card.getCardPoolInfo(new CardPoolReference(cardPoolId, cardPoolVersion));
+                    if (cardPoolInfo != null)
                     {
                         string deckPath = card.getCardPoolPath(cardPoolInfo);
                         return File.OpenRead(deckPath);

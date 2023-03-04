@@ -16,7 +16,12 @@ namespace Controllers
         #region 事件回调
         private async void onItemBuffChangedCallback(ActionNodeItem item, int index)
         {
-            GeneratedBuffDefine buffDefine = game.card.getBuffDefines(_curCardPoolId)
+            if (!game.card.tryGetLocalCardPoolReference(_curCardPoolId, out var cardPoolRef))
+            {
+                return;
+            }
+
+            GeneratedBuffDefine buffDefine = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)
                 .ThenBy(p => p.Value.id)
                 .ElementAt(index).Value as GeneratedBuffDefine;
@@ -30,9 +35,10 @@ namespace Controllers
         private async void onClickItemDeleteBuffButtonCallback(ActionNodeItem item)
         {
             if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine) &&
-                game.card.removeBuffDefine(_curCardPoolId, buffDefine))
+                game.card.removeBuffDefine(_curCardPoolId, buffDefine) &&
+                game.card.tryGetLocalCardPoolReference(_curCardPoolId, out var cardPoolRef))
             {
-                buffDefine = game.card.getBuffDefines(_curCardPoolId)
+                buffDefine = game.card.getBuffDefines(cardPoolRef)
                     .OrderBy(p => p.Value.cardPoolId)
                     .ThenBy(p => p.Value.id)
                     .Last().Value as GeneratedBuffDefine;
@@ -166,25 +172,48 @@ namespace Controllers
         #endregion
         private bool tryGetBuffDefine(object value, out GeneratedBuffDefine buffDefine)
         {
-            buffDefine = null;
+            long cardPoolId;
+            int cardId;
             if (value is DefineReference buffDefineRef)
             {
-                return game.card.tryGetBuffDefine(buffDefineRef.cardPoolId, buffDefineRef.defineId, out buffDefine);
+                cardPoolId = buffDefineRef.cardPoolId;
+                cardId = buffDefineRef.defineId;
             }
             else if (value is CardReference cardRef)
             {
-                return game.card.tryGetBuffDefine(cardRef.cardPoolId, cardRef.cardId, out buffDefine);
+                cardPoolId = cardRef.cardPoolId;
+                cardId = cardRef.cardId;
             }
             else if (value is int buffDefineId)
             {
-                return game.card.tryGetBuffDefine(_curCardPoolId, buffDefineId, out buffDefine);
+                cardPoolId = _curCardPoolId;
+                cardId = buffDefineId;
             }
+            else
+            {
+                buffDefine = null;
+                return false;
+            }
+
+
+            var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId, false);
+            if (cardPoolRef != null)
+            {
+                return game.card.tryGetBuffDefine(cardPoolRef, cardId, out buffDefine);
+            }
+
+
+            buffDefine = null;
             return false;
         }    
         private async Task updateBuffActionNode(ActionNodeItem item, GeneratedBuffDefine buffDefine, BuffSkin buffSkin)
         {
+            if (!game.card.tryGetLocalCardPoolReference(_curCardPoolId, out var cardPoolRef, false))
+            {
+                return;
+            }
             getActionNode(item).consts = new object[] { new DefineReference(buffDefine.cardPoolId, buffDefine.id) };
-            BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId)
+            BuffDefine[] buffDefines = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)
                 .ThenBy(p => p.Value.id)
                 .Select(p => p.Value)
@@ -392,12 +421,16 @@ namespace Controllers
         }
         private BuffSkin getOrCreateBuffSkin(GeneratedBuffDefine buffDefine)
         {
-            BuffSkin[] buffSkins = game.card.getBuffSkins(_curCardPoolId, buffDefine.id);
-            BuffSkin buffSkin = buffSkins.Length > 0 ?
-                Array.Find(buffSkins, s => s.language == game.langManager.getLanguage()) :
-                game.card.createBuffSkin(_curCardPoolId, buffDefine.id, game.langManager.getLanguage());
-            if (buffSkin == null)
-                buffSkin = buffSkins[0];
+            BuffSkin buffSkin = null;
+            if (game.card.tryGetLocalCardPoolReference(_curCardPoolId, out var cardPoolRef))
+            {
+                BuffSkin[] buffSkins = game.card.getBuffSkins(cardPoolRef, buffDefine.id);
+                buffSkin = buffSkins.Length > 0 ?
+                    Array.Find(buffSkins, s => s.language == game.langManager.getLanguage()) :
+                    game.card.createBuffSkin(_curCardPoolId, buffDefine.id, game.langManager.getLanguage());
+                if (buffSkin == null)
+                    buffSkin = buffSkins[0];
+            }
             return buffSkin;
         }
         #endregion

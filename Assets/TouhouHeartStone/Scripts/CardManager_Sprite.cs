@@ -315,10 +315,23 @@ namespace Game
                         //存在卡池，要考虑一下记载这个路径的卡池的路径，综合得到绝对路径
                         //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
                         //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
+                        string picId = Path.GetFileNameWithoutExtension(path);
                         string absPath = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName, path);
                         try
                         {
-                            bytes = await game.fileManager.readBinaryFile(absPath);
+                            if (game.fileManager.isFileExist(absPath))
+                            {
+                                bytes = await game.fileManager.readBinaryFile(absPath);
+                            }
+                            else if (game.cache.FileExists(game.fileManager, TouhouCardEngine.ResourceType.Picture, picId))
+                            {
+                                //如果图片不存在，尝试从缓存资源中读取。
+                                bytes = await game.cache.ReadCache(game.fileManager, TouhouCardEngine.ResourceType.Picture, picId);
+                            }
+                            else
+                            {
+                                throw new FileNotFoundException();
+                            }
                         }
                         catch (FileNotFoundException)
                         {

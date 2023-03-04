@@ -10,6 +10,7 @@ using BJSYGameCore.UI;
 using System.Threading.Tasks;
 using System.Linq;
 using UnityEngine.EventSystems;
+using TouhouCardEngine.Shared;
 
 namespace Controllers
 {
@@ -63,7 +64,7 @@ namespace Controllers
                 for (int i = 0; i < _cardPoolInfoList.Count; i++)
                 {
                     //卡池卡牌
-                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].GetReference());
+                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].ToReference());
                     if (!_cardPoolFilterValue[i])
                     {
                         continue;
@@ -231,7 +232,7 @@ namespace Controllers
                     }
                     else
                     {
-                        characterNames[i] = game.card.getDefaultSkin(game.card.getCardDefine(_characterFilters[i])).name;
+                        characterNames[i] = game.card.getDefaultSkin(game.card.getLocalCardDefine(_characterFilters[i])).name;
                     }
                 }
                 List<string> characterNameList = new List<string>();

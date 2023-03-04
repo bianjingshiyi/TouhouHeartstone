@@ -265,6 +265,7 @@ namespace Controllers
             _ui.onInitReplaceTimeInputFieldValueChanged += onInitReplaceTimeInputFieldValueChanged;
             _ui.onTurnTimeInputFieldValueChanged += onTurnTimeInputFieldValueChanged;
             _ui.onDisableRandomPlayerActOrderToggleValueChanged += onDisableRandomPlayerActOrderToggleValueChanged;
+            _ui.onViewDeckClick += onViewDeckClick;
             _ui.onViewCardPoolsClick += onViewCardPoolsClick;
             _ui.onAddCardPoolsClick += onAddCardPoolsClick;
             _ui.onClickPlayerItemViewDeckButton += onClickPlayerListItemViewDeckButton;
@@ -353,6 +354,30 @@ namespace Controllers
             {
                 setNotifyRoomSetting(Option.SortedPlayers, null);
             }
+        }
+        private async void onViewDeckClick(DefineReference[] cards)
+        {
+            var cardManager = game.card;
+            //_cardViewPanel.setItems(cardManager,cards);
+            async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
+            {
+                var cardPoolRef = cardManager.getCardPoolReferenceInSet(cardRef.cardPoolId, _currentRoomData.getCardPools());
+                var card = cardManager.getCardDefine(cardPoolRef, cardRef.defineId);
+                var skin = cardManager.getCardSkin(cardPoolRef, cardRef.defineId);
+                Sprite image = null;
+                if (card != null)
+                {
+                    var path = skin?.imagePath;
+                    image = await cardManager.loadCardImage(cardPoolRef, cardRef.defineId);
+                }
+                return (skin?.name, image);
+            }
+            List<(string name, Sprite image)> list = new List<(string name, Sprite image)>();
+            foreach (var cardRef in cards)
+            {
+                list.Add(await getCardData(cardRef));
+            }
+            _ui.updateViewCardPanel(list.ToArray());
         }
         private void onViewCardPoolsClick()
         {
@@ -750,7 +775,8 @@ namespace Controllers
             updateStartAndReadyButton();
             if (playerId == game.network.logic.localPlayer.id)
             {
-                _ui.updateLocalPlayerDeck(deck.name, await game.card.loadCardImage(deck.masterCardRef));
+                var cardPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
+                _ui.updateLocalPlayerDeck(deck.name, await game.card.loadCardImage(cardPoolRef, deck.masterCardRef.defineId));
             }
         }
         #region 卡池
@@ -769,7 +795,8 @@ namespace Controllers
                     packs.Add(CardPoolHelper.BuiltinCardPoolInfoPack);
                     continue;
                 }
-                var poolInfo = game.card.getUsableCardPoolInfo(id);
+                var poolRef = game.card.getLocalCardPoolReference(id);
+                var poolInfo = game.card.getCardPoolInfo(poolRef);
                 if (poolInfo != null)
                 {
                     packs.Add(poolInfo.ToCardPoolInfoPack());
@@ -800,7 +827,7 @@ namespace Controllers
             privatePools = pools.Where(pool => !roomCardPools.Contains(pool)).ToArray();
             return privatePools.Length > 0;
         }
-        private async void AddCardPools(IEnumerable<CardPoolInfoPack> packs)
+        private void AddCardPools(IEnumerable<CardPoolInfoPack> packs)
         {
             var roomPools = _currentRoomData.getCardPools();
             var newList = new List<CardPoolInfoPack>(roomPools);
@@ -817,7 +844,7 @@ namespace Controllers
             setNotifyRoomSetting(Option.CardPools, cardPools);
             _cardPoolPanelDirty = true;
         }
-        private async void RemoveCardPools(IEnumerable<CardPoolInfoPack> packs)
+        private void RemoveCardPools(IEnumerable<CardPoolInfoPack> packs)
         {
             var roomPools = _currentRoomData.getCardPools();
             var newList = new List<CardPoolInfoPack>(roomPools);
@@ -1213,13 +1240,17 @@ namespace Controllers
                 {
                     viewData[i].characterName = string.Empty;
                 }
-                else if (game.card.tryGetCardSkin(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId, out CardSkinData skin))
-                {
-                    viewData[i].characterName = skin.name;
-                }
                 else
                 {
-                    viewData[i].characterName = game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    var cardPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
+                    if (game.card.tryGetCardSkin(cardPoolRef, deck.masterCardRef.defineId, out CardSkinData skin))
+                    {
+                        viewData[i].characterName = skin.name;
+                    }
+                    else
+                    {
+                        viewData[i].characterName = game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    }
                 }
                 viewData[i].canViewDeck = player.type == RoomPlayerType.human && deck != null;
                 viewData[i].canSetDeck = player.type == RoomPlayerType.ai;
@@ -1257,7 +1288,8 @@ namespace Controllers
                         }
                     }
                 }
-                viewData[i].image = await game.card.loadCardImage(deck.masterCardRef.cardPoolId, deck.masterCardRef.defineId);
+                var masterPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
+                viewData[i].image = await game.card.loadCardImage(masterPoolRef, deck.masterCardRef.defineId);
 
                 bool warning;
                 // 判断牌组是否合法。

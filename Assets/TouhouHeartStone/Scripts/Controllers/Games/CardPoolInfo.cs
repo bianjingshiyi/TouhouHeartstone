@@ -1,11 +1,12 @@
 ﻿using System;
 using MongoDB.Bson.Serialization.Attributes;
 using TouhouCardEngine;
+using TouhouCardEngine.Shared;
 
 namespace Controllers
 {
     [Serializable]
-    public class CardPoolInfo
+    public class CardPoolInfo : ICardPoolReference
     {
         public long cardPoolId;
         public string cardPoolName;
@@ -16,22 +17,8 @@ namespace Controllers
         public CardPoolReference[] dependencyRefs;
         [BsonIgnoreIfNull]
         public long[] dependencies;
+        long ICardPoolReference.CardPoolID => cardPoolId;
 
-        public CardPoolReference GetReference()
-        {
-            return new CardPoolReference(cardPoolId, editTime);
-        }
-        public bool IsSameCardPool(CardPoolReference other)
-        {
-            if (other == null) 
-                return false;
-            return cardPoolId == other.cardPoolId && editTime == other.version;
-        }
-        public bool IsSameCardPool(CardPoolInfo other)
-        {
-            if (other == null)
-                return false;
-            return cardPoolId == other.cardPoolId && editTime == other.editTime;
-        }
+        int ICardPoolReference.CardPoolVersion => editTime;
     }
 }

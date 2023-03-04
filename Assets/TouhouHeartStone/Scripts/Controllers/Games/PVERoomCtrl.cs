@@ -184,8 +184,10 @@ namespace Controllers
             (string name, Sprite image, bool isWarning)[] viewData = new (string name, Sprite image, bool isWarning)[deckList.Count];
             for (int i = 0; i < viewData.Length; i++)
             {
+                var masterRef = deckList[i].masterCardRef;
+                var cardPoolRef = game.card.getLocalCardPoolReference(masterRef.cardPoolId);
                 viewData[i].name = deckList[i].name;
-                viewData[i].image = await game.card.loadCardImage(deckList[i].masterCardRef);
+                viewData[i].image = await game.card.loadCardImage(cardPoolRef, masterRef.defineId);
                 viewData[i].isWarning = !game.deck.isValidDeck(deckList[i]);
             }
 

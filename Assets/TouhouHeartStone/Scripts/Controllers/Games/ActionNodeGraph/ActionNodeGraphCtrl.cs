@@ -1143,7 +1143,7 @@ namespace Controllers
                             game.langManager.getLanguage());
                     }
                 }
-                BuffDefine[] buffDefines = game.card.getBuffDefines(_curCardPoolId)
+                BuffDefine[] buffDefines = game.card.getBuffDefines(game.card.getLocalCardPoolReference(_curCardPoolId))
                     .OrderBy(p => p.Value.cardPoolId)
                     .ThenBy(p => p.Value.id)
                     .Select(p => p.Value)
@@ -1182,16 +1182,17 @@ namespace Controllers
                         if (actionNode.consts[i] is DefineReference cardReference)
                         {
                             long cardPoolId = cardReference.cardPoolId;
+                            var ownedRef = game.card.getLocalCardPoolReference(cardPoolId);
                             // 如果卡池没有被加载，加载卡池。
-                            if (!game.card.tryGetUsableCardPool(cardPoolId, out _))
+                            if (!game.card.tryGetCardPool(ownedRef, out _))
                             {
-                                var path = game.card.getUsableCardPoolPath(cardPoolId);
+                                var path = game.card.getCardPoolPath(ownedRef);
                                 if (path != null)
                                 {
                                     await game.card.loadCardPool(path);
                                 }
                             }
-                            cardDefine = game.card.getCardDefine(cardPoolId, cardReference.defineId);
+                            cardDefine = game.card.getCardDefine(ownedRef, cardReference.defineId);
                         }
                         if (cardDefine != null)
                         {
@@ -1216,7 +1217,8 @@ namespace Controllers
                                 CardDefine cardDefine = null;
                                 if (cardRefArray[j] is DefineReference cardReference)
                                 {
-                                    cardDefine = game.card.getCardDefine(cardReference.cardPoolId, cardReference.defineId);
+                                    var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
+                                    cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
                                 }
                                 if (cardDefine != null)
                                 {
