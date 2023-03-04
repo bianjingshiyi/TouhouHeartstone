@@ -208,7 +208,7 @@ namespace Game
             foreach (var skin in cardPool.buffSkinList)
             {
                 var newPath = await replaceImage(skin.imagePath);
-                if (newPath != null)
+                if (!string.IsNullOrEmpty(newPath))
                     skin.imagePath = newPath;
             }
         }
