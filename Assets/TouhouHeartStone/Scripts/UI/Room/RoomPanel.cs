@@ -570,7 +570,7 @@ namespace UI
         #region 属性字段
         [TranslateMsg("房间显示-卡池显示界面-名称版本模板（{0}为卡池名称，{1}为版本号）")]
         private const string ROOM_CARD_POOL_VERSION_TEMPLATE = "{0}({1})";
-        [TranslateMsg("房间显示之未知角色")]
+        [TranslateMsg("在房间页面中，当玩家角色获取失败时显示的角色名称")]
         private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
         RoomPlayerData aiPlayerData;
 

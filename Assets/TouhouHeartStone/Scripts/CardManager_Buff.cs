@@ -26,7 +26,8 @@ namespace Game
         }
         public GeneratedBuffDefine createBuffDefine(long cardPoolId)
         {
-            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
+            var cardPool = getLocalCardPool(cardPoolId);
+            if (cardPool == null)
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
@@ -46,7 +47,8 @@ namespace Game
         }
         public bool removeBuffDefine(long cardPoolId, GeneratedBuffDefine buffDefine)
         {
-            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
+            var cardPool = getLocalCardPool(cardPoolId);
+            if (cardPool == null)
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }
@@ -90,7 +92,8 @@ namespace Game
         }
         public BuffSkin createBuffSkin(long cardPoolId, int buffId, string language)
         {
-            if (!tryGetUsableCardPool(cardPoolId, out CardPool cardPool))
+            var cardPool = getLocalCardPool(cardPoolId);
+            if (cardPool == null)
             {
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
             }

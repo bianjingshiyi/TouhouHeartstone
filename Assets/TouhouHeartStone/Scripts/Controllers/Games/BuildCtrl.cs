@@ -32,7 +32,7 @@ namespace Controllers
                     var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
                     // 组卡界面能使用的英雄，必须是玩家自己有的卡池里面的
                     // 缓存卡池里面的英雄不能算进去。
-                    return game.card.isUsableCardPool(cardPoolRef);
+                    return game.card.isLocalCardPool(cardPoolRef);
                 }
                 return false;
             }) ;
@@ -353,8 +353,9 @@ namespace Controllers
             (string name, Sprite image)[] viewData = new (string name, Sprite image)[_selectableMasters.Length];
             for (int i = 0; i < viewData.Length; i++)
             {
-                var cardPoolRef = game.card.getLocalCardPoolReference(_dragCard.cardPoolId);
-                CardSkinData skin = game.card.getDefaultSkin(_selectableMasters[i]);
+                var cardDefine = _selectableMasters[i];
+                var cardPoolRef = game.card.getCardPoolReferenceOfCard(cardDefine);
+                CardSkinData skin = game.card.getDefaultSkin(cardDefine);
                 viewData[i].name = skin.name;
                 viewData[i].image = await game.card.loadCardImage(
                     cardPoolRef,

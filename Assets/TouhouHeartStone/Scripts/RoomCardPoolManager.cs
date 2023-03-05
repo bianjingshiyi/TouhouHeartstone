@@ -66,7 +66,7 @@ namespace Game
                         {
                             if (!string.IsNullOrEmpty(cardPoolPath))
                             {
-                                hasUsablePool = game.card.isUsableCardPool(poolRef) && game.fileManager.isFileExist(cardPoolPath);
+                                hasUsablePool = game.card.isLocalCardPool(poolRef) && game.fileManager.isFileExist(cardPoolPath);
                             }
                         }
 

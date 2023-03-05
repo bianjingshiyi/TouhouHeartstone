@@ -16,7 +16,8 @@ namespace Controllers
         #region 事件回调
         private async void onItemBuffChangedCallback(ActionNodeItem item, int index)
         {
-            if (!game.card.tryGetLocalCardPoolReference(_curCardPoolId, out var cardPoolRef))
+            var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
+            if (cardPoolRef == null)
             {
                 return;
             }
@@ -35,9 +36,14 @@ namespace Controllers
         private async void onClickItemDeleteBuffButtonCallback(ActionNodeItem item)
         {
             if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine) &&
-                game.card.removeBuffDefine(_curCardPoolId, buffDefine) &&
-                game.card.tryGetLocalCardPoolReference(_curCardPoolId, out var cardPoolRef))
+                game.card.removeBuffDefine(_curCardPoolId, buffDefine))
             {
+                var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
+                if (cardPoolRef == null)
+                {
+                    return;
+                }
+
                 buffDefine = game.card.getBuffDefines(cardPoolRef)
                     .OrderBy(p => p.Value.cardPoolId)
                     .ThenBy(p => p.Value.id)
@@ -208,10 +214,12 @@ namespace Controllers
         }    
         private async Task updateBuffActionNode(ActionNodeItem item, GeneratedBuffDefine buffDefine, BuffSkin buffSkin)
         {
-            if (!game.card.tryGetLocalCardPoolReference(_curCardPoolId, out var cardPoolRef, false))
+            var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
+            if (cardPoolRef == null)
             {
                 return;
             }
+
             getActionNode(item).consts = new object[] { new DefineReference(buffDefine.cardPoolId, buffDefine.id) };
             BuffDefine[] buffDefines = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)
@@ -422,7 +430,8 @@ namespace Controllers
         private BuffSkin getOrCreateBuffSkin(GeneratedBuffDefine buffDefine)
         {
             BuffSkin buffSkin = null;
-            if (game.card.tryGetLocalCardPoolReference(_curCardPoolId, out var cardPoolRef))
+            var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
+            if (cardPoolRef != null)
             {
                 BuffSkin[] buffSkins = game.card.getBuffSkins(cardPoolRef, buffDefine.id);
                 buffSkin = buffSkins.Length > 0 ?

@@ -15,7 +15,6 @@ using MongoDB.Bson;
 using ILogger = TouhouCardEngine.Shared.ILogger;
 using IGensoukyo;
 using System.Text.RegularExpressions;
-using Controllers;
 using TouhouCardEngine.Shared;
 
 namespace Game
@@ -469,11 +468,49 @@ namespace Game
         /// <returns></returns>
         public CardDefine getCardDefine(ICardPoolReference cardPoolRef, int cardId)
         {
-            if (tryGetCardDefine(cardPoolRef, cardId, out var cardDefine))
+            if (cardPoolRef.CardPoolID == 0 && cardId < 0)
             {
-                return cardDefine;
+                cardPoolRef = new CardPoolReference(cardId << 1 >> 17, cardId);
+            }
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
+            {
+                return cardPool.cardDefineList.Find(d => d.id == cardId);
+            }
+            else if (defineDic.ContainsKey(cardId))
+            {
+                return defineDic[cardId];
             }
             return null;
+        }
+        /// <summary>
+        /// 根据卡池ID和卡牌ID获取卡片定义
+        /// </summary>
+        /// <param name="cardPoolRef">卡池引用。</param>
+        /// <param name="cardId">卡牌ID。</param>
+        /// <returns></returns>
+        public CardDefine getCardDefine(long cardPoolId, int cardId)
+        {
+            if (cardPoolId == 0 && cardId < 0)
+                cardPoolId = cardId << 1 >> 17;
+            if (tryGetCardPool(cardPoolId, out CardPool cardPool))
+            {
+                return cardPool.cardDefineList.Find(d => d.id == cardId);
+            }
+            else if (defineDic.ContainsKey(cardId))
+            {
+                return defineDic[cardId];
+            }
+            return null;
+        }
+        /// <summary>
+        /// 根据卡牌引用获取卡片定义
+        /// </summary>
+        /// <param name="cardPoolRef">卡池引用。</param>
+        /// <param name="cardId">卡牌ID。</param>
+        /// <returns></returns>
+        public CardDefine getCardDefine(DefineReference defRef)
+        {
+            return getCardDefine(defRef.cardPoolId, defRef.defineId);
         }
         public CardDefine getLocalCardDefine(DefineReference defRef)
         {

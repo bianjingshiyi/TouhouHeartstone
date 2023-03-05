@@ -64,7 +64,8 @@ namespace Game
             {
                 var deckItem = deck.cardList[i];
                 // 未知卡牌。
-                if (!game.card.tryGetCardDefine(deckItem.cardRef, out _))
+                var cardDefine = game.card.getCardDefine(deckItem.cardRef);
+                if (cardDefine == null)
                 {
                     return false;
                 }
