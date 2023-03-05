@@ -2,10 +2,7 @@
 using TouhouCardEngine.Interfaces;
 using System.Threading.Tasks;
 using System.Linq;
-using Boo.Lang;
-using System.Runtime.InteropServices;
 using System;
-using System.Security.Policy;
 
 namespace TouhouHeartstone.Builtin
 {

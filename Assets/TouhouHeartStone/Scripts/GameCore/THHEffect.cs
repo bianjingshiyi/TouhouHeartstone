@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System.Collections.Generic;
-using Microsoft.SqlServer.Server;
-using MongoDB.Bson.IO;
 
 namespace TouhouHeartstone
 {
