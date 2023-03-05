@@ -253,6 +253,11 @@ namespace Game
         {
             return localLanLogic.ResourceExistsAsync(type, id);
         }
+        public Task<bool[]> ResourceExistsBatchAsync(Tuple<ResourceType, string>[] res)
+        {
+            return localLanLogic.ResourceExistsBatchAsync(res);
+        }
+
         /// <summary>
         /// 请求重载房间列表
         /// </summary>

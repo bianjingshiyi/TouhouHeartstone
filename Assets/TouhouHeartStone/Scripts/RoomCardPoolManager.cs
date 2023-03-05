@@ -100,20 +100,26 @@ namespace Game
                             // 检测卡图上传。
                             else if (localCardPool != null)
                             {
+                                var resList = new List<Tuple<ResourceType, string>>();
                                 var picturePaths = GetCardPoolPictures(poolRef);
                                 // 遍历卡池内的所有图片。
                                 foreach (var path in picturePaths)
                                 {
-                                    token.ThrowIfCancellationRequested();
-                                    // 如果有远端不存在的图片，上传该卡图
                                     string picId = Path.GetFileNameWithoutExtension(path);
-                                    if (!string.IsNullOrEmpty(picId) &&
-                                        !await game.network.ResourceExistsAsync(ResourceType.Picture, picId))
-                                    {
-                                        uploadPools.Add(roomPool);
-                                        startPlan = true;
-                                        break;
-                                    }
+                                    if (string.IsNullOrEmpty(picId))
+                                        continue;
+
+                                    resList.Add(new Tuple<ResourceType, string>(ResourceType.Picture, picId));
+                                }
+
+                                // 如果有远端不存在的图片，上传该卡图
+                                token.ThrowIfCancellationRequested();
+
+                                bool[] resExists = await game.network.ResourceExistsBatchAsync(resList.ToArray());
+                                if (resExists.Contains(false))
+                                {
+                                    uploadPools.Add(roomPool);
+                                    startPlan = true;
                                 }
                             }
                             // 该卡池无需上传，已就绪。

@@ -63,6 +63,10 @@ namespace Game
         {
             return logic.ResourceExistsAsync(type, id);
         }
+        public Task<bool[]> ResourceExistsBatchAsync(Tuple<TouhouCardEngine.ResourceType, string>[] res)
+        {
+            return logic.ResourceExistsBatchAsync(res);
+        }
         /// <summary>
         /// 向每个玩家分发卡池。
         /// </summary>
