@@ -7849,7 +7849,7 @@ GameObject:
   - component: {fileID: 1540531351}
   - component: {fileID: 1540531353}
   m_Layer: 5
-  m_Name: NetworkingPage
+  m_Name: LobbyPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13058,6 +13058,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1156081304}
     m_Modifications:
+    - target: {fileID: 1085466668570176274, guid: dfd017d4e4484df40ae97e3101b4a5e6,
+        type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6040560417391019869, guid: dfd017d4e4484df40ae97e3101b4a5e6,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -13182,6 +13187,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -225
+      objectReference: {fileID: 0}
+    - target: {fileID: 6040560418283942974, guid: dfd017d4e4484df40ae97e3101b4a5e6,
+        type: 3}
+      propertyPath: m_Value
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6040560418421003226, guid: dfd017d4e4484df40ae97e3101b4a5e6,
         type: 3}
@@ -13353,6 +13363,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6040560418861228940, guid: dfd017d4e4484df40ae97e3101b4a5e6,
+        type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6040560419220235070, guid: dfd017d4e4484df40ae97e3101b4a5e6,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -13392,6 +13407,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -0.00006394014
+      objectReference: {fileID: 0}
+    - target: {fileID: 9036191559885662312, guid: dfd017d4e4484df40ae97e3101b4a5e6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dfd017d4e4484df40ae97e3101b4a5e6, type: 3}
