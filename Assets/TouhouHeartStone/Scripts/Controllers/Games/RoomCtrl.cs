@@ -19,6 +19,9 @@ namespace Controllers
     class RoomCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 字符串
+        [TranslateMsg("房间界面_默认房间名称")]
+        private const string ROOM_DEFAULT_NAME = "房间";
+
         [TranslateMsg("房间-尝试选择包含未共享卡池的卡组（{0}：卡池名称列表）")]
         public const string ROOM_DECK_HAS_NOT_SHARED_POOL = "该套牌中包含房间设置之外的卡池：\n{0}";
         [TranslateMsg("房间-尝试添加未共享的卡池（{0}：卡池名称列表）")]
@@ -168,6 +171,9 @@ namespace Controllers
                     _currentRoomData.setOption(Option.CardPools, roomPools);
                     setNotifyRoomSetting(Option.CardPools, roomPools);
                 }
+                // TODO: 获取并设置UI的房间名。
+                //_ui.setRoomName(_currentRoomData.getRoomName());
+                _ui.setRoomName(game.lang._(ROOM_DEFAULT_NAME));
                 _ui.setRoomPassword(string.Empty);
                 _ui.setRandomSeed(_currentRoomData.getRandomSeed());
                 _ui.setShuffle(_currentRoomData.getShuffle());
@@ -1162,6 +1168,7 @@ namespace Controllers
         bool isRoomOwner => GetSelfID() == _currentRoomData.ownerId;
         private void updateUIStateForRoomOwner()
         {
+            _ui.enableRoomNameEdit(isRoomOwner && !_isLocalGame);
             _ui.enableRoomPassword(isRoomOwner && !_isLocalGame);
             _ui.enableRandomSeed(isRoomOwner);
             _ui.enableShuffle(isRoomOwner);

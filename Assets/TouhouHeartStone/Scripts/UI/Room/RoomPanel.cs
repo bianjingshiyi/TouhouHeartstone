@@ -1,14 +1,11 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using BJSYGameCore;
 using BJSYGameCore.UI;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,12 +17,10 @@ namespace UI
         #region 常量
         [TranslateMsg]
         private const string Cards_Name = "选择你的卡组";
-        [TranslateMsg]
-        const string STR_START_GAME = "开始游戏";
-        [TranslateMsg]
-        const string STR_PREPARE = "准备";
-        [TranslateMsg]
-        private const String STR_REQUEST_PREPRAE = "取消准备";
+        [TranslateMsg("房间显示-卡池显示界面-名称版本模板（{0}为卡池名称，{1}为版本号）")]
+        private const string ROOM_CARD_POOL_VERSION_TEMPLATE = "{0}({1})";
+        [TranslateMsg("在房间页面中，当玩家角色获取失败时显示的角色名称")]
+        private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
         [TranslateMsg("房间-查看卡池面板的标题")]
         private const string ROOM_TITLE_VIEW_CARD_POOLS = "查看本房间卡池";
         [TranslateMsg("房间-编辑可用卡池面板的标题")]
@@ -200,6 +195,26 @@ namespace UI
         {
             _ipText.gameObject.SetActive(value);
         }
+
+
+        // 房间名编辑
+        public void setRoomName(string value)
+        {
+            _title.text = value;
+        }
+        public void enableRoomNameEdit(bool value)
+        {
+            _titleEditButton.interactable = value;
+            _confirmTitleEditButton.interactable = value;
+            _titleEditInputField.interactable = value;
+            if (!value)
+            {
+                _titleObj.SetActive(true);
+                _editRoomNameObj.SetActive(false);
+            }
+        }
+
+
         public void setIPText(string text)
         {
             _ipText.text = text;
@@ -369,6 +384,10 @@ namespace UI
             _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
             _closeCardPoolsPanelButton.onClick.AddListener(onClickCloseCardPoolsPanelButtonCallback);
 
+            // 房间名编辑
+            _titleEditButton.onClick.AddListener(onClickTitleEditButton);
+            _confirmTitleEditButton.onClick.AddListener(onClickConfirmTitleEditButton);
+
             _deckPanel.SetActive(false);
             _cardPanel.SetActive(false);
             _cardPoolsPanel.SetActive(false);
@@ -405,6 +424,22 @@ namespace UI
         }
         #endregion
         #region 事件回调
+
+        // 房间名编辑
+        private void onClickTitleEditButton()
+        {
+            _titleEditInputField.text = _title.text;
+            _titleObj.SetActive(false);
+            _editRoomNameObj.SetActive(true);
+        }
+        private void onClickConfirmTitleEditButton()
+        {
+            _titleObj.SetActive(true);
+            _editRoomNameObj.SetActive(false);
+            var value = _titleEditInputField.text;
+            setRoomName(value);
+            OnRoomNameEdited?.Invoke(value);
+        }
         private void onClickPlayerListItemViewDeckButtonCallback(RoomPlayerListItem item)
         {
             onClickPlayerItemViewDeckButton?.Invoke(_playerList.IndexOf(item.transform as RectTransform));
@@ -515,12 +550,25 @@ namespace UI
             onViewDeckClick?.Invoke(cards);
         }
         #endregion
+
+        protected override void onDisplay()
+        {
+            base.onDisplay();
+
+            // 重置房间名编辑
+            _titleObj.SetActive(true);
+            _editRoomNameObj.SetActive(false);
+        }
         void updateButtonStates()
         {
             onUpdateButtons?.Invoke();
         }
         #endregion
         #region 事件
+        /// <summary>
+        /// 在房间名被编辑后触发的事件。
+        /// </summary>
+        public event Action<string> OnRoomNameEdited;
         /// <summary>
         /// 当点击玩家查看卡组按钮，参数为玩家索引
         /// </summary>
@@ -576,10 +624,6 @@ namespace UI
         public event Action onUpdateButtons;
         #endregion
         #region 属性字段
-        [TranslateMsg("房间显示-卡池显示界面-名称版本模板（{0}为卡池名称，{1}为版本号）")]
-        private const string ROOM_CARD_POOL_VERSION_TEMPLATE = "{0}({1})";
-        [TranslateMsg("在房间页面中，当玩家角色获取失败时显示的角色名称")]
-        private const string ROOM_UNKNOWN_CHARACTER_NAME = "未知角色";
         RoomPlayerData aiPlayerData;
 
         [SerializeField]
@@ -592,6 +636,21 @@ namespace UI
         Button _addAIPlayerButton;
         [SerializeField]
         Text _ipText;
+
+        [Header("房间名编辑")]
+        [SerializeField]
+        GameObject _titleObj;
+        [SerializeField]
+        GameObject _editRoomNameObj;
+        [SerializeField]
+        Text _title;
+        [SerializeField]
+        Button _titleEditButton;
+        [SerializeField]
+        InputField _titleEditInputField;
+        [SerializeField]
+        Button _confirmTitleEditButton;
+
 
         private RoomPlayerListItem _selfPlayerItem;
 

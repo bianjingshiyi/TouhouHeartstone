@@ -81,7 +81,7 @@ namespace UI
             {
                 if ((this._NetworkingPage == null))
                 {
-                    this._NetworkingPage = this.transform.Find("NetworkingPage").GetComponent<NetworkingPage>();
+                    this._NetworkingPage = this.transform.Find("LobbyPanel").GetComponent<NetworkingPage>();
                 }
                 return this._NetworkingPage;
             }
