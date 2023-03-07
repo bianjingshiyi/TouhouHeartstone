@@ -1114,7 +1114,7 @@ namespace TouhouHeartstone
             }
             if (card.isSkill())
             {
-                await card.setUsed(game, true);
+                await card.setUsed(game, false);
             }
         }
         public static async Task resetCard(this IEnumerable<Card> cards, CardEngine game)
