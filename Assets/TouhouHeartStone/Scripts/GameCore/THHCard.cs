@@ -830,6 +830,8 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string NOT_ENOUGH_SPIRIT = "灵力值不足";
         [TranslateMsg]
+        const string NO_TARGETS = "没有合法目标";
+        [TranslateMsg]
         const string SERVANT_FIELD_FULL = "位置已满";
         [TranslateMsg]
         const string NO_SPACE_FOR_TRAP = "你满头是包";
@@ -893,6 +895,11 @@ namespace TouhouHeartstone
                 if (player.getGem() < card.getCost(game))
                 {
                     info = NOT_ENOUGH_SPIRIT;
+                    return false;
+                }
+                if (card.isNeedTarget(game, out var targets) && card.getAvaliableTargets(game).Length <= 0)
+                {
+                    info = NO_TARGETS;
                     return false;
                 }
                 if (card.hasKeyword(game, KEYWORD.SECRET))
@@ -991,7 +998,8 @@ namespace TouhouHeartstone
                     }
                 }
                 targets = targetList.ToArray();
-                return targets.Length > 0;
+                //return targets.Length > 0;
+                return true;//如果是ITargetEffect那肯定需要目标
             }
             if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
             {
@@ -1103,6 +1111,10 @@ namespace TouhouHeartstone
             if (card.isServant() && card.pile.name == PILE.FIELD)
             {
                 card.InitConsumableKeywords(game);
+            }
+            if (card.isSkill())
+            {
+                await card.setUsed(game, true);
             }
         }
         public static async Task resetCard(this IEnumerable<Card> cards, CardEngine game)

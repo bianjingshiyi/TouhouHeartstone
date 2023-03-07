@@ -915,9 +915,9 @@ namespace Game
                 return;
             foreach (var card in cards)
             {
-                if (card == null)
+                if (card == null || (!card.hasBattlecry(game)))
                     continue;
-                await card.activeEffect(game, card.getOwner(), targets);
+                await card.triggerBattlecries(game, card.getOwner(), targets);
             }
         }
 
@@ -948,7 +948,7 @@ namespace Game
                 return;
             foreach (var card in cards)
             {
-                if (card == null)
+                if (card == null || (!card.hasDeathRattle(game)))
                     continue;
                 await card.triggerDeathRattles(game);
             }

@@ -198,7 +198,7 @@ namespace TouhouHeartstone
             if (!card.isUsable(game, player, out _))
                 //卡牌不可用
                 return false;
-            if (targets.Any(t => t is Card targetCard && targetCard.isElusive(game) && card.isSpell()))
+            if (targets.Any(t => t is Card targetCard && targetCard.isElusive(game) && (card.isSpell() || card.isSkill())))
                 //目标是魔免
                 return false;
             if (card.isSkill())
