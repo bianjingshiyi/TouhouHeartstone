@@ -168,6 +168,7 @@ namespace Controllers
                     _currentRoomData.setOption(Option.CardPools, roomPools);
                     setNotifyRoomSetting(Option.CardPools, roomPools);
                 }
+                _ui.setRoomPassword(string.Empty);
                 _ui.setRandomSeed(_currentRoomData.getRandomSeed());
                 _ui.setShuffle(_currentRoomData.getShuffle());
                 _ui.setInitReplaceTime(_currentRoomData.getTimeoutForInitReplace());
@@ -254,6 +255,7 @@ namespace Controllers
             }
             //_ui.onQuitClick += onQuitButtonClick;
             //_ui.onRoomPropUpdate += onRoomPropUpdate;
+            _ui.onPasswordInputFieldValueChanged += onPasswordInputFieldValueChanged;
             _ui.onRandomSeedInputFieldValueChanged += onRandomSeedInputFieldValueChanged;
             _ui.onShuffleToggleValueChanged += onShuffleToggleValueChanged;
             _ui.onInitReplaceTimeInputFieldValueChanged += onInitReplaceTimeInputFieldValueChanged;
@@ -294,6 +296,13 @@ namespace Controllers
         }
         #endregion
         #region 事件回调
+        private void onPasswordInputFieldValueChanged(string value)
+        {
+            //TODO：加入后端逻辑
+            //_currentRoomData?.setProp(xxxxx, value);
+            //onRoomPropChanged?.Invoke(prop.ToString(), value);
+            _ui.setRoomPassword(value);
+        }
         private void onRandomSeedInputFieldValueChanged(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -696,11 +705,7 @@ namespace Controllers
         }
         private void onUpdateButtons()
         {
-            _ui.enableRandomSeed(isRoomOwner);
-            _ui.enableShuffle(isRoomOwner);
-            _ui.enableInitReplaceTime(isRoomOwner);
-            _ui.enableTurnTime(isRoomOwner);
-            _ui.enableDisableRandomPlayerActOrder(isRoomOwner);
+            updateUIStateForRoomOwner();
             updateStartAndReadyButton();
         }
         private void onCardPoolProgressChanged(float value)
@@ -1157,6 +1162,7 @@ namespace Controllers
         bool isRoomOwner => GetSelfID() == _currentRoomData.ownerId;
         private void updateUIStateForRoomOwner()
         {
+            _ui.enableRoomPassword(isRoomOwner && !_isLocalGame);
             _ui.enableRandomSeed(isRoomOwner);
             _ui.enableShuffle(isRoomOwner);
             _ui.enableInitReplaceTime(isRoomOwner);

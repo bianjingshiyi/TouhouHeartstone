@@ -121,6 +121,8 @@ namespace Game
 
         RoomCtrl roomCtrl => _sceneCtrl.room;
 
+        LANPanel lanPanel => ui.NetworkingPageGroup.LANPanel;
+
         NetworkingLogic _logic;
         public NetworkingLogic logic
         {
@@ -222,6 +224,9 @@ namespace Game
 
             // todo: Client断开后退出房间
             gameManager.onGameEnd += logic.ClearRoom;
+
+            lanPanel.onConfirmPassword += onConfirmRoomPassword;
+            lanPanel.onCancelPassword += onCancelRoomPassword;
             //局域网界面回调注册
             /**
             ui.LANButton.onClick.set(() =>
@@ -386,7 +391,7 @@ namespace Game
 
         public void flushRooms()
         {
-            var list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
+            var list = lanPanel.RoomScrollView.RoomList;
             list.clearItems();
 
             logic.ReloadRoomList();
@@ -444,13 +449,36 @@ namespace Game
             logic.QuitRoom();
             displayPanel();
         }
-
         private void Logic_onGameStart()
         {
             gameManager.startRemoteGame(logic.CurrentRoom);
         }
-
         #endregion
+
+
+        #region 密码
+        public bool RoomNeedsPassword(string roomID)
+        {
+            // TODO: 加入具体逻辑。
+            return true;
+        }
+        public bool RoomNeedsPassword(string address, int port)
+        {
+            // TODO: 加入具体逻辑。
+            return true;
+        }
+        public bool IsRoomPasswordCorrect(string roomID, string password)
+        {
+            // TODO: 加入具体逻辑。
+            return true;
+        }
+        private bool IsRoomPasswordCorrect(string address, int port, string password)
+        {
+            // TODO: 加入具体逻辑。
+            return true;
+        }
+        #endregion
+
         #region UI
 
         void updateAccountPanel()
@@ -472,7 +500,7 @@ namespace Game
 
         void toggleLoadingPanel(bool on)
         {
-            ui.NetworkingPageGroup.LANPanel.LoadingPanelImage.gameObject.SetActive(on);
+            lanPanel.LoadingPanelImage.gameObject.SetActive(on);
         }
 
         /// <summary>
@@ -492,7 +520,6 @@ namespace Game
         /// <returns></returns>
         void displayPanel()
         {
-            LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
             ui.NetworkingPageGroup.display(lanPanel);
 
             lanPanel.LoadingPanelImage.gameObject.SetActive(false);
@@ -513,7 +540,16 @@ namespace Game
                 try
                 {
                     addrParser(lanPanel.IPInputField.text, _ports[0], out string address, out int port);
-                    await joinRoom(address, port);
+                    if (RoomNeedsPassword(address, port))
+                    {
+                        lanPanel.ShowPasswordDialog();
+                        _enteringRoomAddress = address;
+                        _enteringRoomPort = port;
+                    }
+                    else
+                    {
+                        await joinRoom(address, port);
+                    }
                 } 
                 catch (UriFormatException)
                 {
@@ -569,11 +605,11 @@ namespace Game
         }
 
         [TranslateMsg]
-        private const String NETMANAGER_DESCRIBE = "描述";
+        private const string NETMANAGER_DESCRIBE = "描述";
         [TranslateMsg("参数为玩家名称")]
-        private const String NETMANAGER_HOME = "{0}的房间";
+        private const string NETMANAGER_HOME = "{0}的房间";
         [TranslateMsg("参数为玩家ID")]
-        private const String LOCAL_PLAYER_NAME = "玩家{0}";
+        private const string LOCAL_PLAYER_NAME = "玩家{0}";
         private void refreshRoomListItem(RoomListItem item, LobbyRoomData obj)
         {
             string username = "";
@@ -585,7 +621,6 @@ namespace Game
             item.RoomNameText.text = lang._(NETMANAGER_HOME, username);
             item.asButton.onClick.set(() =>
             {
-                LANPanel lanPanel = ui.NetworkingPageGroup.LANPanel;
                 if (obj == null)
                 {
                     lanPanel.NameText.text = null;
@@ -601,9 +636,19 @@ namespace Game
             });
             item.ButtonButtonBlack.asButton.onClick.set(async () =>
             {
-                await joinRoom(obj.RoomID);
+                if (RoomNeedsPassword(obj.RoomID))
+                {
+                    lanPanel.ShowPasswordDialog();
+                    _enteringRoomID = obj.RoomID;
+                }
+                else
+                {
+                    await joinRoom(obj.RoomID);
+                };
             });
             item.ButtonButtonBlack.asButton.interactable = obj.PlayerCount < obj.MaxPlayerCount;
+
+            item.ShowLockedIcon(RoomNeedsPassword(obj.RoomID));
 
         }
 
@@ -655,7 +700,7 @@ namespace Game
         #region 网络事件处理
         private void NetworkingLogic_onRoomListChange(LobbyRoomDataList obj)
         {
-            var list = ui.NetworkingPageGroup.LANPanel.RoomScrollView.RoomList;
+            var list = lanPanel.RoomScrollView.RoomList;
             list.clearItems();
 
             foreach (var roomKV in obj)
@@ -905,6 +950,61 @@ namespace Game
                 }
             }
         }
+
+        #region 房间密码处理
+        [TranslateMsg("尝试进入密码房间时，密码不正确的报错信息")]
+        private const string PASSWORD_ERROR_INCORRECT = "密码错误";
+        [TranslateMsg("尝试进入密码房间时，异常报错信息（{0}为异常名）")]
+        private const string PASSWORD_ERROR_EXCEPTION = "错误：{0}";
+
+        private string _enteringRoomAddress;
+        private int _enteringRoomPort;
+        private string _enteringRoomID;
+
+        private async void onConfirmRoomPassword(string password)
+        {
+            bool valid = false;
+            string errorMessage = lang._(PASSWORD_ERROR_INCORRECT);
+            try
+            {
+                valid = _enteringRoomID != null ?
+                    IsRoomPasswordCorrect(_enteringRoomID, password):
+                    IsRoomPasswordCorrect(_enteringRoomAddress, _enteringRoomPort, password);
+            }
+            catch (Exception e)
+            {
+                errorMessage = lang._(PASSWORD_ERROR_EXCEPTION, e.Message);
+            }
+
+            if (valid)
+            {
+                lanPanel.HidePasswordDialog();
+                if (_enteringRoomID != null)
+                {
+                    await joinRoom(_enteringRoomID);
+                }
+                else
+                {
+                    await joinRoom(_enteringRoomAddress, _enteringRoomPort);
+                }
+                _enteringRoomAddress = null;
+                _enteringRoomPort = 0;
+                _enteringRoomID = null;
+            }
+            else
+            {
+                lanPanel.ShowErrorMessage(errorMessage);
+            }
+        }
+        private void onCancelRoomPassword()
+        {
+            lanPanel.HidePasswordDialog();
+            _enteringRoomAddress = null;
+            _enteringRoomPort = 0;
+            _enteringRoomID = null;
+        }
+        #endregion
+
         #endregion
     }
 }

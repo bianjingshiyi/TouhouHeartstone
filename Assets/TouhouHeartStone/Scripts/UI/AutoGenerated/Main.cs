@@ -28,7 +28,7 @@ namespace UI
             this._Game = this.transform.Find("Game").GetComponent<Game>();
             this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
             this._AboutPage = this.transform.Find("AboutPage").GetComponent<AboutPage>();
-            this._NetworkingPage = this.transform.Find("NetworkingPage").GetComponent<NetworkingPage>();
+            this._NetworkingPage = this.transform.Find("LobbyPanel").GetComponent<NetworkingPage>();
             this._RoomPanel = this.transform.Find("RoomPanel").GetComponent<RoomPanel>();
             this._SettingPage = this.transform.Find("SettingPage").GetComponent<SettingPage>();
             this._Loading = this.transform.Find("Loading").GetComponent<Loading>();

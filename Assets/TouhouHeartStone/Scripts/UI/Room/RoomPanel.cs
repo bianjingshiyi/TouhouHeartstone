@@ -118,6 +118,8 @@ namespace UI
             try
             {
                 var seed = room.getRandomSeed();
+                //TODO: 加入后端逻辑
+                //_passwordInputField.text = room.getPassword();
                 RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
                 ShuffleContainerGameOptionItemToggle.Toggle.isOn = room.getShuffle();
                 InitReplacementContainerGameOptionItemText.InputField.text = room.getTimeoutForInitReplace().ToString();
@@ -201,6 +203,17 @@ namespace UI
         public void setIPText(string text)
         {
             _ipText.text = text;
+        }
+
+        public void setRoomPassword(string value)
+        {
+            if (_randomSeedInputField.isFocused)
+                return;
+            _passwordInputField.SetTextWithoutNotify(value);
+        }
+        public void enableRoomPassword(bool value)
+        {
+            _passwordInputField.interactable = value;
         }
         public void setRandomSeed(int value)
         {
@@ -371,6 +384,7 @@ namespace UI
             _cardPoolsViewPanel.onDeckListItemToggleValueChanged += onAddCardPoolsSelectItemToggleCallback;
 
             // 选项
+            _passwordInputField.onEndEdit.AddListener(onPasswordInputFieldValueChangedCallback);
             _randomSeedInputField.onEndEdit.AddListener(onRandomSeedInputFieldValueChangedCallback);
             _shuffleToggle.onValueChanged.AddListener(onShuffleToggleValueChangedCallback);
             _initReplaceTimeInputField.onEndEdit.AddListener(onInitReplaceTimeInputFieldValueChangedCallback);
@@ -422,6 +436,10 @@ namespace UI
         private void onAddCardPoolsSelectItemToggleCallback(int index, bool value)
         {
             onAddCardPoolsSelectItemToggle?.Invoke(index, value);
+        }
+        private void onPasswordInputFieldValueChangedCallback(string value)
+        {
+            onPasswordInputFieldValueChanged?.Invoke(value);
         }
         private void onRandomSeedInputFieldValueChangedCallback(string value)
         {
@@ -524,6 +542,10 @@ namespace UI
         public event Action<int> onClickCardPoolsSelectPanelItem;
         public event Action<int, bool> onAddCardPoolsSelectItemToggle;
         /// <summary>
+        /// 当房主更改房间的密码
+        /// </summary>
+        public event Action<string> onPasswordInputFieldValueChanged;
+        /// <summary>
         /// 当房主更改房间随机种子，参数为更改后的随机种子值
         /// </summary>
         public event Action<string> onRandomSeedInputFieldValueChanged;
@@ -574,6 +596,8 @@ namespace UI
         private RoomPlayerListItem _selfPlayerItem;
 
         [Header("选项")]
+        [SerializeField]
+        InputField _passwordInputField;
         [SerializeField]
         InputField _randomSeedInputField;
         [SerializeField]
