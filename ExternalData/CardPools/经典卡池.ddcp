@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 58, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 59, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -17064,116 +17064,7 @@
           "posY" : -291.85565185546875
         }
       },
-      "freeNodeList" : [{
-          "_id" : 1,
-          "defineName" : "Compare",
-          "branches" : [0],
-          "inputs" : [{
-              "actionNodeId" : 0,
-              "index" : 0,
-              "eventVarName" : "卡牌",
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }, {
-              "actionNodeId" : 2,
-              "index" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }],
-          "consts" : [null],
-          "regVar" : [false]
-        }, {
-          "_id" : 2,
-          "defineName" : "这张卡牌",
-          "branches" : [0],
-          "inputs" : [],
-          "consts" : [],
-          "regVar" : [true]
-        }, {
-          "_id" : 3,
-          "defineName" : "获取卡牌拥有者",
-          "branches" : [0],
-          "inputs" : [{
-              "actionNodeId" : 2,
-              "index" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }],
-          "consts" : [],
-          "regVar" : [false]
-        }, {
-          "_id" : 4,
-          "defineName" : "获取卡牌拥有者",
-          "branches" : [0],
-          "inputs" : [{
-              "actionNodeId" : 0,
-              "index" : 0,
-              "eventVarName" : "目标卡牌",
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }],
-          "consts" : [],
-          "regVar" : [false]
-        }, {
-          "_id" : 5,
-          "defineName" : "Compare",
-          "branches" : [0],
-          "inputs" : [{
-              "actionNodeId" : 4,
-              "index" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }, {
-              "actionNodeId" : 3,
-              "index" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }],
-          "consts" : [null],
-          "regVar" : [false]
-        }, {
-          "_id" : 6,
-          "defineName" : "是否濒死",
-          "branches" : [0],
-          "inputs" : [{
-              "actionNodeId" : 0,
-              "index" : 0,
-              "eventVarName" : "目标卡牌",
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }],
-          "consts" : [true, true],
-          "regVar" : [false]
-        }, {
-          "_id" : 7,
-          "defineName" : "LogicOperation",
-          "branches" : [0],
-          "inputs" : [{
-              "actionNodeId" : 5,
-              "index" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }, {
-              "actionNodeId" : 1,
-              "index" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }, {
-              "actionNodeId" : 6,
-              "index" : 0,
-              "eventVarName" : null,
-              "argIndex" : 0,
-              "actionNodeList" : null
-            }, null],
-          "consts" : [1],
-          "regVar" : []
-        }]
+      "freeNodeList" : []
     }, {
       "buffId" : 31,
       "entryType" : "triggerList",
@@ -19638,9 +19529,125 @@
           "onDisalbeActionList" : [],
           "triggerList" : [{
               "eventName" : "AfterAttackEvent",
+              "condition" : {
+                "actionNodeId" : 7,
+                "index" : 0,
+                "eventVarName" : null,
+                "argIndex" : 0,
+                "actionNodeList" : null
+              },
               "targetCheckerList" : [],
               "actionId" : 8,
               "actionList" : [{
+                  "_id" : 7,
+                  "defineName" : "LogicOperation",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 5,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }, {
+                      "actionNodeId" : 1,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }, {
+                      "actionNodeId" : 6,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }, null],
+                  "consts" : [1],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 4,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }, {
+                      "actionNodeId" : 3,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 0,
+                      "index" : 0,
+                      "eventVarName" : "目标卡牌",
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 3,
+                  "defineName" : "获取卡牌拥有者",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 2,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 2,
+                  "defineName" : "这张卡牌",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [],
+                  "regVar" : [true]
+                }, {
+                  "_id" : 1,
+                  "defineName" : "Compare",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 0,
+                      "index" : 0,
+                      "eventVarName" : "卡牌",
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }, {
+                      "actionNodeId" : 2,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }],
+                  "consts" : [null],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 6,
+                  "defineName" : "是否濒死",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 0,
+                      "index" : 0,
+                      "eventVarName" : "目标卡牌",
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }],
+                  "consts" : [true, true],
+                  "regVar" : [false]
+                }, {
                   "_id" : 8,
                   "defineName" : "本回合攻击次数增加一次",
                   "branches" : [9],
