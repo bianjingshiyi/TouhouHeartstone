@@ -26,6 +26,10 @@ namespace UI
         const string STR_PREPARE = "准备";
         [TranslateMsg]
         private const String STR_REQUEST_PREPRAE = "取消准备";
+        [TranslateMsg("房间-查看卡池面板的标题")]
+        private const string ROOM_TITLE_VIEW_CARD_POOLS = "查看本房间卡池";
+        [TranslateMsg("房间-编辑可用卡池面板的标题")]
+        private const string ROOM_TITLE_EDIT_CARD_POOLS = "编辑可用卡池";
         #endregion
         #region 公有方法
         public void SetCardPoolLoadProgress(float progress)
@@ -298,11 +302,10 @@ namespace UI
                 list.Add(getPoolData(pool));
             }
             var viewData = list.ToArray();
-            _cardPoolsViewPanel.updateCardPools(viewData, showEditButton, () =>
-            {
-                onAddCardPoolsClickCallback();
-            });
+            _cardPoolsViewPanel.updateCardPools(viewData, showEditButton);
             _cardPoolsPanel.SetActive(true);
+            _confirmEditCardPoolButtonObj.SetActive(false);
+            _cardPoolsPanelTitle.text = lang._(ROOM_TITLE_VIEW_CARD_POOLS);
         }
         public bool isViewingCardPools()
         {
@@ -336,16 +339,10 @@ namespace UI
                 list.Add(getPoolData(pool));
             }
             var viewData = list.ToArray();
-            _addCardPoolsViewPanel.updateAddCardPools(viewData);
-            _addCardPoolsPanel.SetActive(true);
-        }
-        public bool isEditingCardPools()
-        {
-            return _addCardPoolsPanel.activeSelf;
-        }
-        public void closeAddCardPoolsPanel()
-        {
-            _addCardPoolsPanel.SetActive(false);
+            _cardPoolsViewPanel.updateAddCardPools(viewData);
+            _cardPoolsPanel.SetActive(true);
+            _confirmEditCardPoolButtonObj.SetActive(true);
+            _cardPoolsPanelTitle.text = lang._(ROOM_TITLE_EDIT_CARD_POOLS);
         }
         #endregion
         #region 私有方法
@@ -357,12 +354,11 @@ namespace UI
 
             _closeDeckPanelButton.asButton.onClick.AddListener(onClickCloseDeckPanelButtonCallback);
             _closeCardPanelButton.asButton.onClick.AddListener(onClickCloseCardPanelButtonCallback);
-            _closeCardPoolsPanelButton.asButton.onClick.AddListener(onClickCloseCardPoolsPanelButtonCallback);
+            _closeCardPoolsPanelButton.onClick.AddListener(onClickCloseCardPoolsPanelButtonCallback);
 
             _deckPanel.SetActive(false);
             _cardPanel.SetActive(false);
             _cardPoolsPanel.SetActive(false);
-            _addCardPoolsPanel.SetActive(false);
             if (_playerTemplate.transform.parent == _playerRoot)
             {
                 _playerTemplate.gameObject.SetActive(false);
@@ -371,8 +367,8 @@ namespace UI
             _selectDeckButton.onClick.AddListener(onClickSelectDeckButtonCallback);
             _deckViewPanel.onClickDeckListItem += onClickDeckSelectItemCallback;
             _cardPoolsViewPanel.onClickDeckListItem += onClickCardPoolsSelectItemCallback;
-            _addCardPoolsViewPanel.onClickDeckListItem += onClickAddCardPoolsSelectItemCallback;
-            _addCardPoolsViewPanel.onDeckListItemToggleValueChanged += onAddCardPoolsSelectItemToggleCallback;
+            _cardPoolsViewPanel.onClickEditCardPools += onClickEditCardPoolsCallback;
+            _cardPoolsViewPanel.onDeckListItemToggleValueChanged += onAddCardPoolsSelectItemToggleCallback;
 
             // 选项
             _randomSeedInputField.onEndEdit.AddListener(onRandomSeedInputFieldValueChangedCallback);
@@ -381,8 +377,7 @@ namespace UI
             _turnTimeInputField.onEndEdit.AddListener(onTurnTimeInputFieldValueChangedCallback);
             _disableRandomPlayerActOrderToggle.onValueChanged.AddListener(onDisableRandomPlayerActOrderValueChangedCallback);
             _viewCardPoolsButton.onClick.AddListener(onViewCardPoolsClickCallback);
-            _confirmAddCardPoolsPanelButton.onClick.AddListener(onClickConfirmAddCardPoolsPanelButtonCallback);
-            _cancelAddCardPoolsPanelButton.onClick.AddListener(onClickCancelAddCardPoolsPanelButtonCallback);
+            _confirmEditCardPoolsPanelButton.onClick.AddListener(onClickConfirmAddCardPoolsPanelButtonCallback);
 
             // 按钮
             _startButton.onClick.AddListener(onClickStartButtonCallback);
@@ -424,10 +419,6 @@ namespace UI
         {
             onClickCardPoolsSelectPanelItem?.Invoke(index);
         }
-        private void onClickAddCardPoolsSelectItemCallback(int index)
-        {
-            onClickAddCardPoolsSelectPanelItem?.Invoke(index);
-        }
         private void onAddCardPoolsSelectItemToggleCallback(int index, bool value)
         {
             onAddCardPoolsSelectItemToggle?.Invoke(index, value);
@@ -456,7 +447,7 @@ namespace UI
         {
             onViewCardPoolsClick?.Invoke();
         }
-        private void onAddCardPoolsClickCallback()
+        private void onClickEditCardPoolsCallback()
         {
             onAddCardPoolsClick?.Invoke();
         }
@@ -489,15 +480,11 @@ namespace UI
         }
         private void onClickCloseCardPoolsPanelButtonCallback()
         {
-            _cardPoolsPanel.SetActive(false);
+            onCloseCardPoolsPanel?.Invoke();
         }
         private void onClickConfirmAddCardPoolsPanelButtonCallback()
         {
             onConfirmAddCardPools?.Invoke();
-        }
-        private void onClickCancelAddCardPoolsPanelButtonCallback()
-        {
-            onCancelAddCardPools?.Invoke();
         }
 
 
@@ -535,7 +522,6 @@ namespace UI
         public event Action onClickSelectDeckButton;
         public event Action<int> onClickDeckSelectPanelItem;
         public event Action<int> onClickCardPoolsSelectPanelItem;
-        public event Action<int> onClickAddCardPoolsSelectPanelItem;
         public event Action<int, bool> onAddCardPoolsSelectItemToggle;
         /// <summary>
         /// 当房主更改房间随机种子，参数为更改后的随机种子值
@@ -549,7 +535,7 @@ namespace UI
         public event Action<DefineReference[]> onViewDeckClick;
         public event Action onAddCardPoolsClick;
         public event Action onConfirmAddCardPools;
-        public event Action onCancelAddCardPools;
+        public event Action onCloseCardPoolsPanel;
         public event Action onClickStartButton;
         public event Action onClickReadyButton;
         public event Action onClickCancleReadyButton;
@@ -637,23 +623,19 @@ namespace UI
         [SerializeField]
         private ButtonBlack _closeCardPanelButton;
 
-        [Header("View Card Pools")]
+        [Header("Card Pools")]
+        [SerializeField]
+        private Text _cardPoolsPanelTitle;
         [SerializeField]
         private GameObject _cardPoolsPanel;
         [SerializeField]
         private DeckViewPanel _cardPoolsViewPanel;
         [SerializeField]
-        private ButtonBlack _closeCardPoolsPanelButton;
-
-        [Header("Add Card Pools")]
+        private Button _closeCardPoolsPanelButton;
         [SerializeField]
-        private GameObject _addCardPoolsPanel;
+        private GameObject _confirmEditCardPoolButtonObj;
         [SerializeField]
-        private DeckViewPanel _addCardPoolsViewPanel;
-        [SerializeField]
-        private Button _confirmAddCardPoolsPanelButton;
-        [SerializeField]
-        private Button _cancelAddCardPoolsPanelButton;
+        private Button _confirmEditCardPoolsPanelButton;
 
         DeckManager deckManager => this.findInstance<DeckManager>();
         CardManager cardManager => this.findInstance<CardManager>();

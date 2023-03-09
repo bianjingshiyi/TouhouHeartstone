@@ -276,11 +276,10 @@ namespace Controllers
             _ui.onClickSelectDeckButton += onClickSelectDeckButton;
             _ui.onClickDeckSelectPanelItem += onClickDeckSelectPanelItem;
             _ui.onClickCardPoolsSelectPanelItem += onClickCardPoolSelectPanelItem;
-            _ui.onClickAddCardPoolsSelectPanelItem += onClickAddCardPoolSelectPanelItem;
             _ui.onAddCardPoolsSelectItemToggle += onAddCardPoolSelectPanelItemToggle;
 
             _ui.onConfirmAddCardPools += onConfirmAddCardPools;
-            _ui.onCancelAddCardPools += onCancelAddCardPools;
+            _ui.onCloseCardPoolsPanel += onCloseCardPoolsPanel;
 
             _ui.onClickStartButton += onClickStartButton;
             _ui.onClickReadyButton += onClickReadyButton;
@@ -503,18 +502,21 @@ namespace Controllers
         }
         private void onClickCardPoolSelectPanelItem(int index)
         {
-        }
-        private void onClickAddCardPoolSelectPanelItem(int index)
-        {
-            var pool = _editingCardPools[index];
-            onAddCardPoolSelectPanelItemToggle(index, !_selectedEditCardPools.Contains(pool));
+            if (IsEditingCardPools())
+            {
+                var pool = _editingCardPools[index];
+                onAddCardPoolSelectPanelItemToggle(index, !_selectedEditCardPools.Contains(pool));
+            }
         }
         private void onAddCardPoolSelectPanelItemToggle(int index, bool value)
         {
             var pool = _editingCardPools[index];
             // 不能操作内置卡池。
             if (game.card.isBuiltinCardPool(pool.cardPoolId))
+            {
+                _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
                 return;
+            }
 
             if (value)
             {
@@ -551,7 +553,7 @@ namespace Controllers
             // 没有选择任何卡池。
             if (addedCardPools.Count() + removedCardPools.Count() <= 0)
             {
-                closeAddCardPoolsPanel();
+                closeEditCardPoolsPanel();
                 return;
             }
 
@@ -566,7 +568,7 @@ namespace Controllers
                     {
                         AddCardPools(addPools);
                         RemoveCardPools(removedCardPools);
-                        closeAddCardPoolsPanel();
+                        closeEditCardPoolsPanel();
                         updateStartAndReadyButton();
                     }
                     else
@@ -603,7 +605,7 @@ namespace Controllers
                             AddCardPools(addPools);
                             RemoveCardPools(removedCardPools);
                             _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
-                            closeAddCardPoolsPanel();
+                            closeEditCardPoolsPanel();
                         }
                         else
                         {
@@ -627,9 +629,17 @@ namespace Controllers
                 }
             }
         }
-        private void onCancelAddCardPools()
+        private void onCloseCardPoolsPanel()
         {
-            closeAddCardPoolsPanel();
+            if (IsEditingCardPools())
+            {
+                closeEditCardPoolsPanel();
+            }
+            else
+            {
+                _ui.closeViewCardPoolsPanel();
+                _viewingCardPools = null;
+            }
         }
         private async void onClickStartButton()
         {
@@ -971,26 +981,11 @@ namespace Controllers
             return cardPools.ToArray();
         }
 
-        private async Task RefreshRoomCardPoolPanels()
-        {
-            if (_ui.isEditingCardPools())
-            {
-                var modifies = await UpdateEditingCardPools();
-                AddSelectedEditingCardPools(modifies.addedPools);
-                RemoveSelectedEditingCardPools(modifies.removedPools);
-                openEditCardPoolsPanel();
-            }
-            else if (_ui.isViewingCardPools())
-            {
-                viewRoomCardPools();
-            }
-        }
-        private void viewRoomCardPools()
-        {
-            _viewingCardPools = _currentRoomData.getCardPools();
-            _ui.viewCardPools(_viewingCardPools, isRoomOwner);
-        }
         #region 编辑卡池界面
+        private bool IsEditingCardPools()
+        {
+            return _editingCardPools != null;
+        }
         private async Task<(IEnumerable<CardPoolInfoPack> addedPools, IEnumerable<CardPoolInfoPack> removedPools)> UpdateEditingCardPools()
         {
             var roomPools = _currentRoomData.getCardPools();
@@ -1041,16 +1036,36 @@ namespace Controllers
                 _selectedEditCardPools.Remove(pool);
             }
         }
+        private async Task RefreshRoomCardPoolPanels()
+        {
+            if (_ui.isViewingCardPools())
+            {
+                if (IsEditingCardPools())
+                {
+                    var modifies = await UpdateEditingCardPools();
+                    AddSelectedEditingCardPools(modifies.addedPools);
+                    RemoveSelectedEditingCardPools(modifies.removedPools);
+                    openEditCardPoolsPanel();
+                }
+                else
+                {
+                    viewRoomCardPools();
+                }
+            }
+        }
+        private void viewRoomCardPools()
+        {
+            _viewingCardPools = _currentRoomData.getCardPools();
+            _ui.viewCardPools(_viewingCardPools, isRoomOwner);
+        }
         private void openEditCardPoolsPanel()
         {
             _ui.openAddCardPoolsPanel(_editingCardPools, _selectedEditCardPools.Select(p => p.GetReference()));
-            _ui.closeViewCardPoolsPanel();
         }
-        private void closeAddCardPoolsPanel()
+        private void closeEditCardPoolsPanel()
         {
             _editingCardPools = null;
             _selectedEditCardPools?.Clear();
-            _ui.closeAddCardPoolsPanel();
             viewRoomCardPools();
         }
         #endregion

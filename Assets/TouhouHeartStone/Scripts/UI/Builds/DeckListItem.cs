@@ -32,7 +32,7 @@ namespace UI
             DeleteButtonIconGlass.asButton.onClick.AddListener(onClickDeleteButtonCallback);
             NameInputField.onEndEdit.AddListener(onEndEditNameInputField);
 
-            _toggle?.onValueChanged.AddListener((value) => onToggleValueChanged?.Invoke(value));
+            _toggle?.onValueChanged.AddListener((value) => onToggleValueChanged?.Invoke(this, value));
         }
         public void updateView(string name, Sprite image)
         {
@@ -81,18 +81,46 @@ namespace UI
             DeckTitle, // 当前编辑的牌组
             AddDeck, // 添加牌组按钮
             DeckSelect, // 牌组选择（人物编辑）
-            AddCardPool // 添加卡池按钮
+            EditCardPool, // 编辑卡池按钮
+            CardPoolSelect, // 卡池选择
         }
 
         public void SetMode(Mode mode)
         {
-            ImageMask.gameObject.SetActive(mode != Mode.AddDeck && mode != Mode.AddCardPool);
-            AddButtonBlack.gameObject.SetActive(mode == Mode.AddDeck);
-            _addCardPoolButton.gameObject.SetActive(mode == Mode.AddCardPool);
+            ImageMask.gameObject.SetActive(true);
+            AddButtonBlack.gameObject.SetActive(false);
+            _addCardPoolButton.gameObject.SetActive(false);
 
-            DeckNameImage.gameObject.SetActive(mode == Mode.DeckListItem || mode == Mode.DeckSelect);
-            NameInputField.gameObject.SetActive(mode == Mode.DeckTitle);
-            DeleteButtonIconGlass.gameObject.SetActive(mode == Mode.DeckListItem);
+            DeckNameImage.gameObject.SetActive(false);
+            NameInputField.gameObject.SetActive(false);
+            DeleteButtonIconGlass.gameObject.SetActive(false);
+            _toggleObj.SetActive(false);
+
+            switch (mode)
+            {
+                case Mode.DeckListItem: // 牌组列表
+                    DeckNameImage.gameObject.SetActive(true); // 显示名称
+                    DeleteButtonIconGlass.gameObject.SetActive(true); //显示删除按钮
+                    break;
+                case Mode.DeckTitle: // 当前编辑的牌组
+                    NameInputField.gameObject.SetActive(true); // 显示编辑输入栏
+                    break;
+                case Mode.AddDeck: // 添加牌组按钮
+                    ImageMask.gameObject.SetActive(false); // 隐藏图片
+                    AddButtonBlack.gameObject.SetActive(true); // 显示添加牌组按钮
+                    break;
+                case Mode.DeckSelect: // 牌组选择（人物编辑）
+                    DeckNameImage.gameObject.SetActive(true); // 显示名称
+                    break;
+                case Mode.EditCardPool: // 编辑卡池按钮
+                    ImageMask.gameObject.SetActive(false); // 隐藏图片
+                    _addCardPoolButton.gameObject.SetActive(true); // 显示编辑卡池按钮
+                    break;
+                case Mode.CardPoolSelect: // 卡池选择
+                    DeckNameImage.gameObject.SetActive(true); // 显示名称
+                    _toggleObj.SetActive(true); // 显示勾选框
+                    break;
+            }
             _mode = mode;
         }
         void onClickCallback()
@@ -111,7 +139,7 @@ namespace UI
         public event Action<DeckListItem> onClick;
         public event Action<DeckListItem> onClickDeleteButton;
         public event Action<DeckListItem, string> onNameInputFieldValueChanged;
-        public event Action<bool> onToggleValueChanged;
+        public event Action<DeckListItem, bool> onToggleValueChanged;
         public event Action onCardPoolAdd;
         #region 属性字段
 
@@ -123,6 +151,8 @@ namespace UI
         Image _cardPoolWarningImage;
         [SerializeField]
         Button _addCardPoolButton;
+        [SerializeField]
+        GameObject _toggleObj;
         [SerializeField]
         Toggle _toggle;
 

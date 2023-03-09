@@ -19,15 +19,7 @@ namespace UI
                 deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
                 deckListItem.SetSelectable(!deckViewData[i].isWarning);
                 deckListItem.setCardRentWarning(deckViewData[i].hasPrivatePools);
-            }, item =>
-            {
-                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
-                deckListItem.onClick += onClickDeckListItemCallback;
-            }, item =>
-            {
-                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
-                deckListItem.onClick -= onClickDeckListItemCallback;
-            });
+            },onAddDeckListItem, onDestroyDeckListItem);
         }
 
         public void update((string name, Sprite image)[] deckViewData)
@@ -37,18 +29,10 @@ namespace UI
                 DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
                 deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
                 deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
-            }, item =>
-            {
-                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
-                deckListItem.onClick += onClickDeckListItemCallback;
-            }, item =>
-            {
-                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
-                deckListItem.onClick -= onClickDeckListItemCallback;
-            });
+            }, onAddDeckListItem, onDestroyDeckListItem);
         }
 
-        public void updateCardPools((string name, Sprite image)[] cardPoolViewData, bool showEditButton, Action onAddClick)
+        public void updateCardPools((string name, Sprite image)[] cardPoolViewData, bool showEditButton)
         {
             int count = cardPoolViewData.Length;
             if (showEditButton)
@@ -63,19 +47,9 @@ namespace UI
                 }
                 else
                 {
-                    deckListItem.SetMode(DeckListItem.Mode.AddCardPool);
+                    deckListItem.SetMode(DeckListItem.Mode.EditCardPool);
                 }
-            }, item =>
-            {
-                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
-                deckListItem.onClick += onClickDeckListItemCallback;
-                deckListItem.onCardPoolAdd += onAddClick;
-            }, item =>
-            {
-                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
-                deckListItem.onClick -= onClickDeckListItemCallback;
-                deckListItem.onCardPoolAdd -= onAddClick;
-            });
+            }, onAddDeckListItem, onDestroyDeckListItem);
         }
         public void updateAddCardPools((string name, Sprite image, bool selected)[] deckViewData)
         {
@@ -83,19 +57,9 @@ namespace UI
             {
                 DeckListItem deckListItem = item.GetComponentInChildren<DeckListItem>();
                 deckListItem.updateView(deckViewData[i].name, deckViewData[i].image);
-                deckListItem.SetMode(DeckListItem.Mode.DeckSelect);
+                deckListItem.SetMode(DeckListItem.Mode.CardPoolSelect);
                 deckListItem.SetToggleValue(deckViewData[i].selected);
-            }, item =>
-            {
-                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
-                deckListItem.onClick += onClickDeckListItemCallback;
-                deckListItem.onToggleValueChanged += (value) => onDeckListItemToggleValueChangedCallback(deckListItem, value);
-            }, item =>
-            {
-                DeckListItem deckListItem = item.GetComponent<DeckListItem>();
-                deckListItem.onClick -= onClickDeckListItemCallback;
-                deckListItem.onToggleValueChanged += (value) => onDeckListItemToggleValueChangedCallback(deckListItem, value);
-            });
+            }, onAddDeckListItem, onDestroyDeckListItem);
         }
         #endregion
 
@@ -114,10 +78,27 @@ namespace UI
         #endregion
 
         #region 事件回调
-
+        private void onAddDeckListItem(RectTransform item)
+        {
+            DeckListItem deckListItem = item.GetComponent<DeckListItem>();
+            deckListItem.onClick += onClickDeckListItemCallback;
+            deckListItem.onCardPoolAdd += onClickEditCardPoolCallback;
+            deckListItem.onToggleValueChanged += onDeckListItemToggleValueChangedCallback;
+        }
+        private void onDestroyDeckListItem(RectTransform item)
+        {
+            DeckListItem deckListItem = item.GetComponent<DeckListItem>();
+            deckListItem.onClick -= onClickDeckListItemCallback;
+            deckListItem.onCardPoolAdd -= onClickEditCardPoolCallback;
+            deckListItem.onToggleValueChanged -= onDeckListItemToggleValueChangedCallback;
+        }
         private void onClickDeckListItemCallback(DeckListItem item)
         {
             onClickDeckListItem?.Invoke(_deckItemList.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickEditCardPoolCallback()
+        {
+            onClickEditCardPools?.Invoke();
         }
         private void onDeckListItemToggleValueChangedCallback(DeckListItem item, bool value)
         {
@@ -134,6 +115,10 @@ namespace UI
         /// 当点击右侧卡组列表项，参数为索引
         /// </summary>
         public event Action<int> onClickDeckListItem;
+        /// <summary>
+        /// 当点击修改卡池按钮时触发的事件。
+        /// </summary>
+        public event Action onClickEditCardPools;
         /// <summary>
         /// 当更改卡组列表的勾选框的值，参数为索引、更改的值
         /// </summary>
