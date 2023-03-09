@@ -907,7 +907,7 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作节点名称之触发卡牌宣言")]
         public const string EDITOR_NODE_TRIGGER_BATTLECRY = "触发卡牌宣言";
         [ActionNodeMethod(EDITOR_NODE_TRIGGER_BATTLECRY, StringTable.EDITOR_NODE_CATEGORY_CARD)]
-        public static async Task triggerActiveEffect(CardEngine game,
+        public static async Task triggerBattlecries(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
         {
@@ -951,6 +951,26 @@ namespace Game
                 if (card == null || (!card.hasDeathRattle(game)))
                     continue;
                 await card.triggerDeathRattles(game);
+            }
+        }
+        /// <summary>
+        /// 触发法术或技能卡牌效果
+        /// </summary>
+        [TranslateMsg("动作图编辑器中动作节点名称之触发法术或技能卡牌效果")]
+        public const string EDITOR_NODE_TRIGGER_SPELL_CARD_EFFECT = "触发法术或技能卡牌效果";
+        [ActionNodeMethod(EDITOR_NODE_TRIGGER_SPELL_CARD_EFFECT, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async Task triggerActiveEffect(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
+        {
+            if (cards == null)
+                return;
+            foreach (var card in cards)
+            {
+                if (card == null)
+                    continue;
+                else if (card.isSpell() || card.isSkill())
+                    await card.activeEffect(game, card.getOwner(), targets);
             }
         }
         #endregion

@@ -401,6 +401,26 @@ namespace Game
                 return false;
             return cardDefine.hasDeathRattles();
         }
+        /// <summary>
+        /// 触发法术或技能卡牌定义效果
+        /// </summary>
+        [TranslateMsg("编辑器-动作节点-触发法术或技能卡牌定义效果")]
+        public const string EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE = "触发法术或技能卡牌定义效果";
+        [ActionNodeMethod(EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE, EDITOR_NODE_CATEGORY_CARD_DEFINE)]
+        public static async Task activeSpellCardDefineEffect(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
+        {
+            if (cards == null)
+                return;
+            foreach (var card in cards)
+            {
+                if (card == null)
+                    continue;
+                await card.activeSpellCardDefineEffect(game, card.getOwner(), cardDefine, targets);
+            }
+        }
     }
     public enum CardDefineSelect
     {

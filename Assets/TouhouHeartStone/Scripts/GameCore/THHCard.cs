@@ -1167,6 +1167,39 @@ namespace TouhouHeartstone
             return Task.CompletedTask;
         }
         /// <summary>
+        /// 发动特定法术或技能卡牌定义的主动效果
+        /// </summary>
+        public static Task activeSpellCardDefineEffect(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
+        {
+            if (define.isSpell() || define.isSkill())
+            {
+                ITriggerEffect triggerEffect = define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
+                if (triggerEffect != null)
+                {
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    var vars = new object[] { eventArg };
+                    if (triggerEffect.checkCondition(game, card, null, vars))
+                        return triggerEffect.execute(game, card, null, vars, targets);
+                }
+                IActiveEffect activeEffect = define.getActiveEffect();
+                if (activeEffect != null)
+                {
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    var vars = new object[] { eventArg };
+                    if (activeEffect.checkCondition(game, card, vars))
+                        return activeEffect.execute(game, card, vars, targets);
+                }
+                var effect = define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
+                if (effect != null)
+                {
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    if (effect.checkCondition(game, card, null, eventArg))
+                        return effect.execute(game, card, null, eventArg);
+                }
+            }
+            return Task.CompletedTask;
+        }
+        /// <summary> 
         /// 触发一个特定卡牌定义自带的宣言。
         /// </summary>
         /// <param name="card">施放宣言的仆从。</param>
