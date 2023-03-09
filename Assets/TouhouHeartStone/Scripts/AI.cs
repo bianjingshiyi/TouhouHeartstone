@@ -67,7 +67,7 @@ namespace Game
                     DefineReference eirin = discover.cardRefArray.FirstOrDefault(defRef => game.getDefine(defRef) is GameOfLife_Rise_N);
                     if (eirin.defineId != 0)
                     {
-                        resp = new DiscoverResponse() {cardDefRef = eirin};
+                        resp = new DiscoverResponse() { cardDefRef = eirin };
                     }
                     //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -145,17 +145,17 @@ namespace Game
             UseResponse use;
             if (player.getSkill().isUsable(game, player, out _))
             {
-                if (player.getSkill().isNeedTarget(game, out var targets))
+                if (player.getSkill().isNeedTarget(game))
                 {
-                    foreach (var target in targets.Where(t => player.getSkill().isValidTarget(game, t)))
+                    foreach (var target in player.getSkill().getAvaliableTargets(game).Where(t => player.getSkill().isValidTarget(game, t)))
                     {
-                        use = new UseResponse() {cardId = player.getSkill().id, targetsId = new int[] {target.id}};
+                        use = new UseResponse() { cardId = player.getSkill().id, targetsId = new int[] { target.id } };
                         responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                     }
                 }
                 else
                 {
-                    use = new UseResponse() {cardId = player.getSkill().id};
+                    use = new UseResponse() { cardId = player.getSkill().id };
                     responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                 }
             }
@@ -168,36 +168,36 @@ namespace Game
                 {
                     for (int i = 0; i < player.getField().count + 1; i++)
                     {
-                        if (card.isNeedTarget(game, out var targets) && targets.Length > 0)
+                        if (card.isNeedTarget(game))
                         {
-                            foreach (var target in targets.Where(t => card.isValidTarget(game, t)))
+                            foreach (var target in card.getAvaliableTargets(game).Where(t => card.isValidTarget(game, t)))
                             {
                                 responseDic.Add(
                                     new UseResponse()
-                                        {cardId = card.id, position = i, targetsId = new int[] {target.id}},
+                                    { cardId = card.id, position = i, targetsId = new int[] { target.id } },
                                     calcServantValue(card.getAttack(game), card.getLife(game)));
                             }
                         }
                         else
                         {
-                            responseDic.Add(new UseResponse() {cardId = card.id, position = i},
+                            responseDic.Add(new UseResponse() { cardId = card.id, position = i },
                                 calcServantValue(card.getAttack(game), card.getLife(game)));
                         }
                     }
                 }
                 else
                 {
-                    if (card.isNeedTarget(game, out var targets))
+                    if (card.isNeedTarget(game))
                     {
-                        foreach (var target in targets.Where(t => card.isValidTarget(game, t)))
+                        foreach (var target in player.getSkill().getAvaliableTargets(game).Where(t => card.isValidTarget(game, t)))
                         {
-                            use = new UseResponse() {cardId = card.id, targetsId = new int[] {target.id}};
+                            use = new UseResponse() { cardId = card.id, targetsId = new int[] { target.id } };
                             responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                         }
                     }
                     else
                     {
-                        use = new UseResponse() {cardId = card.id};
+                        use = new UseResponse() { cardId = card.id };
                         responseDic.Add(use, calcActionValue(use, game, player, game.getOpponent(player)));
                     }
                 }
@@ -212,7 +212,7 @@ namespace Game
                         ? opponent.getMaster().getLife(game)
                         : player.getMaster().getAttack(game);
                     responseDic.Add(
-                        new AttackResponse() {cardId = player.getMaster().id, targetId = opponent.getMaster().id},
+                        new AttackResponse() { cardId = player.getMaster().id, targetId = opponent.getMaster().id },
                         value);
                 }
 
@@ -226,7 +226,7 @@ namespace Game
                     value += player.getMaster().getCurrentLife(game) > target.getAttack(game)
                         ? -target.getAttack(game)
                         : -player.getMaster().getLife(game);
-                    responseDic.Add(new AttackResponse() {cardId = player.getMaster().id, targetId = target.id},
+                    responseDic.Add(new AttackResponse() { cardId = player.getMaster().id, targetId = target.id },
                         value);
                 }
             }
@@ -241,7 +241,7 @@ namespace Game
                     int value = servant.getAttack(game) > opponent.getMaster().getCurrentLife(game)
                         ? opponent.getMaster().getLife(game)
                         : servant.getAttack(game);
-                    responseDic.Add(new AttackResponse() {cardId = servant.id, targetId = opponent.getMaster().id},
+                    responseDic.Add(new AttackResponse() { cardId = servant.id, targetId = opponent.getMaster().id },
                         value);
                 }
 
@@ -255,7 +255,7 @@ namespace Game
                     value += servant.getCurrentLife(game) > target.getAttack(game)
                         ? -target.getAttack(game)
                         : -servant.getLife(game);
-                    responseDic.Add(new AttackResponse() {cardId = servant.id, targetId = target.id}, value);
+                    responseDic.Add(new AttackResponse() { cardId = servant.id, targetId = target.id }, value);
                 }
             }
 
@@ -993,7 +993,7 @@ namespace Game
 
         float calcMasterLifeWeight(int life)
         {
-            return (float) Math.Log(Math.Max(life, 0)) * 100;
+            return (float)Math.Log(Math.Max(life, 0)) * 100;
         }
 
         float calcStealthValue(CardEngine game, Player player, Player opponent, Card target)

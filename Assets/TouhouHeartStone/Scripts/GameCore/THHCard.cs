@@ -5,6 +5,8 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using System;
 using MukioI18n;
+using static UnityEngine.GraphicsBuffer;
+
 namespace TouhouHeartstone
 {
     public static class THHCard
@@ -728,7 +730,8 @@ namespace TouhouHeartstone
                 results.AddRange(effects.Where(e => e.isDeathRattle())
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
-            return results.Where(e => {
+            return results.Where(e =>
+            {
                 if (e.effect is DeathRattle rattle)
                 {
                     return !rattle.isDisabled(game, card, e.buff);
@@ -754,7 +757,8 @@ namespace TouhouHeartstone
                 results.AddRange(effects.Where(e => e.isAura())
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
-            return results.Where(e => {
+            return results.Where(e =>
+            {
                 if (e.effect is GeneratedAura gen)
                 {
                     return !gen.isDisabled(game, card, e.buff);
@@ -830,6 +834,8 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string NOT_ENOUGH_SPIRIT = "灵力值不足";
         [TranslateMsg]
+        const string NO_TARGET = "没有目标";
+        [TranslateMsg]
         const string SERVANT_FIELD_FULL = "位置已满";
         [TranslateMsg]
         const string NO_SPACE_FOR_TRAP = "你满头是包";
@@ -893,6 +899,11 @@ namespace TouhouHeartstone
                 if (player.getGem() < card.getCost(game))
                 {
                     info = NOT_ENOUGH_SPIRIT;
+                    return false;
+                }
+                if (card.isNeedTarget(game) && card.getAvaliableTargets(game).Length < 1)
+                {
+                    info = NO_TARGET;
                     return false;
                 }
                 if (card.hasKeyword(game, KEYWORD.SECRET))
@@ -975,11 +986,29 @@ namespace TouhouHeartstone
                 return false;//不知道是什么卡
             }
         }
-        public static bool isNeedTarget(this Card card, CardEngine game, out Card[] targets)
+        public static bool isNeedTarget(this Card card, CardEngine game)
         {
             if (card.define.getActiveEffect() is ITargetEffect targetEffect)
+                return true;
+            else if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
             {
-                List<Card> targetList = new List<Card>();
+                TriggerGraph activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
+                return activeTrigger != null && activeTrigger.targetCheckerList != null && activeTrigger.targetCheckerList.Count > 0;
+            }
+            else
+                return false;
+        }
+        /// <summary>
+        /// 这张卡的主动效果的可选目标
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static Card[] getAvaliableTargets(this Card card, CardEngine game)
+        {
+            List<Card> targetList = new List<Card>();
+            if (card.define.getActiveEffect() is ITargetEffect targetEffect)
+            {
                 foreach (Player player in game.players)
                 {
                     if (card.isValidTarget(game, player.getMaster(), targetEffect, null, null))
@@ -990,30 +1019,11 @@ namespace TouhouHeartstone
                             targetList.Add(servant);
                     }
                 }
-                targets = targetList.ToArray();
-                return targets.Length > 0;
             }
-            if (card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers) is ITriggerEffect triggerEffect)
-            {
-                List<Card> targetList = new List<Card>();
-                foreach (Player player in game.players)
-                {
-                    if (card.isValidTarget(game, player.getMaster(), null, triggerEffect, null))
-                        targetList.Add(player.getMaster());
-                    foreach (Card servant in player.getField())
-                    {
-                        if (card.isValidTarget(game, servant, null, triggerEffect, null))
-                            targetList.Add(servant);
-                    }
-                }
-                targets = targetList.ToArray();
-                return targets.Length > 0;
-            }
-            if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
+            else if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
             {
                 TriggerGraph activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
-                List<Card> targetList = new List<Card>();
-                if (activeTrigger != null && activeTrigger.targetCheckerList != null)
+                if (activeTrigger != null && activeTrigger.targetCheckerList != null && activeTrigger.targetCheckerList.Count > 0)
                 {
                     foreach (TargetChecker targetChecker in activeTrigger.targetCheckerList)
                     {
@@ -1036,22 +1046,8 @@ namespace TouhouHeartstone
                         }
                     }
                 }
-                targets = targetList.ToArray();
-                return targets.Length > 0;
             }
-            targets = null;
-            return false;
-        }
-        /// <summary>
-        /// 这张卡的主动效果的可选目标
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        public static Card[] getAvaliableTargets(this Card card, CardEngine game)
-        {
-            isNeedTarget(card, game, out var targets);
-            return targets;
+            return targetList.ToArray();
         }
         public static bool isValidTarget(this Card card, CardEngine game, Card target)
         {
@@ -1449,7 +1445,7 @@ namespace TouhouHeartstone
         [return: ActionNodeParam("DamageEvent")]
         public static Task<DamageEventArg> damage(
             [ActionNodeParam("Card")] this Card card, CardEngine game,
-            [ActionNodeParam("DamageSource")] Card source, 
+            [ActionNodeParam("DamageSource")] Card source,
             [ActionNodeParam("Amount")] int value)
         {
             if (card == null || value <= 0)

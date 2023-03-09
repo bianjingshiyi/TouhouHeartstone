@@ -83,7 +83,7 @@ namespace Game
                 return;
             if (player.getSkill().isUsable(game, player, out var info))
             {
-                if (!player.getSkill().isNeedTarget(game, out _))
+                if (!player.getSkill().isNeedTarget(game))
                     player.cmdUse(game, player.getSkill());
             }
             else
@@ -117,10 +117,10 @@ namespace Game
                 return;
             if (player.getSkill().isUsable(game, player, out var info))
             {
-                if (player.getSkill().isNeedTarget(game, out var targets))
+                if (player.getSkill().isNeedTarget(game))
                 {
                     usingCard = player.getSkill();
-                    highlightTargets(targets);
+                    highlightTargets(player.getSkill().getAvaliableTargets(game));
                     displayArrow(skill.rectTransform, skill.rectTransform.position, pointer.position);
                 }
             }

@@ -712,12 +712,12 @@ namespace Game
                     }
                     else if (usingCard.define.isSpell())
                     {
-                        if (usingCard.isNeedTarget(game, out var targets))
+                        if (usingCard.isNeedTarget(game))
                         {
                             if (!isSelectingTarget)
                             {
                                 isSelectingTarget = true;//TODO:这个地方一定要重写，怎么能这样的？isSelectingTarget就应该被usingCard取代
-                                highlightTargets(targets);//高亮所有可选目标
+                                highlightTargets(usingCard.getAvaliableTargets(game));//高亮所有可选目标
                                 ui.SelfHandList.shrink();//手牌缩小
                             }
                             hand.Card.hide();//将那张牌暂时隐藏
@@ -801,7 +801,7 @@ namespace Game
                 }
                 else if (usingCard.isSpell())
                 {
-                    if (usingCard.isNeedTarget(game, out _))
+                    if (usingCard.isNeedTarget(game))
                     {
                         //获取鼠标停留的那张卡，就是目标
                         if (isOnTarget(pointer, out var target))
@@ -837,12 +837,12 @@ namespace Game
                 }
                 else if (usingCard.isItem())
                 {
-                    if (usingCard.isNeedTarget(game, out var targets))
+                    if (usingCard.isNeedTarget(game))
                     {
                         usingPosition = 0;
                         //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                         isSelectingTarget = true;
-                        highlightTargets(targets);
+                        highlightTargets(usingCard.getAvaliableTargets(game));
                         ui.SelfSkill.isUsable = false;
                         ui.SelfHandList.shrink();
                     }
@@ -1589,7 +1589,7 @@ namespace Game
             {
                 servant.image.sprite = skin.image;
             }
-            else 
+            else
             {
                 var cards = getManager<CardManager>();
                 var poolRef = cards.getCardPoolReferenceOfCard(cardDefine);
