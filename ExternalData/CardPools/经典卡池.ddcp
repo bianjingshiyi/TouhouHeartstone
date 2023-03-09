@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 57, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 1, "editTime" : 58, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -9762,7 +9762,7 @@
               "actionList" : [{
                   "_id" : 2,
                   "defineName" : "添加增益",
-                  "branches" : [0],
+                  "branches" : [4],
                   "inputs" : [{
                       "actionNodeId" : 1,
                       "index" : 0,
@@ -9790,9 +9790,39 @@
                       "actionNodeList" : null
                     }],
                   "consts" : [],
-                  "regVar" : [false]
+                  "regVar" : [true]
                 }, {
                   "_id" : 3,
+                  "defineName" : "获取增益定义",
+                  "branches" : [0],
+                  "inputs" : [],
+                  "consts" : [{
+                      "_t" : "DefineReference",
+                      "cardPoolId" : NumberLong(1),
+                      "defineId" : 30
+                    }],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 4,
+                  "defineName" : "添加增益",
+                  "branches" : [0],
+                  "inputs" : [{
+                      "actionNodeId" : 1,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }, {
+                      "actionNodeId" : 5,
+                      "index" : 0,
+                      "eventVarName" : null,
+                      "argIndex" : 0,
+                      "actionNodeList" : null
+                    }],
+                  "consts" : [],
+                  "regVar" : [false]
+                }, {
+                  "_id" : 5,
                   "defineName" : "获取增益定义",
                   "branches" : [0],
                   "inputs" : [],
@@ -10670,10 +10700,10 @@
                 "actionNodeList" : null
               },
               "targetCheckerList" : [],
-              "actionId" : 1,
+              "actionId" : 5,
               "actionList" : [{
-                  "_id" : 1,
-                  "defineName" : "创建衍生卡并置入战场",
+                  "_id" : 5,
+                  "defineName" : "创建衍生卡并置入手牌",
                   "branches" : [3],
                   "inputs" : [{
                       "actionNodeId" : 0,
@@ -10706,7 +10736,7 @@
                   "defineName" : "添加增益",
                   "branches" : [0],
                   "inputs" : [{
-                      "actionNodeId" : 1,
+                      "actionNodeId" : 5,
                       "index" : 0,
                       "eventVarName" : null,
                       "argIndex" : 0,
@@ -13174,120 +13204,143 @@
       "_id" : 27,
       "_name" : "地狱祸轮*",
       "_imagePath" : "e500c458233e4c0d3d7b6c4dc93c7c9600f59fc81cf01b9a9a480b20993a4e0c.jpg",
-      "_desc" : "将对手墓地顶的三张仆从牌置入你的墓地。"
+      "_desc" : "将对手墓地顶的三张仆从牌置入你的墓地。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 28,
       "_name" : "猫步*",
       "_imagePath" : "ca56fff6d1ffae4437d5310d178e41904ac34be1d9534e32b52bf4f9d22c53d9.jpg",
-      "_desc" : "本回合中，你的英雄获得+3攻击力，如果下次攻击消灭了敌人，则可以再次攻击。"
+      "_desc" : "本回合中，你的英雄获得+3攻击力，如果下次攻击消灭了敌人，则可以再次攻击。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 29,
       "_name" : "鬼灵小镇*",
       "_subname" : "",
       "_imagePath" : "c1abd0c5163787f0c74d290b7ac3adb28d0517d00959614fc9352bd7439d6e0b.jpg",
-      "_desc" : "检视你墓地中的三张具有<b>遗言</b>的仆从牌，选择一张置入你的手牌，并触发其<b>遗言</b>。"
+      "_desc" : "检视你墓地中的三张具有<b>遗言</b>的仆从牌，选择一张置入你的手牌，并触发其<b>遗言</b>。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 30,
       "_name" : "抬棺者*",
       "_imagePath" : "9363150064960872a7fe1dc3b59af918f58fc5ad63ef1e557f5ddba55a1f25ad.jpg",
-      "_desc" : "<b>速攻</b>\n<b>遗言</b>：抽一张具有<b>遗言</b>的仆从牌。"
+      "_desc" : "<b>速攻</b>\n<b>遗言</b>：抽一张具有<b>遗言</b>的仆从牌。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 31,
       "_name" : "尸体繁华街*",
       "_imagePath" : "1aae36ddcbb7c9df0da4a45cc735563476782f91be3547889de3a4aa5e8e2c88.jpg",
-      "_desc" : "从你的墓地中召唤三个具有<b>遗言</b>的仆从，其会在你的回合开始时死亡。"
+      "_desc" : "从你的墓地中召唤三个具有<b>遗言</b>的仆从，其会在你的回合开始时死亡。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 32,
       "_name" : "死灰复燃*",
       "_imagePath" : "0deb15935b6952f02ad4bab16210481f9ab57072a16bf31284e152d9417b0047.jpg",
-      "_desc" : "消灭所有友方仆从，然后从墓地中重新召唤他们。"
+      "_desc" : "消灭所有友方仆从，然后从墓地中重新召唤他们。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 33,
       "_name" : "烈焰车轮*",
       "_imagePath" : "18bab60a40a3b99163c4332873c0234a4bc6b6ff5f86cc42544592c6a605fd0d.jpg",
-      "_desc" : "所有友方仆从获得<b>先攻</b>。"
+      "_desc" : "所有友方仆从获得<b>先攻</b>。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 34,
       "_name" : "半灵猛击*",
       "_subname" : "",
       "_imagePath" : "d61fa9258df8d9764f61a0f0b9848a329c0a74744a94359b8239af3ec68ef963.jpg",
-      "_desc" : "对一个仆从造成等同于你的护甲值的伤害。"
+      "_desc" : "对一个仆从造成等同于你的护甲值的伤害。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 35,
       "_name" : "冥界住人*",
       "_imagePath" : "08717fa5e43cf84cb24ff2be810fe021f70fb7b7327cdd63af86c32fe13f833b.jpg",
-      "_desc" : "<b>遗言</b>：将一张1/1的幽灵置入你的手牌并使其获得+1/+1。"
+      "_desc" : "<b>遗言</b>：将一张1/1的幽灵置入你的手牌并使其获得+1/+1。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 36,
       "_name" : "幽灵*",
-      "_imagePath" : "f8e42f84df85cb4c0341f300ff0b4d4d4a6e01d81e67b461fcf9be57d81d7170.jpg"
+      "_imagePath" : "f8e42f84df85cb4c0341f300ff0b4d4d4a6e01d81e67b461fcf9be57d81d7170.jpg",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 37,
       "_name" : "二百由旬一闪*",
       "_subname" : "",
       "_imagePath" : "768228509cb473076efb3ae1257fa335ff4f6eb434ffc1b0ae0a038286df5e7a.jpg",
-      "_desc" : "抽一张牌，如果你拥有护甲值，再抽一张。"
+      "_desc" : "抽一张牌，如果你拥有护甲值，再抽一张。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 38,
       "_name" : "魂魄妖忌*",
       "_imagePath" : "716ec2b783e8d39a1313c3e1dca68cb791af53b43e581a9c9746e8595e67e65e.jpg",
-      "_desc" : "每当你的英雄攻击时，使你的道具获得+1攻击力。"
+      "_desc" : "每当你的英雄攻击时，使你的道具获得+1攻击力。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 39,
       "_name" : "妖怪铁匠*",
       "_imagePath" : "37b8d171e74816f3b0c7afcece93cef4af19d31e8bc84971c29689798b9e2a67.jpg",
-      "_desc" : "<b>宣言</b>：使你的道具在本回合中获得<b>无敌</b>。"
+      "_desc" : "<b>宣言</b>：使你的道具在本回合中获得<b>无敌</b>。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 40,
       "_name" : "列队游魂*",
       "_imagePath" : "69af74fba79cc39ca555cf2119a90a05ab233ff900825d5f7657b3bf37e72ab4.jpg",
-      "_desc" : "每当你的回合结束时，如果你拥有护甲值，则召唤一个1/1的幽灵。"
+      "_desc" : "每当你的回合结束时，如果你拥有护甲值，则召唤一个1/1的幽灵。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 41,
       "_name" : "樱花闪闪*",
       "_imagePath" : "955d9e121dbec7b0c534070a1d7bf73d1e7812ee087ea38e023a933c45155005.jpg",
-      "_desc" : "本回合中，你的英雄获得+2攻击力，然后按生命值从低到高的顺序依次攻击所有敌方仆从。"
+      "_desc" : "本回合中，你的英雄获得+2攻击力，然后按生命值从低到高的顺序依次攻击所有敌方仆从。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 42,
       "_name" : "幽明的苦轮*",
       "_imagePath" : "b6743f90a1e7ffd5658c7593f5d3e3d3e7c9b369f45f0b453975884f14d6e3c2.jpg",
-      "_desc" : "失去所有护甲值，使你的英雄在本回合中获得等同于失去护甲值的攻击力。"
+      "_desc" : "失去所有护甲值，使你的英雄在本回合中获得等同于失去护甲值的攻击力。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 43,
       "_name" : "半幽灵*",
       "_imagePath" : "7ea0691ef5147d727a8d80357d655f5a70855926c804a504a96d3c5e9b2d0326.jpg",
-      "_desc" : "你每拥有1点护甲值，此牌便获得+1/+1。"
+      "_desc" : "你每拥有1点护甲值，此牌便获得+1/+1。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 44,
       "_name" : "天人亦五衰*",
       "_imagePath" : "1ad9195f2c32beb83ccda4adbf1684950fbfe8176c42d5cb106e00f085eedae1.jpg",
-      "_desc" : "获得5点护甲值。本回合中，你的英雄获得+5攻击力。"
+      "_desc" : "获得5点护甲值。本回合中，你的英雄获得+5攻击力。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 45,
       "_name" : "星熊勇仪*",
       "_imagePath" : "af7332faa467e2a0720d668ee1b1224a7dc2e3870057b4d19e4886642e08470e.jpg",
-      "_desc" : "攻击力最高的敌方仆从每有1点攻击力，此牌灵力值消耗便减少（1）点。"
+      "_desc" : "攻击力最高的敌方仆从每有1点攻击力，此牌灵力值消耗便减少（1）点。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 46,
       "_name" : "黑谷山女*",
       "_imagePath" : "707e70042addf9fe8464a42b560af6b47369797ea43f0036b28e1ed96f99778a.jpg",
-      "_desc" : "此牌对仆从造成伤害后，若目标仍存活，使目标剩余生命值变为1点。"
+      "_desc" : "此牌对仆从造成伤害后，若目标仍存活，使目标剩余生命值变为1点。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 47,
       "_name" : "大妖精*",
       "_imagePath" : "80de0c589a2df8f337e526f23242a5ce61392b96aa4e0fa6fe40df1e2f387282.jpg",
-      "_desc" : "<b>速攻</b>\n<b>遗言</b>：本回合中获得1点灵力值。"
+      "_desc" : "<b>速攻</b>\n<b>遗言</b>：本回合中获得1点灵力值。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 48,
       "_name" : "红美铃*",
       "_imagePath" : "aed4a83dca0775306a4038f3df18cd64c5161d1b475441c6b26729ba7e065118.jpg",
-      "_desc" : "<b>守卫</b>\n每当此牌受到伤害时，获得+3攻击力。"
+      "_desc" : "<b>守卫</b>\n每当此牌受到伤害时，获得+3攻击力。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 49,
       "_name" : "东风谷早苗*",
       "_subname" : "祭祀风的人类",
       "_imagePath" : "3502251e85aaeac73fa64c4093e2d2f56f1b955e6b566c0c3c73ad1e89afeced.jpg",
-      "_desc" : "<b>唯一</b>\n<b>宣言</b>：抽一张牌，重复，直到你牌库顶的卡牌消耗大于该效果抽到的最后一张牌。"
+      "_desc" : "<b>唯一</b>\n<b>宣言</b>：抽一张牌，重复，直到你牌库顶的卡牌消耗大于该效果抽到的最后一张牌。",
+      "_language" : "zh-Hans"
     }],
   "actionNodeGraphInfoList" : [{
       "cardId" : -2147418111,
@@ -16953,8 +17006,16 @@
           "posY" : 171.36361694335938
         },
         "3" : {
-          "posX" : 268.939453125,
-          "posY" : 605.302978515625
+          "posX" : 313.655517578125,
+          "posY" : 628.7257080078125
+        },
+        "4" : {
+          "posX" : 1379.120849609375,
+          "posY" : 174.74356079101563
+        },
+        "5" : {
+          "posX" : 1132.1175537109375,
+          "posY" : 945.5638427734375
         }
       },
       "freeNodeList" : []
@@ -17380,9 +17441,9 @@
       "cardId" : 35,
       "entryType" : "activeTrigger",
       "actionInfoDict" : {
-        "1" : {
-          "posX" : 753.78790283203125,
-          "posY" : 52.575759887695313
+        "5" : {
+          "posX" : 706.3880615234375,
+          "posY" : 34.179840087890625
         },
         "2" : {
           "posX" : 115.00003051757813,
@@ -19569,14 +19630,7 @@
         }]
     }, {
       "_id" : 31,
-      "propModifierList" : [{
-          "_t" : "AttackModifier",
-          "propertyName" : "attack",
-          "value" : 3,
-          "isSet" : false,
-          "minValue" : 0,
-          "maxValue" : 2147483647
-        }],
+      "propModifierList" : [],
       "effectList" : [{
           "typeName" : "GeneratedEffect",
           "pileList" : ["Master"],
@@ -20246,7 +20300,7 @@
       "buffId" : 31,
       "language" : "zh-Hans",
       "name" : "猫步",
-      "desc" : "攻击力+3，下次攻击消灭敌人可再次攻击",
+      "desc" : "本回合下次攻击消灭敌人可再次攻击",
       "imagePath" : "ca56fff6d1ffae4437d5310d178e41904ac34be1d9534e32b52bf4f9d22c53d9.jpg"
     }, {
       "buffId" : 31,
@@ -20315,6 +20369,9 @@
       "name" : "气功",
       "desc" : "+3攻击力",
       "imagePath" : "aed4a83dca0775306a4038f3df18cd64c5161d1b475441c6b26729ba7e065118.jpg"
+    }, {
+      "buffId" : 43,
+      "language" : "zh-Hans"
     }],
   "actionDefineList" : [{
       "_id" : 1,
