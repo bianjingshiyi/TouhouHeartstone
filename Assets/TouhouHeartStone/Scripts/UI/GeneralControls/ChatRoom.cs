@@ -56,7 +56,7 @@ namespace UI
 
         public void EmptyInputField()
         {
-            _chatInputField.text = string.Empty;
+            _chatInputField.SetTextWithoutNotify(string.Empty);
         }
 
         #endregion

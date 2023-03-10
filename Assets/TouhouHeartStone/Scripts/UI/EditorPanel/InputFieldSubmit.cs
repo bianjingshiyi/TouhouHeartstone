@@ -17,7 +17,7 @@ namespace UI
         }
         private void OnDisable()
         {
-            _inputField.onValueChanged.AddListener(onValueChanged);
+            _inputField.onValueChanged.RemoveListener(onValueChanged);
         }
         private void Update()
         {
