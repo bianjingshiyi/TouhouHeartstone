@@ -601,5 +601,17 @@ namespace Game
             }
             return new CardPoolInfoPack[0];
         }
+        public static void setRoomName(this RoomData room, string name)
+        {
+            room.setProp(RoomData.PROP_ROOM_NAME, name);
+        }
+        public static string getRoomName(this RoomData room)
+        {
+            if (room.tryGetProp(RoomData.PROP_ROOM_NAME, out string value))
+            {
+                return value;
+            }
+            return string.Empty;
+        }
     }
 }

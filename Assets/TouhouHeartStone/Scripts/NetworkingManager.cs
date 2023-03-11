@@ -460,12 +460,12 @@ namespace Game
         public bool RoomNeedsPassword(string roomID)
         {
             // TODO: 加入具体逻辑。
-            return true;
+            return false;
         }
         public bool RoomNeedsPassword(string address, int port)
         {
             // TODO: 加入具体逻辑。
-            return true;
+            return false;
         }
         public bool IsRoomPasswordCorrect(string roomID, string password)
         {
@@ -527,7 +527,8 @@ namespace Game
             lanPanel.CreateRoomButtonButtonBlack.asButton.interactable = !logic.RoomIsValid;
             lanPanel.CreateRoomButtonButtonBlack.asButton.onClick.set(async () =>
             {
-                await createRoom();
+                string name = lang._(NETMANAGER_HOME, logic.GetSelfInfo().name);
+                await createRoom(name);
             });
             lanPanel.ReturnBtnButtonBlack.asButton.onClick.AddListener(() =>
             {
@@ -618,7 +619,7 @@ namespace Game
             else
                 username = lang._(LOCAL_PLAYER_NAME, obj.OwnerId);
 
-            item.RoomNameText.text = lang._(NETMANAGER_HOME, username);
+            item.RoomNameText.text = obj.RoomName;
             item.asButton.onClick.set(() =>
             {
                 if (obj == null)

@@ -19,8 +19,8 @@ namespace Controllers
     class RoomCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 字符串
-        [TranslateMsg("房间界面_默认房间名称")]
-        private const string ROOM_DEFAULT_NAME = "房间";
+        [TranslateMsg("房间界面_人机对战房间名称")]
+        private const string ROOM_LOCAL_GAME_NAME = "人机对战";
 
         [TranslateMsg("房间-尝试选择包含未共享卡池的卡组（{0}：卡池名称列表）")]
         public const string ROOM_DECK_HAS_NOT_SHARED_POOL = "该套牌中包含房间设置之外的卡池：\n{0}";
@@ -164,6 +164,7 @@ namespace Controllers
                 if (_isLocalGame)
                 {
                     _ui.displayIPText(false);
+                    _currentRoomData.setRoomName(game.lang._(ROOM_LOCAL_GAME_NAME));
                 }
                 if (isRoomOwner)
                 {
@@ -171,9 +172,7 @@ namespace Controllers
                     _currentRoomData.setOption(Option.CardPools, roomPools);
                     setNotifyRoomSetting(Option.CardPools, roomPools);
                 }
-                // TODO: 获取并设置UI的房间名。
-                //_ui.setRoomName(_currentRoomData.getRoomName());
-                _ui.setRoomName(game.lang._(ROOM_DEFAULT_NAME));
+                _ui.setRoomName(_currentRoomData.getRoomName());
                 _ui.setRoomPassword(string.Empty);
                 _ui.setRandomSeed(_currentRoomData.getRandomSeed());
                 _ui.setShuffle(_currentRoomData.getShuffle());
@@ -267,6 +266,7 @@ namespace Controllers
             _ui.onInitReplaceTimeInputFieldValueChanged += onInitReplaceTimeInputFieldValueChanged;
             _ui.onTurnTimeInputFieldValueChanged += onTurnTimeInputFieldValueChanged;
             _ui.onDisableRandomPlayerActOrderToggleValueChanged += onDisableRandomPlayerActOrderToggleValueChanged;
+            _ui.OnRoomNameEdited += OnRoomNameEditedCallback;
             _ui.onViewDeckClick += onViewDeckClick;
             _ui.onViewCardPoolsClick += onViewCardPoolsClick;
             _ui.onAddCardPoolsClick += onAddCardPoolsClick;
@@ -362,6 +362,12 @@ namespace Controllers
             {
                 setNotifyRoomSetting(Option.SortedPlayers, null);
             }
+        }
+        private void OnRoomNameEditedCallback(string name)
+        {
+            _ui.setRoomName(name);
+            _currentRoomData.setProp(RoomData.PROP_ROOM_NAME, name);
+            game.network.SetRoomProp(RoomData.PROP_ROOM_NAME, name);
         }
         private async void onViewDeckClick(DefineReference[] cards)
         {

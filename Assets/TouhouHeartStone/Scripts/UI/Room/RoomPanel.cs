@@ -113,6 +113,7 @@ namespace UI
             try
             {
                 var seed = room.getRandomSeed();
+                _title.text = room.getRoomName();
                 //TODO: 加入后端逻辑
                 //_passwordInputField.text = room.getPassword();
                 RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
@@ -437,7 +438,6 @@ namespace UI
             _titleObj.SetActive(true);
             _editRoomNameObj.SetActive(false);
             var value = _titleEditInputField.text;
-            setRoomName(value);
             OnRoomNameEdited?.Invoke(value);
         }
         private void onClickPlayerListItemViewDeckButtonCallback(RoomPlayerListItem item)
