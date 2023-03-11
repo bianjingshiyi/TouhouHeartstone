@@ -67,7 +67,7 @@ namespace Game
                 {
                     if (oldDict?.ContainsKey(oldName) == true)
                     {
-                        var item = oldDict[kv.Key];
+                        var item = oldDict[oldName];
                         item.Update(kv.Value);
                         list.Add(item);
                         hasOld = true;
