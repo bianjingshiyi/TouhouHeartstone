@@ -3591,6 +3591,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4822b95bff056bc4a8352266f12a47ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1306031538289086115 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8653644338136854799, guid: 86e69600efd1f0845a7f7349704e6dd4,
+    type: 3}
+  m_PrefabInstance: {fileID: 7640391327323668396}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1376227131633432013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4379,6 +4391,7 @@ MonoBehaviour:
   _titleEditButton: {fileID: 1834436994492853641}
   _titleEditInputField: {fileID: 2042628889817461466}
   _confirmTitleEditButton: {fileID: 237945545067312090}
+  _passwordInputField: {fileID: 1306031538289086115}
   _randomSeedInputField: {fileID: 6635775828029640244}
   _shuffleToggle: {fileID: 6635775828077806874}
   _initReplaceTimeInputField: {fileID: 2594329949719149204}

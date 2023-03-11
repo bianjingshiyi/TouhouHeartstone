@@ -114,8 +114,7 @@ namespace UI
             {
                 var seed = room.getRandomSeed();
                 _title.text = room.getRoomName();
-                //TODO: 加入后端逻辑
-                //_passwordInputField.text = room.getPassword();
+                _passwordInputField.text = string.IsNullOrEmpty(room.getRoomPassword()) ? "" : "******";
                 RandomSeedContainerGameOptionItemText.InputField.text = seed == 0 ? "" : seed.ToString();
                 ShuffleContainerGameOptionItemToggle.Toggle.isOn = room.getShuffle();
                 InitReplacementContainerGameOptionItemText.InputField.text = room.getTimeoutForInitReplace().ToString();
@@ -223,9 +222,9 @@ namespace UI
 
         public void setRoomPassword(string value)
         {
-            if (_randomSeedInputField.isFocused)
+            if (_passwordInputField.isFocused)
                 return;
-            _passwordInputField.SetTextWithoutNotify(value);
+            _passwordInputField.SetTextWithoutNotify(string.IsNullOrEmpty(value) ? string.Empty : "******");
         }
         public void enableRoomPassword(bool value)
         {

@@ -613,5 +613,17 @@ namespace Game
             }
             return string.Empty;
         }
+        public static void setRoomPassword(this RoomData roomData, string password)
+        {
+            roomData.setProp(RoomData.PROP_ROOM_PASSWORD, password);
+        }
+        public static string getRoomPassword(this RoomData roomData)
+        {
+            if (roomData.tryGetProp(RoomData.PROP_ROOM_PASSWORD, out string value))
+            {
+                return value;
+            }
+            return string.Empty;
+        }
     }
 }

@@ -173,7 +173,7 @@ namespace Controllers
                     setNotifyRoomSetting(Option.CardPools, roomPools);
                 }
                 _ui.setRoomName(_currentRoomData.getRoomName());
-                _ui.setRoomPassword(string.Empty);
+                _ui.setRoomPassword(string.IsNullOrEmpty(_currentRoomData.getRoomPassword()) ? "" : "******");
                 _ui.setRandomSeed(_currentRoomData.getRandomSeed());
                 _ui.setShuffle(_currentRoomData.getShuffle());
                 _ui.setInitReplaceTime(_currentRoomData.getTimeoutForInitReplace());
@@ -304,10 +304,9 @@ namespace Controllers
         #region 事件回调
         private void onPasswordInputFieldValueChanged(string value)
         {
-            //TODO：加入后端逻辑
-            //_currentRoomData?.setProp(xxxxx, value);
-            //onRoomPropChanged?.Invoke(prop.ToString(), value);
-            _ui.setRoomPassword(value);
+            _ui.setRoomPassword(string.IsNullOrEmpty(value) ? "" : "******");
+            _currentRoomData?.setRoomPassword(value);
+            game.network.SetRoomProp(RoomData.PROP_ROOM_PASSWORD, value);
         }
         private void onRandomSeedInputFieldValueChanged(string value)
         {

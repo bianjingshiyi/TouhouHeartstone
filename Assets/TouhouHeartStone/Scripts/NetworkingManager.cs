@@ -417,14 +417,14 @@ namespace Game
             }
         }
 
-        public async Task joinRoom(string addr, int port)
+        public async Task joinRoom(string addr, int port, string password = "")
         {
             hideAllOtherPage();
             toggleLoadingPanel(true);
 
             try
             {
-                await logic.JoinRoom(addr, port);
+                await logic.JoinRoom(addr, port, password);
                 displayRoomPanel();
             }
             catch (Exception e)
@@ -452,30 +452,6 @@ namespace Game
         private void Logic_onGameStart()
         {
             gameManager.startRemoteGame(logic.CurrentRoom);
-        }
-        #endregion
-
-
-        #region 密码
-        public bool RoomNeedsPassword(string roomID)
-        {
-            // TODO: 加入具体逻辑。
-            return false;
-        }
-        public bool RoomNeedsPassword(string address, int port)
-        {
-            // TODO: 加入具体逻辑。
-            return false;
-        }
-        public bool IsRoomPasswordCorrect(string roomID, string password)
-        {
-            // TODO: 加入具体逻辑。
-            return true;
-        }
-        private bool IsRoomPasswordCorrect(string address, int port, string password)
-        {
-            // TODO: 加入具体逻辑。
-            return true;
         }
         #endregion
 
@@ -541,17 +517,17 @@ namespace Game
                 try
                 {
                     addrParser(lanPanel.IPInputField.text, _ports[0], out string address, out int port);
-                    if (RoomNeedsPassword(address, port))
-                    {
-                        lanPanel.ShowPasswordDialog();
-                        _enteringRoomAddress = address;
-                        _enteringRoomPort = port;
-                    }
-                    else
-                    {
-                        await joinRoom(address, port);
-                    }
-                } 
+                    //if (RoomNeedsPassword(address, port))
+                    //{
+                    //}
+                    //else
+                    //{
+                    //await joinRoom(address, port);
+                    //}
+                    lanPanel.ShowPasswordDialog();
+                    _enteringRoomAddress = address;
+                    _enteringRoomPort = port;
+                }
                 catch (UriFormatException)
                 {
                     dialog.ShowConfirm(lang._(StringTable.ERROR), lang._(INVALID_ADDRESS), null);
@@ -637,7 +613,7 @@ namespace Game
             });
             item.ButtonButtonBlack.asButton.onClick.set(async () =>
             {
-                if (RoomNeedsPassword(obj.RoomID))
+                if (obj.IsLocked)
                 {
                     lanPanel.ShowPasswordDialog();
                     _enteringRoomID = obj.RoomID;
@@ -649,7 +625,7 @@ namespace Game
             });
             item.ButtonButtonBlack.asButton.interactable = obj.PlayerCount < obj.MaxPlayerCount;
 
-            item.ShowLockedIcon(RoomNeedsPassword(obj.RoomID));
+            item.ShowLockedIcon(obj.IsLocked);
 
         }
 
@@ -964,38 +940,18 @@ namespace Game
 
         private async void onConfirmRoomPassword(string password)
         {
-            bool valid = false;
-            string errorMessage = lang._(PASSWORD_ERROR_INCORRECT);
-            try
+            lanPanel.HidePasswordDialog();
+            if (_enteringRoomID != null)
             {
-                valid = _enteringRoomID != null ?
-                    IsRoomPasswordCorrect(_enteringRoomID, password):
-                    IsRoomPasswordCorrect(_enteringRoomAddress, _enteringRoomPort, password);
-            }
-            catch (Exception e)
-            {
-                errorMessage = lang._(PASSWORD_ERROR_EXCEPTION, e.Message);
-            }
-
-            if (valid)
-            {
-                lanPanel.HidePasswordDialog();
-                if (_enteringRoomID != null)
-                {
-                    await joinRoom(_enteringRoomID);
-                }
-                else
-                {
-                    await joinRoom(_enteringRoomAddress, _enteringRoomPort);
-                }
-                _enteringRoomAddress = null;
-                _enteringRoomPort = 0;
-                _enteringRoomID = null;
+                await joinRoom(_enteringRoomID, password);
             }
             else
             {
-                lanPanel.ShowErrorMessage(errorMessage);
+                await joinRoom(_enteringRoomAddress, _enteringRoomPort, password);
             }
+            _enteringRoomAddress = null;
+            _enteringRoomPort = 0;
+            _enteringRoomID = null;
         }
         private void onCancelRoomPassword()
         {
