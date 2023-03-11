@@ -367,14 +367,14 @@ namespace Game
         /// 创建一个房间
         /// </summary>
         /// <returns></returns>
-        public async Task createRoom()
+        public async Task createRoom(string name = "", string password = "")
         {
             hideAllOtherPage();
             toggleLoadingPanel(true);
 
             try
             {
-                await logic.CreateRoom();
+                await logic.CreateRoom(name, password);
 
                 displayRoomPanel();
             }
@@ -397,13 +397,13 @@ namespace Game
             logic.ReloadRoomList();
         }
 
-        public async Task joinRoom(string roomID)
+        public async Task joinRoom(string roomID, string password = "")
         {
             hideAllOtherPage();
             toggleLoadingPanel(true);
             try
             {
-                await logic.JoinRoom(roomID);
+                await logic.JoinRoom(roomID, password);
                 displayRoomPanel();
             }
             catch (Exception e)

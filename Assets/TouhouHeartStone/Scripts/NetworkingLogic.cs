@@ -107,9 +107,9 @@ namespace Game
         /// </summary>
         /// <param name="roomID"></param>
         /// <returns></returns>
-        public async Task JoinRoom(string roomID)
+        public async Task JoinRoom(string roomID, string password = "")
         {
-            await localLanLogic.joinRoom(roomID);
+            await localLanLogic.joinRoom(roomID, password);
             isInitialRoomOwner = false;
         }
 
@@ -119,9 +119,9 @@ namespace Game
         /// <param name="addr"></param>
         /// <param name="port"></param>
         /// <returns></returns>
-        public async Task JoinRoom(string addr, int port)
+        public async Task JoinRoom(string addr, int port, string password = "")
         {
-            await localLanLogic.joinRoom(addr, port);
+            await localLanLogic.joinRoom(addr, port, password);
             isInitialRoomOwner = false;
         }
 
@@ -158,9 +158,9 @@ namespace Game
         /// 创建一个远程房间
         /// </summary>
         /// <returns></returns>
-        public async Task CreateRoom()
+        public async Task CreateRoom(string name = "", string password = "")
         {
-            await localLanLogic.createOnlineRoom();
+            await localLanLogic.createOnlineRoom(name, password);
 
             // 初始化房间设置
             var option = new HearthstoneOption();
