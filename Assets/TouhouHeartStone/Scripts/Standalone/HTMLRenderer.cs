@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using HtmlAgilityPack;
+using UnityEngine.UI;
 
 namespace IGensoukyo
 {
@@ -367,6 +368,9 @@ namespace IGensoukyo
                     }
                 }
             }
+
+            // update layout
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)transform);
         }
     }
 
