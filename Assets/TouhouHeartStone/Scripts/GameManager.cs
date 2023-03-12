@@ -374,7 +374,7 @@ namespace Game
                 //case THHPlayer.SetMaxGemEventArg _:
                 case HearthStoneRule.BurnEventArg _:
                 case HearthStoneRule.FatigueEventArg _:
-                case HearthStoneRule.DiscardEventArg _:
+                case THHCard.DiscardEventArg _:
                 case HearthStoneRule.CreateTokenEventArg _:
                 case HearthStoneRule.RebornEventArg _:
                 case THHCard.AttackEventArg _:
@@ -482,10 +482,10 @@ namespace Game
                     item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.getMaster()).image;
                     item.BorderImage.sprite = fatigue.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
-                case HearthStoneRule.DiscardEventArg discard:
+                case THHCard.DiscardEventArg discard:
                     item.IconImage.sprite = item.discardIcon;
                     item.Text.text = lang._(GAME_MANAGER_DISCARD);
-                    item.Image.sprite = getManager<TableManager>().getSkin(discard.cards[0]).image;
+                    item.Image.sprite = getManager<TableManager>().getSkin(discard.card).image;
                     item.BorderImage.sprite = discard.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case HearthStoneRule.UseEventArg use:

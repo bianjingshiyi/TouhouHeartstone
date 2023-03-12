@@ -200,12 +200,12 @@ namespace Game
         /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DISCARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
-        public static Task<HearthStoneRule.DiscardEventArg> discard(CardEngine game, Card card,
+        public static Task<THHCard.DiscardEventArg[]> discard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HANDS)] Card[] hands)
         {
             if (hands == null)
                 return null;
-            return card.owner.discard(game, hands);
+            return hands.discard(game);
         }
         #endregion
 

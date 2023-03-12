@@ -924,7 +924,12 @@
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[弃掉一张或多张手牌。]]></summary>
+    <summary><![CDATA[弃掉一张或多张手牌，并将其置入墓地。<br>
+      <b>注：</b><ul>
+        <li>要求卡牌必须在手牌中。</li>
+        <li>“弃牌时”触发器触发时，卡牌仍在手牌中；</li>
+        <li>“弃牌后”触发器触发时，卡牌已经被移动到墓地中。</li>
+      </ul>]]></summary>
     <example><![CDATA[<ul>
       <li>蕾米莉亚·斯卡蕾特</li>
       <li>芙兰朵露·斯卡蕾特</li>

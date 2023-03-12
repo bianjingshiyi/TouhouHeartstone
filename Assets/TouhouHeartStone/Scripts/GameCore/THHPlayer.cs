@@ -577,32 +577,15 @@ namespace TouhouHeartstone
         {
             return player.addCardToHand(game, pool.random(game));
         }
-        public static Task<HearthStoneRule.DiscardEventArg> randomDiscard(this Player player, CardEngine game, int count = 1, Func<Card, bool> filter = null)
+        public static Task<THHCard.DiscardEventArg[]> randomDiscard(this Player player, CardEngine game, int count = 1, Func<Card, bool> filter = null)
         {
             var cards = filter == null ? player.getHand() : player.getHand().Where(c => filter(c));
             if (cards.Count() < 1)
                 return default;
-            else if (cards.Count() <= count)
-                return player.discard(game, cards);
-            else
-                return player.discard(game, cards.randomTake(game, count));
-        }
-        public static Task<HearthStoneRule.DiscardEventArg> discard(this Player player, CardEngine game, Card card)
-        {
-            return player.discard(game, new Card[] { card });
-        }
-        public static Task<HearthStoneRule.DiscardEventArg> discard(this Player player, CardEngine game, IEnumerable<Card> cards)
-        {
-            return game.triggers.doEvent(new HearthStoneRule.DiscardEventArg() { player = player, cards = cards.ToArray() }, arg =>
-            {
-                Player actualPlayer = arg.player;
-                Card[] actualCards = arg.cards;
-                if (actualPlayer == null)
-                    return Task.CompletedTask;
-                if (actualCards == null || actualCards.Length < 1)
-                    return Task.CompletedTask;
-                return actualPlayer.getHand().moveTo(game, actualCards, actualPlayer.getGrave());
-            });
+            var discards = cards;
+            if (cards.Count() > count)
+                discards = cards.randomTake(game, count);
+            return discards.discard(game);
         }
 
         public static bool isFriend(this Player player, Card card)
@@ -1233,64 +1216,5 @@ namespace TouhouHeartstone
             }
         }
 
-        public class DiscardEventArg : EventArg, IDescribableEventArg
-        {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return cards;
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡牌列表")]
-            const string TEMPLATE = "{0} 丢弃 {1}";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    player.name,
-                    string.Join("，", cards.Select(c => c.getFormatString()))
-                };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
-                    new EventVariableInfo(){name = "卡牌",type=typeof(Card[])}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = "玩家",type=typeof(Player)},
-                    new EventVariableInfo(){name = "卡牌",type=typeof(Card[])}
-                };
-            }
-            public Player player
-            {
-                get { return getVar<Player>("玩家"); }
-                set { setVar("玩家", value); }
-            }
-            public Card[] cards
-            {
-                get { return getVar<Card[]>("卡牌"); }
-                set { setVar("卡牌", value); }
-            }
-        }
     }
 }
