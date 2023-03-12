@@ -42,6 +42,8 @@ pipeline {
                             error("Pipeline aborted by: [${user}]")
                         }
                     }
+                    // 清理原有的工作空间
+                    cleanWs()
 
                     // 检出
                     def scmVars = checkout scm
