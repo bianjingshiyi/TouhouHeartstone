@@ -43,7 +43,7 @@ pipeline {
                         }
                     }
                     // 清理原有的工作空间
-                    cleanWs()
+                    cleanWs deleteDirs: true, patterns: [[pattern: 'Library/**', type: 'INCLUDE'], [pattern: 'Temp/**', type: 'INCLUDE']]
 
                     // 检出
                     def scmVars = checkout scm
