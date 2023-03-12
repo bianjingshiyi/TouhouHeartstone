@@ -3873,7 +3873,7 @@
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[判断卡牌是否具有宣言关键词]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -3893,12 +3893,12 @@
         <name>目标卡牌</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[卡牌宣言效果的目标]]></summary>
+        <summary><![CDATA[卡牌宣言效果所指向的目标]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[向目标卡牌触发该卡牌的宣言]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -3924,7 +3924,7 @@
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[判断卡牌是否具有遗言关键词]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -3942,7 +3942,7 @@
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[触发该卡牌的遗言]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -3962,12 +3962,12 @@
         <name>目标卡牌</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[法术或者技能效果的目标]]></summary>
+        <summary><![CDATA[法术或者技能效果所指向的目标]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[向目标卡牌触发法术或技能卡牌的效果]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
