@@ -4800,7 +4800,7 @@
         <name>卡牌</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[以一张卡牌为载体，触发另一个法术或技能卡牌定义的效果。]]></summary>
+        <summary><![CDATA[要触发该效果的卡牌载体。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
@@ -4812,7 +4812,7 @@
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[以一张卡牌为载体，触发另一个法术或技能卡牌定义的效果。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
 </ArrayOfActionComment>
