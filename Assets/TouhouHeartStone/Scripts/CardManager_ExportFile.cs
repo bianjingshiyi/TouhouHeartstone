@@ -85,7 +85,7 @@ namespace Game
                     // 写出卡池图片文件
                     foreach (var file in imageFiles)
                     {
-                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, textureDirName, file), Path.Combine(textureDirName, file));
+                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, textureDirName, file), textureDirName + "/" + file);
                     }
                 }
 
@@ -160,6 +160,7 @@ namespace Game
                     var manifestEntry = archive.GetEntry(CardPoolPackManifest);
                     if (manifestEntry == null)
                     {
+                        Debug.Log($"导入的Manifest不存在");
                         game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_WRONG_FORMAT));
                         return false;
                     }
@@ -189,6 +190,7 @@ namespace Game
                     var defineEntry = archive.GetEntry(CardPoolPackDefine);
                     if (defineEntry == null)
                     {
+                        Debug.Log($"导入的Define不存在");
                         game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_WRONG_FORMAT));
                         return false;
                     }
@@ -218,11 +220,12 @@ namespace Game
                         HashSet<ZipArchiveEntry> imageEntries = new HashSet<ZipArchiveEntry>();
                         foreach (var image in images)
                         {
-                            var fileName = Path.Combine(textureDirName, image);
+                            var fileName = textureDirName + "/" + image;
                             var imgEntry = archive.GetEntry(fileName);
 
                             if (imgEntry == null)
                             {
+                                Debug.Log($"导入的{fileName}不存在");
                                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_WRONG_FORMAT));
                                 return false;
                             }
