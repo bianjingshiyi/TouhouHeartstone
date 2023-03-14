@@ -1,18 +1,13 @@
 ﻿using BJSYGameCore.UI;
-using SFB;
 using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Networking;
 using UnityEngine.EventSystems;
 using Game;
-using UIHelper = Game.UIHelper;
 using System.Threading.Tasks;
 using TouhouHeartstone;
-
-
+using TouhouCardEngine;
 
 namespace UI
 {
@@ -109,8 +104,8 @@ namespace UI
         }
         public void initTags(string[] tagNames)
         {
-            _noRaceTagDropdown.ClearOptions();
-            _noRaceTagDropdown.AddOptions(new List<string>(tagNames));
+            //_noRaceTagDropdown.ClearOptions();
+            //_noRaceTagDropdown.AddOptions(new List<string>(tagNames));
         }
         public void setInitTags(string[] tags)
         {
@@ -200,6 +195,10 @@ namespace UI
         {
             _tagDropdown.SetValueWithoutNotify(index);
         }
+        public void setSkillRef(CardDefine card, CardSkinData skin)
+        {
+            _skillRef.update(card, skin, 0);
+        }
         public void setEffectTypes(string[] effectTypeNames)
         {
             _effectList.setAddEffectMenu(effectTypeNames);
@@ -273,6 +272,12 @@ namespace UI
             _descEndEditButton.gameObject.SetActive(false);
             _descInputField.gameObject.SetActive(false);
         }
+
+        public void displayCardSelectPanel(bool display)
+        {
+            _cardPoolViewPanelObj.SetActive(display);
+        }
+
         #region 私有方法
         #region 生命周期
         protected void Awake()
@@ -280,11 +285,11 @@ namespace UI
             if (_typeDropdown == null)
                 _typeDropdown = transform.Find("DetailPanel/TypeDropdownField/DropdownLight").GetComponent<Dropdown>();
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChanged);
-            _skillIdInputField.onEndEdit.AddListener(onSkillIDInputFieldEndEdit);
+            _skillRef.onClick += onSkillIDInputFieldEndEdit;
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
             _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
             _keywordsDropdown.onValueChanged.AddListener(onKeywordsDropdownValueChanged);
-            _noRaceTagDropdown.onValueChanged.AddListener(onNoRaceTagDropdownValueChangedCallback);
+            //_noRaceTagDropdown.onValueChanged.AddListener(onNoRaceTagDropdownValueChangedCallback);
             _skinDropdown.gameObject.SetActive(true);
             _skinDropdown.onValueChanged.AddListener(onSkinDropdownValueChanged);
             _changeSkinNameButton.gameObject.SetActive(true);
@@ -582,9 +587,9 @@ namespace UI
             }
 
         }
-        private void onSkillIDInputFieldEndEdit(string text)
+        private void onSkillIDInputFieldEndEdit()
         {
-            onChangeSkillID?.Invoke(text);
+            onClickSkillRefButton?.Invoke();
         }
         #endregion
         #endregion
@@ -609,10 +614,6 @@ namespace UI
         /// 当更换卡牌类型，参数为更改类型索引。
         /// </summary>
         public event Action<int> onChangeType;
-        /// <summary>
-        /// 当更改卡牌技能ID，参数为更改后的卡牌技能ID（字符串）。
-        /// </summary>
-        public event Action<string> onChangeSkillID;
         public event Action<bool> onIsTokenToggleValueChanged;
         /// <summary>
         /// 当卡牌的关键词发生改变，参数为更改后的关键词选择状态。
@@ -680,6 +681,10 @@ namespace UI
         /// 当点击删除卡牌按钮
         /// </summary>
         public event Action onClickDeleteCardButton;
+        /// <summary>
+        /// 当点击选择技能按钮
+        /// </summary>
+        public event Action onClickSkillRefButton;
         #endregion
         public Card card => _card;
         [SerializeField]
@@ -693,7 +698,7 @@ namespace UI
         [SerializeField]
         GameObject _skillIdGameObject;
         [SerializeField]
-        InputField _skillIdInputField;
+        BuildDeckListItem _skillRef;
         [SerializeField]
         MultiSelectDropdown _keywordsDropdown;
         [SerializeField]
@@ -714,6 +719,8 @@ namespace UI
         Dropdown _languageDropdown;
         [SerializeField]
         EffectList _effectList;
+        [SerializeField]
+        GameObject _cardPoolViewPanelObj;
 
         [Header("Edit Buttons")]
         [SerializeField]

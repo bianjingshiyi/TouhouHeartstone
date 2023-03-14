@@ -171,9 +171,11 @@ namespace Controllers
             _ui.onClickAddEffectMenu += onClickAddEffectMenu;
             _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
+            _ui.onClickSkillRefButton += onClickSkillRefButton;
             _ui.onChangeTag += onChangeTag;
-            _ui.onChangeSkillID += onChangeSkillID;
             _ui.onChangeSpellDamage += onChangeSpellDamage;
+
+            _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
         }
         #endregion
         #region 事件回调
@@ -407,14 +409,6 @@ namespace Controllers
             scene.editor.hasUnsavedChanges = true;
             _cardDefine.setTags(text.Split(',', ' ', '，'));
         }
-        private void onChangeSkillID(string text)
-        {
-            if (int.TryParse(text, out int result))
-            {
-                scene.editor.hasUnsavedChanges = true;
-                _cardDefine.setSkillId(result);
-            }
-        }
         private void onChangeSpellDamage(int value)
         {
             scene.editor.hasUnsavedChanges = true;
@@ -471,6 +465,29 @@ namespace Controllers
             gameObject.SetActive(false);
             scene.editor.display(false, false, -1, true);
         }
+        private async void onClickSkillRefButton()
+        {
+            //打开卡牌选择界面
+            _ui.displayCardSelectPanel(true);
+            await _cardPoolViewPanelCtrl.display();
+            _cardSelectTarget = CardSelectTarget.Skill;
+        }
+        private void onClickCardPoolViewCard(CardDefine cardDefine)
+        {
+            switch (_cardSelectTarget)
+            {
+                case CardSelectTarget.Skill:
+                    scene.editor.hasUnsavedChanges = true;
+                    var defRef = cardDefine.getDefineRef();
+                    _cardDefine.setSkillRef(defRef);
+
+                    var poolRef = game.card.getLocalCardPoolReference(cardDefine.cardPoolId);
+                    var skin = game.card.getCardSkin(poolRef, cardDefine.id);
+                    _ui.setSkillRef(cardDefine, skin);
+                    break;
+            }
+            _ui.displayCardSelectPanel(false);
+        }
         #endregion
 
         private void _textChangedByType()
@@ -490,6 +507,12 @@ namespace Controllers
             }
         }
         #endregion
+
+        private enum CardSelectTarget
+        {
+            Skill
+        }
+
         private void updateSkinNames()
         {
             CardSkinData[] skins = getCurrentCardSkins();
@@ -536,6 +559,12 @@ namespace Controllers
         public MainCtrl main { get; }
         CardEditorPanel _ui;
         string[] _types;
+
+        [SerializeField]
+        CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
+
+
+        private CardSelectTarget _cardSelectTarget;
 
         public static readonly string[] keywords = new string[]
         {

@@ -1,7 +1,10 @@
 ﻿using BJSYGameCore.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+
 namespace UI
 {
     public class EffectList : MonoBehaviour
@@ -9,8 +12,7 @@ namespace UI
         #region 公有方法
         public void setAddEffectMenu(IEnumerable<string> effectNames)
         {
-            _addEffectMenu.ClearOptions();
-            _addEffectMenu.AddOptions(new List<string>(effectNames));
+            _effectListNames = effectNames.ToArray();
         }
         public void updateList(string[] effectNames)
         {
@@ -34,7 +36,7 @@ namespace UI
         #region 私有方法
         protected void Awake()
         {
-            _addEffectMenu.onClickItem.AddListener(onClickAddEffectMenuCallback);
+            _addEffectButton.onClick.AddListener(onClickAddEffectButtonCallback);
             if (_itemTemplate.transform.parent == _itemRoot)
             {
                 _itemTemplate.gameObject.SetActive(false);
@@ -48,6 +50,9 @@ namespace UI
         {
             onClickItemRemoveButton?.Invoke(_itemList.IndexOf(item.transform as RectTransform));
         }
+        private void onClickAddEffectButtonCallback()
+        {
+        }
         private void onClickAddEffectMenuCallback(int index)
         {
             onClickAddEffect?.Invoke(index);
@@ -59,8 +64,12 @@ namespace UI
         public event Action<int> onClickAddEffect;
         #endregion
         #region 属性字段
+        private string[] _effectListNames;
+
         [SerializeField]
-        DropdownMenu _addEffectMenu;
+        Button _addEffectButton;
+        [SerializeField]
+        RectTransform _addEffectLayout;
         [SerializeField]
         RectTransform _itemRoot;
         [SerializeField]

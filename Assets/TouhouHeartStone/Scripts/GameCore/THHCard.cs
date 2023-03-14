@@ -1452,14 +1452,15 @@ namespace TouhouHeartstone
                 set { setVar("目标卡牌", value); }
             }
         }
-        public static void setSkillId(this CardDefine cardDefine, int id)
+
+        public static void setSkillRef(this CardDefine cardDefine, DefineReference defRef)
         {
             if (cardDefine is MasterCardDefine masterCardDefine)
             {
-                masterCardDefine.skillID = id;
+                masterCardDefine.skillID = defRef.defineId;
             }
             else
-                cardDefine.setProp<int>(DEFINE.CARD_PROP_SKILL_ID, id);
+                cardDefine.setProp(DEFINE.CARD_PROP_SKILL_REF, defRef);
         }
         public static DefineReference getSkillRef(this CardDefine cardDefine)
         {

@@ -7,7 +7,7 @@ using System;
 
 namespace UI
 {
-    partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, ISelectHandler, IDeselectHandler
+    partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, ISelectHandler, IDeselectHandler, IPointerClickHandler
     {
         public void update(CardDefine card, CardSkinData skin, int count)
         {
@@ -124,5 +124,22 @@ namespace UI
                 build.DeckItemDeselect(this);
             }
         }
+
+        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+        {
+            if (CanClick)
+            {
+                onClick?.Invoke();
+            }
+        }
+
+        [SerializeField]
+        private bool _canClick = true;
+        public bool CanClick
+        {
+            get => _canClick;
+            set => _canClick = value;
+        }
+        public event Action onClick;
     }
 }
