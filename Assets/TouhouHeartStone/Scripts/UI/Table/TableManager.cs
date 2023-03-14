@@ -957,6 +957,30 @@ namespace Game
             hand = null;
             return false;
         }
+
+        /// <summary>
+        /// 移除一个UI手牌。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public bool removeHand(Card card)
+        {
+            if (cardHandDic.ContainsKey(card))
+            {
+                var item = cardHandDic[card];
+                cardHandDic.Remove(card);
+
+                if (card.getOwner() == player)
+                {
+                    ui.SelfHandList.removeItem(item);
+                }
+                else
+                {
+                    ui.EnemyHandList.removeItem(item);
+                }
+            }
+            return false;
+        }
         /// <summary>
         /// 手牌悬停事件
         /// </summary>
