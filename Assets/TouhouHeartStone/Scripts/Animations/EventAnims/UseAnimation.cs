@@ -10,98 +10,130 @@ namespace Game
 {
     class UseAnimation : EventAnimation<HearthStoneRule.UseEventArg>
     {
-        Vector3 _startPosition;
-        Timer _timer = new Timer() { duration = 1f };
         TableAnimation _moveAnim;
-        Timer _targetingTimer = new Timer() { duration = .8f };
         AnimAnim _useAnim;
-        AnimAnim _equipAnim;
         TableAnimation _targetedAnim;
         Task<AudioClip> _loadSoundTask;
         Task<Projectile> _loadProjectileTask;
+
+
         public override bool update(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
         {
-            UIObject sourceActor;
+            if (!updateCard(table, eventArg, time))
+            {
+                return false;
+            }
+            if (table.game.answers.getRequests(eventArg.player.id).FirstOrDefault() is DiscoverRequest && eventArg.player != table.player)
+                table.ui.Waiting.SetActive(true);
+            return true;
+        }
+        private bool updateCard(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        {
             if (eventArg.card.isServant())
             {
-                if (eventArg.player == table.player)
-                {
-                    if (!eventArg.isCanceled)
-                    {
-                        if (!table.ui.ServantPlaceHolder.isDisplaying)
-                        {
-                            HandListItem item = table.getHand(eventArg.card);
-                            if (_moveAnim == null)
-                                _moveAnim = new HandToFieldAnim(table, item, table.ui.SelfFieldList, eventArg.position);
-                            if (!_moveAnim.update(table, time))
-                                return false;
-                        }
-                        //table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
-                        //将使用随从的移除手牌转移至TryEnterFiledAnim
-                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
-                            return false;
-                        table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
-                        table.ui.ServantPlaceHolder.hide();
-                    }
-                    else
-                    {
-                        HandListItem item = table.getHand(eventArg.card);
-                        if (item == null)
-                            throw new ActorNotFoundException(eventArg.card);
-                        if (table.ui.ServantPlaceHolder.isDisplaying)
-                        {
-                            table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
-                            table.ui.ServantPlaceHolder.hide();
-                        }
-                        if (_moveAnim == null)
-                        {
-                            item.Card.display();
-                            table.setCard(item.Card, eventArg.card, true);
-                            _moveAnim = new CardMoveAnim(item.Card, item.rectTransform, table.handToFieldCurve);
-                        }
-                        if (!_moveAnim.update(table, time))
-                            return false;
-                    }
-                }
-                else
-                {
-                    var hand = table.getHand(eventArg.card);
-                    if (hand == null && _moveAnim == null)
-                        throw new ActorNotFoundException(eventArg.card);
-                    if (hand != null)
-                    {
-                        table.setCard(hand.Card, eventArg.card, true);
-                        hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.LeftDisplayImage.rectTransform);
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
-                            return false;
-                        table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
-                    }
-                    if (_moveAnim == null)
-                        _moveAnim = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
-                    if (hand != null && !_moveAnim.update(table, time))
-                        return false;
-                    if (!eventArg.isCanceled)
-                    {
-                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
-                            return false;
-                    }
-                    else
-                    {
-                        if (_targetedAnim == null)
-                        {
-                            _targetedAnim = new CardMoveAnim(hand.Card, hand.rectTransform, table.handToFieldCurve);
-                            table.setCard(hand.Card, eventArg.card, true);
-                        }
-                        if (!_targetedAnim.update(table, time))
-                            return false;
-                    }
-                    table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
-                    table.ui.ServantPlaceHolder.hide();
-                }
+                return updateServant(table, eventArg, time);
             }
             else if (eventArg.card.isSpell())
             {
-                if (eventArg.player == table.player)
+                return updateSpell(table, eventArg, time);
+            }
+            else if (eventArg.card.isSkill())
+            {
+                return updateSkill(table, eventArg, time);
+            }
+            else if (eventArg.card.isItem())
+            {
+                return updateItem(table, eventArg, time);
+            }
+            return true;
+        }
+        #region Servant
+        private bool updateServant(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        {
+            if (eventArg.player == table.player)
+            {
+                if (!eventArg.isCanceled)
+                {
+                    if (!table.ui.ServantPlaceHolder.isDisplaying)
+                    {
+                        HandListItem item = table.getHand(eventArg.card);
+                        if (_moveAnim == null)
+                            _moveAnim = new HandToFieldAnim(table, item, table.ui.SelfFieldList, eventArg.position);
+                        if (!_moveAnim.update(table, time))
+                            return false;
+                    }
+                    //table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
+                    //将使用随从的移除手牌转移至TryEnterFiledAnim
+                    if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
+                        return false;
+                    table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
+                    table.ui.ServantPlaceHolder.hide();
+                }
+                else
+                {
+                    HandListItem item = table.getHand(eventArg.card);
+                    if (item == null)
+                        throw new ActorNotFoundException(eventArg.card);
+                    if (table.ui.ServantPlaceHolder.isDisplaying)
+                    {
+                        table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
+                        table.ui.ServantPlaceHolder.hide();
+                    }
+                    if (_moveAnim == null)
+                    {
+                        item.Card.display();
+                        table.setCard(item.Card, eventArg.card, true);
+                        _moveAnim = new CardMoveAnim(item.Card, item.rectTransform, table.handToFieldCurve);
+                    }
+                    if (!_moveAnim.update(table, time))
+                        return false;
+                }
+            }
+            else
+            {
+                var hand = table.getHand(eventArg.card);
+                if (hand == null && _moveAnim == null)
+                    throw new ActorNotFoundException(eventArg.card);
+                if (hand != null)
+                {
+                    table.setCard(hand.Card, eventArg.card, true);
+                    hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.LeftDisplayImage.rectTransform);
+                    if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
+                        return false;
+                    table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
+                }
+                if (_moveAnim == null)
+                    _moveAnim = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
+                if (hand != null && !_moveAnim.update(table, time))
+                    return false;
+                if (!eventArg.isCanceled)
+                {
+                    if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
+                        return false;
+                }
+                else
+                {
+                    if (_targetedAnim == null)
+                    {
+                        _targetedAnim = new CardMoveAnim(hand.Card, hand.rectTransform, table.handToFieldCurve);
+                        table.setCard(hand.Card, eventArg.card, true);
+                    }
+                    if (!_targetedAnim.update(table, time))
+                        return false;
+                }
+                table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
+                table.ui.ServantPlaceHolder.hide();
+            }
+            return true;
+        }
+        #endregion
+
+        #region Spell
+        private bool updateSpell(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        {
+            if (eventArg.player == table.player)
+            {
+                if (!eventArg.isCanceled)
                 {
                     if (table.tryGetHand(eventArg.card, out var hand))
                     {
@@ -115,68 +147,111 @@ namespace Game
                 }
                 else
                 {
-                    if (table.tryGetHand(eventArg.card, out var hand))
+                    HandListItem item = table.getHand(eventArg.card);
+                    if (item == null)
+                        throw new ActorNotFoundException(eventArg.card);
+                    if (_moveAnim == null)
                     {
-                        if (eventArg.card.hasKeyword(table.game, KEYWORD.SECRET))
-                            table.setCard(hand.Card, eventArg.card, false);
-                        else
-                            table.setCard(hand.Card, eventArg.card, true);
-                        hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
-                            return false;
-                        table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
+                        item.Card.display();
+                        table.setCard(item.Card, eventArg.card, true);
+                        _moveAnim = new CardMoveAnim(item.Card, item.rectTransform, table.handToFieldCurve);
                     }
-                    CardSkinData skin = table.getSkin(eventArg.card);
-                    if (skin != null && !string.IsNullOrEmpty(skin.soundPath_onUse))
-                    {
-                        AudioClip sound;
-                        if (_loadSoundTask == null)
-                        {
-                            _loadSoundTask = table.getManager<THHResourceManager>().loadAudio(skin.soundPath_onUse);
-                        }
-                        if (!_loadSoundTask.IsCompleted)
-                            return false;
-                        else
-                        {
-                            sound = _loadSoundTask.Result;
-                            _loadSoundTask = null;
-                        }
-                        table.getManager<SEManager>().playSE(sound);
-                        if (tryTargetedAnim(table, table.ui.EnemyMaster, eventArg, time))
-                            return false;
-                    }
+                    if (!_moveAnim.update(table, time))
+                        return false;
                 }
             }
-            else if (eventArg.card.isSkill())
+            else
             {
-                if (eventArg.player == table.player)
+                if (table.tryGetHand(eventArg.card, out var hand))
                 {
-                    table.setSkill(table.ui.SelfSkill, eventArg.card);
-                    sourceActor = table.ui.SelfSkill;
+                    if (eventArg.card.hasKeyword(table.game, KEYWORD.SECRET))
+                        table.setCard(hand.Card, eventArg.card, false);
+                    else
+                        table.setCard(hand.Card, eventArg.card, true);
+                    hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
+                    if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
+                        return false;
+                    table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
                 }
-                else
-                {
-                    table.setSkill(table.ui.EnemySkill, eventArg.card);
-                    sourceActor = table.ui.EnemySkill;
-                }
+
+                // 播放音效。
                 CardSkinData skin = table.getSkin(eventArg.card);
                 if (skin != null && !string.IsNullOrEmpty(skin.soundPath_onUse))
                 {
+                    AudioClip sound;
                     if (_loadSoundTask == null)
                     {
                         _loadSoundTask = table.getManager<THHResourceManager>().loadAudio(skin.soundPath_onUse);
                     }
-                    if (_loadSoundTask.IsCompleted)
+                    if (!_loadSoundTask.IsCompleted)
+                        return false;
+                    else
                     {
-                        table.getManager<SEManager>().playSE(_loadSoundTask.Result);
+                        sound = _loadSoundTask.Result;
+                        _loadSoundTask = null;
                     }
+                    table.getManager<SEManager>().playSE(sound);
                 }
-                if (tryTargetedAnim(table, sourceActor, eventArg, time))
-                    return false;
+
+
+                if (!eventArg.isCanceled)
+                {
+                    if (tryTargetedAnim(table, table.ui.EnemyMaster, eventArg, time))
+                        return false;
+                }
+                else
+                {
+                    if (_targetedAnim == null)
+                    {
+                        _targetedAnim = new CardMoveAnim(hand.Card, hand.rectTransform, table.handToFieldCurve);
+                        table.setCard(hand.Card, eventArg.card, true);
+                    }
+                    if (!_targetedAnim.update(table, time))
+                        return false;
+                }
             }
-            else if (eventArg.card.isItem())
+            return true;
+        }
+        #endregion
+
+        #region Skill
+        private bool updateSkill(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        {
+            UIObject sourceActor;
+            if (eventArg.player == table.player)
             {
-                if (eventArg.player == table.player)
+                table.setSkill(table.ui.SelfSkill, eventArg.card);
+                sourceActor = table.ui.SelfSkill;
+            }
+            else
+            {
+                table.setSkill(table.ui.EnemySkill, eventArg.card);
+                sourceActor = table.ui.EnemySkill;
+            }
+            CardSkinData skin = table.getSkin(eventArg.card);
+            if (skin != null && !string.IsNullOrEmpty(skin.soundPath_onUse))
+            {
+                if (_loadSoundTask == null)
+                {
+                    _loadSoundTask = table.getManager<THHResourceManager>().loadAudio(skin.soundPath_onUse);
+                }
+                if (_loadSoundTask.IsCompleted)
+                {
+                    table.getManager<SEManager>().playSE(_loadSoundTask.Result);
+                }
+            }
+            if (tryTargetedAnim(table, sourceActor, eventArg, time))
+                return false;
+            return true;
+        }
+        #endregion
+
+        #region Item
+        private bool updateItem(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        {
+            if (eventArg.player == table.player)
+            {
+                if (!eventArg.isCanceled)
                 {
                     if (table.tryGetHand(eventArg.card, out var hand))
                     {
@@ -190,23 +265,52 @@ namespace Game
                 }
                 else
                 {
-                    if (table.tryGetHand(eventArg.card, out var hand))
+                    HandListItem item = table.getHand(eventArg.card);
+                    if (item == null)
+                        throw new ActorNotFoundException(eventArg.card);
+                    if (_moveAnim == null)
                     {
-                        table.setCard(hand.Card, eventArg.card, true);
-                        hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
-                            return false;
-                        table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
+                        item.Card.display();
+                        table.setCard(item.Card, eventArg.card, true);
+                        _moveAnim = new CardMoveAnim(item.Card, item.rectTransform, table.handToFieldCurve);
                     }
-                    table.setMaster(table.ui.EnemyMaster, table.game.getOpponent(table.player).getMaster());
-                    if (tryTargetedAnim(table, table.ui.EnemyItem, eventArg, time))
+                    if (!_moveAnim.update(table, time))
                         return false;
                 }
             }
-            if (table.game.answers.getRequests(eventArg.player.id).FirstOrDefault() is DiscoverRequest && eventArg.player != table.player)
-                table.ui.Waiting.SetActive(true);
+            else
+            {
+                if (table.tryGetHand(eventArg.card, out var hand))
+                {
+                    table.setCard(hand.Card, eventArg.card, true);
+                    hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
+                    if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
+                        return false;
+                    table.ui.EnemyHandList.removeItem(table.getHand(eventArg.card));
+                }
+                table.setMaster(table.ui.EnemyMaster, table.game.getOpponent(table.player).getMaster());
+
+
+                if (!eventArg.isCanceled)
+                {
+                    if (tryTargetedAnim(table, table.ui.EnemyItem, eventArg, time))
+                        return false;
+                }
+                else
+                {
+                    if (_targetedAnim == null)
+                    {
+                        _targetedAnim = new CardMoveAnim(hand.Card, hand.rectTransform, table.handToFieldCurve);
+                        table.setCard(hand.Card, eventArg.card, true);
+                    }
+                    if (!_targetedAnim.update(table, time))
+                        return false;
+                }
+            }
             return true;
         }
+        #endregion
+
         bool tryTargetedAnim(TableManager table, UIObject sourceActor, HearthStoneRule.UseEventArg eventArg, float time)
         {
             if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var targetCard)
