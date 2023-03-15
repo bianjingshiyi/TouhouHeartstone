@@ -797,7 +797,7 @@ namespace Game
                 CardSkinData skin = new CardSkinData();
                 skin.id = cardDefineId;
                 skin.skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME;
-                skin.skinId = getAllLocalSkins(cardPoolId, cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1; ;
+                skin.skinId = getAllLocalSkins(cardPoolId, cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1;
                 cardPool.cardSkinList.Add(skin);
                 return skin;
             }
@@ -1126,21 +1126,41 @@ namespace Game
             {
                 return new CardPoolReference[0];
             }
-            traverseActionNodes(cardPool, addCardPool);
+            traverseActionNodes(cardPool, addCardPoolByNode);
+            foreach (var card in cardPool.cardDefineList)
+            {
+                // 获取卡牌属性中所有引用其他卡牌的属性。
+                var propNames = card.getPropNames();
+                foreach (string propName in propNames)
+                {
+                    var prop = card.getProp<DefineReference>(propName);
+                    if (prop != null)
+                    {
+                        addCardPoolOfDefRef(prop);
+                    }
+                }
+            }
             return poolList.ToArray();
 
-            void addCardPool(ActionNode node)
+            void addCardPoolByNode(ActionNode node)
             {
                 foreach (var valueConst in node.consts)
                 {
-                    if (valueConst is DefineReference defRef && defRef.cardPoolId != cardPoolRef.CardPoolID)
+                    if (valueConst is DefineReference defRef)
                     {
-                        var depPoolInfo = getCardPoolInfo(defRef.cardPoolId);
-                        if (depPoolInfo != null)
-                        {
-                            CardPoolReference depRef = new CardPoolReference(defRef.cardPoolId, depPoolInfo.editTime);
-                            poolList.Add(depRef);
-                        }
+                        addCardPoolOfDefRef(defRef);
+                    }
+                }
+            }
+            void addCardPoolOfDefRef(DefineReference defRef)
+            {
+                if (defRef.cardPoolId != cardPoolRef.CardPoolID)
+                {
+                    var depPoolInfo = getCardPoolInfo(defRef.cardPoolId);
+                    if (depPoolInfo != null)
+                    {
+                        CardPoolReference depRef = new CardPoolReference(defRef.cardPoolId, depPoolInfo.editTime);
+                        poolList.Add(depRef);
                     }
                 }
             }

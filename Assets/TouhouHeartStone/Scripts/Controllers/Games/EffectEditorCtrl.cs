@@ -154,7 +154,7 @@ namespace Controllers
         #region 事件回调
         private void onPropValueChangedCallback(int index, object value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
             _effect.setProp(propInfos[index].name, value);
         }
@@ -210,7 +210,7 @@ namespace Controllers
         }
         private void onPropItemValueChanged(int index, int itemIndex, object value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
         }
         private void onClickPropItemButtonCallback(int index, int itemIndex)
@@ -227,7 +227,7 @@ namespace Controllers
         }
         private void onClickPropAddItemButtonCallback(int index)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
             if (propInfos[index].type == typeof(TriggerCollection))
             {
@@ -243,7 +243,7 @@ namespace Controllers
         }
         private void onClickPropItemRemoveButtonCallback(int index, int itemIndex)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             EffectPropertyInfo[] propInfos = _effect.getPropInfos();
             if (propInfos[index].type == typeof(TriggerCollection))
             {
@@ -254,7 +254,7 @@ namespace Controllers
         }
         private void onActionDefineNameInputFieldValueChanged(string value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             if (!scene.actionNodeGraphCtrl.isActionDefineNameExist(value))
             {
                 _actionDefine.defineName = value;
@@ -271,12 +271,12 @@ namespace Controllers
         }
         private void onActionDefineCategoryDropdownValueChanged(int index)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.category = _categories[index];
         }
         private void onAddInputButtonClicked()
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var valueDefine = new ValueDefine(
                 typeof(int),
                 game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.inputList.Count + 1),
@@ -287,13 +287,13 @@ namespace Controllers
         }
         private void onInputListItemDeleteButtonClicked(int index)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             scene.actionNodeGraphCtrl.deleteActionDefineInput(index);
             updateActionDefinePropList();
         }
         private void onInputListItemTypeChanged(int index, int typeIndex)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var targetType = game.editor.getEditorVarTypeAt(typeIndex);
             var curType = _actionDefine.inputList[index].type;
             if (curType.IsArray)
@@ -302,14 +302,14 @@ namespace Controllers
         }
         private void onInputListItemNameChanged(int index, string name)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.inputList[index].name = name;
             updateActionDefinePropList();
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemIsArrayValueChanged(int index, bool value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var targetType = _actionDefine.inputList[index].type;
             if (value && !targetType.IsArray)
                 targetType = targetType.MakeArrayType();
@@ -319,13 +319,13 @@ namespace Controllers
         }
         private void onInputListItemIsParamsValueChanged(int index, bool value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.inputList[index].isParams = value;
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onAddConstButtonClicked()
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.constList.Add(new ValueDefine(
                 typeof(int),
                 game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT) + (_actionDefine.constList.Count + 1),
@@ -336,13 +336,13 @@ namespace Controllers
         }
         private void onConstListItemDeleteButtonClicked(int index)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             scene.actionNodeGraphCtrl.deleteActionDefineConst(index);
             updateActionDefinePropList();
         }
         private void onConstListItemTypeChanged(int index, int typeIndex)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var targetType = game.editor.getEditorConstTypeAt(typeIndex);
             var curType = _actionDefine.constList[index].type;
             if (curType.IsArray)
@@ -351,14 +351,14 @@ namespace Controllers
         }
         private void onConstListItemNameChanged(int index, string name)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.constList[index].name = name;
             updateActionDefinePropList();
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemIsArrayValueChanged(int index, bool value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var targetType = _actionDefine.constList[index].type;
             if (value && !targetType.IsArray)
                 targetType = targetType.MakeArrayType();
@@ -368,13 +368,13 @@ namespace Controllers
         }
         private void onConstListItemIsParamsValueChanged(int index, bool value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.constList[index].isParams = value;
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onAddOutputButtonClicked()
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.outputList.Add(new ValueDefine(
                 typeof(int),
                 game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.outputList.Count + 1),
@@ -385,13 +385,13 @@ namespace Controllers
         }
         private void onOutputListItemDeleteButtonClicked(int index)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             scene.actionNodeGraphCtrl.deleteActionDefineOutput(index);
             updateActionDefinePropList();
         }
         private void onOutputListItemTypeChanged(int index, int typeIndex)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var targetType = game.editor.getEditorVarTypeAt(typeIndex);
             var curType = _actionDefine.outputList[index].type;
             if (curType.IsArray)
@@ -400,13 +400,13 @@ namespace Controllers
         }
         private void onOutputListItemNameChanged(int index, string name)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.outputList[index].name = name;
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemIsArrayValueChanged(int index, bool value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var targetType = _actionDefine.outputList[index].type;
             if (value && !targetType.IsArray)
                 targetType = targetType.MakeArrayType();
@@ -416,13 +416,13 @@ namespace Controllers
         }
         private void onOutputListItemIsParamsValueChanged(int index, bool value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _actionDefine.outputList[index].isParams = value;
             scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onDeleteActionDefineButtonClickedCallback()
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             //询问玩家
             game.ui.dialog.ShowQuestion(
                game.langManager.getString(StringTable.WARNING),
@@ -447,6 +447,11 @@ namespace Controllers
             });
         }
         #endregion
+        private void MarkCardUnsaved()
+        {
+            scene.cardEditor.MarkCardUnsaved();
+        }
+
         /// <summary>
         /// 更新属性信息UI
         /// </summary>

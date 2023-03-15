@@ -178,7 +178,7 @@ namespace Controllers
         /// </summary>
         private void OnEdited()
         {
-            scene.editor.hasUnsavedChanges = true;
+            scene.cardEditor.MarkCardUnsaved();
         }
         /// <summary>
         /// 当用户长按背景，展开菜单。目前点菜单内容只有创建节点。

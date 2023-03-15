@@ -195,9 +195,9 @@ namespace UI
         {
             _tagDropdown.SetValueWithoutNotify(index);
         }
-        public void setSkillRef(CardDefine card, CardSkinData skin)
+        public void setSkillRef(CardDefine cardDefine, Sprite spr, string name)
         {
-            _skillRef.update(card, skin, 0);
+            _skillRef.update(cardDefine, spr, name, 0);
         }
         public void setEffectTypes(string[] effectTypeNames)
         {
@@ -332,8 +332,15 @@ namespace UI
             _effectList.onClickAddEffect += onAddEffectButtonClicked;
             _effectList.onClickItemEditButton += onClickEffectListItemEditButton;
             _effectList.onClickItemRemoveButton += onClickEffectListItemRemoveButton;
-            _backgroundButton.onClick.AddListener(onBackgroundButtonClicked);
             _deleteCardButton.onClick.AddListener(onClickDeleteCardButtonCallback);
+            _saveCardButton.onClick.AddListener(onClickSaveCardButtonCallback);
+            _closeCardButton.onClick.AddListener(onClickCloseCardButtonCallback);
+
+
+            // Pages.
+            _basicPageButton.onClick.AddListener(() => displayPage(_basicPage));
+            _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage));
+            _skinPageButton.onClick.AddListener(() => displayPage(_skinPage));
         }
         #endregion
         #region 事件回调
@@ -566,13 +573,17 @@ namespace UI
         {
             onClickAddEffectMenu?.Invoke(index);
         }
-        private void onBackgroundButtonClicked()
-        {
-            onClickBackgroundButton?.Invoke();
-        }
         private void onClickDeleteCardButtonCallback()
         {
             onClickDeleteCardButton?.Invoke();
+        }
+        private void onClickSaveCardButtonCallback()
+        {
+            onClickSaveButton?.Invoke();
+        }
+        private void onClickCloseCardButtonCallback()
+        {
+            onClickCloseButton?.Invoke();
         }
         private void onTagInputFieldEndEdit(string text)
         {
@@ -592,6 +603,15 @@ namespace UI
             onClickSkillRefButton?.Invoke();
         }
         #endregion
+
+        private void displayPage(GameObject toDisplay)
+        {
+            _basicPage.SetActive(false);
+            _propertyPage.SetActive(false);
+            _skinPage.SetActive(false);
+
+            toDisplay.SetActive(true);
+        }
         #endregion
         #region 事件
         /// <summary>
@@ -674,13 +694,17 @@ namespace UI
         /// </summary>
         public event Action<int> onClickAddEffectMenu;
         /// <summary>
-        /// 当点击背景返回
-        /// </summary>
-        public event Action onClickBackgroundButton;
-        /// <summary>
         /// 当点击删除卡牌按钮
         /// </summary>
         public event Action onClickDeleteCardButton;
+        ///// <summary>
+        ///// 当点击保存按钮
+        ///// </summary>
+        public event Action onClickSaveButton;
+        ///// <summary>
+        ///// 当点击关闭按钮
+        ///// </summary>
+        public event Action onClickCloseButton;
         /// <summary>
         /// 当点击选择技能按钮
         /// </summary>
@@ -758,11 +782,27 @@ namespace UI
         [SerializeField]
         InputField _lifeInputField;
         [SerializeField]
-        Button _backgroundButton;
-        [SerializeField]
         Button _deleteCardButton;
         [SerializeField]
+        Button _saveCardButton;
+        [SerializeField]
+        Button _closeCardButton;
+        [SerializeField]
         InputField _tagInputField;
+
+        [Header("Pages")]
+        [SerializeField]
+        Button _basicPageButton;
+        [SerializeField]
+        Button _propertyPageButton;
+        [SerializeField]
+        Button _skinPageButton;
+        [SerializeField]
+        GameObject _basicPage;
+        [SerializeField]
+        GameObject _propertyPage;
+        [SerializeField]
+        GameObject _skinPage;
 
         public Button EditNameButton
         {

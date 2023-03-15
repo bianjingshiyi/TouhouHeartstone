@@ -9,13 +9,13 @@ namespace UI
 {
     partial class BuildDeckListItem : IBeginDragHandler, IDragHandler, IEndDragHandler, ISelectHandler, IDeselectHandler, IPointerClickHandler
     {
-        public void update(CardDefine card, CardSkinData skin, int count)
+        public void update(CardDefine card, Sprite spr, string name, int count)
         {
             this.card = card;
             this.count = count;
 
-            Image.sprite = skin.image;
-            Text.text = skin.name;
+            Image.sprite = spr;
+            Text.text = name;
         }
         [SerializeField]
         Vector2 _dragStartPosition;

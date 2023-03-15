@@ -8,11 +8,9 @@ using System;
 using System.Linq;
 using Game;
 using UnityEngine;
-using SFB;
-using UnityEngine.Networking;
 using System.Threading.Tasks;
-using TouhouCardEngine.Interfaces;
-using System.IO;
+using UnityEngine.UI;
+using MukioI18n;
 
 namespace Controllers
 {
@@ -29,22 +27,22 @@ namespace Controllers
             _cardPoolId = cardPoolId;
             _cardDefine = cardDefine;
             updateSkinNames();
-            _ui.setId(_cardDefine.id);
-            _ui.setType(Array.IndexOf(_types, _cardDefine.type), _cardDefine.type);
-            _ui.setIsToken(_cardDefine.isToken());
-            _ui.setSpellDamage(_cardDefine.getSpellDamage());
+            _ui.setId(cardDefine.id);
+            _ui.setType(Array.IndexOf(_types, cardDefine.type), cardDefine.type);
+            _ui.setIsToken(cardDefine.isToken());
+            _ui.setSpellDamage(cardDefine.getSpellDamage());
             bool[] keywordsValue = new bool[keywords.Length];
             for (int i = 0; i < keywordsValue.Length; i++)
             {
-                keywordsValue[i] = _cardDefine.hasKeyword(keywords[i]);
+                keywordsValue[i] = cardDefine.hasKeyword(keywords[i]);
             }
             _ui.setKeywords(keywordsValue);
             bool[] tagsValue = new bool[_tags.Length];
             for (int i = 0; i < _tags.Length; i++)
             {
-                tagsValue[i] = _cardDefine.getTags().Contains(_tags[i]);
+                tagsValue[i] = cardDefine.getTags().Contains(_tags[i]);
             }
-            _ui.setInitTags(_cardDefine.getTags());
+            _ui.setInitTags(cardDefine.getTags());
             string[] charactersName = new string[selectableCharacters.Length + 1];
             charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
             for (int i = 1; i < charactersName.Length; i++)
@@ -56,10 +54,10 @@ namespace Controllers
             _ui.setCharacter(Array.FindIndex(_selectableCharacters, c =>
                 c.cardPoolId == cardDefine.getCharacterRef().cardPoolId && 
                 c.id == cardDefine.getCharacterRef().defineId) + 1);
-            _ui.setCost(_cardDefine.getProp<int>(DEFINE.COST).ToString());
-            _ui.setAttack(_cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
-            _ui.setLife(_cardDefine.getProp<int>(DEFINE.LIFE).ToString());
-            string[] tags = _cardDefine.getProp<string[]>(DEFINE.TAGS);
+            _ui.setCost(cardDefine.getProp<int>(DEFINE.COST).ToString());
+            _ui.setAttack(cardDefine.getProp<int>(DEFINE.ATTACK).ToString());
+            _ui.setLife(cardDefine.getProp<int>(DEFINE.LIFE).ToString());
+            string[] tags = cardDefine.getProp<string[]>(DEFINE.TAGS);
             if (tags != null && tags.Length > 0)
             {
                 int index = Array.IndexOf(_races, tags[0]);
@@ -77,7 +75,10 @@ namespace Controllers
             else if (cardDefine.isItem())
                 _ui.switchToItem();
             else if (cardDefine.isMaster())
+            {
                 _ui.switchToMaster();
+                await setSkillRef(cardDefine.getSkillRef());
+            }
             else
                 _ui.switchToServant();
             await setCurSkinIndex(0);
@@ -169,13 +170,15 @@ namespace Controllers
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
             _ui.setEffectTypes(game.card.getEffectNames());
             _ui.onClickAddEffectMenu += onClickAddEffectMenu;
-            _ui.onClickBackgroundButton += onClickBackgroundButton;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
+            _ui.onClickSaveButton += onClickSaveButton;
+            _ui.onClickCloseButton += onClickCloseButton;
             _ui.onClickSkillRefButton += onClickSkillRefButton;
             _ui.onChangeTag += onChangeTag;
             _ui.onChangeSpellDamage += onChangeSpellDamage;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
+            _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
         }
         #endregion
         #region 事件回调
@@ -183,7 +186,7 @@ namespace Controllers
         {
             if (skinIndex == getSkinCount())
             {
-                scene.editor.hasUnsavedChanges = true;
+                MarkCardUnsaved();
                 //新建皮肤
                 _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 updateSkinNames();
@@ -192,7 +195,7 @@ namespace Controllers
         }
         private async void onChangeSkinName(string skinName)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var skinGroup = getCurrentCardSkins().GroupBy(c => c.skinId).ToList();
             int index = skinGroup.FindIndex(g => g.Key == _curCardSkin.skinId);
             var curSkinGroup = skinGroup[index];
@@ -205,7 +208,7 @@ namespace Controllers
         }
         private async void onDeleteSkin()
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             var skinGroup = getCurrentCardSkins().GroupBy(c => c.skinId).ToList();
             if (skinGroup.Count < 2)
             {
@@ -213,7 +216,6 @@ namespace Controllers
                 return;
             }
             game.card.removeSkin(_cardPoolId, _cardDefine.id, _curCardSkin.skinId);
-            //scene.editor.removeSkins(c => c.skinId == _curCardSkin.skinId);
             updateSkinNames();
             await setCurSkinIndex(0);
         }
@@ -224,17 +226,17 @@ namespace Controllers
             var targetSkin = skinGroup.FirstOrDefault(s => s.language == language);
             if (targetSkin == null)
             {
-                scene.editor.hasUnsavedChanges = true;
+                MarkCardUnsaved();
                 //不存在对应语言的皮肤，新建一个
                 targetSkin = game.card.createSkinForDiffLanguage(_cardPoolId, _curCardSkin, language);
             }
             _curCardSkin = targetSkin;
             _ui.setLanguage(languageIndex);
-            _ui.setName(_curCardSkin.name);
-            _ui.setSubName(_curCardSkin.subname);
-            _ui.setDesc(_curCardSkin.desc);
-            string path = _curCardSkin.imagePath;
-            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolInfoOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+            _ui.setName(targetSkin.name);
+            _ui.setSubName(targetSkin.subname);
+            _ui.setDesc(targetSkin.desc);
+            string path = targetSkin.imagePath;
+            Sprite image = await game.card.loadImage(targetSkin.imagePath, _cardDefine.cardPoolId);
             _ui.setImage(image);
         }
         /// <summary>
@@ -243,19 +245,19 @@ namespace Controllers
         /// <param name="typeIndex"></param>
         private void onChangeType(int typeIndex)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _cardDefine.type = _types[typeIndex];
             _ui.setType(typeIndex, _types[typeIndex]);
             _textChangedByType();
         }
         private void onIsTokenToggleValueChanged(bool value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _cardDefine.setIsToken(value);
         }
         private void onTagDropdownValueChanged(bool[] value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             string[] tags = _cardDefine.getTags();
             string race = tags.Length > 0 ? tags[0] : null;
             List<string> tagList = new List<string>();
@@ -279,7 +281,7 @@ namespace Controllers
         /// <param name="value"></param>
         private void onChangeKeywords(bool[] value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             List<string> keywordList = new List<string>();
             for (int i = 0; i < keywords.Length; i++)
             {
@@ -292,7 +294,7 @@ namespace Controllers
         }
         private void onChangeCharacter(int characterIndex)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             if (characterIndex < 1)
             {
                 _cardDefine.setCharacterRef(DefineReference.Empty);
@@ -312,7 +314,7 @@ namespace Controllers
         {
             if (int.TryParse(cost, out int value))
             {
-                scene.editor.hasUnsavedChanges = true;
+                MarkCardUnsaved();
                 _cardDefine.setProp(DEFINE.COST, value);
                 _ui.setCost(cost);
             }
@@ -323,7 +325,7 @@ namespace Controllers
         /// <param name="name"></param>
         void onChangeName(string name)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _curCardSkin.name = name;
             _ui.setName(name);
             _textChangedByType();
@@ -334,7 +336,7 @@ namespace Controllers
         /// <param name="subName"></param>
         void onChangeSubName(string subName)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _curCardSkin.subname = subName;
             _ui.setSubName(subName);
 
@@ -347,7 +349,7 @@ namespace Controllers
             Sprite sprite = await game.card.selectExternalImage();
             if (sprite != null)
             {
-                scene.editor.hasUnsavedChanges = true;
+                MarkCardUnsaved();
                 _curCardSkin.imagePath = game.card.getSpritePath(sprite);
             }
             return sprite;
@@ -358,7 +360,7 @@ namespace Controllers
         /// <param name="desc"></param>
         void onChangeDesc(string desc)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _curCardSkin.desc = desc;
             _ui.setDesc(desc);
         }
@@ -370,7 +372,7 @@ namespace Controllers
         {
             if (int.TryParse(attack, out int value))
             {
-                scene.editor.hasUnsavedChanges = true;
+                MarkCardUnsaved();
                 _cardDefine.setProp(DEFINE.ATTACK, value);
                 _ui.setAttack(attack);
             }
@@ -383,7 +385,7 @@ namespace Controllers
         {
             if (int.TryParse(life, out int value))
             {
-                scene.editor.hasUnsavedChanges = true;
+                MarkCardUnsaved();
                 _cardDefine.setProp(DEFINE.LIFE, value);
                 _ui.setLife(life);
             }
@@ -393,7 +395,7 @@ namespace Controllers
         /// </summary>
         private void onChangeRace(int index)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             string[] value = _cardDefine.getTags();
             if (value == null || value.Length < 1)
             {
@@ -406,12 +408,12 @@ namespace Controllers
 
         private void onChangeTag(string text)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _cardDefine.setTags(text.Split(',', ' ', '，'));
         }
         private void onChangeSpellDamage(int value)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             _cardDefine.setSpellDamage(value);
         }
         /// <summary>
@@ -425,7 +427,7 @@ namespace Controllers
         }
         private void onClickRemoveEffectButton(int index)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             GeneratedEffect[] prevEffects = _cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             GeneratedEffect[] newEffects = new GeneratedEffect[prevEffects.Length - 1];
             for (int i = 0; i < index; i++)
@@ -444,18 +446,12 @@ namespace Controllers
         /// </summary>
         private void onClickAddEffectMenu(int index)
         {
-            scene.editor.hasUnsavedChanges = true;
+            MarkCardUnsaved();
             GeneratedEffect[] effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(game.card.createEffectByIndex(index)).ToArray();
             _cardDefine.setEffects(effects);
             updateEffectList(effects);
         }
-        private void onClickBackgroundButton()
-        {
-            //返回上一个界面
-            gameObject.SetActive(false);
-            scene.editor.display(false, false, -1, false);
-            //保存卡牌编辑信息
-        }
+        
         private void onClickDeleteCardButton()
         {
             scene.editor.hasUnsavedChanges = true;
@@ -464,26 +460,80 @@ namespace Controllers
             //返回上个界面
             gameObject.SetActive(false);
             scene.editor.display(false, false, -1, true);
+            ClearCardUnsaved();
+        }
+        private void onClickSaveButton()
+        {
+            saveCard();
+        }
+        private void onClickCloseButton()
+        {
+            void exit()
+            {
+                //返回上一个界面
+                gameObject.SetActive(false);
+                scene.editor.display(false, false, -1, false);
+                ClearCardUnsaved();
+            }
+
+            if (hasUnsavedChanges)
+            {
+                string title = game.lang._(StringTable.WARNING);
+
+                string desc = game.lang._(CARD_WARNING_UNSAVED_CHANGES);
+                string[] optNames = new string[2]
+                {
+                    game.lang._(CARD_WARNING_OPTION_SAVE),
+                    game.lang._(CARD_WARNING_OPTION_CANCEL)
+                };
+                game.ui.dialog.ShowOptions(title, desc, optNames, (index) =>
+                {
+                    if (index == 0)
+                    {
+                        saveCard();
+                        exit();
+                    }
+                });
+            }
+            else
+            {
+                exit();
+            }
         }
         private async void onClickSkillRefButton()
         {
             //打开卡牌选择界面
+            long poolId = _cardPoolId;
+            bool hideBuiltinCards = true;
+            var skillRef = _cardDefine.getSkillRef();
+            if (skillRef.defineId != 0)
+            {
+                poolId = skillRef.cardPoolId;
+            }
+            if (game.card.isBuiltinCardPool(poolId))
+            {
+                hideBuiltinCards = false;
+            }
+            await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: (card) =>
+            {
+                return card.isSkill();
+            });
             _ui.displayCardSelectPanel(true);
-            await _cardPoolViewPanelCtrl.display();
             _cardSelectTarget = CardSelectTarget.Skill;
         }
-        private void onClickCardPoolViewCard(CardDefine cardDefine)
+        private void onClickCancelCardPoolSelectButton()
+        {
+            //打开卡牌选择界面
+            _ui.displayCardSelectPanel(false);
+            _cardSelectTarget = CardSelectTarget.None;
+        }
+        private async void onClickCardPoolViewCard(CardDefine cardDefine)
         {
             switch (_cardSelectTarget)
             {
                 case CardSelectTarget.Skill:
-                    scene.editor.hasUnsavedChanges = true;
-                    var defRef = cardDefine.getDefineRef();
-                    _cardDefine.setSkillRef(defRef);
-
-                    var poolRef = game.card.getLocalCardPoolReference(cardDefine.cardPoolId);
-                    var skin = game.card.getCardSkin(poolRef, cardDefine.id);
-                    _ui.setSkillRef(cardDefine, skin);
+                    MarkCardUnsaved();
+                    await setSkillRef(cardDefine.getDefineRef());
                     break;
             }
             _ui.displayCardSelectPanel(false);
@@ -510,6 +560,7 @@ namespace Controllers
 
         private enum CardSelectTarget
         {
+            None,
             Skill
         }
 
@@ -529,16 +580,17 @@ namespace Controllers
         {
             var skinGroup = getCurrentCardSkins().GroupBy(s => s.skinId).ToArray().ElementAt(skinIndex);
             //获取对应语言的皮肤
-            _curCardSkin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
+            var skin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
             //如果没有对应语言，就第一个
-            if (_curCardSkin == null)
-                _curCardSkin = skinGroup.First();
+            if (skin == null)
+                skin = skinGroup.First();
+            _curCardSkin = skin;
             _ui.setSkin(skinIndex);
-            _ui.setLanguage(Array.IndexOf(game.langManager.getLanguages(), _curCardSkin.language));
-            _ui.setName(_curCardSkin.name);
-            _ui.setSubName(_curCardSkin.subname);
-            _ui.setDesc(_curCardSkin.desc);
-            Sprite image = await game.card.loadImage(_curCardSkin.imagePath, game.card.getCardPoolInfoOfCard(_cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
+            _ui.setLanguage(Array.IndexOf(game.langManager.getLanguages(), skin.language));
+            _ui.setName(skin.name);
+            _ui.setSubName(skin.subname);
+            _ui.setDesc(skin.desc);
+            Sprite image = await game.card.loadImage(skin.imagePath, _cardDefine.cardPoolId);
             _ui.setImage(image);
         }
         private int getSkinCount()
@@ -553,6 +605,41 @@ namespace Controllers
         {
             return game.card.getAllLocalSkins(_cardDefine.cardPoolId, _cardDefine.id);
         }
+
+        private async Task setSkillRef(DefineReference defRef)
+        {
+            _cardDefine.setSkillRef(defRef);
+            var poolRef = game.card.getLocalCardPoolReference(defRef.cardPoolId);
+            var cardDefine = game.card.getCardDefine(poolRef, defRef.defineId);
+            var skin = game.card.getCardSkin(poolRef, defRef.defineId);
+            var spr = await game.card.loadImage(skin.imagePath, defRef.cardPoolId);
+            var name = skin.name;
+            _ui.setSkillRef(cardDefine, spr, name);
+        }
+
+        private void saveCard()
+        {
+            // TODO : 目前单张卡牌无法单独保存，需要解决卡牌效果列表的深复制。
+            //game.card.replaceCardDefine(_cardPoolId, _curCardDefine.id, _curCardDefine);
+
+            //game.card.removeAllSkins(_cardPoolId, _curCardDefine.id);
+            //foreach (var skin in _curCardSkins)
+            //{
+            //    game.card.addSkin(_cardPoolId, skin);
+            //}
+
+            scene.editor.hasUnsavedChanges = true;
+            ClearCardUnsaved();
+        }
+        public void MarkCardUnsaved()
+        {
+            hasUnsavedChanges = true;
+        }
+        public void ClearCardUnsaved()
+        {
+            hasUnsavedChanges = false;
+        }
+
         [Obsolete]
         public IAppManager app { get; }
         [Obsolete]
@@ -562,9 +649,19 @@ namespace Controllers
 
         [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
+        [SerializeField]
+        Button _cancelCardPoolSelectButton;
 
+
+        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的警告")]
+        public const string CARD_WARNING_UNSAVED_CHANGES = "是否将更改保存到该卡牌中？";
+        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
+        public const string CARD_WARNING_OPTION_SAVE = "保存";
+        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
+        public const string CARD_WARNING_OPTION_CANCEL = "取消";
 
         private CardSelectTarget _cardSelectTarget;
+        public bool hasUnsavedChanges { get; private set; }
 
         public static readonly string[] keywords = new string[]
         {
@@ -613,7 +710,13 @@ namespace Controllers
         string[] _races;
         string[] _tags;
         long _cardPoolId;
+        /// <summary>
+        /// 正在编辑的卡牌定义。
+        /// </summary>
         CardDefine _cardDefine;
+        /// <summary>
+        /// 正在编辑的卡牌定义的皮肤。
+        /// </summary>
         CardSkinData _curCardSkin;
         CardDefine[] _selectableCharacters;
     }
