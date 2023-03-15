@@ -252,7 +252,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 商业繁荣祈愿
-    /// 信仰对决（随从牌）对目标随从相邻的随从造成4点伤害；获胜时再对目标随从造成2点伤害。
+    /// 信仰对决（随从牌）对一个仆从造成3点伤害；获胜时为你的英雄恢复4点生命值。
     /// </summary>
     public class CharmOfGoodCommerce : SpellCardDefine
     {
@@ -402,7 +402,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
-
+        public override string[] tags { get; set; } = { TAG.BEAST };
         private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<THHCard.HealEventArg>(PileFlag.field,
@@ -835,6 +835,7 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] tags { get; set; } = { TAG.BEAST };
     }
 
     /// <summary>

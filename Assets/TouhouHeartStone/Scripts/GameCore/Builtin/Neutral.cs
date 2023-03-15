@@ -676,7 +676,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 121 大妖精 突袭，亡语：在本回合获得一个法力水晶
+    /// 121 大妖精 速攻
     /// </summary>
     public class Daiyousei_N : ServantCardDefine
     {
@@ -690,7 +690,7 @@ namespace TouhouHeartstone.Builtin
 
         private IEffect[] effects1 = new IEffect[]
         {
-            ///new DeathRattle(ID, (g1, c1, p) => { return c1.getOwner().setGem(g1, c1.getOwner().getGem() + 1); })
+            //new DeathRattle(ID, (g1, c1, p) => { return c1.getOwner().setGem(g1, c1.getOwner().getGem() + 1); })
         };
 
         public override IEffect[] getEffects()
@@ -810,6 +810,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
+        public override string[] tags { get; set; } = new string[] { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -960,6 +961,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -1113,6 +1115,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 5;
         public override string[] keywords { get; set; } = new[] { KEYWORD.RUSH };
+        public override string[] tags { get; set; } = new string[] { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -1528,8 +1531,8 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
-
         public override int life { get; set; } = 4;
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -1560,7 +1563,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 因幡帝 3/4/3 战吼：发现一张牌库里的牌，将它置顶
+    /// 因幡帝 3/4/2 战吼：发现一张牌库里的牌，将它置顶
     /// </summary>
     public class TewiInaba_N : ServantCardDefine
     {
@@ -1568,7 +1571,7 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 4;
-        public override int life { get; set; } = 3;
+        public override int life { get; set; } = 2;
         public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
@@ -1635,15 +1638,15 @@ namespace TouhouHeartstone.Builtin
 
 
     /// <summary>
-    /// 上白泽慧音B 3/4/2 当你的回合结束时若位于手牌中则变形为半人。战吼:将三张墓地中花费最低的牌送进墓地。
+    /// 上白泽慧音B 4/4/4 当你的回合结束时若位于手牌中则变形为半人。战吼:将三张墓地中花费最低的牌送进墓地。
     /// </summary>
     public class KamishirasawaKeine_Beast_N : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x053;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 3;
+        public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4;
-        public override int life { get; set; } = 2;
+        public override int life { get; set; } = 4;
         public override bool isToken { get; set; } = true;
 
         public override string[] tags { get; set; } = { TAG.BEAST };
@@ -1903,7 +1906,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x059;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 10;
+        public override int cost { get; set; } = 5;
         public override bool isToken { get; set; } = true;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1929,7 +1932,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SPELL | 0x060;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 10;
+        public override int cost { get; set; } = 5;
         public override bool isToken { get; set; } = true;
 
         private IEffect[] effects1 = new IEffect[]
@@ -2081,8 +2084,8 @@ namespace TouhouHeartstone.Builtin
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x065;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override int attack { get; set; } = 3;
-        public override int life { get; set; } = 2;
+        public override int attack { get; set; } = 4;
+        public override int life { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD, KEYWORD.STEALTH };
 
         private IEffect[] effects1 = new IEffect[] { };
@@ -2148,7 +2151,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
         public override int life { get; set; } = 3;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CHARGE, KEYWORD.UNIQUE };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -2219,6 +2222,7 @@ namespace TouhouHeartstone.Builtin
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
+        public override string[] tags { get; set; } = { TAG.BEAST };
     }
 
     /// <summary>
@@ -2413,8 +2417,8 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 1;
-
         public override int life { get; set; } = 4;
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -2422,26 +2426,10 @@ namespace TouhouHeartstone.Builtin
                 (game, card, arg) => arg.source == card && !arg.target.isDead(game) && !arg.target.isMaster(), onExecute)
         };
 
-        // public override string[] keywords { get; set; } = {};
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
-
         public override IEffect[] getEffects()
         {
             return effects1;
         }
-
-        // public override string[] keywords { get; set; } = {};
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
 
         public override void setEffects(IEffect[] value)
         {
@@ -2484,26 +2472,10 @@ namespace TouhouHeartstone.Builtin
             })
         };
 
-        // public override string[] keywords { get; set; } = {};
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
-
         public override IEffect[] getEffects()
         {
             return effects1;
         }
-
-        // public override string[] keywords { get; set; } = {};
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
 
         public override void setEffects(IEffect[] value)
         {
@@ -2512,7 +2484,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 星熊勇仪 8/7/7
+    /// 星熊勇仪 9/7/7
     /// 对手所控制的最高攻击力仆从每有一点攻击力，该仆从便减少一点花费。
     /// </summary>
     public class HoshigumaYugi : ServantCardDefine
@@ -2639,15 +2611,15 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 火焰猫燐 4/1/3
+    /// 火焰猫燐 3/2/3
     /// 宣言：本回合内每死亡过一个仆从，便获得增益：攻击力+1
     /// </summary>
     public class KaenbyouRin : ServantCardDefine
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x080;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
-        public override int attack { get; set; } = 1;
+        public override int cost { get; set; } = 3;
+        public override int attack { get; set; } = 2;
 
         public override int life { get; set; } = 3;
 
@@ -2656,26 +2628,10 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(effect)
         };
 
-        // public override string[] keywords { get; set; } = {};
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
-
         public override IEffect[] getEffects()
         {
             return effects1;
         }
-
-        // public override string[] keywords { get; set; } = {};
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
 
         public override void setEffects(IEffect[] value)
         {
@@ -2713,10 +2669,9 @@ namespace TouhouHeartstone.Builtin
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 6;
-
         public override int life { get; set; } = 6;
-
         public override string[] keywords { get; set; } = { KEYWORD.CANTATTACK };
+        public override string[] tags { get; set; } = { TAG.BEAST, TAG.GOD };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -2729,24 +2684,10 @@ namespace TouhouHeartstone.Builtin
             })
         };
 
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
-
         public override IEffect[] getEffects()
         {
             return effects1;
         }
-
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
 
         public override void setEffects(IEffect[] value)
         {
@@ -2801,24 +2742,10 @@ namespace TouhouHeartstone.Builtin
                 })
         };
 
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
-
         public override IEffect[] getEffects()
         {
             return effects1;
         }
-
-        // public override string type { get; set; }
-        // public override bool isToken { get; set; }
-        // public override bool isActive { get; set; }
-        // public override int spellDamage { get; set; }
-        // public override int damageReduce { get; set; }
-        // public override string[] tags { get; set; }
 
         public override void setEffects(IEffect[] value)
         {
