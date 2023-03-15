@@ -735,7 +735,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             //var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
-            var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 5, "书海里寻找智慧");
+            var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck().Where(c => c.isSpell()), false, 5, "书海里寻找智慧");
             await card.getOwner().draw(game, discover.choose);
 
         }

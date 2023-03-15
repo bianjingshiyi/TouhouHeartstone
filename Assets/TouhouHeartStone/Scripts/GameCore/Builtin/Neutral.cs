@@ -690,7 +690,7 @@ namespace TouhouHeartstone.Builtin
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new DeathRattle(ID, (g1, c1, p) => { return c1.getOwner().setGem(g1, c1.getOwner().getGem() + 1); })
+            ///new DeathRattle(ID, (g1, c1, p) => { return c1.getOwner().setGem(g1, c1.getOwner().getGem() + 1); })
         };
 
         public override IEffect[] getEffects()

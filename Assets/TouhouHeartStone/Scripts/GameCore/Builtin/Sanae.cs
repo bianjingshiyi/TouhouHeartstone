@@ -250,6 +250,39 @@ namespace TouhouHeartstone.Builtin
         }
     }
 
+    /// <summary>
+    /// 商业繁荣祈愿
+    /// 信仰对决（随从牌）对目标随从相邻的随从造成4点伤害；获胜时再对目标随从造成2点伤害。
+    /// </summary>
+    public class CharmOfGoodCommerce : SpellCardDefine
+    {
+        public const int ID = Sanae.ID | CATEGORY.SPELL | 0x003;
+        public override int id { get; set; } = ID;
+        public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
+
+        private IEffect[] effects1 = new IEffect[]
+        {
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                Player you = card.getOwner();
+                var duel = await Sanae.revealDuel(you, game, 2);
+                await target.damage(game, card, you.getSpellDamage(game, 3));
+                if (duel.result)
+                    await card.getOwner().getMaster().heal(game, card, 4);
+            }, PileFlag.both | PileFlag.field)
+        };
+
+        public override IEffect[] getEffects()
+        {
+            return effects1;
+        }
+
+        public override void setEffects(IEffect[] value)
+        {
+            effects1 = value;
+        }
+    }
 
     /// <summary>
     /// 五谷丰穰
