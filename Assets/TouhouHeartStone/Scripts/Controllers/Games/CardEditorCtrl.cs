@@ -83,6 +83,8 @@ namespace Controllers
                 _ui.switchToServant();
             await setCurSkinIndex(0);
             _textChangedByType();
+
+            updateCustomProperties();
         }
         #endregion
         #region 私有方法
@@ -179,6 +181,19 @@ namespace Controllers
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
             _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
+
+
+            // Custom Properties.
+            var customPropTypes = _customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
+            _ui.setCustomPropertyTypes(customPropTypes);
+            _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
+            _ui.onCustomPropertyValueChanged += onCustomPropertyValueChangedCallback;
+            _ui.onClickCustomPropertyButton += onClickCustomPropertyButtonCallback;
+            _ui.onDeleteCustomProperty += onDeleteCustomPropertyCallback;
+            _ui.onCustomPropertyItemValueChanged += onCustomPropertyItemValueChangedCallback;
+            _ui.onClickCustomPropertyItemButton += onClickCustomPropertyItemButtonCallback;
+            _ui.onClickCustomPropertyAddItemButton += onClickCustomPropertyAddItemButtonCallback;
+            _ui.onClickCustomPropertyRemoveItemButton += onClickCustomPropertyRemoveItemButtonCallback;
         }
         #endregion
         #region 事件回调
@@ -526,6 +541,8 @@ namespace Controllers
             //打开卡牌选择界面
             _ui.displayCardSelectPanel(false);
             _cardSelectTarget = CardSelectTarget.None;
+            _curEditingCardPropName = null;
+            _curEditingCardPropIndex = -1;
         }
         private async void onClickCardPoolViewCard(CardDefine cardDefine)
         {
@@ -535,8 +552,184 @@ namespace Controllers
                     MarkCardUnsaved();
                     await setSkillRef(cardDefine.getDefineRef());
                     break;
+                case CardSelectTarget.Property:
+                    if (_curEditingCardPropName != null)
+                    {
+                        if (_curEditingCardPropIndex >= 0)
+                        {
+                            var array = _cardDefine.getProp<DefineReference[]>(_curEditingCardPropName);
+                            var defRef = cardDefine.getDefineRef();
+                            if (array == null || _curEditingCardPropIndex >= array.Length)
+                            {
+                                var newArray = new DefineReference[_curEditingCardPropIndex + 1];
+                                array.CopyTo(newArray, 0);
+                                array = newArray;
+                                _cardDefine.setProp(_curEditingCardPropName, array);
+                            }
+                            array[_curEditingCardPropIndex] = defRef;
+                        }
+                        else
+                        {
+                            _cardDefine.setProp(_curEditingCardPropName, cardDefine.getDefineRef());
+                        }
+                        updateCustomPropertyItem(_curEditingCardPropName);
+                        _curEditingCardPropName = null;
+                        _curEditingCardPropIndex = -1;
+                        MarkCardUnsaved();
+                    }
+                    break;
             }
             _ui.displayCardSelectPanel(false);
+        }
+
+        private void onConfirmCreateCustomPropertyCallback(CardPropertyItem item)
+        {
+            if (string.IsNullOrEmpty(item.propertyName))
+            {
+                string errorMessage = game.lang._(CARD_CUSTOM_PROP_NAME_EMPTY);
+                _ui.showCustomPropertyDialogError(errorMessage);
+                return;
+            }
+            if (isPropertyNameTaken(item.propertyName))
+            {
+                string errorMessage = game.lang._(CARD_CUSTOM_PROP_NAME_TAKEN);
+                _ui.showCustomPropertyDialogError(errorMessage);
+                return;
+            }
+
+            if (item.value == null)
+            {
+                item.value = getDefaultValue(item.type, item.isArray);
+            }
+            _cardDefine.setProp(item.propertyName, item.value);
+
+            MarkCardUnsaved();
+            updateCustomProperties();
+            _ui.displayCustomPropertyDialog(false);
+        }
+        private void onCustomPropertyItemValueChangedCallback(string name, int index, object value)
+        {
+            var prop = _cardDefine.getProp<object>(name);
+            if (prop is Array array)
+            {
+                array.SetValue(value, index);
+                MarkCardUnsaved();
+                updateCustomPropertyItem(name);
+            }
+        }
+        private async void onClickCustomPropertyItemButtonCallback(string name, int index)
+        {
+            var prop = _cardDefine.getProp<DefineReference[]>(name);
+            if (prop != null)
+            {
+                //打开卡牌选择界面
+                long poolId = _cardPoolId;
+                bool hideBuiltinCards = true;
+                var define = prop?[index];
+                if (define != null && define.defineId != 0)
+                {
+                    poolId = define.cardPoolId;
+                }
+                if (game.card.isBuiltinCardPool(poolId))
+                {
+                    hideBuiltinCards = false;
+                }
+                await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: card => true);
+                _ui.displayCardSelectPanel(true);
+                _cardSelectTarget = CardSelectTarget.Property;
+                _curEditingCardPropName = name;
+                _curEditingCardPropIndex = index;
+            }
+        }
+        private void onClickCustomPropertyAddItemButtonCallback(string name)
+        {
+            var array = _cardDefine.getProp<Array>(name);
+            if (array != null)
+            {
+                var arrayType = array.GetType();
+                var elementType = arrayType.GetElementType();
+                if (elementType == null)
+                    return;
+                var newArray = Array.CreateInstance(elementType, array.Length + 1);
+                array.CopyTo(newArray, 0);
+
+
+                if (_customPropTypeDict.TryGetValue(elementType, out var key))
+                {
+                    newArray.SetValue(getDefaultValue(key, false), newArray.Length - 1);
+                }
+                _cardDefine.setProp(name, newArray);
+                MarkCardUnsaved();
+                updateCustomPropertyItem(name);
+            }
+        }
+
+        private void onClickCustomPropertyRemoveItemButtonCallback(string name, int index)
+        {
+            var array = _cardDefine.getProp<Array>(name);
+            if (array != null)
+            {
+                var arrayType = array.GetType();
+                var elementType = arrayType.GetElementType();
+                if (elementType == null)
+                    return;
+                var newArray = Array.CreateInstance(elementType, array.Length - 1);
+                int newIndex = 0;
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (i == index)
+                        continue;
+                    newArray.SetValue(array.GetValue(i), newIndex);
+                    newIndex++;
+                }
+                _cardDefine.setProp(name, newArray);
+                MarkCardUnsaved();
+                updateCustomPropertyItem(name);
+            }
+        }
+        private void onCustomPropertyValueChangedCallback(string name, object value)
+        {
+            var prop = _cardDefine.getProp<object>(name);
+            if (prop is Array array)
+            {
+                array.SetValue(value, 0);
+            }
+            else
+            {
+                _cardDefine.setProp(name, value);
+            }
+            MarkCardUnsaved();
+            updateCustomPropertyItem(name);
+        }
+        private async void onClickCustomPropertyButtonCallback(string name)
+        {
+            var prop = _cardDefine.getProp<DefineReference>(name);
+            if (prop != null)
+            {
+                //打开卡牌选择界面
+                long poolId = _cardPoolId;
+                bool hideBuiltinCards = true;
+                if (prop.defineId != 0)
+                {
+                    poolId = prop.cardPoolId;
+                }
+                if (game.card.isBuiltinCardPool(poolId))
+                {
+                    hideBuiltinCards = false;
+                }
+                await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: card => true);
+                _ui.displayCardSelectPanel(true);
+                _cardSelectTarget = CardSelectTarget.Property;
+                _curEditingCardPropName = name;
+                _curEditingCardPropIndex = -1;
+            }
+        }
+        
+        private void onDeleteCustomPropertyCallback(string name)
+        {
+            _cardDefine.removeProp(name);
+            MarkCardUnsaved();
+            updateCustomProperties();
         }
         #endregion
 
@@ -558,11 +751,6 @@ namespace Controllers
         }
         #endregion
 
-        private enum CardSelectTarget
-        {
-            None,
-            Skill
-        }
 
         private void updateSkinNames()
         {
@@ -640,6 +828,118 @@ namespace Controllers
             hasUnsavedChanges = false;
         }
 
+        #region 自定义属性
+        private void updateCustomProperties()
+        {
+            var items = GetCardDefineCustomProps();
+            _ui.updateCustomProperties(items, game.card);
+        }
+        private void updateCustomPropertyItem(string name)
+        {
+            var item = GetCardDefineCustomProperty(name);
+            _ui.updateCustomPropertyItem(name, item, game.card);
+        }
+        private CardPropertyItem[] GetCardDefineCustomProps()
+        {
+            var names = _cardDefine.getPropNames();
+            List<CardPropertyItem> items = new List<CardPropertyItem>();
+            foreach (string name in names)
+            {
+                var item = GetCardDefineCustomProperty(name);
+                if (item == null)
+                    continue;
+                items.Add(item);
+            }
+            return items.ToArray();
+        }
+        private CardPropertyItem GetCardDefineCustomProperty(string name)
+        {
+            if (isPropertyNameBuiltin(name))
+            {
+                return null;
+            }
+
+            var value = _cardDefine[name];
+            if (value == null)
+                return null;
+
+            bool isArray = false;
+            var valueType = value.GetType();
+            if (valueType.IsArray)
+            {
+                valueType = valueType.GetElementType();
+                isArray = true;
+            }
+            // 防止出现什么Array类型的参数，GetElementType会返回null。
+            if (valueType == null)
+                return null;
+
+            if (!_customPropTypeDict.TryGetValue(valueType, out CardPropertyValueType type))
+                return null;
+
+            var item = new CardPropertyItem(name, type, isArray)
+            {
+                value = value
+            };
+            return item;
+        }
+        private object getDefaultValue(CardPropertyValueType valueType, bool isArray)
+        {
+            if (_customPropDefaultValues.TryGetValue(valueType, out var func))
+            {
+                var value = func();
+                if (isArray)
+                {
+                    Type type = null;
+                    foreach (var pair in _customPropTypeDict)
+                    {
+                        if (pair.Value == valueType)
+                        {
+                            type = pair.Key;
+                            break;
+                        }
+                    }
+                    if (type == null)
+                        return null;
+                    var array = Array.CreateInstance(type, 1);
+                    array.SetValue(value, 0);
+                    return array;
+                }
+                else
+                {
+                    return value;
+                }
+            }
+            return null;
+        }
+        /// <summary>
+        /// 属性名是否已经被使用。
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private bool isPropertyNameTaken(string name)
+        {
+            if (_cardDefine.hasProp(name) && _cardDefine.getProp<object>(name) != null)
+                return true;
+            return isPropertyNameBuiltin(name);
+        }
+        /// <summary>
+        /// 属性名是否是内置属性。
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static bool isPropertyNameBuiltin(string name)
+        {
+            return takenPropNames.Contains(name);
+        }
+        #endregion
+        private enum CardSelectTarget
+        {
+            None,
+            Skill,
+            Property
+        }
+
         [Obsolete]
         public IAppManager app { get; }
         [Obsolete]
@@ -659,6 +959,10 @@ namespace Controllers
         public const string CARD_WARNING_OPTION_SAVE = "保存";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
         public const string CARD_WARNING_OPTION_CANCEL = "取消";
+        [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
+        public const string CARD_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
+        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
+        public const string CARD_CUSTOM_PROP_NAME_EMPTY = "请输入属性名！";
 
         private CardSelectTarget _cardSelectTarget;
         public bool hasUnsavedChanges { get; private set; }
@@ -707,9 +1011,91 @@ namespace Controllers
             StringTable.GAME_KEYWORD_PERMANENT_FROZEN,
             StringTable.GAME_KEYWORD_CAN_BE_CHARGED
         };
+
+        public static readonly string[] piles = new string[]
+        {
+            PILE.FIELD,
+            PILE.HAND,
+            PILE.DECK,
+            PILE.GRAVE,
+            PILE.MASTER,
+            PILE.SKILL,
+            PILE.ITEM,
+            PILE.HEAD
+        };
+        public static readonly string[] pileNames = new string[]
+        {
+            StringTable.GAME_FIELD,
+            StringTable.GAME_HAND,
+            StringTable.GAME_DECK,
+            StringTable.GAME_GRAVE,
+            StringTable.GAME_MASTER,
+            StringTable.GAME_SKILL,
+            StringTable.GAME_ITEM,
+            StringTable.GAME_DELAY
+        };
+
+        private static readonly (CardPropertyValueType type, string name)[] _customPropTypes = 
+            new (CardPropertyValueType type, string name)[]
+        {
+            (CardPropertyValueType.integer, StringTable.EDITOR_TYPE_NAME_INT),
+            (CardPropertyValueType.boolean, StringTable.EDITOR_TYPE_NAME_BOOL),
+            (CardPropertyValueType.text, StringTable.EDITOR_TYPE_NAME_STRING),
+            (CardPropertyValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE),
+            (CardPropertyValueType.pile, StringTable.EDITOR_TYPE_NAME_PILE),
+            (CardPropertyValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE),
+        };
+        private static readonly Dictionary<Type, CardPropertyValueType> _customPropTypeDict = new Dictionary<Type, CardPropertyValueType>()
+        {
+            { typeof(int), CardPropertyValueType.integer },
+            { typeof(bool), CardPropertyValueType.boolean },
+            { typeof(string), CardPropertyValueType.text },
+            { typeof(DefineReference), CardPropertyValueType.cardReference },
+            { typeof(PileNameCollection), CardPropertyValueType.pile },
+            { typeof(KeywordCollection), CardPropertyValueType.keywords },
+        };
+        private static readonly Dictionary<CardPropertyValueType, Func<object>> _customPropDefaultValues = new Dictionary<CardPropertyValueType, Func<object>>()
+        {
+            { CardPropertyValueType.integer, () => 0},
+            { CardPropertyValueType.boolean, () => false },
+            { CardPropertyValueType.text, () => string.Empty },
+            { CardPropertyValueType.cardReference, () => new DefineReference() },
+            { CardPropertyValueType.pile, () => new PileNameCollection() },
+            { CardPropertyValueType.keywords, () => new KeywordCollection() },
+        };
+
+
+        public static readonly string[] takenPropNames = new string[]
+        {
+            DEFINE.CHARACTER_ID,
+            DEFINE.LIFE,
+            DEFINE.ISTOKEN,
+            DEFINE.COST,
+            DEFINE.ATTACK,
+            DEFINE.SPELL_DAMAGE,
+            DEFINE.KEYWORDS,
+            DEFINE.TAGS,
+            DEFINE.CARD_PROP_SKILL_ID,
+            DEFINE.CARD_PROP_SKILL_REF,
+            CARD.ISDEAD,
+            CARD.CURRENT_LIFE,
+            CARD.ARMOR,
+            CARD.SILENCE,
+            CARD.ISDEAD,
+            CARD.ISREADY,
+            CARD.ATTACK_TIMES
+        };
         string[] _races;
         string[] _tags;
         long _cardPoolId;
+        /// <summary>
+        /// 当前正在选择的卡牌引用属性的属性名称。
+        /// </summary>
+        string _curEditingCardPropName;
+        /// <summary>
+        /// 当前正在选择的卡牌引用属性的列表索引。
+        /// </summary>
+        int _curEditingCardPropIndex;
         /// <summary>
         /// 正在编辑的卡牌定义。
         /// </summary>

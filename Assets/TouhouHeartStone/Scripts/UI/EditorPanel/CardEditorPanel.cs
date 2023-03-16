@@ -8,6 +8,7 @@ using Game;
 using System.Threading.Tasks;
 using TouhouHeartstone;
 using TouhouCardEngine;
+using Controllers;
 
 namespace UI
 {
@@ -278,6 +279,79 @@ namespace UI
             _cardPoolViewPanelObj.SetActive(display);
         }
 
+        public void setCustomPropertyTypes((CardPropertyValueType type, string name)[] types)
+        {
+            _createCustomPropDialog.setTypes(types);
+        }
+        public void displayCustomPropertyDialog(bool display)
+        {
+            if (display)
+            {
+                _createCustomPropDialog.display();
+            }
+            else
+            {
+                _createCustomPropDialog.hide();
+            }
+        }
+        public void updateCustomProperties(CardPropertyItem[] items, CardManager cardManager)
+        {
+            int count = items.Length;
+            BJSYGameCore.UI.UIHelper.updateList(_customPropertiesRoot, _customPropertyItemTemplate, _customPropertyItemList, count, async (i, rect) =>
+            {
+                CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
+                await item.updateItem(items[i], cardManager);
+            },
+            rect =>
+            {
+                CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
+                item.setPiles(CardEditorCtrl.pileNames, CardEditorCtrl.piles);
+                item.setKeywords(CardEditorCtrl.keywordNames, CardEditorCtrl.keywords);
+                item.onClickItemButton += onClickCustomPropertyItemButtonCallback;
+                item.onItemValueChanged += onCustomPropertyItemValueChangedCallback;
+                item.onClickButton += onClickCustomPropertyButtonCallback;
+                item.onValueChanged += onCustomPropertyValueChangedCallback;
+                item.onClickDelete += onDeleteCustomPropertyCallback;
+                item.onClickAddItemButton += onClickCustomPropertyAddItemButtonCallback;
+                item.onClickRemoveItemButton += onClickCustomPropertyRemoveItemButtonCallback;
+            },
+            rect =>
+            {
+                CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
+                item.onClickItemButton -= onClickCustomPropertyItemButtonCallback;
+                item.onItemValueChanged -= onCustomPropertyItemValueChangedCallback;
+                item.onClickButton -= onClickCustomPropertyButtonCallback;
+                item.onValueChanged -= onCustomPropertyValueChangedCallback;
+                item.onClickDelete -= onDeleteCustomPropertyCallback;
+                item.onClickAddItemButton -= onClickCustomPropertyAddItemButtonCallback;
+                item.onClickRemoveItemButton -= onClickCustomPropertyRemoveItemButtonCallback;
+            });
+        }
+
+        public async void updateCustomPropertyItem(string name, CardPropertyItem item, CardManager cardManager)
+        {
+            CardPropertyListItem listItem = null;
+            foreach (var rect in _customPropertyItemList)
+            {
+                if (rect == null)
+                    continue;
+                var i = rect.GetComponent<CardPropertyListItem>();
+                if (i == null)
+                    continue;
+                if (i.propertyName == name)
+                {
+                    listItem = i;
+                    break;
+                }
+            }
+            if (listItem == null)
+                return;
+            await listItem.updateItem(item, cardManager);
+        }
+        public void showCustomPropertyDialogError(string message)
+        {
+            _createCustomPropDialog.showErrorTip(message);
+        }
         #region 私有方法
         #region 生命周期
         protected void Awake()
@@ -341,6 +415,10 @@ namespace UI
             _basicPageButton.onClick.AddListener(() => displayPage(_basicPage));
             _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage));
             _skinPageButton.onClick.AddListener(() => displayPage(_skinPage));
+
+            // Custom Properties.
+            _addCustomPropertyButton.onClick.AddListener(() => displayCustomPropertyDialog(true));
+            _createCustomPropDialog.onConfirm += item => onConfirmCreateCustomProperty?.Invoke(item);
         }
         #endregion
         #region 事件回调
@@ -602,6 +680,34 @@ namespace UI
         {
             onClickSkillRefButton?.Invoke();
         }
+        private void onClickCustomPropertyItemButtonCallback(string name, int index)
+        {
+            onClickCustomPropertyItemButton?.Invoke(name, index);
+        }
+        private void onCustomPropertyItemValueChangedCallback(string name, int index, object value)
+        {
+            onCustomPropertyItemValueChanged?.Invoke(name, index, value);
+        }
+        private void onClickCustomPropertyAddItemButtonCallback(string name)
+        {
+            onClickCustomPropertyAddItemButton?.Invoke(name);
+        }
+        private void onClickCustomPropertyRemoveItemButtonCallback(string name, int index)
+        {
+            onClickCustomPropertyRemoveItemButton?.Invoke(name, index);
+        }
+        private void onClickCustomPropertyButtonCallback(string name)
+        {
+            onClickCustomPropertyButton?.Invoke(name);
+        }
+        private void onCustomPropertyValueChangedCallback(string name, object value)
+        {
+            onCustomPropertyValueChanged?.Invoke(name, value);
+        }
+        private void onDeleteCustomPropertyCallback(string name)
+        {
+            onDeleteCustomProperty?.Invoke(name);
+        }
         #endregion
 
         private void displayPage(GameObject toDisplay)
@@ -709,6 +815,20 @@ namespace UI
         /// 当点击选择技能按钮
         /// </summary>
         public event Action onClickSkillRefButton;
+
+
+        /// <summary>
+        /// 当确认创建自定义属性。
+        /// </summary>
+        public event Action<CardPropertyItem> onConfirmCreateCustomProperty;
+
+        public event Action<string, int> onClickCustomPropertyItemButton;
+        public event Action<string, int, object> onCustomPropertyItemValueChanged;
+        public event Action<string> onClickCustomPropertyButton;
+        public event Action<string, object> onCustomPropertyValueChanged;
+        public event Action<string> onDeleteCustomProperty;
+        public event Action<string> onClickCustomPropertyAddItemButton;
+        public event Action<string, int> onClickCustomPropertyRemoveItemButton;
         #endregion
         public Card card => _card;
         [SerializeField]
@@ -803,6 +923,17 @@ namespace UI
         GameObject _propertyPage;
         [SerializeField]
         GameObject _skinPage;
+
+        [Header("Custom Properties")]
+        [SerializeField]
+        Button _addCustomPropertyButton;
+        [SerializeField]
+        CreateCustomPropertyDialog _createCustomPropDialog;
+        [SerializeField]
+        RectTransform _customPropertiesRoot;
+        [SerializeField]
+        RectTransform _customPropertyItemTemplate;
+        private List<RectTransform> _customPropertyItemList = new List<RectTransform>();
 
         public Button EditNameButton
         {
