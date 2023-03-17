@@ -86,23 +86,6 @@ namespace UI
         {
             _spellDamageInputField.SetTextWithoutNotify(value.ToString());
         }
-        /// <summary>
-        /// 初始化可选的卡牌关键词
-        /// </summary>
-        /// <param name="keywords"></param>
-        public void initKeywords(string[] keywords)
-        {
-            _keywordsDropdown.ClearOptions();
-            _keywordsDropdown.AddOptions(new List<string>(keywords));
-        }
-        /// <summary>
-        /// 设置卡牌关键词的选择状态
-        /// </summary>
-        /// <param name="value"></param>
-        public void setKeywords(bool[] value)
-        {
-            _keywordsDropdown.SetValueWithoutNotify(value);
-        }
         public void initTags(string[] tagNames)
         {
             //_noRaceTagDropdown.ClearOptions();
@@ -278,6 +261,15 @@ namespace UI
         {
             _cardPoolViewPanelObj.SetActive(display);
         }
+        public void updateKeywords(CardPropertyItem[] items, CardManager cardManager)
+        {
+            _keywordsFoldout.updateItems(items, cardManager);
+        }
+
+        public async void updateKeywordItem(string name, CardPropertyItem item, CardManager cardManager)
+        {
+            await _keywordsFoldout.updateItem(name, item, cardManager);
+        }
 
         public void setCustomPropertyTypes((ActionNodeValueType type, string name)[] types)
         {
@@ -306,7 +298,7 @@ namespace UI
             {
                 CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
                 item.setPiles(CardEditorCtrl.pileNames, CardEditorCtrl.piles);
-                item.setKeywords(CardEditorCtrl.keywordNames, CardEditorCtrl.keywords);
+                item.setKeywords(CardEditorCtrl.getKeywordNames(), CardEditorCtrl.getKeywords());
                 item.onClickItemButton += onClickCustomPropertyItemButtonCallback;
                 item.onItemValueChanged += onCustomPropertyItemValueChangedCallback;
                 item.onClickButton += onClickCustomPropertyButtonCallback;
@@ -362,7 +354,6 @@ namespace UI
             _skillRef.onClick += onSkillIDInputFieldEndEdit;
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
             _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
-            _keywordsDropdown.onValueChanged.AddListener(onKeywordsDropdownValueChanged);
             //_noRaceTagDropdown.onValueChanged.AddListener(onNoRaceTagDropdownValueChangedCallback);
             _skinDropdown.gameObject.SetActive(true);
             _skinDropdown.onValueChanged.AddListener(onSkinDropdownValueChanged);
@@ -419,6 +410,15 @@ namespace UI
             // Custom Properties.
             _addCustomPropertyButton.onClick.AddListener(() => displayCustomPropertyDialog(true));
             _createCustomPropDialog.onConfirm += item => onConfirmCreateCustomProperty?.Invoke(item);
+
+            // Keywords.
+            _keywordsFoldout.onClickPropButton += onClickKeywordButtonCallback;
+            _keywordsFoldout.onPropValueChanged += onKeywordValueChangedCallback;
+
+            _keywordsFoldout.onClickPropChildButton += onClickKeywordItemButtonCallback;
+            _keywordsFoldout.onPropChildValueChanged += onKeywordItemValueChangedCallback;
+            _keywordsFoldout.onClickPropAddChildButton += onClickKeywordAddItemButtonCallback;
+            _keywordsFoldout.onClickPropRemoveChildButton += onClickKeywordRemoveItemButtonCallback;
         }
         #endregion
         #region 事件回调
@@ -430,10 +430,6 @@ namespace UI
         private void onIsTokenToggleValueChangedCallback(bool value)
         {
             onIsTokenToggleValueChanged?.Invoke(value);
-        }
-        private void onKeywordsDropdownValueChanged(bool[] value)
-        {
-            onChangeKeywords?.Invoke(value);
         }
         private void onNoRaceTagDropdownValueChangedCallback(bool[] value)
         {
@@ -680,34 +676,64 @@ namespace UI
         {
             onClickSkillRefButton?.Invoke();
         }
+
+        #region 关键词
+        private void onClickKeywordItemButtonCallback(string name, int index)
+        {
+            onClickPropertyItemButton?.Invoke(false, name, index);
+        }
+        private void onKeywordItemValueChangedCallback(string name, int index, object value)
+        {
+            onPropertyItemValueChanged?.Invoke(false, name, index, value);
+        }
+        private void onClickKeywordAddItemButtonCallback(string name)
+        {
+            onClickPropertyAddItemButton?.Invoke(false, name);
+        }
+        private void onClickKeywordRemoveItemButtonCallback(string name, int index)
+        {
+            onClickPropertyRemoveItemButton?.Invoke(false, name, index);
+        }
+        private void onClickKeywordButtonCallback(string name)
+        {
+            onClickPropertyButton?.Invoke(false, name);
+        }
+        private void onKeywordValueChangedCallback(string name, object value)
+        {
+            onPropertyValueChanged?.Invoke(false, name, value);
+        }
+        #endregion
+
+        #region 自定义属性
         private void onClickCustomPropertyItemButtonCallback(string name, int index)
         {
-            onClickCustomPropertyItemButton?.Invoke(name, index);
+            onClickPropertyItemButton?.Invoke(true, name, index);
         }
         private void onCustomPropertyItemValueChangedCallback(string name, int index, object value)
         {
-            onCustomPropertyItemValueChanged?.Invoke(name, index, value);
+            onPropertyItemValueChanged?.Invoke(true, name, index, value);
         }
         private void onClickCustomPropertyAddItemButtonCallback(string name)
         {
-            onClickCustomPropertyAddItemButton?.Invoke(name);
+            onClickPropertyAddItemButton?.Invoke(true, name);
         }
         private void onClickCustomPropertyRemoveItemButtonCallback(string name, int index)
         {
-            onClickCustomPropertyRemoveItemButton?.Invoke(name, index);
+            onClickPropertyRemoveItemButton?.Invoke(true, name, index);
         }
         private void onClickCustomPropertyButtonCallback(string name)
         {
-            onClickCustomPropertyButton?.Invoke(name);
+            onClickPropertyButton?.Invoke(true, name);
         }
         private void onCustomPropertyValueChangedCallback(string name, object value)
         {
-            onCustomPropertyValueChanged?.Invoke(name, value);
+            onPropertyValueChanged?.Invoke(true, name, value);
         }
         private void onDeleteCustomPropertyCallback(string name)
         {
             onDeleteCustomProperty?.Invoke(name);
         }
+        #endregion
         #endregion
 
         private void displayPage(GameObject toDisplay)
@@ -741,10 +767,6 @@ namespace UI
         /// </summary>
         public event Action<int> onChangeType;
         public event Action<bool> onIsTokenToggleValueChanged;
-        /// <summary>
-        /// 当卡牌的关键词发生改变，参数为更改后的关键词选择状态。
-        /// </summary>
-        public event Action<bool[]> onChangeKeywords;
         /// <summary>
         /// 当更换所属角色，参数为更换角色索引。
         /// </summary>
@@ -816,19 +838,20 @@ namespace UI
         /// </summary>
         public event Action onClickSkillRefButton;
 
-
+        #region Properties
         /// <summary>
         /// 当确认创建自定义属性。
         /// </summary>
         public event Action<CardPropertyItem> onConfirmCreateCustomProperty;
-
-        public event Action<string, int> onClickCustomPropertyItemButton;
-        public event Action<string, int, object> onCustomPropertyItemValueChanged;
-        public event Action<string> onClickCustomPropertyButton;
-        public event Action<string, object> onCustomPropertyValueChanged;
+        public event Action<bool, string, int> onClickPropertyItemButton;
+        public event Action<bool, string, int, object> onPropertyItemValueChanged;
+        public event Action<bool, string> onClickPropertyButton;
+        public event Action<bool, string, object> onPropertyValueChanged;
         public event Action<string> onDeleteCustomProperty;
-        public event Action<string> onClickCustomPropertyAddItemButton;
-        public event Action<string, int> onClickCustomPropertyRemoveItemButton;
+        public event Action<bool, string> onClickPropertyAddItemButton;
+        public event Action<bool, string, int> onClickPropertyRemoveItemButton;
+        #endregion
+
         #endregion
         public Card card => _card;
         [SerializeField]
@@ -844,7 +867,7 @@ namespace UI
         [SerializeField]
         BuildDeckListItem _skillRef;
         [SerializeField]
-        MultiSelectDropdown _keywordsDropdown;
+        CardPropertiesFoldout _keywordsFoldout;
         [SerializeField]
         InputField _spellDamageInputField;
         [SerializeField]

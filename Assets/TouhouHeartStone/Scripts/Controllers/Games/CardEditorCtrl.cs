@@ -31,12 +31,6 @@ namespace Controllers
             _ui.setType(Array.IndexOf(_types, cardDefine.type), cardDefine.type);
             _ui.setIsToken(cardDefine.isToken());
             _ui.setSpellDamage(cardDefine.getSpellDamage());
-            bool[] keywordsValue = new bool[keywords.Length];
-            for (int i = 0; i < keywordsValue.Length; i++)
-            {
-                keywordsValue[i] = cardDefine.hasKeyword(keywords[i]);
-            }
-            _ui.setKeywords(keywordsValue);
             bool[] tagsValue = new bool[_tags.Length];
             for (int i = 0; i < _tags.Length; i++)
             {
@@ -84,7 +78,9 @@ namespace Controllers
             await setCurSkinIndex(0);
             _textChangedByType();
 
-            updateCustomProperties();
+            updateProperties(true);
+            updateProperties(false);
+
         }
         #endregion
         #region 私有方法
@@ -116,8 +112,6 @@ namespace Controllers
             }
             _ui.initLanguages(languages);
             _ui.onChangeLanguage += onChangeLanguage;
-            _ui.initKeywords(Array.ConvertAll(keywordNames, s => game.langManager.getString(s)));
-            _ui.onChangeKeywords += onChangeKeywords;
             _ui.onChangeType += onChangeType;
             _ui.onIsTokenToggleValueChanged += onIsTokenToggleValueChanged;
             string[] tagNames = new string[]
@@ -182,18 +176,18 @@ namespace Controllers
             _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
             _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
 
-
-            // Custom Properties.
+            // Card Properties.
             var customPropTypes = _customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
             _ui.setCustomPropertyTypes(customPropTypes);
             _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
-            _ui.onCustomPropertyValueChanged += onCustomPropertyValueChangedCallback;
-            _ui.onClickCustomPropertyButton += onClickCustomPropertyButtonCallback;
             _ui.onDeleteCustomProperty += onDeleteCustomPropertyCallback;
-            _ui.onCustomPropertyItemValueChanged += onCustomPropertyItemValueChangedCallback;
-            _ui.onClickCustomPropertyItemButton += onClickCustomPropertyItemButtonCallback;
-            _ui.onClickCustomPropertyAddItemButton += onClickCustomPropertyAddItemButtonCallback;
-            _ui.onClickCustomPropertyRemoveItemButton += onClickCustomPropertyRemoveItemButtonCallback;
+
+            _ui.onPropertyValueChanged += onPropertyValueChangedCallback;
+            _ui.onClickPropertyButton += onClickPropertyButtonCallback;
+            _ui.onPropertyItemValueChanged += onPropertyItemValueChangedCallback;
+            _ui.onClickPropertyItemButton += onClickPropertyItemButtonCallback;
+            _ui.onClickPropertyAddItemButton += onClickPropertyAddItemButtonCallback;
+            _ui.onClickPropertyRemoveItemButton += onClickPropertyRemoveItemButtonCallback;
         }
         #endregion
         #region 事件回调
@@ -289,23 +283,6 @@ namespace Controllers
                 }
             }
             _cardDefine.setTags(tagList.ToArray());
-        }
-        /// <summary>
-        /// 当用户更改卡牌的关键词
-        /// </summary>
-        /// <param name="value"></param>
-        private void onChangeKeywords(bool[] value)
-        {
-            MarkCardUnsaved();
-            List<string> keywordList = new List<string>();
-            for (int i = 0; i < keywords.Length; i++)
-            {
-                if (value[i])
-                {
-                    keywordList.Add(keywords[i]);
-                }
-            }
-            _cardDefine.setKeywords(keywordList.ToArray());
         }
         private void onChangeCharacter(int characterIndex)
         {
@@ -533,8 +510,9 @@ namespace Controllers
             //打开卡牌选择界面
             _ui.displayCardSelectPanel(false);
             _cardSelectTarget = CardSelectTarget.None;
-            _curEditingCardPropName = null;
-            _curEditingCardPropIndex = -1;
+            _curCardSeekingPropName = null;
+            _curCardSeekingPropIndex = -1;
+            _curCardSeekingPropIsCustom = false;
         }
         private async void onClickCardPoolViewCard(CardDefine cardDefine)
         {
@@ -545,28 +523,29 @@ namespace Controllers
                     await setSkillRef(cardDefine.getDefineRef());
                     break;
                 case CardSelectTarget.Property:
-                    if (_curEditingCardPropName != null)
+                    if (_curCardSeekingPropName != null)
                     {
-                        if (_curEditingCardPropIndex >= 0)
+                        if (_curCardSeekingPropIndex >= 0)
                         {
-                            var array = _cardDefine.getProp<DefineReference[]>(_curEditingCardPropName);
+                            var array = _cardDefine.getProp<DefineReference[]>(_curCardSeekingPropName);
                             var defRef = cardDefine.getDefineRef();
-                            if (array == null || _curEditingCardPropIndex >= array.Length)
+                            if (array == null || _curCardSeekingPropIndex >= array.Length)
                             {
-                                var newArray = new DefineReference[_curEditingCardPropIndex + 1];
+                                var newArray = new DefineReference[_curCardSeekingPropIndex + 1];
                                 array.CopyTo(newArray, 0);
                                 array = newArray;
-                                _cardDefine.setProp(_curEditingCardPropName, array);
+                                setCardProp(_curCardSeekingPropIsCustom, _curCardSeekingPropName, array);
                             }
-                            array[_curEditingCardPropIndex] = defRef;
+                            array[_curCardSeekingPropIndex] = defRef;
                         }
                         else
                         {
-                            _cardDefine.setProp(_curEditingCardPropName, cardDefine.getDefineRef());
+                            setCardProp(_curCardSeekingPropIsCustom, _curCardSeekingPropName, cardDefine.getDefineRef());
                         }
-                        updateCustomPropertyItem(_curEditingCardPropName);
-                        _curEditingCardPropName = null;
-                        _curEditingCardPropIndex = -1;
+                        updatePropertyItem(_curCardSeekingPropIsCustom, _curCardSeekingPropName);
+                        _curCardSeekingPropName = null;
+                        _curCardSeekingPropIndex = -1;
+                        _curCardSeekingPropIsCustom = false;
                         MarkCardUnsaved();
                     }
                     break;
@@ -593,23 +572,23 @@ namespace Controllers
             {
                 item.value = getDefaultValue(item.type, item.isArray);
             }
-            _cardDefine.setProp(item.propertyName, item.value);
+            setCardProp(true, item.propertyName, item.value);
 
             MarkCardUnsaved();
-            updateCustomProperties();
+            updateProperties(true);
             _ui.displayCustomPropertyDialog(false);
         }
-        private void onCustomPropertyItemValueChangedCallback(string name, int index, object value)
+        private void onPropertyItemValueChangedCallback(bool isCustom, string name, int index, object value)
         {
             var prop = _cardDefine.getProp<object>(name);
             if (prop is Array array)
             {
                 array.SetValue(value, index);
                 MarkCardUnsaved();
-                updateCustomPropertyItem(name);
+                updatePropertyItem(isCustom, name);
             }
         }
-        private async void onClickCustomPropertyItemButtonCallback(string name, int index)
+        private async void onClickPropertyItemButtonCallback(bool isCustom, string name, int index)
         {
             var prop = _cardDefine.getProp<DefineReference[]>(name);
             if (prop != null)
@@ -629,11 +608,12 @@ namespace Controllers
                 await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: card => true);
                 _ui.displayCardSelectPanel(true);
                 _cardSelectTarget = CardSelectTarget.Property;
-                _curEditingCardPropName = name;
-                _curEditingCardPropIndex = index;
+                _curCardSeekingPropName = name;
+                _curCardSeekingPropIndex = index;
+                _curCardSeekingPropIsCustom = isCustom;
             }
         }
-        private void onClickCustomPropertyAddItemButtonCallback(string name)
+        private void onClickPropertyAddItemButtonCallback(bool isCustom, string name)
         {
             var array = _cardDefine.getProp<Array>(name);
             if (array != null)
@@ -650,13 +630,13 @@ namespace Controllers
                 {
                     newArray.SetValue(getDefaultValue(key, false), newArray.Length - 1);
                 }
-                _cardDefine.setProp(name, newArray);
+                setCardProp(isCustom, name, newArray);
                 MarkCardUnsaved();
-                updateCustomPropertyItem(name);
+                updatePropertyItem(isCustom, name);
             }
         }
 
-        private void onClickCustomPropertyRemoveItemButtonCallback(string name, int index)
+        private void onClickPropertyRemoveItemButtonCallback(bool isCustom, string name, int index)
         {
             var array = _cardDefine.getProp<Array>(name);
             if (array != null)
@@ -674,12 +654,12 @@ namespace Controllers
                     newArray.SetValue(array.GetValue(i), newIndex);
                     newIndex++;
                 }
-                _cardDefine.setProp(name, newArray);
+                setCardProp(isCustom, name, newArray);
                 MarkCardUnsaved();
-                updateCustomPropertyItem(name);
+                updatePropertyItem(isCustom, name);
             }
         }
-        private void onCustomPropertyValueChangedCallback(string name, object value)
+        private void onPropertyValueChangedCallback(bool isCustom, string name, object value)
         {
             var prop = _cardDefine.getProp<object>(name);
             if (prop is Array array)
@@ -688,12 +668,12 @@ namespace Controllers
             }
             else
             {
-                _cardDefine.setProp(name, value);
+                setCardProp(isCustom, name, value);
             }
             MarkCardUnsaved();
-            updateCustomPropertyItem(name);
+            updatePropertyItem(isCustom, name);
         }
-        private async void onClickCustomPropertyButtonCallback(string name)
+        private async void onClickPropertyButtonCallback(bool isCustom, string name)
         {
             var prop = _cardDefine.getProp<DefineReference>(name);
             if (prop != null)
@@ -712,8 +692,9 @@ namespace Controllers
                 await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: card => true);
                 _ui.displayCardSelectPanel(true);
                 _cardSelectTarget = CardSelectTarget.Property;
-                _curEditingCardPropName = name;
-                _curEditingCardPropIndex = -1;
+                _curCardSeekingPropName = name;
+                _curCardSeekingPropIndex = -1;
+                _curCardSeekingPropIsCustom = isCustom;
             }
         }
         
@@ -721,7 +702,7 @@ namespace Controllers
         {
             _cardDefine.removeProp(name);
             MarkCardUnsaved();
-            updateCustomProperties();
+            updateProperties(true);
         }
         #endregion
 
@@ -741,6 +722,18 @@ namespace Controllers
                 _ui.NameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
             }
         }
+
+        private void setCardProp(bool isCustom, string name, object value)
+        {
+            if (!isCustom)
+            {
+                var keywordInfo = keywordInfos.FirstOrDefault(i => i.keywordName == name);
+                keywordInfo?.SetKeyword(_cardDefine, value);
+                return;
+            }
+            _cardDefine.setProp(name, value);
+        }
+        
         /// <summary>
         /// 返回上一个界面
         /// </summary>
@@ -829,16 +822,40 @@ namespace Controllers
             hasUnsavedChanges = false;
         }
 
-        #region 自定义属性
-        private void updateCustomProperties()
+        public static string[] getKeywords()
         {
-            var items = GetCardDefineCustomProps();
-            _ui.updateCustomProperties(items, game.card);
+            return keywordInfos.Select(i => i.keywordName).ToArray();
         }
-        private void updateCustomPropertyItem(string name)
+        public static string[] getKeywordNames()
         {
-            var item = GetCardDefineCustomProperty(name);
-            _ui.updateCustomPropertyItem(name, item, game.card);
+            return keywordInfos.Select(i => i.displayName).ToArray();
+        }
+        #region 自定义属性
+        private void updateProperties(bool isCustom)
+        {
+            if (isCustom)
+            {
+                var items = GetCardDefineCustomProps();
+                _ui.updateCustomProperties(items, game.card);
+            }
+            else
+            {
+                var item = GetCardDefineKeywordItems();
+                _ui.updateKeywords(item, game.card);
+            }
+        }
+        private void updatePropertyItem(bool isCustom, string name)
+        {
+            if (isCustom)
+            {
+                var item = GetCardDefineCustomProperty(name);
+                _ui.updateCustomPropertyItem(name, item, game.card);
+            }
+            else
+            {
+                var item = GetCardDefineKeywordItem(name);
+                _ui.updateKeywordItem(name, item, game.card);
+            }
         }
         private CardPropertyItem[] GetCardDefineCustomProps()
         {
@@ -884,6 +901,48 @@ namespace Controllers
             };
             return item;
         }
+
+        private CardPropertyItem[] GetCardDefineKeywordItems()
+        {
+            List<CardPropertyItem> items = new List<CardPropertyItem>();
+            foreach (KeywordInfo info in keywordInfos)
+            {
+                var item = GetCardDefineKeywordItem(info);
+                if (item == null)
+                    continue;
+                items.Add(item);
+            }
+            return items.ToArray();
+        }
+        private CardPropertyItem GetCardDefineKeywordItem(KeywordInfo info)
+        {
+            if (info == null)
+                return null;
+            var type = info.type;
+            bool isArray = false;
+            if (info.type.IsArray)
+            {
+                type = info.type.GetElementType();
+                isArray = true;
+            }
+            ActionNodeValueType valueType = ActionNodeValueType.boolean;
+            if (_customPropTypeDict.TryGetValue(type, out var t))
+            {
+                valueType = t;
+            }
+
+            var value = info.GetKeyword(_cardDefine);
+            var item = new CardPropertyItem(info.keywordName, game.lang._(info.displayName), valueType, isArray)
+            {
+                value = value
+            };
+            return item;
+        }
+        private CardPropertyItem GetCardDefineKeywordItem(string name)
+        {
+            return GetCardDefineKeywordItem(keywordInfos.Where(info => info.keywordName == name).FirstOrDefault());
+        }
+        
         private object getDefaultValue(ActionNodeValueType valueType, bool isArray)
         {
             if (_customPropDefaultValues.TryGetValue(valueType, out var func))
@@ -968,49 +1027,88 @@ namespace Controllers
         private CardSelectTarget _cardSelectTarget;
         public bool hasUnsavedChanges { get; private set; }
 
-        public static readonly string[] keywords = new string[]
+        private class KeywordInfo
         {
-            KEYWORD.TAUNT,
-            KEYWORD.CHARGE,
-            KEYWORD.RUSH,
-            KEYWORD.SHIELD,
-            KEYWORD.STEALTH,
-            KEYWORD.PERMANENTSTEALTH,
-            KEYWORD.DRAIN,
-            KEYWORD.POISONOUS,
-            KEYWORD.ELUSIVE,
-            KEYWORD.FROZEN,
-            KEYWORD.UNIQUE,
-            KEYWORD.AUTOCAST,
-            KEYWORD.CANTATTACK,
-            KEYWORD.WINDFURY,
-            KEYWORD.IMMUNITY,
-            KEYWORD.SECRET,
-            KEYWORD.MISSION,
-            KEYWORD.PERMANENT_FROZEN,
-            KEYWORD.CAN_BE_CHARGED
-        };
-        public static readonly string[] keywordNames = new string[]
+            public string keywordName;
+            public string displayName;
+            public Type type;
+            public Action<CardDefine, object> setPropAction { private get; set; }
+            public Func<CardDefine, object> getPropAction { private get; set; }
+
+            public KeywordInfo(string keywordName, string displayName, Type type)
+            {
+                this.keywordName = keywordName;
+                this.displayName = displayName;
+                this.type = type;
+            }
+            public void SetKeyword(CardDefine card, object value)
+            {
+                if (setPropAction != null)
+                {
+                    setPropAction(card, value);
+                }
+                else
+                {
+                    var keywords = card.getKeywords();
+                    if (value is bool boolValue && boolValue)
+                    {
+                        if (keywords == null)
+                        {
+                            keywords = new string[] { keywordName };
+                        }
+                        else if (!card.hasKeyword(keywordName))
+                        {
+                            keywords = keywords.Append(keywordName).Distinct().ToArray();
+                        }
+                    }
+                    else if (keywords != null && card.hasKeyword(keywordName))
+                    {
+                        List<string> keywordList = new List<string>(keywords);
+                        keywordList.Remove(keywordName);
+                        keywords = keywordList.ToArray();
+                    }
+                    card.setKeywords(keywords);
+                }
+            }
+            public object GetKeyword(CardDefine card)
+            {
+                if (getPropAction != null)
+                {
+                    return getPropAction(card);
+                }
+                else
+                {
+                    return card.hasKeyword(keywordName);
+                }
+            }
+        }
+
+        private static readonly KeywordInfo[] keywordInfos = new KeywordInfo[]
         {
-            StringTable.GAME_KEYWORD_TAUNT,
-            StringTable.GAME_KEYWORD_CHARGE,
-            StringTable.GAME_KEYWORD_RUSH,
-            StringTable.GAME_KEYWORD_SHIELD,
-            StringTable.GAME_KEYWORD_STEALTH,
-            StringTable.GAME_KEYWORD_PERMANENT_STEALTH,
-            StringTable.GAME_KEYWORD_DRAIN,
-            StringTable.GAME_KEYWORD_POISONOUS,
-            StringTable.GAME_KEYWORD_ELUSIVE,
-            StringTable.GAME_KEYWORD_FREEZE,
-            StringTable.GAME_KEYWORD_UNIQUE,
-            StringTable.GAME_KEYWORD_AUTOCAST,
-            StringTable.GAME_KEYWORD_CANTATTACK,
-            StringTable.GAME_KEYWORD_WINDFURY,
-            StringTable.GAME_KEYWORD_IMMUNITY,
-            StringTable.GAME_KEYWORD_SECRET,
-            StringTable.GAME_KEYWORD_MISSION,
-            StringTable.GAME_KEYWORD_PERMANENT_FROZEN,
-            StringTable.GAME_KEYWORD_CAN_BE_CHARGED
+            new KeywordInfo(KEYWORD.TAUNT, StringTable.GAME_KEYWORD_TAUNT, typeof(bool)),
+            new KeywordInfo(KEYWORD.CHARGE, StringTable.GAME_KEYWORD_CHARGE, typeof(bool)),
+            new KeywordInfo(KEYWORD.RUSH, StringTable.GAME_KEYWORD_RUSH, typeof(bool)),
+            new KeywordInfo(KEYWORD.SHIELD, StringTable.GAME_KEYWORD_SHIELD, typeof(bool)),
+            new KeywordInfo(KEYWORD.STEALTH, StringTable.GAME_KEYWORD_STEALTH, typeof(bool)),
+            new KeywordInfo(KEYWORD.PERMANENTSTEALTH, StringTable.GAME_KEYWORD_PERMANENT_STEALTH, typeof(bool)),
+            new KeywordInfo(KEYWORD.DRAIN, StringTable.GAME_KEYWORD_DRAIN, typeof(bool)),
+            new KeywordInfo(KEYWORD.POISONOUS, StringTable.GAME_KEYWORD_POISONOUS, typeof(bool)),
+            new KeywordInfo(KEYWORD.ELUSIVE, StringTable.GAME_KEYWORD_ELUSIVE, typeof(bool)),
+            new KeywordInfo(KEYWORD.FROZEN, StringTable.GAME_KEYWORD_FREEZE, typeof(bool)),
+            new KeywordInfo(KEYWORD.UNIQUE, StringTable.GAME_KEYWORD_UNIQUE, typeof(bool)),
+            new KeywordInfo(KEYWORD.AUTOCAST, StringTable.GAME_KEYWORD_AUTOCAST, typeof(bool)),
+            new KeywordInfo(KEYWORD.CANTATTACK, StringTable.GAME_KEYWORD_CANTATTACK, typeof(bool)),
+            new KeywordInfo(KEYWORD.WINDFURY, StringTable.GAME_KEYWORD_WINDFURY, typeof(bool)),
+            new KeywordInfo(KEYWORD.IMMUNITY, StringTable.GAME_KEYWORD_IMMUNITY, typeof(bool)),
+            new KeywordInfo(KEYWORD.SECRET, StringTable.GAME_KEYWORD_SECRET, typeof(bool)),
+            new KeywordInfo(KEYWORD.MISSION, StringTable.GAME_KEYWORD_MISSION, typeof(bool)),
+            new KeywordInfo(KEYWORD.PERMANENT_FROZEN, StringTable.GAME_KEYWORD_PERMANENT_FROZEN, typeof(bool)),
+            new KeywordInfo(KEYWORD.CAN_BE_CHARGED, StringTable.GAME_KEYWORD_CAN_BE_CHARGED, typeof(bool)),
+            new KeywordInfo(DEFINE.SPELL_DAMAGE, StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE, typeof(int))
+            {
+                setPropAction = (card, value) => card.setSpellDamage((int)value),
+                getPropAction = (card) => card.getSpellDamage(),
+            },
         };
 
         public static readonly string[] piles = new string[]
@@ -1092,11 +1190,15 @@ namespace Controllers
         /// <summary>
         /// 当前正在选择的卡牌引用属性的属性名称。
         /// </summary>
-        string _curEditingCardPropName;
+        string _curCardSeekingPropName;
         /// <summary>
         /// 当前正在选择的卡牌引用属性的列表索引。
         /// </summary>
-        int _curEditingCardPropIndex;
+        int _curCardSeekingPropIndex;
+        /// <summary>
+        /// 当前正在选择的卡牌引用属性的卡牌属性，是否是自定义属性。
+        /// </summary>
+        bool _curCardSeekingPropIsCustom;
         /// <summary>
         /// 正在编辑的卡牌定义。
         /// </summary>

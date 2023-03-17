@@ -23,7 +23,7 @@ namespace UI
         public async Task updateItem(CardPropertyItem item, CardManager cardManager)
         {
             _name = item.propertyName;
-            _nameText.text = _name;
+            _nameText.text = item.GetDisplayName();
 
             var type = item.type;
             var value = item.value;
@@ -96,6 +96,7 @@ namespace UI
     public class CardPropertyItem
     {
         public string propertyName;
+        public string displayName;
         public ActionNodeValueType type;
         public bool isArray;
         public object value;
@@ -105,6 +106,21 @@ namespace UI
             propertyName = name;
             this.type = type;
             this.isArray = isArray;
+        }
+        public CardPropertyItem(string name, string displayName, ActionNodeValueType type, bool isArray)
+        {
+            propertyName = name;
+            this.displayName = displayName;
+            this.type = type;
+            this.isArray = isArray;
+        }
+        public string GetDisplayName()
+        {
+            if (string.IsNullOrEmpty(displayName))
+            {
+                return propertyName;
+            }
+            return displayName;
         }
     }
 }
