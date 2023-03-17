@@ -144,13 +144,14 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 1 冥想 抽一张道具牌，蓄力：使其获得耐久值+1
+    /// 2 冥想 获得2点护甲值，抽一张道具牌，蓄力：使其获得耐久度+1
     /// </summary>
     public class Meditation : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x003;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
         private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
@@ -170,6 +171,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
+            await card.getOwner().getMaster().gainArmor(game, 2);
             await card.getOwner().draw(game, c => c.isItem(), out var drawEvent);
             if (drawEvent != null)
             {
@@ -302,6 +304,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
+        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -346,7 +349,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x009;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        //public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
         private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
@@ -370,14 +373,14 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 4 樱花闪闪 使你的英雄在本回合内获得攻击力+2并对所有敌方随从进行攻击，生命值越低的越优先。
+    /// 5 樱花闪闪 使你的英雄在本回合内获得攻击力+2并对所有敌方随从进行攻击，生命值越低的越优先。
     /// </summary>
     public class CherryBlossomFlashing : SpellCardDefine
     {
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x010;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        public override int cost { get; set; } = 5;
+        //public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
         private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
@@ -413,7 +416,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        //public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
 
         private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),

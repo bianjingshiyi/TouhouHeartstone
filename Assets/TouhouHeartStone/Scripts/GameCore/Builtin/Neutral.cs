@@ -685,7 +685,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 1;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.DEATHRATTLE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override string[] tags { get; set; } = new string[] { TAG.FAIRY };
 
         private IEffect[] effects1 = new IEffect[]
@@ -990,8 +990,8 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = CATEGORY.CHARACTER_NEUTRAL | CATEGORY.SERVANT | 0x031;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 2;
+        public override int cost { get; set; } = 5;
+        public override int attack { get; set; } = 3;
         public override int life { get; set; } = 4;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.WINDFURY };
     }
@@ -1068,7 +1068,7 @@ namespace TouhouHeartstone.Builtin
     }
 
     /// <summary>
-    /// 6/2/2 十六夜咲夜 战吼：抽一张牌，使其本回合法力值消耗变为0点。
+    /// 6/3/1 十六夜咲夜 战吼：抽一张牌，使其本回合法力值消耗变为0点。
     /// </summary>
     public class IzayoiSakuya_N : ServantCardDefine
     {
@@ -1377,7 +1377,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.DEATHRATTLE };
-        public override string[] tags { get; set; } = { TAG.BEAST, TAG.BUG };
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -1693,7 +1693,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 7;
         public override int life { get; set; } = 3;
 
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.DEATHRATTLE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE, KEYWORD.RUSH, KEYWORD.DEATHRATTLE };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -2185,7 +2185,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 4;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.UNIQUE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH, KEYWORD.UNIQUE, KEYWORD.DEATHRATTLE };
         public override string[] tags { get; set; } = { TAG.GOD };
 
         private IEffect[] effects1 = new IEffect[]
@@ -2622,6 +2622,7 @@ namespace TouhouHeartstone.Builtin
         public override int attack { get; set; } = 2;
 
         public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {

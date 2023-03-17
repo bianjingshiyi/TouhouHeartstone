@@ -155,18 +155,27 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 星之仪式
-    /// 信仰对决，胜利时若为花费最大的牌抽取它，否则将一张新的星之仪式置入手牌，失败时改为下回合置入。
+    /// 信仰对决，为一个友方仆从恢复2点生命值，如果目标仍处于受伤状态，重复此法术的效果。
     /// </summary>
     public class StarRitual : SpellCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x001;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 1;
+        public override int cost { get; set; } = 0;
         public override string[] keywords { get; set; } = new string[] { KEYWORD._RevealDuel };
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new NoTargetEffect(effect)
+            //new NoTargetEffect(effect)
+            new LambdaSingleTargetEffect(async (game, card, target) =>
+            {
+                Player you = card.getOwner();
+                do
+                {
+                    await Sanae.revealDuel(you, game);
+                    await target.heal(game, card, 2);
+                } while (target.isDamage(game));
+            }, PileFlag.self | PileFlag.field)
         };
 
         public override IEffect[] getEffects()
@@ -179,31 +188,31 @@ namespace TouhouHeartstone.Builtin
             effects1 = value;
         }
 
-        static async Task effect(CardEngine game, Card card)
-        {
-            Player you = card.getOwner();
-            var duel = await Sanae.revealDuel(you, game);
-            if (duel.result)
-            {
-                if (duel.youCard.getCost(game) == you.getDeck().Select(c => c.getCost(game)).Max())
-                {
-                    you.draw(game, duel.youCard);
-                }
-                else
-                {
-                    await you.addCardToHand<StarRitual>(game);
-                }
-            }
-            else
-            {
-                you.getMaster().addBuff(game, new CodeBuff(ID,
-                    new AfterTurnStart(PileFlag.field, async (g, c, a) =>
-                    {
-                        await you.addCardToHand<StarRitual>(game);
-                        await you.getMaster().removeBuff(game, ID);
-                    })));
-            }
-        }
+        //static async Task effect(CardEngine game, Card card)
+        //{
+            //Player you = card.getOwner();
+            //var duel = await Sanae.revealDuel(you, game);
+            //if (duel.result)
+            //{
+                //if (duel.youCard.getCost(game) == you.getDeck().Select(c => c.getCost(game)).Max())
+                //{
+                    //you.draw(game, duel.youCard);
+                //}
+                //else
+                //{
+                    //await you.addCardToHand<StarRitual>(game);
+                //}
+            //}
+            //else
+            //{
+                //you.getMaster().addBuff(game, new CodeBuff(ID,
+                    //new AfterTurnStart(PileFlag.field, async (g, c, a) =>
+                    //{
+                        //await you.addCardToHand<StarRitual>(game);
+                        //await you.getMaster().removeBuff(game, ID);
+                    //})));
+            //}
+        //}
     }
 
     /// <summary>
@@ -223,11 +232,11 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.heal(game, card, 8);
-                await target.addBuff(game, new CodeBuff(ID, new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
-                        (g, c, a) =>
+                await target.addBuff(game, new CodeBuff(ID, new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field | PileFlag.master,
+                        (g, c, b, a) =>
                         {
                             return a.player == card.getOwner() && a.card.define.hasKeyword(KEYWORD._RevealDuel);
-                        },async (g, c, a) =>
+                        },async (g, c, b, a) =>
                         {
                             await target.heal(game, card, 4);
                             await target.removeBuff(game, ID);
@@ -392,7 +401,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 飞蛇
-    /// 突袭， 每当该随从受到治疗时，获得+1攻击力。
+    /// 每当有角色受到治疗后，获得+1攻击力。
     /// </summary>
     public class FlyingSnake : ServantCardDefine
     {
@@ -401,12 +410,16 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 3;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.RUSH };
         public override string[] tags { get; set; } = { TAG.BEAST };
         private IEffect[] effects1 = new IEffect[]
         {
             new THHEffectAfter<THHCard.HealEventArg>(PileFlag.field,
-                (game, card, arg) => { return arg != null && arg.cards.Any(e => e == card); },
+                (game, card, arg) => 
+                { 
+                    //return arg != null && arg.cards.Any(e => e == card); 
+                    return arg != null;
+                },
                 async (game, card, arg) => { await card.addBuff(game, new CodeBuff(ID, new AttackModifier(1))); })
         };
 
@@ -471,28 +484,38 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 被操纵的巨蛙
-    /// 嘲讽，亡语：本局对战你每揭示过一次，对所有随从造成1点伤害。
+    /// 无法攻击，每当你的回合结束后，如果有角色在本回合中受到过治疗，则随机对一个敌方仆从造成4点伤害。
     /// 我真不知道这东西该如何起名。。。。。。。
     /// </summary>
     public class ManipulatedGaintFrog : ServantCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x010;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 5;
+        public override int cost { get; set; } = 4;
         public override int attack { get; set; } = 4;
-        public override int life { get; set; } = 5;
-        public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT, KEYWORD.DEATHRATTLE };
+        public override int life { get; set; } = 4;
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT, KEYWORD.DEATHRATTLE };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CANTATTACK };
         public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new DeathRattle(ID, async (game, card, p) =>
-            {
-                int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                    .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
+            //new DeathRattle(ID, async (game, card, p) =>
+            //{
+                //int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
+                    //.OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
 
-                await game.getAllServants().damage(game, card, count);
-            })
+                //await game.getAllServants().damage(game, card, count);
+            //})
+            new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field,
+                (game, card, arg) =>
+                {
+                    return arg != null && arg.player == card.getOwner() 
+                    && game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg _).OfType<THHCard.HealEventArg>().Count()>0;
+                },
+                async (game, card, arg) => {
+                    await game.getOpponent(card.getOwner()).getField().Where(c => !c.isDead(game)).random(game).damage(game, card, 4);                    
+                })
         };
 
         public override IEffect[] getEffects()
@@ -510,39 +533,44 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 神代大蛇
-    /// 
+    /// 无法攻击，除非你在本回合中进行过<b>信仰对决</b>。
     /// </summary>
     public class OrochiOfAncientTimes : ServantCardDefine
     {
         public const int ID = Sanae.ID | CATEGORY.SERVANT | 0x012;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 9;
+        public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 6;
 
         public override int life { get; set; } = 7;
 
-        //public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CANTATTACK };
         public override string[] tags { get; set; } = { TAG.BEAST };
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),null,
-                new EventTriggeredModifierFixer<int>.ModifierFixer<HearthStoneRule.TurnEndEventArg>(
-                    (game, card, buff, arg) => card.getOwner() == arg.player,
-                    (game, card, buff, arg) => 0, null,false),
-                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
-                    (game, card, buff, arg) => card.getOwner() == arg.player,
-                    (game, card, buff, arg) =>
-                    {
-                        return game.triggers.getRecordedEvents().skipUntilLast(a => a is HearthStoneRule.TurnStartEventArg)
-                            .Any(a => a is Sanae.RevealDuelEventArg)
-                            ? -4
-                            : 0;
-                    })),
-            new LambdaSingleTargetEffect(async (g, c, t) =>
+            //new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0),null,
+                //new EventTriggeredModifierFixer<int>.ModifierFixer<HearthStoneRule.TurnEndEventArg>(
+                    //(game, card, buff, arg) => card.getOwner() == arg.player,
+                    //(game, card, buff, arg) => 0, null,false),
+                //new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
+                    //(game, card, buff, arg) => card.getOwner() == arg.player,
+                    //(game, card, buff, arg) =>
+                    //{
+                        //return game.triggers.getRecordedEvents().skipUntilLast(a => a is HearthStoneRule.TurnStartEventArg)
+                            //.Any(a => a is Sanae.RevealDuelEventArg)
+                            //? -4
+                            //: 0;
+                    //})),
+            //new LambdaSingleTargetEffect(async (g, c, t) =>
+            //{
+                //await t.kill(g);
+            //}, PileFlag.oppo | PileFlag.field)
+            new AddBuffAfter<Sanae.RevealDuelEventArg>(PileFlag.field,(g,c,a)=>
             {
-                await t.kill(g);
-            }, PileFlag.oppo | PileFlag.field)
+                return a.player == c.getOwner() && !c.containBuff(ID);
+            },new CodeBuff(ID,new KeywordsModifier(KeywordsModifier.ModifyType.remove, KEYWORD.CANTATTACK),
+                new RemoveBuffBefore<HearthStoneRule.TurnEndEventArg>(PileFlag.field,ID)))
         };
 
         public override IEffect[] getEffects()
@@ -1165,7 +1193,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x030;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 1;
         public override bool isToken { get; set; } = true;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1190,7 +1218,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x031;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 1;
         public override bool isToken { get; set; } = true;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1215,7 +1243,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x032;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 1;
         public override bool isToken { get; set; } = true;
 
         private IEffect[] effects1 = new IEffect[]
@@ -1244,7 +1272,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Sanae.ID | CATEGORY.SPELL | 0x033;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 1;
         public override bool isToken { get; set; } = true;
 
         private IEffect[] effects1 = new IEffect[]

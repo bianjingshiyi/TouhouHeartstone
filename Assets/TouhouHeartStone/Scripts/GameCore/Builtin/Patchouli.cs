@@ -741,14 +741,14 @@ namespace TouhouHeartstone.Builtin
         }
     }
     /// <summary>
-    /// 331 图书馆保卫者 战吼：你手牌中每有一张法术牌，便获得+1生命值
+    /// 321 图书馆保卫者 战吼：你手牌中每有一张法术牌，便获得+1生命值
     /// </summary>
     public class LibraryProtector : ServantCardDefine
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x017;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 3;
-        public override int attack { get; set; } = 3;
+        public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
 
@@ -1280,7 +1280,7 @@ namespace TouhouHeartstone.Builtin
     {
         public const int ID = Patchouli.ID | CATEGORY.SERVANT | 0x659;
         public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 2;
+        public override int cost { get; set; } = 3;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
         public override bool isToken { get; set; } = true;
@@ -1290,7 +1290,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[]{
             new BeforeYourTurnEnd(PileFlag.field, async(game,card,buff,arg)=>
             {
-                await game.getAllEnemies(card.getOwner()).random(game).damage(game, card, 2);
+                await game.getAllEnemies(card.getOwner()).Where(c => !c.isDead(game)).random(game).damage(game, card, 2);
             })
         };
 

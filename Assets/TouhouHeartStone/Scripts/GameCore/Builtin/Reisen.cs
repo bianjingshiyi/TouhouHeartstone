@@ -491,13 +491,13 @@ namespace TouhouHeartstone.Builtin
             if (!(card.getOwner().getSkill().define.Equals(game.getDefine<LunaticShoot_MindDropping>())))
             {
                 var arg = await THHCard.setDefine(card.getOwner().getSkill(), game,
-                    game.getDefine<LunaticShoot_MindDropping>());
+                    game.getDefine<LunaticShoot_MindDropping>(), false);
                 await card.getOwner().getSkill().addBuff(game, new CodeBuff(ID,
                     new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
                         (g, c, a) => { return a.player == c.getOwner() && a.card.isSkill(); },
                         async (g, c, a) =>
                         {
-                            await THHCard.setDefine(card.getOwner().getSkill(), game, arg.beforeDefine);
+                            await THHCard.setDefine(card.getOwner().getSkill(), game, arg.beforeDefine, false);
                         }
                     )));
             }
