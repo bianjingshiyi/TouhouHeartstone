@@ -5615,252 +5615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultImagePath: Textures/DrBoom.png
   _defaultImage: {fileID: 0}
-  _skins:
-  - _id: 8193
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u9C81\u83BD\u7684\u5996\u7CBE"
-    _subname: 
-    _image: {fileID: -8675862210698346708, guid: 5657c25c31a1fd64a87663c7399fd40e,
-      type: 3}
-    _imagePath: 
-    _desc: "\u51B2\u950B"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 1000
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u535A\u4E3D\u7075\u68A6"
-    _subname: 
-    _image: {fileID: 21300000, guid: 8af089e3e326ef2499221ac3c8d6c10b, type: 3}
-    _imagePath: 
-    _desc: 
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 2000
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u96FE\u96E8\u9B54\u7406\u6C99"
-    _subname: 
-    _image: {fileID: 21300000, guid: 613689129cc15ea40b5652e7ddc95e49, type: 3}
-    _imagePath: 
-    _desc: 
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 1001
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u53EC\u5524\u795E\u7075"
-    _subname: 
-    _image: {fileID: 21300000, guid: 2c94b7923de31904986df412e01b4618, type: 3}
-    _imagePath: 
-    _desc: "\u968F\u673A\u53EC\u5524\u4E00\u4E2A\u795E\u7075\u4E4B\u9B42\u3002"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 2001
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u661F\u5C51\u9B54\u5F39"
-    _subname: 
-    _image: {fileID: 21300000, guid: 3be03946d2ae2294c9596dfe2bbebaa4, type: 3}
-    _imagePath: 
-    _desc: 
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 1056769
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u5E78\u795E\u4E4B\u7075"
-    _subname: 
-    _image: {fileID: 21300000, guid: 6a9da23c898913b4d96859761f5fc71f, type: 3}
-    _imagePath: 
-    _desc: "\u5F53\u4F60\u7684\u56DE\u5408\u7ED3\u675F\u65F6\uFF0C\u6062\u590D\u4F60\u7684\u6240\u6709\u968F\u4ECE1\u70B9\u751F\u547D\u503C\u3002"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 1056770
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u8352\u795E\u4E4B\u7075"
-    _subname: 
-    _image: {fileID: 21300000, guid: 7bc3dc0ff9c31434aa6c9eecac4e8481, type: 3}
-    _imagePath: 
-    _desc: 
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 1056771
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u5947\u795E\u4E4B\u7075"
-    _subname: 
-    _image: {fileID: 21300000, guid: 925216c2c3ca70c4f944dfde40614267, type: 3}
-    _imagePath: 
-    _desc: "\u6CD5\u672F\u5F3A\u5EA6+1"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 1056772
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u548C\u795E\u4E4B\u7075"
-    _subname: 
-    _image: {fileID: 21300000, guid: 1889af8939a49a343b5887ec93a13760, type: 3}
-    _imagePath: 
-    _desc: "\u5632\u8BBD"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 4194304
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u5E15\u79CB\u8389\xB7\u8BFA\u857E\u59EC"
-    _subname: 
-    _image: {fileID: -1256000664291922148, guid: 89ea0aa5449eadc4ca2e02733095f2fe,
-      type: 3}
-    _imagePath: 
-    _desc: 
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 4198401
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u590F\u4E4B\u706B"
-    _subname: 
-    _image: {fileID: 21300000, guid: 4177c80cd0abaa24f9fe108b02c12447, type: 3}
-    _imagePath: 
-    _desc: "\u9020\u62101\u70B9\u4F24\u5BB3\u3002"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 4204129
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u6D2A\u6C34\u5143\u7D20"
-    _subname: 
-    _image: {fileID: -7651729995787831006, guid: d48829b649856754a972fa1dd3881db3,
-      type: 3}
-    _imagePath: 
-    _desc: "\u5632\u8BBD"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 4204128
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u6C99\u5C18\u5143\u7D20"
-    _subname: 
-    _image: {fileID: 0}
-    _imagePath: 
-    _desc: "\u7A81\u88AD"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 4204119
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u5CA9\u77F3\u5143\u7D20"
-    _subname: 
-    _image: {fileID: 3372380452410354906, guid: 27927af03cef9814ea047e9dd03356dd,
-      type: 3}
-    _imagePath: 
-    _desc: "\u5632\u8BBD\uFF0C\u65E0\u6CD5\u653B\u51FB"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 4206614
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u5927\u56FE\u4E66\u9986"
-    _subname: 
-    _image: {fileID: -4207819239759269741, guid: 02dbd37f2bfc8794f93fd7417f4dba06,
-      type: 3}
-    _imagePath: 
-    _desc: "\u53D1\u73B0\u4E00\u5F20\u724C\u5E93\u4E2D\u7684\u6CD5\u672F\uFF0C\u62BD\u8FD9\u5F20\u724C\u5E76\u4F7F\u5176\u82B1\u8D39-1\u3002"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 4202514
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u5C0F\u6076\u9B54"
-    _subname: 
-    _image: {fileID: -1565917534116930634, guid: 40ae718547bea62478890d4b8c009638,
-      type: 3}
-    _imagePath: 
-    _desc: "\u6218\u543C\uFF1A\u53D1\u73B0\u4E00\u5F20\u5893\u5730\u4E2D\u7684\u6CD5\u672F\u724C\u5E76\u5C06\u5176\u7F6E\u5165\u624B\u724C\u3002"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
-  - _id: 4204121
-    _skinId: 0
-    _illustrator: 
-    _skinName: 
-    _name: "\u7194\u5CA9\u5143\u7D20"
-    _subname: 
-    _image: {fileID: 3467367580737514401, guid: d8154a62023b5f949bf8d6902d3f8782,
-      type: 3}
-    _imagePath: 
-    _desc: "\u5632\u8BBD\uFF0C\u56DE\u5408\u7ED3\u675F\u65F6\u5BF9\u968F\u673A\u654C\u65B9\u89D2\u8272\u9020\u62102\u70B9\u4F24\u5BB3\u3002"
-    _sound_onUse: {fileID: 0}
-    _soundPath_onUse: 
-    _projectile: {fileID: 0}
-    _projectilePath: 
-    _language: 
+  _skins: []
   _externalCardPaths:
   - Cards/*.xls
   _game: {fileID: 1038691140}
@@ -6791,7 +6546,6 @@ MonoBehaviour:
       randomSeed: 0
       sortedPlayers: 
       shuffle: 1
-      allowCustomCards: 1
       timeoutForInitReplace: 30
       timeoutForTurn: 75
       startGem: 0
@@ -7507,7 +7261,6 @@ MonoBehaviour:
     randomSeed: 0
     sortedPlayers: 
     shuffle: 1
-    allowCustomCards: 1
     timeoutForInitReplace: 30
     timeoutForTurn: 75
     startGem: 0
@@ -8836,6 +8589,7 @@ MonoBehaviour:
   windowID: 1
   maxLine: 300
   collapseDefault: 1
+  realtimeWrite: 1
   collapse: 0
 --- !u!4 &1729670673
 Transform:
