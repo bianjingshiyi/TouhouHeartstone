@@ -1,9 +1,11 @@
 ﻿using BJSYGameCore.UI;
+using Game;
 using System;
 using System.Collections.Generic;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
+using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
 {
@@ -32,6 +34,18 @@ namespace UI
         public void setButtonText(string text)
         {
             _buttonText.text = text;
+        }
+        public void setCard(CardDefine cardDefine, CardSkinData skin, Sprite image)
+        {
+            if (_valueInfo.type == ActionNodeValueType.cardReference)
+            {
+                _Card.setCard(cardDefine, skin);
+                _Card.setImage(image);
+            }
+            else if (_valueInfo.type == ActionNodeValueType.cardReferenceItem)
+            {
+                _buildItem.update(cardDefine, image, skin?.name ?? string.Empty, 0);
+            }
         }
         public ValueInputField getItemAt(int index)
         {
@@ -64,6 +78,7 @@ namespace UI
             _addItemButton.onClick.AddListener(onClickAddItemButtonCallback);
             _removeItemButton.onClick.AddListener(onClickRemoveButtonCallback);
             _cardButton.onClick.AddListener(onClickCardButtonCallback);
+            _buildItem.onClick += onClickCardButtonCallback;
         }
         #region 事件回调
         private void onEndEditInputField(string text)
@@ -245,7 +260,70 @@ namespace UI
         #endregion
         private void update()
         {
+            hideAllInputFields();
             _removeItemButton.gameObject.SetActive(_isListItem);
+
+            if (_valueInfo.isArray)
+            {
+                updateArray();
+            }
+            else
+            {
+                updateInputField();
+                updateToggle();
+                updateDropdown();
+                updateMultiDropdown();
+                updateButton();
+                updateList();
+                updateCard();
+                updateCardItem();
+            }
+        }
+        private void hideAllInputFields()
+        {
+            _inputField.gameObject.SetActive(false);
+            _toggle.gameObject.SetActive(false);
+            _dropdown.gameObject.SetActive(false);
+            _multiSelectDropdown.gameObject.SetActive(false);
+            _button.gameObject.SetActive(false);
+            _listRoot.gameObject.SetActive(false);
+            _Card.gameObject.SetActive(false);
+            _buildItem.gameObject.SetActive(false);
+        }
+        private void updateArray()
+        {
+            if (_valueInfo.value is Array array)
+            {
+                var valueType = array.GetType();
+                var elementType = valueType.GetElementType();
+                if (elementType == null)
+                    return;
+                _listRoot.gameObject.SetActive(true);
+                UIHelper.updateList(_listContentRoot, _listTemplate, _list, array.Length, (i, itemRect) =>
+                {
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    item.setValueInfo(null, new ActionNodeValueInfo()
+                    {
+                        type = _valueInfo.type,
+                        value = array.GetValue(i)
+                    }, true);
+                }, itemRect =>
+                {
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    item.onValueChanged += onItemValueChangedCallback;
+                    item.onClickButton += onClickItemButtonCallback;
+                    item.onClickRemoveButton += onClickItemRemoveButtonCallback;
+                }, itemRect =>
+                {
+                    ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    item.onValueChanged -= onItemValueChangedCallback;
+                    item.onClickButton -= onClickItemButtonCallback;
+                    item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
+                });
+            }
+        }
+        private void updateInputField()
+        {
             //输入框
             if (_valueInfo.type == ActionNodeValueType.integer)
             {
@@ -271,10 +349,9 @@ namespace UI
                 else
                     _inputField.SetTextWithoutNotify(string.Empty);
             }
-            else
-            {
-                _inputField.gameObject.SetActive(false);
-            }
+        }
+        private void updateToggle()
+        {
             //勾选框
             if (_valueInfo.type == ActionNodeValueType.boolean)
             {
@@ -284,10 +361,9 @@ namespace UI
                 else
                     _toggle.SetIsOnWithoutNotify(false);
             }
-            else
-            {
-                _toggle.gameObject.SetActive(false);
-            }
+        }
+        private void updateDropdown()
+        {
             //单选下拉菜单
             if (_valueInfo.type == ActionNodeValueType.enumValue)
             {
@@ -304,10 +380,9 @@ namespace UI
                     index = 0;
                 _dropdown.SetValueWithoutNotify(index);
             }
-            else
-            {
-                _dropdown.gameObject.SetActive(false);
-            }
+        }
+        private void updateMultiDropdown()
+        {
             //多选下拉菜单
             if (_valueInfo.type == ActionNodeValueType.pileNameCollection)
             {
@@ -392,10 +467,9 @@ namespace UI
                 else
                     _multiSelectDropdown.SetValueWithoutNotify(new bool[_keywordValues.Length]);
             }
-            else
-            {
-                _multiSelectDropdown.gameObject.SetActive(false);
-            }
+        }
+        private void updateButton()
+        {
             //按钮
             if (_valueInfo.type == ActionNodeValueType.actionNode ||
                 _valueInfo.type == ActionNodeValueType.functionNode ||
@@ -404,17 +478,16 @@ namespace UI
             {
                 _button.gameObject.SetActive(true);
             }
-            else
-            {
-                _button.gameObject.SetActive(false);
-            }
+        }
+        private void updateList()
+        {
             //列表
             if (_valueInfo.type == ActionNodeValueType.triggerCollection)
             {
                 _listRoot.gameObject.SetActive(true);
                 if (_valueInfo.value is TriggerCollection triggerCollection)
                 {
-                    UIHelper.updateList(_listRoot, _listTemplate, _list, triggerCollection.Count, (i, itemRect) =>
+                    UIHelper.updateList(_listContentRoot, _listTemplate, _list, triggerCollection.Count, (i, itemRect) =>
                     {
                         ValueInputField item = itemRect.GetComponent<ValueInputField>();
                         item.setValueInfo(null, new ActionNodeValueInfo()
@@ -449,7 +522,7 @@ namespace UI
                 {
                     cardReferenceCollection = null;
                 }
-                UIHelper.updateList(_listRoot, _listTemplate, _list, cardReferenceCollection != null ? cardReferenceCollection.Length : 0, (i, itemRect) =>
+                UIHelper.updateList(_listContentRoot, _listTemplate, _list, cardReferenceCollection != null ? cardReferenceCollection.Length : 0, (i, itemRect) =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.setValueInfo(null, new ActionNodeValueInfo()
@@ -471,18 +544,21 @@ namespace UI
                     item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
                 });
             }
-            else
-            {
-                _listRoot.gameObject.SetActive(false);
-            }
+        }
+        private void updateCard()
+        {
             //卡牌
             if (_valueInfo.type == ActionNodeValueType.cardReference)
             {
                 _Card.gameObject.SetActive(true);
             }
-            else
+        }
+        private void updateCardItem()
+        {
+            //卡牌引用（长条）
+            if (_valueInfo.type == ActionNodeValueType.cardReferenceItem)
             {
-                _Card.gameObject.SetActive(false);
+                _buildItem.gameObject.SetActive(true);
             }
         }
         #endregion
@@ -496,7 +572,6 @@ namespace UI
         public event Action<ValueInputField, int> onClickItemRemoveButton;
         #endregion
         #region 属性字段
-        public Card card => _Card;
         [SerializeField]
         Text _nameText;
         [SerializeField]
@@ -513,6 +588,8 @@ namespace UI
         MultiSelectDropdown _multiSelectDropdown;
         [SerializeField]
         RectTransform _listRoot;
+        [SerializeField]
+        RectTransform _listContentRoot;
         [SerializeField]
         RectTransform _listTemplate;
         [SerializeField]
@@ -535,6 +612,8 @@ namespace UI
         private string[] _keywordValues;
         [SerializeField]
         Card _Card;
+        [SerializeField]
+        BuildDeckListItem _buildItem;
         [SerializeField]
         Button _cardButton;
         [SerializeField]

@@ -1237,6 +1237,7 @@ namespace UI
             {
                 optionalNames[i] = Enum.GetName(enumType, optionalValues[i]);
             }
+            isArray = false;
         }
         public ActionNodeValueInfo(string name, ActionNodeValueType type, object value, string[] optionalNames, object[] optionalValues)
         {
@@ -1245,12 +1246,14 @@ namespace UI
             this.value = value;
             this.optionalNames = optionalNames;
             this.optionalValues = optionalValues;
+            isArray = false;
         }
         public string name;
         public ActionNodeValueType type;
         public object value;
         public string[] optionalNames;
         public object[] optionalValues;
+        public bool isArray;
     }
     [Serializable]
     struct ActionNodeConnectionData
@@ -1333,6 +1336,10 @@ namespace UI
         /// 函数节点
         /// </summary>
         functionNode,
+        /// <summary>
+        /// 卡牌引用（外观为长条）
+        /// </summary>
+        cardReferenceItem
     }
     public enum ActionNodeConnectionType
     {

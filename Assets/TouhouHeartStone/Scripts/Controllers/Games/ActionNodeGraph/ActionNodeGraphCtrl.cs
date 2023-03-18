@@ -701,26 +701,27 @@ namespace Controllers
                 Sprite sprite = skin.image != null ?
                     skin.image :
                     await game.card.loadImage(skin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+
+                var inputField = actionNodeItem.getConstInputField(_curEditActionNodeConstIndex);
                 if (_curEditActionNodeConstItemIndex < 0)
                 {
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setCard(cardDefine, skin);
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setImage(sprite);
+                    inputField.setCard(cardDefine, skin, sprite);
                 }
                 else
                 {
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setCard(cardDefine, skin);
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setImage(sprite);
+                    var item = inputField.getItemAt(_curEditActionNodeConstItemIndex);
+                    item.setCard(cardDefine, skin, sprite);
                 }
             }
             else
             {
                 if (_curEditActionNodeConstItemIndex < 0)
                 {
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).card.setCard(null, null, false);
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).setCard(null, null, null);
                 }
                 else
                 {
-                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).card.setCard(null, null, false);
+                    actionNodeItem.getConstInputField(_curEditActionNodeConstIndex).getItemAt(_curEditActionNodeConstItemIndex).setCard(null, null, null);
                 }
             }
             OnEdited();
@@ -1194,18 +1195,18 @@ namespace Controllers
                             }
                             cardDefine = game.card.getCardDefine(ownedRef, cardReference.defineId);
                         }
+
+                        var inputField = actionNodeItem.getConstInputField(i);
                         if (cardDefine != null)
                         {
                             CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
-                            actionNodeItem.getConstInputField(i).card.setCard(cardDefine, cardSkin);
-                            Sprite sprite = cardSkin.image != null ?
-                                cardSkin.image :
+                            Sprite sprite = cardSkin.image ??
                                 await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
-                            actionNodeItem.getConstInputField(i).card.setImage(sprite);
+                            inputField.setCard(cardDefine, cardSkin, sprite);
                         }
                         else
                         {
-                            actionNodeItem.getConstInputField(i).card.isFaceup = false;
+                            inputField.setCard(null, null, null);
                         }
                     }
                     else if (constsInfo[i].type == ActionNodeValueType.cardReferenceCollection)
@@ -1220,18 +1221,17 @@ namespace Controllers
                                     var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
                                     cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
                                 }
+                                var inputField = actionNodeItem.getConstInputField(i).getItemAt(j);
                                 if (cardDefine != null)
                                 {
                                     CardSkinData cardSkin = game.card.getDefaultSkin(cardDefine);
-                                    actionNodeItem.getConstInputField(i).getItemAt(j).card.setCard(cardDefine, cardSkin);
-                                    Sprite sprite = cardSkin.image != null ?
-                                        cardSkin.image :
+                                    Sprite sprite = cardSkin.image ??
                                         await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
-                                    actionNodeItem.getConstInputField(i).getItemAt(j).card.setImage(sprite);
+                                    inputField.setCard(cardDefine, cardSkin, sprite);
                                 }
                                 else
                                 {
-                                    actionNodeItem.getConstInputField(i).getItemAt(j).card.isFaceup = false;
+                                    inputField.setCard(null, null, null);
                                 }
                             }
                         }
