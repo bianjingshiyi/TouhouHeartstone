@@ -2641,21 +2641,21 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            var recorded = game.triggers.getRecordedEvents();
-            int count = 0;
-            for (int i = recorded.Length - 1; i > 0; i--)
-            {
-                if (recorded[i] is THHCard.DeathEventArg)
-                {
-                    count++;//+= (recorded[i] as THHCard.DeathEventArg).infoDic.Count;
-                }
-
-                if (recorded[i] is HearthStoneRule.TurnStartEventArg)
-                {
-                    break;
-                }
-            }
-
+            //var recorded = game.triggers.getRecordedEvents();
+            //int count = 0;
+            //for (int i = recorded.Length - 1; i > 0; i--)
+            //{
+            //    if (recorded[i] is THHCard.DeathEventArg)
+            //    {
+            //        count++;//+= (recorded[i] as THHCard.DeathEventArg).infoDic.Count;
+            //    }
+            //    if (recorded[i] is HearthStoneRule.TurnStartEventArg)
+            //    {
+            //        break;
+            //    }
+            //}
+            int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg)
+                .OfType<THHCard.DeathEventArg>().Where(e2 => e2.card.isServant()).Count();
             await card.addBuff(game, new CodeBuff(ID, new AttackModifier(count)));
         }
     }
