@@ -415,10 +415,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BEFORE_HEAL = "治疗时";
         [TranslateMsg("编辑器中的事件类型之攻击后")]
         public const string EDITOR_EVENT_NAME_AFTER_HEAL = "治疗后";
-        [TranslateMsg("编辑器中的事件类型之死亡时")]
-        public const string EDITOR_EVENT_NAME_BEFORE_DEATH = "死亡时";
-        [TranslateMsg("编辑器中的事件类型之死亡后")]
-        public const string EDITOR_EVENT_NAME_AFTER_DEATH = "死亡后";
+        [TranslateMsg("编辑器中的事件类型之死亡/摧毀时")]
+        public const string EDITOR_EVENT_NAME_BEFORE_DEATH = "死亡/摧毀时";
+        [TranslateMsg("编辑器中的事件类型之死亡/摧毀后")]
+        public const string EDITOR_EVENT_NAME_AFTER_DEATH = "死亡/摧毀后";
         [TranslateMsg("编辑器中的事件类型之奥秘触发时")]
         public const string EDITOR_EVENT_NAME_BEFORE_SECRETTRIGGER = "奥秘触发时";
         [TranslateMsg("编辑器中的事件类型之奥秘触发后")]
