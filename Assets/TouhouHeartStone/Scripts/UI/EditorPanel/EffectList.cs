@@ -25,12 +25,33 @@ namespace UI
                 EffectListItem item = itemRect.GetComponent<EffectListItem>();
                 item.onEditButtonClick += onClickItemEditButtonCallback;
                 item.onRemoveButtonClick += onClickItemRemoveButtonCallback;
+                item.onInputFieldEndEdit += onItemInputFieldEndEditCallback;
             }, itemRect =>
             {
                 EffectListItem item = itemRect.GetComponent<EffectListItem>();
                 item.onEditButtonClick -= onClickItemEditButtonCallback;
                 item.onRemoveButtonClick -= onClickItemRemoveButtonCallback;
+                item.onInputFieldEndEdit -= onItemInputFieldEndEditCallback;
             });
+        }
+
+        public void showItemInputField(int index, string name)
+        {
+            var rect = _itemList?[index];
+            if (rect)
+            {
+                EffectListItem item = rect.GetComponent<EffectListItem>();
+                item.showInputField(name);
+            }
+        }
+        public void hideItemInputField(int index)
+        {
+            var rect = _itemList?[index];
+            if (rect)
+            {
+                EffectListItem item = rect.GetComponent<EffectListItem>();
+                item.hideInputField();
+            }
         }
         #endregion
         #region 私有方法
@@ -50,18 +71,20 @@ namespace UI
         {
             onClickItemRemoveButton?.Invoke(_itemList.IndexOf(item.transform as RectTransform));
         }
+        private void onItemInputFieldEndEditCallback(EffectListItem item, string value)
+        {
+            onItemInputFieldEndEdit?.Invoke(_itemList.IndexOf(item.transform as RectTransform), value);
+        }
         private void onClickAddEffectButtonCallback()
         {
-        }
-        private void onClickAddEffectMenuCallback(int index)
-        {
-            onClickAddEffect?.Invoke(index);
+            onClickAddEffect?.Invoke(0);
         }
         #endregion
         #region 事件
         public event Action<int> onClickItemEditButton;
         public event Action<int> onClickItemRemoveButton;
         public event Action<int> onClickAddEffect;
+        public event Action<int, string> onItemInputFieldEndEdit;
         #endregion
         #region 属性字段
         private string[] _effectListNames;

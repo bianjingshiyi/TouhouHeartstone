@@ -9,10 +9,22 @@ namespace UI
         {
             _nameText.text = name;
         }
+        public void showInputField(string value)
+        {
+            _nameInputFieldObj.SetActive(true);
+            _nameInputField.text = value;
+            _nameText.gameObject.SetActive(false);
+        }
+        public void hideInputField()
+        {
+            _nameInputFieldObj.SetActive(false);
+            _nameText.gameObject.SetActive(true);
+        }
         protected void Awake()
         {
             _editButton.onClick.AddListener(onEditButtonClickCallback);
             _removeButton.onClick.AddListener(onRemoveButtonClickCallback);
+            _nameInputField.onEndEdit.AddListener(onInputFieldEndEditCallback);
         }
         private void onEditButtonClickCallback()
         {
@@ -22,13 +34,22 @@ namespace UI
         {
             onRemoveButtonClick?.Invoke(this);
         }
+        private void onInputFieldEndEditCallback(string value)
+        {
+            onInputFieldEndEdit?.Invoke(this, value);
+        }
         public event Action<EffectListItem> onEditButtonClick;
         public event Action<EffectListItem> onRemoveButtonClick;
+        public event Action<EffectListItem, string> onInputFieldEndEdit;
         [SerializeField]
         Button _editButton;
         [SerializeField]
         Button _removeButton;
         [SerializeField]
         Text _nameText;
+        [SerializeField]
+        GameObject _nameInputFieldObj;
+        [SerializeField]
+        InputField _nameInputField;
     }
 }

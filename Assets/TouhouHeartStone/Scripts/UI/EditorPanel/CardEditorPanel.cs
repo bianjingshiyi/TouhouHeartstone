@@ -272,6 +272,14 @@ namespace UI
             await _keywordsFoldout.updateItem(name, item, cardManager);
         }
 
+        public void showEffectListItemInputField(int index, string value)
+        {
+            _effectList.showItemInputField(index, value);
+        }
+        public void hideEffectListItemInputField(int index)
+        {
+            _effectList.hideItemInputField(index);
+        }
         public void setCustomPropertyTypes((ActionNodeValueType type, string name)[] types)
         {
             _createCustomPropDialog.setTypes(types);
@@ -398,6 +406,7 @@ namespace UI
             _effectList.onClickAddEffect += onAddEffectButtonClicked;
             _effectList.onClickItemEditButton += onClickEffectListItemEditButton;
             _effectList.onClickItemRemoveButton += onClickEffectListItemRemoveButton;
+            _effectList.onItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
             _deleteCardButton.onClick.AddListener(onClickDeleteCardButtonCallback);
             _saveCardButton.onClick.AddListener(onClickSaveCardButtonCallback);
             _closeCardButton.onClick.AddListener(onClickCloseCardButtonCallback);
@@ -644,6 +653,10 @@ namespace UI
         {
             onClickRemoveEffectButton?.Invoke(index);
         }
+        private void onEffectListItemInputFieldEndEditCallback(int index, string value)
+        {
+            onEffectListItemInputFieldEndEdit?.Invoke(index, value);
+        }
         private void onAddEffectButtonClicked(int index)
         {
             onClickAddEffectMenu?.Invoke(index);
@@ -822,6 +835,10 @@ namespace UI
         /// 当点击添加效果按钮
         /// </summary>
         public event Action<int> onClickAddEffectMenu;
+        /// <summary>
+        /// 当效果标题输入框结束编辑
+        /// </summary>
+        public event Action<int, string> onEffectListItemInputFieldEndEdit;
         /// <summary>
         /// 当点击删除卡牌按钮
         /// </summary>

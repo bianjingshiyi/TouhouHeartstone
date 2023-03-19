@@ -164,8 +164,10 @@ namespace Controllers
             _ui.onChangeRace += onChangeRace;
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
-            _ui.setEffectTypes(game.card.getEffectNames());
             _ui.onClickAddEffectMenu += onClickAddEffectMenu;
+            _ui.onEffectListItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
+            _ui.setEffectTypes(game.card.getEffectNames());
+
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
@@ -414,8 +416,18 @@ namespace Controllers
 
         private void onClickEditEffectButton(int index)
         {
-            GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
-            scene.effectEditor.display(_cardPoolId, _cardDefine, effect);
+            // TODO：在加入获取当前正在查看的效果的方法时改掉这个条件。
+            if (false)
+            {
+                //GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
+                //scene.effectEditor.display(_cardPoolId, _cardDefine, effect);
+            }
+            else
+            {
+                GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
+                string name = effect?.name ?? string.Empty;
+                _ui.showEffectListItemInputField(index, name);
+            }
         }
         private void onClickRemoveEffectButton(int index)
         {
@@ -439,11 +451,26 @@ namespace Controllers
         private void onClickAddEffectMenu(int index)
         {
             MarkCardUnsaved();
-            GeneratedEffect[] effects = _cardDefine.getEffects().OfType<GeneratedEffect>().Append(game.card.createEffectByIndex(index)).ToArray();
-            _cardDefine.setEffects(effects);
-            updateEffectList(effects);
+            var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
+            var effect = game.card.createEffectByIndex(index);
+            effect.name = game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, effects.Count() + 1);
+            var effectArray = effects.Append(effect).ToArray();
+            _cardDefine.setEffects(effectArray);
+            updateEffectList(effectArray);
         }
-        
+        private void onEffectListItemInputFieldEndEditCallback(int index, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+            var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
+            GeneratedEffect effect = effects.ElementAt(index);
+            effect.name = value;
+            _ui.hideEffectListItemInputField(index);
+            updateEffectList(effects.ToArray());
+        }
+
         private void onClickDeleteCardButton()
         {
             scene.editor.hasUnsavedChanges = true;
@@ -804,7 +831,17 @@ namespace Controllers
         }
         private void updateEffectList(GeneratedEffect[] effects)
         {
-            _ui.setEffects(game.card.getEffectNames(effects));
+            string[] names = new string[effects.Length];
+            for (int i = 0; i < effects.Length; i++)
+            {
+                var effect = effects[i];
+                if (string.IsNullOrEmpty(effect.name))
+                {
+                    effect.name = game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, i + 1);
+                }
+                names[i] = effect.name;
+            }
+            _ui.setEffects(names);
         }
         private CardSkinData[] getCurrentCardSkins()
         {
@@ -1042,6 +1079,8 @@ namespace Controllers
         public const string CARD_WARNING_OPTION_SAVE = "保存";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
         public const string CARD_WARNING_OPTION_CANCEL = "取消";
+        [TranslateMsg("效果默认名称的模板（{0}为效果序号）")]
+        public const string CARD_EFFECT_DEFAULT_NAME_TEMPLATE = "效果{0}";
         [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
         public const string CARD_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
         [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
