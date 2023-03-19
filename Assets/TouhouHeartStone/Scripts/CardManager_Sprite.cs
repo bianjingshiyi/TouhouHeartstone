@@ -28,7 +28,7 @@ namespace Game
                 {
                     if (path != null)
                     {
-                        Sprite sprite = await getSpriteFromCache(path);
+                        Sprite sprite = getSpriteFromCache(path);
                         if (sprite == null)
                         {
                             Texture2D orig = NativeGallery.LoadImageAtPath(path, markTextureNonReadable: false);
@@ -61,32 +61,42 @@ namespace Game
                 }, false);
                 if (paths == null || paths.Length < 1)
                 {
+                    Debug.Log($"没有选择文件");
                     return Task.FromResult<Sprite>(null);
                 }
                 string path = paths[0];
-                UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path);
-                uwr.SendWebRequest().completed += async op =>
+
+                if (!File.Exists(path))
                 {
-                    if (uwr.isNetworkError || uwr.isHttpError)
+                    Debug.Log($"选择的文件 {path} 不存在");
+                    return Task.FromResult<Sprite>(null);
+                }
+
+                Sprite sprite = getSpriteFromCache(path);
+                if (sprite == null)
+                {
+                    try
                     {
-                        tcs.SetException(new IOException("读取图片发生异常：" + uwr.error));
-                    }
-                    else
-                    {
-                        Sprite sprite = await getSpriteFromCache(path);
-                        if (sprite == null)
+                        Texture2D orig = new Texture2D(2, 2);
+                        bool success = orig.LoadImage(File.ReadAllBytes(path));
+                        if (!success)
                         {
-                            Texture2D orig = DownloadHandlerTexture.GetContent(uwr);
-                            var texture = ResizeAndCropImage(orig, width, height);
-                            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
-                            //缓存外部图片
-                            addSpriteToCache(path, sprite);
+                            Debug.Log($"文件 {path} 读取出错");
+                            return Task.FromResult<Sprite>(null);
                         }
-                        //更改贴图路径为外部文件路径
-                        tcs.SetResult(sprite);
+                        var texture = ResizeAndCropImage(orig, width, height);
+                        sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * .5f);
+                        //缓存外部图片
+                        addSpriteToCache(path, sprite);
                     }
-                    uwr.Dispose();
-                };
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                        return Task.FromException<Sprite>(e);
+                    }
+                }
+                //更改贴图路径为外部文件路径
+                tcs.SetResult(sprite);
             }
             return tcs.Task;
         }
@@ -115,12 +125,6 @@ namespace Game
                 if (pair.Value is Sprite sprite)
                 {
                     //是Sprite，啥也不做
-                }
-                else if (pair.Value is Task<Sprite> task)
-                {
-                    //保存还在加载的图片
-                    //虽然这种情况不太可能，但是还是加上去吧
-                    sprite = await task;
                 }
                 else
                 {
@@ -252,7 +256,7 @@ namespace Game
             {
                 return null;
             }
-            Sprite sprite = await getSpriteFromCache(path);
+            Sprite sprite = getSpriteFromCache(path);
             if (sprite != null)
             {
                 //存在缓存，直接返回缓存
@@ -373,18 +377,13 @@ namespace Game
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public Task<Sprite> getSpriteFromCache(string path)
+        public Sprite getSpriteFromCache(string path)
         {
-            if (_externalSpriteCacheDict.TryGetValue(path, out object value))
+            if (_externalSpriteCacheDict.TryGetValue(path, out var value))
             {
-                if (value is Sprite)
-                {
-                    return Task.FromResult(value as Sprite);
-                }
-                else if (value is Task<Sprite> task)
-                    return task;
+                return value;
             }
-            return Task.FromResult<Sprite>(null);
+            return null;
         }
         /// <summary>
         /// 获取加载到内存的Sprite的地址
@@ -575,7 +574,7 @@ namespace Game
         #endregion
         #region 属性字段
         public string externalImageDir { get; private set; }
-        Dictionary<string, object> _externalSpriteCacheDict = new Dictionary<string, object>();
+        Dictionary<string, Sprite> _externalSpriteCacheDict = new Dictionary<string, Sprite>();
 
         private static SHA256 _hashProvider = SHA256.Create();
         #endregion

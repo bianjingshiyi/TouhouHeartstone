@@ -796,7 +796,7 @@ namespace Game
             Sprite sprite;
             if (path.StartsWith("res:"))
             {
-                sprite = await getSpriteFromCache(path);
+                sprite = getSpriteFromCache(path);
                 if (sprite != null)
                 {
                     return sprite;
@@ -810,7 +810,7 @@ namespace Game
             }
             else if (path.StartsWith("sa:"))
             {
-                sprite = await getSpriteFromCache(path);
+                sprite = getSpriteFromCache(path);
                 if (sprite != null)
                 {
                     return sprite;
@@ -846,7 +846,7 @@ namespace Game
                 {
                     path = Path.Combine(dirName, path);
                 }
-                sprite = await getSpriteFromCache(path);
+                sprite = getSpriteFromCache(path);
                 if (sprite != null)
                 {
                     return sprite;
