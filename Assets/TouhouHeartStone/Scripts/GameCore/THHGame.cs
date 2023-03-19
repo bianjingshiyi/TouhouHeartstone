@@ -493,7 +493,7 @@ namespace TouhouHeartstone
                         deathList.Add(master);
                 }
 
-                if (deathList.Count <= 0)
+                if (deathList.Count <= 0 || !game.isRunning)
                 {
                     break;
                 }
