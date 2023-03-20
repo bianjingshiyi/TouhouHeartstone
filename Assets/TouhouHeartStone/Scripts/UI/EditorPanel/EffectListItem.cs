@@ -13,6 +13,7 @@ namespace UI
         {
             _nameInputFieldObj.SetActive(true);
             _nameInputField.text = value;
+            _nameInputField.ActivateInputField();
             _nameText.gameObject.SetActive(false);
         }
         public void hideInputField()
@@ -37,6 +38,7 @@ namespace UI
         private void onInputFieldEndEditCallback(string value)
         {
             onInputFieldEndEdit?.Invoke(this, value);
+            hideInputField();
         }
         public event Action<EffectListItem> onEditButtonClick;
         public event Action<EffectListItem> onRemoveButtonClick;

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,8 @@ namespace UI
         #region 公有方法
         public void setAddEffectMenu(IEnumerable<string> effectNames)
         {
-            _effectListNames = effectNames.ToArray();
+            _addEffectMenu.ClearOptions();
+            _addEffectMenu.AddOptions(effectNames.ToList());
         }
         public void updateList(string[] effectNames)
         {
@@ -57,11 +59,16 @@ namespace UI
         #region 私有方法
         protected void Awake()
         {
-            _addEffectButton.onClick.AddListener(onClickAddEffectButtonCallback);
+            _addEffectMenu.onClickItem.AddListener(onClickAddEffectItemCallback);
             if (_itemTemplate.transform.parent == _itemRoot)
             {
                 _itemTemplate.gameObject.SetActive(false);
             }
+        }
+        #region 回调
+        private void onClickAddEffectItemCallback(int index)
+        {
+            onClickAddEffect?.Invoke(index);
         }
         private void onClickItemEditButtonCallback(EffectListItem item)
         {
@@ -75,10 +82,7 @@ namespace UI
         {
             onItemInputFieldEndEdit?.Invoke(_itemList.IndexOf(item.transform as RectTransform), value);
         }
-        private void onClickAddEffectButtonCallback()
-        {
-            onClickAddEffect?.Invoke(0);
-        }
+        #endregion
         #endregion
         #region 事件
         public event Action<int> onClickItemEditButton;
@@ -87,12 +91,11 @@ namespace UI
         public event Action<int, string> onItemInputFieldEndEdit;
         #endregion
         #region 属性字段
-        private string[] _effectListNames;
+        [Header("添加效果")]
+        [SerializeField]
+        DropdownMenu _addEffectMenu;
 
-        [SerializeField]
-        Button _addEffectButton;
-        [SerializeField]
-        RectTransform _addEffectLayout;
+        [Header("效果列表")]
         [SerializeField]
         RectTransform _itemRoot;
         [SerializeField]

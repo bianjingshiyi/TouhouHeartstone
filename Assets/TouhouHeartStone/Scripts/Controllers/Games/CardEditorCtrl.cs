@@ -11,6 +11,8 @@ using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.UI;
 using MukioI18n;
+using System.Reflection;
+using TouhouCardEngine.Interfaces;
 
 namespace Controllers
 {
@@ -453,7 +455,7 @@ namespace Controllers
             MarkCardUnsaved();
             var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
             var effect = game.card.createEffectByIndex(index);
-            effect.name = game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, effects.Count() + 1);
+            effect.name = getEffectDefaultName(effect, effects.Count() + 1);
             var effectArray = effects.Append(effect).ToArray();
             _cardDefine.setEffects(effectArray);
             updateEffectList(effectArray);
@@ -744,6 +746,12 @@ namespace Controllers
                 _ui.NameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
             }
         }
+        private string getEffectDefaultName(GeneratedEffect effect, int num)
+        {
+            var names = game.card.getEffectNames();
+            var index = game.card.getEffectTypeIndex(effect);
+            return game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, names?[index] ?? CARD_EFFECT_DEFAULT_NAME, num);
+        }
 
         private void setCardProp(bool isCustom, string name, object value)
         {
@@ -837,7 +845,7 @@ namespace Controllers
                 var effect = effects[i];
                 if (string.IsNullOrEmpty(effect.name))
                 {
-                    effect.name = game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, i + 1);
+                    effect.name = getEffectDefaultName(effect, i + 1);
                 }
                 names[i] = effect.name;
             }
@@ -1079,8 +1087,10 @@ namespace Controllers
         public const string CARD_WARNING_OPTION_SAVE = "保存";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
         public const string CARD_WARNING_OPTION_CANCEL = "取消";
-        [TranslateMsg("效果默认名称的模板（{0}为效果序号）")]
-        public const string CARD_EFFECT_DEFAULT_NAME_TEMPLATE = "效果{0}";
+        [TranslateMsg("效果默认名称")]
+        public const string CARD_EFFECT_DEFAULT_NAME = "效果";
+        [TranslateMsg("效果默认名称的模板（{0}为效果名，{1}为效果序号）")]
+        public const string CARD_EFFECT_DEFAULT_NAME_TEMPLATE = "{0}{1}";
         [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
         public const string CARD_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
         [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
