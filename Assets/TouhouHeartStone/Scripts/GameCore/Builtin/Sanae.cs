@@ -635,6 +635,8 @@ namespace TouhouHeartstone.Builtin
 
 
             var arg = await card.getOwner().chooseOne(game, options, title: "见证神迹！");
+            if (arg == null)
+                return;
             CardDefine choice = arg.choose;
 
             if (choice == game.getDefine<GodMiracleOfRain>())

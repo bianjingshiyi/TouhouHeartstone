@@ -602,6 +602,8 @@ namespace TouhouHeartstone.Builtin
         {
             Player player = card.getOwner();
             var discovered = await player.searchPile(game, player.getGrave().Where(c => c.isSpell()), title: "选择一张墓地中的法术加入手牌");
+            if (discovered == null)
+                return;
             if (!player.getHand().isFull)
             {
                 await player.getGrave().moveTo(game, discovered.choose, player.getHand());
@@ -736,6 +738,8 @@ namespace TouhouHeartstone.Builtin
         {
             //var discovered = await card.getOwner().discover(game, card.getOwner().deck, 5, "查询图书");
             var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck().Where(c => c.isSpell()), false, 5, "书海里寻找智慧");
+            if (discover == null)
+                return;
             await card.getOwner().draw(game, discover.choose);
 
         }
@@ -800,6 +804,8 @@ namespace TouhouHeartstone.Builtin
             for (int i = 0; i < 2; i++)
             {
                 var discovered = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 5, "知识中寻求方法");
+                if (discovered == null)
+                    continue;
                 await card.getOwner().draw(game, discovered.choose);
             }
         }
