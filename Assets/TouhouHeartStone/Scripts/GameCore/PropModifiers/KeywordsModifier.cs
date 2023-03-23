@@ -19,22 +19,24 @@ namespace TouhouHeartstone
             modifyType = origin.modifyType;
             propertyName = origin.propertyName;
         }
-        public override Task afterAdd(IGame game, Card card)
+        public override async Task afterAdd(IGame game, Card card)
         {
-            Task task = base.afterAdd(game, card);
-            if (value.Contains(KEYWORD.SHIELD))
+            await base.afterAdd(game, card);
+            if (modifyType != ModifyType.remove)
             {
-                card.addKeywords(game, KEYWORD.HAS_SHIELD);
+                if (value.Contains(KEYWORD.SHIELD))
+                {
+                    await card.addKeywords(game, KEYWORD.HAS_SHIELD);
+                }
+                if (value.Contains(KEYWORD.STEALTH))
+                {
+                    await card.addKeywords(game, KEYWORD.HAS_STEALTH);
+                }
+                if (value.Contains(KEYWORD.FROZEN))
+                {
+                    await card.setFreeze(game, true);
+                }
             }
-            if (value.Contains(KEYWORD.STEALTH))
-            {
-                card.addKeywords(game, KEYWORD.HAS_STEALTH);
-            }
-            if (value.Contains(KEYWORD.FROZEN))
-            {
-                card.setFreeze(game, true);
-            }
-            return task;
         }
         public override string[] calc(IGame game, Card card, string[] value)
         {

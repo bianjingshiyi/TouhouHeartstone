@@ -476,7 +476,7 @@ namespace Game
                 master.onCanAttackFalse.invokeAfterAnim();
             }
 
-            if (card.hasKeyword(game, KEYWORD.HAS_SHIELD))
+            if (card.isShield(game))
                 master.ShieldImage.display();
             else
                 master.ShieldImage.hide();
