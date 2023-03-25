@@ -39,11 +39,6 @@ namespace UI
         {
             if (_valueInfo.type == ActionNodeValueType.cardReference)
             {
-                _Card.setCard(cardDefine, skin);
-                _Card.setImage(image);
-            }
-            else if (_valueInfo.type == ActionNodeValueType.cardReferenceItem)
-            {
                 _buildItem.update(cardDefine, image, skin?.name ?? string.Empty, 0);
             }
         }
@@ -77,7 +72,6 @@ namespace UI
             _button.onClick.AddListener(onClickButtonCallback);
             _addItemButton.onClick.AddListener(onClickAddItemButtonCallback);
             _removeItemButton.onClick.AddListener(onClickRemoveButtonCallback);
-            _cardButton.onClick.AddListener(onClickCardButtonCallback);
             _buildItem.onClick += onClickCardButtonCallback;
         }
         #region 事件回调
@@ -276,7 +270,6 @@ namespace UI
                 updateButton();
                 updateList();
                 updateCard();
-                updateCardItem();
             }
         }
         private void hideAllInputFields()
@@ -287,7 +280,6 @@ namespace UI
             _multiSelectDropdown.gameObject.SetActive(false);
             _button.gameObject.SetActive(false);
             _listRoot.gameObject.SetActive(false);
-            _Card.gameObject.SetActive(false);
             _buildItem.gameObject.SetActive(false);
         }
         private void updateArray()
@@ -550,14 +542,6 @@ namespace UI
             //卡牌
             if (_valueInfo.type == ActionNodeValueType.cardReference)
             {
-                _Card.gameObject.SetActive(true);
-            }
-        }
-        private void updateCardItem()
-        {
-            //卡牌引用（长条）
-            if (_valueInfo.type == ActionNodeValueType.cardReferenceItem)
-            {
                 _buildItem.gameObject.SetActive(true);
             }
         }
@@ -585,6 +569,8 @@ namespace UI
         [SerializeField]
         Dropdown _dropdown;
         [SerializeField]
+        BuildDeckListItem _buildItem;
+        [SerializeField]
         MultiSelectDropdown _multiSelectDropdown;
         [SerializeField]
         RectTransform _listRoot;
@@ -610,12 +596,6 @@ namespace UI
         private string[] _keywordNames;
         [SerializeField]
         private string[] _keywordValues;
-        [SerializeField]
-        Card _Card;
-        [SerializeField]
-        BuildDeckListItem _buildItem;
-        [SerializeField]
-        Button _cardButton;
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
         [SerializeField]
