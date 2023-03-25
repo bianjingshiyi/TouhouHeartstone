@@ -279,7 +279,7 @@ namespace UI
             _cardPoolViewPanelObj.SetActive(display);
         }
 
-        public void setCustomPropertyTypes((CardPropertyValueType type, string name)[] types)
+        public void setCustomPropertyTypes((ActionNodeValueType type, string name)[] types)
         {
             _createCustomPropDialog.setTypes(types);
         }

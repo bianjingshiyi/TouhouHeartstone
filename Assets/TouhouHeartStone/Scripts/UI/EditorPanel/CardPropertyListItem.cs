@@ -25,11 +25,7 @@ namespace UI
             _name = item.propertyName;
             _nameText.text = _name;
 
-            if (!_typeConversionDict.TryGetValue(item.type, out var type))
-            {
-                Debug.LogError($"没有找到从CustomPropertyValueType.{item.type}转换到ActionNodeValueType的映射。");
-                return;
-            }
+            var type = item.type;
             var value = item.value;
             var valueInfo = new ActionNodeValueInfo(string.Empty, type, value)
             {
@@ -38,7 +34,7 @@ namespace UI
             _valueInputField.setValueInfo(string.Empty, valueInfo);
 
 
-            if (item.type == CardPropertyValueType.cardReference)
+            if (item.type == ActionNodeValueType.cardReference)
             {
                 if (item.value is DefineReference defRef)
                 {
@@ -95,41 +91,20 @@ namespace UI
         private ValueInputField _valueInputField;
         [SerializeField]
         private Button _deleteButton;
-
-        private Dictionary<CardPropertyValueType, ActionNodeValueType> _typeConversionDict = new Dictionary<CardPropertyValueType, ActionNodeValueType>()
-        {
-            { CardPropertyValueType.integer, ActionNodeValueType.integer },
-            { CardPropertyValueType.boolean, ActionNodeValueType.boolean },
-            { CardPropertyValueType.text, ActionNodeValueType.text },
-            { CardPropertyValueType.cardReference, ActionNodeValueType.cardReferenceItem },
-            { CardPropertyValueType.pile, ActionNodeValueType.pileNameCollection },
-            { CardPropertyValueType.keywords, ActionNodeValueType.keywords },
-
-        };
     }
 
     public class CardPropertyItem
     {
         public string propertyName;
-        public CardPropertyValueType type;
+        public ActionNodeValueType type;
         public bool isArray;
         public object value;
 
-        public CardPropertyItem(string name, CardPropertyValueType type, bool isArray)
+        public CardPropertyItem(string name, ActionNodeValueType type, bool isArray)
         {
             propertyName = name;
             this.type = type;
             this.isArray = isArray;
         }
-    }
-
-    public enum CardPropertyValueType
-    {
-        integer,
-        boolean,
-        text,
-        pile,
-        keywords,
-        cardReference
     }
 }

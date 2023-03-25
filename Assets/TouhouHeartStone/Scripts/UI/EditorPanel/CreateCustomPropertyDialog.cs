@@ -7,7 +7,7 @@ namespace UI
 {
     public class CreateCustomPropertyDialog : MonoBehaviour
     {
-        public void setTypes((CardPropertyValueType type, string name)[] types)
+        public void setTypes((ActionNodeValueType type, string name)[] types)
         {
             _propTypes = types;
             _typeDropdown.ClearOptions();
@@ -51,7 +51,7 @@ namespace UI
 
         private CardPropertyItem ToCardPropertyItem()
         {
-            CardPropertyValueType type = CardPropertyValueType.integer;
+            ActionNodeValueType type = ActionNodeValueType.integer;
             var index = _typeDropdown.value;
             if (index >= 0 && index < _propTypes.Length)
                 type = _propTypes[index].type;
@@ -64,7 +64,7 @@ namespace UI
         public event Action<CardPropertyItem> onConfirm;
         #endregion
 
-        private (CardPropertyValueType type, string name)[] _propTypes;
+        private (ActionNodeValueType type, string name)[] _propTypes;
 
         [SerializeField]
         private InputField _propertyName;

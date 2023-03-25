@@ -483,14 +483,6 @@ namespace Controllers
         }
         private void onClickCloseButton()
         {
-            void exit()
-            {
-                //返回上一个界面
-                gameObject.SetActive(false);
-                scene.editor.display(false, false, -1, false);
-                ClearCardUnsaved();
-            }
-
             if (hasUnsavedChanges)
             {
                 string title = game.lang._(StringTable.WARNING);
@@ -749,6 +741,15 @@ namespace Controllers
                 _ui.NameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
             }
         }
+        /// <summary>
+        /// 返回上一个界面
+        /// </summary>
+        private void exit()
+        {
+            gameObject.SetActive(false);
+            scene.editor.display(false, false, -1, false);
+            ClearCardUnsaved();
+        }
         #endregion
 
 
@@ -874,7 +875,7 @@ namespace Controllers
             if (valueType == null)
                 return null;
 
-            if (!_customPropTypeDict.TryGetValue(valueType, out CardPropertyValueType type))
+            if (!_customPropTypeDict.TryGetValue(valueType, out ActionNodeValueType type))
                 return null;
 
             var item = new CardPropertyItem(name, type, isArray)
@@ -883,7 +884,7 @@ namespace Controllers
             };
             return item;
         }
-        private object getDefaultValue(CardPropertyValueType valueType, bool isArray)
+        private object getDefaultValue(ActionNodeValueType valueType, bool isArray)
         {
             if (_customPropDefaultValues.TryGetValue(valueType, out var func))
             {
@@ -1035,33 +1036,33 @@ namespace Controllers
             StringTable.GAME_DELAY
         };
 
-        private static readonly (CardPropertyValueType type, string name)[] _customPropTypes = 
-            new (CardPropertyValueType type, string name)[]
+        private static readonly (ActionNodeValueType type, string name)[] _customPropTypes = 
+            new (ActionNodeValueType type, string name)[]
         {
-            (CardPropertyValueType.integer, StringTable.EDITOR_TYPE_NAME_INT),
-            (CardPropertyValueType.boolean, StringTable.EDITOR_TYPE_NAME_BOOL),
-            (CardPropertyValueType.text, StringTable.EDITOR_TYPE_NAME_STRING),
-            (CardPropertyValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE),
-            (CardPropertyValueType.pile, StringTable.EDITOR_TYPE_NAME_PILE),
-            (CardPropertyValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE),
+            (ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT),
+            (ActionNodeValueType.boolean, StringTable.EDITOR_TYPE_NAME_BOOL),
+            (ActionNodeValueType.text, StringTable.EDITOR_TYPE_NAME_STRING),
+            (ActionNodeValueType.cardReference, StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE),
+            (ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE),
+            (ActionNodeValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE),
         };
-        private static readonly Dictionary<Type, CardPropertyValueType> _customPropTypeDict = new Dictionary<Type, CardPropertyValueType>()
+        private static readonly Dictionary<Type, ActionNodeValueType> _customPropTypeDict = new Dictionary<Type, ActionNodeValueType>()
         {
-            { typeof(int), CardPropertyValueType.integer },
-            { typeof(bool), CardPropertyValueType.boolean },
-            { typeof(string), CardPropertyValueType.text },
-            { typeof(DefineReference), CardPropertyValueType.cardReference },
-            { typeof(PileNameCollection), CardPropertyValueType.pile },
-            { typeof(KeywordCollection), CardPropertyValueType.keywords },
+            { typeof(int), ActionNodeValueType.integer },
+            { typeof(bool), ActionNodeValueType.boolean },
+            { typeof(string), ActionNodeValueType.text },
+            { typeof(DefineReference), ActionNodeValueType.cardReference },
+            { typeof(PileNameCollection), ActionNodeValueType.pileNameCollection },
+            { typeof(KeywordCollection), ActionNodeValueType.keywords },
         };
-        private static readonly Dictionary<CardPropertyValueType, Func<object>> _customPropDefaultValues = new Dictionary<CardPropertyValueType, Func<object>>()
+        private static readonly Dictionary<ActionNodeValueType, Func<object>> _customPropDefaultValues = new Dictionary<ActionNodeValueType, Func<object>>()
         {
-            { CardPropertyValueType.integer, () => 0},
-            { CardPropertyValueType.boolean, () => false },
-            { CardPropertyValueType.text, () => string.Empty },
-            { CardPropertyValueType.cardReference, () => new DefineReference() },
-            { CardPropertyValueType.pile, () => new PileNameCollection() },
-            { CardPropertyValueType.keywords, () => new KeywordCollection() },
+            { ActionNodeValueType.integer, () => 0},
+            { ActionNodeValueType.boolean, () => false },
+            { ActionNodeValueType.text, () => string.Empty },
+            { ActionNodeValueType.cardReference, () => new DefineReference() },
+            { ActionNodeValueType.pileNameCollection, () => new PileNameCollection() },
+            { ActionNodeValueType.keywords, () => new KeywordCollection() },
         };
 
 
