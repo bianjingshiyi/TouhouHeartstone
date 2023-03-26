@@ -368,8 +368,8 @@ namespace UI
         public void resetView()
         {
             _currentSelectedKnob = default;
-            _backgroundImage.transform.localPosition = Vector3.zero;
-            _backgroundImage.transform.localScale = Vector3.one;
+            _content.localPosition = Vector3.zero;
+            _content.localScale = Vector3.one;
         }
         public void updateNodeLines(ActionNodeItem item)
         {
@@ -409,7 +409,7 @@ namespace UI
 
             displayCardSelectPanel(false);
             #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
-            _backgroundOriginScale = _backgroundImage.transform.localScale;//读取目前的缩放比例 
+            _backgroundOriginScale = _content.localScale;//读取目前的缩放比例 
 
             ///UnityAction <BaseEventData> zoomingAction =  new UnityAction <BaseEventData> (EditorZooming);
             EventTrigger.Entry scrollZooming = new EventTrigger.Entry();
@@ -468,7 +468,7 @@ namespace UI
         private void onPointerUpBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
             Vector2 screenPosition = eventData.currentInputModule.input.mousePosition;
-            Vector2 localPoistion = _backgroundImage.transform.InverseTransformPoint(screenPosition);
+            Vector2 localPoistion = _content.InverseTransformPoint(screenPosition);
             if (_longPressTimer.isExpired())
             {
                 onLongPressBackground?.Invoke(localPoistion.x, localPoistion.y);
@@ -488,9 +488,9 @@ namespace UI
         private void onBackgroundScroll(BaseEventData eventData)
         {
             var delta = Vector3.one * (Input.GetAxis("Mouse ScrollWheel") * zoomSpeed);//读取滚轮的变化           
-            var desiredScale = _backgroundImage.transform.localScale + delta;//进行缩放
+            var desiredScale = _content.localScale + delta;//进行缩放
             desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
-            _backgroundImage.transform.localScale = desiredScale;
+            _content.localScale = desiredScale;
         }
 
         private void OnFingertouch(BaseEventData eventData)
@@ -527,20 +527,20 @@ namespace UI
                 var scaleFactor = leng2 / leng1;
                 Vector3 prevCenter = (_perviousPosition1 + _perviousPosition2) / 2;
                 Vector3 currCenter = (_currentPosition1 + _currentPosition2) / 2;
-                Vector3 _localScale = _backgroundImage.transform.localScale;
+                Vector3 _localScale = _content.localScale;
                 Vector3 desiredScale = _localScale * scaleFactor;
 
                 if (scaleFactor != 1 && desiredScale.x < _maxScale && desiredScale.y < _maxScale && desiredScale.x > _minScale && desiredScale.y > _minScale)
                 {
-                    var localPos = _backgroundImage.transform.position;
+                    var localPos = _content.position;
                     var targetPos = (1 - scaleFactor) * prevCenter + scaleFactor * localPos;
                     //Debug.Log($"c1: {prevCenter}, c2: {currCenter}, factor: {scaleFactor}, delta: {targetPos - localPos}, prev: {localPos}");
 
-                    _backgroundImage.transform.localScale = desiredScale;
-                    _backgroundImage.transform.position = targetPos;
+                    _content.localScale = desiredScale;
+                    _content.position = targetPos;
                 }
 
-                _backgroundImage.transform.position += (currCenter - prevCenter);
+                _content.position += currCenter - prevCenter;
 
                 _perviousTouch1 = _currentTouch1;
                 _perviousTouch2 = _currentTouch2;
@@ -558,12 +558,12 @@ namespace UI
             _isDragging = true;
             if (!_isTouchZooming)
             {
-                _backgroundImage.transform.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
+                _content.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
             }
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
         {
-            _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_backgroundImage.transform.position;
+            _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
         }
         public void OnBackgroundEndDrag(BaseEventData eventData)
         {
@@ -1165,19 +1165,25 @@ namespace UI
         [SerializeField]
         EventTriggerWithoutUseEvent _backgroundEventTrigger;
         [SerializeField]
+        RectTransform _content;
+
+        [Header("Nodes")]
+        [SerializeField]
         ActionNodeItem _actionNodeItemTemplate;
         [SerializeField]
         RectTransform _actionNodesRoot;
         [SerializeField]
         List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
-        //[SerializeField]
-        // ActionNodeGraphLine _actionNodeLineTemplate;
+
+        [Header("Connections")]
         [SerializeField]
         ActionNodeGraphLine _ActionNodeGraphLineTemplate;
         [SerializeField]
         RectTransform _actionNodeLineRoot;
         [SerializeField]
         List<ActionNodeConnectionData> _connectionList = new List<ActionNodeConnectionData>();
+
+        [Header("Menu")]
         [SerializeField]
         RectTransform _menuRoot;
         [SerializeField]
