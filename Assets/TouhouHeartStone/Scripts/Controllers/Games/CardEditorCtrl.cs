@@ -11,8 +11,6 @@ using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.UI;
 using MukioI18n;
-using System.Reflection;
-using TouhouCardEngine.Interfaces;
 
 namespace Controllers
 {
