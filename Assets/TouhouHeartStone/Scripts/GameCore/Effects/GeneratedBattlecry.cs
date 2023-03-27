@@ -1,53 +1,35 @@
-﻿using TouhouCardEngine;
+﻿using System.Threading.Tasks;
+using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
     public class GeneratedBattlecry : GeneratedEffect
     {
         #region 公有方法
-        /// <summary>
-        /// 构造一个战吼效果
-        /// </summary>
-        public GeneratedBattlecry(ActionValueRef condition, TargetChecker[] targets, ActionNode action) : base(new string[0], null, null,
-            new TriggerGraph[] { new TriggerGraph("ActiveEvent", condition, targets, action) }, new string[] { KEYWORD.BATTLECRY })
+        public GeneratedBattlecry(ActionGraph graph) : base(graph)
         {
         }
-        /// <summary>
-        /// 构造一个空的战吼效果
-        /// </summary>
-        public GeneratedBattlecry() : this(new ActionValueRef(), new TargetChecker[0], null)
+        public GeneratedBattlecry() : base(null)
         {
         }
-        public override object getProp(string name)
+        public override void Init()
         {
-            if (name == nameof(activeTrigger))
-                return activeTrigger;
-            return base.getProp(name);
+            var entryNode = graph.createTriggerEntryNode(entryNodeEvent);
+            entryNode.hideEvents = true;
         }
-        public override void setProp(string name, object value)
+        public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
-            if (name == nameof(activeTrigger))
+            if (activeTrigger != null)
             {
-                activeTrigger = value as TriggerGraph;
-                return;
+                return game.runActions(card, buff, eventArg, activeTrigger.getActionOutputPort());
             }
-            base.setProp(name, value);
-        }
-        public override EffectPropertyInfo[] getPropInfos()
-        {
-            return propertyInfos;
+            return Task.CompletedTask;
         }
         #endregion
         #region 属性字段
-        public TriggerGraph activeTrigger
-        {
-            get { return triggerList[0]; }
-            set { triggerList[0] = value; }
-        }
-        static EffectPropertyInfo[] propertyInfos = new EffectPropertyInfo[]
-        {
-            new EffectPropertyInfo(typeof(TriggerGraph), nameof(activeTrigger))
-        };
+        public TriggerEntryNode activeTrigger => graph?.findTriggerEntryNode(entryNodeEvent);
+        public const string entryNodeEvent = "ActiveEvent";
         #endregion
     }
 }
