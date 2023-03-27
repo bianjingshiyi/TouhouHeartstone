@@ -97,7 +97,7 @@ namespace Controllers
         private void loadEventTypes()
         {
             _eventTypeInfoList.Clear();
-            _eventTypeInfoList.AddRange(EventTypeInfo.getOrLoadEventTypes());
+            _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventTypes());
         }
         /// <summary>
         /// 打开一个触发器的动作节点图
@@ -481,7 +481,7 @@ namespace Controllers
         List<EventTypeInfo> _eventTypeInfoList = new List<EventTypeInfo>();
         #endregion
     }
-    class EventTypeInfo
+    public static class EventTypeInfoLoader
     {
         #region 公有方法
         /// <summary>
@@ -672,10 +672,6 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
-        public string eventName;
-        public string editorName;
-        public EventVariableInfo[] variableInfos;
-        public string[] obsoleteNames;
         static List<EventTypeInfo> _eventTypeInfoList = null;
         #endregion
     }
