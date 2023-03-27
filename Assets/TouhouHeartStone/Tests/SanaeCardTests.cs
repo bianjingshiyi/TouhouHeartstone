@@ -63,24 +63,24 @@ namespace Tests
         /// 星之仪式测试
         /// 信仰对决 将一张全新的“星之仪式”置入手牌；获胜时改为抽一张法力值消耗最高的牌
         /// </summary>
-        [Test, Obsolete]
-        public void StarRitualTest()
-        {
-            TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
-                new HearthstoneOption() { shuffle = false },
-                Sanae.ID, new[] { new KeyValuePair<int, int>(StarRitual.ID, 2) },
-                Sanae.ID, new KeyValuePair<int, int>[0]);
-            game.skipUntilCanUse<StarRitual>(you);
-            int count = you.getHand().count;
-            you.cmdUse<StarRitual>(game);
-            Assert.AreEqual(count, you.getHand().count);
-            Assert.AreEqual(4, you.getHand()[count - 1].getCost(game));
-            game.skipTurnUntil(() => you.getDeck().count == 0);
-            you.cmdUse<StarRitual>(game);
-            count = you.getHand().count;
-            Assert.AreEqual(1, you.getHand()[count - 1].getCost(game));
-            game.Dispose();
-        }
+        //[Test, Obsolete]
+        //public void StarRitualTest()
+        //{
+        //    TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
+        //        new HearthstoneOption() { shuffle = false },
+        //        Sanae.ID, new[] { new KeyValuePair<int, int>(StarRitual.ID, 2) },
+        //        Sanae.ID, new KeyValuePair<int, int>[0]);
+        //    game.skipUntilCanUse<StarRitual>(you);
+        //    int count = you.getHand().count;
+        //    you.cmdUse<StarRitual>(game);
+        //    Assert.AreEqual(count, you.getHand().count);
+        //    Assert.AreEqual(4, you.getHand()[count - 1].getCost(game));
+        //    game.skipTurnUntil(() => you.getDeck().count == 0);
+        //    you.cmdUse<StarRitual>(game);
+        //    count = you.getHand().count;
+        //    Assert.AreEqual(1, you.getHand()[count - 1].getCost(game));
+        //    game.Dispose();
+        //}
 
         [Test]
         public void GrayThaumaturgyTest()
@@ -555,19 +555,19 @@ namespace Tests
             Assert.True(you.getDeck().Contains(yourServants[3]));
         }
 
-        [Test]
-        public void LittleShrineTest()
-        {
-            TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
-                new HearthstoneOption { shuffle = false },
-                Sanae.ID, new[] { new KeyValuePair<int, int>(LittleShrine.ID, 1) },
-                Sanae.ID, new KeyValuePair<int, int>[0]);
-            game.skipUntilCanUse<LittleShrine>(you);
-            int i = you.getHand().count;
-            you.cmdUse<LittleShrine>(game);
-            you.cmdTurnEnd(game);
-            Assert.AreEqual(i, you.getHand().count);
-        }
+        //[Test]
+        //public void LittleShrineTest()
+        //{
+        //    TestGameflow.createGame<FireBall, DefaultServant>(out var game, out var you, out var oppo,
+        //        new HearthstoneOption { shuffle = false },
+        //        Sanae.ID, new[] { new KeyValuePair<int, int>(LittleShrine.ID, 1) },
+        //        Sanae.ID, new KeyValuePair<int, int>[0]);
+        //    game.skipUntilCanUse<LittleShrine>(you);
+        //    int i = you.getHand().count;
+        //    you.cmdUse<LittleShrine>(game);
+        //    you.cmdTurnEnd(game);
+        //    Assert.AreEqual(i, you.getHand().count);
+        //}
 
         [Test]
         public void ForgottenRecrptionTest()

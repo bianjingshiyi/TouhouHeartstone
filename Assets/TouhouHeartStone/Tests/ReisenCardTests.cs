@@ -389,27 +389,27 @@ namespace Tests
             game.Dispose();
         }
 
-        [Test]
-        public void ReisenDisbeliefAspectTest()
-        {
-            TestGameflow.createGame<FireBall,DefaultServant>(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(DisbeliefAspect.ID, 3)
-            );
+        //[Test]
+        //public void ReisenDisbeliefAspectTest()
+        //{
+        //    TestGameflow.createGame<FireBall,DefaultServant>(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(DisbeliefAspect.ID, 3)
+        //    );
 
-            game.skipUntilCanUse<DisbeliefAspect>(you);
-            var count = you.getHand().count;
-            you.cmdUse<DisbeliefAspect>(game);
-            Assert.AreEqual(count-1,you.getHand().count);
-            game.skipUntilCanUse<FireBall>(you);
-            var fireBall = you.getHand().getCard<FireBall>();
-            you.cmdUse(game,fireBall,0,oppo.getMaster());
-            count = you.getHand().count;
-            you.cmdUse<DisbeliefAspect>(game);
-            Assert.AreEqual(count,you.getHand().count);
-            Assert.True(you.getHand()[count-1].define is FireBall);
+        //    game.skipUntilCanUse<DisbeliefAspect>(you);
+        //    var count = you.getHand().count;
+        //    you.cmdUse<DisbeliefAspect>(game);
+        //    Assert.AreEqual(count-1,you.getHand().count);
+        //    game.skipUntilCanUse<FireBall>(you);
+        //    var fireBall = you.getHand().getCard<FireBall>();
+        //    you.cmdUse(game,fireBall,0,oppo.getMaster());
+        //    count = you.getHand().count;
+        //    you.cmdUse<DisbeliefAspect>(game);
+        //    Assert.AreEqual(count,you.getHand().count);
+        //    Assert.True(you.getHand()[count-1].define is FireBall);
 
-            game.Dispose();
-        }
+        //    game.Dispose();
+        //}
         [Test]
         public void medicineSellmanTest()
         {

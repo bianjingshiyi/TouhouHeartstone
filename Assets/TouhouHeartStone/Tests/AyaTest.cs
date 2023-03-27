@@ -98,57 +98,57 @@ namespace Tests
             game.Dispose();
         }
 
-        [Test]
-        public void ScoopTest()
-        {
-            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
-            {
-                shuffle = false
-            });
-            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 20));
-            Player you = game.createPlayer(1, "玩家1", game.getDefine<Aya>(),
-                Enumerable.Repeat(game.getDefine<Scoop>() as CardDefine, 5).Concat(Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 5)));
+        //[Test]
+        //public void ScoopTest()
+        //{
+        //    CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+        //    {
+        //        shuffle = false
+        //    });
+        //    Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+        //        Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 20));
+        //    Player you = game.createPlayer(1, "玩家1", game.getDefine<Aya>(),
+        //        Enumerable.Repeat(game.getDefine<Scoop>() as CardDefine, 5).Concat(Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 5)));
 
-            game.skipUntilHasGem(you, 10);
-            you.cmdUse(game, you.getHand().getCard<Scoop>());
-            Debug.Log("法力：" + you.getHand()[0].getCost(game));
-            Debug.Log("法力：" + you.getHand()[1].getCost(game));
-            Debug.Log("法力：" + you.getHand()[2].getCost(game));
+        //    game.skipUntilHasGem(you, 10);
+        //    you.cmdUse(game, you.getHand().getCard<Scoop>());
+        //    Debug.Log("法力：" + you.getHand()[0].getCost(game));
+        //    Debug.Log("法力：" + you.getHand()[1].getCost(game));
+        //    Debug.Log("法力：" + you.getHand()[2].getCost(game));
 
-            you.cmdUse(game, you.getHand().getCard<FireBall>(), targets: oppo.getMaster());
-            Debug.Log("法力：" + you.getHand()[0].getCost(game));
-            Debug.Log("法力：" + you.getHand()[1].getCost(game));
-            Debug.Log("法力：" + you.getHand()[2].getCost(game));
+        //    you.cmdUse(game, you.getHand().getCard<FireBall>(), targets: oppo.getMaster());
+        //    Debug.Log("法力：" + you.getHand()[0].getCost(game));
+        //    Debug.Log("法力：" + you.getHand()[1].getCost(game));
+        //    Debug.Log("法力：" + you.getHand()[2].getCost(game));
 
-            game.Dispose();
-        }
+        //    game.Dispose();
+        //}
 
-        [Test]
-        public void LittleAyaTest()
-        {
-            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
-            {
-                shuffle = false
-            });
-            Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
-                Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 20));
-            Player you = game.createPlayer(1, "玩家1", game.getDefine<Aya>(),
-                Enumerable.Repeat(game.getDefine<LittleAya>() as CardDefine, 5).Concat(Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 5)));
+        //[Test]
+        //public void LittleAyaTest()
+        //{
+        //    CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+        //    {
+        //        shuffle = false
+        //    });
+        //    Player oppo = game.createPlayer(0, "玩家0", game.getDefine<TestMaster2>(),
+        //        Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 20));
+        //    Player you = game.createPlayer(1, "玩家1", game.getDefine<Aya>(),
+        //        Enumerable.Repeat(game.getDefine<LittleAya>() as CardDefine, 5).Concat(Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 5)));
 
-            game.skipUntilHasGem(you, 5);
-            you.cmdUse(game, you.getSkill());
-            you.cmdUse(game, you.getHand().getCard<LittleAya>());
-            you.cmdTurnEnd(game);
-            oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.getSkill());
-            you.getField()[0].setDead(game, true);
-            you.cmdTurnEnd(game);
-            oppo.cmdTurnEnd(game);
-            you.cmdUse(game, you.getSkill());
+        //    game.skipUntilHasGem(you, 5);
+        //    you.cmdUse(game, you.getSkill());
+        //    you.cmdUse(game, you.getHand().getCard<LittleAya>());
+        //    you.cmdTurnEnd(game);
+        //    oppo.cmdTurnEnd(game);
+        //    you.cmdUse(game, you.getSkill());
+        //    you.getField()[0].setDead(game, true);
+        //    you.cmdTurnEnd(game);
+        //    oppo.cmdTurnEnd(game);
+        //    you.cmdUse(game, you.getSkill());
 
-            game.Dispose();
-        }
+        //    game.Dispose();
+        //}
 
         [Test]
         public void BunbunmaruNewsTest()

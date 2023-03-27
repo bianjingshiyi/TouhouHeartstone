@@ -4,10 +4,6 @@ using Controllers;
 using TouhouCardEngine;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using TouhouHeartstone;
-using UnityEditor.Graphs;
-using TouhouCardEngine.Interfaces;
 
 namespace Game
 {

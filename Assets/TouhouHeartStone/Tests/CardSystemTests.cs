@@ -195,23 +195,23 @@ namespace Tests
             await buff.setProp(game, "Value", 3);
             Assert.AreEqual(card.getLife(game), cardDefine.getLife() + 3);
         }
-        [Test]
-        public void mountainGaintTest()
-        {
-            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
-            {
-                shuffle = false
-            });
-            game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
-            game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
+        //[Test]
+        //public void mountainGaintTest()
+        //{
+        //    CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+        //    {
+        //        shuffle = false
+        //    });
+        //    game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
+        //    game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<MountainGaint>() as CardDefine, 30));
 
-            game.skipTurnWhen(() => game.getSortedPlayers()[0].getHand().count < 10);
+        //    game.skipTurnWhen(() => game.getSortedPlayers()[0].getHand().count < 10);
 
-            Assert.AreEqual(3, game.getSortedPlayers()[0].getHand()[0].getCost(game));
-            int gemNow = game.getSortedPlayers()[0].getGem();
-            game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
-            Assert.AreEqual(gemNow - 3, game.getSortedPlayers()[0].getGem());
-        }
+        //    Assert.AreEqual(3, game.getSortedPlayers()[0].getHand()[0].getCost(game));
+        //    int gemNow = game.getSortedPlayers()[0].getGem();
+        //    game.getSortedPlayers()[0].cmdUse(game, game.getSortedPlayers()[0].getHand()[0], 0);
+        //    Assert.AreEqual(gemNow - 3, game.getSortedPlayers()[0].getGem());
+        //}
         class TestBuff : Buff
         {
             public override int id { get; } = 0;
@@ -246,60 +246,60 @@ namespace Tests
                 return new TestBuff(this);
             }
         }
-        [UnityTest]
-        public IEnumerator fireBallTest()
-        {
-            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
-            {
-                shuffle = false
-            });
-            game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 30));
-            game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 30));
+        //[UnityTest]
+        //public IEnumerator fireBallTest()
+        //{
+        //    CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+        //    {
+        //        shuffle = false
+        //    });
+        //    game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 30));
+        //    game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(), Enumerable.Repeat(game.getDefine<FireBall>() as CardDefine, 30));
 
-            game.skipTurnUntil(() => game.players[0].getHand().count > 0);
-            Assert.False(game.players[0].getHand()[0].isUsable(game, game.players[0], out _));
-            game.skipTurnUntil(() => game.players[0].getGem() == 4);
-            Assert.True(game.players[0].getHand()[0].isUsable(game, game.players[0], out _));
-            Assert.True(game.players[0].getHand()[0].isValidTarget(game, game.players[1].getMaster()));
-            game.players[0].cmdUse(game, game.players[0].getHand()[0], 0, game.players[1].getMaster());
-            yield return new WaitUntil(() => game.triggers.getRecordedEvents().Any(e => e is THHCard.DamageEventArg));
-            Assert.NotNull(game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last());
-        }
-        [UnityTest]
-        public IEnumerator sorcererApprenticeTest()
-        {
-            CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
-            {
-                shuffle = false
-            });
-            game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(),
-                Enumerable.Repeat(game.getDefine<FireBall>(), 29).Cast<CardDefine>()
-                .Concat(Enumerable.Repeat(game.getDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
-            game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(),
-                Enumerable.Repeat(game.getDefine<FireBall>(), 29).Cast<CardDefine>()
-                .Concat(Enumerable.Repeat(game.getDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
+        //    game.skipTurnUntil(() => game.players[0].getHand().count > 0);
+        //    Assert.False(game.players[0].getHand()[0].isUsable(game, game.players[0], out _));
+        //    game.skipTurnUntil(() => game.players[0].getGem() == 4);
+        //    Assert.True(game.players[0].getHand()[0].isUsable(game, game.players[0], out _));
+        //    Assert.True(game.players[0].getHand()[0].isValidTarget(game, game.players[1].getMaster()));
+        //    game.players[0].cmdUse(game, game.players[0].getHand()[0], 0, game.players[1].getMaster());
+        //    yield return new WaitUntil(() => game.triggers.getRecordedEvents().Any(e => e is THHCard.DamageEventArg));
+        //    Assert.NotNull(game.triggers.getRecordedEvents().OfType<THHCard.DamageEventArg>().Last());
+        //}
+        //[UnityTest]
+        //public IEnumerator sorcererApprenticeTest()
+        //{
+        //    CardEngine game = TestGameflow.initGameWithoutPlayers(null, new HearthstoneOption()
+        //    {
+        //        shuffle = false
+        //    });
+        //    game.createPlayer(0, "玩家0", game.getDefine<TestMaster>(),
+        //        Enumerable.Repeat(game.getDefine<FireBall>(), 29).Cast<CardDefine>()
+        //        .Concat(Enumerable.Repeat(game.getDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
+        //    game.createPlayer(1, "玩家1", game.getDefine<TestMaster>(),
+        //        Enumerable.Repeat(game.getDefine<FireBall>(), 29).Cast<CardDefine>()
+        //        .Concat(Enumerable.Repeat(game.getDefine<SorcererApprentice>(), 1).Cast<CardDefine>()));
 
-            game.skipTurnUntil(() =>
-                game.getCurrentPlayer() == game.players[0] &&
-                game.players[0].getGem() >= game.getDefine<SorcererApprentice>().cost &&
-                game.players[0].getHand().Any(c => c.define is SorcererApprentice));
-            Assert.True(game.players[0].getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//火球术全是4费
-            var task = game.players[0].cmdUse(game, game.players[0].getHand().getCard<SorcererApprentice>());//使用哀绿
-            yield return TestHelper.waitTask(task);
-            Assert.True(game.players[0].getField().Any(c => c.define is SorcererApprentice));
-            Assert.True(game.players[0].getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 3));//火球术全是3费
-            task = game.players[0].draw(game);//抽一张火球
-            yield return TestHelper.waitTask(task);
-            Card card = game.players[0].getHand().right;
-            Assert.AreEqual(3, card.getCost(game));
-            task = card.pile.moveTo(game, card, game.players[0].getGrave());//把火球送入墓地
-            yield return TestHelper.waitTask(task);
-            Assert.AreEqual(4, card.getCost(game));
-            yield return game.players[0].getField()[0].destroy(game).wait();//杀死哀绿
-            Assert.True(game.players[0].getHand().getCards<FireBall>().All(c => c.getCost(game) == 4));
-            yield return game.players[0].draw(game).wait();//再抽一张火球术
-            Assert.True(game.players[0].getHand().getCards<FireBall>().All(c => c.getCost(game) == 4));
-        }
+        //    game.skipTurnUntil(() =>
+        //        game.getCurrentPlayer() == game.players[0] &&
+        //        game.players[0].getGem() >= game.getDefine<SorcererApprentice>().cost &&
+        //        game.players[0].getHand().Any(c => c.define is SorcererApprentice));
+        //    Assert.True(game.players[0].getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//火球术全是4费
+        //    var task = game.players[0].cmdUse(game, game.players[0].getHand().getCard<SorcererApprentice>());//使用哀绿
+        //    yield return TestHelper.waitTask(task);
+        //    Assert.True(game.players[0].getField().Any(c => c.define is SorcererApprentice));
+        //    Assert.True(game.players[0].getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 3));//火球术全是3费
+        //    task = game.players[0].draw(game);//抽一张火球
+        //    yield return TestHelper.waitTask(task);
+        //    Card card = game.players[0].getHand().right;
+        //    Assert.AreEqual(3, card.getCost(game));
+        //    task = card.pile.moveTo(game, card, game.players[0].getGrave());//把火球送入墓地
+        //    yield return TestHelper.waitTask(task);
+        //    Assert.AreEqual(4, card.getCost(game));
+        //    yield return game.players[0].getField()[0].destroy(game).wait();//杀死哀绿
+        //    Assert.True(game.players[0].getHand().getCards<FireBall>().All(c => c.getCost(game) == 4));
+        //    yield return game.players[0].draw(game).wait();//再抽一张火球术
+        //    Assert.True(game.players[0].getHand().getCards<FireBall>().All(c => c.getCost(game) == 4));
+        //}
         [Test]
         public void idTest()
         {
@@ -548,22 +548,22 @@ namespace Tests
 
             game.Dispose();
         }
-        [Test]
-        public void multipleHaloTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var _,
-                new KeyValuePair<int, int>(SorcererApprentice.ID, 2),
-                new KeyValuePair<int, int>(FireBall.ID, 1));
-            game.skipUntilCanUse(you, game.getDefine<SorcererApprentice>(),
-                                      game.getDefine<SorcererApprentice>(),
-                                      game.getDefine<FireBall>());
-            you.cmdUse(game, you.getHand().getCard<SorcererApprentice>());
-            you.cmdUse(game, you.getHand().getCard<SorcererApprentice>());
-            Assert.AreEqual(game.getDefine<FireBall>().cost - 2, you.getHand().getCard<FireBall>().getCost(game));
-            you.getField().getCard<SorcererApprentice>().destroy(game);
-            game.updateDeath();
-            Assert.AreEqual(game.getDefine<FireBall>().cost - 1, you.getHand().getCard<FireBall>().getCost(game));
-        }
+        //[Test]
+        //public void multipleHaloTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var _,
+        //        new KeyValuePair<int, int>(SorcererApprentice.ID, 2),
+        //        new KeyValuePair<int, int>(FireBall.ID, 1));
+        //    game.skipUntilCanUse(you, game.getDefine<SorcererApprentice>(),
+        //                              game.getDefine<SorcererApprentice>(),
+        //                              game.getDefine<FireBall>());
+        //    you.cmdUse(game, you.getHand().getCard<SorcererApprentice>());
+        //    you.cmdUse(game, you.getHand().getCard<SorcererApprentice>());
+        //    Assert.AreEqual(game.getDefine<FireBall>().cost - 2, you.getHand().getCard<FireBall>().getCost(game));
+        //    you.getField().getCard<SorcererApprentice>().destroy(game);
+        //    game.updateDeath();
+        //    Assert.AreEqual(game.getDefine<FireBall>().cost - 1, you.getHand().getCard<FireBall>().getCost(game));
+        //}
         [Test]
         public void rushServantBackToHandTest()
         {

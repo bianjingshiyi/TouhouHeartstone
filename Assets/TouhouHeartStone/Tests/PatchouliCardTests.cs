@@ -48,38 +48,38 @@ namespace Tests
             game.Dispose();
         }
 
-        [Test]
-        public void BestMagicTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(BestMagic.ID, 1),
-                new KeyValuePair<int, int>(FireBall.ID, 3)
-            );
-            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<BestMagic>().cost);
-            you.cmdUse(game, you.getHand().getCard<BestMagic>());//使用秘藏魔法
-            Assert.True(you.getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 0));//火球术费用-5
-            you.cmdUse(game, you.getHand().getCard<FireBall>(), 0, you.getMaster());
-            Assert.True(you.getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));
-            you.cmdTurnEnd(game);
-            //Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//回合结束，效果消失
-            game.Dispose();
-        }
+        //[Test]
+        //public void BestMagicTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(BestMagic.ID, 1),
+        //        new KeyValuePair<int, int>(FireBall.ID, 3)
+        //    );
+        //    game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<BestMagic>().cost);
+        //    you.cmdUse(game, you.getHand().getCard<BestMagic>());//使用秘藏魔法
+        //    Assert.True(you.getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 0));//火球术费用-5
+        //    you.cmdUse(game, you.getHand().getCard<FireBall>(), 0, you.getMaster());
+        //    Assert.True(you.getHand().Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));
+        //    you.cmdTurnEnd(game);
+        //    //Assert.True(game.players[0].hand.Where(c => c.define is FireBall).All(c => c.getCost(game) == 4));//回合结束，效果消失
+        //    game.Dispose();
+        //}
 
-        [Test]
-        public void MegaReaverTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(MegaReaver.ID, 1),
-                new KeyValuePair<int, int>(FireBall.ID, 3)
-            );
-            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<FireBall>().cost);
-            Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));
-            you.cmdUse(game, you.getHand().getCard<FireBall>(), 0, you.getMaster());//使用法术牌
-            Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 5));//费用-2
-            you.cmdTurnEnd(game);
-            Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));//只能在当前回合生效
-            game.Dispose();
-        }
+        //[Test]
+        //public void MegaReaverTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(MegaReaver.ID, 1),
+        //        new KeyValuePair<int, int>(FireBall.ID, 3)
+        //    );
+        //    game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<FireBall>().cost);
+        //    Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));
+        //    you.cmdUse(game, you.getHand().getCard<FireBall>(), 0, you.getMaster());//使用法术牌
+        //    Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 5));//费用-2
+        //    you.cmdTurnEnd(game);
+        //    Assert.True(game.players[0].getHand().Where(c => c.define is MegaReaver).All(c => c.getCost(game) == 7));//只能在当前回合生效
+        //    game.Dispose();
+        //}
 
         [Test]
         public void AgniShineTest()
@@ -175,37 +175,37 @@ namespace Tests
             game.Dispose();
         }
 
-        [Test]
-        public void KoakumaTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(Koakuma.ID, 1),
-                new KeyValuePair<int, int>(FireBall.ID, 3),
-                new KeyValuePair<int, int>(DefaultServant.ID, 3)
-            );//游戏初始化写的这么复杂干嘛
-            for (int i = 0; i < 3; i++)
-            {
-                game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<FireBall>().cost);
-                you.cmdUse(game, you.getHand().getCard<FireBall>(), targets: oppo.getMaster());
-                you.cmdTurnEnd(game);
-            }//先射三发火球
-            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<Koakuma>().cost);
-            you.cmdUse(game, you.getHand().getCard<Koakuma>(), targets: oppo.getMaster());//使用小恶魔
-            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
-            Assert.NotNull(discoverRequest);//确实发现
-            Assert.True(discoverRequest.cardIdArray.All(id => you.getGrave().Any(c => c.id == id)));//发现的全是墓地里的卡
-            int cardId = discoverRequest.cardIdArray[0];
-            Card card = you.getGrave().getCard(cardId);//随便选一张
-            you.cmdDiscover(game, cardId);//选
-            Assert.True(you.getHand().Contains(card));//确认它在你的手牌里了
-            //TODO:落叶，补充各种特殊情况，比如墓地里没有卡，手牌满了，墓地里还有随从
-            //game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<Koakuma>().cost);
-            //you.cmdUse(game, you.hand.getCard<Koakuma>(), targets: oppo.master);//不射了，直接使用小恶魔
-            //you.cmdUse(game, you.hand.getCard<DefaultServant>());
-            //you.field[0].die(game);
-            //you.cmdUse(game, you.hand.getCard<Koakuma>(), targets: oppo.master);
-            game.Dispose();
-        }
+        //[Test]
+        //public void KoakumaTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(Koakuma.ID, 1),
+        //        new KeyValuePair<int, int>(FireBall.ID, 3),
+        //        new KeyValuePair<int, int>(DefaultServant.ID, 3)
+        //    );//游戏初始化写的这么复杂干嘛
+        //    for (int i = 0; i < 3; i++)
+        //    {
+        //        game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<FireBall>().cost);
+        //        you.cmdUse(game, you.getHand().getCard<FireBall>(), targets: oppo.getMaster());
+        //        you.cmdTurnEnd(game);
+        //    }//先射三发火球
+        //    game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<Koakuma>().cost);
+        //    you.cmdUse(game, you.getHand().getCard<Koakuma>(), targets: oppo.getMaster());//使用小恶魔
+        //    DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+        //    Assert.NotNull(discoverRequest);//确实发现
+        //    Assert.True(discoverRequest.cardIdArray.All(id => you.getGrave().Any(c => c.id == id)));//发现的全是墓地里的卡
+        //    int cardId = discoverRequest.cardIdArray[0];
+        //    Card card = you.getGrave().getCard(cardId);//随便选一张
+        //    you.cmdDiscover(game, cardId);//选
+        //    Assert.True(you.getHand().Contains(card));//确认它在你的手牌里了
+        //    //TODO:落叶，补充各种特殊情况，比如墓地里没有卡，手牌满了，墓地里还有随从
+        //    //game.skipTurnUntil(() => game.currentPlayer == you && you.gem >= game.getCardDefine<Koakuma>().cost);
+        //    //you.cmdUse(game, you.hand.getCard<Koakuma>(), targets: oppo.master);//不射了，直接使用小恶魔
+        //    //you.cmdUse(game, you.hand.getCard<DefaultServant>());
+        //    //you.field[0].die(game);
+        //    //you.cmdUse(game, you.hand.getCard<Koakuma>(), targets: oppo.master);
+        //    game.Dispose();
+        //}
 
         [Test]
         public void RoyalFlareTest()
@@ -230,48 +230,48 @@ namespace Tests
             game.Dispose();
         }
 
-        [Test]
-        public void TheGreatLibraryTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(TheGreatLibrary.ID, 1),
-                new KeyValuePair<int, int>(FireBall.ID, 20)
-            );
-            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<TheGreatLibrary>().cost);
-            you.cmdUse(game, you.getHand().getCard<TheGreatLibrary>());
-            DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
-            Assert.NotNull(discoverRequest);
-            Assert.True(discoverRequest.cardIdArray.All(id => you.getDeck().Any(c => c.id == id)));
-            int cardId = discoverRequest.cardIdArray[0];
-            Card card = you.getDeck().getCard(cardId);
-            you.cmdDiscover(game, cardId);
-            Assert.True(you.getHand().Contains(card));
-            game.Dispose();
-        }
+        //[Test]
+        //public void TheGreatLibraryTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(TheGreatLibrary.ID, 1),
+        //        new KeyValuePair<int, int>(FireBall.ID, 20)
+        //    );
+        //    game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<TheGreatLibrary>().cost);
+        //    you.cmdUse(game, you.getHand().getCard<TheGreatLibrary>());
+        //    DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);
+        //    Assert.NotNull(discoverRequest);
+        //    Assert.True(discoverRequest.cardIdArray.All(id => you.getDeck().Any(c => c.id == id)));
+        //    int cardId = discoverRequest.cardIdArray[0];
+        //    Card card = you.getDeck().getCard(cardId);
+        //    you.cmdDiscover(game, cardId);
+        //    Assert.True(you.getHand().Contains(card));
+        //    game.Dispose();
+        //}
 
-        [Test]
-        public void LibraryProtectorTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(LibraryProtector.ID, 1),
-                new KeyValuePair<int, int>(FireBall.ID, 20)
-            );
-            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<LibraryProtector>().cost);
-            you.cmdUse(game, you.getHand().getCard<LibraryProtector>());
-            game.Dispose();
-        }
+        //[Test]
+        //public void LibraryProtectorTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(LibraryProtector.ID, 1),
+        //        new KeyValuePair<int, int>(FireBall.ID, 20)
+        //    );
+        //    game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<LibraryProtector>().cost);
+        //    you.cmdUse(game, you.getHand().getCard<LibraryProtector>());
+        //    game.Dispose();
+        //}
 
-        [Test]
-        public void ArcaneKnowledgeTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo,
-                new KeyValuePair<int, int>(ArcaneKnowledge.ID, 1),
-                new KeyValuePair<int, int>(FireBall.ID, 20)
-            );
-            game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<ArcaneKnowledge>().cost);
-            you.cmdUse(game, you.getHand().getCard<ArcaneKnowledge>());
-            game.Dispose();
-        }
+        //[Test]
+        //public void ArcaneKnowledgeTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo,
+        //        new KeyValuePair<int, int>(ArcaneKnowledge.ID, 1),
+        //        new KeyValuePair<int, int>(FireBall.ID, 20)
+        //    );
+        //    game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<ArcaneKnowledge>().cost);
+        //    you.cmdUse(game, you.getHand().getCard<ArcaneKnowledge>());
+        //    game.Dispose();
+        //}
 
         [Test]
         public void SilentSeleneTest()

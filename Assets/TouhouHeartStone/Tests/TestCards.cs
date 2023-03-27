@@ -508,119 +508,131 @@ namespace Tests
         }
     }
 
-    public class MountainGaint : ServantCardDefine
-    {
-        public const int ID = 0x00110010;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 12;
-        public override int attack { get; set; } = 8;
-        public override int life { get; set; } = 8;
+    //public class MountainGaint : ServantCardDefine
+    //{
+    //    public const int ID = 0x00110010;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 12;
+    //    public override int attack { get; set; } = 8;
+    //    public override int life { get; set; } = 8;
 
-        private IEffect[] effects1 = new IEffect[]
-        {
-            new GeneratedEffect(new string[]{ PILE.HAND },new ActionNode("SetProperty",new ActionValueRef[]//添加属性修改器并设置修改器的数值为改卡拥有者手牌除去自己的数量
-            {
-                new ActionValueRef(new ActionNode("ThisCard")),
-                new ActionValueRef(new ActionNode("GetUniquePropertyName",new ActionValueRef[]
-                {
-                    new ActionValueRef(new ActionNode("StringConst",new object[]{ "MountainGaintCostModifier" }))
-                })),
-                new ActionValueRef(new ActionNode("AddIntModifier",new ActionValueRef[]
-                {
-                    new ActionValueRef(new ActionNode("ThisCard")),
-                    new ActionValueRef(new ActionNode("StringConst",new object[] { DEFINE.COST })),
-                    new ActionValueRef(new ActionNode("IntegerOperation", new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("IntegerConst", new object[]{ 0 })),
-                        new ActionValueRef(new ActionNode("GetCount", new ActionValueRef[]
-                        {
-                            new ActionValueRef(new ActionNode("Except", new ActionValueRef[]
-                            {
-                                new ActionValueRef(new ActionNode("GetPile", new ActionValueRef[]
-                                {
-                                    new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
-                                    {
-                                        new ActionValueRef(new ActionNode("ThisCard"))
-                                    })),
-                                    new ActionValueRef(new ActionNode("StringConst",new object[]{ PILE.HAND }))
-                                })),
-                                new ActionValueRef(new ActionNode("ThisCard"))
-                            }))
-                        }))
-                    }, new object[]{ IntegerOperator.sub })),
-                    new ActionValueRef(new ActionNode("BooleanConst", new object[] { false }))
-                }))
-            }), new ActionNode("RemoveModifier", new ActionValueRef[]//移除属性修改器
-            {
-                new ActionValueRef(new ActionNode("ThisCard")),
-                new ActionValueRef(new ActionNode("GetProperty",new ActionValueRef[]
-                {
-                    new ActionValueRef(new ActionNode("ThisCard")),
-                    new ActionValueRef(new ActionNode("GetUniquePropertyName", new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("StringConst", new object[]{ "MountainGaintCostModifier" }))
-                    }))
-                }))
-            }), new TriggerGraph[]
-            {
-                new TriggerGraph("AfterMoveCardEvent", new ActionValueRef(new ActionNode("IsPlayerPileChanged",new ActionValueRef[]//当拥有者的手牌发生改变时
-                {
-                    new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("ThisCard"))
-                    })),
-                    new ActionValueRef(new ActionNode("StringConst",new object[]{ PILE.HAND }))
-                })), new ActionNode("SetIntPropModifierValue",new ActionValueRef[]
-                {
-                    new ActionValueRef(new ActionNode("ThisCard")),
-                    new ActionValueRef(new ActionNode("GetProperty",new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("ThisCard")),
-                        new ActionValueRef(new ActionNode("GetUniquePropertyName", new ActionValueRef[]
-                        {
-                            new ActionValueRef(new ActionNode("StringConst", new object[]{ "MountainGaintCostModifier" }))
-                        }))
-                    })),
-                    new ActionValueRef(new ActionNode("IntegerOperation", new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("IntegerConst", new object[]{ 0 })),
-                        new ActionValueRef(new ActionNode("GetCount", new ActionValueRef[]
-                        {
-                            new ActionValueRef(new ActionNode("Except", new ActionValueRef[]
-                            {
-                                new ActionValueRef(new ActionNode("GetPile", new ActionValueRef[]
-                                {
-                                    new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
-                                    {
-                                        new ActionValueRef(new ActionNode("ThisCard"))
-                                    })),
-                                    new ActionValueRef(new ActionNode("StringConst",new object[]{ PILE.HAND }))
-                                })),
-                                new ActionValueRef(new ActionNode("ThisCard"))
-                            }))
-                        }))
-                    }, new object[]{ IntegerOperator.sub }))
-                }))//设置属性修改器的值等于手牌数量
-            })
-            //,
-            //new IntPropFixer<Pile.MoveCardEventArg>(PileFlag.hand,new IntPropFixer<Pile.MoveCardEventArg>.ModifierFixer(new CostModifier(0),(g,c,b,a)=>
-            //{
-            //    int v = -c.getOwner().getHand().Where(c1=>c1!=c).Count();
-            //    g.logger.log(c+"的花费=>"+v);
-            //    return v;
-            //}))
-        };
+    //    private IEffect[] effects1 = new IEffect[]
+    //    {
+    //        getEffect()
+    //    };
 
-        public override IEffect[] getEffects()
-        {
-            return effects1;
-        }
+    //    public override IEffect[] getEffects()
+    //    {
+    //        return effects1;
+    //    }
 
-        public override void setEffects(IEffect[] value)
-        {
-            effects1 = value;
-        }
-    }
+    //    public override void setEffects(IEffect[] value)
+    //    {
+    //        effects1 = value;
+    //    }
+    //    private static IEffect getEffect()
+    //    {
+    //        var piles = new string[] { PILE.HAND };
+    //        var effect = new GeneratedEffect();
+
+    //        var thisCardNode = effect.graph.createActionNode("ThisCard");
+    //        var setPropNode = effect.graph.createActionNode("SetProperty");
+    //        var getUniquePropertyNameNode = effect.graph.createActionNode("GetUniquePropertyName");
+
+    //        effect.graph.connect(getUniquePropertyNameNode, "")
+    //        new ActionNode("GetUniquePropertyName", new ActionValueRef[]
+    //            {
+    //                new ActionValueRef(new ActionNode("StringConst",new object[]{ "MountainGaintCostModifier" }))
+    //            })
+
+    //        //添加属性修改器并设置修改器的数值为改卡拥有者手牌除去自己的数量
+
+    //        new ActionValueRef[]
+    //        {
+    //            new ActionValueRef(new ActionNode("ThisCard")),
+    //            new ActionValueRef(),
+    //            new ActionValueRef(new ActionNode("AddIntModifier",new ActionValueRef[]
+    //            {
+    //                new ActionValueRef(new ActionNode("ThisCard")),
+    //                new ActionValueRef(new ActionNode("StringConst",new object[] { DEFINE.COST })),
+    //                new ActionValueRef(new ActionNode("IntegerOperation", new ActionValueRef[]
+    //                {
+    //                    new ActionValueRef(new ActionNode("IntegerConst", new object[]{ 0 })),
+    //                    new ActionValueRef(new ActionNode("GetCount", new ActionValueRef[]
+    //                    {
+    //                        new ActionValueRef(new ActionNode("Except", new ActionValueRef[]
+    //                        {
+    //                            new ActionValueRef(new ActionNode("GetPile", new ActionValueRef[]
+    //                            {
+    //                                new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
+    //                                {
+    //                                    new ActionValueRef(new ActionNode("ThisCard"))
+    //                                })),
+    //                                new ActionValueRef(new ActionNode("StringConst",new object[]{ PILE.HAND }))
+    //                            })),
+    //                            new ActionValueRef(new ActionNode("ThisCard"))
+    //                        }))
+    //                    }))
+    //                }, new object[]{ IntegerOperator.sub })),
+    //                new ActionValueRef(new ActionNode("BooleanConst", new object[] { false }))
+    //            }))
+    //            }
+
+
+    //        new ActionNode("RemoveModifier", new ActionValueRef[]//移除属性修改器
+    //        {
+    //            new ActionValueRef(new ActionNode("ThisCard")),
+    //            new ActionValueRef(new ActionNode("GetProperty",new ActionValueRef[]
+    //            {
+    //                new ActionValueRef(new ActionNode("ThisCard")),
+    //                new ActionValueRef(new ActionNode("GetUniquePropertyName", new ActionValueRef[]
+    //                {
+    //                    new ActionValueRef(new ActionNode("StringConst", new object[]{ "MountainGaintCostModifier" }))
+    //                }))
+    //            }))
+    //        }), new TriggerGraph[]
+    //        {
+    //            new TriggerGraph("AfterMoveCardEvent", new ActionValueRef(new ActionNode("IsPlayerPileChanged",new ActionValueRef[]//当拥有者的手牌发生改变时
+    //            {
+    //                new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
+    //                {
+    //                    new ActionValueRef(new ActionNode("ThisCard"))
+    //                })),
+    //                new ActionValueRef(new ActionNode("StringConst",new object[]{ PILE.HAND }))
+    //            })), new ActionNode("SetIntPropModifierValue",new ActionValueRef[]
+    //            {
+    //                new ActionValueRef(new ActionNode("ThisCard")),
+    //                new ActionValueRef(new ActionNode("GetProperty",new ActionValueRef[]
+    //                {
+    //                    new ActionValueRef(new ActionNode("ThisCard")),
+    //                    new ActionValueRef(new ActionNode("GetUniquePropertyName", new ActionValueRef[]
+    //                    {
+    //                        new ActionValueRef(new ActionNode("StringConst", new object[]{ "MountainGaintCostModifier" }))
+    //                    }))
+    //                })),
+    //                new ActionValueRef(new ActionNode("IntegerOperation", new ActionValueRef[]
+    //                {
+    //                    new ActionValueRef(new ActionNode("IntegerConst", new object[]{ 0 })),
+    //                    new ActionValueRef(new ActionNode("GetCount", new ActionValueRef[]
+    //                    {
+    //                        new ActionValueRef(new ActionNode("Except", new ActionValueRef[]
+    //                        {
+    //                            new ActionValueRef(new ActionNode("GetPile", new ActionValueRef[]
+    //                            {
+    //                                new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
+    //                                {
+    //                                    new ActionValueRef(new ActionNode("ThisCard"))
+    //                                })),
+    //                                new ActionValueRef(new ActionNode("StringConst",new object[]{ PILE.HAND }))
+    //                            })),
+    //                            new ActionValueRef(new ActionNode("ThisCard"))
+    //                        }))
+    //                    }))
+    //                }, new object[]{ IntegerOperator.sub }))
+    //            }))//设置属性修改器的值等于手牌数量
+    //        }
+    //    }
+    //}
     /// <summary>
     /// 冰环法术
     /// </summary>
@@ -755,48 +767,48 @@ namespace Tests
         //    }
         //}
     }
-    class FireBall : SpellCardDefine
-    {
-        public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x012;
-        public override int id { get; set; } = ID;
-        public override int cost { get; set; } = 4;
+    //class FireBall : SpellCardDefine
+    //{
+    //    public const int ID = TestMaster.ID | CATEGORY.SPELL | 0x012;
+    //    public override int id { get; set; } = ID;
+    //    public override int cost { get; set; } = 4;
 
-        private IEffect[] effects1 = new IEffect[]
-        {
-            new GeneratedEffect(null, new TargetChecker[]
-            {
-                new TargetChecker("Character", null, "必须以角色为目标")
-            }, new ActionNode("Damage", new ActionValueRef[]
-            {
-                new ActionValueRef(new ActionNode("GetTarget", new object[] { "Target" })),
-                new ActionValueRef(new ActionNode("GetVariable", new object[] { "Card" })),
-                new ActionValueRef(new ActionNode("GetSpellDamage", new ActionValueRef[]
-                {
-                    new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
-                    {
-                        new ActionValueRef(new ActionNode("GetVariable", new object[] { "Card" }))
-                    })),
-                    new ActionValueRef(new ActionNode("IntegerConst", new object[] { 6 }))
-                }))
-            }), new string[0])
-            ,
-            new LambdaSingleTargetEffect((game,card,target)=>
-            {
-                target.damage(game, card, card.getOwner().getSpellDamage(game, 6));
-                return Task.CompletedTask;
-            })
-        };
+    //    private IEffect[] effects1 = new IEffect[]
+    //    {
+    //        new GeneratedEffect(null, new TargetChecker[]
+    //        {
+    //            new TargetChecker("Character", null, "必须以角色为目标")
+    //        }, new ActionNode("Damage", new ActionValueRef[]
+    //        {
+    //            new ActionValueRef(new ActionNode("GetTarget", new object[] { "Target" })),
+    //            new ActionValueRef(new ActionNode("GetVariable", new object[] { "Card" })),
+    //            new ActionValueRef(new ActionNode("GetSpellDamage", new ActionValueRef[]
+    //            {
+    //                new ActionValueRef(new ActionNode("GetOwner", new ActionValueRef[]
+    //                {
+    //                    new ActionValueRef(new ActionNode("GetVariable", new object[] { "Card" }))
+    //                })),
+    //                new ActionValueRef(new ActionNode("IntegerConst", new object[] { 6 }))
+    //            }))
+    //        }), new string[0])
+    //        ,
+    //        new LambdaSingleTargetEffect((game,card,target)=>
+    //        {
+    //            target.damage(game, card, card.getOwner().getSpellDamage(game, 6));
+    //            return Task.CompletedTask;
+    //        })
+    //    };
 
-        public override IEffect[] getEffects()
-        {
-            return effects1;
-        }
+    //    public override IEffect[] getEffects()
+    //    {
+    //        return effects1;
+    //    }
 
-        public override void setEffects(IEffect[] value)
-        {
-            effects1 = value;
-        }
-    }
+    //    public override void setEffects(IEffect[] value)
+    //    {
+    //        effects1 = value;
+    //    }
+    //}
     /// <summary>
     /// 剧毒女祭师
     /// </summary>

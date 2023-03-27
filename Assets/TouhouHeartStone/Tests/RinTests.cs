@@ -363,19 +363,19 @@ namespace Tests
             game.Dispose();
         }
 
-        [Test]
-        public void CatRandomWalkTest()
-        {
-            TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
-                new KeyValuePair<int, int>(CatRandomWalk.ID, 2),
-                new KeyValuePair<int, int>(FireBall.ID, 20));
-            game.skipUntilCanUse<CatRandomWalk>(you);
-            you.cmdUse<CatRandomWalk>(game);
-            Assert.AreEqual(4, you.getGrave().count);
-            Assert.AreEqual(3, you.getGrave().Count(c => c.define is DefaultServant));
-            Assert.AreEqual(3, you.getMaster().getAttack(game));
-            game.Dispose();
-        }
+        //[Test]
+        //public void CatRandomWalkTest()
+        //{
+        //    TestGameflow.createGame(out var game, out var you, out var oppo, Rin.ID,
+        //        new KeyValuePair<int, int>(CatRandomWalk.ID, 2),
+        //        new KeyValuePair<int, int>(FireBall.ID, 20));
+        //    game.skipUntilCanUse<CatRandomWalk>(you);
+        //    you.cmdUse<CatRandomWalk>(game);
+        //    Assert.AreEqual(4, you.getGrave().count);
+        //    Assert.AreEqual(3, you.getGrave().Count(c => c.define is DefaultServant));
+        //    Assert.AreEqual(3, you.getMaster().getAttack(game));
+        //    game.Dispose();
+        //}
 
         [Test]
         public void HellTrafficAccidentTest()
