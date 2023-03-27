@@ -27,22 +27,12 @@ namespace Game
         /// <param name="variableName"></param>
         /// <param name="value"></param>
         [ActionNodeMethod(EDIOTR_NODE_NAME_SET_TEMP_VARIABLE, EDIOTR_CATEGORY_NAME_ADVANCED)]
-        public static void setTempVariable(Scope scope,
+        public static void setTempVariable(Flow flow,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] string variableName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
-            var curScope = scope;
-            var key = "TEMPVAR_" + variableName;
-            while (curScope != null)
-            {
-                if (curScope.localVarDict.ContainsKey(key))
-                {
-                    curScope.localVarDict[key] = value;
-                    return;
-                }
-                curScope = curScope.parentScope;
-            }
-            scope.localVarDict[key] = value;
+            var key = variableName;
+            flow.setFlowVariable(key, value);
         }
         /// <summary>
         /// 获取临时变量
@@ -51,18 +41,11 @@ namespace Game
         /// <param name="variableName"></param>
         /// <param name="value"></param>
         [ActionNodeMethod(EDIOTR_NODE_NAME_GET_TEMP_VARIABLE, EDIOTR_CATEGORY_NAME_ADVANCED)]
-        public static object getTempVariable(Scope scope,
+        public static object getTempVariable(Flow flow,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] string variableName)
         {
-            var curScope = scope;
-            var key = "TEMPVAR_" + variableName;
-            while (curScope != null)
-            {
-                if (curScope.localVarDict.TryGetValue(key, out object value))
-                    return value;
-                curScope = curScope.parentScope;
-            }
-            return null;
+            var key = variableName;
+            return flow.getFlowVariable(key);
         }
     }
 }

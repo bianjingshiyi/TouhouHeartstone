@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Controllers;
 using TouhouCardEngine;
 
 namespace Game
@@ -22,7 +24,10 @@ namespace Game
                     }
                 }
                 id++;
-                GeneratedActionDefine actionDefine = new GeneratedActionDefine(id, null, name, null, null, null, null, null);
+                id++;
+                var graph = new ActionGraph();
+                GeneratedActionDefine actionDefine = new GeneratedActionDefine(graph, id, null, name, null, null, null);
+                actionDefine.InitNodes();
                 cardPool.actionDefineList.Add(actionDefine);
 
                 return actionDefine;

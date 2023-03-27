@@ -1,4 +1,5 @@
-﻿using TouhouCardEngine;
+﻿using Controllers;
+using TouhouCardEngine;
 using TouhouHeartstone;
 
 namespace Game
@@ -29,16 +30,20 @@ namespace Game
             }
             return effectNames;
         }
-        public GeneratedEffect createEffectByIndex(int index)
+        public GeneratedEffect createEffectByIndex(long cardPoolId, int index)
         {
+            ActionGraph graph = new ActionGraph();
+            GeneratedEffect effect;
             if (index == 3)
-                return new GeneratedDeathRattle();
+                effect = new GeneratedDeathRattle(graph);
             else if (index == 2)
-                return new GeneratedBattlecry();
+                effect = new GeneratedBattlecry(graph);
             else if (index == 1)
-                return new GeneratedAura();
+                effect = new GeneratedAura(graph);
             else
-                return new GeneratedEffect();
+                effect = new GeneratedEffect(graph);
+            effect.Init();
+            return effect;
         }
         public int getEffectTypeIndex(GeneratedEffect effect)
         {
@@ -46,7 +51,7 @@ namespace Game
                 return 3;
             else if (effect is GeneratedBattlecry)
                 return 2;
-            else if (effect is GeneratedAura || effect is GeneratedHalo)
+            else if (effect is GeneratedAura)
                 return 1;
             else
                 return 0;

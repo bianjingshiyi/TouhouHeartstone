@@ -6,53 +6,31 @@ namespace Game
 {
     partial class CardManager
     {
-        public ActionNodeGraphInfo getOrCreateCardEffectActionNodeGraphInfo(long cardPoolId, int cardDefineId, int effectIndex, string entryType, int triggerIndex)
+        public ActionNodeGraphInfo getOrCreateCardEffectActionNodeGraphInfo(long cardPoolId, int cardDefineId, int effectIndex)
         {
             CardPool cardPool = getLocalCardPool(cardPoolId);
             if (cardPool != null)
             {
-                ActionNodeGraphInfo info = cardPool.actionNodeGraphInfoList.Find(a =>
-                    a.cardId == cardDefineId &&
-                    a.effectIndex == effectIndex &&
-                    a.entryType == entryType &&
-                    a.triggerIndex == triggerIndex);
-                if (info == null)
+                ActionNodeGraphInfo info = new ActionNodeGraphInfo()
                 {
-                    info = new ActionNodeGraphInfo()
-                    {
-                        cardId = cardDefineId,
-                        effectIndex = effectIndex,
-                        entryType = entryType,
-                        triggerIndex = triggerIndex
-                    };
-                    cardPool.actionNodeGraphInfoList.Add(info);
-                }
+                    cardId = cardDefineId,
+                    effectIndex = effectIndex
+                };
                 return info;
             }
             else
                 throw new KeyNotFoundException("不存在卡池" + cardPoolId);
         }
-        public ActionNodeGraphInfo getOrCreateBuffEffectActionNodeGraphInfo(long cardPoolId, int buffDefineId, int effectIndex, string entryType, int triggerIndex)
+        public ActionNodeGraphInfo getOrCreateBuffEffectActionNodeGraphInfo(long cardPoolId, int buffDefineId, int effectIndex)
         {
             CardPool cardPool = getLocalCardPool(cardPoolId);
             if (cardPool != null)
             {
-                ActionNodeGraphInfo info = cardPool.actionNodeGraphInfoList.Find(a =>
-                    a.buffId == buffDefineId &&
-                    a.effectIndex == effectIndex &&
-                    a.entryType == entryType &&
-                    a.triggerIndex == triggerIndex);
-                if (info == null)
+                ActionNodeGraphInfo info = new ActionNodeGraphInfo()
                 {
-                    info = new ActionNodeGraphInfo()
-                    {
-                        buffId = buffDefineId,
-                        effectIndex = effectIndex,
-                        entryType = entryType,
-                        triggerIndex = triggerIndex
-                    };
-                    cardPool.actionNodeGraphInfoList.Add(info);
-                }
+                    buffId = buffDefineId,
+                    effectIndex = effectIndex
+                };
                 return info;
             }
             else
@@ -63,16 +41,10 @@ namespace Game
             CardPool cardPool = getLocalCardPool(cardPoolId);
             if (cardPool != null)
             {
-                ActionNodeGraphInfo info = cardPool.actionNodeGraphInfoList.Find(a => a.actionDefineId == actionDefineId);
-                if (info == null)
+                var info = new ActionNodeGraphInfo()
                 {
-                    info = new ActionNodeGraphInfo()
-                    {
-                        actionDefineId = actionDefineId,
-                        entryType = "actionDefine" // 为了防止错误修复把这玩意的entryNode改成triggerList
-                    };
-                    cardPool.actionNodeGraphInfoList.Add(info);
-                }
+                    actionDefineId = actionDefineId
+                };
                 return info;
             }
             else

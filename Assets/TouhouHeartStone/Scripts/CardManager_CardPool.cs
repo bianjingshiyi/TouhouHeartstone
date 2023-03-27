@@ -117,7 +117,7 @@ namespace Game
             cardPoolInfo.cardPoolId = cardPoolId;
             cardPoolInfo.cardPoolName = StringTable.EDITOR_NEW_CARDPOOL_DEFAULT_NAME;
             cardPoolInfo.imageResPath = null;
-            cardPoolInfo.versionNumber = CARD_POOL_VERSION_1;
+            cardPoolInfo.versionNumber = CURRENT_CARD_POOL_VERSION;
             cardPool = new CardPool();
             CardPoolReference cardPoolRef = new CardPoolReference(cardPoolId, 0);
             _cardPoolDict[cardPoolRef] = cardPool;
@@ -179,7 +179,7 @@ namespace Game
                 path = path.Substring(3, path.Length - 3);
             }
             cardPoolInfo.version = 0;
-            cardPoolInfo.versionNumber = CARD_POOL_VERSION_1;
+            cardPoolInfo.versionNumber = CURRENT_CARD_POOL_VERSION;
             //初始化JSON
             if (!JsonHelper.isInited)
             {
@@ -290,7 +290,13 @@ namespace Game
             CardPoolInfo cardPoolInfo = parseCardPoolInfo(infoJson);
 
             var cardPoolId = cardPoolInfo.cardPoolId;
-            if (cardPoolInfo.versionNumber >= CARD_POOL_VERSION_1 || cardPoolInfo.version >= CARD_POOL_VERSION_0_3)
+            if (cardPoolInfo.versionNumber >= CARD_POOL_VERSION_2)
+            {
+                var remain = string.Join("\n", lines.Skip(1));
+                var cardPool = parseCardPool_v2(remain, cardPoolId);
+                return (cardPoolInfo, cardPool);
+            }
+            else if (cardPoolInfo.versionNumber >= CARD_POOL_VERSION_1 || cardPoolInfo.version >= CARD_POOL_VERSION_0_3)
             {
                 var remain = string.Join("\n", lines.Skip(1));
                 var cardPool = parseCardPool_v1(remain, cardPoolId);
@@ -354,12 +360,14 @@ namespace Game
 
             //错误信息修复
             bool hasUnsavedFix = false;
-            Dictionary<string, ActionDefine> actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
+            void fixData(IActionNode node)
             {
-                typeof(CardEngine).Assembly,
-                typeof(HearthStoneRule).Assembly,
-                typeof(EffectEditorLibrary).Assembly
-            });
+                if (node is ActionNode action)
+                {
+                    fixActionNodeIncorrectData(action);
+                }
+            }
+            Dictionary<string, ActionDefine> actionDefineDict = game.actionDefineDict;
 
             // 遍历所有节点图并修复信息。
             traverseActionGraphs(cardPool,
@@ -419,7 +427,7 @@ namespace Game
                         continue;
                     fixTriggerIncorrectData(trigger);
                 }
-                effect.traverseActionNode(fixActionNodeIncorrectData);
+                effect.traverseActionNode(fixData);
             }
             // 用于遍历自定义动作的方法。
             void defineAction(GeneratedActionDefine define)
@@ -464,24 +472,25 @@ namespace Game
                         Debug.LogError("动作节点" + actionNode.id + "的名称未知：" + actionNode.defineName);
                     }
                 }
-                for (int i = 0; i < actionNode.consts.Length; i++)
+                foreach (var constPair in actionNode.consts)
                 {
-                    if (actionNode.consts[i] is CardReference cardRef)
+                    if (constPair.Value is CardReference cardRef)
                     {
                         //CardReference过期，使用DefineReference替代
-                        actionNode.consts[i] = new DefineReference(cardRef.cardPoolId, cardRef.cardId);
+                        actionNode.setConst(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
                     }
                 }
                 // 将旧版的“获取增益定义”的ID从int变为DefineReference。
-                if (actionNode.defineName == StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE)
+                if (actionNode.defineName == GetBuffDefineAction.defName)
                 {
-                    if (actionNode.consts != null && actionNode.consts.Length > 0 && actionNode.consts[0] is int buffId)
+                    var constValue = actionNode.getConst(GetBuffDefineAction.constName);
+                    if (constValue is int buffId)
                     {
-                        actionNode.consts[0] = new DefineReference(cardPoolInfo.cardPoolId, buffId);
+                        actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
                     }
                 }
             }
-            void fixTriggerIncorrectData(TriggerGraph trigger)
+            void fixTriggerIncorrectData(TriggerEntryNode trigger)
             {
                 foreach (var targetChecker in trigger.targetCheckerList)
                 {
@@ -1142,11 +1151,11 @@ namespace Game
             }
             return poolList.ToArray();
 
-            void addCardPoolByNode(ActionNode node)
+            void addCardPoolByNode(IActionNode node)
             {
                 foreach (var valueConst in node.consts)
                 {
-                    if (valueConst is DefineReference defRef)
+                    if (valueConst.Value is DefineReference defRef)
                     {
                         addCardPoolOfDefRef(defRef);
                     }
@@ -1203,15 +1212,20 @@ namespace Game
         }
 
         /// <summary>
-        /// 解析卡池文件，版本0.3-1.0
+        /// 解析卡池文件，版本1.0-2.0
         /// </summary>
         /// <param name="json"></param>
         /// <param name="cardPoolID"></param>
         /// <returns></returns>
-        CardPool parseCardPool_v1(string json, long cardPoolID)
+        CardPool parseCardPool_v2(string json, long cardPoolID)
         {
             SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
-            CardPool cardPool = serializableCardPool.toCardPool(game.editor.getTypeByName);
+
+            ActionDefineFinder defineFinder = name => game.getActionDefine(name, cardPoolID);
+            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
+            TypeFinder typeFinder = game.editor.getTypeByName;
+
+            CardPool cardPool = serializableCardPool.toCardPool(defineFinder, eventFinder, typeFinder);
             for (int i = 0; i < cardPool.cardDefineList.Count; i++)
             {
                 cardPool.cardDefineList[i].cardPoolId = cardPoolID;
@@ -1222,6 +1236,25 @@ namespace Game
             }
             return cardPool;
         }
+
+        /// <summary>
+        /// 解析卡池文件，版本0.3-1.0
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="cardPoolID"></param>
+        /// <returns></returns>
+        CardPool parseCardPool_v1(string json, long cardPoolID)
+        {
+            SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
+
+            ActionDefineFinder defineFinder = name => game.getActionDefine(name, cardPoolID);
+            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
+            TypeFinder typeFinder = game.editor.getTypeByName;
+
+            var convertor = new CardPoolConvertor(cardPoolID, serializableCardPool, defineFinder, eventFinder, typeFinder);
+            return convertor.Convert();
+        }
+
 
         /// <summary>
         /// 解析卡池文件，版本0.1-0.2
@@ -1274,22 +1307,6 @@ namespace Game
                     catch (Exception e)
                     {
                         throw new FormatException("反序列化卡池卡牌皮肤失败：" + e, e);
-                    }
-                }
-            }
-            //编辑器信息
-            if (lines.Length > 2)
-            {
-                var json = lines[2];
-                if (!string.IsNullOrEmpty(json))
-                {
-                    try
-                    {
-                        cardPool.actionNodeGraphInfoList.AddRange(JsonHelper.fromJson<ActionNodeGraphInfo[]>(json));
-                    }
-                    catch (Exception e)
-                    {
-                        throw new FormatException("反序列化卡池编辑器信息失败：" + e, e);
                     }
                 }
             }
@@ -1473,6 +1490,8 @@ namespace Game
         const float CARD_POOL_VERSION_0_2 = 0.2f;
         const float CARD_POOL_VERSION_0_1 = 0.1f;
         const int CARD_POOL_VERSION_1 = 1;
+        const int CARD_POOL_VERSION_2 = 2;
+        const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_2;
         public static readonly CardPoolReference builtinCardPoolReference = new CardPoolReference(0, 0);
         #endregion
     }

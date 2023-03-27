@@ -13,34 +13,32 @@ namespace Game
     public static partial class EffectEditorLibrary
     {
         [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION, null)]
-        public static Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+        public static async Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)] bool isTrue,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ActionNode thenAction,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELSE_ACTION, isOut: true)] ActionNode elseAction)
         {
-            Scope newScope = new Scope(scope);
-            if (isTrue)
-            {
-                return thenAction != null ? game.doActionsAsync(card, buff, eventArg, thenAction, newScope) : Task.CompletedTask;
-            }
-            else
-            {
-                return elseAction != null ? game.doActionsAsync(card, buff, eventArg, elseAction, newScope) : Task.CompletedTask;
-            }
+            var port = node.getOutputPort<ControlOutput>(isTrue ? nameof(thenAction) : nameof(elseAction));
+            flow.EnterScope();
+            await game.runActions(card, buff, eventArg, port);
+            flow.ExitScope();
         }
         [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_FOR_ACTION, null)]
-        public static async Task forAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+        public static async Task forAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ActionNode action,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME, isOut: true)] int repeatTime)
         {
             if (action == null)
                 return;
+            var repeatTimePort = node.getOutputPort<ValueOutput>(nameof(repeatTime));
+            var actionPort = node.getOutputPort<ControlOutput>(nameof(action));
             for (int i = 1; i <= count; i++)
             {
-                scope.setOutParamValue(0, i);
-                Scope newScope = new Scope(scope);
-                await game.doActionsAsync(card, buff, eventArg, action, newScope);
+                flow.setValue(repeatTimePort, i);
+                flow.EnterScope();
+                await game.runActions(card, buff, eventArg, actionPort);
+                flow.ExitScope();
             }
         }
 
@@ -52,7 +50,7 @@ namespace Game
         private const string EDIOTR_PARAM_NAME_STOP_CONDITION = "结束条件";
 
         [ActionNodeMethod(EDIOTR_NODE_NAME_DO_UNTIL_ACTION, null)]
-        public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+        public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] ActionNode condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ActionNode action,
@@ -63,21 +61,28 @@ namespace Game
             if (maxRepeatTime <= 0)
                 return;
             int times = 0;
+            bool finished = false;
+
+            var repeatTimePort = node.getOutputPort<ValueOutput>(nameof(repeatTime));
+            var actionPort = node.getOutputPort<ControlOutput>(nameof(action));
+            var conditionPort = node.getOutputPort<ControlOutput>(nameof(condition));
+            var connectedInput = conditionPort.getConnectedInputPort();
+            var resultPort = connectedInput?.node.getInputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
             do
             {
                 times++;
-                scope.setOutParamValue(0, times);
-                Scope newScope = new Scope(scope);
-                await game.doActionsAsync(card, buff, eventArg, action, newScope);
-                if (condition != null)
+                finished = false;
+
+                flow.EnterScope();
+                flow.setValue(repeatTimePort, times);
+                await game.runActions(card, buff, eventArg, actionPort);
+                if (resultPort != null && await game.getValue<bool>(card, buff, eventArg, resultPort))
                 {
-                    if (await game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope))
-                    {
-                        break;
-                    }
+                    finished = true;
                 }
+                flow.ExitScope();
             }
-            while (times < maxRepeatTime);
+            while (times < maxRepeatTime && !finished);
         }
         //  把这个“玩家”逐步移到下面几个去
         #region 玩家
@@ -245,20 +250,25 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
-        public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, Scope scope,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION, isConst: true)] ActionValueRef condition)
+        public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, IBuff buff, IEventArg eventArg, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION, isConst: true)] ActionNode condition)
         {
             Pile deck = card.owner.getDeck();
             List<Card> cardList = new List<Card>();
+            var conditionPort = node.getOutputPort<ControlOutput>(nameof(condition));
+            var connectedInput = conditionPort.getConnectedInputPort();
+            var resultPort = connectedInput?.node.getInputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
             for (int i = 0; i < deck.count; i++)
             {
-                Scope newScope = new Scope(scope);
-                bool result = true;
-                if (condition != null)
+
+                bool fits = true;
+                if (resultPort != null)
                 {
-                    await game.getActionReturnValueAsync<bool>(deck[i], null, null, condition.action, condition.index, newScope);
+                    flow.EnterScope();
+                    fits = await game.getValue<bool>(card, buff, eventArg, resultPort);
+                    flow.ExitScope();
                 }
-                if (result)
+                if (fits)
                 {
                     cardList.Add(deck[i]);
                 }
@@ -268,7 +278,7 @@ namespace Game
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
-        public static Card[] getCardsWithCondition(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+        public static async Task<Card[]> getCardsWithCondition(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_FILTERING_CARD, isOut: true)] Card filteringCard)
@@ -277,16 +287,22 @@ namespace Game
                 return Array.Empty<Card>();
 
             List<Card> cardList = new List<Card>();
+            var conditionPort = node.getOutputPort<ControlOutput>(nameof(condition));
+            var connectedInput = conditionPort.getConnectedInputPort();
+            var resultPort = connectedInput?.node.getInputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
+            var filteringPort = node.getOutputPort<ValueOutput>(nameof(filteringCard));
             for (int i = 0; i < cards.Length; i++)
             {
-                scope.setOutParamValue(0, cards[i]);
-                Scope newScope = new Scope(scope);
-                bool result = true;
-                if (condition != null)
+
+                bool fits = true;
+                if (resultPort != null)
                 {
-                    result = game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope).Result;
+                    flow.EnterScope();
+                    flow.setValue(filteringPort, cards[i]);
+                    fits = await game.getValue<bool>(card, buff, eventArg, resultPort);
+                    flow.ExitScope();
                 }
-                if (result)
+                if (fits)
                 {
                     cardList.Add(cards[i]);
                 }
@@ -321,12 +337,12 @@ namespace Game
         #endregion
         //  与增益相关
         #region 增益
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE, StringTable.EDITOR_NODE_CATEGORY_BUFF, "GetBuffDefine")]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]
-        public static BuffDefine getBuffDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ID, isConst: true)] DefineReference defRef)
-        {
-            return game.getBuffDefine(defRef.cardPoolId, defRef.defineId);
-        }
+        //[ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE, StringTable.EDITOR_NODE_CATEGORY_BUFF, "GetBuffDefine")]
+        //[return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]
+        //public static BuffDefine getBuffDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ID, isConst: true)] DefineReference defRef)
+        //{
+        //    return game.getBuffDefine(defRef.cardPoolId, defRef.defineId);
+        //}
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_THIS_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "ThisBuff")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
         public static Buff thisBuff(Buff buff)
@@ -697,7 +713,7 @@ namespace Game
         public const string EDITOR_PARAM_NAME_ARRAY_MISMATCHED = "不匹配的集合";
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_WHERE, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
-        public static Array where(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+        public static async Task<object[]> where(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] ActionNode condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
@@ -707,12 +723,26 @@ namespace Game
 
             List<object> objList = new List<object>();
             List<object> negList = new List<object>();
+
+            var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+            var conditionPort = node.getOutputPort<ControlOutput>(nameof(condition));
+            var connectedInput = conditionPort.getConnectedInputPort();
+            var resultPort = connectedInput?.node.getInputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
+
             for (int i = 0; i < array.Length; i++)
             {
                 object obj = array.GetValue(i);
-                scope.setOutParamValue(0, obj);
-                Scope newScope = new Scope(scope);
-                bool result = condition != null ? game.getActionReturnValueAsync<bool>(card, buff, eventArg, condition, scope: newScope).Result : true;
+
+                flow.setValue(elementPort, obj);
+
+
+                bool result = true;
+                if (resultPort != null)
+                {
+                    flow.EnterScope();
+                    result = await game.getValue<bool>(card, buff, eventArg, resultPort);
+                    flow.ExitScope();
+                }
 
                 if (result)
                 {
@@ -770,7 +800,7 @@ namespace Game
         /// </summary>
         [ActionNodeMethod(EDITOR_NODE_NAME_ORDER_BY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
-        public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+        public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_NODE_NAME_DESCENDING, isConst: true)] bool descending,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(EDITOR_NODE_NAME_ORDER_KEY)] ActionNode condition,
@@ -781,11 +811,22 @@ namespace Game
             if (condition == null)
                 return array;
 
+            var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+            var conditionPort = node.getOutputPort<ControlOutput>(nameof(condition));
+            var connectedInput = conditionPort.getConnectedInputPort();
+            var resultPort = connectedInput?.node.getInputPorts<ValueOutput>().FirstOrDefault();
+
             object func(object obj)
             {
-                scope.setOutParamValue(0, obj);
-                Scope newScope = new Scope(scope);
-                return game.getActionReturnValueAsync<object>(card, buff, eventArg, condition, scope: newScope).Result;
+                flow.setValue(elementPort, obj);
+                object value = null;
+                if (resultPort != null)
+                {
+                    flow.EnterScope();
+                    value = game.getValue<object>(card, buff, eventArg, resultPort).Result;
+                    flow.ExitScope();
+                }
+                return value;
             }
             if (!descending)
             {
@@ -820,7 +861,7 @@ namespace Game
         /// 遍历集合
         /// </summary>
         [ActionNodeMethod(EDITOR_NODE_NAME_FOREACH, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
-        public static async Task foreachAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+        public static async Task foreachAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION)] ActionNode action,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
@@ -829,11 +870,14 @@ namespace Game
                 return;
             if (action == null)
                 return;
+            var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+            var actionPort = node.getOutputPort<ControlOutput>(nameof(action));
             foreach (object ele in array)
             {
-                scope.setOutParamValue(0, ele);
-                Scope newScope = new Scope(scope);
-                await game.doActionsAsync(card, buff, eventArg, action, newScope);
+                flow.setValue(elementPort, ele);
+                flow.EnterScope();
+                await game.runActions(card, buff, eventArg, actionPort);
+                flow.ExitScope();
             }
         }
         public const string EDITOR_NODE_NAME_GET_RANDOM_ELEMENT = "获取集合中的随机元素";

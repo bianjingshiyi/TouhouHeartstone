@@ -1024,7 +1024,7 @@ namespace TouhouHeartstone
                 return true;
             else if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
             {
-                TriggerGraph activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
+                var activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
                 return activeTrigger != null && activeTrigger.targetCheckerList != null && activeTrigger.targetCheckerList.Count > 0;
             }
             else
@@ -1054,7 +1054,7 @@ namespace TouhouHeartstone
             }
             else if (card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault() is GeneratedEffect generatedEffect)
             {
-                TriggerGraph activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
+                var activeTrigger = generatedEffect.triggerList.FirstOrDefault(t => t.eventName == game.triggers.getName<HearthStoneRule.ActiveEventArg>());
                 if (activeTrigger != null && activeTrigger.targetCheckerList != null && activeTrigger.targetCheckerList.Count > 0)
                 {
                     foreach (TargetChecker targetChecker in activeTrigger.targetCheckerList)
