@@ -31,8 +31,6 @@ namespace Controllers
                 BsonClassMap.RegisterClassMap<SerializableFunctionNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedEffect)))
                 BsonClassMap.RegisterClassMap<GeneratedEffect>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedHalo)))
-                BsonClassMap.RegisterClassMap<GeneratedHalo>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedAura)))
                 BsonClassMap.RegisterClassMap<GeneratedAura>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(CompareOperator)))
@@ -41,6 +39,12 @@ namespace Controllers
                 BsonClassMap.RegisterClassMap<IntegerOperator>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(LogicOperator)))
                 BsonClassMap.RegisterClassMap<LogicOperator>();
+
+            // Action Graph V2.
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActionNode))) BsonClassMap.RegisterClassMap<SerializableActionNode>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableTriggerNode))) BsonClassMap.RegisterClassMap<SerializableTriggerNode>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedEntryNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedEntryNode>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedReturnNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedReturnNode>();
             isInited = true;
         }
         public static string toJson(this object obj, bool readFriendly = false)

@@ -5,15 +5,16 @@ using TouhouCardEngine;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using TouhouHeartstone;
+using UnityEditor.Graphs;
+using TouhouCardEngine.Interfaces;
 
 namespace Game
 {
-    [Serializable]
     public class CardPool
     {
         public List<CardDefine> cardDefineList = new List<CardDefine>();
         public List<CardSkinData> cardSkinList = new List<CardSkinData>();
-        public List<ActionNodeGraphInfo> actionNodeGraphInfoList = new List<ActionNodeGraphInfo>();
         public List<GeneratedBuffDefine> buffDefineList = new List<GeneratedBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
         public List<GeneratedActionDefine> actionDefineList = new List<GeneratedActionDefine>();
@@ -29,7 +30,6 @@ namespace Game
                 throw new ArgumentNullException(nameof(cardPool));
             cardDefineList = cardPool.cardDefineList.ConvertAll(c => new SerializableCardDefine(c));
             cardSkinList = cardPool.cardSkinList;
-            actionNodeGraphInfoList = cardPool.actionNodeGraphInfoList.ConvertAll(c => new SerializableActionNodeGraphInfo(c));
             buffDefineList = cardPool.buffDefineList.ConvertAll(b => new SerializableBuffDefine(b));
             buffSkinList = cardPool.buffSkinList;
             if (cardPool.actionDefineList.Count > 0)
@@ -38,102 +38,36 @@ namespace Game
                 actionDefineList = new List<SerializableActionDefine>();
         }
         #endregion
-        public CardPool toCardPool(Func<string, Type> typeFinder)
+        public CardPool toCardPool(ActionDefineFinder defineFinder, EventTypeInfoFinder eventFinder, TypeFinder typeFinder)
         {
-            var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(typeFinder));
-            var buffDefines = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine(typeFinder));
-            var genActionDefines = actionDefineList.ConvertAll(a => a.toGeneratedActionDefine(typeFinder));
-            var nodeGraphs = new List<ActionNodeGraphInfo>();
-            foreach (var graph in actionNodeGraphInfoList)
-            {
-                List<SerializableActionNode> actionNodeList = getActionNodeList(graph, cardDefineList, buffDefineList, actionDefineList);
-                var nodeGraph = graph.toActionNodeGraphInfo(actionNodeList);
-                nodeGraphs.Add(nodeGraph);
-            }
+            var genActionDefines = SerializableActionDefine.toGeneratedActionDefines(actionDefineList, defineFinder, eventFinder, typeFinder);
+
+            var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(getActionDefine, eventFinder, typeFinder));
+            var buffDefines = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine(getActionDefine, eventFinder, typeFinder));
+
             return new CardPool()
             {
                 cardDefineList = cardDefines,
                 buffDefineList = buffDefines,
-                actionDefineList = genActionDefines,
+                actionDefineList = new List<GeneratedActionDefine>(genActionDefines),
                 cardSkinList = cardSkinList,
                 buffSkinList = buffSkinList,
-                actionNodeGraphInfoList = nodeGraphs,
             };
-        }
-        private List<SerializableActionNode> getActionNodeList(SerializableActionNodeGraphInfo graphInfo, 
-            List<SerializableCardDefine> cardDefines, 
-            List<SerializableBuffDefine> buffDefines, 
-            List<SerializableActionDefine> genActionDefines)
-        {
-            // 卡牌定义。
-            var cardDefine = cardDefines.Find(c => c.id == graphInfo.cardId);
-            if (cardDefine != null)
+
+            ActionDefine getActionDefine(string name)
             {
-                var effects = cardDefine.effectList;
-                if (tryGetEffectsActionNodeList(graphInfo, effects, out var nodeList))
-                    return nodeList;
+                return defineFinder?.Invoke(name) ?? genActionDefines.FirstOrDefault(a => a.defineName == name || (a.obsoleteNames != null && a.obsoleteNames.Contains(name)));
             }
-            // 增益定义。
-            var buffDefine = buffDefines.Find(c => c.id == graphInfo.buffId);
-            if (buffDefine != null)
-            {
-                var effects = buffDefine.effectList;
-                if (tryGetEffectsActionNodeList(graphInfo, effects, out var nodeList))
-                    return nodeList;
-            }
-            // 自定义动作。
-            var genActionDefine = genActionDefines.Find(c => c.id == graphInfo.actionDefineId);
-            if (genActionDefine != null)
-            {
-                return genActionDefine.actionNodeList;
-            }
-            return new List<SerializableActionNode>();
-        }
-        private bool tryGetEffectsActionNodeList(SerializableActionNodeGraphInfo graphInfo, List<SerializableEffect> effects, out List<SerializableActionNode> nodeList)
-        {
-            var effectIndex = graphInfo.effectIndex;
-            if (effectIndex >= 0 && effectIndex < effects.Count)
-            {
-                SerializableEffect effect = effects[effectIndex];
-                if (effect != null)
-                {
-                    if (graphInfo.entryType == nameof(GeneratedEffect.onEnableAction))
-                    {
-                        nodeList = effect.onEnableActionList;
-                        return true;
-                    }
-                    else if (graphInfo.entryType == nameof(GeneratedEffect.onDisableAction))
-                    {
-                        nodeList = effect.onDisalbeActionList;
-                        return true;
-                    }
-                    else
-                    {
-                        var triggerIndex = graphInfo.triggerIndex;
-                        var triggerList = effect.triggerList;
-                        if (triggerList != null && triggerIndex >= 0 && triggerIndex < triggerList.Count)
-                        {
-                            var trigger = effect.triggerList[graphInfo.triggerIndex];
-                            if (trigger != null)
-                            {
-                                nodeList = trigger.actionList;
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-            nodeList = null;
-            return false;
         }
         #endregion
         #region 属性字段
         public List<SerializableCardDefine> cardDefineList = new List<SerializableCardDefine>();
         public List<CardSkinData> cardSkinList = new List<CardSkinData>();
-        public List<SerializableActionNodeGraphInfo> actionNodeGraphInfoList = new List<SerializableActionNodeGraphInfo>();
         public List<SerializableBuffDefine> buffDefineList = new List<SerializableBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
         public List<SerializableActionDefine> actionDefineList;
+        [Obsolete]
+        public List<SerializableActionNodeGraphInfo> actionNodeGraphInfoList = new List<SerializableActionNodeGraphInfo>();
         #endregion
     }
 }
