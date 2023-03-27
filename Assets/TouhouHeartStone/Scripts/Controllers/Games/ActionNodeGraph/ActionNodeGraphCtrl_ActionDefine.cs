@@ -321,19 +321,7 @@ namespace Controllers
         }
         #endregion
         #region 私有方法
-        #region 生命周期
-        private void onAwake_ActionDefine()
-        {
-            //内置动作定义
-            _actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
-            {
-                typeof(CardEngine).Assembly,
-                typeof(HearthStoneRule).Assembly,
-                typeof(EffectEditorLibrary).Assembly
-            });
-        }
-        #endregion
-        private async Task openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
+        private Task openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
         {
             resetEditObjects();
             _generatedActionDefine = generatedActionDefine;
@@ -552,66 +540,23 @@ namespace Controllers
         }
         #endregion
         #region 动作定义
-        private Type getActionDefineInputTypeAt(int index)
-        {
-            if (index < _generatedActionDefine.inputList.Count)
-                return _generatedActionDefine.inputList[index].type;
-            return _generatedActionDefine.constList[index - _generatedActionDefine.inputList.Count].type;
-        }
         private ActionDefine getActionDefine(string name)
         {
-            //内置
-            if (_actionDefineDict.TryGetValue(name, out ActionDefine actionDefine))
-            {
-                return actionDefine;
-            }
-            //自定义
-            if (game.card.getActionDefine(_curCardPoolId, name, out GeneratedActionDefine generatedActionDefine))
-            {
-                return generatedActionDefine;
-            }
-            return null;
+            return game.getActionDefine(name, _curCardPoolId);
         }
         private ActionDefine[] getAllActionDefines()
         {
-            //内置
-            List<ActionDefine> actionDefineList = new List<ActionDefine>();
-            foreach (var pair in _actionDefineDict)
-            {
-                actionDefineList.Add(pair.Value);
-            }
-            //自定义
-            actionDefineList.AddRange(game.card.getActionDefines(_curCardPoolId));
-            return actionDefineList.ToArray();
+            return game.getActionDefinesArray(_curCardPoolId);
         }
         private IGrouping<string, ActionDefine>[] getActionDefineGroups()
         {
-            return getAllActionDefines().GroupBy(actionDefine =>
+            return getAllActionDefines().Where(d => !d.disableCreate).GroupBy(actionDefine =>
             {
                 string name;
-                if (actionDefine is MethodActionDefine methodActionDefine)
-                {
-                    if (string.IsNullOrEmpty(methodActionDefine.category))
-                        name = methodActionDefine.defineName;
-                    else
-                        name = methodActionDefine.category;
-                }
-                else if (actionDefine is GeneratedActionDefine generatedActionDefine)
-                {
-                    if (string.IsNullOrEmpty(generatedActionDefine.category))
-                        name = generatedActionDefine.defineName;
-                    else
-                        name = generatedActionDefine.category;
-                }
-                else if (actionDefine.defineName.EndsWith("Const"))
-                {
-                    // 以Const结尾的类型是常量
-                    name = StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST;
-                }
-                else
-                {
+                if (string.IsNullOrEmpty(actionDefine.category))
                     name = actionDefine.defineName;
-                }
+                else
+                    name = actionDefine.category;
                 if (_nameTextDict.ContainsKey(name))
                     name = _nameTextDict[name];
                 return game.langManager.getString(name);
@@ -620,7 +565,6 @@ namespace Controllers
         #endregion
         #endregion
         #region 属性字段
-        Dictionary<string, ActionDefine> _actionDefineDict;
         private GeneratedActionDefine _generatedActionDefine;
         #endregion
     }
