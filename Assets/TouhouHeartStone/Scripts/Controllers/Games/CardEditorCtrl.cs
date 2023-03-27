@@ -82,6 +82,8 @@ namespace Controllers
             updateCustomProperties();
             updateKeywords();
 
+            _effectEditorCtrl.hideActionGraph();
+
         }
         public override Task display(CardPoolDisplayInfo info)
         {
@@ -425,15 +427,14 @@ namespace Controllers
 
         private void onClickEditEffectButton(int index)
         {
+            GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
             // TODO：在加入获取当前正在查看的效果的方法时改掉这个条件。
             if (true)
             {
-                GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
-                scene.effectEditor.display(_cardPoolId, _cardDefine, effect);
+                _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
             }
             else
             {
-                GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
                 string name = effect?.name ?? string.Empty;
                 _ui.showEffectListItemInputField(index, name);
             }
@@ -461,7 +462,7 @@ namespace Controllers
         {
             MarkCardUnsaved();
             var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
-            var effect = game.card.createEffectByIndex(index);
+            var effect = game.card.createEffectByIndex(_cardPoolId, index);
             effect.name = getEffectDefaultName(effect, effects.Count() + 1);
             var effectArray = effects.Append(effect).ToArray();
             _cardDefine.setEffects(effectArray);
@@ -1086,6 +1087,8 @@ namespace Controllers
         CardEditorPanel _ui;
         string[] _types;
 
+        [SerializeField]
+        EffectEditorCtrl _effectEditorCtrl;
         [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]

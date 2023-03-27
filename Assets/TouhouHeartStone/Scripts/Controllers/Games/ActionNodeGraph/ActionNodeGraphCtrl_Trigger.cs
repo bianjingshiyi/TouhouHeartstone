@@ -1,13 +1,12 @@
-﻿using TouhouCardEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using UnityEngine;
-using UI;
-using Card = TouhouCardEngine.Card;
 using Game;
+using TouhouCardEngine;
 using TouhouHeartstone;
+using UI;
+using UnityEngine;
+using Card = TouhouCardEngine.Card;
 
 namespace Controllers
 {
@@ -18,77 +17,69 @@ namespace Controllers
         /// 打开一个触发器的动作节点图
         /// </summary>
         /// <param name="trigger"></param>
-        public void openTriggerGraph(long cardPoolId, string entryType, TriggerGraph trigger, ActionNodeGraphInfo graphInfo)
+        public void openTriggerGraph(long cardPoolId, TriggerGraph trigger, ActionNodeGraphInfo graphInfo)
         {
-            display(new DisplayInfo(cardPoolId, entryType, trigger, null, graphInfo));
+            display(new DisplayInfo(cardPoolId, trigger, null, graphInfo));
         }
         #endregion
         #region 私有方法
         #region 事件回调
-        private void onChangeTriggerTypeIndex(int typeIndex)
+        private void onChangeTriggerTypeIndex(ActionNodeItem item, int typeIndex)
         {
-            _trigger.eventName = getEventTypeNameByIndex(typeIndex);
-            //TODO:切换事件要断开所有事件变量引用连接
-            _entryNodeItem.setOutputs(getTriggerOutputViewData());
-            OnEdited();
-        }
-        /// <summary>
-        /// 当用户更改触发器的事件名称，将事件名称改为更改值
-        /// </summary>
-        /// <param name="eventName"></param>
-        private void onChangeTriggerEventName(string eventName)
-        {
-            _trigger.eventName = eventName;
-        }
-        /// <summary>
-        /// 当用户点击编辑条件按钮，将当前的编辑信息入栈，打开条件编辑
-        /// </summary>
-        private async void onClickTriggerEditConditionButton()
-        {
-            pushCurEditObjectToStack();
-            if (_trigger.condition == null)
-                _trigger.condition = new ActionValueRef();
-            await openValueRefGraph(_trigger.condition);
-            OnEdited();
+            var actionNode = getActionNode(item);
+            if (actionNode is TriggerEntryNode trigger)
+            {
+                trigger.eventName = _eventTypeInfoList.getEventTypeNameByIndex(typeIndex);
+                disconnectNodeAll(trigger);
+                item.setOutputs(getTriggerOutputViewData(trigger));
+                OnEdited();
+            }
         }
         /// <summary>
         /// 当用户点击新增目标按钮，为当前触发器新建目标检查器，然后在UI列表中新增项目
         /// </summary>
-        private void onClickAddTargetCheckerButton()
+        private void onClickAddTargetCheckerButton(ActionNodeItem item)
         {
-            _trigger.targetCheckerList.Add(new TargetChecker(string.Empty, new ActionValueRef(null, 0), string.Empty));
-            _entryNodeItem.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData());
-            OnEdited();
+            var actionNode = getActionNode(item);
+            if (actionNode is TriggerEntryNode trigger)
+            {
+                var index = trigger.targetCheckerList.Count;
+                trigger.AddTargetChecker(new TargetChecker(string.Empty, index, string.Empty));
+                item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData(trigger));
+                OnEdited();
+            }
         }
-        private void onTargetCheckerTypeValueChanged(int index, int value)
+        private void onTargetCheckerTypeValueChanged(ActionNodeItem item, int index, int value)
         {
-            _trigger.targetCheckerList[index].targetType = _targetCheckerTypes[value];
-            OnEdited();
-        }
-        /// <summary>
-        /// 当用户点击编辑目标按钮，将当前的编辑信息入栈，打开目标编辑
-        /// </summary>
-        /// <param name="index"></param>
-        private async void onClickEditTargetCheckerButton(int index)
-        {
-            pushCurEditObjectToStack();
-            await openTargetCheckerGraph(_trigger.targetCheckerList[index]);
-            OnEdited();
+            var actionNode = getActionNode(item);
+            if (actionNode is TriggerEntryNode trigger)
+            {
+                trigger.targetCheckerList[index].targetType = _targetCheckerTypes[value];
+                OnEdited();
+            }
         }
         /// <summary>
         /// 当用户点击删除目标按钮，为当前触发器删除目标检查器，然后在UI列表中也删除对应索引项目
         /// </summary>
         /// <param name="index"></param>
-        private void onClickRemoveTargetCheckerButton(int index)
+        private void onClickRemoveTargetCheckerButton(ActionNodeItem item, int index)
         {
-            _trigger.targetCheckerList.RemoveAt(index);
-            _entryNodeItem.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData());
-            OnEdited();
+            var actionNode = getActionNode(item);
+            if (actionNode is TriggerEntryNode trigger)
+            {
+                trigger.RemoveTargetChecker(index);
+                item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData(trigger));
+                OnEdited();
+            }
         }
-        private void onTargetCheckerErrorTipValueChanged(int index, string value)
+        private void onTargetCheckerErrorTipValueChanged(ActionNodeItem item, int index, string value)
         {
-            _trigger.targetCheckerList[index].errorTip = value;
-            OnEdited();
+            var actionNode = getActionNode(item);
+            if (actionNode is TriggerEntryNode trigger)
+            {
+                trigger.targetCheckerList[index].errorTip = value;
+                OnEdited();
+            }
         }
         #endregion
         /// <summary>
@@ -99,102 +90,35 @@ namespace Controllers
             _eventTypeInfoList.Clear();
             _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventTypes());
         }
-        /// <summary>
-        /// 打开一个触发器的动作节点图
-        /// </summary>
-        /// <param name="trigger"></param>
-        private async Task openTriggerGraph(TriggerGraph trigger, string entryType)
+        private (int typeIndex, string name, string errorTip)[] getTriggerTargetCheckerViewData(TriggerEntryNode trigger)
         {
-            resetEditObjects();
-            _entryType = entryType;
-            _trigger = trigger;
-            //转成index
-            int triggerIndex = getEventTypeIndex(_trigger.eventName);
-            if (triggerIndex < 0)
-            {
-                //没有类型
-                string[] eventNames = getEventTypeNames();
-                triggerIndex = eventNames.Length - 1;
-                _trigger.eventName = eventNames[triggerIndex];
-            }
-            //创建入口节点
-            _entryNodeItem = _ui.createTriggerNode(0, 0,
-                game.langManager.getString(StringTable.EDITOR_NODE_NAME_TRIGGER),
-                getTranslatedTargetCheckerTypes(),
-                triggerIndex,
-                getTriggerTargetCheckerViewData());
-            //宣言、遗言、光环的影响类型节点图隐藏事件类型
-            if (_entryType == nameof(GeneratedBattlecry.activeTrigger) || 
-                _entryType == nameof(GeneratedDeathRattle.activeTrigger))
-            {
-                _entryNodeItem.displayEventType(false);
-            }
-            else
-            {
-                _entryNodeItem.displayEventType(true);
-            }
-            _entryNodeItem.setInputs(getTriggerInputViewData());
-            _entryNodeItem.setOutputs(getTriggerOutputViewData());
-            //创建触发条件节点
-            if (_trigger.condition != null && _trigger.condition.action != null)
-            {
-                ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.condition.action);
-                _ui.connectNode(actionNodeItem, _trigger.condition.action.branches.Length + _trigger.condition.index, _entryNodeItem, 0, ActionNodeConnectionType.value);
-            }
-            //创建目标条件节点
-            if (_trigger.targetCheckerList != null && _trigger.targetCheckerList.Count > 0)
-            {
-                for (int i = 0; i < _trigger.targetCheckerList.Count; i++)
-                {
-                    if (_trigger.targetCheckerList[i] == null ||
-                        _trigger.targetCheckerList[i].condition == null ||
-                        _trigger.targetCheckerList[i].condition.action == null)
-                        continue;
-                    ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.targetCheckerList[i].condition.action);
-                    _ui.connectNode(
-                        actionNodeItem,
-                        _trigger.targetCheckerList[i].condition.action.branches.Length + _trigger.targetCheckerList[i].condition.index,
-                        _entryNodeItem,
-                        1 + i,
-                        ActionNodeConnectionType.value);
-                }
-            }
-            //创建动作节点
-            if (_trigger.action != null)
-            {
-                ActionNodeItem actionNodeItem = await createGraph4ActionNode(_trigger.action);
-                _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
-            }
-            await createFreeNodes();
-            updateContentSize();
-        }
-        private (int typeIndex, string name, string errorTip)[] getTriggerTargetCheckerViewData()
-        {
-            var targetCheckers = new (int typeIndex, string name, string errorTip)[_trigger.targetCheckerList.Count];
+            var targetList = trigger.targetCheckerList;
+            var targetCheckers = new (int typeIndex, string name, string errorTip)[targetList.Count];
             for (int i = 0; i < targetCheckers.Length; i++)
             {
-                targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, _trigger.targetCheckerList[i].targetType);
+                var targetChecker = targetList[i];
+                targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, targetChecker.targetType);
                 if (targetCheckers[i].typeIndex < 0)
                 {
-                    _trigger.targetCheckerList[i].targetType = DEFINE.TARGET_TYPE_SERVANT;
+                    targetList[i].targetType = DEFINE.TARGET_TYPE_SERVANT;
                     targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, DEFINE.TARGET_TYPE_SERVANT);
                 }
                 targetCheckers[i].name = "目标" + (i + 1);
-                targetCheckers[i].errorTip = _trigger.targetCheckerList[i].errorTip;
+                targetChecker.errorTip = targetList[i].errorTip;
             }
             return targetCheckers;
         }
-        private (string name, Color color)[] getTriggerInputViewData()
+        private (string name, Color color)[] getTriggerInputViewData(TriggerEntryNode trigger)
         {
-            (string name, Color color)[] inputs = new (string name, Color color)[1 + _trigger.targetCheckerList.Count];
+            (string name, Color color)[] inputs = new (string name, Color color)[1 + trigger.targetCheckerList.Count];
             inputs[0] = (
                 game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TRIGGER_CONDITION),
-                game.editor.getColorByType(typeof(ActionValueRef)));
-            for (int i = 0; i < _trigger.targetCheckerList.Count; i++)
+                game.editor.getColorByType(typeof(bool)));
+            for (int i = 0; i < trigger.targetCheckerList.Count; i++)
             {
                 inputs[1 + i] = (
                     string.Format(game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TARGET_CONDITION), 1 + i),
-                    game.editor.getColorByType(typeof(ActionValueRef)));
+                    game.editor.getColorByType(typeof(bool)));
             }
             return inputs;
         }
@@ -202,9 +126,9 @@ namespace Controllers
         /// 获取当前触发器的输出值的名称。
         /// </summary>
         /// <returns></returns>
-        private (string name, Color color)[] getTriggerOutputViewData()
+        private (string name, Color color)[] getTriggerOutputViewData(TriggerEntryNode trigger)
         {
-            int typeIndex = getEventTypeIndex(_trigger.eventName);
+            int typeIndex = _eventTypeInfoList.getEventTypeIndex(trigger.eventName);
             EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
             if (eventTypeInfo.variableInfos != null)
             {
@@ -229,260 +153,14 @@ namespace Controllers
                 };
             }
         }
-
-        private bool validateConnection4TriggerOutput(int outputIndex, ActionNode inputActionNode, int inputIndex, bool showErrorTip = true)
-        {
-            // 尝试连接：触发器的值----动作节点的前置动作
-            if (inputIndex < 1)
-            {
-                //值输出只能与值输入相互连接
-                if (showErrorTip)
-                    ShowValueConnectActionError();
-                return false;
-            }
-            try
-            {
-                Type outputType = getEventVarInfo(outputIndex - 1).type;
-                Type inputType = getActionDefine(inputActionNode.defineName).getValueInputAt(inputIndex - 1).type;
-                return validateConnectionType(outputType, inputType, showErrorTip);
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"验证触发器入口节点和动作节点“{inputActionNode.defineName}”的连接合法性时出现异常：{e}");
-                return false;
-            }
-        }
-        #region 节点连接
-        /// <summary>
-        /// 将事件节点的输出值连接到输入上
-        /// </summary>
-        /// <param name="outputIndex"></param>
-        /// <param name="inputActionNode"></param>
-        /// <param name="inputIndex"></param>
-        private void connectNode4TriggerEventVarRef(int outputIndex, ActionNode inputActionNode, int inputIndex)
-        {
-            string[] curEventVarNames = getEventVarNames();
-            //判断是否已经相连
-            if (inputActionNode.inputs != null &&
-                inputActionNode.inputs.Length > inputIndex &&
-                inputActionNode.inputs[inputIndex] != null)
-            {
-                var input = inputActionNode.inputs[inputIndex];
-                if (input.eventVarName == curEventVarNames[outputIndex])
-                {
-                    //已经相连，什么也不做
-                    return;
-                }
-                else
-                {
-                    //相连的是其他输入节点，断开连接
-                    unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, inputActionNode, inputIndex);
-                }
-            }
-            // 新建或扩容动作节点的输入列表。
-            if (inputActionNode.inputs == null || inputActionNode.inputs.Length <= inputIndex)
-            {
-                var newArray = new ActionValueRef[inputIndex + 1];
-                if (inputActionNode.inputs != null)
-                    inputActionNode.inputs.CopyTo(newArray, 0);
-                inputActionNode.inputs = newArray;
-            }
-            //建立新的连接
-            inputActionNode.inputs[inputIndex] = new ActionValueRef(curEventVarNames[outputIndex]);
-            //更新ui
-            _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex, ActionNodeConnectionType.value);
-        }
-        private void connectNode4TriggerCondition(ActionNode outputActionNode, int outputIndex, int inputIndex)
-        {
-            if (inputIndex == 0)
-            {
-                //触发条件
-                //判断是否已经相连
-                if (_trigger.condition != null &&
-                    _trigger.condition.action != null)
-                {
-                    if (_trigger.condition.action == outputActionNode &&
-                        _trigger.condition.index == outputIndex)
-                    {
-                        //已经相连，什么也不做
-                        return;
-                    }
-                    else
-                    {
-                        //与其他节点相连，先断开连接
-                        ActionNode prevActionNode = _trigger.condition.action;
-                        unconnectNode4TriggerCondition(prevActionNode, _trigger.condition.index, 0);
-                    }
-                }
-                //建立新的连接
-                _trigger.condition = new ActionValueRef(outputActionNode, outputIndex);
-                //更新输出节点的输出变量状态
-                updateRegVar(outputActionNode);
-                //更新UI
-                _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, 0, ActionNodeConnectionType.value);
-            }
-            else if (inputIndex > 0)
-            {
-                //目标条件
-                int targetCheckerIndex = inputIndex - 1;
-                //判断是否已经相连
-                if (_trigger.targetCheckerList != null &&
-                    targetCheckerIndex < _trigger.targetCheckerList.Count &&
-                    _trigger.targetCheckerList[targetCheckerIndex] != null &&
-                    _trigger.targetCheckerList[targetCheckerIndex].condition != null &&
-                    _trigger.targetCheckerList[targetCheckerIndex].condition.action != null)
-                {
-                    if (_trigger.targetCheckerList[targetCheckerIndex].condition.action == outputActionNode &&
-                        _trigger.targetCheckerList[targetCheckerIndex].condition.index == outputIndex)
-                    {
-                        //已经连接，什么都不做
-                        return;
-                    }
-                    else
-                    {
-                        //与其他节点连接，断开连接
-                        unconnectNode4TriggerCondition(outputActionNode, outputIndex, inputIndex);
-                    }
-                }
-                //建立新的连接
-                _trigger.targetCheckerList[targetCheckerIndex].condition = new ActionValueRef(outputActionNode, outputIndex);
-                //更新输出节点的输出变量状态
-                updateRegVar(outputActionNode);
-                //更新UI
-                _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex, ActionNodeConnectionType.value);
-            }
-        }
-        private void unconnectNode4TriggerCondition(ActionNode outputActionNode, int outputIndex, int inputIndex)
-        {
-            if (inputIndex == 0)
-            {
-                //触发条件
-                //判断是否已经相连
-                if (_trigger.condition != null &&
-                    _trigger.condition.action == outputActionNode &&
-                    _trigger.condition.index == inputIndex)
-                {
-                    //相连，断开连接
-                    _trigger.condition.action = null;
-                    _trigger.condition.index = 0;
-                    //更新输出节点的输出变量状态
-                    updateRegVar(outputActionNode);
-                    //更新ui
-                    _ui.unconnectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex);
-                }
-            }
-            else if (inputIndex > 0)
-            {
-                //目标条件
-                //判断是否已经相连
-                int targetCheckerIndex = inputIndex - 1;
-                if (_trigger.targetCheckerList != null &&
-                    targetCheckerIndex < _trigger.targetCheckerList.Count &&
-                    _trigger.targetCheckerList[targetCheckerIndex] != null &&
-                    _trigger.targetCheckerList[targetCheckerIndex].condition != null &&
-                    _trigger.targetCheckerList[targetCheckerIndex].condition.action == outputActionNode &&
-                    _trigger.targetCheckerList[targetCheckerIndex].condition.index == outputIndex)
-                {
-                    //相连，断开连接
-                    _trigger.targetCheckerList[targetCheckerIndex].condition.action = null;
-                    _trigger.targetCheckerList[targetCheckerIndex].condition.index = 0;
-                    //更新输出节点的输出变量状态
-                    updateRegVar(outputActionNode);
-                    //更新UI
-                    _ui.unconnectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _entryNodeItem, inputIndex);
-                }
-            }
-        }
-        private void unconnectNode4TriggerEventVarRef(int outputIndex, ActionNode inputActionNode, int inputIndex)
-        {
-            string[] curEventVarNames = getEventVarNames();
-            //判断是否已经相连
-            if (inputActionNode.inputs != null &&
-                inputActionNode.inputs.Length > inputIndex &&
-                inputActionNode.inputs[inputIndex] != null)
-            {
-                if (inputActionNode.inputs[inputIndex].eventVarName == curEventVarNames[outputIndex])
-                {
-                    //相连，断开连接
-                    inputActionNode.inputs[inputIndex] = null;
-                    //更新ui
-                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex);
-                }
-            }
-        }
-        #endregion
-        #region 事件类型
-        private int getEventTypeIndex(string eventName)
-        {
-            return _eventTypeInfoList.FindIndex(e => e.eventName == eventName);
-        }
-        private string getEventTypeNameByIndex(int index)
-        {
-            return _eventTypeInfoList[index].eventName;
-        }
-        private string[] getEventTypeNames()
-        {
-            string[] eventNames = new string[_eventTypeInfoList.Count];
-            for (int i = 0; i < eventNames.Length; i++)
-            {
-                eventNames[i] = _eventTypeInfoList[i].eventName;
-            }
-            return eventNames;
-        }
-        private string[] getEventTypeNamesForEditor()
-        {
-            string[] eventNames = new string[_eventTypeInfoList.Count];
-            for (int i = 0; i < eventNames.Length; i++)
-            {
-                eventNames[i] = string.IsNullOrEmpty(_eventTypeInfoList[i].editorName) ? _eventTypeInfoList[i].eventName : _eventTypeInfoList[i].editorName;
-            }
-            return eventNames;
-        }
-        private string[] getEventVarNames()
-        {
-            EventTypeInfo eventTypeInfo = _eventTypeInfoList.Find(e => e.eventName == _trigger.eventName);
-            if (eventTypeInfo.variableInfos != null)
-            {
-                string[] varNames = new string[eventTypeInfo.variableInfos.Length];
-                for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
-                {
-                    varNames[i] = eventTypeInfo.variableInfos[i].name;
-                }
-                return varNames;
-            }
-            else
-                return null;
-        }
-        private int getEventVarNameIndex(string eventVarName)
-        {
-            EventTypeInfo eventTypeInfo = _eventTypeInfoList.Find(e => e.eventName == _trigger.eventName);
-            if (eventTypeInfo.variableInfos != null)
-            {
-                for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
-                {
-                    if (eventTypeInfo.variableInfos[i].name == eventVarName)
-                        return i;
-                }
-            }
-            return -1;
-        }
-        private EventVariableInfo getEventVarInfo(int index)
-        {
-            EventTypeInfo eventTypeInfo = _eventTypeInfoList.Find(e => e.eventName == _trigger.eventName);
-            if (eventTypeInfo.variableInfos != null && index < eventTypeInfo.variableInfos.Length)
-            {
-                return eventTypeInfo.variableInfos[index];
-            }
-            return null;
-        }
-        #endregion
         #endregion
         #region 属性字段
-        List<EventTypeInfo> _eventTypeInfoList = new List<EventTypeInfo>();
+        EventTypeInfoCollection _eventTypeInfoList = new EventTypeInfoCollection();
         #endregion
     }
-    public static class EventTypeInfoLoader
+    public class EventTypeInfoLoader
     {
+
         #region 公有方法
         /// <summary>
         /// 获取所有事件类型，如果未加载则进行加载
@@ -660,19 +338,82 @@ namespace Controllers
         }
         public static bool isValidEventTypeName(string eventTypeName)
         {
-            if (_eventTypeInfoList == null)
-                getOrLoadEventTypes();
-            return _eventTypeInfoList.Find(e => e.eventName == eventTypeName) != null;
+            return FindEventTypeInfo(eventTypeName) != null;
         }
-        public static EventTypeInfo findEventTypeInfoForObsolateName(string eventTypeName)
+        public static EventTypeInfo FindEventTypeInfo(string eventTypeName)
         {
             if (_eventTypeInfoList == null)
                 getOrLoadEventTypes();
-            return _eventTypeInfoList.Find(e => e.obsoleteNames != null && e.obsoleteNames.Contains(eventTypeName));
+            return _eventTypeInfoList.Find(e => e.eventName == eventTypeName || (e.obsoleteNames != null && e.obsoleteNames.Contains(eventTypeName)));
         }
         #endregion
-        #region 属性字段
         static List<EventTypeInfo> _eventTypeInfoList = null;
-        #endregion
     }
+    public class EventTypeInfoCollection : List<EventTypeInfo>
+    {
+        public string[] getEventVarNames(string eventName)
+        {
+            EventTypeInfo eventTypeInfo = Find(e => e.eventName == eventName);
+            if (eventTypeInfo.variableInfos != null)
+            {
+                string[] varNames = new string[eventTypeInfo.variableInfos.Length];
+                for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
+                {
+                    varNames[i] = eventTypeInfo.variableInfos[i].name;
+                }
+                return varNames;
+            }
+            else
+                return null;
+        }
+        public int getEventVarNameIndex(string eventName, string eventVarName)
+        {
+            EventTypeInfo eventTypeInfo = Find(e => e.eventName == eventName);
+            if (eventTypeInfo.variableInfos != null)
+            {
+                for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
+                {
+                    if (eventTypeInfo.variableInfos[i].name == eventVarName)
+                        return i;
+                }
+            }
+            return -1;
+        }
+        public EventVariableInfo getEventVarInfo(string eventName, int index)
+        {
+            EventTypeInfo eventTypeInfo = Find(e => e.eventName == eventName);
+            if (eventTypeInfo.variableInfos != null && index < eventTypeInfo.variableInfos.Length)
+            {
+                return eventTypeInfo.variableInfos[index];
+            }
+            return null;
+        }
+        public int getEventTypeIndex(string eventName)
+        {
+            return FindIndex(e => e.eventName == eventName);
+        }
+        public string getEventTypeNameByIndex(int index)
+        {
+            return this[index].eventName;
+        }
+        public string[] getEventTypeNames()
+        {
+            string[] eventNames = new string[Count];
+            for (int i = 0; i < eventNames.Length; i++)
+            {
+                eventNames[i] = this[i].eventName;
+            }
+            return eventNames;
+        }
+        public string[] getEventTypeNamesForEditor()
+        {
+            string[] eventNames = new string[Count];
+            for (int i = 0; i < eventNames.Length; i++)
+            {
+                eventNames[i] = string.IsNullOrEmpty(this[i].editorName) ? this[i].eventName : this[i].editorName;
+            }
+            return eventNames;
+        }
+    }
+
 }

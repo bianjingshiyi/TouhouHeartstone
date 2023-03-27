@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Serialization;
+using System.Linq;
 using System.Xml;
+using System.Xml.Serialization;
+using BJSYGameCore;
+using IGensoukyo;
+using MukioI18n;
 using TouhouCardEngine;
 using UnityEngine;
-using RestSharp.Deserializers;
-using System.IO;
-using IGensoukyo;
-using BJSYGameCore;
 using UnityEngine.UI;
-using MukioI18n;
 
 namespace Game
 {
@@ -240,9 +238,9 @@ namespace Game
             obsoleteNames = act.obsoleteNames;
             obsoleteMsg = act.obsoleteMsg;
 
-            inputs = ActionParameterComment.GetArray(inputs, act.inputs);
-            outputs = ActionParameterComment.GetArray(outputs, act.outputs);
-            consts = ActionParameterComment.GetArray(consts, act.consts);
+            inputs = ActionParameterComment.GetArray(inputs, act.inputDefines.ToArray());
+            outputs = ActionParameterComment.GetArray(outputs, act.outputDefines.ToArray());
+            consts = ActionParameterComment.GetArray(consts, act.constDefines.ToArray());
 
             if (act is MethodActionDefine method)
                 category = method.category;
@@ -294,7 +292,7 @@ namespace Game
 
         public ActionParameterComment() { }
 
-        public ActionParameterComment(ValueDefine valueDefine)
+        public ActionParameterComment(PortDefine valueDefine)
         {
             Update(valueDefine);
         }
@@ -303,11 +301,11 @@ namespace Game
         /// 更新 ValueDefine
         /// </summary>
         /// <param name="val"></param>
-        public void Update(ValueDefine val)
+        public void Update(PortDefine val)
         {
             type = val.type.IsArray ? val.type.GetElementType().FullName : val.type.FullName;
             name = val.name;
-            isParams = val.isParams;
+            isParams = false;
             isArray = val.type.IsArray;
         }
 
@@ -317,7 +315,7 @@ namespace Game
         /// <param name="orig">原文档</param>
         /// <param name="defines">新的valueDefine</param>
         /// <returns></returns>
-        public static ActionParameterComment[] GetArray(ActionParameterComment[] orig, ValueDefine[] defines)
+        public static ActionParameterComment[] GetArray(ActionParameterComment[] orig, PortDefine[] defines)
         {
             List<ActionParameterComment> list = new List<ActionParameterComment>();
             for (int i = 0; i < defines.Length; i++)

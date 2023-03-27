@@ -40,7 +40,7 @@ namespace Controllers
         }
         private async void onItemEditBuffCallback(ActionNodeItem item)
         {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
+            if (tryGetBuffDefine(getActionNode(item).getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
             {
                 await scene.editor.openBuffEditor(_curCardPoolId, buffDefine);
             }
@@ -50,10 +50,10 @@ namespace Controllers
         {
             long cardPoolId;
             int cardId;
-            if (value is DefineReference buffDefineRef)
+            if (value is DefineReference defineRef)
             {
-                cardPoolId = buffDefineRef.cardPoolId;
-                cardId = buffDefineRef.defineId;
+                cardPoolId = defineRef.cardPoolId;
+                cardId = defineRef.defineId;
             }
             else if (value is CardReference cardRef)
             {
@@ -89,8 +89,10 @@ namespace Controllers
             {
                 return Task.CompletedTask;
             }
-
-            getActionNode(item).consts = new object[] { new DefineReference(buffDefine.cardPoolId, buffDefine.id) };
+            var action = getActionNode(item) as ActionNode;
+            if (action == null)
+                return;
+            action.setConst(GetBuffDefineAction.constName, new DefineReference(buffDefine.cardPoolId, buffDefine.id));
             BuffDefine[] buffDefines = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)
                 .ThenBy(p => p.Value.id)

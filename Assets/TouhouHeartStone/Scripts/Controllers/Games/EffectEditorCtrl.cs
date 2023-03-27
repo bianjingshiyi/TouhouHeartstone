@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using BJSYGameCore.UI;
 using System.Threading.Tasks;
 using MukioI18n;
+using System.Reflection;
 
 namespace Controllers
 {
@@ -18,19 +19,28 @@ namespace Controllers
         #region 公有方法
         public Task display(long cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
         {
-            return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, cardDefine, effect, null));
+            return display(new DisplayInfo(cardPoolId, cardDefine, effect, new ActionNodeGraphCtrl.DisplayInfo(
+                        cardPoolId,
+                        effect,
+                        null,
+                        game.card.getOrCreateCardEffectActionNodeGraphInfo(cardPoolId, cardDefine.id, cardDefine.getEffects().indexOf(effect)))
+                ));
         }
         public Task display(long cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect)
         {
-            return game.ui.displayUIWithReturn(this, new DisplayInfo(cardPoolId, buffDefine, effect, null));
+            return display(new DisplayInfo(cardPoolId, buffDefine, effect, new ActionNodeGraphCtrl.DisplayInfo(
+                        cardPoolId,
+                        effect,
+                        null,
+                        game.card.getOrCreateBuffEffectActionNodeGraphInfo(cardPoolId, buffDefine.id, buffDefine.effectList.IndexOf(effect))
+                )));
         }
         public Task display(long cardPoolId, GeneratedActionDefine actionDefine)
         {
-            return game.ui.displayUIWithReturn(this,
+            return display(
                 new DisplayInfo(cardPoolId, actionDefine,
                     new ActionNodeGraphCtrl.DisplayInfo(
                         cardPoolId,
-                        null,
                         actionDefine,
                         null,
                         game.card.getOrCreateActionDefineActionNodeGraphInfo(cardPoolId, actionDefine.id))));
@@ -48,7 +58,7 @@ namespace Controllers
                 if (_effect != null)
                 {
                     //更新效果属性
-                    updateEffectPropList();
+                    //updateEffectPropList();
                 }
                 else if (_actionDefine != null)
                 {
@@ -56,9 +66,9 @@ namespace Controllers
                     updateActionDefinePropList();
                 }
                 if (info.actionNodeGraphDisplayInfo != null)
-                    await scene.actionNodeGraphCtrl.display(info.actionNodeGraphDisplayInfo);
+                    await _actionNodeGraphCtrl.display(info.actionNodeGraphDisplayInfo);
                 else
-                    await scene.actionNodeGraphCtrl.hide();
+                    await _actionNodeGraphCtrl.hide();
             }
         }
         public UIDisplayInfo getCurrentDisplayInfo()
@@ -66,18 +76,22 @@ namespace Controllers
             if (_buffDefine != null)
             {
                 return new DisplayInfo(_cardPoolId, _buffDefine, _effect,
-                    scene.actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
+                    _actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
             }
             else
             {
                 return new DisplayInfo(_cardPoolId, _cardDefine, _effect,
-                    scene.actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
+                    _actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
             }
         }
         public Task hide()
         {
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
+        }
+        public void hideActionGraph()
+        {
+            _actionNodeGraphCtrl.hide();
         }
         #endregion
         #region 私有方法
@@ -88,21 +102,11 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<EffectEditorPanel>();
             }
-            _selectableRanges = new string[]
-            {
-                PILE.FIELD,
-                PILE.HAND,
-                PILE.DECK,
-                PILE.GRAVE,
-                PILE.MASTER,
-                PILE.SKILL,
-                PILE.ITEM,
-                PILE.HEAD
-            };
+            _selectableRanges = CardEditorCtrl.pileOptionNameDict.Keys.ToArray();
             string[] activeRanges = new string[_selectableRanges.Length];
             for (int i = 0; i < activeRanges.Length; i++)
             {
-                activeRanges[i] = game.langManager.getString(_pileOptionNameDict[_selectableRanges[i]]);
+                activeRanges[i] = game.langManager.getString(CardEditorCtrl.pileOptionNameDict[_selectableRanges[i]]);
             }
             _ui.initActiveRanges(activeRanges, _selectableRanges);
             string[] effectTagNames = new string[_effectTags.Length];
@@ -111,12 +115,12 @@ namespace Controllers
                 effectTagNames[i] = game.langManager.getString(_effectTagOptionNameDict[_effectTags[i]]);
             }
             _ui.initEffectTagNames(effectTagNames, _effectTags);
-            _ui.onPropValueChanged += onPropValueChangedCallback;
-            _ui.onClickPropButton += onClickPropButtonCallback;
-            _ui.onPropItemValueChanged += onPropItemValueChanged;
-            _ui.onClickPropItemButton += onClickPropItemButtonCallback;
-            _ui.onClickPropAddItemButton += onClickPropAddItemButtonCallback;
-            _ui.onClickPropItemRemoveButton += onClickPropItemRemoveButtonCallback;
+            //_ui.onPropValueChanged += onPropValueChangedCallback;
+            //_ui.onClickPropButton += onClickPropButtonCallback;
+            //_ui.onPropItemValueChanged += onPropItemValueChanged;
+            //_ui.onClickPropItemButton += onClickPropItemButtonCallback;
+            //_ui.onClickPropAddItemButton += onClickPropAddItemButtonCallback;
+            //_ui.onClickPropItemRemoveButton += onClickPropItemRemoveButtonCallback;
 
             _ui.initActionDefineViewData(
                 Array.ConvertAll(_categories, c => game.langManager.getString(c)),
@@ -152,110 +156,10 @@ namespace Controllers
         }
         #endregion
         #region 事件回调
-        private void onPropValueChangedCallback(int index, object value)
-        {
-            MarkCardUnsaved();
-            EffectPropertyInfo[] propInfos = _effect.getPropInfos();
-            _effect.setProp(propInfos[index].name, value);
-        }
-        private void onClickPropButtonCallback(int index)
-        {
-            EffectPropertyInfo[] propInfos = _effect.getPropInfos();
-            if (propInfos[index].type == typeof(ActionNode))
-            {
-                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
-                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
-                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
-                scene.actionNodeGraphCtrl.openActionGraph(_cardPoolId, _effect, propInfos[index].name, graphInfo);
-            }
-            else if (propInfos[index].type == typeof(FunctionNode))
-            {
-                FunctionNode condition = _effect.getProp<FunctionNode>(propInfos[index].name);
-                if (condition == null)
-                {
-                    condition = new FunctionNode();
-                    _effect.setProp(propInfos[index].name, condition);
-                }
-                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
-                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
-                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
-                scene.actionNodeGraphCtrl.openFunctionNodeGraph(_cardPoolId, condition, graphInfo);
-            }
-            else if (propInfos[index].type == typeof(ActionValueRef))
-            {
-                ActionValueRef valueRef = _effect.getProp<ActionValueRef>(propInfos[index].name);
-                if (valueRef == null)
-                {
-                    valueRef = new ActionValueRef();
-                    _effect.setProp(propInfos[index].name, valueRef);
-                }
-                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
-                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
-                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
-                scene.actionNodeGraphCtrl.openActionValueRefGraph(_cardPoolId, valueRef, graphInfo);
-            }
-            else if (propInfos[index].type == typeof(TriggerGraph))
-            {
-                TriggerGraph trigger = _effect.getProp<TriggerGraph>(propInfos[index].name);
-                if (trigger == null)
-                {
-                    trigger = new TriggerGraph();
-                    _effect.setProp(propInfos[index].name, trigger);
-                }
-                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
-                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, 0) :
-                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, 0);
-                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, propInfos[index].name, trigger, graphInfo);
-            }
-        }
-        private void onPropItemValueChanged(int index, int itemIndex, object value)
-        {
-            MarkCardUnsaved();
-            EffectPropertyInfo[] propInfos = _effect.getPropInfos();
-        }
-        private void onClickPropItemButtonCallback(int index, int itemIndex)
-        {
-            EffectPropertyInfo[] propInfos = _effect.getPropInfos();
-            if (propInfos[index].type == typeof(TriggerCollection))
-            {
-                TriggerCollection triggers = _effect.getProp<TriggerCollection>(propInfos[index].name);
-                ActionNodeGraphInfo graphInfo = _buffDefine != null ?
-                    game.card.getOrCreateBuffEffectActionNodeGraphInfo(_cardPoolId, _buffDefine.id, _buffDefine.effectList.IndexOf(_effect), propInfos[index].name, itemIndex) :
-                    game.card.getOrCreateCardEffectActionNodeGraphInfo(_cardPoolId, _cardDefine.id, _cardDefine.getEffectIndex(_effect), propInfos[index].name, itemIndex);
-                scene.actionNodeGraphCtrl.openTriggerGraph(_cardPoolId, null, triggers[itemIndex], graphInfo);
-            }
-        }
-        private void onClickPropAddItemButtonCallback(int index)
-        {
-            MarkCardUnsaved();
-            EffectPropertyInfo[] propInfos = _effect.getPropInfos();
-            if (propInfos[index].type == typeof(TriggerCollection))
-            {
-                TriggerCollection triggers = _effect.getProp<TriggerCollection>(propInfos[index].name);
-                if (triggers == null)
-                {
-                    triggers = new TriggerCollection();
-                    _effect.setProp(propInfos[index].name, triggers);
-                }
-                triggers.Add(new TriggerGraph());
-            }
-            updateEffectPropList();
-        }
-        private void onClickPropItemRemoveButtonCallback(int index, int itemIndex)
-        {
-            MarkCardUnsaved();
-            EffectPropertyInfo[] propInfos = _effect.getPropInfos();
-            if (propInfos[index].type == typeof(TriggerCollection))
-            {
-                TriggerCollection triggers = _effect.getProp<TriggerCollection>(propInfos[index].name);
-                triggers.RemoveAt(itemIndex);
-            }
-            updateEffectPropList();
-        }
         private void onActionDefineNameInputFieldValueChanged(string value)
         {
             MarkCardUnsaved();
-            if (!scene.actionNodeGraphCtrl.isActionDefineNameExist(value))
+            if (!_actionNodeGraphCtrl.isActionDefineNameExist(value))
             {
                 _actionDefine.defineName = value;
             }
@@ -272,153 +176,170 @@ namespace Controllers
         private void onActionDefineCategoryDropdownValueChanged(int index)
         {
             MarkCardUnsaved();
-            _actionDefine.category = _categories[index];
+            _actionDefine.setCategory(_categories[index]);
         }
         private void onAddInputButtonClicked()
         {
             MarkCardUnsaved();
-            var valueDefine = new ValueDefine(
+            int id = 0;
+            while (_actionDefine.inputDefines.Any(d => d.name == $"input{id}"))
+            {
+                id++;
+            }
+            var valueDefine = PortDefine.Value(
                 typeof(int),
-                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.inputList.Count + 1),
-                false,
-                false);
-            scene.actionNodeGraphCtrl.addActionDefineInput(valueDefine);
+                $"input{id}",
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (id + 1));
+            _actionNodeGraphCtrl.addActionDefineInput(valueDefine);
             updateActionDefinePropList();
         }
         private void onInputListItemDeleteButtonClicked(int index)
         {
             MarkCardUnsaved();
-            scene.actionNodeGraphCtrl.deleteActionDefineInput(index);
+            var define = _actionDefine.inputDefines.ElementAt(index);
+            _actionNodeGraphCtrl.deleteActionDefineInput(define);
             updateActionDefinePropList();
         }
         private void onInputListItemTypeChanged(int index, int typeIndex)
         {
             MarkCardUnsaved();
             var targetType = game.editor.getEditorVarTypeAt(typeIndex);
-            var curType = _actionDefine.inputList[index].type;
+            var define = _actionDefine.inputDefines.ElementAt(index);
+            var curType = define.type;
             if (curType.IsArray)
                 targetType  = targetType.MakeArrayType();
-            scene.actionNodeGraphCtrl.changeActionDefineInputType(index, targetType);
+            _actionNodeGraphCtrl.changeActionDefineInputType(define.name, targetType);
         }
         private void onInputListItemNameChanged(int index, string name)
         {
             MarkCardUnsaved();
-            _actionDefine.inputList[index].name = name;
+            _actionDefine.inputDefines.ElementAt(index).name = name;
             updateActionDefinePropList();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onInputListItemIsArrayValueChanged(int index, bool value)
         {
             MarkCardUnsaved();
-            var targetType = _actionDefine.inputList[index].type;
+            var define = _actionDefine.inputDefines.ElementAt(index);
+            var targetType = define.type;
             if (value && !targetType.IsArray)
                 targetType = targetType.MakeArrayType();
             else if (!value && targetType.IsArray)
                 targetType = targetType.GetElementType();
-            scene.actionNodeGraphCtrl.changeActionDefineInputType(index, targetType);
+            _actionNodeGraphCtrl.changeActionDefineInputType(define.name, targetType);
         }
         private void onInputListItemIsParamsValueChanged(int index, bool value)
         {
             MarkCardUnsaved();
-            _actionDefine.inputList[index].isParams = value;
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            _actionDefine.isParams = value;
+            _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onAddConstButtonClicked()
         {
             MarkCardUnsaved();
-            _actionDefine.constList.Add(new ValueDefine(
+            int id = 0;
+            while (_actionDefine.constDefines.Any(d => d.name == $"const{id}"))
+            {
+                id++;
+            }
+            _actionDefine.addConst(PortDefine.Const(
                 typeof(int),
-                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT) + (_actionDefine.constList.Count + 1),
-                false,
-                false));
+                $"const{id}",
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT) + (id + 1)));
             updateActionDefinePropList();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemDeleteButtonClicked(int index)
         {
             MarkCardUnsaved();
-            scene.actionNodeGraphCtrl.deleteActionDefineConst(index);
+            var define = _actionDefine.constDefines.ElementAt(index);
+            _actionNodeGraphCtrl.deleteActionDefineConst(define);
             updateActionDefinePropList();
         }
         private void onConstListItemTypeChanged(int index, int typeIndex)
         {
             MarkCardUnsaved();
             var targetType = game.editor.getEditorConstTypeAt(typeIndex);
-            var curType = _actionDefine.constList[index].type;
+            var define = _actionDefine.constDefines.ElementAt(index);
+            var curType = define.type;
             if (curType.IsArray)
                 targetType = targetType.MakeArrayType();
-            scene.actionNodeGraphCtrl.changeActionDefineConstType(index, targetType);
+            _actionNodeGraphCtrl.changeActionDefineConstType(define.name, targetType);
         }
         private void onConstListItemNameChanged(int index, string name)
         {
             MarkCardUnsaved();
-            _actionDefine.constList[index].name = name;
+            var define = _actionDefine.constDefines.ElementAt(index);
+            define.displayName = name;
             updateActionDefinePropList();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onConstListItemIsArrayValueChanged(int index, bool value)
         {
             MarkCardUnsaved();
-            var targetType = _actionDefine.constList[index].type;
+            var define = _actionDefine.constDefines.ElementAt(index);
+            var targetType = define.type;
             if (value && !targetType.IsArray)
                 targetType = targetType.MakeArrayType();
             else if (!value && targetType.IsArray)
                 targetType = targetType.GetElementType();
-            scene.actionNodeGraphCtrl.changeActionDefineConstType(index, targetType);
+            _actionNodeGraphCtrl.changeActionDefineConstType(define.name, targetType);
         }
         private void onConstListItemIsParamsValueChanged(int index, bool value)
         {
-            MarkCardUnsaved();
-            _actionDefine.constList[index].isParams = value;
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onAddOutputButtonClicked()
         {
             MarkCardUnsaved();
-            _actionDefine.outputList.Add(new ValueDefine(
+            int id = 0;
+            while (_actionDefine.outputDefines.Any(d => d.name == $"output{id}"))
+            {
+                id++;
+            }
+            _actionDefine.addOutput(PortDefine.Value(
                 typeof(int),
-                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (_actionDefine.outputList.Count + 1),
-                false,
-                false));
+                $"output{id}",
+                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT) + (id + 1)));
             updateActionDefinePropList();
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemDeleteButtonClicked(int index)
         {
             MarkCardUnsaved();
-            scene.actionNodeGraphCtrl.deleteActionDefineOutput(index);
+            var define = _actionDefine.outputDefines.ElementAt(index);
+            _actionNodeGraphCtrl.deleteActionDefineOutput(define);
             updateActionDefinePropList();
         }
         private void onOutputListItemTypeChanged(int index, int typeIndex)
         {
             MarkCardUnsaved();
             var targetType = game.editor.getEditorVarTypeAt(typeIndex);
-            var curType = _actionDefine.outputList[index].type;
+            var define = _actionDefine.outputDefines.ElementAt(index);
+            var curType = define.type;
             if (curType.IsArray)
                 targetType = targetType.MakeArrayType();
-            scene.actionNodeGraphCtrl.changeActionDefineOutputType(index, targetType);
+            _actionNodeGraphCtrl.changeActionDefineOutputType(define.name, targetType);
         }
         private void onOutputListItemNameChanged(int index, string name)
         {
             MarkCardUnsaved();
-            _actionDefine.outputList[index].name = name;
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
+            var define = _actionDefine.outputDefines.ElementAt(index);
+            define.displayName = name;
+            _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onOutputListItemIsArrayValueChanged(int index, bool value)
         {
             MarkCardUnsaved();
-            var targetType = _actionDefine.outputList[index].type;
+            var define = _actionDefine.outputDefines.ElementAt(index);
+            var targetType = define.type;
             if (value && !targetType.IsArray)
                 targetType = targetType.MakeArrayType();
             else if (!value && targetType.IsArray)
                 targetType = targetType.GetElementType();
-            scene.actionNodeGraphCtrl.changeActionDefineOutputType(index, targetType);
+            _actionNodeGraphCtrl.changeActionDefineOutputType(define.name, targetType);
         }
         private void onOutputListItemIsParamsValueChanged(int index, bool value)
         {
-            MarkCardUnsaved();
-            _actionDefine.outputList[index].isParams = value;
-            scene.actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
         private void onDeleteActionDefineButtonClickedCallback()
         {
@@ -440,7 +361,7 @@ namespace Controllers
         }
         private async void onClickReturnButton()
         {
-            scene.actionNodeGraphCtrl.quitGraph();
+            _actionNodeGraphCtrl.quitGraph();
             await game.ui.returnPrevUI(() =>
             {
                 _ui.gameObject.SetActive(false);
@@ -452,56 +373,6 @@ namespace Controllers
             scene.cardEditor.MarkCardUnsaved();
         }
 
-        /// <summary>
-        /// 更新属性信息UI
-        /// </summary>
-        private void updateEffectPropList()
-        {
-            _ui.switchToEffect();
-            EffectPropertyInfo[] propInfos = _effect.getPropInfos();
-            ActionNodeValueInfo[] valueInfos = new ActionNodeValueInfo[propInfos.Length];
-            for (int i = 0; i < valueInfos.Length; i++)
-            {
-                valueInfos[i] = new ActionNodeValueInfo()
-                {
-                    //翻译属性名称
-                    name = _propNameDict.ContainsKey(propInfos[i].name) ? game.langManager.getString(_propNameDict[propInfos[i].name]) : propInfos[i].name,
-                    type = getValueTypeByType(propInfos[i].type),
-                    value = _effect.getProp(propInfos[i].name)
-                };
-            }
-            _ui.updatePropList(valueInfos);
-            for (int i = 0; i < valueInfos.Length; i++)
-            {
-                ValueInputField item = _ui.getPropItemAt(i);
-                if (valueInfos[i].type == ActionNodeValueType.actionNode)
-                {
-                    item.setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_ACTION));
-                }
-                else if (valueInfos[i].type == ActionNodeValueType.functionNode)
-                {
-                    item.setButtonText(game.langManager.getString(EDITOR_BUTTON_EDIT_FUNCTION));
-                }
-                else if (valueInfos[i].type == ActionNodeValueType.actionValueRef)
-                {
-                    item.setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_RETURN_VALUE));
-                }
-                else if (valueInfos[i].type == ActionNodeValueType.trigger)
-                {
-                    item.setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_TRIGGER));
-                }
-                else if (valueInfos[i].type == ActionNodeValueType.triggerCollection)
-                {
-                    if (valueInfos[i].value is TriggerCollection triggerCol)
-                    {
-                        for (int j = 0; j < triggerCol.Count; j++)
-                        {
-                            item.getItemAt(j).setButtonText(game.langManager.getString(StringTable.EDITOR_BUTTON_EDIT_TRIGGER));
-                        }
-                    }
-                }
-            }
-        }
         private ActionNodeValueType getValueTypeByType(Type type)
         {
             if (type == typeof(int))
@@ -544,27 +415,30 @@ namespace Controllers
             //更新类型
             _ui.setActionDefineCategory(Array.IndexOf(_categories, _actionDefine.category));
             //更新输入
-            (int typeIndex, string name, bool isArray, bool isParams)[] inputViewData =
-                new (int typeIndex, string name, bool isArray, bool isParams)[_actionDefine.inputList.Count];
-            for (int i = 0; i < _actionDefine.inputList.Count; i++)
+            var inputs = _actionDefine.inputDefines;
+            (int typeIndex, string name, bool isArray)[] inputViewData =
+                new (int typeIndex, string name, bool isArray)[inputs.Count()];
+            for (int i = 0; i < inputs.Count(); i++)
             {
-                ValueDefine valueDefine = _actionDefine.inputList[i];
-                inputViewData[i] = (game.editor.getEditorVarTypeNameIndex(valueDefine.type.Name), valueDefine.name, valueDefine.type.IsArray, valueDefine.isParams);
+                PortDefine valueDefine = inputs.ElementAt(i);
+                inputViewData[i] = (game.editor.getEditorVarTypeNameIndex(valueDefine.type.Name), valueDefine.name, valueDefine.type.IsArray);
             }
             _ui.updateInputList(inputViewData);
             //更新常量
-            (int typeIndex, string name)[] constViewData = new (int typeIndex, string name)[_actionDefine.constList.Count];
-            for (int i = 0; i < _actionDefine.constList.Count; i++)
+            var consts = _actionDefine.constDefines;
+            (int typeIndex, string name)[] constViewData = new (int typeIndex, string name)[consts.Count()];
+            for (int i = 0; i < consts.Count(); i++)
             {
-                ValueDefine valueDefine = _actionDefine.constList[i];
+                PortDefine valueDefine = consts.ElementAt(i);
                 constViewData[i] = (game.editor.getEditorConstTypeNameIndex(valueDefine.type.Name), valueDefine.name);
             }
             _ui.updateConstList(constViewData);
             //更新输出
-            (int typeIndex, string name, bool isArray)[] outputViewData = new (int typeIndex, string name, bool isArray)[_actionDefine.outputList.Count];
-            for (int i = 0; i < _actionDefine.outputList.Count; i++)
+            var outputs = _actionDefine.constDefines;
+            (int typeIndex, string name, bool isArray)[] outputViewData = new (int typeIndex, string name, bool isArray)[outputs.Count()];
+            for (int i = 0; i < outputs.Count(); i++)
             {
-                ValueDefine valueDefine = _actionDefine.outputList[i];
+                PortDefine valueDefine = outputs.ElementAt(i);
                 outputViewData[i] = (game.editor.getEditorVarTypeNameIndex(valueDefine.type.Name), valueDefine.name, valueDefine.type.IsArray);
             }
             _ui.updateOutputList(outputViewData);
@@ -573,11 +447,11 @@ namespace Controllers
         #region 属性字段
         [TranslateMsg("编辑器-效果-属性名称-更新动作（光环效果）")]
         private const string EDITOR_EFFECT_PROP_NAME_UPDATE_ACTION = "更新动作";
-        [TranslateMsg("编辑器-效果-按钮提示-编辑函数")]
-        private const string EDITOR_BUTTON_EDIT_FUNCTION = "编辑函数";
         
         [SerializeField]
         EffectEditorPanel _ui;
+        [SerializeField]
+        ActionNodeGraphCtrl _actionNodeGraphCtrl;
         [Obsolete("使用game作为替代")]
         public IAppManager app { get; }
         long _cardPoolId;
@@ -586,47 +460,17 @@ namespace Controllers
         GeneratedEffect _effect;
         GeneratedActionDefine _actionDefine;
         string[] _selectableRanges;
-        readonly string[] _effectTags = new string[]
+        static readonly string[] _effectTags = new string[]
         {
             KEYWORD.BATTLECRY,
             KEYWORD.DEATHRATTLE
         };
-        readonly Dictionary<string, string> _propNameDict = new Dictionary<string, string>()
-        {
-            { nameof(GeneratedEffect.pileList), StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST },
-            { nameof(GeneratedEffect.onEnableAction), StringTable.EDITOR_EFFECT_PROP_NAME_ON_ENABLE_ACTION },
-            { nameof(GeneratedEffect.onDisableAction), StringTable.EDITOR_EFFECT_PROP_NAME_ON_DISABLE_ACTION },
-            { nameof(GeneratedEffect.triggerList), StringTable.EDITOR_EFFECT_PROP_NAME_TRIGGER_LIST },
-            { nameof(GeneratedEffect.tagList), StringTable.EDITOR_EFFECT_PROP_NAME_TAG_LIST },
-            { nameof(GeneratedHalo.rangeList), StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST },
-            { nameof(GeneratedHalo.affectCondition), StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
-            { nameof(GeneratedHalo.getHaloBuffDefine), StringTable.EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE },
-
-            //{ nameof(GeneratedAura.rangeList), StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST },
-            //{ nameof(GeneratedAura.affectCondition), StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
-            { nameof(GeneratedAura.getAuraBuffDefine), StringTable.EDITOR_EFFECT_PROP_NAME_GET_HALO_BUFF_DEFINE },
-            { nameof(GeneratedAura.updateAction), EDITOR_EFFECT_PROP_NAME_UPDATE_ACTION },
-
-            { nameof(GeneratedBattlecry.activeTrigger), StringTable.EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER }
-            //{ nameof(GeneratedDeathRattle.activeTrigger), StringTable.EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER }
-        };
-        readonly Dictionary<string, string> _pileOptionNameDict = new Dictionary<string, string>()
-        {
-            { PILE.FIELD, StringTable.GAME_FIELD }  ,
-            { PILE.HAND, StringTable.GAME_HAND },
-            { PILE.DECK, StringTable.GAME_DECK },
-            { PILE.GRAVE, StringTable.GAME_GRAVE },
-            { PILE.MASTER, StringTable.GAME_MASTER } ,
-            { PILE.SKILL, StringTable.GAME_SKILL },
-            { PILE.ITEM, StringTable.GAME_ITEM },
-            { PILE.HEAD, StringTable.GAME_DELAY }
-        };
-        readonly Dictionary<string, string> _effectTagOptionNameDict = new Dictionary<string, string>()
+        static readonly Dictionary<string, string> _effectTagOptionNameDict = new Dictionary<string, string>()
         {
             { KEYWORD.BATTLECRY, StringTable.GAME_KEYWORD_BATTLECRY },
             { KEYWORD.DEATHRATTLE, StringTable.GAME_KEYWORD_DEATHRATTLE }
         };
-        readonly string[] _categories = new string[]
+        static readonly string[] _categories = new string[]
         {
             StringTable.EDITOR_NODE_CATEGORY_GAME,
             StringTable.EDITOR_NODE_CATEGORY_PLAYER,

@@ -46,9 +46,7 @@ namespace UI
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
             actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
-            actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
-            actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
@@ -70,7 +68,10 @@ namespace UI
         /// <param name="eventName"></param>
         /// <param name="targetCheckerCount"></param>
         /// <returns></returns>
-        public ActionNodeItem createTriggerNode(float posX, float posY, string nodeName, string[] targetCheckerTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        public ActionNodeItem createTriggerNode(float posX, float posY, string nodeName,
+            (string name, Color color)[] inputViewData, 
+            string[] targetCheckerTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers,
+            (string name, Color color)[] outputViewData)
         {
             ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
             _actionNodeItemList.Add(actionNodeItem);
@@ -80,11 +81,8 @@ namespace UI
             actionNodeItem.setName(nodeName);
             actionNodeItem.switchToTriggerNode();
             actionNodeItem.setTrigger(targetCheckerTypes, eventIndex, targetCheckers);
-            string[] outputNames = new string[]
-            {
-                string.Empty
-            };
-            actionNodeItem.setOutputs(outputNames);
+            actionNodeItem.setInputs(inputViewData);
+            actionNodeItem.setOutputs(outputViewData);
 
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
@@ -103,9 +101,7 @@ namespace UI
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
             actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
-            actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
-            actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
@@ -125,9 +121,7 @@ namespace UI
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
             actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
-            actionNodeItem.onClickEditConditionButton += onClickTriggerNodeEditConditionButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
-            actionNodeItem.onClickEditTargetCheckerButton += onClickTriggerNodeEditTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
@@ -360,9 +354,15 @@ namespace UI
         {
             _cardSelectPanel.SetActive(value);
         }
-        public void init(string[] eventTypes)
+        public void init(string[] languages, string[] eventTypes, (string name, string value)[] keywords, (string name, string value)[] piles)
         {
+            init(languages, eventTypes, piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray(), keywords.Select(i => i.name).ToArray(), keywords.Select(i => i.value).ToArray());
+        }        
+        public void init(string[] languages, string[] eventTypes, string[] pileNames, string[] pileValues, string[] keywordNames, string[] keywordValues)
+        {
+            _actionNodeItemTemplate.initBuffLanguages(languages, keywordNames, keywordValues);
             _actionNodeItemTemplate.initEventTypes(eventTypes);
+            _actionNodeItemTemplate.initPileNames(pileNames, pileValues);
         }
         public void resetView()
         {
@@ -377,6 +377,10 @@ namespace UI
             {
                 connection.line.UpdatePoints();
             }
+        }
+        public Vector2 getNodesRootPosition()
+        {
+            return _actionNodesRoot.anchoredPosition;
         }
         #endregion
         #region 私有方法
@@ -905,31 +909,23 @@ namespace UI
         }
         private void onTriggerNodeEventIndexChanged(ActionNodeItem item, int eventIndex)
         {
-            onTriggerEventTypeChanged?.Invoke(eventIndex);
-        }
-        private void onClickTriggerNodeEditConditionButton(ActionNodeItem item)
-        {
-            onClickTriggerEditConditionButton?.Invoke();
+            onTriggerEventTypeChanged?.Invoke(item, eventIndex);
         }
         private void onClickTriggerNodeAddTargetCheckerButton(ActionNodeItem item)
         {
-            onClickAddTargetCheckerButton?.Invoke();
+            onClickAddTargetCheckerButton?.Invoke(item);
         }
         private void onTargetCheckerTypeValueChangedCallback(ActionNodeItem item, int targetCheckerIndex, int value)
         {
-            onTargetCheckerTypeValueChanged?.Invoke(targetCheckerIndex, value);
-        }
-        private void onClickTriggerNodeEditTargetCheckerButton(ActionNodeItem item, int targetCheckerIndex)
-        {
-            onClickEditTargetCheckerButton?.Invoke(targetCheckerIndex);
+            onTargetCheckerTypeValueChanged?.Invoke(item, targetCheckerIndex, value);
         }
         private void onClickTriggerNodeRemoveTargetCheckerButton(ActionNodeItem item, int targetCheckerIndex)
         {
-            onClickRemoveTargetCheckerButton?.Invoke(targetCheckerIndex);
+            onClickRemoveTargetCheckerButton?.Invoke(item, targetCheckerIndex);
         }
         private void onTargetCheckerErrorTipValueChangedCallback(ActionNodeItem item, int targetCheckerIndex, string value)
         {
-            onTargetCheckerErrorTipValueChanged?.Invoke(targetCheckerIndex, value);
+            onTargetCheckerErrorTipValueChanged?.Invoke(item, targetCheckerIndex, value);
         }
         private void onClickMenuOption(ActionNodeGraphMenuOption item)
         {
@@ -1096,37 +1092,25 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemEditButton;
         /// <summary>
-        /// 当触发器节点的事件名称改变，参数为更改后的事件名称
-        /// </summary>
-        public event Action<string> onChangeTriggerEventName;
-        /// <summary>
         /// 当触发器节点的事件名称改变，参数为更改后的事件名称的索引ID
         /// </summary>
-        public event Action<int> onTriggerEventTypeChanged;
-        /// <summary>
-        /// 当点击触发器节点的编辑条件按钮
-        /// </summary>
-        public event Action onClickTriggerEditConditionButton;
+        public event Action<ActionNodeItem, int> onTriggerEventTypeChanged;
         /// <summary>
         /// 当点击触发器节点的添加目标按钮
         /// </summary>
-        public event Action onClickAddTargetCheckerButton;
+        public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
         /// <summary>
         /// 当触发器节点的某个目标类型发生改变的时候，参数为发生改变的目标索引和目标值的索引
         /// </summary>
-        public event Action<int, int> onTargetCheckerTypeValueChanged;
-        /// <summary>
-        /// 当点击触发器节点的编辑目标按钮，参数为点击的按钮的索引
-        /// </summary>
-        public event Action<int> onClickEditTargetCheckerButton;
+        public event Action<ActionNodeItem, int, int> onTargetCheckerTypeValueChanged;
         /// <summary>
         /// 当点击触发器节点的删除目标按钮，参数为点击的按钮的索引
         /// </summary>
-        public event Action<int> onClickRemoveTargetCheckerButton;
+        public event Action<ActionNodeItem, int> onClickRemoveTargetCheckerButton;
         /// <summary>
         /// 当触发器节点的某个目标错误提示发生改变，参数为发生改变的目标索引和错误提示的字符串
         /// </summary>
-        public event Action<int, string> onTargetCheckerErrorTipValueChanged;
+        public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         /// <summary>
         /// 当点击返回之前编辑的动作图按钮
         /// </summary>
@@ -1228,11 +1212,15 @@ namespace UI
     }
     public struct ActionNodeValueInfo
     {
-        public ActionNodeValueInfo(string name, ActionNodeValueType type, object value) : this(name, type, value, null, null)
+        public ActionNodeValueInfo(string name, ActionNodeValueType type, object value) : this(name, name, type, value, null, null)
+        {
+        }
+        public ActionNodeValueInfo(string displayName, string name, ActionNodeValueType type, object value) : this(displayName, name, type, value, null, null)
         {
         }
         public ActionNodeValueInfo(string name, ActionNodeValueType type, object value, Type enumType)
         {
+            displayName = name;
             this.name = name;
             this.type = type;
             this.value = value;
@@ -1246,6 +1234,7 @@ namespace UI
         }
         public ActionNodeValueInfo(string name, ActionNodeValueType type, object value, string[] optionalNames, object[] optionalValues)
         {
+            displayName = name;
             this.name = name;
             this.type = type;
             this.value = value;
@@ -1253,6 +1242,17 @@ namespace UI
             this.optionalValues = optionalValues;
             isArray = false;
         }
+        public ActionNodeValueInfo(string displayName, string name, ActionNodeValueType type, object value, string[] optionalNames, object[] optionalValues)
+        {
+            this.displayName = displayName;
+            this.name = name;
+            this.type = type;
+            this.value = value;
+            this.optionalNames = optionalNames;
+            this.optionalValues = optionalValues;
+            isArray = false;
+        }
+        public string displayName;
         public string name;
         public ActionNodeValueType type;
         public object value;

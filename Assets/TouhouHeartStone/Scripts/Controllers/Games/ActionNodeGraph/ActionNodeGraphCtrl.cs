@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BJSYGameCore;
+using BJSYGameCore.UI;
+using Game;
+using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
-using BJSYGameCore;
-using System.Reflection;
-using Game;
 using UnityEngine;
-using BJSYGameCore.UI;
-using System.Threading.Tasks;
-using Card = TouhouCardEngine.Card;
-using MukioI18n;
 
 namespace Controllers
 {
@@ -25,20 +24,19 @@ namespace Controllers
         /// <param name="effect"></param>
         /// <param name="entryType"></param>
         /// <param name="graphInfo"></param>
-        public void openActionGraph(long cardPoolId, GeneratedEffect effect, string entryType, ActionNodeGraphInfo graphInfo)
+        public void openActionGraph(long cardPoolId, GeneratedEffect effect, ActionNodeGraphInfo graphInfo)
         {
-            display(new DisplayInfo(cardPoolId, entryType, effect, null, graphInfo));
+            display(new DisplayInfo(cardPoolId, effect, null, graphInfo));
         }
         public Task openActionValueRefGraph(long cardPoolId, ActionValueRef valueRef, ActionNodeGraphInfo graphInfo)
         {
-            return display(new DisplayInfo(cardPoolId, null, valueRef, null, graphInfo));
+            return display(new DisplayInfo(cardPoolId, valueRef, null, graphInfo));
         }
         /// <summary>
         /// 退出节点图。
         /// </summary>
         public void quitGraph()
         {
-            evaluateFreeNodes();
         }
         public Task display(UIDisplayInfo uiDisplayInfo)
         {
@@ -64,16 +62,8 @@ namespace Controllers
                 _ui.resetView();
                 if (info.editObject is GeneratedActionDefine actionDefine)
                     return openGeneratedActionDefine(actionDefine);
-                else if (info.editObject is TriggerGraph trigger)
-                    return openTriggerGraph(trigger, info.entryType);
-                else if (info.editObject is TargetChecker targetChecker)
-                    return openTargetCheckerGraph(targetChecker);
-                else if (info.editObject is FunctionNode funcNode)
-                    return openFunctionNodeGraph(funcNode);
-                else if (info.editObject is ActionValueRef valueRef)
-                    return openValueRefGraph(valueRef);
                 else if (info.editObject is GeneratedEffect effect)
-                    return openActionGraph(effect, info.entryType);
+                    return openActionGraph(effect);
                 else
                     return Task.CompletedTask;
             }
@@ -82,19 +72,13 @@ namespace Controllers
         public UIDisplayInfo getCurrentDisplayInfo()
         {
             object editObject;
-            if (_trigger != null)
-                editObject = _trigger;
-            else if (_targetChecker != null)
-                editObject = _targetChecker;
-            else if (_valueRef != null)
-                editObject = _valueRef;
-            else if (_functionNode != null)
-                editObject = _functionNode;
-            else if (_effect != null)
+            if (_effect != null)
                 editObject = _effect;
+            else if (_generatedActionDefine != null)
+                editObject = _generatedActionDefine;
             else
-                return null;
-            return new DisplayInfo(_curCardPoolId, _entryType, editObject, _editObjectStack.Count > 0 ? _editObjectStack.ToArray() : null, _graphInfo);
+                editObject = null;
+            return new DisplayInfo(_curCardPoolId, editObject, _editObjectStack.Count > 0 ? _editObjectStack.ToArray() : null, _graphInfo);
         }
         public Task hide()
         {
@@ -115,7 +99,6 @@ namespace Controllers
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
             loadEventTypes();
-            onAwake_ActionDefine();
             _ui.onLeftClickBackground += onLeftClickBackground;
             _ui.onRightClickBackground += onRightClickBackground;
             _ui.onLongPressBackground += onLongPressBackground;
@@ -131,12 +114,9 @@ namespace Controllers
             _ui.onClickActionNodeConstValueItemEditButton += onClickActionNodeConstValueItemEditButton;
             _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
             //触发
-            _ui.onChangeTriggerEventName += onChangeTriggerEventName;
             _ui.onTriggerEventTypeChanged += onChangeTriggerTypeIndex;
-            _ui.onClickTriggerEditConditionButton += onClickTriggerEditConditionButton;
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
-            _ui.onClickEditTargetCheckerButton += onClickEditTargetCheckerButton;
             _ui.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
             _ui.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChanged;
             _ui.onClickReturnButton += onClickReturnButton;
@@ -152,7 +132,10 @@ namespace Controllers
             {
                 languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
             }
-            _ui.init(getEventTypeNamesForEditor());
+            _ui.init(
+                languages,
+                _eventTypeInfoList.getEventTypeNamesForEditor(),
+                CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray(),
         }
         #endregion
         #region 事件回调
@@ -207,12 +190,11 @@ namespace Controllers
                 else if (index == 1)//编辑
                 {
                     GeneratedActionDefine generatedActionDefine = getActionDefine(_curEditActionNode.defineName) as GeneratedActionDefine;
-                    await game.ui.displayUIWithReturn(scene.effectEditor, new EffectEditorCtrl.DisplayInfo(
+                    await game.ui.displayUIWithReturn(_effectEditor, new EffectEditorCtrl.DisplayInfo(
                         _curCardPoolId,
                         generatedActionDefine,
                         new DisplayInfo(
                             _curCardPoolId,
-                            null,
                             generatedActionDefine,
                             null, game.card.getOrCreateActionDefineActionNodeGraphInfo(_curCardPoolId, generatedActionDefine.id))));
                 }
@@ -256,7 +238,7 @@ namespace Controllers
                         GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(
                             _curCardPoolId,
                             game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT));
-                        await scene.effectEditor.display(_curCardPoolId, generatedActionDefine);
+                        await _effectEditor.display(_curCardPoolId, generatedActionDefine);
                     }
                 }
                 else
@@ -289,154 +271,20 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onConnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
-            // 连接的输出节点是入口节点。
-            if (outputActionNodeItem == _entryNodeItem)
+            IActionNode outputActionNode = getActionNode(outputActionNodeItem);
+            IActionNode inputActionNode = getActionNode(inputActionNodeItem);
+            IPort outputPort = outputActionNode.getOutputPortAt(outputIndex);
+            IPort inputPort = inputActionNode.getInputPortAt(inputIndex);
+
+            if (validatePortConnection(outputPort, inputPort, true))
             {
-                // 连接的输出节点是出口节点
-                if (inputActionNodeItem == _returnNodeItem)
+                if (outputPort is ValueOutput valueOutput && inputPort is ValueInput valueInput)
                 {
-                    if (_generatedActionDefine != null)
-                    {
-                        // 检测自定义动作的连接合法性。
-                        if (!validateConnection4ActionDefineArgToReturn(outputIndex, inputIndex))
-                            return;
-                        // 自定义动作参数返回连接
-                        connectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
-                    }
-                    else if (_functionNode != null)
-                    {
-                        // 检测函数节点的连接合法性。
-                        if (!validateConnection4FunctionNodeOutput2Return(outputIndex, inputIndex))
-                            return;
-                        // 自定义动作参数返回连接
-                        connectNode4FunctionNodeOutput2Return(outputIndex - 1, inputIndex);
-                    }
+                    connectValuePorts(valueOutput, valueInput);
                 }
-                // 连接的输出节点是普通的动作节点。
-                else if (getActionNode(inputActionNodeItem) is ActionNode inputActionNode)
+                else if (outputPort is ControlOutput controlOutput && inputPort is ControlInput controlInput)
                 {
-                    // 尝试连接输出节点的0号位输出（动作节点）
-                    if (outputIndex < 1)
-                    {
-                        //动作连接
-                        //检查合法性
-                        if (inputIndex > 0)
-                        {
-                            //值输出只能与值输入相互连接
-                            ShowValueConnectActionError();
-                            return;
-                        }
-                        connectNode4RootAction(inputActionNode);
-                    }
-                    // 不是0号位输出，值连接。
-                    else
-                    {
-                        // 连接：触发器（输出值）----动作节点
-                        if (_trigger != null)
-                        {
-                            //检查合法性
-                            if (!validateConnection4TriggerOutput(outputIndex, inputActionNode, inputIndex))
-                                return;
-                            connectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - 1);
-                        }
-                        // 连接：自定义动作入口节点（输出值）----动作节点
-                        else if (_generatedActionDefine != null)
-                        {
-                            //检查合法性
-                            if (!validateConnection4ActionDefineEntryOutput(outputIndex, inputActionNode, inputIndex))
-                                return;
-                            connectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - 1);
-                        }
-                        // 连接：自定义动作入口节点（输出值）----动作节点
-                        else if (_functionNode != null)
-                        {
-                            //检查合法性
-                            if (!validateConnection4FunctionNodeOutput(outputIndex, inputActionNode, inputIndex))
-                                return;
-                            connectNode4FunctionNodeOutput(outputIndex - 1, inputActionNode, inputIndex - inputActionNode.branches.Length);
-                        }
-                    }
-                }
-            }
-            // 连接的输入节点是入口节点。
-            else if (inputActionNodeItem == _entryNodeItem)
-            {
-                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                // 检查连接合法性
-                // 尝试连接：动作节点（后续动作）----入口节点（值输入）
-                if (outputIndex < outputActionNode.branches.Length)
-                {
-                    //值输出只能与值输入相互连接
-                    ShowValueConnectActionError();
-                    return;
-                }
-                // 连接触发器的“触发条件”（值输入）
-                if (_trigger != null)
-                {
-                    connectNode4TriggerCondition(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
-                }
-            }
-            // 连接的输入节点是出口节点。
-            else if (inputActionNodeItem == _returnNodeItem)
-            {
-                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                // 检查连接合法性
-                // 尝试连接：动作节点（后续动作）----出口节点（值输入）
-                if (outputIndex < outputActionNode.branches.Length)
-                {
-                    //值输出只能与值输入相互连接
-                    ShowValueConnectActionError();
-                    return;
-                }
-                connectNode4ReturnValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
-            }
-            // 普通的动作节点连接。
-            else
-            {
-                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
-                ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
-                int outputBranchesCount = getBranchesCount(outputActionDefine);
-                // 连接：动作节点----动作节点（前置动作）
-                if (inputIndex == 0)
-                {
-                    //动作连接
-                    if (outputActionNode.branches == null)
-                    {
-                        outputActionNode.branches = new ActionNode[outputBranchesCount];
-                    }
-                    // 检查合法性
-                    // 尝试连接：动作节点（值输出）----动作节点（前置动作）
-                    if (outputIndex >= outputBranchesCount)
-                    {
-                        //值输出只能与值输入相互连接
-                        ShowValueConnectActionError();
-                        return;
-                    }
-                    connectNode4Action(outputActionNode, outputIndex, inputActionNode);
-                }
-                // 连接：动作节点----动作节点（值输入）
-                else
-                {
-                    if (outputActionNode.branches == null)
-                    {
-                        outputActionNode.branches = new ActionNode[outputBranchesCount];
-                    }
-                    // 检查合法性
-                    // 连接：动作节点（后续动作）----动作节点（值输入）
-                    if (outputIndex < outputBranchesCount)
-                    {
-                        //值输出只能与值输入相互连接
-                        ShowValueConnectActionError();
-                        return;
-                    }
-                    //检查类型合法性，获取输入输出类型
-                    Type outputType = outputActionDefine.getValueOutputAt(outputIndex - outputBranchesCount).type;
-                    Type inputType = inputActionDefine.getValueInputAt(inputIndex - 1).type;
-                    if (!validateConnectionType(outputType, inputType))
-                        return;
-                    connectNode4ValueRef(outputActionNode, outputIndex - outputBranchesCount, inputActionNode, inputIndex - 1);
+                    connectControlPorts(controlOutput, controlInput);
                 }
             }
             OnEdited();
@@ -450,81 +298,11 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onUnconnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
-            // 断开的输出节点是入口节点
-            if (outputActionNodeItem == _entryNodeItem)
-            {
-                // 断开的输入节点是返回节点
-                if (inputActionNodeItem == _returnNodeItem)
-                {
-                    //自定义动作参数返回连接
-                    if (_generatedActionDefine != null)
-                    {
-                        unconnectNode4ActionDefineArgToReturn(outputIndex - 1, inputIndex);
-                    }
-                    else if (_functionNode != null)
-                    {
-                        unconnectNode4FunctionNodeOutput2Return(outputIndex - 1, inputIndex);
-                    }
-                }
-                // 断开的输入节点不是返回节点，是普通的动作节点
-                else if (getActionNode(inputActionNodeItem) is ActionNode inputActionNode)
-                {
-                    // 连接的输入动作节点，它的输入值号码是0，说明是ActionNode类型。
-                    if (inputIndex == 0)
-                    {
-                        //动作连接
-                        unconnectNode4RootAction(inputActionNode);
-                    }
-                    // 其他类型的输入。
-                    else
-                    {
-                        // 断开触发器对这个节点的输出。
-                        if (_trigger != null)
-                        {
-                            unconnectNode4TriggerEventVarRef(outputIndex - 1, inputActionNode, inputIndex - 1);
-                        }
-                        else if (_generatedActionDefine != null)
-                        {
-                            unconnectNode4ActionDefineArg(outputIndex - 1, inputActionNode, inputIndex - 1);
-                        }
-                        // 断开函数节点对这个节点的输出。
-                        else if (_functionNode != null)
-                        {
-                            unconnectNode4FunctionNodeOutput(outputIndex - 1, inputActionNode, inputIndex - 1);
-                        }
-                    }
-                }
-            }
-            // 断开的输入节点是入口节点
-            else if (inputActionNodeItem == _entryNodeItem)
-            {
-                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                // 断开触发器的“触发条件”连接。
-                if (_trigger != null)
-                {
-                    unconnectNode4TriggerCondition(outputActionNode, outputIndex - outputActionNode.branches.Length, inputIndex);
-                }
-            }
-            else if (inputActionNodeItem == _returnNodeItem)
-            {
-                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                unconnectNode4ReturnValueRef(outputActionNode, outputIndex - 1, inputIndex);
-            }
-            else
-            {
-                ActionNode inputActionNode = getActionNode(inputActionNodeItem);
-                ActionNode outputActionNode = getActionNode(outputActionNodeItem);
-                if (inputIndex == 0)
-                {
-                    //动作连接
-                    unconnectNode4Action(outputActionNode, outputIndex, inputActionNode);
-                }
-                else
-                {
-                    //值连接
-                    unconnectNode4ValueRef(outputActionNode, outputIndex - outputActionNode.branches.Length, inputActionNode, inputIndex - 1);
-                }
-            }
+            IActionNode outputActionNode = getActionNode(outputActionNodeItem);
+            IActionNode inputActionNode = getActionNode(inputActionNodeItem);
+            IPort outputPort = outputActionNode.getOutputPortAt(outputIndex);
+            IPort inputPort = inputActionNode.getInputPortAt(inputIndex);
+            disconnectPorts(outputPort, inputPort);
             OnEdited();
         }
         /// <summary>
@@ -554,15 +332,10 @@ namespace Controllers
         }
         private void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
-            if (actionNodeItem == _entryNodeItem || actionNodeItem == _returnNodeItem)
-            {
-                //入口节点因为不是动作的一部分所以是不可以移动的。
-                return;
-            }
-            ActionNodeGraphNodeInfo nodeInfo = getNodeInfo(getActionNode(actionNodeItem));
-            ActionNodeItem rootActionNodeItem = _entryNodeItem != null ? _entryNodeItem : _returnNodeItem;
-            nodeInfo.posX = graphPosition.x - (rootActionNodeItem.transform as RectTransform).anchoredPosition.x;
-            nodeInfo.posY = graphPosition.y - (rootActionNodeItem.transform as RectTransform).anchoredPosition.y;
+            Vector2 rootPosition = _ui.getNodesRootPosition();
+            IActionNode node = getActionNode(actionNodeItem);
+            node.posX = graphPosition.x - rootPosition.x;
+            node.posY = graphPosition.y - rootPosition.y;
             _ui.moveActionNodeTo(actionNodeItem, graphPosition);
             updateContentSize();
             OnEdited();
@@ -575,39 +348,28 @@ namespace Controllers
         /// <param name="value"></param>
         private void onActionNodeValueChange(ActionNodeItem actionNodeItem, int constIndex, object value)
         {
-            if (_targetChecker != null && actionNodeItem == _returnNodeItem)
+            var actionNode = getActionNode(actionNodeItem);
+            if (actionNode is ActionNode action)
             {
-                if (constIndex == 0)
-                    _targetChecker.targetType = (string)value;
-                else if (constIndex == 1)
-                    _targetChecker.errorTip = (string)value;
+                var actionDefine = getActionDefine(action.defineName);
+                var name = actionDefine.constDefines.ElementAt(constIndex).name;
+                action.setConst(name, value);
+                OnEdited();
             }
-            else
-            {
-                var actionNode = getActionNode(actionNodeItem);
-                actionNode.consts[constIndex] = value;
-            }
-            OnEdited();
         }
         private async void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
         {
-            ActionNode actionNode = getActionNode(actionNodeItem);
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
-            if (actionDefine.consts[index].type == typeof(ActionValueRef))
-            {
-                ActionValueRef value = actionNode.consts[index] as ActionValueRef;
-                if (value == null)
-                {
-                    value = new ActionValueRef();
-                    actionNode.consts[index] = value;
-                }
-                pushCurEditObjectToStack();
-                await openValueRefGraph(value);
-            }
-            else if (actionDefine.consts[index].type == typeof(DefineReference))
+            IActionNode actionNode = getActionNode(actionNodeItem);
+            if (!(actionNode is ActionNode action))
+                return;
+            ActionDefine actionDefine = getActionDefine(action.defineName);
+            var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
+            if (constDefine == null)
+                return;
+            if (constDefine.type == typeof(DefineReference))
             {
                 _ui.displayCardSelectPanel(true);
-                if (actionNode.consts[index] is DefineReference value)
+                if (action.getConst(constDefine.name) is DefineReference value)
                 {
                     //打开卡牌选择界面
                     await _cardPoolViewPanelCtrl.display(value.defineId, cardPoolsId: new long[] { value.cardPoolId }, cardFilter: c =>
@@ -624,19 +386,24 @@ namespace Controllers
                         return true;
                     });
                 }
-                _curEditActionNode = actionNode;
-                _curEditActionNodeConstIndex = index;
+                _curEditActionNode = action;
+                _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = -1;
             }
         }
         private async void onClickActionNodeConstValueItemEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
-            ActionNode actionNode = getActionNode(actionNodeItem);
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
-            if (actionDefine.consts[index].type == typeof(DefineReference[]))
+            IActionNode actionNode = getActionNode(actionNodeItem);
+            if (!(actionNode is ActionNode action))
+                return;
+            ActionDefine actionDefine = getActionDefine(action.defineName);
+            var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
+            if (constDefine == null)
+                return;
+            if (constDefine.type == typeof(DefineReference[]))
             {
                 _ui.displayCardSelectPanel(true);
-                if (actionNode.consts[index] is DefineReference[] value)
+                if (actionNode.getConst(constDefine.name) is DefineReference[] value)
                 {
                     if (value[itemIndex] == null)
                     {
@@ -657,8 +424,8 @@ namespace Controllers
                         return true;
                     });
                 }
-                _curEditActionNode = actionNode;
-                _curEditActionNodeConstIndex = index;
+                _curEditActionNode = action;
+                _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = itemIndex;
             }
             OnEdited();
@@ -669,13 +436,14 @@ namespace Controllers
             {
                 return;
             }
+            var consts = _curEditActionNode.consts;
             if (_curEditActionNodeConstItemIndex < 0)
             {
-                _curEditActionNode.consts[_curEditActionNodeConstIndex] = cardDefine.getDefineRef();
+                consts[_curEditActionNodeConstName] = cardDefine.getDefineRef();
             }
             else
             {
-                (_curEditActionNode.consts[_curEditActionNodeConstIndex] as DefineReference[])[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
+                (consts[_curEditActionNodeConstName] as DefineReference[])[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
             }
             ActionNodeItem actionNodeItem = getActionNodeItem(_curEditActionNode);
 
@@ -697,7 +465,7 @@ namespace Controllers
             OnEdited();
             //重置字段
             _curEditActionNode = null;
-            _curEditActionNodeConstIndex = -1;
+            _curEditActionNodeConstName = string.Empty;
             _curEditActionNodeConstItemIndex = -1;
             //隐藏UI
             _ui.displayCardSelectPanel(false);
@@ -706,7 +474,7 @@ namespace Controllers
         {
             //重置字段
             _curEditActionNode = null;
-            _curEditActionNodeConstIndex = -1;
+            _curEditActionNodeConstName = string.Empty;
             _curEditActionNodeConstItemIndex = -1;
             //隐藏UI
             _ui.displayCardSelectPanel(false);
@@ -725,346 +493,92 @@ namespace Controllers
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="entryType"></param>
-        private async Task openActionGraph(GeneratedEffect effect, string entryType)
+        private Task openActionGraph(GeneratedEffect effect)
         {
             //清理数据
             resetEditObjects();
-            _entryType = entryType;
             _effect = effect;
 
+            ApplyGraph(effect.graph);
 
-            //显示UI
-            ActionNodeItem connectActionNode = null;
-            string nodeName = "";
-            ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
-            (string name, Color color)[] inputViewData = new (string name, Color color)[0];
-            (string name, Color color)[] outputViewData = new (string name, Color color)[0];
-            string obsoleteMsg = null;
-
-            // 效果的启用动作。
-            if (_entryType == nameof(GeneratedEffect.onEnableAction))
-            {
-                nodeName = StringTable.EDITOR_NODE_NAME_ONENABLE;
-                outputViewData = new (string name, Color color)[]
-                {
-                    (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
-                };
-                if (_effect.onEnableAction != null)
-                {
-                    connectActionNode = await createGraph4ActionNode(_effect.onEnableAction);
-                }
-            }
-            // 效果的禁用动作。
-            else if (entryType == nameof(GeneratedEffect.onDisableAction))
-            {
-                nodeName = StringTable.EDITOR_NODE_NAME_ONDISABLE;
-                outputViewData = new (string name, Color color)[]
-                {
-                    (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
-                };
-                if (_effect.onDisableAction != null)
-                {
-                    connectActionNode = await createGraph4ActionNode(_effect.onDisableAction);
-                }
-            }
-            _entryNodeItem = _ui.createNode(0, 0, game.langManager.getString(nodeName), inputViewData, constsInfo, outputViewData, obsoleteMsg, nodeName);
-            if (connectActionNode != null)
-            {
-                _ui.connectNode(_entryNodeItem, 0, connectActionNode, 0, ActionNodeConnectionType.action);
-            }
-
-            await createFreeNodes();
             updateContentSize();
-        }
-        /// <summary>
-        /// 打开一个有输出的值引用动作节点
-        /// </summary>
-        /// <param name="valueRef"></param>
-        private async Task openValueRefGraph(ActionValueRef valueRef)
-        {
-            resetEditObjects();
-            _valueRef = valueRef;
-            _returnNodeItem = _ui.createNode(0, 0,
-                game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
-                new (string name, Color color)[]
-                {
-                    (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByType(typeof(object)))
-                },
-                new ActionNodeValueInfo[0],
-                new (string name, Color color)[0],
-                null,
-                StringTable.EDITOR_NODE_NAME_OUTPUT);
-            if (valueRef.action != null)
-            {
-                ActionNodeItem actionNodeItem = await createGraph4ActionNode(valueRef.action);
-                _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
-            }
-            await createFreeNodes();
-            updateContentSize();
-        }
-        private async Task openTargetCheckerGraph(TargetChecker targetChecker)
-        {
-            resetEditObjects();
-            _targetChecker = targetChecker;
-
-            _returnNodeItem = _ui.createNode(0, 0,
-                game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT),
-                new (string name, Color color)[]
-                {
-                    (game.langManager.getString(StringTable.EDITOR_PARAM_NAME_RETURN), game.editor.getColorByType(typeof(bool)))
-                },
-                new ActionNodeValueInfo[]
-                {
-                    new ActionNodeValueInfo()
-                    {
-                        name = game.langManager.getString(StringTable.EDITOR_VALUE_NAME_TARGET_TYPE),
-                        type = ActionNodeValueType.text,
-                        value = _targetChecker.targetType
-                    },
-                    new ActionNodeValueInfo()
-                    {
-                        name = game.langManager.getString(StringTable.EDITOR_VALUE_NAME_INVALID_MSG),
-                        type = ActionNodeValueType.text,
-                        value = _targetChecker.errorTip
-                    }
-                },
-                new (string name, Color color)[0],
-                null,
-                StringTable.EDITOR_NODE_NAME_OUTPUT);
-            if (targetChecker.condition != null && targetChecker.condition.action != null)
-            {
-                ActionNodeItem actionNodeItem = await createGraph4ActionNode(targetChecker.condition.action);
-                _ui.connectNode(actionNodeItem, valueRef.index + 1, _returnNodeItem, 0, ActionNodeConnectionType.value);
-            }
-            await createFreeNodes();
-            updateContentSize();
+            return Task.CompletedTask;
         }
         #endregion
         #region 节点UI创建/删除/获取
-        private Vector2 calcActionNodeGraphSize(ActionNode actionNode, Dictionary<ActionNode, Vector2> sizeDict)
-        {
-            if (actionNode == null)
-                return Vector2.zero;
-            if (sizeDict != null && sizeDict.ContainsKey(actionNode))
-                return sizeDict[actionNode];
-            Vector2 size = new Vector2();
-            //计算输入的宽度
-            float inputWidth = 0;
-            for (int i = 0; i < actionNode.inputs.Length; i++)
-            {
-                ActionNode inputNode;
-                if (actionNode.inputs[i] != null)
-                {
-                    if (actionNode.inputs[i].action != null)
-                        inputNode = actionNode.inputs[i].action;
-                    else
-                        inputNode = getActionNode(actionNode.inputs[i].actionNodeId);
-                }
-                else
-                    inputNode = null;
-                float width = calcActionNodeGraphSize(inputNode, sizeDict).x;
-                if (width > inputWidth)
-                    inputWidth = width;
-            }
-            size.x = _ui.autoPosSpacingWidth + inputWidth;
-            float inputHeight = 0;
-            //计算输入的高度
-            for (int i = 0; i < actionNode.inputs.Length; i++)
-            {
-                ActionNode inputNode;
-                if (actionNode.inputs[i] != null)
-                {
-                    if (actionNode.inputs[i].action != null)
-                        inputNode = actionNode.inputs[i].action;
-                    else
-                        inputNode = getActionNode(actionNode.inputs[i].actionNodeId);
-                }
-                else
-                    inputNode = null;
-                inputHeight += calcActionNodeGraphSize(inputNode, sizeDict).y;
-            }
-            //float branchHeight = 0;
-            ////计算分支高度
-            //for (int i = 0; i < actionNode.branches.Length; i++)
-            //{
-            //    ActionNode branchNode = actionNode.branches[i];
-            //    branchHeight += calcActionNodeGraphSize(branchNode, sizeDict).y;
-            //}
-            //size.y = Math.Max(inputHeight, Math.Max(branchHeight, _compo.autoPosSpacingHeight));
-            size.y = Math.Max(inputHeight, _ui.autoPosSpacingHeight);
-            sizeDict[actionNode] = size;
-            return size;
-        }
         /// <summary>
         /// 为动作节点以及其所有子节点创建动作节点图
         /// </summary>
         /// <param name="actionNode"></param>
-        private async Task<ActionNodeItem> createGraph4ActionNode(ActionNode actionNode, ActionNodeItem prevNodeItem = null, ActionNodeItem nextNodeItem = null, float startPosOffset = 0, Dictionary<ActionNode, Vector2> sizeDict = null)
+        private async Task ApplyGraph(ActionGraph graph)
         {
-            // 同一个节点不添加两次。
-            if (_actionNodeList.Contains(actionNode))
+            foreach (var node in graph.nodes)
             {
-                if (tryGetActionNodeItem(actionNode, out var item))
+                if (node is ActionNode action)
                 {
-                    return item;
+                    await createNodeUI4ActionNode(action);
                 }
-                return null;
-            }
-            _actionNodeList.Add(actionNode);
-            ActionNodeItem actionNodeItem;
-            ActionNodeGraphNodeInfo nodeInfo =
-                hasNodeInfo(actionNode) ?
-                getNodeInfo(actionNode) : null;
-            ActionNodeItem rootActionNodeItem = _entryNodeItem != null ? _entryNodeItem : _returnNodeItem;
-            Vector2 pos;
-            if (nodeInfo != null)
-            {
-                //有图信息，从图中取位置
-                pos = new Vector2((rootActionNodeItem.transform as RectTransform).anchoredPosition.x + nodeInfo.posX,
-                    (rootActionNodeItem.transform as RectTransform).anchoredPosition.y + nodeInfo.posY);
-            }
-            else if (prevNodeItem != null)
-            {
-                //没有图信息，自动计算位置。位置和上一个节点以及其他子节点的位置有关，同时还要计算所有子节点在这个排布规则下的尺寸。
-                //暂时先不做那么复杂的自动布局计算……分支节点基本上都是下一个动作，直接接在当前动作屁股后面就行。中间间隔参数的嵌套层数的宽度
-                //输入参数的高度直接往下排就完事了。
-                if (sizeDict == null)
-                    sizeDict = new Dictionary<ActionNode, Vector2>();
-                Vector2 size = calcActionNodeGraphSize(actionNode, sizeDict);
-                pos = new Vector2((rootActionNodeItem.transform as RectTransform).anchoredPosition.x + prevNodeItem.posX + size.x,
-                   (rootActionNodeItem.transform as RectTransform).anchoredPosition.y + startPosOffset);
-                nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
-                setNodeInfo(actionNode, nodeInfo);
-            }
-            else if (nextNodeItem != null)
-            {
-                if (sizeDict == null)
-                    sizeDict = new Dictionary<ActionNode, Vector2>();
-                Vector2 size = calcActionNodeGraphSize(actionNode, sizeDict);
-                pos = new Vector2((rootActionNodeItem.transform as RectTransform).anchoredPosition.x + nextNodeItem.posX - size.x,
-                     (rootActionNodeItem.transform as RectTransform).anchoredPosition.y + startPosOffset);
-                nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
-                setNodeInfo(actionNode, nodeInfo);
-            }
-            else
-            {
-                //没有信息也没有前置节点，那我也不知道该放在哪里了。
-                pos = new Vector2((rootActionNodeItem.transform as RectTransform).anchoredPosition.x, (rootActionNodeItem.transform as RectTransform).anchoredPosition.y);
-                nodeInfo = new ActionNodeGraphNodeInfo(pos.x, pos.y);
-                setNodeInfo(actionNode, nodeInfo);
-            }
-            actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, pos.x, pos.y);
-            //为输入节点创建节点图
-            float lastNodeOffset = 0;
-            if (actionNode.inputs != null)
-            {
-                for (int i = 0; i < actionNode.inputs.Length; i++)
+                else if (node is TriggerEntryNode trigger)
                 {
-                    ActionValueRef valueRef = actionNode.inputs[i];
-                    if (valueRef == null)
-                        continue;
-                    if (sizeDict == null)
-                        sizeDict = new Dictionary<ActionNode, Vector2>();
-                    if (!string.IsNullOrEmpty(valueRef.eventVarName))
-                    {
-                        //与触发节点连接
-                        int outputIndex = getEventVarNameIndex(valueRef.eventVarName);
-                        if (validateConnection4TriggerOutput(outputIndex + 1, actionNode, i + 1, false))
-                        {
-                            _ui.connectNode(_entryNodeItem, 1 + outputIndex, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
-                        }
-                        else
-                        {
-                            unconnectNode4TriggerEventVarRef(outputIndex, actionNode, i);
-                        }
-                    }
-                    else
-                    {
-                        ActionNode inputActionNode = valueRef.action != null ? valueRef.action : getActionNode(valueRef.actionNodeId);
-                        if (inputActionNode != null)
-                        {
-                            //与普通节点连接
-                            try
-                            {
-                                if (!tryGetActionNodeItem(inputActionNode, out ActionNodeItem inputActionNodeItem))
-                                {
-                                    inputActionNodeItem = await createGraph4ActionNode(inputActionNode,
-                                        nextNodeItem: actionNodeItem,
-                                        startPosOffset: lastNodeOffset,
-                                        sizeDict: sizeDict);
-                                    Vector2 size = calcActionNodeGraphSize(inputActionNode, sizeDict);
-                                    lastNodeOffset -= size.y;
-                                }
-                                if (validateConnection4ActionNodes(inputActionNode, inputActionNode.branches.Length + valueRef.index, actionNode, i + 1))
-                                {
-                                    //输出索引要被动作分支占用若干个空位
-                                    //输入索引要被前置动作占用一个空位
-                                    _ui.connectNode(inputActionNodeItem, inputActionNode.branches.Length + valueRef.index, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
-                                }
-                                else
-                                {
-                                    unconnectNode4AnyType(inputActionNode, valueRef.index, actionNode, i);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogError("创建子节点" + inputActionNode + "的图像时发生异常：" + e);
-                                continue;
-                            }
-                        }
-                        else if (_generatedActionDefine != null)
-                        {
-                            // 与自定义动作的入口节点连接。
-                            var outputIndex = valueRef.argIndex;
-                            if (validateConnection4ActionDefineEntryOutput(outputIndex + 1, actionNode, i + 1, false))
-                            {
-                                _ui.connectNode(_entryNodeItem, 1 + outputIndex, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
-                            }
-                            else
-                            {
-                                unconnectNode4ActionDefineArg(outputIndex, actionNode, i);
-                            }
-                        }
-                        else if (_functionNode != null)
-                        {
-                            // 与自定义动作的入口节点连接。
-                            var outputIndex = valueRef.argIndex;
-                            if (validateConnection4FunctionNodeOutput(outputIndex + 1, actionNode, i + 1, false))
-                            {
-                                _ui.connectNode(_entryNodeItem, 1 + outputIndex, actionNodeItem, 1 + i, ActionNodeConnectionType.value);
-                            }
-                            else
-                            {
-                                unconnectNode4FunctionNodeOutput(outputIndex, actionNode, i);
-                            }
-                        }
-                    }
+                    string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_TRIGGER);
+                    var targetTypes = getTranslatedTargetCheckerTypes();
+                    var checkers = getTriggerTargetCheckerViewData(trigger);
+                    var inputViewData = getTriggerInputViewData(trigger);
+                    var outputViewData = getTriggerOutputViewData(trigger);
+
+                    var actionNodeItem = _ui.createTriggerNode(trigger.posX, trigger.posY, nodeName, inputViewData, 
+                        targetTypes, _eventTypeInfoList.getEventTypeIndex(trigger.eventName), checkers,
+                        outputViewData);
+                    actionNodeItem.displayEventType(!trigger.hideEvents);
+                    _actionNodeItemList.Add(actionNodeItem);
+                    _actionNodeList.Add(node);
+                }
+                else if (node is GeneratedActionEntryNode genEntry)
+                {
+                    string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
+                    var inputViewData = new (string name, Color color)[0];
+                    ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
+                    var outputViewData = getActionDefineInputViewData(_generatedActionDefine);
+
+                    var actionNodeItem = _ui.createNode(genEntry.posX, genEntry.posY, nodeName, inputViewData, constsInfo, outputViewData);
+                    _actionNodeItemList.Add(actionNodeItem);
+                    _actionNodeList.Add(node);
+                }
+                else if (node is GeneratedActionReturnNode genReturn)
+                {
+                    string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_OUTPUT);
+                    var inputViewData = getActionDefineOutputViewData(_generatedActionDefine);
+                    ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
+                    var outputViewData = new (string name, Color color)[0];
+
+                    var actionNodeItem = _ui.createNode(genReturn.posX, genReturn.posY, nodeName, inputViewData, constsInfo, outputViewData);
+                    _actionNodeItemList.Add(actionNodeItem);
+                    _actionNodeList.Add(node);
                 }
             }
-            //为动作分支创建节点图
-            lastNodeOffset = 0;
-            if (actionNode.branches != null)
+
+            foreach (var connection in graph.connections)
             {
-                for (int i = 0; i < actionNode.branches.Length; i++)
+                if (connection == null)
+                    continue;
+                var outputNode = connection.source?.node;
+                var inputNode = connection.destination?.node;
+                if (outputNode == null || inputNode == null)
+                    continue;
+
+                var outputNodeItem = getActionNodeItem(outputNode);
+                var inputNodeItem = getActionNodeItem(inputNode);
+                if (outputNodeItem == null || inputNodeItem == null)
+                    continue;
+
+                ActionNodeConnectionType type = ActionNodeConnectionType.value;
+                if (connection.type == PortType.Control)
                 {
-                    if (actionNode.branches[i] == null)
-                        continue;
-                    ActionNode nextActionNode = actionNode.branches[i];
-                    if (sizeDict == null)
-                        sizeDict = new Dictionary<ActionNode, Vector2>();
-                    if (!tryGetActionNodeItem(nextActionNode, out ActionNodeItem nextActionNodeItem))
-                    {
-                        nextActionNodeItem = await createGraph4ActionNode(nextActionNode,
-                            prevNodeItem: actionNodeItem,
-                            startPosOffset: lastNodeOffset,
-                            sizeDict: sizeDict);
-                    }
-                    Vector2 size = calcActionNodeGraphSize(nextActionNode, sizeDict);
-                    lastNodeOffset -= size.y;
-                    _ui.connectNode(actionNodeItem, i, nextActionNodeItem, 0, ActionNodeConnectionType.action);
+                    type = ActionNodeConnectionType.action;
                 }
+
+                _ui.connectNode(outputNodeItem, connection.source.GetPortIndex(), inputNodeItem, connection.destination.GetPortIndex(), type);
             }
-            return actionNodeItem;
         }
         /// <summary>
         /// 在指定位置上为动作节点创建节点图UI，不包括它的子节点。
@@ -1073,29 +587,30 @@ namespace Controllers
         /// <param name="posX"></param>
         /// <param name="posY"></param>
         /// <returns>动作节点对应的UI组件</returns>
-        private async Task<ActionNodeItem> createNodeUI4ActionNodeAt(ActionNode actionNode, float posX, float posY)
+        private async Task<ActionNodeItem> createNodeUI4ActionNode(ActionNode actionNode)
         {
             ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             ActionNodeItem actionNodeItem;
-            if (actionDefine is MethodActionDefine methodActionDefine && methodActionDefine.methodName == StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE)
+            if (actionDefine is GetBuffDefineAction getBuffDefineAction)
             {
                 //如果是获取增益定义节点，那么它和普通的节点不一样，会显示增益的编辑界面。
                 //先获取节点的增益
                 GeneratedBuffDefine generatedBuffDefine = null;
                 BuffSkin buffSkin = null;
-                if (actionNode.consts == null || actionNode.consts.Length < 1)
+                string constName = GetBuffDefineAction.constName;
+                if (actionNode.consts == null || actionNode.consts.Count < 1)
                 {
                     //节点没有增益，那么就为它新建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
-                    actionNode.consts = new object[] { new DefineReference(generatedBuffDefine.cardPoolId, generatedBuffDefine.id) };
+                    actionNode.setConst(constName, new DefineReference(generatedBuffDefine.cardPoolId, generatedBuffDefine.id));
                     //同时还有增益的皮肤，也要新建一个
                     buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
-                else if (!tryGetBuffDefine(actionNode.consts[0], out GeneratedBuffDefine buffDefine))
+                else if (!tryGetBuffDefine(actionNode.getConst(constName), out GeneratedBuffDefine buffDefine))
                 {
                     //读到了增益id，但是查无此增益，那么重新创建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
-                    actionNode.consts[0] = new DefineReference(_curCardPoolId, generatedBuffDefine.id);
+                    actionNode.setConst(constName, new DefineReference(_curCardPoolId, generatedBuffDefine.id));
                     //皮肤也要新建一个
                     buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
@@ -1135,21 +650,24 @@ namespace Controllers
             else if (actionDefine != null)
             {
                 ActionNodeValueInfo[] constsInfo = getActionNodeConstValueInfo(actionNode);
+                string nodeKey = actionDefine.hideDocument ? null : actionNode.defineName;
                 actionNodeItem = _ui.createNode(
-                    posX,
-                    posY,
+                    actionNode.posX,
+                    actionNode.posY,
                     getActionNodeName(actionNode),
                     getActionNodeInputViewData(actionNode),
                     constsInfo,
                     getActionNodeOutputViewData(actionNode),
                     getActionNodeObsoleteMsg(actionNode),
-                    actionNode.defineName);
+                    nodeKey);
                 for (int i = 0; i < constsInfo.Length; i++)
                 {
-                    if (constsInfo[i].type == ActionNodeValueType.cardReference)
+                    var constInfo = constsInfo[i];
+                    var name = constInfo.name;
+                    if (constInfo.type == ActionNodeValueType.cardReference)
                     {
                         CardDefine cardDefine = null;
-                        if (actionNode.consts[i] is DefineReference cardReference)
+                        if (actionNode.getConst(name) is DefineReference cardReference)
                         {
                             long cardPoolId = cardReference.cardPoolId;
                             var ownedRef = game.card.getLocalCardPoolReference(cardPoolId);
@@ -1174,9 +692,9 @@ namespace Controllers
                         }
                         actionNodeItem.getConstInputField(i).setCard(cardDefine, cardSkin, sprite);
                     }
-                    else if (constsInfo[i].type == ActionNodeValueType.cardReferenceCollection)
+                    else if (constInfo.type == ActionNodeValueType.cardReferenceCollection)
                     {
-                        if (actionNode.consts[i] is DefineReference[] cardRefArray)
+                        if (actionNode.getConst(name) is DefineReference[] cardRefArray)
                         {
                             for (int j = 0; j < cardRefArray.Length; j++)
                             {
@@ -1203,8 +721,8 @@ namespace Controllers
             else
             {
                 actionNodeItem = _ui.createNode(
-                    posX,
-                    posY,
+                    actionNode.posX,
+                    actionNode.posY,
                     game.langManager.getString(StringTable.EDITOR_NODE_NAME_UNKNOW));
                 actionNodeItem.setInputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByType(typeof(ActionNode))) });
                 actionNodeItem.setOutputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByType(typeof(ActionNode))) });
@@ -1213,60 +731,32 @@ namespace Controllers
             if (!_actionNodeList.Contains(actionNode))
             {
                 _actionNodeList.Add(actionNode);
-                actionNode.id = allocActionNodeId();
-                setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(posX, posY));
             }
             return actionNodeItem;
         }
         private async Task<ActionNodeItem> createActionNodeAtCurPos(ActionDefine actionDefine)
         {
-            var actionNode = new ActionNode(0, actionDefine.defineName,
-                new ActionValueRef[/*actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams ? actionDefine.inputs.Length - 1 :*/ actionDefine.inputs.Length],
-                new object[actionDefine.consts.Length],
-                null, new ActionNode[actionDefine.getActionOutputs().Length + 1]);
+            var actionNode = graph.createActionNode(actionDefine, _curPosX, _curPosY);
             _actionNodeList.Add(actionNode);
-            actionNode.id = allocActionNodeId();
-            setNodeInfo(actionNode, new ActionNodeGraphNodeInfo(_curPosX, _curPosY));
-            ActionNodeItem actionNodeItem = await createNodeUI4ActionNodeAt(actionNode, _curPosX, _curPosY);
+            ActionNodeItem actionNodeItem = await createNodeUI4ActionNode(actionNode);
             updateContentSize();
             return actionNodeItem;
-        }
-        /// <summary>
-        /// 创建离散节点。
-        /// </summary>
-        /// <returns></returns>
-        private async Task createFreeNodes()
-        {
-            for (int i = 0; i < _graphInfo.freeActionNodeList.Count; i++)
-            {
-                if (_graphInfo.freeActionNodeList[i] == null)
-                    continue;
-                if (getActionNode(_graphInfo.freeActionNodeList[i].id) != null)
-                {
-                    //防止因为离散节点表中错误的记录了已经存在的节点而重复进行创建
-                    _graphInfo.freeActionNodeList.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-                await createGraph4ActionNode(_graphInfo.freeActionNodeList[i]);
-            }
         }
         private void removeActionNode()
         {
             ActionNode actionNode = _curEditActionNode;
             int actionNodeIndex = _actionNodeList.IndexOf(_curEditActionNode);
             ActionNodeItem actionNodeItem = getActionNodeItem(actionNode);
-            unconnectNodeAll(actionNode);
+            disconnectNodeAll(actionNode);
             //从列表中移除
             _actionNodeList.RemoveAt(actionNodeIndex);
             _actionNodeItemList.RemoveAt(actionNodeIndex);
-            //从编辑器信息中删除
-            removeNodeInfo(actionNode);
+            graph.removeNode(actionNode);
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
             updateContentSize();
         }
-        private ActionNodeItem getActionNodeItem(ActionNode actionNode)
+        private ActionNodeItem getActionNodeItem(IActionNode actionNode)
         {
             int index = _actionNodeList.IndexOf(actionNode);
             return _actionNodeItemList[index];
@@ -1286,586 +776,89 @@ namespace Controllers
             }
         }
         #endregion
-
-        private void evaluateFreeNodes()
-        {
-            if (_graphInfo == null)
-                return;
-            HashSet<ActionNode> traversedNodes = new HashSet<ActionNode>();
-            Action<ActionNode> act = a => traversedNodes.Add(a);
-            if (_trigger != null)
-            {
-                _trigger.traverse(act, traversedNodes);
-            }
-            else if (_generatedActionDefine != null)
-            {
-                _generatedActionDefine.traverse(act, traversedNodes);
-            }
-            else if (_functionNode != null)
-            {
-                _functionNode.traverse(act);
-            }
-            else if (_effect != null)
-            {
-                if (rootActionNode != null)
-                    rootActionNode.traverse(act, traversedNodes);
-            }
-            else if (valueRef != null)
-            {
-                valueRef.traverse(act, traversedNodes);
-            }
-
-            var freeNodes = _actionNodeList.Except(traversedNodes);
-            _graphInfo.freeActionNodeList.Clear();
-            _graphInfo.freeActionNodeList.AddRange(freeNodes);
-        }
         #region 节点连接
-        /// <summary>
-        /// 连接：入口节点（后续动作）----动作节点（前置动作）
-        /// </summary>
-        /// <param name="inputActionNode">动作节点（前置动作）</param>
-        private void connectNode4RootAction(ActionNode inputActionNode)
+        private void connectValuePorts(ValueOutput outputPort, ValueInput inputPort)
         {
-            //判断判断输出是否与输入相连
-            if (rootActionNode != null)
+            var outputNodeItem = getActionNodeItem(outputPort.node);
+            var inputNodeItem = getActionNodeItem(inputPort.node);
+            var outputIndex = outputPort.GetPortIndex();
+            var inputIndex = inputPort.GetPortIndex();
+            if (graph.isConnected(outputPort, inputPort))
             {
-                if (rootActionNode == inputActionNode)
-                {
-                    //输出已经与输入相连，什么都不做
-                    return;
-                }
-                else
-                {
-                    //输出与其他输入相连，断开连接
-                    unconnectNode4RootAction(rootActionNode);
-                }
-            }
-            //判断输入是否与输出相连
-            if (rootActionNode == inputActionNode)
-            {
-                //输入已经与输出相连，什么都不做
+                //已经相连，什么也不做
                 return;
             }
-            else if (tryGetPrevActionNode(inputActionNode, out ActionNode prevActionNode, out int prevOutputIndex))
+            else if (inputPort.getConnectedOutputPort() != null)
             {
-                //如果输入已经和其他输出连接，则断开。
-                unconnectNode4Action(prevActionNode, prevOutputIndex, inputActionNode);
+                //相连的是其他输出节点，断开连接
+                graph.disconnectAll(inputPort);
+                _ui.unconnectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex);
             }
+
             //建立新的连接
-            rootActionNode = inputActionNode;
-            //更新输入节点的输出变量状态
-            updateRegVar(inputActionNode);
+            graph.connect(outputPort, inputPort);
             //更新ui
-            _ui.connectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
+            _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.value);
         }
-        /// <summary>
-        /// 连接：动作节点（值输出）----自定义动作出口节点（值输入）
-        /// </summary>
-        /// <param name="outputActionNode">动作节点（值输出）</param>
-        /// <param name="outputIndex">输出索引</param>
-        /// <param name="inputIndex">输入索引</param>
-        private void connectNode4ReturnValueRef(ActionNode outputActionNode, int outputIndex, int inputIndex)
+
+        private void connectControlPorts(ControlOutput outputPort, ControlInput inputPort)
         {
-            if (_generatedActionDefine != null)
+            var outputNodeItem = getActionNodeItem(outputPort.node);
+            var inputNodeItem = getActionNodeItem(inputPort.node);
+            var outputIndex = outputPort.GetPortIndex();
+            var inputIndex = inputPort.GetPortIndex();
+            if (graph.isConnected(outputPort, inputPort))
             {
-                if (_generatedActionDefine.returnValueRefList == null)
-                    _generatedActionDefine.returnValueRefList = new List<ReturnValueRef>();
-                //判断是否已经相连
-                ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList.Find(r => r != null && r.valueRef != null && r.returnIndex == inputIndex);
-                if (returnValueRef != null)
-                {
-                    if (returnValueRef.valueRef.action == outputActionNode && returnValueRef.valueRef.index == outputIndex)
-                    {
-                        //已经相连，什么也不做
-                        return;
-                    }
-                    else
-                    {
-                        //如果输入已经和其他输出连接，则断开。
-                        unconnectNode4AnyType(returnValueRef.valueRef.action, returnValueRef.valueRef.index, null, inputIndex);
-                    }
-                }
-                //建立新的连接
-                _generatedActionDefine.returnValueRefList.Add(new ReturnValueRef(outputActionNode, outputIndex, inputIndex));
-                //更新输出节点的输出变量状态
-                updateRegVar(outputActionNode);
-                //更新ui
-                _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _returnNodeItem, inputIndex, ActionNodeConnectionType.value);
+                //已经相连，什么也不做
+                return;
             }
-            else if (_functionNode != null)
+            else if (outputPort.getConnectedInputPort() != null)
             {
-                connectNode4FunctionNodeReturn(outputActionNode, outputIndex, 0);
+                //相连的是其他输入节点，断开连接
+                graph.disconnectAll(outputPort);
+                _ui.unconnectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex);
             }
-            else if (_valueRef != null)
-            {
-                //判断是否已经相连
-                if (rootActionNode == outputActionNode)
-                {
-                    //已经相连，什么也不做
-                    return;
-                }
-                else
-                {
-                    //如果输入已经和其他输出连接，则断开。
-                    unconnectNode4ReturnValueRef(outputActionNode, outputIndex, inputIndex);
-                }
-                //建立新的连接
-                rootActionNode = outputActionNode;
-                //更新输出节点的输出变量状态
-                updateRegVar(outputActionNode);
-                //更新ui
-                _ui.connectNode(getActionNodeItem(outputActionNode), outputActionNode.branches.Length + outputIndex, _returnNodeItem, 0, ActionNodeConnectionType.value);
-            }
-            else
-            {
-                //目前只支持对值引用的编辑
-                throw new NotImplementedException();
-            }
-        }
-        /// <summary>
-        /// 连接：动作节点（后续动作）----动作节点（前置动作）
-        /// </summary>
-        /// <param name="outputActionNode">动作节点（后续动作）</param>
-        /// <param name="outputIndex">输出索引</param>
-        /// <param name="inputActionNode">动作节点（前置动作）</param>
-        private void connectNode4Action(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode)
-        {
-            //判断输出是否已经和输入相连
-            if (outputActionNode.branches != null &&
-                outputActionNode.branches.Length > outputIndex)
-            {
-                if (outputActionNode.branches[outputIndex] == inputActionNode)
-                {
-                    //输出已经和输入相连，什么都不做
-                    return;
-                }
-                else if (outputActionNode.branches[outputIndex] != null)
-                {
-                    //输出已经和其他节点输入相连，断开
-                    unconnectNode4Action(outputActionNode, outputIndex, outputActionNode.branches[outputIndex]);
-                }
-            }
-            else
-            {
-                //数组长度不够，扩大
-                ActionNode[] branches = new ActionNode[outputIndex + 1];
-                if (outputActionNode.branches != null)
-                {
-                    Array.Copy(outputActionNode.branches, 0, branches, 0, outputActionNode.branches.Length);
-                }
-                outputActionNode.branches = branches;
-            }
-            //判断输入是否已经和输出相连
-            if (rootActionNode == inputActionNode)
-            {
-                //输入与入口动作输出相连，断开
-                unconnectNode4RootAction(inputActionNode);
-            }
-            else if (tryGetPrevActionNode(inputActionNode, out ActionNode prevActionNode, out int prevOutputIndex))
-            {
-                if (prevActionNode == outputActionNode && prevOutputIndex == outputIndex)
-                {
-                    //输入已经和输出相连，什么也不做
-                    return;
-                }
-                else
-                {
-                    //输入已经和其他输出连接，则断开。
-                    unconnectNode4Action(prevActionNode, prevOutputIndex, inputActionNode);
-                }
-            }
+
             //建立新的连接
-            outputActionNode.branches[outputIndex] = inputActionNode;
-            //更新输入节点的输出变量状态
-            updateRegVar(inputActionNode);
+            graph.connect(outputPort, inputPort);
             //更新ui
-            _ui.connectNode(getActionNodeItem(outputActionNode), outputIndex, getActionNodeItem(inputActionNode), 0, ActionNodeConnectionType.action);
+            _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.action);
         }
-        /// <summary>
-        /// 连接：动作节点（值输出）----动作节点（值输入）
-        /// </summary>
-        /// <param name="outputActionNode">动作节点（值输出）</param>
-        /// <param name="outputIndex">输出索引</param>
-        /// <param name="inputActionNode">动作节点（值输入）</param>
-        /// <param name="outputIndex">输入索引</param>
-        private void connectNode4ValueRef(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode, int inputIndex)
+
+
+        private void connectPorts(IPort outputPort, IPort inputPort)
         {
-            //值的输出可以与任意数量的输入相连，所以不做检查
-            //判断输入是否已经和输出相连
-            if (inputActionNode.inputs != null &&
-                inputActionNode.inputs.Length > inputIndex)
+            if (outputPort is ControlOutput co && inputPort is ControlInput ci)
             {
-                var input = inputActionNode.inputs[inputIndex];
-                if (input != null)
-                {
-                    if ((input.action == outputActionNode || input.actionNodeId == outputActionNode.id) &&
-                        input.index == outputIndex)
-                    {
-                        //输入已经与输出相连，什么都不做
-                        return;
-                    }
-                    else
-                    {
-                        //输入与其他输出相连，断开
-                        unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, inputActionNode, inputIndex);
-                    }
-                }
+                connectControlPorts(co, ci);
             }
-            else
+            else if (outputPort is ValueOutput vo && inputPort is ValueInput vi)
             {
-                //数组长度不够，增长
-                ActionValueRef[] inputs = new ActionValueRef[inputIndex + 1];
-                if (inputActionNode.inputs != null)
-                {
-                    Array.Copy(inputActionNode.inputs, 0, inputs, 0, inputActionNode.inputs.Length);
-                }
-                inputActionNode.inputs = inputs;
+                connectValuePorts(vo, vi);
             }
-            ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
-            ActionDefine outputActionDefine = getActionDefine(outputActionNode.defineName);
-            inputActionNode.inputs[inputIndex] = new ActionValueRef(outputActionNode, outputIndex);
-            if (inputActionDefine.inputs.Last().isParams && inputIndex >= inputActionDefine.inputs.Length - 1)
-            {
-                //是多参数
-                ActionValueRef lastValueRef = inputActionNode.inputs[inputActionNode.inputs.Length - 1];
-                if (lastValueRef.action != null || lastValueRef.actionNodeId != 0 || !string.IsNullOrEmpty(lastValueRef.eventVarName))
-                {
-                    //最后一个参数不为空，需要一个额外的空位
-                    ActionValueRef[] newInputs = new ActionValueRef[inputActionNode.inputs.Length + 1];
-                    Array.Copy(inputActionNode.inputs, 0, newInputs, 0, inputActionNode.inputs.Length);
-                    inputActionNode.inputs = newInputs;
-                    getActionNodeItem(inputActionNode).setInputs(getActionNodeInputViewData(inputActionNode));
-                }
-            }
-            //更新输出节点的输出变量状态
-            updateRegVar(outputActionNode);
-            //更新ui
-            _ui.connectNode(getActionNodeItem(outputActionNode), getBranchesCount(outputActionDefine) + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex, ActionNodeConnectionType.action);
         }
         #endregion
         #region 节点断开
-        /// <summary>
-        /// 断开：入口节点（后续动作）----动作节点（前置动作）
-        /// </summary>
-        /// <param name="inputActionNode">动作节点（前置动作）</param>
-        private void unconnectNode4RootAction(ActionNode inputActionNode)
+        private void disconnectPorts(IPort outputPort, IPort inputPort)
         {
-            if (inputActionNode == rootActionNode)
+            if (graph.disconnect(outputPort, inputPort))
             {
-                //断开与入口动作节点的连接
-                rootActionNode = null;
-            }
-            //更新输入节点的输出变量状态
-            updateRegVar(inputActionNode);
-            _ui.unconnectNode(_entryNodeItem, 0, getActionNodeItem(inputActionNode), 0);
-        }
-        /// <summary>
-        /// 断开：动作节点（值输出）----出口节点（值输入）
-        /// </summary>
-        /// <param name="outputActionNode">动作节点（值输出）</param>
-        /// <param name="outputIndex">输出索引</param>
-        /// <param name="inputIndex">输入索引</param>
-        private void unconnectNode4ReturnValueRef(ActionNode outputActionNode, int outputIndex, int inputIndex)
-        {
-            if (_generatedActionDefine != null)
-            {
-                ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList.Find(r =>
-                    r != null &&
-                    r.valueRef != null &&
-                    r.valueRef.action == outputActionNode &&
-                    r.valueRef.index == outputIndex &&
-                    r.returnIndex == inputIndex);
-                if (returnValueRef != null)
-                {
-                    //断开与返回值节点的连接
-                    _generatedActionDefine.returnValueRefList.Remove(returnValueRef);
-                }
-                //更新输出变量状态
-                updateRegVar(outputActionNode);
-                _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex + 1, _returnNodeItem, inputIndex);
-            }
-            else if (_valueRef != null)
-            {
-                if (rootActionNode == outputActionNode)
-                {
-                    //断开与返回值节点的连接
-                    rootActionNode = null;
-                }
-                //更新输出变量状态
-                updateRegVar(outputActionNode);
-                _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex + 1, _returnNodeItem, 0);
-            }
-            else if (_functionNode != null)
-            {
-                unconnectNode4FunctionNodeReturn(outputActionNode, outputIndex, inputIndex);
-            }
-            else
-                throw new NotImplementedException();
-        }
-        /// <summary>
-        /// 断开：动作节点（后续动作）----动作节点（前置动作）
-        /// </summary>
-        /// <param name="outputActionNode">动作节点（后续动作）</param>
-        /// <param name="outputIndex">输出索引</param>
-        /// <param name="inputActionNode">动作节点（前置动作）</param>
-        private void unconnectNode4Action(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode)
-        {
-            //断开节点连接
-            if (outputActionNode.branches != null &&
-                outputActionNode.branches.Length > outputIndex)
-            {
-                outputActionNode.branches[outputIndex] = null;
-            }
-            //更新输入节点的输出变量状态
-            updateRegVar(inputActionNode);
-            //更新ui
-            _ui.unconnectNode(getActionNodeItem(outputActionNode), outputIndex, getActionNodeItem(inputActionNode), 0);
-        }
-        /// <summary>
-        /// 断开：动作节点（值输出）----动作节点（值输入）
-        /// </summary>
-        /// <param name="outputActionNode">动作节点（值输出）</param>
-        /// <param name="outputIndex">输出索引</param>
-        /// <param name="inputActionNode">动作节点（值输入）</param>
-        /// <param name="outputIndex">输入索引</param>
-        private void unconnectNode4ValueRef(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode, int inputIndex)
-        {
-            ActionNodeItem inputActionNodeItem = getActionNodeItem(inputActionNode);
-            ActionValueRef inputActionValueRef = inputActionNode.inputs[inputIndex];
-            //断开之前的节点连接
-            ActionDefine inputActionDefine = getActionDefine(inputActionNode.defineName);
-            if (inputActionDefine != null &&
-                inputActionDefine.inputs.Last().isParams &&
-                inputIndex >= inputActionDefine.inputs.Length - 1)
-            {
-                //如果断开的是多参数节点
-                List<ActionValueRef> inputList = new List<ActionValueRef>(inputActionNode.inputs);
-                inputList.RemoveAt(inputIndex);
-                inputActionNode.inputs = inputList.ToArray();
                 //更新ui
-                _ui.unconnectNodeAllInput(inputActionNodeItem);
-                for (int i = 0; i < inputActionNode.branches.Length; i++)
-                {
-                    if (inputActionNode.branches[i] == null)
-                    {
-                        continue;
-                    }
-                    _ui.connectNode(getActionNodeItem(inputActionNode.branches[i]), 0, inputActionNodeItem, i, ActionNodeConnectionType.value);
-                }
-                for (int i = inputActionNode.branches.Length; i < inputList.Count; i++)
-                {
-                    if (inputList[i] == null)
-                    {
-                        continue;
-                    }
-                    if (inputList[i].action != null)
-                    {
-                        _ui.connectNode(getActionNodeItem(inputList[i].action), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
-                    }
-                    else if (inputList[i].actionNodeId != 0)
-                    {
-                        _ui.connectNode(getActionNodeItem(getActionNode(inputList[i].actionNodeId)), inputList[i].index + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
-                    }
-                    else if (!string.IsNullOrEmpty(inputList[i].eventVarName))
-                    {
-                        _ui.connectNode(_entryNodeItem, getEventVarNameIndex(inputList[i].eventVarName) + 1, inputActionNodeItem, i, ActionNodeConnectionType.value);
-                    }
-                }
-                inputActionNodeItem.setInputs(getActionNodeInputViewData(inputActionNode));
-            }
-            else
-            {
-                //不是端参数，直接断开
-                inputActionNode.inputs[inputIndex] = null;
-                //更新ui
-                if (tryGetActionNodeItem(outputActionNode, out ActionNodeItem outputActionNodeItem))
-                {
-                    _ui.unconnectNode(outputActionNodeItem, outputActionNode.branches.Length + outputIndex, inputActionNodeItem, 1 + inputIndex);
-                }
-            }
-            //因为动作的序列化类型和运行时类型彻底分开，所以动作节点不需要维持树状结构，进而不需要维持每个节点在树中的唯一直接引用
-            //if (inputActionValueRef.action != null)
-            //{
-            //    //寻找子节点中的第一个值引用，将其改为引用对象本身
-            //    traverseActionNode(inputActionNode, false, a =>
-            //    {
-            //        if (a.inputs == null)
-            //            return false;
-            //        for (int i = 0; i < a.inputs.Length; i++)
-            //        {
-            //            if (a.inputs[i] != null && a.inputs[i].actionNodeId == inputActionValueRef.action.id)
-            //            {
-            //                a.inputs[i].action = inputActionValueRef.action;
-            //                a.inputs[i].actionNodeId = 0;
-            //                return true;
-            //            }
-            //        }
-            //        return false;
-            //    });
-            //}
-            //更新输出变量状态
-            updateRegVar(outputActionNode);
-        }
-        /// <summary>
-        /// 断开：动作节点（任意输出）----动作节点（任意输入）
-        /// </summary>
-        /// <param name="outputActionNode">动作节点（任意输出）</param>
-        /// <param name="outputIndex">输出索引</param>
-        /// <param name="inputActionNode">动作节点（任意输入）</param>
-        /// <param name="outputIndex">输入索引</param>
-        private void unconnectNode4AnyType(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode, int inputIndex)
-        {
-            if (inputActionNode == null)
-            {
-                if (outputActionNode == null)
-                {
-                    if (_generatedActionDefine != null)
-                    {
-                        unconnectNode4ActionDefineArgToReturn(outputIndex, inputIndex);
-                    }
-                    else if (_functionNode != null)
-                    {
-                        unconnectNode4FunctionNodeOutput2Return(outputIndex, inputIndex);
-                    }
-                }
-                else
-                    unconnectNode4ReturnValueRef(outputActionNode, outputIndex, inputIndex);
-            }
-            else if (inputActionNode.inputs[inputIndex].action != null)
-            {
-                //直接与节点值连接
-                unconnectNode4ValueRef(inputActionNode.inputs[inputIndex].action, inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
-            }
-            else if (inputActionNode.inputs[inputIndex].actionNodeId != 0)
-            {
-                //间接与节点值连接
-                unconnectNode4ValueRef(getActionNode(inputActionNode.inputs[inputIndex].actionNodeId), inputActionNode.inputs[inputIndex].index, inputActionNode, inputIndex);
-            }
-            else if (!string.IsNullOrEmpty(inputActionNode.inputs[inputIndex].eventVarName))
-            {
-                //与事件变量相连
-                unconnectNode4TriggerEventVarRef(getEventVarNameIndex(inputActionNode.inputs[inputIndex].eventVarName), inputActionNode, inputIndex);
-            }
-            else
-            {
-                //与自定义动作参数相连
-                var input = inputActionNode.inputs[inputIndex];
-                unconnectNode4ActionDefineArg(input.argIndex, inputActionNode, inputIndex);
+                var outputNodeItem = getActionNodeItem(outputPort.node);
+                var inputNodeItem = getActionNodeItem(inputPort.node);
+                _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
             }
         }
-        /// <summary>
         /// 断开：动作节点----所有节点
         /// </summary>
         /// <param name="actionNode">动作节点</param>
-        private void unconnectNodeAll(ActionNode actionNode)
+        private void disconnectNodeAll(IActionNode actionNode)
         {
-            //与入口节点断开连接
-            if (rootActionNode == actionNode)
+            var connections = graph.getNodeConnections(actionNode);
+            foreach (var connection in connections)
             {
-                if (valueRef != null)
-                    unconnectNode4ReturnValueRef(actionNode, valueRef.index, 0);
-                else
-                    unconnectNode4RootAction(actionNode);
+                disconnectPorts(connection.source, connection.destination);
             }
-            // 断开所有输入到该节点的连接。
-            if (actionNode.inputs != null)
-            {
-                for (int i = 0; i < actionNode.inputs.Length; i++)
-                {
-                    if (actionNode.inputs[i] == null)
-                    {
-                        continue;
-                    }
-                    if (!string.IsNullOrEmpty(actionNode.inputs[i].eventVarName))
-                    {
-                        unconnectNode4TriggerEventVarRef(getEventVarNameIndex(actionNode.inputs[i].eventVarName), actionNode, i);
-                    }
-                }
-            }
-            // 断开所有该节点输出到其他入口/出口节点的输出连接。
-            if (_trigger != null)
-            {
-                // 触发器的“触发条件”。
-                if (_trigger.condition != null && _trigger.condition.action == actionNode)
-                {
-                    unconnectNode4TriggerCondition(actionNode, _trigger.condition.index, 0);
-                }
-            }
-            else if (_generatedActionDefine != null)
-            {
-                // 自定义动作的“返回值”。
-                var returns = _generatedActionDefine.returnValueRefList;
-                if (returns != null)
-                {
-                    foreach (var returnRef in returns.ToArray())
-                    {
-                        if (returnRef == null || returnRef.valueRef == null)
-                            continue;
-                        if (returnRef.valueRef.action == actionNode)
-                        {
-                            unconnectNode4ReturnValueRef(actionNode, returnRef.valueRef.index, returnRef.returnIndex);
-                        }
-                    }
-                }
-            }
-            else if (_functionNode != null)
-            {
-                // 函数节点的“返回值”。
-                foreach (var returnRef in _functionNode.returns)
-                {
-                    if (returnRef != null &&
-                        returnRef.valueRef != null &&
-                        returnRef.valueRef.action == actionNode)
-                    {
-                        unconnectNode4FunctionNodeReturn(actionNode, returnRef.valueRef.index, returnRef.returnIndex);
-                    }
-                }
-            }
-
-            //与其他节点断开连接
-            for (int i = 0; i < _actionNodeList.Count; i++)
-            {
-                if (_actionNodeList[i] == null)
-                    continue;
-                //与输出动作断开连接
-                int index;
-                if (actionNode.branches != null)
-                {
-                    index = Array.IndexOf(actionNode.branches, _actionNodeList[i]);
-                    if (index >= 0)
-                    {
-                        unconnectNode4Action(actionNode, index, _actionNodeList[i]);
-                    }
-                }
-                //与输出值断开连接
-                if (_actionNodeList[i].inputs != null)
-                {
-                    index = Array.FindIndex(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id));
-                    if (index >= 0)
-                    {
-                        unconnectNode4ValueRef(actionNode, _actionNodeList[i].inputs[index].index, _actionNodeList[i], index);
-                    }
-                }
-                //与输入动作断开连接
-                if (_actionNodeList[i].branches != null)
-                {
-                    index = Array.IndexOf(_actionNodeList[i].branches, actionNode);
-                    if (index >= 0)
-                    {
-                        unconnectNode4Action(_actionNodeList[i], index, actionNode);
-                    }
-                }
-                //与输入值断开连接
-                if (actionNode.inputs != null)
-                {
-                    index = Array.FindIndex(actionNode.inputs, v => v != null && (v.action == _actionNodeList[i] || v.actionNodeId == _actionNodeList[i].id));
-                    if (index >= 0)
-                    {
-                        unconnectNode4ValueRef(_actionNodeList[i], actionNode.inputs[index].index, actionNode, index);
-                    }
-                }
-            }
-
         }
         #endregion
         #region 合法检测
@@ -1904,62 +897,42 @@ namespace Controllers
             }
             return true;
         }
-
-        /// <summary>
-        /// 验证连接合法性：动作节点（输出）----动作节点（输入）
-        /// </summary>
-        /// <param name="outputActionNode">动作节点（输出）</param>
-        /// <param name="outputIndex">动作节点输出索引</param>
-        /// <param name="inputActionNode">动作节点（输入）</param>
-        /// <param name="inputIndex">动作节点输入索引</param>
-        /// <returns>是否合法</returns>
-        private bool validateConnection4ActionNodes(ActionNode outputActionNode, int outputIndex, ActionNode inputActionNode, int inputIndex)
-        {
-            var outputDefine = getActionDefine(outputActionNode.defineName);
-            var inputDefine = getActionDefine(inputActionNode.defineName);
-            if (outputDefine == null || inputDefine == null)
-                return false;
-
-            try
-            {
-                Type outputType = outputDefine.getValueOutputAt(outputIndex - outputActionNode.branches.Length).type;
-                Type inputType = inputDefine.getValueInputAt(inputIndex - 1).type;
-                return isValidTypeForConnection(outputType, inputType);
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"验证动作节点“{outputActionNode.defineName}”和“{inputActionNode.defineName}”的连接合法性时出现异常：{e}");
-                return false;
-            }
-        }
         private void ShowValueConnectActionError()
         {
             _ui.showErrorTip(game.lang._(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
         }
+        private bool validatePortConnection(IPort outputPort, IPort inputPort, bool showErrorTip = true)
+        {
+            if (outputPort.canConnectTo(inputPort))
+            {
+                try
+                {
+                    Type outputType = outputPort.define.type;
+                    Type inputType = inputPort.define.type;
+                    return validateConnectionType(outputType, inputType, showErrorTip);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"验证端点“{outputPort}”和“{inputPort}”的连接合法性时出现异常：{e}");
+                    return false;
+                }
+            }
+            else
+            {
+                //值输出只能与值输入相互连接
+                if (showErrorTip)
+                    ShowValueConnectActionError();
+                return false;
+            }
+        }
         #endregion
         #region 节点操作
-        int allocActionNodeId()
-        {
-            int id = 1;
-            for (int i = 0; i < _actionNodeList.Count; i++)
-            {
-                if (_actionNodeList[i] == null)
-                {
-                    _actionNodeList.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-                if (_actionNodeList[i].id >= id)
-                    id = _actionNodeList[i].id + 1;
-            }
-            return id;
-        }
-        private ActionNode getActionNode(ActionNodeItem actionNodeItem)
+        private IActionNode getActionNode(ActionNodeItem actionNodeItem)
         {
             int index = _actionNodeItemList.IndexOf(actionNodeItem);
             return _actionNodeList[index];
         }
-        private ActionNode getActionNode(int actionNodeId)
+        private IActionNode getActionNode(int actionNodeId)
         {
             return _actionNodeList.Find(a => a != null && a.id == actionNodeId);
         }
@@ -1991,382 +964,32 @@ namespace Controllers
             if (actionDefine.obsoleteMsg == "") return "";
             return game.lang._(actionDefine.obsoleteMsg);
         }
-        /// <summary>
-        /// 判断一个节点是否是离散的节点，实际上不影响游戏但是可能对没有完成的编辑工作有用所以保存在编辑器里
-        /// </summary>
-        /// <param name="actionNode"></param>
-        /// <returns></returns>
-        private bool isFreeActionNode(ActionNode actionNode)
-        {
-            for (int i = 0; i < _actionNodeList.Count; i++)
-            {
-                if (_actionNodeList[i] == null)
-                    continue;
-                if (_actionNodeList[i].branches != null &&
-                    _actionNodeList[i].branches.Length > 0 &&
-                    Array.IndexOf(_actionNodeList[i].branches, actionNode) >= 0)
-                {
-                    //被其他节点作为后续节点引用，不是离散节点
-                    return false;
-                }
-                if (_actionNodeList[i].inputs != null &&
-                    _actionNodeList[i].inputs.Length > 0 &&
-                    Array.Exists(_actionNodeList[i].inputs, v => v != null && (v.action == actionNode || v.actionNodeId == actionNode.id)))
-                {
-                    //被其他节点引用输入值，不是离散节点
-                    return false;
-                }
-            }
-            //没有被任何节点引用，是离散的
-            return true;
-        }
-        /// <summary>
-        /// 获取当前节点的父节点。
-        /// </summary>
-        /// <param name="actionNode"></param>
-        /// <returns></returns>
-        private bool tryGetPrevActionNode(ActionNode actionNode, out ActionNode prevActionNode, out int outputIndex)
-        {
-            for (int i = 0; i < _actionNodeList.Count; i++)
-            {
-                if (_actionNodeList[i] == null)
-                    continue;
-                if (_actionNodeList[i].branches != null)
-                {
-                    for (int j = 0; j < _actionNodeList[i].branches.Length; j++)
-                    {
-                        if (_actionNodeList[i].branches[j] == actionNode)
-                        {
-                            prevActionNode = _actionNodeList[i];
-                            outputIndex = j;
-                            return true;
-                        }
-                    }
-                }
-            }
-            prevActionNode = null;
-            outputIndex = -1;
-            return false;
-        }
-        private void traverseActionNode(ActionNode actionNode, bool traverseInputs, Action<ActionNode> action)
-        {
-            if (action == null)
-                return;
-            traverseActionNode(actionNode, traverseInputs, a =>
-            {
-                action.Invoke(a);
-                return false;
-            });
-        }
-        /// <summary>
-        /// 遍历动作节点和它的子节点
-        /// </summary>
-        /// <param name="actionNode"></param>
-        /// <param name="action">返回值表示是否终止遍历</param>
-        private void traverseActionNode(ActionNode actionNode, bool traverseInputs, Func<ActionNode, bool> action)
-        {
-            if (actionNode == null)
-                return;
-            if (action == null)
-                return;
-            bool isBreak = action.Invoke(actionNode);
-            if (isBreak)
-                return;
-            if (traverseInputs)
-            {
-                if (actionNode.inputs != null && actionNode.inputs.Length > 0)
-                {
-                    for (int i = 0; i < actionNode.inputs.Length; i++)
-                    {
-                        if (actionNode.inputs[i] == null)
-                            continue;
-                        if (actionNode.inputs[i].action != null)
-                            traverseActionNode(actionNode.inputs[i].action, traverseInputs, action);
-                        else
-                            traverseActionNode(getActionNode(actionNode.inputs[i].actionNodeId), traverseInputs, action);
-                    }
-                }
-            }
-            if (actionNode.branches != null && actionNode.branches.Length > 0)
-            {
-                for (int i = 0; i < actionNode.branches.Length; i++)
-                {
-                    traverseActionNode(actionNode.branches[i], traverseInputs, action);
-                }
-            }
-        }
-        /// <summary>
-        /// 获取一个节点的一个输出点被引用的次数。
-        /// 为（该节点作为后续动作的连接数量 + 该节点输出值连接其他节点的输入值数量）。
-        /// </summary>
-        /// <param name="actionNode">目标动作节点。</param>
-        /// <param name="outputIndex">输出值的索引。</param>
-        /// <returns>被引用的次数。</returns>
-        private int getActionNodeRefCount(ActionNode actionNode, int outputIndex)
-        {
-            int count = 0;
-            //节点是根节点
-            if (rootActionNode == actionNode)
-            {
-                count++;
-            }
-            for (int i = 0; i < _actionNodeList.Count; i++)
-            {
-                var curNode = _actionNodeList[i];
-                var branches = curNode.branches;
-                if (branches != null && branches.Length > 0)
-                {
-                    for (int j = 0; j < branches.Length; j++)
-                    {
-                        var branch = branches[j];
-                        if (branch == null)
-                            continue;
-                        //节点本身作为动作分支被引用
-                        if (branch == actionNode)
-                        {
-                            count++;
-                        }
-                    }
-                }
-                var inputs = curNode.inputs;
-                if (inputs != null && inputs.Length > 0)
-                {
-                    for (int j = 0; j < inputs.Length; j++)
-                    {
-                        var input = inputs[j];
-                        if (input == null)
-                            continue;
-                        //节点的输出值被引用
-                        if ((input.action == actionNode || input.actionNodeId == actionNode.id) &&
-                            input.index == outputIndex)
-                        {
-                            count++;
-                        }
-                    }
-                }
-            }
-            // 检测入口节点和出口节点的连接。
-            // 触发器入口节点的条件连接的是该节点的输出值。
-            if (_trigger != null)
-            {
-                var valueRef = _trigger.condition;
-                if (valueRef != null)
-                {
-                    if ((valueRef.action == actionNode || valueRef.actionNodeId == actionNode.id) && valueRef.index == outputIndex)
-                    {
-                        count++;
-                    }
-                }
-            }
-            // 自定义的出口节点的返回值连接的是该节点的输出值。
-            else if (_generatedActionDefine != null)
-            {
-                foreach (var returnValueRef in _generatedActionDefine.returnValueRefList)
-                {
-                    if (returnValueRef == null || returnValueRef.valueRef == null)
-                        continue;
-                    var valueRef = returnValueRef.valueRef;
-                    if ((valueRef.action == actionNode || valueRef.actionNodeId == actionNode.id) &&
-                        valueRef.index == outputIndex)
-                    {
-                        count++;
-                    }
-                }
-            }
-            // 函数节点的出口节点的返回值连接的是该节点的输出值。
-            else if (_functionNode != null)
-            {
-                foreach (var returnValueRef in _functionNode.returns)
-                {
-                    if (returnValueRef == null || returnValueRef.valueRef == null)
-                        continue;
-                    var valueRef = returnValueRef.valueRef;
-                    if ((valueRef.action == actionNode || valueRef.actionNodeId == actionNode.id) &&
-                        valueRef.index == outputIndex)
-                    {
-                        count++;
-                    }
-                }
-            }
-            return count;
-        }
-        /// <summary>
-        /// 获取引用了特定节点的输出的所有节点以及引用的输入索引
-        /// </summary>
-        /// <returns></returns>
-        private (ActionNode actionNode, int index)[] getValueRefedActionNodes(ActionNode outputActionNode, int outputIndex)
-        {
-            List<(ActionNode actionNode, int index)> list = new List<(ActionNode actionNode, int index)>();
-            for (int i = 0; i < _actionNodeList.Count; i++)
-            {
-                if (_actionNodeList[i].inputs == null || _actionNodeList[i].inputs.Length < 1)
-                    continue;
-                for (int j = 0; j < _actionNodeList[i].inputs.Length; j++)
-                {
-                    if (_actionNodeList[i].inputs[j] == null)
-                        continue;
-                    if ((_actionNodeList[i].inputs[j].action == outputActionNode || _actionNodeList[i].inputs[j].actionNodeId == outputActionNode.id) &&
-                        _actionNodeList[i].inputs[j].index == outputIndex)
-                    {
-                        list.Add((_actionNodeList[i], j));
-                    }
-                }
-            }
-            return list.ToArray();
-        }
-        /// <summary>
-        /// 获取一个动作节点的根节点，如果它已经是根节点那么就返回它。
-        /// </summary>
-        /// <param name="actionNode"></param>
-        /// <returns></returns>
-        private ActionNode getRootNode(ActionNode actionNode)
-        {
-            if (actionNode == null)
-                return null;
-            if (tryGetPrevActionNode(actionNode, out ActionNode prevActionNode, out _))
-            {
-                return getRootNode(prevActionNode);
-            }
-            else
-                return actionNode;
-        }
-        /// <summary>
-        /// 判断一个节点是否在当前节点之前的动作节点中被引用了。
-        /// </summary>
-        /// <param name="valueActionNode"></param>
-        /// <param name="curActionNode"></param>
-        /// <returns></returns>
-        private bool isActionNodeValueRefedInPrevNodes(ActionNode valueActionNode, ActionNode curActionNode, int curIndex)
-        {
-            //判断当前节点是否已经引用了
-            if (isActionNodeValueRefedInNode(valueActionNode, curActionNode, curIndex))
-            {
-                return true;
-            }
-            //没有父节点，则不可能已经被引用
-            if (!tryGetPrevActionNode(curActionNode, out curActionNode, out _))
-            {
-                return false;
-            }
-            //判断父节点
-            while (curActionNode != null)
-            {
-                //判断是否在父节点中被引用
-                if (isActionNodeValueRefedInNode(valueActionNode, curActionNode))
-                {
-                    return true;
-                }
-                //尝试获取下一个父节点
-                if (!tryGetPrevActionNode(curActionNode, out curActionNode, out _))
-                {
-                    return false;
-                }
-            }
-            return false;
-        }
-        private bool isActionNodeValueRefedInNode(ActionNode valueActionNode, ActionNode actionNode, int curIndex = -1)
-        {
-            //检查该节点是否是目标节点
-            if (valueActionNode == actionNode)
-                return true;
-            if (actionNode == null || actionNode.inputs == null)
-                return false;
-            for (int i = 0; i < (curIndex < 0 || curIndex >= actionNode.inputs.Length ? actionNode.inputs.Length : curIndex); i++)
-            {
-                if (actionNode.inputs[i] == null)
-                    continue;
-                ActionNode childActionNode;
-                if (actionNode.inputs[i].action != null)
-                    childActionNode = actionNode.inputs[i].action;
-                else
-                    childActionNode = getActionNode(actionNode.inputs[i].actionNodeId);
-                //递归检查输入节点是否是目标节点
-                if (isActionNodeValueRefedInNode(valueActionNode, childActionNode))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        private int getOutputCount(ActionNode actionNode)
-        {
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
-            if (actionDefine == null)
-                return 0;
-            return actionDefine.outputs.Length;
-        }
-        private int getBranchesCount(ActionDefine actionDefine)
-        {
-            int count = 1;//每个动作至少具有一个动作输出
-            for (int i = 0; i < actionDefine.outputs.Length; i++)
-            {
-                if (actionDefine.outputs[i].type == typeof(ActionNode))
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-        /// <summary>
-        /// 更新动作节点的变量注册状态，会使得动作节点在同一个作用域内不触发两次。
-        /// ！！！需要在连接/断开动作节点的前置动作（左，红线），或连接动作节点的输出值（右，非红线）时调用该方法！！！
-        /// </summary>
-        /// <param name="actionNode">要更新变量注册状态的动作节点。</param>
-        private void updateRegVar(ActionNode actionNode)
-        {
-            int outputCount = getOutputCount(actionNode);
-            if (actionNode.regVar == null || actionNode.regVar.Length != outputCount)
-            {
-                actionNode.regVar = new bool[outputCount];
-            }
-            for (int i = 0; i < actionNode.regVar.Length; i++)
-            {
-                //如果节点本身或者节点的输出值被重复引用了，那必然要注册变量。
-                actionNode.regVar[i] = getActionNodeRefCount(actionNode, i) > 1;
-            }
-        }
         #endregion
         /// <summary>
         /// 为动作节点分配id，
         /// </summary>
         /// <returns></returns>
         #region 节点信息
-        ActionNodeGraphNodeInfo getNodeInfo(ActionNode node)
-        {
-            return _graphInfo.actionInfoDict[node.id.ToString()];
-        }
-        void setNodeInfo(ActionNode node, ActionNodeGraphNodeInfo graphNodeInfo)
-        {
-            _graphInfo.actionInfoDict[node.id.ToString()] = graphNodeInfo;
-        }
-        bool hasNodeInfo(ActionNode node)
-        {
-            return _graphInfo.actionInfoDict.ContainsKey(node.id.ToString());
-        }
-        bool removeNodeInfo(ActionNode node)
-        {
-            return _graphInfo.actionInfoDict.Remove(node.id.ToString());
-        }
         private ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
             var actionDefine = getActionDefine(actionNode.defineName);
-            var infoArray = new ActionNodeValueInfo[actionDefine.consts.Length];
-            for (int i = 0; i < infoArray.Length; i++)
+            var count = actionDefine.constDefines.Count();
+            var infoArray = new ActionNodeValueInfo[count];
+            for (int i = 0; i < count; i++)
             {
+                var constDefine = actionDefine.constDefines.ElementAt(i);
                 // 翻译名称
-                var name = tryTranslateWithDict(actionDefine.consts[i].name);
-                Type type = actionDefine.consts[i].type;
-                object value = null;
-                if (i < actionNode.consts.Length)
-                    value = actionNode.consts[i];
+                var name = tryTranslateWithDict(constDefine.getDisplayName());
+                Type type = constDefine.type;
+                object value = actionNode.getConst(constDefine.name);
                 if (type == typeof(int))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.integer, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.integer, value);
                 else if (type == typeof(float))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.real, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.real, value);
                 else if (type == typeof(bool))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.boolean, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.boolean, value);
                 else if (type == typeof(string))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.text, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.text, value);
                 else if (type.IsEnum)
                 {
                     var optionalValues = Enum.GetValues(type).Cast<object>().ToArray();
@@ -2385,18 +1008,18 @@ namespace Controllers
                             optionalNames[j] = optName;
                         }
                     }
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
                 }
                 else if (type == typeof(ActionValueRef))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.actionValueRef, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.actionValueRef, value);
                 else if (type == typeof(DefineReference))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.cardReference, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardReference, value);
                 else if (type == typeof(DefineReference[]))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.cardReferenceCollection, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardReferenceCollection, value);
                 else if (type == typeof(PileNameCollection))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.pileNameCollection, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileNameCollection, value);
                 else if (type == typeof(KeywordCollection))
-                    infoArray[i] = new ActionNodeValueInfo(name, ActionNodeValueType.keywords, value);
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.keywords, value);
                 else
                     throw new NotImplementedException("没有" + type + "对应的常数类型");
             }
@@ -2404,121 +1027,47 @@ namespace Controllers
         }
         private string[] getActionNodeInputNames(ActionNode actionNode)
         {
-            //TODO:这里应该考虑动作节点输入的翻译，但是暂时先不这么做。
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
-            List<string> inputNameList = new List<string>();
-            //前一个动作节点
-            inputNameList.Add(string.Empty);
-            //输入
-            string inputName;
-            for (int i = 0; i < actionNode.inputs.Length; i++)
+            string[] inputNames = new string[actionNode.inputPorts.Count];
+            for (int i = 0; i < inputNames.Length; i++)
             {
-                if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams && i >= actionDefine.inputs.Length - 1)
-                {
-                    inputName = actionDefine.inputs.Last().name;
-                    if (_nameTextDict.TryGetValue(inputName, out inputName))
-                    {
-                        inputName = game.langManager.getString(inputName);
-                    }
-                    inputNameList.Add(inputName + (i - actionDefine.inputs.Length + 2));
-                }
-                else if (i < actionDefine.inputs.Length)
-                {
-                    //有可能由于ActionDefine的参数数量变化导致存在的输入参数比实际的多，忽略已有的参数
-                    inputNameList.Add(actionDefine.inputs[i].name);
-                }
+                // 翻译输出节点
+                var outputName = actionNode.inputPorts[i].define.getDisplayName();
+                inputNames[i] = tryTranslateWithDict(outputName);
             }
-            if (actionDefine.inputs.Length > 0 && actionDefine.inputs.Last().isParams)
-            {
-                inputName = actionDefine.inputs.Last().name;
-                if (_nameTextDict.TryGetValue(inputName, out inputName))
-                {
-                    inputName = game.langManager.getString(inputName);
-                }
-                inputNameList.Add(inputName + (actionNode.inputs.Length - actionDefine.inputs.Length + 2));
-            }
-            return inputNameList.ToArray();
+            return inputNames;
         }
         private (string name, Color color)[] getActionNodeInputViewData(ActionNode actionNode)
         {
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
             List<(string name, Color color)> viewDataList = new List<(string name, Color color)>();
-            //动作输入
-            viewDataList.Add((string.Empty, game.editor.getColorByType(typeof(ActionNode))));
             //值输入
-            for (int i = 0; i < actionDefine.inputs.Length; i++)
+            foreach (var inputPort in actionNode.inputPorts)
             {
                 // 翻译输出节点
-                var inputName = tryTranslateWithDict(actionDefine.inputs[i].name);
-                viewDataList.Add((inputName, game.editor.getColorByType(actionDefine.inputs[i].type)));
-                if (i == actionDefine.inputs.Length - 1 && actionDefine.inputs[i].isParams)
-                {
-                    //变长参数，要多已有参数的连接点和一个空的连接点
-                    if (actionNode.inputs != null && actionNode.inputs.Length > actionDefine.inputs.Length)
-                    {
-                        for (int j = actionDefine.inputs.Length; j < actionNode.inputs.Length; j++)
-                        {
-                            //空的直接去掉，跳过
-                            if (j != actionNode.inputs.Length - 1 && actionNode.inputs[j] == null)
-                            {
-                                var list = new List<ActionValueRef>(actionNode.inputs);
-                                list.RemoveAt(j);
-                                actionNode.inputs = list.ToArray();
-                                j--;
-                                continue;
-                            }
-                            viewDataList.Add((inputName, game.editor.getColorByType(actionDefine.inputs[i].type)));
-                        }
-                    }
-                    else if (i < actionNode.inputs.Length && actionNode.inputs[i] != null)
-                        viewDataList.Add((inputName, game.editor.getColorByType(actionDefine.inputs[i].type)));
-                }
+                var inputName = tryTranslateWithDict(inputPort.define.getDisplayName());
+                viewDataList.Add((inputName, game.editor.getColorByType(inputPort.define.type)));
             }
             return viewDataList.ToArray();
         }
         private string[] getActionNodeOutputNames(ActionNode actionNode)
         {
-            //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
-            string[] outputNames = new string[actionDefine.outputs.Length + actionNode.branches.Length];
+            string[] outputNames = new string[actionNode.outputPorts.Count];
             for (int i = 0; i < outputNames.Length; i++)
             {
-                if (i < actionNode.branches.Length)
-                {
-                    //TODO:下一个动作节点不知道该叫啥，就先不给名字好了
-                    outputNames[i] = string.Empty;
-                }
-                else
-                {
-                    // 翻译输出节点
-                    var outputName = actionDefine.outputs[i - actionNode.branches.Length].name;
-                    outputNames[i] = tryTranslateWithDict(outputName);
-                }
+                // 翻译输出节点
+                var outputName = actionNode.outputPorts[i].define.getDisplayName();
+                outputNames[i] = tryTranslateWithDict(outputName);
             }
             return outputNames;
+
         }
         private (string name, Color color)[] getActionNodeOutputViewData(ActionNode actionNode)
         {
-            //TODO:这里应该考虑动作节点输出的翻译，但是暂时先不这么做。
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
-            List<(string name, Color color)> outputList = new List<(string name, Color color)>()
-            {
-                (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
-            };
-            for (int i = 0; i < actionDefine.outputs.Length; i++)
+            List<(string name, Color color)> outputList = new List<(string name, Color color)>();
+            foreach (var output in actionNode.outputPorts)
             {
                 // 翻译输出节点
-                var outputName = tryTranslateWithDict(actionDefine.outputs[i].name);
-                if (actionDefine.outputs[i].type == typeof(ActionNode))
-                {
-                    //动作分支节点
-                    outputList.Add((outputName, game.editor.getColorByType(typeof(ActionNode))));
-                }
-                else
-                {
-                    //输出值节点
-                    outputList.Add((outputName, game.editor.getColorByType(actionDefine.outputs[i].type)));
-                }
+                var outputName = tryTranslateWithDict(output.define.getDisplayName());
+                outputList.Add((outputName, game.editor.getColorByType(output.define.type)));
             }
             return outputList.ToArray();
         }
@@ -2550,19 +1099,20 @@ namespace Controllers
         }
         private void openMenuForNodeItem(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
-            //入口节点不能通过长按编辑
-            if (actionNodeItem == _entryNodeItem)
+            var node = getActionNode(actionNodeItem);
+            //不能通过长按编辑
+            if (!(node is ActionNode action))
                 return;
-            //出口节点也不行
-            if (actionNodeItem == _returnNodeItem)
+            var define = getActionDefine(action.defineName);
+            if (define != null && define.disableMenu)
                 return;
-            _curEditActionNode = getActionNode(actionNodeItem);
+            _curEditActionNode = action;
             Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
             List<string> optionList = new List<string>()
             {
                 game.langManager.getString(StringTable.DELETE)//删除
             };
-            if (getActionDefine(_curEditActionNode.defineName) is GeneratedActionDefine)
+            if (getActionDefine(action.defineName) is GeneratedActionDefine)
             {
                 optionList.Add(game.langManager.getString(StringTable.EDIT));//编辑
             }
@@ -2591,29 +1141,18 @@ namespace Controllers
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
             _ui.clearGraph();
-            _entryType = null;
             _effect = null;
-            _valueRef = null;
-            _targetChecker = null;
-            _trigger = null;
             _generatedActionDefine = null;
-            _functionNode = null;
         }
         /// <summary>
         /// 将当前正在编辑的对象入栈
         /// </summary>
         private void pushCurEditObjectToStack()
         {
-            if (_trigger != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _trigger, null, _graphInfo));
-            else if (_targetChecker != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _targetChecker, null, _graphInfo));
-            else if (_valueRef != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _valueRef, null, _graphInfo));
-            else if (_functionNode != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _functionNode, null, _graphInfo));
+            if (_generatedActionDefine != null)
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _generatedActionDefine, null, _graphInfo));
             else
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _entryType, _effect, null, _graphInfo));
+                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _effect, null, _graphInfo));
             _ui.setReturnButtonActive(true);
         }
         private void popPrevEditObjectFromStackAndOpen()
@@ -2662,7 +1201,7 @@ namespace Controllers
         public const string EDITOR_PARAM_NAME_AFFECT_CONDITION = "作用条件";
         [TranslateMsg("编辑器-参数名称-目标增益（自定义光环-更新动作-输出值）")]
         public const string EDITOR_PARAM_NAME_TARGETS_BUFF = "目标增益";
-        
+
         [Obsolete]
         public IAppManager app { get; }
         [Obsolete]
@@ -2670,83 +1209,36 @@ namespace Controllers
         [SerializeField]
         ActionNodeGraphPanel _ui;
         [SerializeField]
+        EffectEditorCtrl _effectEditor = null;
+        [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         string _curCategroy = null;
         float _curPosX;
         float _curPosY;
-        readonly List<ActionNode> _actionNodeList = new List<ActionNode>();
+        readonly List<IActionNode> _actionNodeList = new List<IActionNode>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
-        ActionNodeGraphInfo _graphInfo;
-        ActionNodeItem _entryNodeItem;
-        ActionNodeItem _returnNodeItem;
-        ActionNode rootActionNode
+        ActionGraph graph
         {
             get
             {
                 if (_generatedActionDefine != null)
-                    return _generatedActionDefine.action;
+                    return _generatedActionDefine.graph;
                 if (_effect != null)
-                {
-                    if (_entryType == nameof(GeneratedEffect.onEnableAction))
-                        return _effect.onEnableAction;
-                    else if (_entryType == nameof(GeneratedEffect.onDisableAction))
-                        return _effect.onDisableAction;
-                    else
-                        return _effect.getProp<ActionNode>(_entryType);
-                }
-                if (_trigger != null)
-                    return _trigger.action;
-                if (_functionNode != null)
-                    return _functionNode.action;
-                if (valueRef != null)
-                    return valueRef.action;
+                    return _effect.graph;
                 return null;
-                //throw new NullReferenceException("没有引用动作的对象");
-            }
-            set
-            {
-                if (_generatedActionDefine != null)
-                    _generatedActionDefine.action = value;
-                else if (_effect != null)
-                {
-                    if (_entryType == nameof(GeneratedEffect.onEnableAction))
-                        _effect.onEnableAction = value;
-                    else if (_entryType == nameof(GeneratedEffect.onDisableAction))
-                        _effect.onDisableAction = value;
-                    else
-                        _effect.setProp(_entryType, value);
-                }
-                else if (_trigger != null)
-                    _trigger.action = value;
-                if (_functionNode != null)
-                    _functionNode.action = value;
-                else if (valueRef != null)
-                    valueRef.action = value;
             }
         }
-        string _entryType;
+        ActionNodeGraphInfo _graphInfo;
         long _curCardPoolId = 0;
         GeneratedEffect _effect;
-        ActionValueRef valueRef
-        {
-            get
-            {
-                if (_targetChecker != null)
-                    return _targetChecker.condition;
-                return _valueRef;
-            }
-        }
-        ActionValueRef _valueRef;
-        TargetChecker _targetChecker;
-        TriggerGraph _trigger;
         /// <summary>
         /// 当前正在编辑的动作节点
         /// </summary>
         ActionNode _curEditActionNode = null;
         /// <summary>
-        /// 当前正在编辑的动作节点常量索引
+        /// 当前正在编辑的动作节点常量名
         /// </summary>
-        int _curEditActionNodeConstIndex = -1;
+        string _curEditActionNodeConstName = string.Empty;
         /// <summary>
         /// 当前正在编辑的动作节点常量子项索引
         /// </summary>
@@ -2757,6 +1249,9 @@ namespace Controllers
             DEFINE.TARGET_TYPE_CHARACTER,
             DEFINE.TARGET_TYPE_SERVANT
         };
+
+        [TranslateMsg("内置节点名称，用于通用效果设置属性")]
+        const string EDITOR_NODE_NAME_GENERATED_EFFECT_DATA = "通用效果属性";
 
         [TranslateMsg("内置节点参数，通常用于比较和操作，表示操作符，如加、减、或、异或等")]
         const string EDITOR_PARAM_OPERATOR = "运算符";
@@ -2860,6 +1355,7 @@ namespace Controllers
             { "SetVariable", StringTable.EDITOR_NODE_NAME_SET_VARIABLE },
             { "CollectionOperation", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
+            { "GeneratedEffectData", EDITOR_NODE_NAME_GENERATED_EFFECT_DATA },
             // 内置参数
             { "value", StringTable.EDITOR_PARAM_NAME_VALUE },
             { "Value", StringTable.EDITOR_PARAM_NAME_VALUE },
@@ -2877,6 +1373,10 @@ namespace Controllers
             { "Amount", EDITOR_PARAM_DAMAGE_AMOUNT },
             { "Target", EDITOR_PARAM_TARGET },
             { "TargetName", EDITOR_PARAM_TARGET_NAME },
+            { "EnableAction", StringTable.EDITOR_EFFECT_PROP_NAME_ON_ENABLE_ACTION },
+            { "DisableAction", StringTable.EDITOR_EFFECT_PROP_NAME_ON_DISABLE_ACTION },
+            { "Buff", StringTable.EDITOR_PARAM_NAME_BUFF },
+            { "BuffDefine", StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE },
             
             // Enum
             { "TouhouCardEngine.IntegerOperator.add", EDITOR_ENUM_INT_OPERATOR_ADD },
@@ -2884,11 +1384,11 @@ namespace Controllers
             { "TouhouCardEngine.IntegerOperator.mul", EDITOR_ENUM_INT_OPERATOR_MUL },
             { "TouhouCardEngine.IntegerOperator.div", EDITOR_ENUM_INT_OPERATOR_DIV },
             { "TouhouCardEngine.IntegerOperator.mod", EDITOR_ENUM_INT_OPERATOR_MOD },
-            
+
             { "TouhouCardEngine.LogicOperator.not", EDITOR_ENUM_LOGIC_OPERATOR_NOT },
             { "TouhouCardEngine.LogicOperator.and", EDITOR_ENUM_LOGIC_OPERATOR_AND },
             { "TouhouCardEngine.LogicOperator.or", EDITOR_ENUM_LOGIC_OPERATOR_OR },
-            
+
             { "TouhouCardEngine.CompareOperator.equals", EDITOR_ENUM_CMP_OPERATOR_EQUAL },
             { "TouhouCardEngine.CompareOperator.unequals", EDITOR_ENUM_CMP_OPERATOR_UNEQUAL },
             { "TouhouCardEngine.CompareOperator.greater", EDITOR_ENUM_CMP_OPERATOR_GREATER },
@@ -2903,42 +1403,18 @@ namespace Controllers
             { "Game.CardDefineSelect.Master", EDITOR_ENUM_CARD_TYPE_MASTER },
             { "Game.CardDefineSelect.Item", EDITOR_ENUM_CARD_TYPE_ITEM },
         };
-        readonly Dictionary<string, FunctionDefine> _functionDefineDict = new Dictionary<string, FunctionDefine>
-        {
-            { GeneratedAura.FUNCTION_DEFINE_NAME_AFFECT_CONDITION, new FunctionDefine()
-            {
-                parameters = new ValueDefine[1]
-                {
-                    new ValueDefine(typeof(Card), StringTable.EDITOR_PARAM_NAME_TARGET_CARD, false, false)
-                },
-                returns = new ValueDefine[1]
-                {
-                    new ValueDefine(typeof(bool), EDITOR_PARAM_NAME_AFFECT_CONDITION, false, false)
-                },
-            }},
-            { GeneratedAura.FUNCTION_DEFINE_NAME_UPDATE_ACTION, new FunctionDefine()
-            {
-                parameters = new ValueDefine[]
-                {
-                    new ValueDefine(typeof(Card), StringTable.EDITOR_PARAM_NAME_TARGET_CARD, false, false),
-                    new ValueDefine(typeof(Buff), EDITOR_PARAM_NAME_TARGETS_BUFF, false, false)
-                }
-            }}
-        };
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
-            public DisplayInfo(long cardPoolId, string entryType, object editObject, DisplayInfo[] editObjectStack, ActionNodeGraphInfo graphInfo)
+            public DisplayInfo(long cardPoolId, object editObject, DisplayInfo[] editObjectStack, ActionNodeGraphInfo graphInfo)
             {
                 this.cardPoolId = cardPoolId;
-                this.entryType = entryType;
                 this.editObject = editObject;
                 this.editObjectStack = editObjectStack;
                 this.graphInfo = graphInfo;
             }
             public long cardPoolId;
-            public string entryType;
             public object editObject;
             public DisplayInfo[] editObjectStack;
             public ActionNodeGraphInfo graphInfo;

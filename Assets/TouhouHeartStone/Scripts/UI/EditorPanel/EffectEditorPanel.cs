@@ -52,7 +52,7 @@ namespace UI
             _constTemplate.GetComponent<EffectEditorValueDefineItem>().initTypeDropdown(constTypes);
             _outputListTemplate.GetComponent<EffectEditorValueDefineItem>().initTypeDropdown(variableTypes);
         }
-        public void updateInputList((int typeIndex, string name, bool isArray, bool isParams)[] viewData)
+        public void updateInputList((int typeIndex, string name, bool isArray)[] viewData)
         {
             UIHelper.updateList(_inputListRoot, _inputTemplate, _inputList, viewData.Length, (i, itemRect) =>
             {
@@ -60,7 +60,6 @@ namespace UI
                 item.setType(viewData[i].typeIndex);
                 item.setName(viewData[i].name);
                 item.setIsArray(viewData[i].isArray);
-                item.setIsParams(viewData[i].isParams);
             }, itemRect =>
             {
                 EffectEditorValueDefineItem item = itemRect.GetComponent<EffectEditorValueDefineItem>();

@@ -65,8 +65,6 @@ namespace Controllers
         public EditorCtrl editor => _editor;
         public CardEditorCtrl cardEditor => _cardEditor;
         public BuffEditorCtrl buffEditor => _buffEditor;
-        public EffectEditorCtrl effectEditor => _effectEditor;
-        public ActionNodeGraphCtrl actionNodeGraphCtrl => _actionNodeGraphCtrl;
         public ChatCtrl chatCtrl => _chatCtrl;
         [SerializeField]
         MainMenuCtrl _menu;

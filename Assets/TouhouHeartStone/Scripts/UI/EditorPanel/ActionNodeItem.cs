@@ -16,7 +16,7 @@ namespace UI
         {
             _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(true);
-            _inputRoot.gameObject.SetActive(false);
+            _inputRoot.gameObject.SetActive(true);
             _valueRoot.gameObject.SetActive(false);
             _outputRoot.gameObject.SetActive(true);
             SetDirty();
@@ -86,7 +86,7 @@ namespace UI
                 UIHelper.updateList(_valueNameRoot, _valueNameTempltate, _valueNameList, valueInfos.Length, (i, itemRect) =>
                 {
                     Text item = itemRect.GetComponentInChildren<Text>();
-                    item.text = valueInfos[i].name;
+                    item.text = valueInfos[i].displayName;
                 });
                 UIHelper.updateList(_valueRoot, _valueTemplate, _valueList, valueInfos.Length, (i, itemRect) =>
                 {
@@ -120,6 +120,15 @@ namespace UI
         {
             _eventTypeDropdown.ClearOptions();
             _eventTypeDropdown.AddOptions(new List<string>(eventNames));
+        }
+        /// <summary>
+        /// 初始化事件类型名称
+        /// </summary>
+        /// <param name="eventNames"></param>
+        public void initPileNames(string[] pileNames, string[] pileValues)
+        {
+            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            item.initPileNames(pileNames, pileValues);
         }
 
 

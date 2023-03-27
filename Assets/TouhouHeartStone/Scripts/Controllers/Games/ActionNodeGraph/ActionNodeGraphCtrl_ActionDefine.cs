@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using TouhouHeartstone;
 using System.Linq;
+using TouhouCardEngine.Interfaces;
 
 namespace Controllers
 {
@@ -20,7 +21,7 @@ namespace Controllers
         /// <param name="trigger"></param>
         public void openGeneratedActionDefine(int cardPoolId, GeneratedActionDefine actionDefine, ActionNodeGraphInfo graphInfo)
         {
-            display(new DisplayInfo(cardPoolId, null, actionDefine, null, graphInfo));
+            display(new DisplayInfo(cardPoolId, actionDefine, null, graphInfo));
         }
         public void updateActionDefineEntryAndReturnNodes()
         {
@@ -28,242 +29,89 @@ namespace Controllers
             updateActionDefineReturnNodes();
         }
         /// <summary>
-        /// 为自定义动作添加一个输入值，并重新连接所有常量。
-        /// 因为新增输入值会把常量往下顶，所以要单独写一个。
+        /// 为自定义动作添加一个输入值。
         /// </summary>
-        /// <param name="valueDef"></param>
-        public void addActionDefineInput(ValueDefine valueDef)
+        /// <param name="portDefine"></param>
+        public void addActionDefineInput(PortDefine portDefine)
         {
-            List<ReturnValueRef> reconnectReturnValueRefs = new List<ReturnValueRef>();
-            List<(ActionNode inputNode, int outputIndex, int inputIndex)> reconnectActionNodes = new List<(ActionNode inputNode, int outputIndex, int inputIndex)>();
-            // 断开入口节点的常量输出到出口节点的输出连接。
-            foreach (var returnRef in _generatedActionDefine.returnValueRefList.FindAll(r => r != null && r.valueRef != null && r.valueRef.action == null && r.valueRef.argIndex >= _generatedActionDefine.inputList.Count))
-            {
-                var valueRef = returnRef.valueRef;
-                reconnectReturnValueRefs.Add(returnRef);
-                unconnectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex);
-            }
-
-            //与其他节点断开连接
-            for (int i = 0; i < _actionNodeList.Count; i++)
-            {
-                var node = _actionNodeList[i];
-                if (node == null)
-                    continue;
-                //与输出值断开连接
-                if (node.inputs != null)
-                {
-                    for (int inputIndex = 0; inputIndex < node.inputs.Length; inputIndex++)
-                    {
-                        var input = node.inputs[inputIndex];
-                        if (input == null)
-                            continue;
-                        if (input.action == null && input.argIndex >= _generatedActionDefine.inputList.Count)
-                        {
-                            reconnectActionNodes.Add((node, input.argIndex, inputIndex));
-                            unconnectNode4ActionDefineArg(input.argIndex, node, inputIndex);
-                        }
-                    }
-                }
-            }
-            _generatedActionDefine.inputList.Add(valueDef);
+            _generatedActionDefine.addInput(portDefine);
             updateActionDefineEntryNode();
-
-            // 重新连接入口节点输出到出口节点的输出连接。
-            foreach (var returnRef in reconnectReturnValueRefs)
-            {
-                connectNode4ActionDefineArgToReturn(returnRef.valueRef.argIndex + 1, returnRef.returnIndex);
-            }
-
-            // 重新连接其他节点
-            foreach (var (node, outIndex, inputIndex) in reconnectActionNodes)
-            {
-                connectNode4ActionDefineArg(outIndex + 1, node, inputIndex);
-            }
         }
         /// <summary>
-        /// 删除自定义动作的一个输入值，并重新连接所有下方的点。
+        /// 删除自定义动作的一个输入值。
         /// </summary>
-        /// <param name="outputIndex"></param>
-        public void deleteActionDefineInput(int outputIndex)
+        /// <param name="portDefine"></param>
+        public void deleteActionDefineInput(PortDefine portDefine)
         {
-            List<ReturnValueRef> reconnectReturnValueRefs = new List<ReturnValueRef>();
-            List<(ActionNode inputNode, int outputIndex, int inputIndex)> reconnectActionNodes = new List<(ActionNode inputNode, int outputIndex, int inputIndex)> ();
-            // 断开入口节点输出到出口节点的输出连接。
-            foreach (var returnRef in _generatedActionDefine.returnValueRefList.ToArray())
-            {
-                if (returnRef == null || returnRef.valueRef == null)
-                    continue;
-                var valueRef = returnRef.valueRef;
-                if (valueRef.action == null)
-                {
-                    if (valueRef.argIndex > outputIndex)
-                        reconnectReturnValueRefs.Add(returnRef);
-                    if (valueRef.argIndex >= outputIndex)
-                        unconnectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex);
-                }
-            }
-
-            //与其他节点断开连接
-            for (int i = 0; i < _actionNodeList.Count; i++)
-            {
-                var node = _actionNodeList[i];
-                if (node == null)
-                    continue;
-                //与输出值断开连接
-                if (node.inputs != null)
-                {
-                    for (int inputIndex = 0; inputIndex < node.inputs.Length; inputIndex++)
-                    {
-                        var input = node.inputs[inputIndex];
-                        if (input == null)
-                            continue;
-                        if (input.action == null && input.actionNodeId == 0)
-                        {
-                            if (input.argIndex > outputIndex)
-                                reconnectActionNodes.Add((node, input.argIndex, inputIndex));
-                            if (input.argIndex >= outputIndex)
-                                unconnectNode4ActionDefineArg(input.argIndex, node, inputIndex);
-                        }
-                    }
-                }
-            }
-            if (outputIndex < _generatedActionDefine.inputList.Count)
-                _generatedActionDefine.inputList.RemoveAt(outputIndex);
-            else
-                _generatedActionDefine.constList.RemoveAt(outputIndex - _generatedActionDefine.inputList.Count);
+            _generatedActionDefine.removeInput(portDefine);
             updateActionDefineEntryNode();
-
-            // 重新连接入口节点输出到出口节点的输出连接。
-            foreach (var returnRef in reconnectReturnValueRefs)
-            {
-                connectNode4ActionDefineArgToReturn(returnRef.valueRef.argIndex - 1, returnRef.returnIndex);
-            }
-
-            // 重新连接其他节点
-            foreach (var (node, outIndex, inputIndex) in reconnectActionNodes)
-            {
-                connectNode4ActionDefineArg(outIndex - 1, node, inputIndex);
-            }
         }
         /// <summary>
-        /// 删除自定义动作的一个常量值，并重新连接所有下方的点。
+        /// 删除自定义动作的一个常量值。
         /// </summary>
-        /// <param name="constIndex"></param>
-        public void deleteActionDefineConst(int constIndex)
+        /// <param name="portDefine"></param>
+        public void deleteActionDefineConst(PortDefine portDefine)
         {
-            int outputIndex = _generatedActionDefine.inputList.Count + constIndex;
-            deleteActionDefineInput(outputIndex);
+            _generatedActionDefine.removeConst(portDefine);
+            updateActionDefineEntryNode();
         }
         /// <summary>
-        /// 删除自定义动作的一个返回值，并重新连接所有下方的点。
+        /// 删除自定义动作的一个返回值。
         /// </summary>
         /// <param name="inputIndex"></param>
-        public void deleteActionDefineOutput(int inputIndex)
+        public void deleteActionDefineOutput(PortDefine portDefine)
         {
-            List<ReturnValueRef> reconnectReturnValueRefs = new List<ReturnValueRef>();
-            // 断开输出到出口节点的连接。
-            var returns = _generatedActionDefine.returnValueRefList;
-            if (returns != null)
-            {
-                foreach (var returnRef in returns.FindAll(r => r.returnIndex >= inputIndex))
-                {
-                    if (returnRef == null || returnRef.valueRef == null)
-                        continue;
-                    if (returnRef.returnIndex > inputIndex)
-                        reconnectReturnValueRefs.Add(returnRef);
-
-                    var valueRef = returnRef.valueRef;
-                    ActionNode actionNode = valueRef.action ?? getActionNode(valueRef.actionNodeId);
-                    if (actionNode != null)
-                    {
-                        unconnectNode4ReturnValueRef(actionNode, valueRef.index, returnRef.returnIndex);
-                    }
-                    else
-                    {
-                        unconnectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex);
-                    }
-                }
-            }
-            _generatedActionDefine.outputList.RemoveAt(inputIndex);
+            _generatedActionDefine.removeOutput(portDefine);
             updateActionDefineReturnNodes();
-
-
-            // 重新连接输出到断开的点下方的点的连接。
-            foreach (var returnRef in reconnectReturnValueRefs)
-            {
-                var valueRef = returnRef.valueRef;
-                if (valueRef.action != null)
-                {
-                    connectNode4ReturnValueRef(valueRef.action, valueRef.index, returnRef.returnIndex - 1);
-                }
-                else if (valueRef.actionNodeId != 0)
-                {
-                    ActionNode actionNode = getActionNode(valueRef.actionNodeId);
-                    connectNode4ReturnValueRef(actionNode, valueRef.index, returnRef.returnIndex - 1);
-                }
-                else
-                {
-                    connectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex - 1);
-                }
-            }
         }
         /// <summary>
         /// 改变自定义动作的一个输入值的类型，并检查连接到该值的线的合法性。
         /// </summary>
         /// <param name="index"></param>
         /// <param name="type"></param>
-        public void changeActionDefineInputType(int index, Type type)
+        public void changeActionDefineInputType(string name, Type type)
         {
-            var inputList = _generatedActionDefine.inputList;
-            if (index < inputList.Count)
-                _generatedActionDefine.inputList[index].type = type;
-            else
-                _generatedActionDefine.constList[index - inputList.Count].type = type;
+            var input = _generatedActionDefine.getInputDefine(name);
+            if (input == null)
+                return;
+
+            input.type = type;
+
             // 检查连接合法性。
             // 断开不合法的，连接到返回节点上的连接
-            var returns = _generatedActionDefine.returnValueRefList.FindAll(r => r != null && r.valueRef != null && r.valueRef.action == null && r.valueRef.argIndex == index);
-            foreach (var returnRef in returns)
+            var entryNode = _generatedActionDefine.getEntryNode();
+            var changedPort = entryNode.getOutputPort(name);
+            var returnNode = _generatedActionDefine.getReturnNode();
+            foreach (var returnInput in returnNode.inputs)
             {
-                if (returnRef == null || returnRef.valueRef == null)
+                if (returnInput == null)
                     continue;
-                bool valid = false;
 
-                // 自定义动作的outputList，在其内部其实是输入值。
-                var inputs = _generatedActionDefine.outputList;
-                if (inputs != null && returnRef.returnIndex >= 0 && returnRef.returnIndex < inputs.Count)
-                    valid = isValidTypeForConnection(type, inputs[returnRef.returnIndex].type);
-
-                if (!valid)
+                var connection = graph.getConnection(changedPort, returnInput);
+                if (connection != null)
                 {
-                    unconnectNode4ActionDefineArgToReturn(index, returnRef.returnIndex);
+                    if (!isValidTypeForConnection(type, returnInput.define.type))
+                    {
+                        disconnectPorts(changedPort, returnInput);
+                    }
                 }
             }
 
             // 断开不合法的，连接到其他节点上的连接
-            for (int i = 0; i < _actionNodeList.Count; i++)
+            foreach (var node in _actionNodeList)
             {
-                var node = _actionNodeList[i];
-                if (node == null || node.inputs == null)
+                if (node == null)
                     continue;
-                for (int inputIndex = 0; inputIndex < node.inputs.Length; inputIndex++)
+                foreach (var nodeInput in node.inputPorts)
                 {
-                    var input = node.inputs[inputIndex];
-                    if (input != null && input.action == null && input.actionNodeId == 0 && input.argIndex == index)
+                    if (nodeInput == null)
+                        continue;
+                    if (!graph.isConnected(changedPort, nodeInput))
+                        continue;
+
+                    if (!isValidTypeForConnection(type, nodeInput.define.type))
                     {
-                        bool valid = false;
-
-                        var define = getActionDefine(node.defineName);
-                        if (define == null)
-                            continue;
-                        var inputs = define.inputs;
-                        if (inputs != null && inputIndex >= 0 && inputIndex < inputs.Length)
-                            valid = isValidTypeForConnection(type, inputs[inputIndex].type);
-
-                        if (!valid)
-                        {
-                            unconnectNode4ActionDefineArg(index, node, inputIndex);
-                        }
+                        disconnectPorts(changedPort, nodeInput);
                     }
                 }
             }
@@ -274,50 +122,102 @@ namespace Controllers
         /// </summary>
         /// <param name="index"></param>
         /// <param name="type"></param>
-        public void changeActionDefineConstType(int index, Type type)
+        public void changeActionDefineConstType(string name, Type type)
         {
-            int outputIndex = _generatedActionDefine.inputList.Count + index;
-            changeActionDefineInputType(outputIndex, type);
+            var constDefine = _generatedActionDefine.getConstDefine(name);
+            if (constDefine == null)
+                return;
+            constDefine.type = type;
+            // 检查连接合法性。
+            // 断开不合法的，连接到返回节点上的连接
+            var entryNode = _generatedActionDefine.getEntryNode();
+            var changedPort = entryNode.getOutputPort(name);
+            var returnNode = _generatedActionDefine.getReturnNode();
+            foreach (var returnInput in returnNode.inputs)
+            {
+                if (returnInput == null)
+                    continue;
+
+                var connection = graph.getConnection(changedPort, returnInput);
+                if (connection != null)
+                {
+                    if (!isValidTypeForConnection(type, returnInput.define.type))
+                    {
+                        disconnectPorts(changedPort, returnInput);
+                    }
+                }
+            }
+
+            // 断开不合法的，连接到其他节点上的连接
+            foreach (var node in _actionNodeList)
+            {
+                if (node == null)
+                    continue;
+                foreach (var nodeInput in node.inputPorts)
+                {
+                    if (nodeInput == null)
+                        continue;
+                    if (!graph.isConnected(changedPort, nodeInput))
+                        continue;
+
+                    if (!isValidTypeForConnection(type, nodeInput.define.type))
+                    {
+                        disconnectPorts(changedPort, nodeInput);
+                    }
+                }
+            }
+            updateActionDefineEntryNode();
         }
         /// <summary>
         /// 改变自定义动作的一个返回值的类型，并检查连接到该值的线的合法性。
         /// </summary>
         /// <param name="index"></param>
         /// <param name="type"></param>
-        public void changeActionDefineOutputType(int index, Type type)
+        public void changeActionDefineOutputType(string name, Type type)
         {
-            _generatedActionDefine.outputList[index].type = type;
-            // 断开输出到出口节点的连接。
-            var returns = _generatedActionDefine.returnValueRefList;
-            if (returns != null)
+            var outputDefine = _generatedActionDefine.getOutputDefine(name);
+            if (outputDefine == null)
+                return;
+            outputDefine.type = type;
+            // 检查连接合法性。
+            // 断开不合法的，连接到返回节点上的连接
+            var entryNode = _generatedActionDefine.getEntryNode();
+            var returnNode = _generatedActionDefine.getReturnNode();
+            var changedPort = returnNode.getInputPort(name);
+            foreach (var entryOutput in entryNode.outputs)
             {
-                var returnRef = returns.Find(r => r != null && r.returnIndex == index);
-                if (returnRef != null && returnRef.valueRef != null)
+                if (entryOutput == null)
+                    continue;
+
+                var connection = graph.getConnection(entryOutput, changedPort);
+                if (connection != null)
                 {
-                    var valueRef = returnRef.valueRef;
-                    ActionNode actionNode = valueRef.action ?? getActionNode(valueRef.actionNodeId);
-                    if (actionNode != null)
+                    if (!isValidTypeForConnection(entryOutput.define.type, type))
                     {
-                        var valid = false;
-                        var define = getActionDefine(actionNode.defineName);
-                        if (define != null)
-                            valid = isValidTypeForConnection(define.outputs[valueRef.index].type, type);
-                        if (!valid)
-                            unconnectNode4ReturnValueRef(actionNode, valueRef.index, returnRef.returnIndex);
-                    }
-                    else
-                    {
-                        var valid = false;
-                        var inputs = _generatedActionDefine.inputs;
-                        if (valueRef.argIndex >= 0 && valueRef.argIndex < inputs.Length)
-                            valid = isValidTypeForConnection(inputs[valueRef.argIndex].type, type);
-                        if (!valid)
-                            unconnectNode4ActionDefineArgToReturn(valueRef.argIndex, returnRef.returnIndex);
+                        disconnectPorts(entryOutput, changedPort);
                     }
                 }
-
             }
-            updateActionDefineReturnNodes();
+
+            // 断开不合法的，连接到其他节点上的连接
+            foreach (var node in _actionNodeList)
+            {
+                if (node == null)
+                    continue;
+                foreach (var nodeOutput in node.outputPorts)
+                {
+                    if (nodeOutput == null)
+                        continue;
+                    if (!graph.isConnected(nodeOutput, changedPort))
+                        continue;
+
+                    if (!isValidTypeForConnection(type, nodeOutput.define.type))
+                    {
+                        disconnectPorts(nodeOutput, changedPort);
+                    }
+                }
+            }
+            updateActionDefineEntryNode();
         }
         #endregion
         #region 私有方法
@@ -327,117 +227,92 @@ namespace Controllers
             _generatedActionDefine = generatedActionDefine;
             //显示UI
             _ui.clearGraph();
-            //创建入口节点
-            _entryNodeItem = _ui.createNode(0, 0, game.langManager.getString(StringTable.EDITOR_NODE_NAME_INPUT));
             //设置参数
             updateActionDefineEntryNode();
-            //创建出口节点
-            _returnNodeItem = _ui.createNode(500, 0, game.langManager.getString(StringTable.EDITOR_NODE_NAME_OUTPUT));
             //设置返回
             updateActionDefineReturnNodes();
             //创建动作节点
-            if (_generatedActionDefine.action != null)
-            {
-                ActionNodeItem actionNodeItem = await createGraph4ActionNode(_generatedActionDefine.action);
-                _ui.connectNode(_entryNodeItem, 0, actionNodeItem, 0, ActionNodeConnectionType.action);
-            }
-            //连接返回节点
-            for (int i = 0; i < _generatedActionDefine.returnValueRefList.Count; i++)
-            {
-                ReturnValueRef returnValueRef = _generatedActionDefine.returnValueRefList[i];
-                ActionNodeItem outputActionNodeItem;
-                int outputIndex;
-
-                ActionNode actionNode = returnValueRef.valueRef.action ?? getActionNode(returnValueRef.valueRef.actionNodeId);
-                if (actionNode != null)
-                {
-                    if (!tryGetActionNodeItem(actionNode, out outputActionNodeItem))
-                    {
-                        outputActionNodeItem = await createGraph4ActionNode(actionNode);
-                    }
-                    outputIndex = getBranchesCount(getActionDefine(actionNode.defineName)) + returnValueRef.valueRef.index;
-                }
-                else
-                {
-                    outputActionNodeItem = _entryNodeItem;
-                    outputIndex = 1 + returnValueRef.valueRef.argIndex;
-                }
-                _ui.connectNode(outputActionNodeItem, outputIndex, _returnNodeItem, returnValueRef.returnIndex, ActionNodeConnectionType.value);
-            }
-            await createFreeNodes();
+            ApplyGraph(_generatedActionDefine.graph);
             updateContentSize();
+            return Task.CompletedTask;
         }
         private void updateActionDefineReturnNodes()
         {
-            (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.outputList.Count];
-            for (int i = 0; i < _generatedActionDefine.outputList.Count; i++)
+            var outputs = _generatedActionDefine.outputDefines;
+            (string name, Color color)[] viewData = new (string name, Color color)[outputs.Count()];
+            for (int i = 0; i < outputs.Count(); i++)
             {
-                viewData[i] = (_generatedActionDefine.outputList[i].name,
-                    game.editor.getColorByType(_generatedActionDefine.outputList[i].type));
+                var output = outputs.ElementAt(i);
+                viewData[i] = (output.name, game.editor.getColorByType(output.type));
             }
-            _returnNodeItem.setInputs(viewData);
+            var returnNode = _generatedActionDefine.getReturnNode();
+            returnNode.Define();
+            var returnNodeItem = getActionNodeItem(returnNode);
+            returnNodeItem.setInputs(viewData);
         }
 
         private void updateActionDefineEntryNode()
         {
-            (string name, Color color)[] viewData = new (string name, Color color)[_generatedActionDefine.inputList.Count + _generatedActionDefine.constList.Count + 1];
-            viewData[0] = (string.Empty, game.editor.getColorByType(typeof(ActionNode)));
-            for (int i = 0; i < _generatedActionDefine.inputList.Count; i++)
+            var inputs = _generatedActionDefine.inputDefines;
+            var consts = _generatedActionDefine.constDefines;
+            (string name, Color color)[] viewData = new (string name, Color color)[inputs.Count()];
+            for (int i = 0; i < inputs.Count(); i++)
             {
-                viewData[i + 1] = (_generatedActionDefine.inputList[i].name,
-                    game.editor.getColorByType(_generatedActionDefine.inputList[i].type));
+                var input = inputs.ElementAt(i);
+                viewData[i] = (input.name, game.editor.getColorByType(input.type));
             }
-            for (int i = 0; i < _generatedActionDefine.constList.Count; i++)
+            for (int i = 0; i < consts.Count(); i++)
             {
-                viewData[i + _generatedActionDefine.inputList.Count + 1] = (_generatedActionDefine.constList[i].name,
-                    game.editor.getColorByType(_generatedActionDefine.constList[i].type));
+                var constDef = consts.ElementAt(i);
+                viewData[i + consts.Count()] = (constDef.name, game.editor.getColorByType(constDef.type));
             }
-            _entryNodeItem.setOutputs(viewData);
+            var entryNode = _generatedActionDefine.getEntryNode();
+            entryNode.Define();
+            var entryNodeItem = getActionNodeItem(entryNode);
+            entryNodeItem.setOutputs(viewData);
         }
 
-        private bool validateConnection4ActionDefineEntryOutput(int outputIndex, ActionNode inputActionNode, int inputIndex, bool showErrorTip = true)
+        // 连接：自定义动作入口节点（输出）----动作节点（输入）
+        private bool validateConnection4ActionDefineEntryOutput(string outputName, ActionNode inputActionNode, string inputName, bool showErrorTip = true)
         {
-            // 尝试连接：自定义动作入口节点（值输出）----出口节点（前置动作）
-            if (inputIndex < 1)
-            {
-                //值输出只能与值输入相互连接
-                if (showErrorTip)
-                    ShowValueConnectActionError();
-                return false;
-            }
-            try
-            {
-                Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
-                Type inputType = getActionDefine(inputActionNode.defineName).getValueInputAt(inputIndex - 1).type;
-                return validateConnectionType(outputType, inputType, showErrorTip);
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"验证自定义动作入口节点和动作节点“{inputActionNode.defineName}”的连接合法性时出现异常：{e}");
-                return false;
-            }
+            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort(outputName);
+            var inputPort = inputActionNode.getInputPort(inputName);
+
+            return validatePortConnection(outputPort, inputPort, showErrorTip);
         }
-        private bool validateConnection4ActionDefineArgToReturn(int outputIndex, int inputIndex, bool showErrorTip = true)
+        // 连接：入口节点（动作）----出口节点
+        private bool validateConnection4ActionDefineArgToReturn(string outputName, string inputName, bool showErrorTip = true)
         {
-            // 尝试连接：入口节点（动作）----出口节点
-            if (outputIndex < 1)
+            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort(outputName);
+            var inputPort = _generatedActionDefine.getReturnNode().getInputPort(inputName);
+
+            return validatePortConnection(outputPort, inputPort, showErrorTip);
+        }
+        private (string name, Color color)[] getActionDefineInputViewData(GeneratedActionDefine actionDefine)
+        {
+            (string name, Color color)[] inputs = new (string name, Color color)[actionDefine.inputDefines.Count()];
+            for (int i = 0; i < actionDefine.inputDefines.Count(); i++)
             {
-                //值输出只能与值输入相互连接
-                if (showErrorTip)
-                    ShowValueConnectActionError();
-                return false;
+                var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(i);
+                if (inputDefine == null)
+                    continue;
+                var inputName = tryTranslateWithDict(inputDefine.getDisplayName());
+                inputs[i] = (inputName, game.editor.getColorByType(inputDefine.type));
             }
-            try
+            return inputs;
+        }
+        private (string name, Color color)[] getActionDefineOutputViewData(GeneratedActionDefine actionDefine)
+        {
+            (string name, Color color)[] outputs = new (string name, Color color)[actionDefine.outputDefines.Count()];
+            for (int i = 0; i < actionDefine.outputDefines.Count(); i++)
             {
-                Type outputType = getActionDefineInputTypeAt(outputIndex - 1);
-                Type inputType = _generatedActionDefine.outputList[inputIndex].type;
-                return validateConnectionType(outputType, inputType, showErrorTip);
+                var outputDefine = actionDefine.outputDefines.ElementAtOrDefault(i);
+                if (outputDefine == null)
+                    continue;
+                var outputName = tryTranslateWithDict(outputDefine.getDisplayName());
+                outputs[i] = (outputName, game.editor.getColorByType(outputDefine.type));
             }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"验证自定义动作入口节点和自定义动作出口节点的连接合法性时出现异常：{e}");
-                return false;
-            }
+            return outputs;
         }
         #region 节点连接
         /// <summary>
@@ -446,97 +321,33 @@ namespace Controllers
         /// <param name="outputIndex"></param>
         /// <param name="inputActionNode"></param>
         /// <param name="inputIndex"></param>
-        private void connectNode4ActionDefineArg(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        private void connectNode4ActionDefineArg(string outputName, ActionNode inputActionNode, string inputName)
         {
-            //判断是否已经相连
-            if (inputActionNode.inputs != null &&
-                inputActionNode.inputs.Length > inputIndex &&
-                inputActionNode.inputs[inputIndex] != null)
-            {
-                var input = inputActionNode.inputs[inputIndex];
-                if (input.argIndex == outputIndex)
-                {
-                    //已经相连，什么也不做
-                    return;
-                }
-                else
-                {
-                    //相连的是其他输入节点，断开连接
-                    unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, inputActionNode, inputIndex);
-                }
-            }
-            // 新建或扩容动作节点的输入列表。
-            if (inputActionNode.inputs == null || inputActionNode.inputs.Length <= inputIndex)
-            {
-                var newArray = new ActionValueRef[inputIndex + 1];
-                if (inputActionNode.inputs != null)
-                    inputActionNode.inputs.CopyTo(newArray, 0);
-                inputActionNode.inputs = newArray;
-            }
-            //建立新的连接
-            inputActionNode.inputs[inputIndex] = new ActionValueRef(outputIndex);
-            //更新ui
-            _ui.connectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex, ActionNodeConnectionType.value);
+            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort<ValueOutput>(outputName);
+            var inputPort = inputActionNode.getInputPort<ValueInput>(inputName);
+
+            connectValuePorts(outputPort, inputPort);
         }
-        private void connectNode4ActionDefineArgToReturn(int outputIndex, int inputIndex)
+        private void connectNode4ActionDefineArgToReturn(string outputName, string inputName)
         {
-            //判断是否已经相连
-            int index = _generatedActionDefine.returnValueRefList.FindIndex(r =>
-                r != null &&
-                r.returnIndex == inputIndex);
-            if (index >= 0)
-            {
-                var returnRef = _generatedActionDefine.returnValueRefList[index];
-                var input = returnRef.valueRef;
-                if (input != null && input.action == null && input.actionNodeId == 0 && input.argIndex == outputIndex)
-                {
-                    //已经相连，什么也不做
-                    return;
-                }
-                else
-                {
-                    //相连的是其他输入节点，断开连接
-                    unconnectNode4AnyType(input.action ?? getActionNode(input.actionNodeId), input.index, null, inputIndex);
-                }
-            }
-            //建立新的连接
-            _generatedActionDefine.returnValueRefList.Add(new ReturnValueRef(outputIndex, inputIndex));
-            //更新ui
-            _ui.connectNode(_entryNodeItem, 1 + outputIndex, _returnNodeItem, inputIndex, ActionNodeConnectionType.value);
+            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort<ValueOutput>(outputName);
+            var inputPort = _generatedActionDefine.getReturnNode().getInputPort<ValueInput>(inputName);
+
+            connectValuePorts(outputPort, inputPort);
         }
-        private void unconnectNode4ActionDefineArgToReturn(int outputIndex, int inputIndex)
+        private void unconnectNode4ActionDefineArg(string outputName, ActionNode inputActionNode, string inputName)
         {
-            //判断是否已经相连
-            int index = _generatedActionDefine.returnValueRefList.FindIndex(r =>
-                r != null &&
-                r.returnIndex == inputIndex);
-            if (index >= 0)
-            {
-                var returnRef = _generatedActionDefine.returnValueRefList[index];
-                if (returnRef.valueRef != null && returnRef.valueRef.action == null && returnRef.valueRef.actionNodeId == 0 && returnRef.valueRef.argIndex == outputIndex)
-                {
-                    //相连，断开连接
-                    _generatedActionDefine.returnValueRefList.RemoveAt(index);
-                    //更新ui
-                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, _returnNodeItem, inputIndex);
-                }
-            }
+            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort<ValueOutput>(outputName);
+            var inputPort = inputActionNode.getInputPort<ValueInput>(inputName);
+
+            disconnectPorts(outputPort, inputPort);
         }
-        private void unconnectNode4ActionDefineArg(int outputIndex, ActionNode inputActionNode, int inputIndex)
+        private void unconnectNode4ActionDefineArgToReturn(string outputName, string inputName)
         {
-            //判断是否已经相连
-            if (inputActionNode.inputs != null &&
-                inputActionNode.inputs.Length > inputIndex &&
-                inputActionNode.inputs[inputIndex] != null)
-            {
-                if (inputActionNode.inputs[inputIndex].argIndex == outputIndex)
-                {
-                    //相连，断开连接
-                    inputActionNode.inputs[inputIndex] = null;
-                    //更新ui
-                    _ui.unconnectNode(_entryNodeItem, 1 + outputIndex, getActionNodeItem(inputActionNode), 1 + inputIndex);
-                }
-            }
+            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort<ValueOutput>(outputName);
+            var inputPort = _generatedActionDefine.getReturnNode().getInputPort<ValueInput>(inputName);
+
+            disconnectPorts(outputPort, inputPort);
         }
         #endregion
         #region 动作定义

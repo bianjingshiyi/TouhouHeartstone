@@ -25,7 +25,7 @@ namespace UI
         {
             _editButton.onClick.AddListener(onEditButtonClickCallback);
             _removeButton.onClick.AddListener(onRemoveButtonClickCallback);
-            _nameInputField.onEndEdit.AddListener(onInputFieldEndEditCallback);
+            _nameInputField?.onEndEdit.AddListener(onInputFieldEndEditCallback);
         }
         private void onEditButtonClickCallback()
         {
