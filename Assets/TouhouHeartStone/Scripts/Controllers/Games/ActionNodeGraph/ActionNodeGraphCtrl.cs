@@ -572,7 +572,7 @@ namespace Controllers
                     continue;
 
                 ActionNodeConnectionType type = ActionNodeConnectionType.value;
-                if (connection.type == PortType.Control)
+                if (connection.GetConnectionType() == PortType.Control)
                 {
                     type = ActionNodeConnectionType.action;
                 }
