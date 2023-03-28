@@ -30,7 +30,7 @@ namespace TouhouHeartstone
         }
         public override void Init()
         {
-            graph.createActionNode("AuraData", 0, 0);
+            graph.createActionNode(AuraDataDefine.defName, 0, 0);
         }
 
         public override async Task onEnable(IGame game, ICard card, IBuff buff)

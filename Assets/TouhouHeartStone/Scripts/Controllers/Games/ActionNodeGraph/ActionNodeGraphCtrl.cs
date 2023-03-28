@@ -1252,6 +1252,8 @@ namespace Controllers
 
         [TranslateMsg("内置节点名称，用于通用效果设置属性")]
         const string EDITOR_NODE_NAME_GENERATED_EFFECT_DATA = "通用效果属性";
+        [TranslateMsg("内置节点名称，用于光环效果设置属性")]
+        const string EDITOR_NODE_NAME_AURA_DATA = "光环效果属性";
 
         [TranslateMsg("内置节点参数，通常用于比较和操作，表示操作符，如加、减、或、异或等")]
         const string EDITOR_PARAM_OPERATOR = "运算符";
@@ -1279,6 +1281,9 @@ namespace Controllers
         const string EDITOR_PARAM_TARGET = "目标";
         [TranslateMsg("节点参数 TargetName")]
         const string EDITOR_PARAM_TARGET_NAME = "目标名";
+        [TranslateMsg("节点参数 TargetBuff")]
+        const string EDITOR_PARAM_TARGET_BUFF = "目标增益";
+        
 
         [TranslateMsg("整数运算符，加法 +")]
         const string EDITOR_ENUM_INT_OPERATOR_ADD = "加";
@@ -1356,6 +1361,7 @@ namespace Controllers
             { "CollectionOperation", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
             { "GeneratedEffectData", EDITOR_NODE_NAME_GENERATED_EFFECT_DATA },
+            { "AuraData", EDITOR_NODE_NAME_AURA_DATA },
             // 内置参数
             { "value", StringTable.EDITOR_PARAM_NAME_VALUE },
             { "Value", StringTable.EDITOR_PARAM_NAME_VALUE },
@@ -1377,6 +1383,11 @@ namespace Controllers
             { "DisableAction", StringTable.EDITOR_EFFECT_PROP_NAME_ON_DISABLE_ACTION },
             { "Buff", StringTable.EDITOR_PARAM_NAME_BUFF },
             { "BuffDefine", StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE },
+            { "PileList", StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST },
+            { "RangeList", StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST },
+            { "AffectCondition", StringTable.EDITOR_EFFECT_PROP_NAME_AFFECT_CONDITION },
+            { "TargetCard", StringTable.EDITOR_PARAM_NAME_TARGET_CARD },
+            { "TargetBuff", EDITOR_PARAM_TARGET_BUFF },
             
             // Enum
             { "TouhouCardEngine.IntegerOperator.add", EDITOR_ENUM_INT_OPERATOR_ADD },

@@ -11,7 +11,7 @@ namespace TouhouCardEngine
             _inputs = new PortDefine[2]
             {
                 PortDefine.Value(typeof(BuffDefine), buffDefineName, "BuffDefine"),
-                PortDefine.Control(conditionName, "Condition")
+                PortDefine.Value(typeof(bool), conditionName, "AffectCondition")
             };
             _consts = new PortDefine[]
             {
@@ -20,7 +20,9 @@ namespace TouhouCardEngine
             };
             _outputs = new PortDefine[]
             {
-                PortDefine.Control(updateActionName, string.Empty)
+                PortDefine.Control(updateActionName, string.Empty),
+                PortDefine.Value(typeof(Card), targetCardName, "TargetCard"),
+                PortDefine.Value(typeof(Buff), targetBuffName, "TargetBuff")
             };
             hideDocument = true;
             disableMenu = true;
@@ -35,6 +37,8 @@ namespace TouhouCardEngine
         public const string conditionName = "condition";
         public const string buffDefineName = "buffDefine";
         public const string updateActionName = "updateAction";
+        public const string targetCardName = "targetCard";
+        public const string targetBuffName = "targetBuff";
         public const string defName = "AuraData";
         private PortDefine[] _inputs;
         private PortDefine[] _consts;

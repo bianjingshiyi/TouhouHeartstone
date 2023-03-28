@@ -360,10 +360,10 @@ namespace Game
                 GeneratedAura aura = new GeneratedAura(graph);
                 aura.Init();
                 aura.name = effect.name;
+                graph.DefineNodes(defineFinder, eventInfoFinder);
 
                 // 创建光环数据节点。
-                var dataNode = aura.getDataNode();
-                graph.DefineNodes(defineFinder, eventInfoFinder);
+                var dataNode = aura.getEntryNode();
 
                 // 光环的生效区域。
                 var pileList = effect.pileList;
@@ -376,51 +376,56 @@ namespace Game
                 }
 
                 // 光环的增益定义。
-                if (effect.propDict.TryGetValue(AuraDataDefine.buffDefineName, out object buffDefineObj) && buffDefineObj is SerializableActionValueRef buffDefineRef)
+                if (effect.propDict.TryGetValue("getAuraBuffDefine", out object buffDefineObj) && buffDefineObj is SerializableActionValueRef buffDefineRef)
                 {
                     // 获取光环增益定义的节点图信息。
                     var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "getAuraBuffDefine");
 
                     // 将对增益定义的节点引用转换为根节点。
-                    var param = new ActionNodeGraphParams(new Vector2(0, 200), graph: graph, graphInfo: graphInfo, actionNodeList: buffDefineRef.actionNodeList);
+                    var param = new ActionNodeGraphParams(new Vector2(-300, 200), graph: graph, graphInfo: graphInfo, actionNodeList: buffDefineRef.actionNodeList);
                     var rootNode = ConvertActionValueRef(buffDefineRef, param);
 
                     // 连接光环数据节点的“buffDefine”输入和根节点。
-                    ConnectValueRef(dataNode.getInputPort<ValueInput>(AuraDataDefine.buffDefineName), rootNode, param);
+                    ConnectValueRef(aura.getAuraBuffDefine, rootNode, param);
 
                     // 添加离散节点。
                     CreateFreeNodesToGraph(param);
                 }
 
                 // 光环的施加条件。
-                if (effect.propDict.TryGetValue(AuraDataDefine.conditionName, out object conditionObj) && conditionObj is SerializableFunctionNode condFunc)
+                if (effect.propDict.TryGetValue("affectCondition", out object conditionObj) && conditionObj is SerializableFunctionNode condFunc)
                 {
                     // 获取光环作用条件的节点图信息。
                     var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "affectCondition");
 
                     // 转换作用条件的节点图。
-                    var param = new ActionNodeGraphParams(graph: graph, graphInfo: graphInfo, actionNodeList: condFunc.returns[0].valueRef.actionNodeList);
-                    var rootNode = ConvertActionValueRef(condFunc.returns[0].valueRef, param);
+                    var param = new ActionNodeGraphParams(new Vector2(-1200, -300), graph: graph, graphInfo: graphInfo, actionNodeList: condFunc.actionNodeList);
+                    if (condFunc.returns.Length > 0)
+                    {
+                        var rootNode = ConvertActionValueRef(condFunc.returns[0].valueRef, param);
 
-                    // 连接光环数据节点的“affectCondition”输入和根节点。
-                    ConnectValueRef(dataNode.getInputPort<ValueInput>(AuraDataDefine.conditionName), rootNode, param);
-
+                        // 连接光环数据节点的“affectCondition”输入和根节点。
+                        ConnectValueRef(aura.affectCondition, rootNode, param);
+                    }
                     // 添加离散节点。
                     CreateFreeNodesToGraph(param);
                 }
 
                 // 光环的更新动作。
-                if (effect.propDict.TryGetValue(AuraDataDefine.updateActionName, out object updateObj) && conditionObj is SerializableFunctionNode updateFunc)
+                if (effect.propDict.TryGetValue("updateAction", out object updateObj) && updateObj is SerializableFunctionNode updateFunc)
                 {
                     // 获取光环更新动作的节点图信息。
                     var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "updateAction");
 
                     // 转换更新动作的节点图。
-                    var param = new ActionNodeGraphParams(graph: graph, graphInfo: graphInfo, actionNodeList: updateFunc.returns[0].valueRef.actionNodeList);
-                    var rootNode = ConvertActionValueRef(updateFunc.returns[0].valueRef, param);
+                    var param = new ActionNodeGraphParams(new Vector2(300, 0),graph: graph, graphInfo: graphInfo, actionNodeList: updateFunc.actionNodeList);
+                    if (updateFunc.actionNodeId != 0)
+                    {
+                        var rootNode = ConvertActionNodeChain(param, updateFunc.actionNodeId);
 
-                    // 连接光环数据节点的“buffDefine”输入和根节点。
-                    ConnectValueRef(dataNode.getInputPort<ValueInput>(AuraDataDefine.updateActionName), rootNode, param);
+                        // 连接光环数据节点的“buffDefine”输入和根节点。
+                        graph.connect(aura.updateAction, rootNode.getEnterPort());
+                    }
 
                     // 添加离散节点。
                     CreateFreeNodesToGraph(param);
@@ -566,6 +571,7 @@ namespace Game
                     // 将触发器的序列化文档转换为根节点。
                     var param = new ActionNodeGraphParams(graph: effect.graph, graphInfo: graphInfo, eventName: activeTrigger.eventName, actionNodeList: activeTrigger.actionList);
                     var trigger = ConvertTriggerEntryNode(activeTrigger, param);
+                    trigger.hideEvents = true;
 
                     // 添加离散节点。
                     CreateFreeNodesToGraph(param);
