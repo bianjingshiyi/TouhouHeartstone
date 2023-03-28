@@ -1240,12 +1240,6 @@ namespace TouhouHeartstone
                     if (cry.checkCondition(game, card, null, eventArg))
                         await cry.execute(game, card, null, eventArg);
                 }
-                else if (battlecry is GeneratedEffect gen)
-                {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                    if (gen.checkCondition(game, card, null, eventArg))
-                        await gen.execute(game, card, null, eventArg);
-                }
                 else if (battlecry is ActiveEffect active)
                 {
                     if (active.checkCondition(game, card))
@@ -1263,12 +1257,6 @@ namespace TouhouHeartstone
                     var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
                     if (cry.checkCondition(game, card, buff, eventArg))
                         await cry.execute(game, card, buff, eventArg);
-                }
-                else if (effect is GeneratedEffect gen)
-                {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                    if (gen.checkCondition(game, card, buff, eventArg))
-                        await gen.execute(game, card, buff, eventArg);
                 }
                 else if (effect is ActiveEffect active)
                 {
@@ -1295,12 +1283,6 @@ namespace TouhouHeartstone
                     if (genRattle.checkCondition(game, card, null, eventArg))
                         await genRattle.execute(game, card, null, eventArg);
                 }
-                else if (deathRattle is GeneratedEffect gen)
-                {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
-                    if (gen.checkCondition(game, card, null, eventArg))
-                        await gen.execute(game, card, null, eventArg);
-                }
                 else if (deathRattle is DeathRattle rattle)
                 {
                     await rattle.execute(game, card, null, new DeathEventArg(card));
@@ -1317,12 +1299,6 @@ namespace TouhouHeartstone
                     var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
                     if (genRattle.checkCondition(game, card, null, eventArg))
                         await genRattle.execute(game, card, buff, eventArg);
-                }
-                else if (effect is GeneratedEffect gen)
-                {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
-                    if (gen.checkCondition(game, card, null, eventArg))
-                        await gen.execute(game, card, buff, eventArg);
                 }
                 else if (effect is DeathRattle rattle)
                 {

@@ -35,7 +35,7 @@ namespace TouhouHeartstone
 
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
         {
-            await base.onDisable(game, card, buff);
+            await base.onEnable(game, card, buff);
             await execute(game, card, buff, null);
         }
         public override async Task onDisable(IGame game, ICard card, IBuff buff)
@@ -50,7 +50,6 @@ namespace TouhouHeartstone
             Buff selfBuff = buff as Buff;
             EventArg selfEventArg = eventArg as EventArg;
             Dictionary<Card, Buff> buffDict = getBuffDic(cardEngine, selfCard, selfBuff);
-            var piles = pileList;
             // 如果该光环已被禁用。
             if (isDisabled(game, card, buff) || (selfCard != null && !piles.Contains(selfCard.pile.name)))
             {
@@ -78,29 +77,6 @@ namespace TouhouHeartstone
             }
 
             List<Card> checkedCards = new List<Card>();
-            async Task<bool> condition(Card target)
-            {
-                if (ranges != null && ranges.Contains(target.pile))
-                {
-                    //if (affectCondition != null)
-                    if (affectCondition != null)
-                    {
-                        try
-                        {
-                            return await game.getValue<bool>(new Flow(game, card, buff, null), affectCondition);
-                        }
-                        catch (Exception e)
-                        {
-                            string msg = buff != null ?
-                                card + "的" + buff + "的光环效果" + this + "的作用条件执行失败" :
-                                card + "的光环效果" + this + "的作用条件执行失败";
-                            throw new TaskNotCompleteException($"{msg}：{e}");
-                        }
-                    }
-                    return true;
-                }
-                return false;
-            }
 
             // 检测已经记录的卡牌和增益列表。
             foreach (var pair in buffDict.ToArray())
@@ -114,7 +90,7 @@ namespace TouhouHeartstone
                     continue;
                 }
                 // 卡牌不再具有增益条件。
-                if (!await condition(buffedCard))
+                if (!ranges.Contains(buffedCard.pile) || !await checkAuraCondition(game, card, buff, buffedCard))
                 {
                     // 移除该卡牌的增益，并删除记录。
                     await buffedCard.removeBuff(game, cardBuff);
@@ -124,7 +100,7 @@ namespace TouhouHeartstone
                 else
                 {
                     // 更新增益。
-                    await updateAuraBuff(game, card, buff);
+                    await updateAuraBuff(game, card, buff, buffedCard, cardBuff);
                     await buffedCard.updateBuff(cardEngine, cardBuff);
                 }
                 checkedCards.Add(buffedCard);
@@ -142,12 +118,13 @@ namespace TouhouHeartstone
                             continue;
                         }
                         // 卡牌进入作用范围
-                        if (!buffDict.ContainsKey(target) && await condition(target))
+                        if (!buffDict.ContainsKey(target) && ranges.Contains(target.pile) && await checkAuraCondition(game, card, buff, target))
                         {
                             // 添加增益，并记录增益。
-                            BuffDefine buffDefine = await game.getValue<BuffDefine>(new Flow(game, selfCard, selfBuff, null), getAuraBuffDefine);
+                            var flow = new Flow(game, selfCard, selfBuff, null);
+                            BuffDefine buffDefine = await game.getValue<BuffDefine>(flow, getAuraBuffDefine);
                             Buff auraBuff = new GeneratedBuff(buffDefine);
-                            await updateAuraBuff(game, card, buff);
+                            await updateAuraBuff(game, card, buff, target, auraBuff);
                             await target.addBuff(game, auraBuff);
                             buffDict.Add(target, auraBuff);
                         }
@@ -171,13 +148,36 @@ namespace TouhouHeartstone
                 yield return prop;
             }
         }
-        private async Task updateAuraBuff(IGame game, ICard card, IBuff buff)
+        private async Task<bool> checkAuraCondition(IGame game, ICard card, IBuff buff, Card targetCard)
+        {
+            if (affectCondition == null)
+                return true;
+            try
+            {
+                var flowEnv = new FlowEnv(game, card, buff, null);
+                flowEnv.SetArgument(AuraDataDefine.targetCardName, targetCard);
+                var flow = new Flow(flowEnv);
+                return await game.getValue<bool>(flow, affectCondition);
+            }
+            catch (Exception e)
+            {
+                string msg = buff != null ?
+                    $"{card}的{buff}的光环效果{this}的作用条件执行失败" :
+                    $"{card}的光环效果{this}的作用条件执行失败";
+                throw new TaskNotCompleteException($"{msg}：{e}");
+            }
+        }
+        private async Task updateAuraBuff(IGame game, ICard card, IBuff buff, Card targetCard, Buff targetBuff)
         {
             if (updateAction != null)
             {
                 try
                 {
-                    await game.runActions(new Flow(game, card, buff, null), updateAction);
+                    var flowEnv = new FlowEnv(game, card, buff, null);
+                    flowEnv.SetArgument(AuraDataDefine.targetCardName, targetCard);
+                    flowEnv.SetArgument(AuraDataDefine.targetBuffName, targetBuff);
+                    var flow = new Flow(flowEnv);
+                    await game.runActions(flow, updateAction);
                 }
                 catch (Exception e)
                 {

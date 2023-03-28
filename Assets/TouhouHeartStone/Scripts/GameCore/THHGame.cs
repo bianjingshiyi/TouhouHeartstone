@@ -548,11 +548,11 @@ namespace TouhouHeartstone
             while (updateTimes < MAX_UPDATE_TIMES);
 
             // 更新光环。
-            var auras = game.players.SelectMany(p => p.getPiles().SelectMany(pile => pile)).ToDictionary(c => c, c => c.getAuras(game));
-            foreach (var pair in auras)
+            var cards = game.players.SelectMany(p => p.getPiles().SelectMany(pile => pile));
+            foreach (var card in cards)
             {
-                var card = pair.Key;
-                foreach (var (effect, buff) in pair.Value)
+                var aura = card.getAuras(game);
+                foreach (var (effect, buff) in aura)
                 {
                     if (effect is GeneratedAura gen)
                     {

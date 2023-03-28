@@ -30,6 +30,10 @@ namespace TouhouCardEngine
         }
         public override Task<ControlOutput> run(Flow flow, Node node)
         {
+            foreach (var output in node.getOutputPorts<ValueOutput>())
+            {
+                flow.setValue(output, flow.env.GetArgument<object>(output.name));
+            }
             return Task.FromResult(node.getOutputPort<ControlOutput>(updateActionName));
         }
         public const string pileListName = "pileList";
