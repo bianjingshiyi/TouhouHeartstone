@@ -26,7 +26,7 @@ namespace TouhouCardEngine
             disableMenu = true;
             disableCreate = true;
         }
-        public override Task<ControlOutput> run(Flow flow, IActionNode node)
+        public override Task<ControlOutput> run(Flow flow, Node node)
         {
             return Task.FromResult(node.getOutputPort<ControlOutput>(updateActionName));
         }

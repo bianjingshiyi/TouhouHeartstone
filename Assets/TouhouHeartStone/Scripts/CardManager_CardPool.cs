@@ -360,7 +360,7 @@ namespace Game
 
             //错误信息修复
             bool hasUnsavedFix = false;
-            void fixData(IActionNode node)
+            void fixData(Node node)
             {
                 if (node is ActionNode action)
                 {
@@ -1151,7 +1151,7 @@ namespace Game
             }
             return poolList.ToArray();
 
-            void addCardPoolByNode(IActionNode node)
+            void addCardPoolByNode(Node node)
             {
                 foreach (var valueConst in node.consts)
                 {

@@ -271,8 +271,8 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onConnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
-            IActionNode outputActionNode = getActionNode(outputActionNodeItem);
-            IActionNode inputActionNode = getActionNode(inputActionNodeItem);
+            Node outputActionNode = getActionNode(outputActionNodeItem);
+            Node inputActionNode = getActionNode(inputActionNodeItem);
             IPort outputPort = outputActionNode.getOutputPortAt(outputIndex);
             IPort inputPort = inputActionNode.getInputPortAt(inputIndex);
 
@@ -298,8 +298,8 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onUnconnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
-            IActionNode outputActionNode = getActionNode(outputActionNodeItem);
-            IActionNode inputActionNode = getActionNode(inputActionNodeItem);
+            Node outputActionNode = getActionNode(outputActionNodeItem);
+            Node inputActionNode = getActionNode(inputActionNodeItem);
             IPort outputPort = outputActionNode.getOutputPortAt(outputIndex);
             IPort inputPort = inputActionNode.getInputPortAt(inputIndex);
             disconnectPorts(outputPort, inputPort);
@@ -333,7 +333,7 @@ namespace Controllers
         private void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
             Vector2 rootPosition = _ui.getNodesRootPosition();
-            IActionNode node = getActionNode(actionNodeItem);
+            Node node = getActionNode(actionNodeItem);
             node.posX = graphPosition.x - rootPosition.x;
             node.posY = graphPosition.y - rootPosition.y;
             _ui.moveActionNodeTo(actionNodeItem, graphPosition);
@@ -359,7 +359,7 @@ namespace Controllers
         }
         private async void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
         {
-            IActionNode actionNode = getActionNode(actionNodeItem);
+            Node actionNode = getActionNode(actionNodeItem);
             if (!(actionNode is ActionNode action))
                 return;
             ActionDefine actionDefine = getActionDefine(action.defineName);
@@ -393,7 +393,7 @@ namespace Controllers
         }
         private async void onClickActionNodeConstValueItemEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
-            IActionNode actionNode = getActionNode(actionNodeItem);
+            Node actionNode = getActionNode(actionNodeItem);
             if (!(actionNode is ActionNode action))
                 return;
             ActionDefine actionDefine = getActionDefine(action.defineName);
@@ -756,7 +756,7 @@ namespace Controllers
             _ui.removeNode(actionNodeItem);
             updateContentSize();
         }
-        private ActionNodeItem getActionNodeItem(IActionNode actionNode)
+        private ActionNodeItem getActionNodeItem(Node actionNode)
         {
             int index = _actionNodeList.IndexOf(actionNode);
             return _actionNodeItemList[index];
@@ -852,7 +852,7 @@ namespace Controllers
         /// 断开：动作节点----所有节点
         /// </summary>
         /// <param name="actionNode">动作节点</param>
-        private void disconnectNodeAll(IActionNode actionNode)
+        private void disconnectNodeAll(Node actionNode)
         {
             var connections = graph.getNodeConnections(actionNode);
             foreach (var connection in connections)
@@ -927,12 +927,12 @@ namespace Controllers
         }
         #endregion
         #region 节点操作
-        private IActionNode getActionNode(ActionNodeItem actionNodeItem)
+        private Node getActionNode(ActionNodeItem actionNodeItem)
         {
             int index = _actionNodeItemList.IndexOf(actionNodeItem);
             return _actionNodeList[index];
         }
-        private IActionNode getActionNode(int actionNodeId)
+        private Node getActionNode(int actionNodeId)
         {
             return _actionNodeList.Find(a => a != null && a.id == actionNodeId);
         }
@@ -1027,11 +1027,11 @@ namespace Controllers
         }
         private string[] getActionNodeInputNames(ActionNode actionNode)
         {
-            string[] inputNames = new string[actionNode.inputPorts.Count];
+            string[] inputNames = new string[actionNode.inputPorts.Count()];
             for (int i = 0; i < inputNames.Length; i++)
             {
                 // 翻译输出节点
-                var outputName = actionNode.inputPorts[i].define.getDisplayName();
+                var outputName = actionNode.inputPorts.ElementAt(i).define.getDisplayName();
                 inputNames[i] = tryTranslateWithDict(outputName);
             }
             return inputNames;
@@ -1050,11 +1050,11 @@ namespace Controllers
         }
         private string[] getActionNodeOutputNames(ActionNode actionNode)
         {
-            string[] outputNames = new string[actionNode.outputPorts.Count];
+            string[] outputNames = new string[actionNode.outputPorts.Count()];
             for (int i = 0; i < outputNames.Length; i++)
             {
                 // 翻译输出节点
-                var outputName = actionNode.outputPorts[i].define.getDisplayName();
+                var outputName = actionNode.outputPorts.ElementAt(i).define.getDisplayName();
                 outputNames[i] = tryTranslateWithDict(outputName);
             }
             return outputNames;
@@ -1215,7 +1215,7 @@ namespace Controllers
         string _curCategroy = null;
         float _curPosX;
         float _curPosY;
-        readonly List<IActionNode> _actionNodeList = new List<IActionNode>();
+        readonly List<Node> _actionNodeList = new List<Node>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
         ActionGraph graph
         {

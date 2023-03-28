@@ -82,7 +82,7 @@ namespace Controllers
             var entryNode = _generatedActionDefine.getEntryNode();
             var changedPort = entryNode.getOutputPort(name);
             var returnNode = _generatedActionDefine.getReturnNode();
-            foreach (var returnInput in returnNode.inputs)
+            foreach (var returnInput in returnNode.inputPorts)
             {
                 if (returnInput == null)
                     continue;
@@ -133,7 +133,7 @@ namespace Controllers
             var entryNode = _generatedActionDefine.getEntryNode();
             var changedPort = entryNode.getOutputPort(name);
             var returnNode = _generatedActionDefine.getReturnNode();
-            foreach (var returnInput in returnNode.inputs)
+            foreach (var returnInput in returnNode.inputPorts)
             {
                 if (returnInput == null)
                     continue;
@@ -184,7 +184,7 @@ namespace Controllers
             var entryNode = _generatedActionDefine.getEntryNode();
             var returnNode = _generatedActionDefine.getReturnNode();
             var changedPort = returnNode.getInputPort(name);
-            foreach (var entryOutput in entryNode.outputs)
+            foreach (var entryOutput in entryNode.outputPorts)
             {
                 if (entryOutput == null)
                     continue;

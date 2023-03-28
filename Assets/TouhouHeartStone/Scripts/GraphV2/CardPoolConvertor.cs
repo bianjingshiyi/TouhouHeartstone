@@ -196,7 +196,7 @@ namespace Game
                     if (returnRef == null || returnRef.valueRef == null)
                         continue;
                     var valueRef = ConvertActionValueRef(returnRef.valueRef, param);
-                    ConnectValueRef(returnNode.inputs.ElementAt(returnRef.returnIndex), valueRef, param);
+                    ConnectValueRef(returnNode.inputPorts.ElementAt(returnRef.returnIndex), valueRef, param);
                 }
 
             }
@@ -899,7 +899,7 @@ namespace Game
         {
             if (node == null)
                 return null;
-            var input = node.outputPorts.OfType<ValueOutput>().ElementAtOrDefault(index);
+            var input = node.getOutputPorts<ValueOutput>().ElementAtOrDefault(index);
             if (input is ValueOutput valueInput)
             {
                 return valueInput;
@@ -951,7 +951,7 @@ namespace Game
                     if (n is ActionNode action && (action.defineName == AuraDataDefine.defName))
                         return getActionNodeValueOutput(action, valueRef.argIndex);
                     if (n is GeneratedActionEntryNode entryNode)
-                        return entryNode.outputs?[valueRef.argIndex + 1];
+                        return entryNode.getOutputPortAt(valueRef.argIndex + 1);
                     return null;
                 }).FirstOrDefault();
             }
