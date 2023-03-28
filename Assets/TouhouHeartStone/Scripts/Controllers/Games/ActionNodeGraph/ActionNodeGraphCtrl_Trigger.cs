@@ -129,7 +129,7 @@ namespace Controllers
         private (string name, Color color)[] getTriggerOutputViewData(TriggerEntryNode trigger)
         {
             int typeIndex = _eventTypeInfoList.getEventTypeIndex(trigger.eventName);
-            EventTypeInfo eventTypeInfo = _eventTypeInfoList[typeIndex];
+            EventDefine eventTypeInfo = _eventTypeInfoList[typeIndex];
             if (eventTypeInfo.variableInfos != null)
             {
                 (string name, Color color)[] viewData = new (string name, Color color)[eventTypeInfo.variableInfos.Length + 1];
@@ -165,11 +165,11 @@ namespace Controllers
         /// <summary>
         /// 获取所有事件类型，如果未加载则进行加载
         /// </summary>
-        public static EventTypeInfo[] getOrLoadEventTypes()
+        public static EventDefine[] getOrLoadEventTypes()
         {
             if (_eventTypeInfoList != null)
                 return _eventTypeInfoList.ToArray();
-            _eventTypeInfoList = new List<EventTypeInfo>();
+            _eventTypeInfoList = new List<EventDefine>();
             //通过反射加载硬编码的事件类型
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -190,13 +190,13 @@ namespace Controllers
                             continue;
                         }
                         //发生时事件
-                        _eventTypeInfoList.Add(new EventTypeInfo()
+                        _eventTypeInfoList.Add(new EventDefine()
                         {
                             eventName = EventHelper.getNameBefore(eventArg),
                             variableInfos = eventArg.getBeforeEventVarInfos()
                         });
                         //发生后事件
-                        _eventTypeInfoList.Add(new EventTypeInfo()
+                        _eventTypeInfoList.Add(new EventDefine()
                         {
                             eventName = EventHelper.getNameAfter(eventArg),
                             variableInfos = eventArg.getAfterEventVarInfos()
@@ -205,7 +205,7 @@ namespace Controllers
                 }
             }
             //一些无法通过反射加载的事件类型
-            _eventTypeInfoList.Add(new EventTypeInfo()
+            _eventTypeInfoList.Add(new EventDefine()
             {
                 eventName = "ActiveEvent",
                 editorName = StringTable.EDITOR_EVENT_NAME_ACTIVE,
@@ -340,20 +340,20 @@ namespace Controllers
         {
             return FindEventTypeInfo(eventTypeName) != null;
         }
-        public static EventTypeInfo FindEventTypeInfo(string eventTypeName)
+        public static EventDefine FindEventTypeInfo(string eventTypeName)
         {
             if (_eventTypeInfoList == null)
                 getOrLoadEventTypes();
             return _eventTypeInfoList.Find(e => e.eventName == eventTypeName || (e.obsoleteNames != null && e.obsoleteNames.Contains(eventTypeName)));
         }
         #endregion
-        static List<EventTypeInfo> _eventTypeInfoList = null;
+        static List<EventDefine> _eventTypeInfoList = null;
     }
-    public class EventTypeInfoCollection : List<EventTypeInfo>
+    public class EventTypeInfoCollection : List<EventDefine>
     {
         public string[] getEventVarNames(string eventName)
         {
-            EventTypeInfo eventTypeInfo = Find(e => e.eventName == eventName);
+            EventDefine eventTypeInfo = Find(e => e.eventName == eventName);
             if (eventTypeInfo.variableInfos != null)
             {
                 string[] varNames = new string[eventTypeInfo.variableInfos.Length];
@@ -368,7 +368,7 @@ namespace Controllers
         }
         public int getEventVarNameIndex(string eventName, string eventVarName)
         {
-            EventTypeInfo eventTypeInfo = Find(e => e.eventName == eventName);
+            EventDefine eventTypeInfo = Find(e => e.eventName == eventName);
             if (eventTypeInfo.variableInfos != null)
             {
                 for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
@@ -381,7 +381,7 @@ namespace Controllers
         }
         public EventVariableInfo getEventVarInfo(string eventName, int index)
         {
-            EventTypeInfo eventTypeInfo = Find(e => e.eventName == eventName);
+            EventDefine eventTypeInfo = Find(e => e.eventName == eventName);
             if (eventTypeInfo.variableInfos != null && index < eventTypeInfo.variableInfos.Length)
             {
                 return eventTypeInfo.variableInfos[index];
