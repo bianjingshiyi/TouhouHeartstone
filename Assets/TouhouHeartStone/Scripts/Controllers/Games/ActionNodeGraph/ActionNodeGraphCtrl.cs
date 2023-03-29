@@ -772,17 +772,28 @@ namespace Controllers
                 //已经相连，什么也不做
                 return;
             }
-            else if (inputPort.getConnectedOutputPort() != null)
+            else
             {
-                //相连的是其他输出节点，断开连接
-                graph.disconnectAll(inputPort);
-                _ui.unconnectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex);
+                var connectedPort = inputPort.getConnectedOutputPort();
+                if (connectedPort != null)
+                {
+                    //相连的是其他输出节点，断开连接
+                    graph.disconnect(inputPort, connectedPort);
+                    var connectedNodeItem = getActionNodeItem(connectedPort.node);
+                    var connectedNodeIndex = connectedPort.GetPortIndex();
+                    _ui.unconnectNode(outputNodeItem, outputIndex, connectedNodeItem, connectedNodeIndex);
+                }
             }
 
             //建立新的连接
             graph.connect(outputPort, inputPort);
             //更新ui
             _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.value);
+            //更新变长参数。
+            if (inputPort.node is ActionNode actionNode && actionNode.define?.isParams == true)
+            {
+                inputNodeItem.setInputs(getActionNodeInputViewData(actionNode));
+            }
         }
 
         private void connectControlPorts(ControlOutput outputPort, ControlInput inputPort)
@@ -796,11 +807,17 @@ namespace Controllers
                 //已经相连，什么也不做
                 return;
             }
-            else if (outputPort.getConnectedInputPort() != null)
+            else
             {
-                //相连的是其他输入节点，断开连接
-                graph.disconnectAll(outputPort);
-                _ui.unconnectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex);
+                var connectedPort = outputPort.getConnectedInputPort();
+                if (connectedPort != null)
+                {
+                    //相连的是其他输入节点，断开连接
+                    graph.disconnect(outputPort, connectedPort);
+                    var connectedNodeItem = getActionNodeItem(connectedPort.node);
+                    var connectedNodeIndex = connectedPort.GetPortIndex();
+                    _ui.unconnectNode(outputNodeItem, outputIndex, connectedNodeItem, connectedNodeIndex);
+                }
             }
 
             //建立新的连接
@@ -825,12 +842,15 @@ namespace Controllers
         #region 节点断开
         private void disconnectPorts(IPort outputPort, IPort inputPort)
         {
-            if (graph.disconnect(outputPort, inputPort))
+            //更新ui
+            var outputNodeItem = getActionNodeItem(outputPort.node);
+            var inputNodeItem = getActionNodeItem(inputPort.node);
+            _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
+            graph.disconnect(outputPort, inputPort);
+            //更新变长参数。
+            if (inputPort is ValueInput && inputPort.node is ActionNode actionNode && actionNode.define?.isParams == true)
             {
-                //更新ui
-                var outputNodeItem = getActionNodeItem(outputPort.node);
-                var inputNodeItem = getActionNodeItem(inputPort.node);
-                _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
+                inputNodeItem.setInputs(getActionNodeInputViewData(actionNode));
             }
         }
         /// 断开：动作节点----所有节点
@@ -1073,6 +1093,7 @@ namespace Controllers
         {
             var options = getActionDefineGroups().Select(g => game.i18n._(g.Key) + (g.Count() > 1 ? " >" : "")).ToList();
             options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
+            _curEditActionNode = null;
             openMenu(posX, posY, options.ToArray());
         }
         private void updateMenuForCategory()
