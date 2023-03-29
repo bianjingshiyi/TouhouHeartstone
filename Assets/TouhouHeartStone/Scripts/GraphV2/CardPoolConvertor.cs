@@ -745,7 +745,7 @@ namespace Game
                     continue;
                 try
                 {
-                    var checker = new TargetChecker(seriChecker.targetType, i, seriChecker.errorTip);
+                    var checker = new TargetChecker(seriChecker.targetType, seriChecker.errorTip);
                     trigger.AddTargetChecker(checker);
                     // 创建连接到触发器触发条件的各节点。
                     if (seriChecker.condition != null)

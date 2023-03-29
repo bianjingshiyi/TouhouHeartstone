@@ -43,8 +43,7 @@ namespace Controllers
             var actionNode = getActionNode(item);
             if (actionNode is TriggerEntryNode trigger)
             {
-                var index = trigger.targetCheckerList.Count;
-                trigger.AddTargetChecker(new TargetChecker(string.Empty, index, string.Empty));
+                trigger.AddTargetChecker(new TargetChecker(string.Empty, string.Empty));
                 item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData(trigger));
                 OnEdited();
             }
