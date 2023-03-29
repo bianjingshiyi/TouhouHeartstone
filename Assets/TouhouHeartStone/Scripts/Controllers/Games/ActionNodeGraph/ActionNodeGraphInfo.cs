@@ -18,6 +18,7 @@ namespace Controllers
         public int actionDefineId;
     }
     [Serializable]
+    [Obsolete]
     public class SerializableActionNodeGraphInfo
     {
         public int cardId;
@@ -35,6 +36,29 @@ namespace Controllers
         /// 用于兼容老版本的卡池。
         /// </summary>
         [BsonIgnoreIfNull]
-        public List<ActionNode> freeActionNodeList;
+        public List<SerializableFreeNode> freeActionNodeList;
     }
+    /// <summary>
+    /// 用于兼容老版本的卡池所用的结构类。
+    /// </summary>
+    [Obsolete]
+    public class SerializableFreeNode
+    {
+        public int _id;
+        public string defineName;
+        public SerializableFreeNode[] branches;
+        public SerializableFreeNodeRef[] inputs;
+        public object[] consts;
+        public bool[] regVar;
+    }
+    [Obsolete]
+    public class SerializableFreeNodeRef
+    {
+        public SerializableFreeNode action;
+        public int index;
+        public int actionNodeId;
+        public string eventVarName;
+        public int argIndex;
+    }
+
 }

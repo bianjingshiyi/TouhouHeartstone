@@ -787,9 +787,19 @@ namespace Game
         {
             if (param.graphInfo == null)
                 return;
-            foreach (var freeNode in param.graphInfo.freeNodeList)
+            if (param.graphInfo.freeNodeList == null && param.graphInfo.freeActionNodeList != null)
             {
-                CreateFreeNodeToGraph(freeNode.id, param.graphInfo, param);
+                foreach (var freeNode in param.graphInfo.freeActionNodeList)
+                {
+                    CreateFreeNodeToGraphOld(freeNode, param.graphInfo, param);
+                }
+            }
+            else
+            {
+                foreach (var freeNode in param.graphInfo.freeNodeList)
+                {
+                    CreateFreeNodeToGraph(freeNode.id, param.graphInfo, param);
+                }
             }
         }
         /// <summary>
@@ -862,6 +872,83 @@ namespace Game
                 if (!nodes.TryGetValue(targetNodeId, out ActionNode targetNode))
                 {
                     targetNode = CreateFreeNodeToGraph(targetNodeId, graphInfo, param);
+                }
+
+                // 连接节点。
+                var output = getActionNodeControlOutput(freeNode, i);
+                var input = targetNode.getEnterPort();
+                if (output == null || input == null)
+                    continue;
+                graph.connect(output, input);
+            }
+
+            return freeNode;
+        }
+
+        /// <summary>
+        /// 创建一个节点图内的离散节点。（使用老的freeActionNodeList）
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <param name="graphInfo"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        private ActionNode CreateFreeNodeToGraphOld(SerializableFreeNode seriNode, SerializableActionNodeGraphInfo graphInfo, ActionNodeGraphParams param)
+        {
+            // 参数。
+            var graph = param.graph;
+            var nodes = param.actionNodeDict;
+            var infoDict = graphInfo.actionInfoDict;
+
+            var nodeId = seriNode._id;
+            // 如果该节点已被加入，中断。
+            if (nodes.TryGetValue(nodeId, out ActionNode node))
+            {
+                return node;
+            }
+
+            // 创建离散节点。
+            float posX = 0, posY = 0;
+            var nodeInfo = infoDict.FirstOrDefault(p => p.Key == nodeId.ToString()).Value;
+            if (nodeInfo != null)
+            {
+                posX = nodeInfo.posX;
+                posY = nodeInfo.posY;
+            }
+
+            var freeNode = graph.createActionNode(seriNode.defineName, posX + param.posOffset.x, posY + param.posOffset.y);
+            nodes.Add(nodeId, freeNode);
+
+            // 创建并连接输入的节点。
+            for (int i = 0; i < seriNode.inputs.Length; i++)
+            {
+                var input = seriNode.inputs[i];
+                if (input.action == null)
+                    continue;
+                // 如果该节点未被加入，创建一个。
+                if (!nodes.TryGetValue(input.action._id, out ActionNode targetNode))
+                {
+                    targetNode = CreateFreeNodeToGraphOld(input.action, graphInfo, param);
+                }
+
+                // 连接节点。
+                var outputPort = getActionNodeValueOutput(targetNode, input.index);
+                var inputPort = getActionNodeValueInput(freeNode, i);
+                if (outputPort == null || inputPort == null)
+                    continue;
+                graph.connect(outputPort, inputPort);
+            }
+
+
+            // 创建并连接后续动作节点。
+            for (int i = 0; i < seriNode.branches.Length; i++)
+            {
+                var seriBranch = seriNode.branches[i];
+                if (seriBranch == null)
+                    continue;
+                // 如果该节点未被加入，创建一个。
+                if (!nodes.TryGetValue(seriBranch._id, out ActionNode targetNode))
+                {
+                    targetNode = CreateFreeNodeToGraphOld(seriBranch, graphInfo, param);
                 }
 
                 // 连接节点。
