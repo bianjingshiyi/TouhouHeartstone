@@ -583,7 +583,7 @@ namespace UI
             if (_isTouchZooming) return;
 
             int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == item.indexOfInput(input));
-            if (index < 0)
+            if (index < 0 || input.isControl)
             {
                 GameObject from = input.getNode();
                 GameObject to = new GameObject();
@@ -631,16 +631,10 @@ namespace UI
         /// <param name="eventData"></param>
         private void onEndDragInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
+            int connectCount = _connectionList.Count(c => c.inputNode == item && c.inputIndex == item.indexOfInput(input));
             int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == item.indexOfInput(input));
-            if (index < 0)
-            {
-                Destroy(_dragLine.gameObject);
-                _dragLine = null;
-            }
-            else
-            {
-                _dragLine = null;
-            }
+            Destroy(_dragLine.gameObject);
+            _dragLine = null;
             //使用射线判断是否在其他的输入点上
             List<RaycastResult> raycastList = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData as PointerEventData, raycastList);
@@ -653,9 +647,12 @@ namespace UI
                 onConnectNodes?.Invoke(outputItem, outputItem.indexOfOutput(output), item, item.indexOfInput(input));
                 return;
             }
-            //不在任何点上，如果目前的连线已经与节点链接，则断开它们的连接
-            if (index < 0)
+            //不在任何点上：
+            //如果不存在该端口的链接，或者（该输入端点是动作端点）并且（有多个连接），跳过。
+            if (index < 0 || (input.isControl && connectCount > 1))
                 return;
+
+            //如果目前的连线已经与节点链接，则断开它们的连接。
             onUnconnectNodes?.Invoke(_connectionList[index].outputNode, _connectionList[index].outputIndex,
                 _connectionList[index].inputNode, _connectionList[index].inputIndex);
         }
@@ -719,7 +716,7 @@ namespace UI
             if (!_isTouchZooming)
             {
                 int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
-                if (index < 0)
+                if (index < 0 || !output.isControl)
                 {
                     GameObject from = output.getNode();
                     GameObject to = new GameObject();
@@ -765,16 +762,10 @@ namespace UI
         /// <param name="eventData"></param>
         private void onEndDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
+            int connectedCount = _connectionList.Count(c => c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
             int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
-            if (index < 0)
-            {
-                Destroy(_dragLine.gameObject);
-                _dragLine = null;
-            }
-            else
-            {
-                _dragLine = null;
-            }
+            Destroy(_dragLine.gameObject);
+            _dragLine = null;
             //使用射线判断是否在其他的输入点上
             List<RaycastResult> raycastList = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData as PointerEventData, raycastList);
@@ -787,9 +778,12 @@ namespace UI
                 onConnectNodes?.Invoke(item, item.indexOfOutput(output), inputItem, inputItem.indexOfInput(input));
                 return;
             }
-            //不在任何点上，如果目前的连线已经与节点链接，则断开它们的连接
-            if (index < 0)
+            // 不在任何点上：
+            //如果不存在该端口的链接，或者（该输出端点是值端点）并且（有多个连接），跳过。
+            if (index < 0 || (!output.isControl && connectedCount > 1))
                 return;
+
+            //如果目前的连线已经与节点链接，则断开它们的连接。
             onUnconnectNodes?.Invoke(_connectionList[index].outputNode, _connectionList[index].outputIndex,
                 _connectionList[index].inputNode, _connectionList[index].inputIndex);
         }
