@@ -214,12 +214,16 @@ namespace Game
                 typeof(HearthStoneRule).Assembly,
                 typeof(EffectEditorLibrary).Assembly
             });
-            void checkObsoleteNodes(ActionNode node, (int cardId, int buffId, int actionId) graphObj)
+            void checkObsoleteNodes(Node node, (int cardId, int buffId, int actionId) graphObj)
             {
-                ActionDefine define = null;
-                if (!actionDefineDict.TryGetValue(node.defineName, out define))
+                if (!(node is ActionNode actionNode))
                 {
-                    define = cardPool.actionDefineList.Find(a => a.defineName == node.defineName);
+                    return;
+                }
+                ActionDefine define = null;
+                if (!actionDefineDict.TryGetValue(actionNode.defineName, out define))
+                {
+                    define = cardPool.actionDefineList.Find(a => a.defineName == actionNode.defineName);
                 }
                 if (define == null || define.obsoleteMsg != null)
                 {
@@ -240,14 +244,7 @@ namespace Game
             {
                 define.traverse(node => checkObsoleteNodes(node, (0, 0, define.id)));
             };
-            Action<ActionNodeGraphInfo> infoAction = (info) =>
-            {
-                foreach (var freeNode in info.freeActionNodeList)
-                {
-                    checkObsoleteNodes(freeNode, (info.cardId, info.buffId, info.actionDefineId));
-                }
-            };
-            traverseActionGraphs(cardPool, cardAction, buffAction, defineAction, infoAction);
+            traverseActionGraphs(cardPool, cardAction, buffAction, defineAction);
             return list.ToArray();
         }
 
@@ -373,8 +370,7 @@ namespace Game
             traverseActionGraphs(cardPool,
                 (c, e) => effectAction(e),
                 (b, e) => effectAction(e),
-                defineAction,
-                graphInfoAction);
+                defineAction);
 
 
             foreach (var skin in cardPool.cardSkinList)
@@ -432,20 +428,7 @@ namespace Game
             // 用于遍历自定义动作的方法。
             void defineAction(GeneratedActionDefine define)
             {
-                define.traverse(fixActionNodeIncorrectData);
-            }
-            // 用于遍历节点图信息的方法。
-            void graphInfoAction(ActionNodeGraphInfo graphInfo)
-            {
-                if (string.IsNullOrEmpty(graphInfo.entryType))
-                {
-                    //流程图信息不能没有类型，如果为空则默认为triggerList
-                    graphInfo.entryType = nameof(GeneratedEffect.triggerList);
-                }
-                foreach (var actionNode in graphInfo.freeActionNodeList)
-                {
-                    actionNode.traverse(fixActionNodeIncorrectData);
-                }
+                define.traverse(fixData);
             }
 
             void fixActionNodeIncorrectData(ActionNode actionNode)
@@ -1402,8 +1385,7 @@ namespace Game
 
         private void traverseActionGraphs(CardPool cardPool, Action<CardDefine, GeneratedEffect> cardAction,
             Action<BuffDefine, GeneratedEffect> buffAction, 
-            Action<GeneratedActionDefine> defineAction,
-            Action<ActionNodeGraphInfo> infoAction)
+            Action<GeneratedActionDefine> defineAction)
         {
             foreach (var card in cardPool.cardDefineList)
             {
@@ -1423,12 +1405,8 @@ namespace Game
             {
                 defineAction?.Invoke(actionDefine);
             }
-            foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
-            {
-                infoAction?.Invoke(graphInfo);
-            }
         }
-        private void traverseActionNodes(CardPool cardPool, Action<ActionNode> action)
+        private void traverseActionNodes(CardPool cardPool, Action<Node> action)
         {
             Action<CardDefine, GeneratedEffect> cardAction = (card, effect) =>
             {
@@ -1442,14 +1420,7 @@ namespace Game
             {
                 define.traverse(action);
             };
-            Action<ActionNodeGraphInfo> infoAction = (info) =>
-            {
-                foreach (var freeNode in info.freeActionNodeList)
-                {
-                    action?.Invoke(freeNode);
-                }
-            };
-            traverseActionGraphs(cardPool, cardAction, buffAction, defineAction, infoAction);
+            traverseActionGraphs(cardPool, cardAction, buffAction, defineAction);
         }
         #endregion
         #region 属性字段

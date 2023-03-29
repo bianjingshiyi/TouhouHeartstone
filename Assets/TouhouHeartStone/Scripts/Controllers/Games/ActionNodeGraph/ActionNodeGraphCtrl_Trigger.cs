@@ -31,10 +31,13 @@ namespace Controllers
             {
                 trigger.eventName = _eventTypeInfoList.getEventTypeNameByIndex(typeIndex);
                 disconnectNodeAll(trigger);
+                trigger.define = _eventTypeInfoList[typeIndex];
+                trigger.Define();
                 item.setOutputs(getTriggerOutputViewData(trigger));
                 OnEdited();
             }
         }
+        #region 目标检查器
         /// <summary>
         /// 当用户点击新增目标按钮，为当前触发器新建目标检查器，然后在UI列表中新增项目
         /// </summary>
@@ -45,6 +48,7 @@ namespace Controllers
             {
                 trigger.AddTargetChecker(new TargetChecker(string.Empty, string.Empty));
                 item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData(trigger));
+                item.setInputs(getTriggerInputViewData(trigger));
                 OnEdited();
             }
         }
@@ -68,6 +72,7 @@ namespace Controllers
             {
                 trigger.RemoveTargetChecker(index);
                 item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getTriggerTargetCheckerViewData(trigger));
+                item.setInputs(getTriggerInputViewData(trigger));
                 OnEdited();
             }
         }
@@ -80,6 +85,8 @@ namespace Controllers
                 OnEdited();
             }
         }
+        #endregion
+
         #endregion
         /// <summary>
         /// 加载所有事件类型
@@ -96,13 +103,14 @@ namespace Controllers
             for (int i = 0; i < targetCheckers.Length; i++)
             {
                 var targetChecker = targetList[i];
-                targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, targetChecker.targetType);
-                if (targetCheckers[i].typeIndex < 0)
+                var viewData = targetCheckers[i];
+                viewData.typeIndex = Array.IndexOf(_targetCheckerTypes, targetChecker.targetType);
+                if (viewData.typeIndex < 0)
                 {
-                    targetList[i].targetType = DEFINE.TARGET_TYPE_SERVANT;
-                    targetCheckers[i].typeIndex = Array.IndexOf(_targetCheckerTypes, DEFINE.TARGET_TYPE_SERVANT);
+                    targetChecker.targetType = DEFINE.TARGET_TYPE_SERVANT;
+                    viewData.typeIndex = Array.IndexOf(_targetCheckerTypes, DEFINE.TARGET_TYPE_SERVANT);
                 }
-                targetCheckers[i].name = "目标" + (i + 1);
+                viewData.name = "目标" + (i + 1);
                 targetChecker.errorTip = targetList[i].errorTip;
             }
             return targetCheckers;

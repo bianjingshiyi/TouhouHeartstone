@@ -22,7 +22,8 @@ namespace TouhouHeartstone
         {
             if (activeTrigger != null)
             {
-                return game.runActions(card, buff, eventArg, activeTrigger.getActionOutputPort());
+                var flow = new Flow(game, card, buff, eventArg);
+                return game.runActions(flow, activeTrigger.getActionOutputPort());
             }
             return Task.CompletedTask;
         }

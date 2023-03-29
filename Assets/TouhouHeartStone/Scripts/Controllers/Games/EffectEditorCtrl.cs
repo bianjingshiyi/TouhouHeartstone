@@ -112,11 +112,11 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<EffectEditorPanel>();
             }
-            _selectableRanges = CardEditorCtrl.pileOptionNameDict.Keys.ToArray();
+            _selectableRanges = CardEditorCtrl.piles.Keys.ToArray();
             string[] activeRanges = new string[_selectableRanges.Length];
             for (int i = 0; i < activeRanges.Length; i++)
             {
-                activeRanges[i] = game.langManager.getString(CardEditorCtrl.pileOptionNameDict[_selectableRanges[i]]);
+                activeRanges[i] = game.langManager.getString(CardEditorCtrl.piles[_selectableRanges[i]]);
             }
             _ui.initActiveRanges(activeRanges, _selectableRanges);
             string[] effectTagNames = new string[_effectTags.Length];

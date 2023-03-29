@@ -905,9 +905,9 @@ namespace Game
         /// </summary>
         [ActionNodeMethod(EDITOR_NODE_FAITHDUEL, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
         [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
-        public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+        public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] ActionNode filter,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] ControlInput filter,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard)
@@ -917,13 +917,21 @@ namespace Game
 
             bool filterFunc(Card c)
             {
-                scope.setOutParamValue(0, c);
-                Scope childScope = new Scope(scope);
-                return filter != null ? game.getActionReturnValueAsync<bool>(card, buff, eventArg, filter, scope: childScope).Result : true;
+                bool valid = true;
+                if (filter != null)
+                {
+                    var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+                    var resultPort = filter?.node.getOutputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
+                    flow.EnterScope();
+                    flow.setValue(elementPort, c);
+                    valid = game.getValue<bool>(flow, resultPort).Result;
+                    flow.ExitScope();
+                }
+                return valid;
             }
             var arg = player.revealDuel(game, filterFunc).Result;
-            scope.setOutParamValue(1, arg.youCard);
-            scope.setOutParamValue(2, arg.oppoCard);
+            flow.setValue(node.getOutputPort<ValueOutput>(nameof(selfCard)), arg.youCard);
+            flow.setValue(node.getOutputPort<ValueOutput>(nameof(opponentCard)), arg.oppoCard);
             return arg.result;
         }
         #endregion

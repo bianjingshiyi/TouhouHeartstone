@@ -87,7 +87,7 @@ namespace TouhouHeartstone
                     {
                         try
                         {
-                            return await game.getValue<bool>(card, buff, null, affectCondition);
+                            return await game.getValue<bool>(new Flow(game, card, buff, null), affectCondition);
                         }
                         catch (Exception e)
                         {
@@ -145,7 +145,7 @@ namespace TouhouHeartstone
                         if (!buffDict.ContainsKey(target) && await condition(target))
                         {
                             // 添加增益，并记录增益。
-                            BuffDefine buffDefine = await game.getValue<BuffDefine>(selfCard, selfBuff, null, getAuraBuffDefine);
+                            BuffDefine buffDefine = await game.getValue<BuffDefine>(new Flow(game, selfCard, selfBuff, null), getAuraBuffDefine);
                             Buff auraBuff = new GeneratedBuff(buffDefine);
                             await updateAuraBuff(game, card, buff);
                             await target.addBuff(game, auraBuff);
@@ -177,7 +177,7 @@ namespace TouhouHeartstone
             {
                 try
                 {
-                    await game.runActions(card, buff, null, updateAction);
+                    await game.runActions(new Flow(game, card, buff, null), updateAction);
                 }
                 catch (Exception e)
                 {
@@ -208,7 +208,7 @@ namespace TouhouHeartstone
         }
         #endregion
         #region 属性字段
-        public override PileNameCollection pileList => getEntryNode()?.getConst<PileNameCollection>(AuraDataDefine.pileListName);
+        protected override PileNameCollection pileList => getEntryNode()?.getConst<PileNameCollection>(AuraDataDefine.pileListName);
         /// <summary>
         /// 光环的作用范围
         /// </summary>
