@@ -192,9 +192,9 @@ namespace UI
         /// 设置效果列表
         /// </summary>
         /// <param name="effectNames"></param>
-        public void setEffects(string[] effectNames)
+        public void setEffects(string[] effectNames, int activeIndex = -1)
         {
-            _effectList.updateList(effectNames);
+            _effectList.updateList(effectNames, activeIndex);
         }
         public void switchToServant()
         {

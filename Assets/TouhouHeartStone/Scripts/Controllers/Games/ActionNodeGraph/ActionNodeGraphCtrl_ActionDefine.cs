@@ -221,72 +221,57 @@ namespace Controllers
         }
         #endregion
         #region 私有方法
-        private Task openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
+        private async Task openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
         {
             resetEditObjects();
             _generatedActionDefine = generatedActionDefine;
             //显示UI
             _ui.clearGraph();
+            //创建动作节点
+            await ApplyGraph(_generatedActionDefine.graph);
             //设置参数
             updateActionDefineEntryNode();
             //设置返回
             updateActionDefineReturnNodes();
-            //创建动作节点
-            ApplyGraph(_generatedActionDefine.graph);
             updateContentSize();
-            return Task.CompletedTask;
         }
         private void updateActionDefineReturnNodes()
         {
-            var outputs = _generatedActionDefine.outputDefines;
-            (string name, Color color)[] viewData = new (string name, Color color)[outputs.Count()];
-            for (int i = 0; i < outputs.Count(); i++)
-            {
-                var output = outputs.ElementAt(i);
-                viewData[i] = (output.name, game.editor.getColorByType(output.type));
-            }
             var returnNode = _generatedActionDefine.getReturnNode();
             returnNode.Define();
+
+            var inputs = returnNode.inputPorts;
+            (string name, Color color)[] viewData = new (string name, Color color)[inputs.Count()];
+            for (int i = 0; i < inputs.Count(); i++)
+            {
+                var output = inputs.ElementAt(i);
+                viewData[i] = (output.define?.name, game.editor.getColorByType(output.define?.type));
+            }
             var returnNodeItem = getActionNodeItem(returnNode);
             returnNodeItem.setInputs(viewData);
         }
 
         private void updateActionDefineEntryNode()
         {
-            var inputs = _generatedActionDefine.inputDefines;
+            var entryNode = _generatedActionDefine.getEntryNode();
+            entryNode.Define();
+
+            var outputs = entryNode.outputPorts;
             var consts = _generatedActionDefine.constDefines;
-            (string name, Color color)[] viewData = new (string name, Color color)[inputs.Count()];
-            for (int i = 0; i < inputs.Count(); i++)
+
+            (string name, Color color)[] viewData = new (string name, Color color)[outputs.Count() + consts.Count()];
+            for (int i = 0; i < outputs.Count(); i++)
             {
-                var input = inputs.ElementAt(i);
-                viewData[i] = (input.name, game.editor.getColorByType(input.type));
+                var input = outputs.ElementAt(i);
+                viewData[i] = (input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type));
             }
             for (int i = 0; i < consts.Count(); i++)
             {
                 var constDef = consts.ElementAt(i);
                 viewData[i + consts.Count()] = (constDef.name, game.editor.getColorByType(constDef.type));
             }
-            var entryNode = _generatedActionDefine.getEntryNode();
-            entryNode.Define();
             var entryNodeItem = getActionNodeItem(entryNode);
             entryNodeItem.setOutputs(viewData);
-        }
-
-        // 连接：自定义动作入口节点（输出）----动作节点（输入）
-        private bool validateConnection4ActionDefineEntryOutput(string outputName, ActionNode inputActionNode, string inputName, bool showErrorTip = true)
-        {
-            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort(outputName);
-            var inputPort = inputActionNode.getInputPort(inputName);
-
-            return validatePortConnection(outputPort, inputPort, showErrorTip);
-        }
-        // 连接：入口节点（动作）----出口节点
-        private bool validateConnection4ActionDefineArgToReturn(string outputName, string inputName, bool showErrorTip = true)
-        {
-            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort(outputName);
-            var inputPort = _generatedActionDefine.getReturnNode().getInputPort(inputName);
-
-            return validatePortConnection(outputPort, inputPort, showErrorTip);
         }
         private (string name, Color color)[] getActionDefineInputViewData(GeneratedActionDefine actionDefine)
         {

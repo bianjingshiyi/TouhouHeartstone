@@ -9,6 +9,10 @@ namespace UI
         {
             _nameText.text = name;
         }
+        public void setActive(bool active)
+        {
+            _itemImage.sprite = active ? _selectedSprite : _normalSprite;
+        }
         public void showInputField(string value)
         {
             _nameInputFieldObj.SetActive(true);
@@ -53,5 +57,13 @@ namespace UI
         GameObject _nameInputFieldObj;
         [SerializeField]
         InputField _nameInputField;
+
+        [Header("激活")]
+        [SerializeField]
+        Image _itemImage;
+        [SerializeField]
+        Sprite _selectedSprite;
+        [SerializeField]
+        Sprite _normalSprite;
     }
 }

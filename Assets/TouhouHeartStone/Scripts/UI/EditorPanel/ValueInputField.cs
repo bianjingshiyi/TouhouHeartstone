@@ -400,12 +400,13 @@ namespace UI
                     _multiSelectDropdown.SetValueWithoutNotify(boolValue);
                 }
                 else
-                {
-                    //如果集合为null，则立刻给它新建一个空的并触发事件。
-                    _valueInfo.value = new PileNameCollection();
                     _multiSelectDropdown.SetValueWithoutNotify(new bool[_pileValues.Length]);
-                    onValueChanged?.Invoke(this, _valueInfo.value);
-                }
+                //{
+                //    //如果集合为null，则立刻给它新建一个空的并触发事件。
+                //    _valueInfo.value = new PileNameCollection();
+                //    _multiSelectDropdown.SetValueWithoutNotify(new bool[_pileValues.Length]);
+                //    onValueChanged?.Invoke(this, _valueInfo.value);
+                //}
             }
             else if (_valueInfo.type == ActionNodeValueType.effectTagCollection)
             {

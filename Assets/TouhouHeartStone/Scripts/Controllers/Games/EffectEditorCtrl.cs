@@ -84,13 +84,23 @@ namespace Controllers
                     _actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
             }
         }
+        public GeneratedEffect getCurrentEffect()
+        {
+            return _effect;
+        }
         public Task hide()
         {
+            hideActionGraph();
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
         }
         public void hideActionGraph()
         {
+            _cardPoolId = 0;
+            _cardDefine = null;
+            _buffDefine = null;
+            _effect = null;
+            _actionDefine = null;
             _actionNodeGraphCtrl.hide();
         }
         #endregion

@@ -15,12 +15,13 @@ namespace UI
             _addEffectMenu.ClearOptions();
             _addEffectMenu.AddOptions(effectNames.ToList());
         }
-        public void updateList(string[] effectNames)
+        public void updateList(string[] effectNames, int activeIndex = -1)
         {
             UIHelper.updateList(_itemRoot, _itemTemplate, _itemList, effectNames.Length, (i, itemRect) =>
             {
                 EffectListItem item = itemRect.GetComponent<EffectListItem>();
                 item.update(effectNames[i]);
+                item.setActive(activeIndex == i);
             }, itemRect =>
             {
                 EffectListItem item = itemRect.GetComponent<EffectListItem>();

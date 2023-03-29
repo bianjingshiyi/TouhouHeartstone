@@ -18,21 +18,6 @@ namespace Controllers
     {
         #region 公有方法
         /// <summary>
-        /// 打开一个效果的某个动作图
-        /// </summary>
-        /// <param name="cardPoolId"></param>
-        /// <param name="effect"></param>
-        /// <param name="entryType"></param>
-        /// <param name="graphInfo"></param>
-        public void openActionGraph(long cardPoolId, GeneratedEffect effect, ActionNodeGraphInfo graphInfo)
-        {
-            display(new DisplayInfo(cardPoolId, effect, null, graphInfo));
-        }
-        public Task openActionValueRefGraph(long cardPoolId, ActionValueRef valueRef, ActionNodeGraphInfo graphInfo)
-        {
-            return display(new DisplayInfo(cardPoolId, valueRef, null, graphInfo));
-        }
-        /// <summary>
         /// 退出节点图。
         /// </summary>
         public void quitGraph()
@@ -493,16 +478,15 @@ namespace Controllers
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="entryType"></param>
-        private Task openActionGraph(GeneratedEffect effect)
+        private async Task openActionGraph(GeneratedEffect effect)
         {
             //清理数据
             resetEditObjects();
             _effect = effect;
 
-            ApplyGraph(effect.graph);
+            await ApplyGraph(effect.graph);
 
             updateContentSize();
-            return Task.CompletedTask;
         }
         #endregion
         #region 节点UI创建/删除/获取

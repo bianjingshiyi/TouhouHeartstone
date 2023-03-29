@@ -63,7 +63,6 @@ namespace Controllers
             else
                 _ui.setRace(0);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
-            updateEffectList(effects);
             _ui.closeAllEdit();
             if (cardDefine.isSpell())
                 _ui.switchToSpell();
@@ -81,9 +80,8 @@ namespace Controllers
 
             updateCustomProperties();
             updateKeywords();
-
             _effectEditorCtrl.hideActionGraph();
-
+            updateEffectList(effects);
         }
         public override Task display(CardPoolDisplayInfo info)
         {
@@ -421,17 +419,21 @@ namespace Controllers
             MarkCardUnsaved();
             _cardDefine.setSpellDamage(value);
         }
+
+        #region Effects
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
 
         private void onClickEditEffectButton(int index)
         {
-            GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
+            var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
+            GeneratedEffect effect = effects.ElementAt(index);
             // TODO：在加入获取当前正在查看的效果的方法时改掉这个条件。
-            if (true)
+            if (_effectEditorCtrl.getCurrentEffect() != effect)
             {
                 _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
+                updateEffectList(effects.ToArray());
             }
             else
             {
@@ -442,17 +444,14 @@ namespace Controllers
         private void onClickRemoveEffectButton(int index)
         {
             MarkCardUnsaved();
-            GeneratedEffect[] prevEffects = _cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
-            GeneratedEffect[] newEffects = new GeneratedEffect[prevEffects.Length - 1];
-            for (int i = 0; i < index; i++)
-            {
-                newEffects[i] = prevEffects[i];
-            }
-            for (int i = index; i < newEffects.Length; i++)
-            {
-                newEffects[i] = prevEffects[i + 1];
-            }
+            var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
+            var removedEffect = effects.ElementAt(index);
+            GeneratedEffect[] newEffects = effects.Where(e => e != removedEffect).ToArray();
             _cardDefine.setEffects(newEffects);
+            if (_effectEditorCtrl.getCurrentEffect() == removedEffect)
+            {
+                _effectEditorCtrl.hideActionGraph();
+            }
             updateEffectList(newEffects);
         }
         /// <summary>
@@ -466,6 +465,8 @@ namespace Controllers
             effect.name = getEffectDefaultName(effect, effects.Count() + 1);
             var effectArray = effects.Append(effect).ToArray();
             _cardDefine.setEffects(effectArray);
+
+            _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
             updateEffectList(effectArray);
         }
         private void onEffectListItemInputFieldEndEditCallback(int index, string value)
@@ -480,6 +481,8 @@ namespace Controllers
             _ui.hideEffectListItemInputField(index);
             updateEffectList(effects.ToArray());
         }
+        #endregion Effects
+
 
         private async void onClickDeleteCardButton()
         {
@@ -851,6 +854,8 @@ namespace Controllers
         }
         private void updateEffectList(GeneratedEffect[] effects)
         {
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            int activeIndex = -1;
             string[] names = new string[effects.Length];
             for (int i = 0; i < effects.Length; i++)
             {
@@ -860,8 +865,12 @@ namespace Controllers
                     effect.name = getEffectDefaultName(effect, i + 1);
                 }
                 names[i] = effect.name;
+                if (currentEffect == effect)
+                {
+                    activeIndex = i;
+                }
             }
-            _ui.setEffects(names);
+            _ui.setEffects(names, activeIndex);
         }
         private CardSkinData[] getCurrentCardSkins()
         {
