@@ -50,6 +50,8 @@ namespace Game
         }
         private ActionDefine getActionDefine(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                return null;
             return defineFinder?.Invoke(name) ?? convertedActionDefines.FirstOrDefault(d => d.defineName == name || (d.obsoleteNames != null && d.obsoleteNames.Contains(name)));
         }
         #region 转换定义
@@ -653,10 +655,6 @@ namespace Game
             ActionNode actionNode = graph.createActionNode(define, posX + posOffset.x, posY + posOffset.y);
             actionNodeDict.Add(rootActionId, actionNode);
 
-            // 定义节点。
-            actionNode.define = define;
-            actionNode.Define();
-
             if (seriActionNode.consts != null)
             {
                 for (int i = 0; i < seriActionNode.consts.Length; i++)
@@ -969,6 +967,8 @@ namespace Game
             if (node == null)
                 return null;
             var define = getActionDefine(node.defineName);
+            if (define == null)
+                return null;
             if (node.getEnterPort() != null)
             {
                 index++;

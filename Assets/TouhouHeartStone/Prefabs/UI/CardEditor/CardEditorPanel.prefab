@@ -6115,6 +6115,21 @@ PrefabInstance:
       propertyPath: _effectEditor
       value: 
       objectReference: {fileID: 8025051573059156000}
+    - target: {fileID: 586650703623804363, guid: 4659cf81342551a4ba1145f37b06cd07,
+        type: 3}
+      propertyPath: _cardPoolViewPanelCtrl
+      value: 
+      objectReference: {fileID: 5564887323529923047}
+    - target: {fileID: 4356420107676162975, guid: 4659cf81342551a4ba1145f37b06cd07,
+        type: 3}
+      propertyPath: _cardSelectPanel
+      value: 
+      objectReference: {fileID: 11768102114419643}
+    - target: {fileID: 4356420107676162975, guid: 4659cf81342551a4ba1145f37b06cd07,
+        type: 3}
+      propertyPath: _cancelSelectButton
+      value: 
+      objectReference: {fileID: 218575620658938332}
 --- !u!1001 &8623355629251110913
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10499,4 +10514,3 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}

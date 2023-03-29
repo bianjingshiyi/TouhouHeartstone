@@ -447,8 +447,8 @@ namespace Controllers
             }
             ActionNodeItem actionNodeItem = getActionNodeItem(_curEditActionNode);
 
-
-            ValueInputField cardInputField = actionNodeItem.getConstInputField(_curEditActionNodeConstIndex);
+            var constIndex = consts.Keys.ToList().IndexOf(_curEditActionNodeConstName);
+            ValueInputField cardInputField = actionNodeItem.getConstInputField(constIndex);
             CardSkinData cardSkin = null;
             Sprite image = null;
             if (cardDefine != null)
