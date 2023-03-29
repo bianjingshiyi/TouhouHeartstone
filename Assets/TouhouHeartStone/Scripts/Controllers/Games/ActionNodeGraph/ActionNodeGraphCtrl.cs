@@ -520,7 +520,7 @@ namespace Controllers
                 else if (node is GeneratedActionEntryNode genEntry)
                 {
                     string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
-                    var inputViewData = new (string name, Color color)[0];
+                    var inputViewData = new PortItemInfo[0];
                     ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
                     var outputViewData = getActionDefineInputViewData(_generatedActionDefine);
 
@@ -533,7 +533,7 @@ namespace Controllers
                     string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_OUTPUT);
                     var inputViewData = getActionDefineOutputViewData(_generatedActionDefine);
                     ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
-                    var outputViewData = new (string name, Color color)[0];
+                    var outputViewData = new PortItemInfo[0];
 
                     var actionNodeItem = _ui.createNode(genReturn.posX, genReturn.posY, nodeName, inputViewData, constsInfo, outputViewData);
                     _actionNodeItemList.Add(actionNodeItem);
@@ -708,8 +708,8 @@ namespace Controllers
                     actionNode.posX,
                     actionNode.posY,
                     game.langManager.getString(StringTable.EDITOR_NODE_NAME_UNKNOW));
-                actionNodeItem.setInputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByType(typeof(ActionNode))) });
-                actionNodeItem.setOutputs(new (string name, Color color)[] { (string.Empty, game.editor.getColorByType(typeof(ActionNode))) });
+                actionNodeItem.setInputs(new PortItemInfo[] { new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true) });
+                actionNodeItem.setOutputs(new PortItemInfo[] { new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true) });
             }
             _actionNodeItemList.Add(actionNodeItem);
             if (!_actionNodeList.Contains(actionNode))
@@ -1020,15 +1020,15 @@ namespace Controllers
             }
             return inputNames;
         }
-        private (string name, Color color)[] getActionNodeInputViewData(ActionNode actionNode)
+        private PortItemInfo[] getActionNodeInputViewData(ActionNode actionNode)
         {
-            List<(string name, Color color)> viewDataList = new List<(string name, Color color)>();
+            List<PortItemInfo> viewDataList = new List<PortItemInfo>();
             //值输入
             foreach (var inputPort in actionNode.inputPorts)
             {
                 // 翻译输出节点
                 var inputName = tryTranslateWithDict(inputPort.define.getDisplayName());
-                viewDataList.Add((inputName, game.editor.getColorByType(inputPort.define.type)));
+                viewDataList.Add(new PortItemInfo(inputName, game.editor.getColorByType(inputPort.define.type), inputPort.GetPortType() == PortType.Control));
             }
             return viewDataList.ToArray();
         }
@@ -1044,14 +1044,14 @@ namespace Controllers
             return outputNames;
 
         }
-        private (string name, Color color)[] getActionNodeOutputViewData(ActionNode actionNode)
+        private PortItemInfo[] getActionNodeOutputViewData(ActionNode actionNode)
         {
-            List<(string name, Color color)> outputList = new List<(string name, Color color)>();
+            List<PortItemInfo> outputList = new List<PortItemInfo>();
             foreach (var output in actionNode.outputPorts)
             {
                 // 翻译输出节点
                 var outputName = tryTranslateWithDict(output.define.getDisplayName());
-                outputList.Add((outputName, game.editor.getColorByType(output.define.type)));
+                outputList.Add(new PortItemInfo(outputName, game.editor.getColorByType(output.define.type), output.GetPortType() == PortType.Control));
             }
             return outputList.ToArray();
         }

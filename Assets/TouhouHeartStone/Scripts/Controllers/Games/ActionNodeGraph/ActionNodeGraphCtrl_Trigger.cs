@@ -107,17 +107,19 @@ namespace Controllers
             }
             return targetCheckers;
         }
-        private (string name, Color color)[] getTriggerInputViewData(TriggerEntryNode trigger)
+        private PortItemInfo[] getTriggerInputViewData(TriggerEntryNode trigger)
         {
-            (string name, Color color)[] inputs = new (string name, Color color)[1 + trigger.targetCheckerList.Count];
-            inputs[0] = (
+            PortItemInfo[] inputs = new PortItemInfo[1 + trigger.targetCheckerList.Count];
+            inputs[0] = new PortItemInfo(
                 game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TRIGGER_CONDITION),
-                game.editor.getColorByType(typeof(bool)));
+                game.editor.getColorByType(typeof(bool)),
+                false);
             for (int i = 0; i < trigger.targetCheckerList.Count; i++)
             {
-                inputs[1 + i] = (
+                inputs[1 + i] = new PortItemInfo(
                     string.Format(game.langManager.getString(StringTable.EDITOR_PARAM_NAME_TARGET_CONDITION), 1 + i),
-                    game.editor.getColorByType(typeof(bool)));
+                    game.editor.getColorByType(typeof(bool)),
+                    false);
             }
             return inputs;
         }
@@ -125,30 +127,31 @@ namespace Controllers
         /// 获取当前触发器的输出值的名称。
         /// </summary>
         /// <returns></returns>
-        private (string name, Color color)[] getTriggerOutputViewData(TriggerEntryNode trigger)
+        private PortItemInfo[] getTriggerOutputViewData(TriggerEntryNode trigger)
         {
             int typeIndex = _eventTypeInfoList.getEventTypeIndex(trigger.eventName);
             EventDefine eventTypeInfo = _eventTypeInfoList[typeIndex];
             if (eventTypeInfo.variableInfos != null)
             {
-                (string name, Color color)[] viewData = new (string name, Color color)[eventTypeInfo.variableInfos.Length + 1];
+                PortItemInfo[] viewData = new PortItemInfo[eventTypeInfo.variableInfos.Length + 1];
                 //动作输出
-                viewData[0] = (string.Empty, game.editor.getColorByType(typeof(ActionNode)));
+                viewData[0] = new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true);
                 for (int i = 0; i < eventTypeInfo.variableInfos.Length; i++)
                 {
                     //爱，这个名字要弄成中文可麻烦了，我总不能把字段的名称都搞成中文吧？
                     //不过考虑到自定义的时候玩家也不可能都写英文，所以这倒也不是不合理。
-                    viewData[i + 1] = (game.langManager.getString(eventTypeInfo.variableInfos[i].name),
-                        game.editor.getColorByType(eventTypeInfo.variableInfos[i].type));
+                    var varInfo = eventTypeInfo.variableInfos[i];
+                    viewData[i + 1] = new PortItemInfo(game.langManager.getString(varInfo.name),
+                        game.editor.getColorByType(varInfo.type), varInfo.type == typeof(ActionNode));
                 }
                 return viewData;
             }
             else
             {
                 //只有一个动作输出
-                return new (string name, Color color)[]
+                return new PortItemInfo[]
                 {
-                    (string.Empty, game.editor.getColorByType(typeof(ActionNode)))
+                    new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true)
                 };
             }
         }

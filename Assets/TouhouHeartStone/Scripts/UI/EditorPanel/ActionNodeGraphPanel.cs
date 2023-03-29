@@ -34,9 +34,9 @@ namespace UI
         /// <param name="outputViewData"></param>
         /// <returns></returns>
         public ActionNodeItem createNode(float posX, float posY, string nodeName,
-            (string name, Color color)[] inputViewData,
+            PortItemInfo[] inputViewData,
             ActionNodeValueInfo[] constsInfo,
-            (string name, Color color)[] outputViewData,
+            PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
             string nodeKey = null)
         {
@@ -69,9 +69,9 @@ namespace UI
         /// <param name="targetCheckerCount"></param>
         /// <returns></returns>
         public ActionNodeItem createTriggerNode(float posX, float posY, string nodeName,
-            (string name, Color color)[] inputViewData, 
+            PortItemInfo[] inputViewData, 
             string[] targetCheckerTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers,
-            (string name, Color color)[] outputViewData)
+            PortItemInfo[] outputViewData)
         {
             ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
             _actionNodeItemList.Add(actionNodeItem);

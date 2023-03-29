@@ -241,11 +241,11 @@ namespace Controllers
             returnNode.Define();
 
             var inputs = returnNode.inputPorts;
-            (string name, Color color)[] viewData = new (string name, Color color)[inputs.Count()];
+            PortItemInfo[] viewData = new PortItemInfo[inputs.Count()];
             for (int i = 0; i < inputs.Count(); i++)
             {
-                var output = inputs.ElementAt(i);
-                viewData[i] = (output.define?.name, game.editor.getColorByType(output.define?.type));
+                var input = inputs.ElementAt(i);
+                viewData[i] = new PortItemInfo(input.define?.name, game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
             }
             var returnNodeItem = getActionNodeItem(returnNode);
             returnNodeItem.setInputs(viewData);
@@ -259,43 +259,43 @@ namespace Controllers
             var outputs = entryNode.outputPorts;
             var consts = _generatedActionDefine.constDefines;
 
-            (string name, Color color)[] viewData = new (string name, Color color)[outputs.Count() + consts.Count()];
+            PortItemInfo[] viewData = new PortItemInfo[outputs.Count() + consts.Count()];
             for (int i = 0; i < outputs.Count(); i++)
             {
                 var input = outputs.ElementAt(i);
-                viewData[i] = (input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type));
+                viewData[i] = new PortItemInfo(input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
             }
             for (int i = 0; i < consts.Count(); i++)
             {
                 var constDef = consts.ElementAt(i);
-                viewData[i + consts.Count()] = (constDef.name, game.editor.getColorByType(constDef.type));
+                viewData[i + consts.Count()] = new PortItemInfo(constDef.name, game.editor.getColorByType(constDef.type), false);
             }
             var entryNodeItem = getActionNodeItem(entryNode);
             entryNodeItem.setOutputs(viewData);
         }
-        private (string name, Color color)[] getActionDefineInputViewData(GeneratedActionDefine actionDefine)
+        private PortItemInfo[] getActionDefineInputViewData(GeneratedActionDefine actionDefine)
         {
-            (string name, Color color)[] inputs = new (string name, Color color)[actionDefine.inputDefines.Count()];
+            PortItemInfo[] inputs = new PortItemInfo[actionDefine.inputDefines.Count()];
             for (int i = 0; i < actionDefine.inputDefines.Count(); i++)
             {
                 var inputDefine = actionDefine.inputDefines.ElementAtOrDefault(i);
                 if (inputDefine == null)
                     continue;
                 var inputName = tryTranslateWithDict(inputDefine.getDisplayName());
-                inputs[i] = (inputName, game.editor.getColorByType(inputDefine.type));
+                inputs[i] = new PortItemInfo(inputName, game.editor.getColorByType(inputDefine.type), inputDefine.GetPortType() == PortType.Control);
             }
             return inputs;
         }
-        private (string name, Color color)[] getActionDefineOutputViewData(GeneratedActionDefine actionDefine)
+        private PortItemInfo[] getActionDefineOutputViewData(GeneratedActionDefine actionDefine)
         {
-            (string name, Color color)[] outputs = new (string name, Color color)[actionDefine.outputDefines.Count()];
+            PortItemInfo[] outputs = new PortItemInfo[actionDefine.outputDefines.Count()];
             for (int i = 0; i < actionDefine.outputDefines.Count(); i++)
             {
                 var outputDefine = actionDefine.outputDefines.ElementAtOrDefault(i);
                 if (outputDefine == null)
                     continue;
                 var outputName = tryTranslateWithDict(outputDefine.getDisplayName());
-                outputs[i] = (outputName, game.editor.getColorByType(outputDefine.type));
+                outputs[i] = new PortItemInfo(outputName, game.editor.getColorByType(outputDefine.type), outputDefine.GetPortType() == PortType.Control);
             }
             return outputs;
         }

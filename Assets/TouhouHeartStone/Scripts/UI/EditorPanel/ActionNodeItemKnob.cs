@@ -4,6 +4,18 @@ using UnityEngine.UI;
 
 namespace UI
 {
+    public struct PortItemInfo 
+    {
+        public string name;
+        public Color color;
+        public bool isControl;
+        public PortItemInfo(string name, Color color, bool isControl)
+        {
+            this.name = name;
+            this.color = color;
+            this.isControl = isControl;
+        }
+    }
     public abstract class ActionNodeItemKnob : MonoBehaviour
     {
         public void setName(string name)
@@ -103,6 +115,11 @@ namespace UI
         Image _slotMaskImage;
         bool _selected;
         float _selectedMaskTime;
+
+        /// <summary>
+        /// 是否是动作端口。
+        /// </summary>
+        public bool isControl;
 
         static readonly Color color1 = Color.clear;
         static readonly Color color2 = new Color(0, 0, 0, 0.5f);

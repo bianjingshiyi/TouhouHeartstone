@@ -40,7 +40,7 @@ namespace UI
             _eventTypeDropdown.transform.parent.gameObject.SetActive(value);
             SetDirty();
         }
-        public void setInputs((string name, Color color)[] inputViewData)
+        public void setInputs(PortItemInfo[] inputViewData)
         {
             if (inputViewData == null || inputViewData.Length < 1)
             {
@@ -54,6 +54,7 @@ namespace UI
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
                     item.setName(inputViewData[i].name);
                     item.setColor(inputViewData[i].color);
+                    item.isControl = inputViewData[i].isControl;
                 }, itemRect =>
                 {
                     ActionNodeItemInput item = itemRect.GetComponent<ActionNodeItemInput>();
@@ -171,7 +172,7 @@ namespace UI
         /// </summary>
         /// <param name="outputInfos"></param>
         /// <param name="listColor">传入的颜色列表</param>
-        public void setOutputs((string name, Color color)[] viewData)
+        public void setOutputs(PortItemInfo[] viewData)
         {
             if (viewData == null || viewData.Length < 1)
             {
@@ -185,6 +186,7 @@ namespace UI
                     ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();
                     item.setName(viewData[i].name);
                     item.setColor(viewData[i].color);
+                    item.isControl = viewData[i].isControl;
                 }, itemRect =>
                 {
                     ActionNodeItemOutput item = itemRect.GetComponent<ActionNodeItemOutput>();
