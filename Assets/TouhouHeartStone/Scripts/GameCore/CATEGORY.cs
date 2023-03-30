@@ -49,7 +49,12 @@ namespace TouhouHeartstone
                 {
                     // 旧版角色ID。
                     int id = define.getProp<int>(DEFINE.CHARACTER_ID);
-                    return new DefineReference(id << 1 >> 17, id);
+                    var cardPoolId = 0;
+                    if (id < 0)
+                    {
+                        cardPoolId = id << 1 >> 17;
+                    }
+                    return new DefineReference(cardPoolId, id);
                 }
             }
             if (define.cardPoolId == 0) //内置卡牌
