@@ -636,13 +636,9 @@ namespace Game
                     logic.RemovePlayer(id);
                 }
             };
-            roomCtrl.onSetPlayerDeck += (id, cards) =>
+            roomCtrl.onLocalPlayerPropChanged += (name, cards) =>
             {
-                SetPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, cards);
-            };
-            roomCtrl.onPlayerReadyChange += (id, state) =>
-            {
-                SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, state);
+                SetPlayerProp(name, cards);
             };
 
             ui.hide();

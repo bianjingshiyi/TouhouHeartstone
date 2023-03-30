@@ -46,7 +46,7 @@ namespace Controllers
             currentRoomData.setOption(option);
 
             hide();
-            scene.room.display(currentRoomData, true);
+            await scene.room.display(currentRoomData, true);
         }
         private void onBuildButtonClick()
         {

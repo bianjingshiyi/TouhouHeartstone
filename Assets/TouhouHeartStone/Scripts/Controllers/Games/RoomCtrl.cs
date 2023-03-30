@@ -123,7 +123,7 @@ namespace Controllers
                 {
                     AddCardPools(addPools);
                     game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
-                    await cardPoolManager.CheckUpdate(addPools.ToArray());
+                    await CheckCardPoolsUpdate(addPools.ToArray());
                 }
                 else
                 {
@@ -143,7 +143,7 @@ namespace Controllers
 
             if (agree)
             {
-                await cardPoolManager.CheckUpdate(suggestion.cardPools);
+                await CheckCardPoolsUpdate(suggestion.cardPools);
             }
         }
         public Task display(UIDisplayInfo displayInfo)
@@ -186,10 +186,7 @@ namespace Controllers
                 SetRoomData(_currentRoomData);
                 updateUIStateForRoomOwner();
 
-                if (!_isLocalGame)
-                {
-                    _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
-                }
+                _ = CheckCardPoolsUpdate(_currentRoomData.getCardPools());
                 updateStartAndReadyButton();
                 updatePlayerListUI();
             }
@@ -225,7 +222,7 @@ namespace Controllers
                 if (!_isLocalGame && value is CardPoolInfoPack[] pools)
                 {
                     _cardPoolPanelDirty = true;
-                    await cardPoolManager.CheckUpdate(pools);
+                    await CheckCardPoolsUpdate(pools);
                 }
             }
         }
@@ -241,13 +238,10 @@ namespace Controllers
         }
         public void ResetEvents()
         {
-            onRoomPropChanged = null;
-
-            onStartClick = null;
             onQuitClick = null;
-            onPlayerReadyChange = null;
             onPlayerRemove = null;
-            onSetPlayerDeck = null;
+            onRoomPropChanged = null;
+            onLocalPlayerPropChanged = null;
         }
         #endregion
         #region 私有方法
@@ -424,79 +418,75 @@ namespace Controllers
             //选择卡组
             var deck = game.deck.getOrLoadDeckList()[index];
 
-            // 如果不是本地游戏，进行卡牌的卡池检测。
-            if (!_isLocalGame)
+            // 检测deck是否有房间没有的卡池。
+            CardPoolInfoPack[] pools = getDeckCardPools(deck, out var missingPools);
+            // 如果卡组内的卡牌属于或引用了丢失的卡池，弹出错误。
+            if (missingPools.Length > 0)
             {
-                // 检测deck是否有房间没有的卡池。
-                CardPoolInfoPack[] pools = getDeckCardPools(deck, out var missingPools);
-                // 如果卡组内的卡牌属于或引用了丢失的卡池，弹出错误。
-                if (missingPools.Length > 0)
-                {
-                    string title = game.lang._(StringTable.ERROR);
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine(game.lang._(ROOM_ERROR_CANNOT_UPLOAD_CARD_POOLS));
-                    sb.AppendLine(game.lang._(ROOM_ERROR_MISSING_CARD_POOL));
+                string title = game.lang._(StringTable.ERROR);
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine(game.lang._(ROOM_ERROR_CANNOT_UPLOAD_CARD_POOLS));
+                sb.AppendLine(game.lang._(ROOM_ERROR_MISSING_CARD_POOL));
 
-                    game.ui.dialog.ShowConfirm(title, sb.ToString());
-                    return;
-                }
-                // 如果有房间没有的卡池，提议加入该卡池。
-                if (HasNotSharedPools(pools, out var privatePools))
+                game.ui.dialog.ShowConfirm(title, sb.ToString());
+                return;
+            }
+            // 如果有房间没有的卡池，提议加入该卡池。
+            if (HasNotSharedPools(pools, out var privatePools))
+            {
+                CardPoolInfoPack[] packs = privatePools;
+                // 如果是房主，弹出对话框提示是否设置卡池属性。
+                if (isRoomOwner || _isLocalGame)
                 {
-                    CardPoolInfoPack[] packs = privatePools;
-                    // 如果是房主，弹出对话框提示是否设置卡池属性。
-                    if (isRoomOwner)
+                    string poolsString = PoolsToString(packs);
+                    string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
+                    desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_OWNER);
+
+                    List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
+                    List<CardPoolInfoPack> addPools;
+                    void ConfirmSuggestion()
                     {
-                        string poolsString = PoolsToString(packs);
-                        string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
-                        desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_OWNER);
-
-                        List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
-                        List<CardPoolInfoPack> addPools;
-                        void ConfirmSuggestion()
+                        if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
                         {
-                            if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
-                            {
-                                AddCardPools(addPools);
-                                SetPlayerDeck(_selectDeckPlayerId, deck);
-                                _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
-                            }
-                            else
-                            {
-                                ShowDependencyMissingDialog(missingDeps);
-                            }
+                            AddCardPools(addPools);
+                            SetPlayerDeck(_selectDeckPlayerId, deck);
+                            _ = CheckCardPoolsUpdate(_currentRoomData.getCardPools());
                         }
-
-                        game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+                        else
                         {
-                            if (CanUploadCardPools(packs, out string errorMessage))
-                            {
-                                conflictPools = GetConflictCardPools(packs, out addPools);
-                                ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion);
-                            }
-                            else
-                            {
-                                string title = game.lang._(StringTable.ERROR);
-                                game.ui.dialog.ShowConfirm(title, errorMessage);
-                            }
-                        });
+                            ShowDependencyMissingDialog(missingDeps);
+                        }
                     }
-                    // 否则，向房主提议加入卡池。
-                    else
+
+                    game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
                     {
-                        string poolsString = PoolsToString(packs);
-                        string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
-                        desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_CUSTOMER);
-
-                        game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+                        if (CanUploadCardPools(packs, out string errorMessage))
                         {
-                            SuggestCardPools(new CardPoolSuggestion(packs));
-                            //隐藏选择卡组界面
-                            _ui.hideDeckSelectPanel();
-                        });
-                    }
-                    return;
+                            conflictPools = GetConflictCardPools(packs, out addPools);
+                            ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion);
+                        }
+                        else
+                        {
+                            string title = game.lang._(StringTable.ERROR);
+                            game.ui.dialog.ShowConfirm(title, errorMessage);
+                        }
+                    });
                 }
+                // 否则，向房主提议加入卡池。
+                else
+                {
+                    string poolsString = PoolsToString(packs);
+                    string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
+                    desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_CUSTOMER);
+
+                    game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+                    {
+                        SuggestCardPools(new CardPoolSuggestion(packs));
+                        //隐藏选择卡组界面
+                        _ui.hideDeckSelectPanel();
+                    });
+                }
+                return;
             }
             SetPlayerDeck(_selectDeckPlayerId, deck);
         }
@@ -604,7 +594,7 @@ namespace Controllers
                         {
                             AddCardPools(addPools);
                             RemoveCardPools(removedCardPools);
-                            _ = cardPoolManager.CheckUpdate(_currentRoomData.getCardPools());
+                            _ = CheckCardPoolsUpdate(_currentRoomData.getCardPools());
                             closeEditCardPoolsPanel();
                         }
                         else
@@ -646,10 +636,6 @@ namespace Controllers
             if (_gameStarted)
                 return;
 
-            if (isRoomOwner)
-            {
-                onStartClick?.Invoke();
-            }
             var players = _currentRoomData.getSortedPlayers();
             if (players != null &&
                 players.Length != _currentRoomData.playerDataList.Count)
@@ -680,7 +666,7 @@ namespace Controllers
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(true);
-            onPlayerReadyChange?.Invoke(GetSelfID(), true);
+            onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, true);
             updateStartAndReadyButton();
             //TODO:多人再说
         }
@@ -688,7 +674,7 @@ namespace Controllers
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(false);
-            onPlayerReadyChange?.Invoke(GetSelfID(), false);
+            onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
             updateStartAndReadyButton();
             //TODO:多人再说
         }
@@ -731,12 +717,12 @@ namespace Controllers
             if (state != localPlayer.getLoadState())
             {
                 localPlayer.setLoadState(state);
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
+                onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
             }
             if (localPlayer.getReady())
             {
                 localPlayer.setReady(false);
-                game.network.SetPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
+                onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
             }
             // 玩家状态更新后，读取缓存中的卡池。
             // 用于局域网联机，比如客场玩家向房主上传完卡池后，不需要下载卡池的场合。
@@ -764,18 +750,20 @@ namespace Controllers
         }
         private async void SetPlayerDeck(int playerId, Deck deck)
         {
-            for (int i = 0; i < _currentRoomData.playerDataList.Count; i++)
+            RoomPlayerData player = _currentRoomData.playerDataList.Find(p => p.id == playerId);
+            if (player != null)
             {
-                RoomPlayerData player = _currentRoomData.playerDataList[i];
-                if (player.id == playerId)
-                {
-                    player.setDeck(deck);
-                    onSetPlayerDeck?.Invoke(playerId, deck.toDefRefArray(true));
+                player.setDeck(deck);
 
-                    if (player.type == RoomPlayerType.ai)
-                    {
-                        player.setReady(true);
-                    }
+                if (player.type == RoomPlayerType.ai)
+                {
+                    player.setReady(true);
+                }
+                if (playerId == game.network.logic.localPlayer.id)
+                {
+                    onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_DECK, deck.toDefRefArray(true));
+                    var cardPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
+                    _ui.updateLocalPlayerDeck(deck.name, await game.card.loadCardImage(cardPoolRef, deck.masterCardRef.defineId));
                 }
             }
             //隐藏选择卡组界面
@@ -783,11 +771,6 @@ namespace Controllers
             //更新界面
             updatePlayerListUI();
             updateStartAndReadyButton();
-            if (playerId == game.network.logic.localPlayer.id)
-            {
-                var cardPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
-                _ui.updateLocalPlayerDeck(deck.name, await game.card.loadCardImage(cardPoolRef, deck.masterCardRef.defineId));
-            }
         }
         #region 卡池
         private CardPoolInfoPack[] getDeckCardPools(Deck deck, out long[] missingPools)
@@ -1198,6 +1181,12 @@ namespace Controllers
                 _ui.displayReadyButton(isAbleToReady(localPlayer) && !localPlayer.getReady());
                 _ui.displayCancleReadyButton(localPlayer.getReady());
             }
+
+            // AI自动准备
+            foreach (var ai in _currentRoomData.playerDataList.Where(a => a.type == RoomPlayerType.ai))
+            {
+                ai.setReady(true);
+            }
         }
         private bool isAbleToStartGame()
         {
@@ -1310,8 +1299,7 @@ namespace Controllers
                 // 判断牌组是否合法。
                 if (_isLocalGame)
                 {
-                    // 本地模式下，如果卡组内有不允许的卡池的卡牌，不能选择该卡组。
-                    warning = !game.deck.isValidDeck(deck) || HasNotSharedPools(getDeckCardPools(deck, out _), out _);
+                    warning = !game.deck.isValidDeck(deck);
                 }
                 else
                 {
@@ -1323,12 +1311,14 @@ namespace Controllers
             }
             _ui.displayDeckSelectPanel(viewData);
         }
+        private async Task CheckCardPoolsUpdate(CardPoolInfoPack[] pools)
+        {
+            if (_isLocalGame)
+                return;
+            await cardPoolManager.CheckUpdate(pools);
+        }
         #endregion
         #region 事件
-        /// <summary>
-        /// 点击开始游戏后触发
-        /// </summary>
-        public event Action onStartClick;
         /// <summary>
         /// 点击退出房间后触发
         /// </summary>
@@ -1338,17 +1328,13 @@ namespace Controllers
         /// </summary>
         public event Action<string, object> onRoomPropChanged;
         /// <summary>
-        /// 玩家准备或取消准备
+        /// 本地玩家属性发生改变后触发
         /// </summary>
-        public event Action<int, bool> onPlayerReadyChange;
+        public event Action<string, object> onLocalPlayerPropChanged;
         /// <summary>
         /// 删除玩家后触发
         /// </summary>
         public event Action<int> onPlayerRemove;
-        /// <summary>
-        /// 玩家牌组改变
-        /// </summary>
-        public event Action<int, DefineReference[]> onSetPlayerDeck;
         #endregion
         #region 属性字段
         RoomMode _currentMode;
