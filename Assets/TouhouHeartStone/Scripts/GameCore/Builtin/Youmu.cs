@@ -23,58 +23,6 @@ namespace TouhouHeartstone.Builtin
         {
             effects1 = value;
         }
-
-        public const string PREHEAT = "preheat";
-        public const string IS_PREHEATED = "isPreheated";
-        /// <summary>
-        /// 蓄力：当回合结束时，如果你的最大法力值大于等于这张卡的花费，那么将这张卡标记为蓄力。在使用一张牌的时候，如果这张牌具有蓄力效果且处于蓄力状态，那么触发该效果。
-        /// </summary>
-        public class SetPreHeatEffect : THHEffectBefore<HearthStoneRule.TurnEndEventArg>
-        {
-            public SetPreHeatEffect() : base(PileFlag.hand, (g1, c1, a1) =>
-            {
-                return c1.getOwner() == a1.player && c1.getOwner().getMaxGem() >= c1.getCost(g1) && !isPreHeated(g1, c1);
-            }, null, (g, c, a, targets) =>
-            {
-                return setPreHeated(g, c, true);
-            })
-            {
-
-            }
-        }
-        public class RemovePreHeatEffect : THHEffectBefore<Pile.MoveCardEventArg>
-        {
-            public RemovePreHeatEffect() : base(PileFlag.field | PileFlag.warp | PileFlag.item,
-            (g1, c1, a1) =>
-            {
-                return a1.card == c1 && (a1.to == a1.card.getOwner().getGrave()|| a1.to == c1.getOwner().getDeck());
-            }, null, (g1, c1, a1, targets) =>
-            {
-                return setPreHeated(g1, c1, false);
-            })
-            {
-
-            }
-        }
-        public class PreHeatEventArg : EventArg
-        {
-            public Card card;
-            public bool value;
-        }
-        public static bool isPreHeated(IGame game, Card card)
-        {
-            return card.getProp<bool>(game, IS_PREHEATED);
-        }
-        public static Task setPreHeated(CardEngine game, Card card, bool value)
-        {
-            return game.triggers.doEvent(new PreHeatEventArg() { card = card, value = value }, arg =>
-            {
-                card = arg.card;
-                value = arg.value;
-                game.logger.log(card + "蓄力 => " + value);
-                return card.setProp(game, IS_PREHEATED, value);
-            });
-        }
     }
     /// <summary>
     /// 2 妖梦技能
@@ -113,12 +61,10 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x002;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CAN_BE_CHARGED };
 
         private IEffect[] effects1 = new IEffect[] {
-           new NoTargetEffect(effect),
-           new Youmu.SetPreHeatEffect(),
-           new Youmu.RemovePreHeatEffect()
+           new NoTargetEffect(effect)
         };
 
         public override IEffect[] getEffects()
@@ -133,7 +79,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            if (!Youmu.isPreHeated(game, card))
+            if (!card.isCharged(game))
                 await card.getOwner().getMaster().addBuff(game,
                     new CodeBuff(ID, new AttackModifier(2),
                     new RemoveBuffAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.master, ID)));
@@ -151,12 +97,10 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x003;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CAN_BE_CHARGED };
 
         private IEffect[] effects1 = new IEffect[] {
-           new NoTargetEffect(effect),
-           new Youmu.SetPreHeatEffect(),
-           new Youmu.RemovePreHeatEffect()
+           new NoTargetEffect(effect)
         };
 
         public override IEffect[] getEffects()
@@ -176,7 +120,7 @@ namespace TouhouHeartstone.Builtin
             if (drawEvent != null)
             {
                 var item = drawEvent.card;
-                if (Youmu.isPreHeated(game, card))
+                if (card.isCharged(game))
                     await item.addBuff(game, new CodeBuff(ID, new LifeModifier(1)));
             }
         }
@@ -189,12 +133,10 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x004;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 1;
-        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CAN_BE_CHARGED };
 
         private IEffect[] effects1 = new IEffect[] {
-            new NoTargetEffect(effect),
-            new Youmu.SetPreHeatEffect(),
-            new Youmu.RemovePreHeatEffect()
+            new NoTargetEffect(effect)
         };
 
         public override IEffect[] getEffects()
@@ -210,7 +152,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             await card.getOwner().getMaster().gainArmor(game, 6);
-            if (!Youmu.isPreHeated(game, card))
+            if (!card.isCharged(game))
             {
                 await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
                     new BeforeTurnStart(PileFlag.field, async (g, c,b, a) =>
@@ -304,15 +246,13 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 2;
         public override int attack { get; set; } = 3;
         public override int life { get; set; } = 2;
-        public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        public override string[] keywords { get; set; } = new string[] { KEYWORD.CAN_BE_CHARGED };
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new Youmu.SetPreHeatEffect(),
-            new Youmu.RemovePreHeatEffect(),
             new NoTargetEffect((game,card)=>
             {
-                if(Youmu.isPreHeated(game,card))
+                if(card.isCharged(game))
                 {
                     return card.addBuff(game,new CodeBuff(ID,new THHEffectAfter<THHCard.AttackEventArg>(PileFlag.item,(g,c,b,a)=>
                     {
@@ -349,7 +289,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x009;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 2;
-        //public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.CAN_BE_CHARGED };
 
         private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
@@ -380,7 +320,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x010;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 5;
-        //public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.CAN_BE_CHARGED };
 
         private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),
@@ -416,7 +356,7 @@ namespace TouhouHeartstone.Builtin
         public const int ID = Youmu.ID | CATEGORY.SPELL | 0x011;
         public override int id { get; set; } = ID;
         public override int cost { get; set; } = 4;
-        //public override string[] keywords { get; set; } = new string[] { Youmu.PREHEAT };
+        //public override string[] keywords { get; set; } = new string[] { KEYWORD.CAN_BE_CHARGED };
 
         private IEffect[] effects1 = new IEffect[] {
            new NoTargetEffect(effect),

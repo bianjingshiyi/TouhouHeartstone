@@ -317,15 +317,15 @@ namespace Game
                     value = 2;
                     return true;
                 case SlashOfPresentWorld _:
-                    value = Youmu.isPreHeated(game, card)
+                    value = card.isCharged(game)
                         ? calcBuffValue(game, player, oppo, player.getMaster(), 3, 0)
                         : calcBuffValue(game, player, oppo, player.getMaster(), 2, 0);
                     return true;
                 case Meditation _:
-                    value = Youmu.isPreHeated(game, card) ? 3 : 2;
+                    value = card.isCharged(game) ? 3 : 2;
                     return true;
                 case FantasyOfEnteringEnlightenment _:
-                    value = Youmu.isPreHeated(game, card)
+                    value = card.isCharged(game)
                         ? calcBuffValue(game, player, oppo, player.getMaster(), 0, 6)
                         : 0;
                     return true;
@@ -339,13 +339,13 @@ namespace Game
                             player.getItem().getCurrentLife(game));
                     return true;
                 case TwoHundredYojanaOneSlash _:
-                    value = Youmu.isPreHeated(game, card) ? 4 : 2;
+                    value = card.isCharged(game) ? 4 : 2;
                     return true;
                 case CherryBlossomFlashing _:
                     value = calcAOEDamageValue(game, player, oppo, oppo.getField(), player.getMaster().getAttack(game));
                     return true;
                 case FiveSignsOfTheDyingDeva _:
-                    value = Youmu.isPreHeated(game, card)
+                    value = card.isCharged(game)
                         ? calcBuffValue(game, player, oppo, player.getMaster(), 7, 0)
                         : calcBuffValue(game, player, oppo, player.getMaster(), 5, 0);
                     return true;

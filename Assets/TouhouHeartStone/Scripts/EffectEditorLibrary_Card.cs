@@ -1183,6 +1183,55 @@ namespace Game
                 return;
             game.Reveal(card);
         }
+
+
+        [TranslateMsg("编辑器/卡牌-节点名称")]
+        public const string EDITOR_NODE_IS_CHARGED = "是否已蓄力";
+        [TranslateMsg("编辑器/卡牌-节点名称")]
+        public const string EDITOR_NODE_GET_CHARGED_LEVEL = "获取蓄力层数";
+        [TranslateMsg("编辑器/卡牌-节点名称")]
+        public const string EDITOR_NODE_SET_CHARGED_LEVEL = "设置蓄力层数";
+        [TranslateMsg("编辑器/卡牌-是否已蓄力节点-参数名称")]
+        public const string EDITOR_PARAM_NAME_IS_CHARGED = "已蓄力";
+        [TranslateMsg("编辑器/卡牌-是否已蓄力节点-参数名称")]
+        public const string EDITOR_PARAM_NAME_CHARGED_LEVEL = "蓄力层数";
+        /// <summary>
+        /// 是否已蓄力
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_IS_CHARGED, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_IS_CHARGED)]
+        public static bool isCharged(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            if (card == null)
+                return false;
+            return card.isCharged(game);
+        }
+
+        /// <summary>
+        /// 获取蓄力层数
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_GET_CHARGED_LEVEL, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_CHARGED_LEVEL)]
+        public static int getChargedLevel(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            if (card == null)
+                return 0;
+            return card.getChargedLevel(game);
+        }
+        /// <summary>
+        /// 设置蓄力层数
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_SET_CHARGED_LEVEL, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static async void setChargedLevel(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_PARAM_NAME_CHARGED_LEVEL)] int level)
+        {
+            if (card == null)
+                return;
+            await card.setChargeLevel(game, level);
+        }
     }
 }
 

@@ -103,5 +103,9 @@
         /// 永久禁锢
         /// </summary>
         public const string PERMANENT_FROZEN = "permanentFrozen";
+        /// <summary>
+        /// 可蓄力
+        /// </summary>
+        public const string CAN_BE_CHARGED = "preheat";
     }
 }

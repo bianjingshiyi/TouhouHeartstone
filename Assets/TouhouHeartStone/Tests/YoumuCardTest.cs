@@ -34,11 +34,11 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= game.getDefine<SlashOfPresentWorld>().cost * 2);
             Card card = you.getHand().First();
-            Assert.True(Youmu.isPreHeated(game, card));
+            Assert.True(card.isCharged(game));
             you.cmdUse(game, card);
             Assert.AreEqual(3, you.getMaster().getAttack(game));
             card = you.getHand().Last();
-            Assert.False(Youmu.isPreHeated(game, card));
+            Assert.False(card.isCharged(game));
             you.cmdUse(game, card);
             Assert.AreEqual(5, you.getMaster().getAttack(game));
         }
@@ -69,14 +69,14 @@ namespace Tests
             );
             game.skipUntilCanUse<FantasyOfEnteringEnlightenment>(you);
             Card card = you.getHand().getCards<FantasyOfEnteringEnlightenment>().Last();
-            Assert.False(Youmu.isPreHeated(game, card));
+            Assert.False(card.isCharged(game));
             you.cmdUse(game, card);//未蓄力
             Assert.AreEqual(6, you.getMaster().getArmor(game));
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             Assert.AreEqual(3, you.getMaster().getArmor(game));
             card = you.getHand().getCards<FantasyOfEnteringEnlightenment>().First();
-            Assert.True(Youmu.isPreHeated(game, card));
+            Assert.True(card.isCharged(game));
             you.cmdUse(game, card);
             Assert.AreEqual(9, you.getMaster().getArmor(game));
             you.cmdTurnEnd(game);

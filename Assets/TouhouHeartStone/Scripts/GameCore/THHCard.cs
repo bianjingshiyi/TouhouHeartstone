@@ -581,6 +581,36 @@ namespace TouhouHeartstone
             }
             return card.setKeywords(game, keywordList.ToArray());
         }
+
+        #region 蓄力
+        public class BeChargedEventArg : EventArg
+        {
+            public Card card;
+            public int value;
+        }
+        public static bool canBeCharged(this Card card, IGame game)
+        {
+            return card.hasKeyword(game, KEYWORD.CAN_BE_CHARGED);
+        }
+        public static bool isCharged(this Card card, IGame game)
+        {
+            return card.getChargedLevel(game) > 0;
+        }
+        public static int getChargedLevel(this Card card, IGame game)
+        {
+            return card.getProp<int>(game, DEFINE.CHARGED_LEVEL);
+        }
+        public static Task setChargeLevel(this Card card, CardEngine game, int value)
+        {
+            return game.triggers.doEvent(new BeChargedEventArg() { card = card, value = value }, arg =>
+            {
+                card = arg.card;
+                value = arg.value;
+                game.logger.log(card + "蓄力 => " + value);
+                return card.setProp(game, DEFINE.CHARGED_LEVEL, value);
+            });
+        }
+        #endregion 蓄力
         public static int getSpellDamage(this Card card, IGame game)
         {
             return card.getProp<int>(game, DEFINE.SPELL_DAMAGE);
@@ -1096,6 +1126,7 @@ namespace TouhouHeartstone
             await card.setReady(game, false);
             await card.setAttackTimes(game, 0);
             await card.setProp(game, CARD.SILENCE, false);
+            await card.setChargeLevel(game, 0);
             if (card.isServant() && card.pile.name == PILE.FIELD)
             {
                 card.InitConsumableKeywords(game);

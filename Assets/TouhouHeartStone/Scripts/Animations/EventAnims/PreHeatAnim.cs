@@ -1,16 +1,16 @@
-﻿using UI;
-using TouhouHeartstone.Builtin;
+﻿using BJSYGameCore.UI;
+using TouhouHeartstone;
+using UI;
 
-using BJSYGameCore.UI;
 namespace Game
 {
-    class PreHeatAnim : EventAnimation<Youmu.PreHeatEventArg>
+    class PreHeatAnim : EventAnimation<THHCard.BeChargedEventArg>
     {
-        public override bool update(TableManager table, Youmu.PreHeatEventArg eventArg, float time)
+        public override bool update(TableManager table, THHCard.BeChargedEventArg eventArg, float time)
         {
             if (table.tryGetHand(eventArg.card, out var hand))
             {
-                if (eventArg.value)
+                if (eventArg.value > 0)
                 {
                     hand.Card.cardBackEffectImage.display();
                     hand.Card.cardFaceEffectImage.display();

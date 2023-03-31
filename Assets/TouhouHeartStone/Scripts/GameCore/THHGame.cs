@@ -798,6 +798,14 @@ namespace TouhouHeartstone
                         }
                     }
                 }
+                // 蓄力。
+                foreach (Card hand in player.getHand())
+                {
+                    if (hand.canBeCharged(game) && player.getMaxGem() >= hand.getCost(game))
+                    {
+                        hand.setChargeLevel(game, hand.getChargedLevel(game) + 1);
+                    }
+                }
 
                 game.answers.cancel(game.answers.getRequests(player.id));
                 return Task.CompletedTask;
