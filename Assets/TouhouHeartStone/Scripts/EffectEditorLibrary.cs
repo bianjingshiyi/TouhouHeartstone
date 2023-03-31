@@ -159,7 +159,7 @@ namespace Game
             return player.getDeck();
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
-        public static Task drawTargetCard(CardEngine game, Card card,
+        public static Task drawTargetCard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card targetCard,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BURN_EVENT)] out HearthStoneRule.BurnEventArg burnEvent)
@@ -170,7 +170,7 @@ namespace Game
                 burnEvent = null;
                 return Task.CompletedTask;
             }
-            return card.owner.draw(game, targetCard, out drawEvent, out burnEvent);
+            return targetCard.owner.draw(game, targetCard, out drawEvent, out burnEvent);
         }
         ///从一定数量卡牌中选一张
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
