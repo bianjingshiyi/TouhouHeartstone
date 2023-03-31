@@ -123,6 +123,16 @@ namespace Game
         {
             return player?.getMaster();
         }
+
+
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_CURRENT_PLAYER = "获取当前回合的玩家";
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_CURRENT_PLAYER, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
+        public static Player getCurrentPlayer(CardEngine game)
+        {
+            return game.getCurrentPlayer();
+        }
         /// <summary>
         /// 获取玩家手牌
         /// </summary>
@@ -727,6 +737,26 @@ namespace Game
             if (collection == null)
                 return 0;
             return collection.Length;
+        }
+
+
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CONTAINS = "包含";
+        [TranslateMsg("编辑器-包含节点-参数名称")]
+        public const string EDITOR_PARAM_NAME_CONTAINS_ELEMENT = "是否包含元素";
+        /// <summary>
+        /// 包含
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(EDITOR_NODE_NAME_CONTAINS, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_CONTAINS_ELEMENT)]
+        public static bool getCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)] object element)
+        {
+            if (collection == null)
+                return false;
+            return collection.Contains(element);
         }
 
         [TranslateMsg("编辑器_动作节点_排序")]
