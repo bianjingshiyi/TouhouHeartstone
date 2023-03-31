@@ -296,12 +296,14 @@ namespace Game
                 return false;
             return card.define.type == DEFINE.SPELL;
         }
-        [TranslateMsg]
+        [TranslateMsg("编辑器/分类名称")]
         public const string EDITOR_TYPE_NAME_DAMAGE = "伤害";
-        [TranslateMsg]
+        [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_NODE_IS_SPELL_DAMAGE = "是否为法术伤害";
-        [TranslateMsg]
+        [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_TYPE_NAME_VALUE_COMPENSATION = "+";
+        [TranslateMsg("编辑器/伤害分类/节点名称")]
+        public const string EDITOR_PARAM_NAME_DAMAGE_SOURCE = "伤害源";
         #region 伤害类节点
         /// <summary>
         /// 造成伤害或法术伤害
@@ -313,20 +315,20 @@ namespace Game
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamage(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
             [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
             if (targets == null)
                 return default;
 
+            var source = damageSource ?? card;
+            var dmg = damage + damage2;
             if (damagetype)
             {
-                return targets.damage(game, card, card.owner.getSpellDamage(game, damage + damage2));
+                dmg = source.owner.getSpellDamage(game, dmg);
             }
-            else
-            {
-                return targets.damage(game, card, damage + damage2);
-            }
+            return targets.damage(game, source, dmg);
         }
         /// <summary>
         /// 造成伤害或法术伤害并分配给目标
@@ -338,20 +340,20 @@ namespace Game
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
             [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
         {
             if (targets == null)
                 return Task.FromResult(Array.Empty<THHCard.DamageEventArg>());
 
+            var source = damageSource ?? card;
+            var dmg = damage + damage2;
             if (damagetype)
             {
-                return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage + damage2));
+                dmg = source.owner.getSpellDamage(game, dmg);
             }
-            else
-            {
-                return targets.damageByRandom(game, card, damage + damage2);
-            }
+            return targets.damageByRandom(game, source, dmg);
         }
         /// <summary>
         /// 对固定数量的随机目标造成伤害或法术伤害
@@ -364,6 +366,7 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
+            [ActionNodeParam(EDITOR_PARAM_NAME_DAMAGE_SOURCE)] Card damageSource,
             [ActionNodeParam(EDITOR_NODE_IS_SPELL_DAMAGE, isConst: true)] bool damagetype,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int count2,
             [ActionNodeParam(EDITOR_TYPE_NAME_VALUE_COMPENSATION, isConst: true)] int damage2)
@@ -371,14 +374,13 @@ namespace Game
             if (targets == null)
                 return default;
 
+            var source = damageSource ?? card;
+            var dmg = damage + damage2;
             if (damagetype)
             {
-                return targets.damageByRandomCount(game, card, card.owner.getSpellDamage(game, damage + damage2), count + count2);
+                dmg = source.owner.getSpellDamage(game, dmg);
             }
-            else
-            {
-                return targets.damageByRandomCount(game, card, damage + damage2, count + count2);
-            }
+            return targets.damageByRandomCount(game, card, dmg, count + count2);
         }
         /// <summary>
         /// 对目标造成固定的法术伤害
