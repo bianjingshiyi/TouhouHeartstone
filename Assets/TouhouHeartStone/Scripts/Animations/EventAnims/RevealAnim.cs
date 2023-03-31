@@ -2,8 +2,6 @@
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
-using UDeck = UI.Deck;
 using UObject = UnityEngine.Object;
 
 namespace Game

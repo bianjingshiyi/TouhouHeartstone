@@ -895,7 +895,11 @@ namespace Game
         [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
         public const string EDITOR_NODE_FAITHDUEL_FILTER = "筛选条件";
         [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
-        public const string EDITOR_NODE_FAITHDUEL_FILTER_ELEMENT = "筛选元素";
+        public const string EDITOR_NODE_FAITHDUEL_FILTER_CARD = "筛选卡牌";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_SELF_CARD = "己方卡牌";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_OPPONENT_CARD = "对方卡牌";
         /// <summary>
         /// 信仰对决
         /// </summary>
@@ -904,7 +908,9 @@ namespace Game
         public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] ActionNode filter,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_ELEMENT, isOut: true)] Card element)
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard)
         {
             if (player == null)
                 return false;
@@ -916,6 +922,8 @@ namespace Game
                 return filter != null ? game.getActionReturnValueAsync<bool>(card, buff, eventArg, filter, scope: childScope).Result : true;
             }
             var arg = player.revealDuel(game, filterFunc).Result;
+            scope.setOutParamValue(1, arg.youCard);
+            scope.setOutParamValue(2, arg.oppoCard);
             return arg.result;
         }
         #endregion

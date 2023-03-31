@@ -618,8 +618,8 @@ namespace Controllers
             _eventTypeInfoList.Find(e => e.eventName == "AfterDiscardEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_DISCARD;
             _eventTypeInfoList.Find(e => e.eventName == "BeforeCreateTokenEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_CREATETOKEN;
             _eventTypeInfoList.Find(e => e.eventName == "AfterCreateTokenEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_CREATETOKEN;
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforePreHeatEvent");
-            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterPreHeatEvent");
+            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeBeChargedEvent");
+            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterBeChargedEvent");
             _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeTestEvent");
             _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterTestEvent");
             _eventTypeInfoList.Find(e => e.eventName == "BeforeSetDefineEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_SETDEFINE;

@@ -602,11 +602,13 @@ namespace TouhouHeartstone
         }
         public static Task setChargeLevel(this Card card, CardEngine game, int value)
         {
+            if (value == card.getChargedLevel(game))
+                return Task.CompletedTask;
             return game.triggers.doEvent(new BeChargedEventArg() { card = card, value = value }, arg =>
             {
                 card = arg.card;
                 value = arg.value;
-                game.logger.log(card + "蓄力 => " + value);
+                game.logger.log(card + "改变蓄力层数 => " + value);
                 return card.setProp(game, DEFINE.CHARGED_LEVEL, value);
             });
         }

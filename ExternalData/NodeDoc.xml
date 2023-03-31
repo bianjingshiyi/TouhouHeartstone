@@ -705,6 +705,24 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
+    <defineName>获取当前回合的玩家</defineName>
+    <obsoleteNames />
+    <category>玩家</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Player</type>
+        <name>玩家</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[当前回合的玩家。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取正在进行当前回合的玩家。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineName>获取玩家的手牌</defineName>
     <obsoleteNames />
     <category>玩家</category>
@@ -916,10 +934,10 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.HearthStoneRule+DiscardEventArg</type>
+        <type>TouhouHeartstone.THHCard+DiscardEventArg</type>
         <name>抽牌事件</name>
         <isParams>false</isParams>
-        <isArray>false</isArray>
+        <isArray>true</isArray>
         <summary><![CDATA[执行的弃牌事件。]]></summary>
       </ActionParameterComment>
     </outputs>
@@ -1738,6 +1756,39 @@
     <example><![CDATA[<ul>
       <li>洩矢诹访子</li>
     </ul>]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>包含</defineName>
+    <obsoleteNames />
+    <category>集合运算</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>集合</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要判断是否包含元素的集合。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>元素</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断是否包含的元素。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>是否包含元素</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[集合内是否包含元素？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一个集合内是否包含某个元素。]]></summary>
+    <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
     <defineName>排序</defineName>
@@ -3856,6 +3907,60 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineName>信仰对决</defineName>
+    <obsoleteNames />
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Player</type>
+        <name>玩家</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行信仰对决的玩家。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.ActionNode</type>
+        <name>筛选条件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[牌库内的卡牌要满足的条件。需要连接一个输出真值的节点。<br>不连接则使用牌库中的所有卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>筛选卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[提供给“筛选条件”的输出值，表示每个要检查满足条件的牌库中的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>己方卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行信仰对决一方揭示的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>对方卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[被进行信仰对决一方揭示的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>是否胜利</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行信仰对决的玩家是否胜利。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[使双方玩家各从牌库中选择并揭示一张符合条件的牌进行信仰对决，揭示的牌灵力值消耗较大的一方获胜。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineName>卡牌具有宣言</defineName>
     <obsoleteNames />
     <category>卡牌</category>
@@ -4123,6 +4228,101 @@
     </outputs>
     <consts />
     <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>揭示卡牌</defineName>
+    <obsoleteNames />
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要展示的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[向双方玩家展示一张卡牌。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>是否已蓄力</defineName>
+    <obsoleteNames />
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断是否已蓄力的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>已蓄力</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[判断是否已蓄力的结果。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一张卡牌是否已蓄力。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取蓄力层数</defineName>
+    <obsoleteNames />
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取蓄力层数的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>蓄力层数</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[这张卡牌的蓄力层数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌的蓄力层数。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>设置蓄力层数</defineName>
+    <obsoleteNames />
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置蓄力层数的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>蓄力层数</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的这张卡牌的蓄力层数。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[设置一张卡牌的蓄力层数。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
