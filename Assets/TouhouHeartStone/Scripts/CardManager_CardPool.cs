@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Controllers;
 using MongoDB.Bson.Serialization;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
@@ -225,31 +226,28 @@ namespace Game
                     list.Add(graphObj);
                 }
             }
-            foreach (var card in cardPool.cardDefineList)
+
+
+            Action<CardDefine, GeneratedEffect> cardAction = (card, effect) =>
             {
-                foreach (GeneratedEffect effect in card.getGeneratedEffects())
+                effect.traverseActionNode(node => checkObsoleteNodes(node, (card.id, 0, 0)));
+            };
+            Action<BuffDefine, GeneratedEffect> buffAction = (buff, effect) =>
+            {
+                effect.traverseActionNode(node => checkObsoleteNodes(node, (0, buff.id, 0)));
+            };
+            Action<GeneratedActionDefine> defineAction = (define) =>
+            {
+                define.traverse(node => checkObsoleteNodes(node, (0, 0, define.id)));
+            };
+            Action<ActionNodeGraphInfo> infoAction = (info) =>
+            {
+                foreach (var freeNode in info.freeActionNodeList)
                 {
-                    effect.traverseActionNode(node => checkObsoleteNodes(node, (card.id, 0, 0)));
+                    checkObsoleteNodes(freeNode, (info.cardId, info.buffId, info.actionDefineId));
                 }
-            }
-            foreach (var buff in cardPool.buffDefineList)
-            {
-                foreach (var effect in buff.effectList)
-                {
-                    effect.traverseActionNode(node => checkObsoleteNodes(node, (0, buff.id, 0)));
-                }
-            }
-            foreach (var actionDefine in cardPool.actionDefineList)
-            {
-                actionDefine.traverse(node => checkObsoleteNodes(node, (0, 0, actionDefine.id)));
-            }
-            foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
-            {
-                foreach (var actionNode in graphInfo.freeActionNodeList)
-                {
-                    actionNode.traverse(node => checkObsoleteNodes(node, (graphInfo.cardId, graphInfo.buffId, graphInfo.actionDefineId)));
-                }
-            }
+            };
+            traverseActionGraphs(cardPool, cardAction, buffAction, defineAction, infoAction);
             return list.ToArray();
         }
 
@@ -362,19 +360,15 @@ namespace Game
                 typeof(HearthStoneRule).Assembly,
                 typeof(EffectEditorLibrary).Assembly
             });
-            foreach (var card in cardPool.cardDefineList)
-            {
-                foreach (GeneratedEffect effect in card.getGeneratedEffects())
-                {
-                    foreach (var trigger in effect.triggerList)
-                    {
-                        if (trigger == null)
-                            continue;
-                        fixTriggerIncorrectData(trigger);
-                    }
-                    effect.traverseActionNode(fixActionNodeIncorrectData);
-                }
-            }
+
+            // 遍历所有节点图并修复信息。
+            traverseActionGraphs(cardPool,
+                (c, e) => effectAction(e),
+                (b, e) => effectAction(e),
+                defineAction,
+                graphInfoAction);
+
+
             foreach (var skin in cardPool.cardSkinList)
             {
                 if (string.IsNullOrEmpty(skin.language))
@@ -392,31 +386,6 @@ namespace Game
                         skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
                         hasUnsavedFix = true;
                     }
-                }
-            }
-            foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
-            {
-                if (string.IsNullOrEmpty(graphInfo.entryType))
-                {
-                    //流程图信息不能没有类型，如果为空则默认为triggerList
-                    graphInfo.entryType = nameof(GeneratedEffect.triggerList);
-                }
-                foreach (var actionNode in graphInfo.freeActionNodeList)
-                {
-                    actionNode.traverse(fixActionNodeIncorrectData);
-                }
-            }
-            foreach (var buff in cardPool.buffDefineList)
-            {
-                foreach (var effect in buff.effectList)
-                {
-                    foreach (var trigger in effect.triggerList)
-                    {
-                        if (trigger == null)
-                            continue;
-                        fixTriggerIncorrectData(trigger);
-                    }
-                    effect.traverseActionNode(fixActionNodeIncorrectData);
                 }
             }
             foreach (var buffSkin in cardPool.buffSkinList)
@@ -438,6 +407,38 @@ namespace Game
             if (hasUnsavedFix)
                 await saveCardPool(cardPoolInfo);
             return (cardPoolInfo, cardPool);
+
+
+
+            // 用于遍历卡牌/增益效果的方法。
+            void effectAction(GeneratedEffect effect)
+            {
+                foreach (var trigger in effect.triggerList)
+                {
+                    if (trigger == null)
+                        continue;
+                    fixTriggerIncorrectData(trigger);
+                }
+                effect.traverseActionNode(fixActionNodeIncorrectData);
+            }
+            // 用于遍历自定义动作的方法。
+            void defineAction(GeneratedActionDefine define)
+            {
+                define.traverse(fixActionNodeIncorrectData);
+            }
+            // 用于遍历节点图信息的方法。
+            void graphInfoAction(ActionNodeGraphInfo graphInfo)
+            {
+                if (string.IsNullOrEmpty(graphInfo.entryType))
+                {
+                    //流程图信息不能没有类型，如果为空则默认为triggerList
+                    graphInfo.entryType = nameof(GeneratedEffect.triggerList);
+                }
+                foreach (var actionNode in graphInfo.freeActionNodeList)
+                {
+                    actionNode.traverse(fixActionNodeIncorrectData);
+                }
+            }
 
             void fixActionNodeIncorrectData(ActionNode actionNode)
             {
@@ -482,20 +483,6 @@ namespace Game
             }
             void fixTriggerIncorrectData(TriggerGraph trigger)
             {
-                //if (!string.IsNullOrEmpty(trigger.eventName) && !EventTypeInfo.isValidEventTypeName(trigger.eventName))
-                //{
-                //    //触发的事件名称可能已经过期
-                //    EventTypeInfo eventTypeInfo = EventTypeInfo.findEventTypeInfoForObsolateName(trigger.eventName);
-                //    if (eventTypeInfo != null)
-                //    {
-                //        Debug.LogWarning(trigger + "事件名称" + trigger.eventName + "已经过期，被替换为" + eventTypeInfo.eventName);
-                //        trigger.eventName = eventTypeInfo.eventName;
-                //    }
-                //    else
-                //    {
-                //        Debug.LogError(trigger + "的事件名称" + trigger.eventName + "可能已经过期且找不到可替换名称");
-                //    }
-                //}
                 foreach (var targetChecker in trigger.targetCheckerList)
                 {
                     if (string.IsNullOrEmpty(targetChecker.targetType))
@@ -1139,27 +1126,7 @@ namespace Game
             {
                 return new CardPoolReference[0];
             }
-            foreach (var card in cardPool.cardDefineList)
-            {
-                foreach (GeneratedEffect effect in card.getGeneratedEffects())
-                {
-                    effect.traverseActionNode(addCardPool);
-                }
-            }
-            foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
-            {
-                foreach (var actionNode in graphInfo.freeActionNodeList)
-                {
-                    actionNode.traverse(addCardPool);
-                }
-            }
-            foreach (var buff in cardPool.buffDefineList)
-            {
-                foreach (var effect in buff.effectList)
-                {
-                    effect.traverseActionNode(addCardPool);
-                }
-            }
+            traverseActionNodes(cardPool, addCardPool);
             return poolList.ToArray();
 
             void addCardPool(ActionNode node)
@@ -1394,6 +1361,58 @@ namespace Game
             var picDir = Path.Combine(Application.persistentDataPath, textureDirName);
             if (!Directory.Exists(picDir))
                 Directory.CreateDirectory(picDir);
+        }
+
+        private void traverseActionGraphs(CardPool cardPool, Action<CardDefine, GeneratedEffect> cardAction,
+            Action<BuffDefine, GeneratedEffect> buffAction, 
+            Action<GeneratedActionDefine> defineAction,
+            Action<ActionNodeGraphInfo> infoAction)
+        {
+            foreach (var card in cardPool.cardDefineList)
+            {
+                foreach (GeneratedEffect effect in card.getGeneratedEffects())
+                {
+                    cardAction?.Invoke(card, effect);
+                }
+            }
+            foreach (var buff in cardPool.buffDefineList)
+            {
+                foreach (var effect in buff.effectList)
+                {
+                    buffAction?.Invoke(buff, effect);
+                }
+            }
+            foreach (var actionDefine in cardPool.actionDefineList)
+            {
+                defineAction?.Invoke(actionDefine);
+            }
+            foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
+            {
+                infoAction?.Invoke(graphInfo);
+            }
+        }
+        private void traverseActionNodes(CardPool cardPool, Action<ActionNode> action)
+        {
+            Action<CardDefine, GeneratedEffect> cardAction = (card, effect) =>
+            {
+                effect.traverseActionNode(action);
+            };
+            Action<BuffDefine, GeneratedEffect> buffAction = (buff, effect) =>
+            {
+                effect.traverseActionNode(action);
+            };
+            Action<GeneratedActionDefine> defineAction = (define) =>
+            {
+                define.traverse(action);
+            };
+            Action<ActionNodeGraphInfo> infoAction = (info) =>
+            {
+                foreach (var freeNode in info.freeActionNodeList)
+                {
+                    action?.Invoke(freeNode);
+                }
+            };
+            traverseActionGraphs(cardPool, cardAction, buffAction, defineAction, infoAction);
         }
         #endregion
         #region 属性字段

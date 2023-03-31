@@ -360,7 +360,7 @@ namespace Controllers
             }
         }
         /// <summary>
-        /// （协程）尝试返回上层UI。
+        /// 尝试返回上层UI。
         /// </summary>
         /// <returns></returns>
         private void tryReturn()
@@ -382,7 +382,7 @@ namespace Controllers
         }
 
         /// <summary>
-        /// （协程）尝试保存卡池，会检查有没有过时节点。
+        /// 尝试保存卡池，会检查有没有过时节点。
         /// </summary>
         /// <returns></returns>
         private void trySaveCardPool(Action<bool> onEndAction = null)
@@ -464,12 +464,9 @@ namespace Controllers
                 }
                 else if (actionId != 0)
                 {
-                    string actionName = null;
-                    if (game.card.getActionDefine(cardPoolRef.cardPoolId, actionId, out var actionDefine))
-                    {
-                        actionName = actionDefine.defineName;
-                    }
-                    descs.Add(actionName ?? EDITOR_UNKNOWN_ACTION_NAME);
+                    var actionDefine = game.card.getActionDefine(cardPoolRef.cardPoolId, actionId);
+                    string actionName = actionDefine?.defineName ?? EDITOR_UNKNOWN_ACTION_NAME;
+                    descs.Add(actionName);
                 }
             }
             string obsoleteString = string.Join(",", descs);

@@ -49,16 +49,14 @@ namespace Game
             actionDefine = null;
             return false;
         }
-        public bool getActionDefine(long cardPoolId, int id, out GeneratedActionDefine actionDefine)
+        public GeneratedActionDefine getActionDefine(long cardPoolId, int id)
         {
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                actionDefine = cardPool.actionDefineList.Find(g => g.id == id);
-                return actionDefine != null;
+                return cardPool.actionDefineList.Find(g => g.id == id);
             }
-            actionDefine = null;
-            return false;
+            return null;
         }
         public GeneratedActionDefine[] getActionDefines(long cardPoolId)
         {
