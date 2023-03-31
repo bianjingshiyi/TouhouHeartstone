@@ -28,7 +28,20 @@ namespace Game
         {
             _card = card;
             _startPosition = card.rectTransform.position;
+            _startScale = card.transform.localScale;
             _targetPosition = targetPosition;
+            _scale = _startScale;
+            _curve = curve;
+            _timer = new Timer() { duration = curve.keys.Last().time };
+            _timer.start();
+        }
+        public CardTransAnim(Card card, Vector3 targetPosition, Vector3 scale, AnimationCurve curve)
+        {
+            _card = card;
+            _startPosition = card.rectTransform.position;
+            _startScale = card.transform.localScale;
+            _targetPosition = targetPosition;
+            _scale = scale;
             _curve = curve;
             _timer = new Timer() { duration = curve.keys.Last().time };
             _timer.start();

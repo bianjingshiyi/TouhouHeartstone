@@ -613,7 +613,7 @@ namespace Tests
             TestGameflow.createGame(out var game, out var you, out var oppo,
                 new KeyValuePair<int, int>(DefaultServant.ID, 30)
             );
-            var reveal = you.Reveal(game, you.getDeck());
+            var reveal = game.Reveal(you.getDeck());
             Assert.True(reveal.IsCompleted);
 
             game.Dispose();

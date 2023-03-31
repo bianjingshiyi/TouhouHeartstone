@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using TouhouHeartstone;
 using UI;
-using UObject = UnityEngine.Object;
-using TouhouHeartstone.Builtin;
+using UnityEngine;
 using UDeck = UI.Deck;
+using UObject = UnityEngine.Object;
+
 namespace Game
 {
-    class InvokeEAnim : EventAnimation<Sanae.RevealDuelEventArg>
+    class InvokeEAnim : EventAnimation<THHPlayer.RevealDuelEventArg>
     {
         Card _cardSelf;
         Card _cardOppo;
@@ -18,7 +19,7 @@ namespace Game
         AnimAnim _flipBackOppo;
         TableAnimation _moveBackSelf;
         TableAnimation _moveBackOppo;
-        public override bool update(TableManager table, Sanae.RevealDuelEventArg eventArg, float time)
+        public override bool update(TableManager table, THHPlayer.RevealDuelEventArg eventArg, float time)
         {
             if (eventArg.youCard == null && eventArg.oppoCard == null)
                 return true;

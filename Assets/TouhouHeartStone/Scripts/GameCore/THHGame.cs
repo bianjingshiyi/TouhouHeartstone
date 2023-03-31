@@ -248,6 +248,50 @@ namespace TouhouHeartstone
             game.logger.logTrace(player + "选择" + selectedCard);
             return selectedCard;
         }
+
+        #region 揭示
+
+        /// <summary>
+        /// 揭示Reveal
+        /// 向双方展示牌库里的一张牌
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="cards">被展示卡的来源</param>
+        /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
+        /// <returns></returns>
+        public static async Task<Card> Reveal(this CardEngine game, Pile cards, Predicate<Card> filter = null, bool shouldAnimate = true)
+        {
+            Card show = null;
+
+            var filtered = cards.Where(c => filter != null ? filter.Invoke(c) : true);
+            if (filtered.Count() > 0)
+            {
+                show = filtered.random(game);
+            }
+            await game.Reveal(show, shouldAnimate);
+            return show;
+        }
+
+        /// <summary>
+        /// 揭示Reveal
+        /// 向双方展示目标卡牌
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card">被展示的卡</param>
+        /// <returns></returns>
+        public static Task<HearthStoneRule.RevealEventArg> Reveal(this CardEngine game, Card card, bool shouldAnimate = true)
+        {
+            if (card == null)
+                return Task.FromResult<HearthStoneRule.RevealEventArg>(null);
+            return game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = card?.getOwner(), card = card, shouldAnimate = shouldAnimate }, arg =>
+            {
+                var show = arg.card;
+                game.logger.logTrace(show != null ? "揭示了{card:" + show.define.id + "}" : "揭示了null");
+                return Task.CompletedTask;
+            });
+        }
+
+        #endregion
     }
 
     [Serializable]
@@ -1485,6 +1529,8 @@ namespace TouhouHeartstone
                 get { return getVar<Card>("卡牌"); }
                 set { setVar("卡牌", value); }
             }
+            // 是否应该播放动画。
+            public bool shouldAnimate;
         }
     }
 }

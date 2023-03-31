@@ -53,7 +53,7 @@ namespace Tests
                 Enumerable.Repeat(game.getDefine<TestFreezeBrain>() as CardDefine, 30));
             Player you = game.createPlayer(1, "玩家1", game.getDefine<Sanae>(),
                 Enumerable.Repeat(game.getDefine<DefaultServant>() as CardDefine, 30));
-            var reveal = Sanae.revealDuel(you, game);
+            var reveal = you.revealDuel(game);
             Assert.True(reveal.IsCompleted);
 
             game.Dispose();
@@ -303,10 +303,10 @@ namespace Tests
             }
 
             game.skipUntilCanUse<ManipulatedGaintFrog>(you);
-            Sanae.revealDuel(you, game);
-            Sanae.revealDuel(you, game);
+            you.revealDuel(game);
+            you.revealDuel(game);
             you.cmdUse(game, you.getHand().getCard<ManipulatedGaintFrog>());
-            Sanae.revealDuel(you, game);
+            you.revealDuel(game);
 
             you.getField()[0].setDead(game, true);
             game.updateDeath();

@@ -886,6 +886,38 @@ namespace Game
             if (player != null)
                 await player.setMaxGem(game, player.getMaxGem() + count);
         }
+
+
+        [TranslateMsg("编辑器/卡牌-节点名称")]
+        public const string EDITOR_NODE_FAITHDUEL = "信仰对决";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_WIN = "是否胜利";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_FILTER = "筛选条件";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_FILTER_ELEMENT = "筛选元素";
+        /// <summary>
+        /// 信仰对决
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_FAITHDUEL, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
+        public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Scope scope,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] ActionNode filter,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_ELEMENT, isOut: true)] Card element)
+        {
+            if (player == null)
+                return false;
+
+            bool filterFunc(Card c)
+            {
+                scope.setOutParamValue(0, c);
+                Scope childScope = new Scope(scope);
+                return filter != null ? game.getActionReturnValueAsync<bool>(card, buff, eventArg, filter, scope: childScope).Result : true;
+            }
+            var arg = player.revealDuel(game, filterFunc).Result;
+            return arg.result;
+        }
         #endregion
 
         #region 宣言/遗言
@@ -1108,7 +1140,7 @@ namespace Game
         [ActionNodeMethod(EDITOR_NODE_GET_CARD_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
         public static Card[] getAllLegalCardTargets(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             if (card == null)
                 return Array.Empty<Card>();
@@ -1126,7 +1158,7 @@ namespace Game
         [ActionNodeMethod(EDITOR_NODE_GET_ATTACK_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(EDITOR_NODE_GET_ATTACK_TARGETS_TARGETS)]
         public static Card[] getAllLegalAttackTargets(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             if (card == null)
                 return Array.Empty<Card>();
@@ -1135,6 +1167,21 @@ namespace Game
                 .Where(c => !c.isStealth(game)).ToArray();
 
             return legalTargets;
+        }
+
+
+        [TranslateMsg("编辑器/卡牌-节点名称")]
+        public const string EDITOR_NODE_REVEAL = "揭示卡牌";
+        /// <summary>
+        /// 揭示卡牌
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_REVEAL, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        public static void revealCard(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            if (card == null)
+                return;
+            game.Reveal(card);
         }
     }
 }

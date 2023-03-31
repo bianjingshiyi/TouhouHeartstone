@@ -1,26 +1,24 @@
-﻿using System.Reflection;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using TouhouHeartstone;
-using TouhouCardEngine;
-using TouhouHeartstone.Builtin;
-using BJSYGameCore;
-using UI;
-using System;
-using ExcelLibrary.SpreadSheet;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using BJSYGameCore;
 using BJSYGameCore.UI;
+using Controllers;
+using MongoDB.Bson;
+using MukioI18n;
+using NitoriNetwork.Common;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
+using TouhouHeartstone.Builtin;
+using UI;
+using UnityEngine;
 using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
-using System.Text.RegularExpressions;
-using NitoriNetwork.Common;
-using MukioI18n;
-using MongoDB.Bson;
 using Deck = TouhouHeartstone.Deck;
-using Controllers;
 
 namespace Game
 {
@@ -384,7 +382,7 @@ namespace Game
                 case THHCard.SilenceEventArg _:
                 case THHCard.DeathEventArg _:
                 case THHPlayer.DiscoverEventArg _:
-                case Sanae.RevealDuelEventArg _:
+                case THHPlayer.RevealDuelEventArg _:
                 case THHCard.SecretTriggerEventArg _:
                     var item = ui.LogScrollView.LogList.addItem();
                     item.setProp("event", obj);
@@ -566,7 +564,7 @@ namespace Game
                 case THHPlayer.DiscoverEventArg discover:
                     item.Text.text = lang._(GAME_MANAGER_DISCOVER);
                     break;
-                case Sanae.RevealDuelEventArg revealDuel:
+                case THHPlayer.RevealDuelEventArg revealDuel:
                     item.Text.text = lang._(GAME_MANAGER_REVEAL_DUEL);
                     item.BorderImage.sprite = revealDuel.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;

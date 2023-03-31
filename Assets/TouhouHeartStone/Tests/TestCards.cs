@@ -1348,7 +1348,7 @@ namespace Tests
         {
             new NoTargetEffect((g,c)=>
             {
-                return Sanae.revealDuel(c.getOwner(),g);
+                return c.getOwner().revealDuel(g);
             })
         };
 

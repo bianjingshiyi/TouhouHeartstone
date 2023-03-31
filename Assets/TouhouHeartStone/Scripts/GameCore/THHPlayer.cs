@@ -614,111 +614,138 @@ namespace TouhouHeartstone
         }
 
 
+        #region 信仰对决
         /// <summary>
-        /// 揭示Reveal
-        /// 向双方展示牌库里的一张牌
+        /// 揭示对决
+        /// 双方揭示牌库里的一张牌，法力消耗大的胜利
         /// </summary>
         /// <param name="game"></param>
-        /// <param name="cards">被展示卡的来源</param>
         /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
         /// <returns></returns>
-        public static async Task<Card> Reveal(this Player player, CardEngine game, Pile cards, int define = 0)
+        public static Task<RevealDuelEventArg> revealDuel(this Player player, CardEngine game, int define)
         {
-            Card show = null;
+            return player.revealDuel(game, getRevealFilterByDefine(define));
+        }
 
-            switch (define)
+        /// <summary>
+        /// 揭示对决
+        /// 双方揭示牌库里的一张牌，法力消耗大的胜利
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
+        /// <returns></returns>
+        public static Task<RevealDuelEventArg> revealDuel(this Player player, CardEngine game, Predicate<Card> filter = null)
+        {
+            return game.triggers.doEvent(new RevealDuelEventArg() { player = player }, async arg =>
             {
-                case 0:
-                    if (cards.count > 0)
-                    {
-                        show = cards.random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
-                        {
-                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
-                            return Task.CompletedTask;
-                        });
-                        return show;
-                    }
-                    else
-                    {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
-                        {
-                            game.logger.logTrace("揭示了null");
-                            return Task.CompletedTask;
-                        });
-                        return show;
-                    }
-                case 1:
-                    if (cards.Count(c => c.isSpell()) > 0)
-                    {
-                        show = cards.Where(c => c.isSpell()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
-                        {
-                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
-                            return Task.CompletedTask;
-                        });
-                        return show;
+                var duelPlayer = arg.player;
+                Player oppo = game.getOpponent(duelPlayer);
+                arg.youCard = await game.Reveal(duelPlayer.getDeck(), filter, false);
+                arg.yourCardSnapshot = arg.youCard != null ? new CardSnapshot(game, arg.youCard) : null;
+                arg.oppoCard = await game.Reveal(oppo.getDeck(), filter, false);
+                arg.oppoCardSnapshot = arg.oppoCard != null ? new CardSnapshot(game, arg.oppoCard) : null;
+                arg.result = false;
 
-                    }
-                    else
-                    {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
-                        {
-                            game.logger.logTrace("揭示了null");
-                            return Task.CompletedTask;
-                        });
-                        return show;
-                    }
-                case 2:
-                    if (cards.Count(c => c.isServant()) > 0)
-                    {
-                        show = cards.Where(c => c.isServant()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
-                        {
-                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
-                            return Task.CompletedTask;
-                        });
-                        return show;
+                if (arg.youCard != null && arg.oppoCard == null)
+                    arg.result = true;
+                else if (arg.youCard != null && arg.youCard.getCost(game) > arg.oppoCard.getCost(game))
+                    arg.result = true;
+                if (arg.youCard != null)
+                    game.logger.log(duelPlayer + "发动了对决，她揭示了：" + arg.youCard + "。她的对手揭示了：" + arg.oppoCard + "。结果是" +
+                                    arg.result);
+                else
+                    game.logger.log(duelPlayer + "揭示了个寂寞，输掉了对决。");
+            });
+        }
+        private static Predicate<Card> getRevealFilterByDefine(int define)
+        {
+            bool filter(Card card)
+            {
+                switch (define)
+                {
+                    case 0:
+                        return true;
+                    case 1:
+                        return card.isSpell();
+                    case 2:
+                        return card.isServant();
+                    case 3:
+                        return card.isItem();
+                    default:
+                        return false;
+                }
+            }
+            return filter;
+        }
 
-                    }
-                    else
-                    {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
-                        {
-                            game.logger.logTrace("揭示了null");
-                            return Task.CompletedTask;
-                        });
-                        return show;
-                    }
-                case 3:
-                    if (cards.Count(c => c.isItem()) > 0)
-                    {
-                        show = cards.Where(c => c.isItem()).random(game);
-                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = show }, arg =>
-                        {
-                            game.logger.logTrace("揭示了{card:" + show.define.id + "}");
-                            return Task.CompletedTask;
-                        });
-                        return show;
+        public class RevealDuelEventArg : EventArg, IDescribableEventArg
+        {
+            /// <summary>
+            /// 对决发起方
+            /// </summary>
+            public Player player;
 
-                    }
-                    else
-                    {
-                        await game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = player, card = null }, arg =>
-                        {
-                            game.logger.logTrace("揭示了null");
-                            return Task.CompletedTask;
-                        });
-                        return show;
-                    }
-                default:
-                    game.logger.logTrace("揭示失败：类别不对");
-                    return null;
+            /// <summary>
+            /// 发起方揭示的牌
+            /// </summary>
+            public Card youCard;
 
+            /// <summary>
+            /// 你的揭示牌快照
+            /// </summary>
+            public CardSnapshot yourCardSnapshot;
 
+            /// <summary>
+            /// 另一方揭示的牌
+            /// </summary>
+            public Card oppoCard;
 
+            /// <summary>
+            /// 对方的揭示牌快照
+            /// </summary>
+            public CardSnapshot oppoCardSnapshot;
+
+            /// <summary>
+            /// 是否胜利
+            /// </summary>
+            public bool result;
+
+            public ICard getCard(IGame game, IPlayer viewer)
+            {
+                return result ? youCard : oppoCard;
+            }
+
+            public ICard[] getTargets(IGame game, IPlayer viewer)
+            {
+                return new[] { youCard, oppoCard };
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡，{3}是结果")]
+            const string TEMPLATE = "{0}发动了对决，揭示了:{1}。 对手揭示了：{2}。 结果是 {3}";
+
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE_NULL = "{0}发动了对决 揭示了个寂寞，输掉了对决。";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return youCard != null ? TEMPLATE : TEMPLATE_NULL;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    youCard?.getFormatString(),
+                    oppoCard?.getFormatString(),
+                    result?"胜利":"失败"
+                };
             }
         }
+        #endregion 揭示/信仰对决
 
         public delegate bool PoolRange(CardEngine game, CardDefine define);
         public delegate bool isInRange(CardEngine game, CardDefine define);

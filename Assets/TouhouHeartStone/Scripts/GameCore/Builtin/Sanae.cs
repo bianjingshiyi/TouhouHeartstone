@@ -2,7 +2,7 @@
 using TouhouCardEngine.Interfaces;
 using System.Threading.Tasks;
 using System.Linq;
-using System;
+using RevealDuelEventArg = TouhouHeartstone.THHPlayer.RevealDuelEventArg;
 
 namespace TouhouHeartstone.Builtin
 {
@@ -28,103 +28,7 @@ namespace TouhouHeartstone.Builtin
             effects1 = value;
         }
 
-        /// <summary>
-        /// 揭示对决
-        /// 双方揭示牌库里的一张牌，法力消耗大的胜利
-        /// </summary>
-        /// <param name="game"></param>
-        /// <param name="define">设定揭示的类别:0是所有类别；1是法术牌；2是随从牌；3是武器牌</param>
-        /// <returns></returns>
-        public static Task<RevealDuelEventArg> revealDuel(Player player, CardEngine game, int define = 0)
-        {
-            return game.triggers.doEvent(new RevealDuelEventArg() { player = player }, async arg =>
-              {
-                  Player oppo = game.getOpponent(player);
-                  arg.youCard = await player.Reveal(game, player.getDeck(), define);
-                  arg.yourCardSnapshot = arg.youCard != null ? new CardSnapshot(game, arg.youCard) : null;
-                  arg.oppoCard = await oppo.Reveal(game, oppo.getDeck(), define);
-                  arg.oppoCardSnapshot = arg.oppoCard != null ? new CardSnapshot(game, arg.oppoCard) : null;
-                  arg.result = false;
 
-                  if (arg.youCard != null && arg.oppoCard == null)
-                      arg.result = true;
-                  else if (arg.youCard != null && arg.youCard.getCost(game) > arg.oppoCard.getCost(game))
-                      arg.result = true;
-                  if (arg.youCard != null)
-                      game.logger.log(player + "发动了对决，她揭示了：" + arg.youCard + "。她的对手揭示了：" + arg.oppoCard + "。结果是" +
-                                      arg.result);
-                  else
-                      game.logger.log(player + "揭示了个寂寞，输掉了对决。");
-              });
-        }
-
-        public class RevealDuelEventArg : EventArg, IDescribableEventArg
-        {
-            /// <summary>
-            /// 对决发起方
-            /// </summary>
-            public Player player;
-
-            /// <summary>
-            /// 发起方揭示的牌
-            /// </summary>
-            public Card youCard;
-
-            /// <summary>
-            /// 你的揭示牌快照
-            /// </summary>
-            public CardSnapshot yourCardSnapshot;
-
-            /// <summary>
-            /// 另一方揭示的牌
-            /// </summary>
-            public Card oppoCard;
-
-            /// <summary>
-            /// 对方的揭示牌快照
-            /// </summary>
-            public CardSnapshot oppoCardSnapshot;
-
-            /// <summary>
-            /// 是否胜利
-            /// </summary>
-            public bool result;
-
-            public ICard getCard(IGame game, IPlayer viewer)
-            {
-                return result ? youCard : oppoCard;
-            }
-
-            public ICard[] getTargets(IGame game, IPlayer viewer)
-            {
-                return new[] { youCard, oppoCard };
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [MukioI18n.TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡，{3}是结果")]
-            const string TEMPLATE = "{0}发动了对决，揭示了:{1}。 对手揭示了：{2}。 结果是 {3}";
-
-            [MukioI18n.TranslateMsg("{0}是玩家")]
-            const string TEMPLATE_NULL = "{0}发动了对决 揭示了个寂寞，输掉了对决。";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return youCard != null ? TEMPLATE : TEMPLATE_NULL;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    player.name,
-                    youCard?.getFormatString(),
-                    oppoCard?.getFormatString(),
-                    result?"胜利":"失败"
-                };
-            }
-        }
     }
 
     /// <summary>
@@ -172,7 +76,7 @@ namespace TouhouHeartstone.Builtin
                 Player you = card.getOwner();
                 do
                 {
-                    await Sanae.revealDuel(you, game);
+                    await you.revealDuel(game);
                     await target.heal(game, card, 2);
                 } while (target.isDamage(game));
             }, PileFlag.self | PileFlag.field)
@@ -191,7 +95,7 @@ namespace TouhouHeartstone.Builtin
         //static async Task effect(CardEngine game, Card card)
         //{
             //Player you = card.getOwner();
-            //var duel = await Sanae.revealDuel(you, game);
+            //var duel = await you.revealDuel(game);
             //if (duel.result)
             //{
                 //if (duel.youCard.getCost(game) == you.getDeck().Select(c => c.getCost(game)).Max())
@@ -275,7 +179,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 Player you = card.getOwner();
-                var duel = await Sanae.revealDuel(you, game, 2);
+                var duel = await you.revealDuel(game, 2);
                 await target.damage(game, card, you.getSpellDamage(game, 3));
                 if (duel.result)
                     await card.getOwner().getMaster().heal(game, card, 4);
@@ -356,7 +260,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             Player you = card.getOwner();
-            var duel = await Sanae.revealDuel(you, game);
+            var duel = await you.revealDuel(game);
             await game.getOpponent(you).getField().damage(game, card, 2);
             if (duel.result)
             {
@@ -381,7 +285,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 Player you = card.getOwner();
-                var duel = await Sanae.revealDuel(you, game, 2);
+                var duel = await you.revealDuel(game, 2);
                 await target.getNearbyCards().damage(game, card, you.getSpellDamage(game, 4));
                 if (duel.result)
                     await target.damage(game, card, you.getSpellDamage(game, 2));
@@ -503,7 +407,7 @@ namespace TouhouHeartstone.Builtin
             //new DeathRattle(ID, async (game, card, p) =>
             //{
                 //int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                    //.OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                    //.OfType<RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
 
                 //await game.getAllServants().damage(game, card, count);
             //})
@@ -553,12 +457,12 @@ namespace TouhouHeartstone.Builtin
                 //new EventTriggeredModifierFixer<int>.ModifierFixer<HearthStoneRule.TurnEndEventArg>(
                     //(game, card, buff, arg) => card.getOwner() == arg.player,
                     //(game, card, buff, arg) => 0, null,false),
-                //new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
+                //new EventTriggeredModifierFixer<int>.ModifierFixer<RevealDuelEventArg>(
                     //(game, card, buff, arg) => card.getOwner() == arg.player,
                     //(game, card, buff, arg) =>
                     //{
                         //return game.triggers.getRecordedEvents().skipUntilLast(a => a is HearthStoneRule.TurnStartEventArg)
-                            //.Any(a => a is Sanae.RevealDuelEventArg)
+                            //.Any(a => a is RevealDuelEventArg)
                             //? -4
                             //: 0;
                     //})),
@@ -566,7 +470,7 @@ namespace TouhouHeartstone.Builtin
             //{
                 //await t.kill(g);
             //}, PileFlag.oppo | PileFlag.field)
-            new AddBuffAfter<Sanae.RevealDuelEventArg>(PileFlag.field,(g,c,a)=>
+            new AddBuffAfter<RevealDuelEventArg>(PileFlag.field,(g,c,a)=>
             {
                 return a.player == c.getOwner() && !c.containBuff(ID);
             },new CodeBuff(ID,new KeywordsModifier(KeywordsModifier.ModifyType.remove, KEYWORD.CANTATTACK),
@@ -618,7 +522,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             int count = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                .OfType<RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
             Card card1 = game.createCard<GodMiracleOfRain>();
             Card card2 = game.createCard<GodMiracleOfOnbashira>();
             Card card3 = game.createCard<GodMiracleOfWar>();
@@ -829,12 +733,12 @@ namespace TouhouHeartstone.Builtin
                 }
             }),
             new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), null,
-                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
+                new EventTriggeredModifierFixer<int>.ModifierFixer<RevealDuelEventArg>(
                     (game, card, buff, arg) => card.owner == arg.player,
                     (game, card, buff, arg) =>
                     {
                         int v = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                            .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                            .OfType<RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
                         return -v;
                     }))
         };
@@ -1021,12 +925,12 @@ namespace TouhouHeartstone.Builtin
 
             new NoTargetEffect(effect),
             new EventTriggeredModifierFixer<int>(PileFlag.hand, new CostModifier(0), null,
-                new EventTriggeredModifierFixer<int>.ModifierFixer<Sanae.RevealDuelEventArg>(
+                new EventTriggeredModifierFixer<int>.ModifierFixer<RevealDuelEventArg>(
                     (game, card, buff, arg) => card.owner == arg.player,
                     (game, card, buff, arg) =>
                     {
                         int v = game.triggers.getRecordedEvents().skipUntilLast(e => e is HearthStoneRule.StartEventArg GameStart)
-                            .OfType<Sanae.RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
+                            .OfType<RevealDuelEventArg>().Where(e2 => e2.player == card.getOwner()).Count();
                         return -v;
                     }))
         };
@@ -1104,7 +1008,7 @@ namespace TouhouHeartstone.Builtin
             new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.field, (g, c, a) => { return a.player == c.getOwner(); },
                 async (g, c, a) =>
                 {
-                    var duel = await Sanae.revealDuel(c.getOwner(), g);
+                    var duel = await c.getOwner().revealDuel(g);
                     if (duel.result)
                     {
                         await c.getOwner().draw(g);
