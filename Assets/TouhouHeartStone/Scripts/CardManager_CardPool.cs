@@ -201,6 +201,59 @@ namespace Game
         }
 
         /// <summary>
+        /// 获取卡池内的所有包含过时节点的节点图。
+        /// </summary>
+        /// <returns>过时节点节点图列表。</returns>
+        public (int cardId, int buffId, int actionId)[] getObsoleteNodeGraphs(CardPool cardPool)
+        {
+            HashSet<(int cardId, int buffId, int actionId)> list = new HashSet<(int cardId, int buffId, int actionId)>(); 
+            Dictionary<string, ActionDefine> actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
+            {
+                typeof(CardEngine).Assembly,
+                typeof(HearthStoneRule).Assembly,
+                typeof(EffectEditorLibrary).Assembly
+            });
+            void checkObsoleteNodes(ActionNode node, (int cardId, int buffId, int actionId) graphObj)
+            {
+                ActionDefine define = null;
+                if (!actionDefineDict.TryGetValue(node.defineName, out define))
+                {
+                    define = cardPool.actionDefineList.Find(a => a.defineName == node.defineName);
+                }
+                if (define == null || define.obsoleteMsg != null)
+                {
+                    list.Add(graphObj);
+                }
+            }
+            foreach (var card in cardPool.cardDefineList)
+            {
+                foreach (GeneratedEffect effect in card.getGeneratedEffects())
+                {
+                    effect.traverseActionNode(node => checkObsoleteNodes(node, (card.id, 0, 0)));
+                }
+            }
+            foreach (var buff in cardPool.buffDefineList)
+            {
+                foreach (var effect in buff.effectList)
+                {
+                    effect.traverseActionNode(node => checkObsoleteNodes(node, (0, buff.id, 0)));
+                }
+            }
+            foreach (var actionDefine in cardPool.actionDefineList)
+            {
+                actionDefine.traverse(node => checkObsoleteNodes(node, (0, 0, actionDefine.id)));
+            }
+            foreach (var graphInfo in cardPool.actionNodeGraphInfoList)
+            {
+                foreach (var actionNode in graphInfo.freeActionNodeList)
+                {
+                    actionNode.traverse(node => checkObsoleteNodes(node, (graphInfo.cardId, graphInfo.buffId, graphInfo.actionDefineId)));
+                }
+            }
+            return list.ToArray();
+        }
+
+        /// <summary>
         /// 解析卡池文件的头文件信息，并返回卡池信息。
         /// </summary>
         /// <param name="line">文件信息</param>

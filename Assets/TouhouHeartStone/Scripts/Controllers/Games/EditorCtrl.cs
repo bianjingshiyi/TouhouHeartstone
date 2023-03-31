@@ -1,6 +1,4 @@
-﻿using BJSYGameCore;
-using Game;
-using MongoDB.Bson.Serialization;
+﻿using Game;
 using MukioI18n;
 using System;
 using System.Collections.Generic;
@@ -10,7 +8,6 @@ using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
-using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
 
@@ -115,20 +112,7 @@ namespace Controllers
         {
             if (hasUnsavedChanges)
             {
-                game.ui.dialog.ShowQuestion(
-                    game.langManager.getString(StringTable.WARNING),
-                    game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES), async () =>
-                    {
-                        //保存卡池
-                        await game.card.saveCardPool(_curCardPoolInfo);
-                        //返回主菜单
-                        await returnToView();
-                        hasUnsavedChanges = false;
-                    }, async () =>
-                    {
-                        await returnToView();
-                        hasUnsavedChanges = false;
-                    });
+                tryReturn();
             }
             else
             {
@@ -212,23 +196,21 @@ namespace Controllers
         /// <summary>
         /// 当点击保存按钮，保存当前编辑的卡池
         /// </summary>
-        private async void onClickSaveCardPoolButton()
+        private void onClickSaveCardPoolButton()
         {
-            if (hasUnsavedChanges)
-            {
-                bool success = await game.card.saveCardPool(_curCardPoolInfo);
-                if (success)
-                {
-                    _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
-                    int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
-                    _cardPoolPathList[index] = _curCardPoolPath;
-                    hasUnsavedChanges = false;//如果已经保存则不需要再提示保存
-                }
-            }
+            trySaveCardPool();
         }
 
         [TranslateMsg]
         const string EXPORT_BEFORE_SAVE = "当前卡池含有未保存的修改，请在导出前保存修改";
+        [TranslateMsg]
+        const string EDITOR_UNKNOWN_BUFF_NAME = "未知增益";
+        [TranslateMsg]
+        const string EDITOR_UNKNOWN_ACTION_NAME = "未知自定义动作";
+        [TranslateMsg("尝试保存具有过时节点的卡池时的警告。（{0}：过时节点列表）")]
+        const string EDITOR_WARNING_OBSOLETE_NODES_TEMPLATE = "以下内容包含过时的节点：\n{0}\n是否保存卡池？";
+        [TranslateMsg("尝试保存具有过时节点的卡池，并且显示达到上限时的警告。（{0}：过时节点列表）")]
+        const string EDITOR_WARNING_OBSOLETE_NODES_DESC_MAX = "{0}...";
 
         [TranslateMsg("{0}是路径")]
         const string EXPORT_SUCCESS = "卡池已导出至 {0}";
@@ -378,6 +360,127 @@ namespace Controllers
             }
         }
         /// <summary>
+        /// （协程）尝试返回上层UI。
+        /// </summary>
+        /// <returns></returns>
+        private void tryReturn()
+        {
+            game.ui.dialog.ShowQuestion(game.langManager.getString(StringTable.WARNING), game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES),
+                () =>
+                {
+                    trySaveCardPool(async save => 
+                    {
+                        if (save) 
+                            await returnToView();
+                    });
+                }
+                ,
+                async () =>
+                {
+                    await returnToView();
+                });
+        }
+
+        /// <summary>
+        /// （协程）尝试保存卡池，会检查有没有过时节点。
+        /// </summary>
+        /// <returns></returns>
+        private void trySaveCardPool(Action<bool> onEndAction = null)
+        {
+            if (hasUnsavedChanges)
+            {
+                if (hasObsoleteNodes(out string desc))
+                {
+                    game.ui.dialog.ShowQuestion(game.langManager.getString(StringTable.WARNING), desc,
+                        async () =>
+                        {
+                            await saveCardPool();
+                            onEndAction?.Invoke(true);
+                        },
+                        () => {
+                            onEndAction?.Invoke(false);
+                        });
+                }
+            }
+        }
+        /// <summary>
+        /// 保存一个卡池。
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> saveCardPool()
+        {
+            bool success = await game.card.saveCardPool(_curCardPoolInfo);
+            if (success)
+            {
+                _curCardPoolPath = game.card.getCardPoolPath(_curCardPoolInfo);
+                int index = _cardPoolInfoList.IndexOf(_curCardPoolInfo);
+                _cardPoolPathList[index] = _curCardPoolPath;
+                hasUnsavedChanges = false;//如果已经保存则不需要再提示保存
+            }
+            return success;
+        }
+        /// <summary>
+        /// 卡尺内是否有过时的节点。
+        /// </summary>
+        /// <param name="desc"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
+        private bool hasObsoleteNodes(out string desc)
+        {
+            // 检查有无过时的节点。
+            var cardPoolRef = _curCardPoolInfo.ToReference();
+            if (!game.card.tryGetCardPool(cardPoolRef, out var cardPool))
+            {
+                throw new NullReferenceException("尝试保存一个不存在的卡池。");
+            }
+            var obsoleteGraphs = game.card.getObsoleteNodeGraphs(cardPool);
+
+            // 没有过时的节点。
+            if (obsoleteGraphs.Length <= 0)
+            {
+                desc = null;
+                return false;
+            }
+            // 有过时的节点。
+            // 获取描述。
+            const int MAX_DISPLAY_COUNT = 4;
+            List<string> descs = new List<string>();
+            for (int i = 0; i < Math.Min(obsoleteGraphs.Length, MAX_DISPLAY_COUNT); i++)
+            {
+                var (cardId, buffId, actionId) = obsoleteGraphs[i];
+                if (cardId != 0)
+                {
+                    var cardName = game.card.getCardSkin(cardPoolRef, cardId)?.name;
+                    descs.Add(cardName ?? StringTable.BUILD_UNKNOW_CARD_NAME);
+                }
+                else if (buffId != 0)
+                {
+                    string buffName = null;
+                    if (game.card.tryGetBuffDefine(cardPoolRef, buffId, out var buffDefine))
+                    {
+                        buffName = game.card.getBuffSkin(buffDefine)?.name;
+                    }
+                    descs.Add(buffName ?? EDITOR_UNKNOWN_BUFF_NAME);
+                }
+                else if (actionId != 0)
+                {
+                    string actionName = null;
+                    if (game.card.getActionDefine(cardPoolRef.cardPoolId, actionId, out var actionDefine))
+                    {
+                        actionName = actionDefine.defineName;
+                    }
+                    descs.Add(actionName ?? EDITOR_UNKNOWN_ACTION_NAME);
+                }
+            }
+            string obsoleteString = string.Join(",", descs);
+            if (obsoleteGraphs.Length > MAX_DISPLAY_COUNT)
+            {
+                obsoleteString = game.lang._(EDITOR_WARNING_OBSOLETE_NODES_DESC_MAX, obsoleteString);
+            }
+            desc = game.lang._(EDITOR_WARNING_OBSOLETE_NODES_TEMPLATE, obsoleteString);
+            return true;
+        }
+        /// <summary>
         /// 清空字段并切换到浏览状态
         /// </summary>
         private async Task returnToView()
@@ -387,6 +490,7 @@ namespace Controllers
             {
                 var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolInfo.cardPoolId);
                 await game.card.reloadCardPoolsAndGetCardDefinesAsync(new ICardPoolReference[] { cardPoolRef });
+                hasUnsavedChanges = false;
             }
             _curCardPoolPath = null;
             _curCardPoolInfo = null;
