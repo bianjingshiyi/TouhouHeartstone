@@ -305,7 +305,7 @@ namespace Game
         {
             type = val.type.IsArray ? val.type.GetElementType().FullName : val.type.FullName;
             name = val.getDisplayName();
-            isParams = false;
+            isParams = val.isParams;
             isArray = val.type.IsArray;
         }
 
@@ -321,6 +321,11 @@ namespace Game
             for (int i = 0; i < defines.Length; i++)
             {
                 var input = defines[i];
+                if (input.GetPortType() == PortType.Control && i == 0)
+                {
+                    // 跳过第一个动作端口。
+                    continue;
+                }
                 if (orig == null)
                 {
                     list.Add(new ActionParameterComment(input));

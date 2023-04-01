@@ -11,9 +11,13 @@ namespace Game
         [TranslateMsg("节点分类名称")]
         public const string EDITOR_NODE_CATEGORY_CARD_SNAPSHOT = "卡牌快照";
         [TranslateMsg("节点名称")]
-        public const string EDITOR_NODE_IS_CARD_SNAPSHOT_TYPE = "卡牌快照类型判断";
+        public const string EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_CARD = "获取卡牌快照对应卡牌";
         [TranslateMsg("节点名称")]
-        public const string EDITOR_NODE_CARD_SNAPSHOT_HAS_KEYWORDS = "卡牌快照关键词判断";
+        public const string EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_CARD_DEFINE = "获取卡牌快照卡牌定义";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NAME_NODE_IS_CARD_SNAPSHOT_TYPE = "卡牌快照类型判断";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_KEYWORDS = "卡牌快照关键词判断";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_PROPERTY = "获取卡牌快照属性";
         [TranslateMsg("节点名称")]
@@ -28,17 +32,49 @@ namespace Game
         public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_OWNER = "获取卡牌快照拥有者";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_ARMOR = "获取卡牌快照护甲值";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_BATTLECRY = "卡牌快照具有宣言";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_DEATHRATTLE = "卡牌快照具有遗言";
         [TranslateMsg("编辑器/卡牌快照-节点名称")]
         public const string EDITOR_NODE_CARD_SNAPSHOT_IS_CHARGED = "卡牌快照是否已蓄力";
         [TranslateMsg("编辑器/卡牌快照-节点名称")]
         public const string EDITOR_NODE_CARD_SNAPSHOT_GET_CHARGED_LEVEL = "获取卡牌快照蓄力层数";
+        /// <summary>
+        /// 获取卡牌快照对应卡牌
+        /// </summary>
+        /// <param name="card">卡牌快照</param>
+        /// <returns>bool,对应卡牌</returns>
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_CARD, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getCardOfCardSnapshot(
+            [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
+        {
+            if (card == null)
+                return null;
+            return card.card;
+        }
+        /// <summary>
+        /// 获取卡牌快照卡牌定义
+        /// </summary>
+        /// <param name="card">卡牌快照</param>
+        /// <returns>卡牌定义</returns>
+        [ActionNodeMethod(EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_CARD_DEFINE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
+        public static CardDefine getCardDefineOfCardSnapshot(
+            [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
+        {
+            if (card == null)
+                return null;
+            return card.define;
+        }
         /// <summary>
         /// 卡牌快照类型判断节点
         /// </summary>
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ActionNodeMethod(EDITOR_NODE_IS_CARD_SNAPSHOT_TYPE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [ActionNodeMethod(EDITOR_NAME_NODE_IS_CARD_SNAPSHOT_TYPE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsTypeOfCardSnapshot(
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card,
@@ -66,7 +102,7 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ActionNodeMethod(EDITOR_NODE_CARD_SNAPSHOT_HAS_KEYWORDS, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_KEYWORDS, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool CardSnapshotHasKeywords(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card,
@@ -180,9 +216,36 @@ namespace Game
                 return 0;
             return card.getChargedLevel(game);
         }
+        /// <summary>
+        /// 卡牌快照具有宣言
+        /// </summary>
+        /// <param name="card">卡牌快照</param>
+        /// <returns>卡牌定义</returns>
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_BATTLECRY, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
+        public static bool cardSnapshotHasBattlecry(CardEngine game,
+            [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
+        {
+            if (card == null)
+                return false;
+            return card.hasBattlecry(game);
+        }
+        /// <summary>
+        /// 卡牌快照具有遗言
+        /// </summary>
+        /// <param name="card">卡牌快照</param>
+        /// <returns>卡牌定义</returns>
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_DEATHRATTLE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
+        public static bool cardSnapshotHasDeathrattle(CardEngine game,
+            [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
+        {
+            if (card == null)
+                return false;
+            return card.hasDeathRattle(game);
+        }
     }
 }
-
 
 
 

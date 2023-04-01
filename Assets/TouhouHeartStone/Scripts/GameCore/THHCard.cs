@@ -760,7 +760,7 @@ namespace TouhouHeartstone
             }
             return results.ToArray();
         }
-        public static bool hasBattlecry(this Card card, IGame game)
+        public static bool hasBattlecry(this ICardData card, IGame game)
         {
             if (!card.getProp<bool>(game, CARD.SILENCE))
             {

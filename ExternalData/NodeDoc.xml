@@ -7,7 +7,7 @@
     <outputs>
       <ActionParameterComment>
         <type>System.Boolean</type>
-        <name>value</name>
+        <name>Value</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[输出的真值常量。]]></summary>
@@ -16,7 +16,7 @@
     <consts>
       <ActionParameterComment>
         <type>System.Boolean</type>
-        <name>value</name>
+        <name>Value</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[选中为true，未选中为false]]></summary>
@@ -102,7 +102,7 @@
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
-        <name>value</name>
+        <name>Value</name>
         <isParams>true</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[整数参数列表。]]></summary>
@@ -111,7 +111,7 @@
     <outputs>
       <ActionParameterComment>
         <type>System.Int32</type>
-        <name>result</name>
+        <name>Value</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[运算后的结果。]]></summary>
@@ -174,7 +174,7 @@
     <outputs>
       <ActionParameterComment>
         <type>System.String</type>
-        <name>value</name>
+        <name>Value</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[输出的字符串常量。]]></summary>
@@ -183,7 +183,7 @@
     <consts>
       <ActionParameterComment>
         <type>System.String</type>
-        <name>value</name>
+        <name>Value</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[字符串的值。]]></summary>
@@ -191,6 +191,37 @@
     </consts>
     <summary><![CDATA[输出一个固定的字符串（即一长串文字）。]]></summary>
     <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取增益定义</defineName>
+    <obsoleteNames>
+      <string>GetBuffDefine</string>
+    </obsoleteNames>
+    <category>增益</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.BuffDefine</type>
+        <name>BuffDefine</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.DefineReference</type>
+        <name>BuffDefine</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[获取一个固定的增益定义，决定要为卡牌施加哪种增益。]]></summary>
+    <example><![CDATA[<ul>
+      <li>春之风</li>
+      <li>夏之红</li>
+    </ul>]]></example>
   </ActionComment>
   <ActionComment>
     <defineName>AddIntModifier</defineName>
@@ -268,57 +299,6 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts />
-    <summary><![CDATA[]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>GetVariable</defineName>
-    <obsoleteNames />
-    <category>Event</category>
-    <inputs />
-    <outputs>
-      <ActionParameterComment>
-        <type>System.Object</type>
-        <name>Value</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>System.String</type>
-        <name>VariableName</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
-    <summary><![CDATA[]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>SetVariable</defineName>
-    <obsoleteNames />
-    <category>Event</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>System.String</type>
-        <name>VariableName</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>System.Object</type>
-        <name>Value</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
     <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
@@ -987,6 +967,13 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
+        <type>TouhouCardEngine.ActionNode</type>
+        <name>条件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌要满足的条件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
         <name>卡牌</name>
         <isParams>false</isParams>
@@ -994,15 +981,7 @@
         <summary><![CDATA[要筛选的卡牌集合。]]></summary>
       </ActionParameterComment>
     </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.ActionValueRef</type>
-        <name>条件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[卡牌要满足的条件。]]></summary>
-      </ActionParameterComment>
-    </consts>
+    <consts />
     <summary><![CDATA[获取牌库中满足条件的卡牌。<br>请使用<b>集合运算-筛选</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
@@ -1118,37 +1097,6 @@
     </consts>
     <summary><![CDATA[判断一张卡牌是否位于某牌堆内。]]></summary>
     <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>获取增益定义</defineName>
-    <obsoleteNames>
-      <string>GetBuffDefine</string>
-    </obsoleteNames>
-    <category>增益</category>
-    <inputs />
-    <outputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.BuffDefine</type>
-        <name>增益定义</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[输出的该增益定义。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.DefineReference</type>
-        <name>编号</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[增益的编号ID]]></summary>
-      </ActionParameterComment>
-    </consts>
-    <summary><![CDATA[获取一个固定的增益定义，决定要为卡牌施加哪种增益。]]></summary>
-    <example><![CDATA[<ul>
-      <li>春之风</li>
-      <li>夏之红</li>
-    </ul>]]></example>
   </ActionComment>
   <ActionComment>
     <defineName>该增益</defineName>
@@ -1718,10 +1666,10 @@
         <summary><![CDATA[提供给“条件”的输出值，表示每个要检查满足条件的元素。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Array</type>
+        <type>System.Object</type>
         <name>匹配的集合</name>
         <isParams>false</isParams>
-        <isArray>false</isArray>
+        <isArray>true</isArray>
         <summary><![CDATA[所有满足条件的元素的集合。]]></summary>
       </ActionParameterComment>
     </outputs>
@@ -2022,170 +1970,6 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineName>当前事件</defineName>
-    <obsoleteNames />
-    <category>事件</category>
-    <inputs />
-    <outputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[当前的事件。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts />
-    <summary><![CDATA[获取当前正在执行的事件。<br>仅能在触发器的节点图内使用。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>阻止事件</defineName>
-    <obsoleteNames />
-    <category>事件</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要阻止的事件。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts />
-    <summary><![CDATA[阻止一个即将执行的事件。<br><b>注意：</b>仅能对“XX时”事件生效，已经被执行的事件无法被阻止。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>更改攻击目标</defineName>
-    <obsoleteNames />
-    <category>事件</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[“攻击时”事件。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要修改为攻击目标的卡牌。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts />
-    <summary><![CDATA[更改“攻击时”事件的攻击目标。<br><b>注意：</b>仅能对“攻击时”事件生效。]]></summary>
-    <example><![CDATA[<ul>
-      <li>露米娅</li>
-      <li>古明地恋</li>
-    </ul>]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>更改使用目标</defineName>
-    <obsoleteNames />
-    <category>事件</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[“使用卡牌时”事件。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>集合</name>
-        <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[要修改为使用目标的一个或多个卡牌。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts />
-    <summary><![CDATA[更改“使用卡牌时”事件的目标卡牌。<br><b>注意：</b>仅能对“使用卡牌时”事件生效。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>伤害/更改受伤卡牌</defineName>
-    <obsoleteNames />
-    <category>事件</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[“伤害时”事件。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要更改为受伤目标的卡牌。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts />
-    <summary><![CDATA[更改“伤害时”事件的受伤卡牌。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>伤害/更改伤害源</defineName>
-    <obsoleteNames />
-    <category>事件</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[“伤害时”事件。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要更改为伤害源的卡牌。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts />
-    <summary><![CDATA[更改“伤害时”事件的伤害源。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineName>伤害/更改伤害值</defineName>
-    <obsoleteNames />
-    <category>事件</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[“伤害时”事件。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要更改为的伤害值。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts />
-    <summary><![CDATA[更改“伤害时”事件的伤害数值。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
     <defineName>设置临时变量</defineName>
     <obsoleteNames />
     <category>高级</category>
@@ -2202,7 +1986,7 @@
     <consts>
       <ActionParameterComment>
         <type>System.String</type>
-        <name>变量名称</name>
+        <name>变量名</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的临时变量名。]]></summary>
@@ -2228,7 +2012,7 @@
     <consts>
       <ActionParameterComment>
         <type>System.String</type>
-        <name>变量名称</name>
+        <name>变量名</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的临时变量名。]]></summary>
@@ -2838,6 +2622,13 @@
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>伤害源</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -2884,6 +2675,13 @@
         <name>目标卡牌</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>伤害源</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </inputs>
@@ -2939,6 +2737,13 @@
         <name>目标卡牌</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>伤害源</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </inputs>
@@ -4249,6 +4054,31 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineName>获得控制权</defineName>
+    <obsoleteNames />
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Player</type>
+        <name>生效玩家</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取仆从控制权的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>移动的卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要被获得控制权的仆从。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[一方玩家获得一个仆从的控制权。<br>会使得该仆从进入未准备状态，在没有先攻、速攻的情况下无法在本回合进行攻击。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineName>是否已蓄力</defineName>
     <obsoleteNames />
     <category>卡牌</category>
@@ -5018,6 +4848,1044 @@
     <outputs />
     <consts />
     <summary><![CDATA[以一张卡牌为载体，触发另一个法术或技能卡牌定义的效果。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照对应卡牌</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取对应卡牌的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照对应的卡牌。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌快照所记录的卡牌是哪张卡牌。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照卡牌定义</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取卡牌定义的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardDefine</type>
+        <name>卡牌定义</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照在当时的的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌快照在当时的卡牌定义。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>卡牌快照类型判断</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行类型判断的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>真值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照是否是该类型？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Game.CardDefineSelect</type>
+        <name>卡牌类型</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的卡牌类型。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[判断一个卡牌快照在当时是否属于某种卡牌类型。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>卡牌快照关键词判断</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行关键词判断的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>真值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照是否具有该关键词？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>关键词类型</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的关键词。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[判断一个卡牌快照在当时是否有某种关键词。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照属性</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取属性的卡牌快照。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>属性名称</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的属性名称。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的属性值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时的某项属性值。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照花费</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取灵力值消耗的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的灵力值消耗。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时的灵力值消耗。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照攻击力</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取攻击力的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的攻击力。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时的攻击力。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照最大生命值</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取最大生命值的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的最大生命值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时的最大生命值。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照当前生命值</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取当前生命值的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的当前生命值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时的当前生命值。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照拥有者</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取拥有者的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Player</type>
+        <name>玩家</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的玩家。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时的拥有者。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照护甲值</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取护甲值的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的护甲值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时的护甲值。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>卡牌快照是否已蓄力</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取是否已蓄力的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>已蓄力</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照是否已蓄力。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时是否已蓄力。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌快照蓄力层数</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取蓄力层数的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>蓄力层数</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的卡牌快照蓄力层数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌快照在当时拥有的蓄力层数。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>卡牌快照具有宣言</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断具有宣言的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>真值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照是否具有宣言。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一个卡牌快照在当时是否具有宣言。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>卡牌快照具有遗言</defineName>
+    <obsoleteNames />
+    <category>卡牌快照</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断具有遗言的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>真值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照是否具有遗言。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一个卡牌快照在当时是否具有遗言。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>该效果</defineName>
+    <obsoleteNames />
+    <category>效果</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Interfaces.IEffect</type>
+        <name>效果</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[当前效果。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取正在运行该节点图的效果。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>效果具有标签</defineName>
+    <obsoleteNames />
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Interfaces.IEffect</type>
+        <name>效果</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断标签的效果。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>Value</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[效果是否具有标签。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Game.EffectTag</type>
+        <name>效果标签</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断的效果标签。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[判断一个效果是否具有标签。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取效果属性</defineName>
+    <obsoleteNames />
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Interfaces.IEffect</type>
+        <name>效果</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取属性的效果。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>Value</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的属性值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>属性名称</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[属性名。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[获取一个效果的某项属性。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌的所有效果</defineName>
+    <obsoleteNames />
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取效果的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Interfaces.IEffect</type>
+        <name>效果集合</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的效果集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌所拥有的的所有效果。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取增益的所有效果</defineName>
+    <obsoleteNames />
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Buff</type>
+        <name>增益</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取效果的增益。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Interfaces.IEffect</type>
+        <name>效果集合</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的效果集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个增益所拥有的的所有效果。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌定义的所有效果</defineName>
+    <obsoleteNames />
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardDefine</type>
+        <name>卡牌定义</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取效果的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Interfaces.IEffect</type>
+        <name>效果集合</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的效果集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌定义所拥有的的所有效果。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取当前回合数</defineName>
+    <obsoleteNames />
+    <category>事件记录</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>回合数</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的回合数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取当前回合数。<br>第一回合为0，一方玩家的回合开始后，回合数+1。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取事件记录变量</defineName>
+    <obsoleteNames />
+    <category>事件记录</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventRecord</type>
+        <name>事件记录</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取变量的事件记录。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的事件记录变量。<br>
+          <b>注意：</b>卡牌类型的变量，获取到的是卡牌快照而非卡牌本身。这是防止卡牌之后发生的变化对事件本身造成影响。
+        ]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>变量名</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
+          如：“使用卡牌”事件包含5个变量：
+          <ul>
+            <li>玩家（玩家）</li>
+            <li>卡牌（卡牌）</li>
+            <li>位置（整数）</li>
+            <li>花费（整数）</li>
+            <li>目标卡牌（卡牌）</li>
+          </ul>]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[获取一个事件记录的某项变量。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>事件记录类型判断</defineName>
+    <obsoleteNames />
+    <category>事件记录</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventRecord</type>
+        <name>事件记录</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断类型的事件记录。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>真值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[事件记录是否属于该类型？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Game.EventArgReference</type>
+        <name>事件类型</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要进行判断的事件类型。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[判断一个事件记录是否是某种类型。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取本局游戏事件记录</defineName>
+    <obsoleteNames />
+    <category>事件记录</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventRecord</type>
+        <name>事件集合</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的事件列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取本局游戏中所有发生过的事件。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取本回合事件记录</defineName>
+    <obsoleteNames />
+    <category>事件记录</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventRecord</type>
+        <name>事件集合</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的事件列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取本回合中所有发生过的事件。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取前X-Y回合内的事件记录</defineName>
+    <obsoleteNames />
+    <category>事件记录</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>前X回合开始</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[距离本回合的最小距离。
+          <ul>
+            <li>X=0：从现在开始。</li>
+            <li>X=1：从你对手的上个回合结束时开始。</li>
+            <li>X=2：从你的上个回合结束时开始。</li>
+            <li>...</li>
+          </ul>]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>前Y回合结束</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[距离本回合的最大距离。
+          <ul>
+            <li>Y=0：到本回合开始时结束。</li>
+            <li>Y=1：到你对手的上个回合开始时结束。</li>
+            <li>Y=2：到你的上个回合开始时结束。</li>
+            <li>...</li>
+          </ul>]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventRecord</type>
+        <name>事件集合</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的事件列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取<b>前</b>X-Y回合内所有发生过的事件。<br>X必须小于或等于Y。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取卡牌在某事件时的快照</defineName>
+    <obsoleteNames />
+    <category>事件记录</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取快照的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventRecord</type>
+        <name>事件记录</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[事件记录，用于获取快照的时间点。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardSnapshot</type>
+        <name>卡牌快照</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌在某个事件发生后的卡牌快照。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>当前事件</defineName>
+    <obsoleteNames />
+    <category>事件</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[当前的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取当前正在执行的事件。<br>仅能在触发器的节点图内使用。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>获取变量</defineName>
+    <obsoleteNames>
+      <string>GetVariable</string>
+    </obsoleteNames>
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取变量的事件。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的事件变量。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>变量名</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
+          如：“使用卡牌”事件包含5个变量：
+          <ul>
+            <li>玩家（玩家）</li>
+            <li>卡牌（卡牌）</li>
+            <li>位置（整数）</li>
+            <li>花费（整数）</li>
+            <li>目标卡牌（卡牌）</li>
+          </ul>]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[从一个事件中获取某项变量。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>设置变量</defineName>
+    <obsoleteNames>
+      <string>SetVariable</string>
+    </obsoleteNames>
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置变量的事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的事件变量的值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>变量名</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
+          如：“使用卡牌”事件包含5个变量：
+          <ul>
+            <li>玩家（玩家）</li>
+            <li>卡牌（卡牌）</li>
+            <li>位置（整数）</li>
+            <li>花费（整数）</li>
+            <li>目标卡牌（卡牌）</li>
+          </ul>]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[为一个事件设置某项变量。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>阻止事件</defineName>
+    <obsoleteNames />
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要阻止的事件。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[阻止一个即将执行的事件。<br><b>注意：</b>仅能对“XX时”事件生效，已经被执行的事件无法被阻止。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>更改攻击目标</defineName>
+    <obsoleteNames />
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[“攻击时”事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>目标卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要修改为攻击目标的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[更改“攻击时”事件的攻击目标。<br><b>注意：</b>仅能对“攻击时”事件生效。]]></summary>
+    <example><![CDATA[<ul>
+      <li>露米娅</li>
+      <li>古明地恋</li>
+    </ul>]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>更改使用目标</defineName>
+    <obsoleteNames />
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[“使用卡牌时”事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>集合</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要修改为使用目标的一个或多个卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[更改“使用卡牌时”事件的目标卡牌。<br><b>注意：</b>仅能对“使用卡牌时”事件生效。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>伤害/更改受伤卡牌</defineName>
+    <obsoleteNames />
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[“伤害时”事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要更改为受伤目标的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[更改“伤害时”事件的受伤卡牌。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>伤害/更改伤害源</defineName>
+    <obsoleteNames />
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[“伤害时”事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要更改为伤害源的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[更改“伤害时”事件的伤害源。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineName>伤害/更改伤害值</defineName>
+    <obsoleteNames />
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.EventArg</type>
+        <name>事件</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[“伤害时”事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要更改为的伤害值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[更改“伤害时”事件的伤害数值。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
 </ArrayOfActionComment>

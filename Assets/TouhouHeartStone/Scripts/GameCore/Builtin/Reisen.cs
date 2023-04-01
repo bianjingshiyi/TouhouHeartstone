@@ -730,10 +730,10 @@ namespace TouhouHeartstone.Builtin
                     .skipUntilLast(e => e is HearthStoneRule.TurnStartEventArg _).OfType<HearthStoneRule.UseEventArg>()
                     .Select(e => e.card).Where(c1 => c1.isSpell()).ToArray();
 
-                if (spellsUsedInTurn.Length > 1)
+                if (spellsUsedInTurn.Length > 0)
                 {
                     return c.getOwner().getHand()
-                        .add(g, g.createCard(spellsUsedInTurn[spellsUsedInTurn.Length - 2].define));
+                        .add(g, g.createCard(spellsUsedInTurn[spellsUsedInTurn.Length - 1].define));
                 }
 
                 return Task.CompletedTask;

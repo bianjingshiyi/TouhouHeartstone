@@ -38,13 +38,20 @@ namespace Game
         public const string EDITOR_NODE_EVENT_RECORD_GET_VARIABLE = "获取事件记录变量";
         [ActionNodeMethod(EDITOR_NODE_EVENT_RECORD_GET_VARIABLE, EDITOR_TYPE_NAME_EVENT_RECORD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static object getRecordVariable(
+        public static object getRecordVariable(CardEngine game,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] string varName)
         {
             if (record == null)
                 return null;
-            return record.getVar(varName);
+            var value = record.getVar(varName);
+            if (value is CardState state)
+            {
+                var snapshot = game.snapshotCard(state.card);
+                state.card.revertToHistory(snapshot, state.stateIndex);
+                return snapshot;
+            }
+            return value;
         }
         [TranslateMsg("编辑器/事件记录_事件记录类型判断_节点名称")]
         public const string EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE = "事件记录类型判断";
