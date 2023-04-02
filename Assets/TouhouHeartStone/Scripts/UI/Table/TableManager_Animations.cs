@@ -187,5 +187,13 @@ namespace Game
             }
         }
         public event Action onAllAnimsFinished;
+        #region 属性字段
+        /// <summary>
+        /// 当前回合的玩家（仅限动画显示）。
+        /// </summary>
+        public Player currentAnimPlayer { get; set; }
+        HandToFieldAnim _handToFieldAnim = null;
+        public SimpleAnim simpleAnim = null;
+        #endregion
     }
 }

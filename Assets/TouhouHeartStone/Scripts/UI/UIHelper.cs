@@ -7,6 +7,7 @@ using UICard = UI.Card;
 using Card = TouhouCardEngine.Card;
 using System.Linq;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 namespace Game
 {
@@ -24,23 +25,22 @@ namespace Game
             setAttack(ui, "0");
             setLife(ui, "0");
         }
-        public static void setCard(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
+        public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
         {
+            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string subName = string.Empty;
+            string desc = string.Empty;
             if (skin != null)
             {
-                setImage(ui, skin.image);
-                setName(ui, skin.name);
-                setSubname(ui, skin.subname);
-                setDesc(ui, skin.desc);
-            }
-            else
-            {
-                setImage(ui, null);
-                setName(ui, StringTable.BUILD_UNKNOW_CARD_NAME);
-                setSubname(ui, string.Empty);
-                setDesc(ui, string.Empty);
+                name = skin.name;
+                subName = skin.subname;
+                desc = skin.desc;
             }
             ui.isFaceup = isFaceUp;
+            setName(ui, name);
+            setSubname(ui, subName);
+            setDesc(ui, desc);
+
             setCost(ui, card.getCost().ToString());
             if (card.type == DEFINE.MASTER)
             {
@@ -64,32 +64,37 @@ namespace Game
             }
             else
                 throw new NotImplementedException();
-            if (card is ServantCardDefine servantCardDefine)
+            setTag(ui, card.getTags().FirstOrDefault());
+        }
+        public static async Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
+        {
+            var skin = cardManager.getCardSkin(card);
+            ui.setCardDefine(card, skin, isFaceUp);
+
+            Sprite image = skin.image;
+            if (!image)
             {
-                setTag(ui, servantCardDefine.tags.FirstOrDefault());
+                var cardPoolRef = cardManager.getCardPoolReferenceOfCard(card);
+                image = await cardManager.loadCardImage(cardPoolRef, card.id);
             }
-            else
-            {
-                setTag(ui, card.getTags().FirstOrDefault());
-            }
+            ui.setImage(image);
         }
         public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, bool isFaceUp = true)
         {
+            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string subName = string.Empty;
+            string desc = string.Empty;
             if (skin != null)
             {
-                setImage(ui, skin.image);
-                setName(ui, skin.name);
-                setSubname(ui, skin.subname);
-                setDesc(ui, skin.desc);
-            }
-            else
-            {
-                setImage(ui, null);
-                setName(ui, StringTable.BUILD_UNKNOW_CARD_NAME);
-                setSubname(ui, string.Empty);
-                setDesc(ui, string.Empty);
+                name = skin.name;
+                subName = skin.subname;
+                desc = skin.desc;
             }
             ui.isFaceup = isFaceUp;
+            setName(ui, name);
+            setSubname(ui, subName);
+            setDesc(ui, desc);
+
             setCost(ui, card.getCost(game).ToString());
             if (card.define.type == DEFINE.MASTER)
             {
@@ -114,14 +119,20 @@ namespace Game
             }
             else
                 throw new NotImplementedException();
-            if (card.define is ServantCardDefine servantCardDefine)
+            setTag(ui, card.getTags(game).FirstOrDefault());
+        }
+        public static async Task setCard(this UICard ui, CardEngine game, Card card, CardManager cardManager, bool isFaceUp = true)
+        {
+            var define = card.define;
+            var skin = cardManager.getCardSkin(define);
+            ui.setCard(game, card, skin, isFaceUp);
+
+            Sprite image = skin.image;
+            if (!image)
             {
-                setTag(ui, servantCardDefine.tags.FirstOrDefault());
+                image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
             }
-            else
-            {
-                setTag(ui, card.getTags(game).FirstOrDefault());
-            }
+            ui.setImage(image);
         }
         public static void setAttack(this UICard ui, string attack)
         {

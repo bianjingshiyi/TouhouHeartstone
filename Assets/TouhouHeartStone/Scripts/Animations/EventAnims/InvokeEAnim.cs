@@ -59,12 +59,12 @@ namespace Game
             if (_flipFaceSelf == null && eventArg.youCard != null)
             {
                 _flipFaceSelf = new AnimAnim(_cardSelf.animator, _cardSelf._flipToFaceAnimName);
-                table.setCard(_cardSelf, eventArg.yourCardSnapshot);
+                table.setCardSnapshot(_cardSelf, eventArg.yourCardSnapshot);
             }
             if (_flipFaceOppo == null && eventArg.oppoCard != null)
             {
                 _flipFaceOppo = new AnimAnim(_cardOppo.animator, _cardOppo._flipToFaceAnimName);
-                table.setCard(_cardOppo, eventArg.oppoCardSnapshot);
+                table.setCardSnapshot(_cardOppo, eventArg.oppoCardSnapshot);
             }
             //bool FlipFace1 = _flipFaceSelf != null ? !_flipFaceSelf.update(table, time) : false;
             //bool FlipFace2 = _flipFaceOppo != null ? !_flipFaceOppo.update(table, time) : false;

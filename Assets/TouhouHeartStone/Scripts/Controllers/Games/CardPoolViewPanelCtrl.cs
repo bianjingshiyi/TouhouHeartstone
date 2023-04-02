@@ -206,12 +206,7 @@ namespace Controllers
                 item.hideCount();
             }
             CardDefine card = _filteredCardDefineList[index];
-            CardSkinData skin = game.card.getDefaultSkin(card);
-            item.card.setCard(card, skin);
-            Sprite sprite = skin.image != null ?
-                skin.image :
-                await game.card.loadImage(skin.imagePath, game.card.getCardPoolInfoOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
-            item.card.setImage(sprite);
+            await item.card.setCardDefine(card, game.card);
             onUpdateCardListItem?.Invoke(index, item);
         }
         private void onClickCardListItem(EditorCardListItem item)

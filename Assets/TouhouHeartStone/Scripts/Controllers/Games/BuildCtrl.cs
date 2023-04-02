@@ -196,8 +196,7 @@ namespace Controllers
                             //onStartDargCardListItem?.Invoke(getCardItemIndex(item.transform as RectTransform));
                             //更新UI
                             CardSkinData skin = game.card.getDefaultSkin(_dragCard);
-                            _ui.dragCard.setCard(_dragCard, skin);
-
+                            _ui.dragCard.setCardDefine(_dragCard, skin);
                             var cardPoolRef = game.card.getLocalCardPoolReference(_dragCard.cardPoolId);
                             Sprite image = await game.card.loadCardImage(cardPoolRef, _dragCard.id);
                             _ui.dragCard.setImage(image);
@@ -313,8 +312,7 @@ namespace Controllers
                 CardSkinData skin = game.card.getDefaultSkin(_dragCard);
                 var cardPoolRef = game.card.getLocalCardPoolReference(_dragCard.cardPoolId);
                 Sprite image = await game.card.loadCardImage(cardPoolRef, _dragCard.id);
-                _ui.dragCard.setCard(_dragCard, skin);
-                _ui.dragCard.setImage(image);
+                _ui.dragCard.setCardDefine(_dragCard, skin, image);
                 _ui.dragDeckListItem.updateView(skin.name, image);
             }
             else

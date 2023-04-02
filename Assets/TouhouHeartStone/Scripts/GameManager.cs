@@ -662,12 +662,8 @@ namespace Game
                 if (describable.getCard(game, localPlayer) != null)
                 {
                     ui.LogScrollView.LogInfoHorizantal.InfoCard.display();
-                    CardSkinData skin = main.card.getDefaultSkin((describable.getCard(game, localPlayer) as Card).define);
                     CardDefine card = describable.getCard(game, localPlayer).define as CardDefine;
-                    ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setCard(card, skin);
-                    Sprite sprite = skin.image != null ? skin.image :
-                        await main.card.loadImage(skin.imagePath, main.card.getCardPoolInfoOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
-                    ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setImage(sprite);
+                    await ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setCardDefine(card, main.card);
                 }
                 else
                     ui.LogScrollView.LogInfoHorizantal.InfoCard.hide();
@@ -678,11 +674,7 @@ namespace Game
                     {
                         var targetItem = ui.LogScrollView.LogInfoHorizantal.TargetGridList.addItem();
                         CardDefine card = target.define as CardDefine;
-                        CardSkinData skin = main.card.getDefaultSkin((target as Card).define);
-                        targetItem.Card.setCard(card, skin);
-                        Sprite sprite = skin.image != null ? skin.image :
-                            await main.card.loadImage(skin.imagePath, main.card.getCardPoolInfoOfCard(card) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
-                        targetItem.Card.setImage(sprite);
+                        await targetItem.Card.setCardDefine(card, main.card);
                     }
                     ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);
                 }
