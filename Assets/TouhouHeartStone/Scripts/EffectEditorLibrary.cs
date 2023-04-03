@@ -973,8 +973,8 @@ namespace Game
             [ActionNodeParam(EDITOR_NODE_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
         {
-            if (eventArg.getVar<Card[]>(HearthStoneRule.UseEventArg.VAR_TARGETS).Length > 0)
-                eventArg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, target);
+            if (eventArg.getVar<Card[]>(EVENTVAR.TARGETS).Length > 0)
+                eventArg.setVar(EVENTVAR.TARGETS, target);
         }
         [TranslateMsg("编辑器/事件-节点名称")]
         public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET = "伤害/更改受伤卡牌";

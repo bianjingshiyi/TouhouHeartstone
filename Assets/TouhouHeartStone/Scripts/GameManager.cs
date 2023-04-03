@@ -14,6 +14,7 @@ using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
+using TouhouHeartStone;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -207,7 +208,6 @@ namespace Game
         }
         private async Task<CardEngine> createGame(HearthstoneOption option, IEnumerable<IRoomPlayer> playerList)
         {
-
             //加载外部卡牌
             Dictionary<long, Dictionary<int, CardDefine>> cardDict = new Dictionary<long, Dictionary<int, CardDefine>>();
             Dictionary<long, Dictionary<int, BuffDefine>> buffDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
@@ -225,14 +225,18 @@ namespace Game
             }
 
 
+            var answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>();
+            var triggerManager = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>();
             CardEngine game = new CardEngine()
             {
-                answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
-                triggers = new GameObject(nameof(TriggerManager)).AddComponent<TriggerManager>(),
+                answers = answers,
+                triggers = triggerManager,
                 time = new GameObject(nameof(TimeManager)).AddComponent<TimeManager>(),
+                snapshoter = new THHSnapshoter(),
                 logger = new ULogger()
             };
-            game.answers.game = game;
+            answers.game = game;
+            triggerManager.game = game;
 #if UNITY_EDITOR
             if (_useTestDeck)
             {

@@ -2731,7 +2731,7 @@ namespace TouhouHeartstone.Builtin
                     var count = arg.targets.Count();
                     var availableTargets = arg.card.getAvaliableTargets(game).Where(c => c != card);
                     var newTargets = availableTargets.randomTake(game, count).ToArray();
-                    arg.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS,newTargets);
+                    arg.setVar(EVENTVAR.TARGETS,newTargets);
                     return Task.CompletedTask;
                 }),
             new THHEffectBefore<THHCard.AttackEventArg>(PileFlag.field,

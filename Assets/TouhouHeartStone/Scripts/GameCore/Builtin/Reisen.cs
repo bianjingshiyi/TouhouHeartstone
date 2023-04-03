@@ -281,7 +281,7 @@ namespace TouhouHeartstone.Builtin
                     Card[] range = a.card.getAvaliableTargets(g);
                     Card newTarget = range.Where(target => !target.Equals(a.targets)).random(g);
                     Card[] targets = new Card[] {newTarget};
-                    a.setVar(HearthStoneRule.UseEventArg.VAR_TARGETS, targets);
+                    a.setVar(EVENTVAR.TARGETS, targets);
                     return Task.CompletedTask;
                 })
         };

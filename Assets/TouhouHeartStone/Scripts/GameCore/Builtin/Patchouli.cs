@@ -105,6 +105,13 @@ namespace TouhouHeartstone.Builtin
             public CardDefine define2;
             public Card results;
 
+            public override void Record(IGame game, EventRecord record)
+            {
+                record.setVar(EVENTVAR.PLAYER, player);
+                record.setVar(VAR_DEFINE_1, define1);
+                record.setVar(VAR_DEFINE_2, define2);
+                record.setCardState(VAR_RESULT, results);
+            }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return viewer == player ? results : null;
@@ -146,6 +153,10 @@ namespace TouhouHeartstone.Builtin
                     results.getFormatString()
                 };
             }
+
+            public const string VAR_DEFINE_1 = "define1";
+            public const string VAR_DEFINE_2 = "define2";
+            public const string VAR_RESULT = "result";
         }
     }
 

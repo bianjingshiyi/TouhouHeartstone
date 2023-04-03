@@ -113,6 +113,9 @@ namespace Tests
         }
         class TestEvent : EventArg
         {
+            public override void Record(IGame game, EventRecord record)
+            {
+            }
         }
         class TestAnim : UIAnimation<TestEvent>
         {
