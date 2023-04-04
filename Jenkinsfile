@@ -136,7 +136,7 @@ pipeline {
                         if [[ $i != *android* ]]; then
                             pushd .
                             cd $i
-                            tar --gzip -cf ../$RELEASE_FOLDER/$PREFIX$i.tar.gz *
+                            zip -r ../$RELEASE_FOLDER/$PREFIX$i.tar.gz *
                             popd
                         else
                             cp $i/*.apk $RELEASE_FOLDER/$PREFIX$i.apk
