@@ -32,7 +32,7 @@ namespace Game
         {
             if (cardPoolInfo == null)
                 return null;
-            
+
             if (isBuiltinCardPool(cardPoolInfo.cardPoolId) || isStandardCardPool(cardPoolInfo))
             {
                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.HINT_TITLE), game.i18n._(ERROR_BUILTIN_CARDPOOL));
@@ -55,13 +55,33 @@ namespace Game
 
             var defaultFileName = cardPoolInfo.cardPoolName + "." + CardPoolPackExt;
 
-#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_EDITOR
+#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX 
             var exportPath = StandaloneFileBrowser.SaveFilePanel("", "", defaultFileName, CardPoolPackExt);
             if (string.IsNullOrEmpty(exportPath))
                 return null;
+            await exportCardPool(cardPoolInfo, cardPoolDefineFile, cardPool, exportPath);
+            return exportPath;
+#elif UNITY_IOS || UNITY_ANDROID || UNITY_EDITOR
+            // 这个插件是先写出再复制到目标目录的
+            var exportPath = Path.Combine(Application.temporaryCachePath, defaultFileName);
+            await exportCardPool(cardPoolInfo, cardPoolDefineFile, cardPool, exportPath);
+
+            var t = new TaskCompletionSource<string>();
+            NativeFilePicker.ExportFile(exportPath, (bool success) =>
+            {
+                t.SetResult(success ? defaultFileName : null);
+                File.Delete(exportPath); // 清理临时文件
+            });
+            return await t.Task;
 #else
             var exportPath = Path.Combine(Application.persistentDataPath, defaultFileName);
+            await exportCardPool(cardPoolInfo, cardPoolDefineFile, cardPool, exportPath);
+            return exportPath;
 #endif
+        }
+
+        private async Task exportCardPool(CardPoolInfo cardPoolInfo, string cardPoolDefineFile, CardPool cardPool, string exportPath)
+        {
             // 关联卡片资源列表
             var imageFiles = getCardPoolImages(cardPool);
             byte[] defineHash;
@@ -97,7 +117,6 @@ namespace Game
             }
 
             Debug.Log("卡池文件已打包至" + exportPath);
-            return exportPath;
         }
 
         private static ICollection<string> getCardPoolImages(CardPool cardPool)
@@ -135,6 +154,7 @@ namespace Game
         const string ERROR_BUILTIN_CARDPOOL = "无法导出内置卡池";
         [TranslateMsg("{0}是默认导入路径")]
         const string ERROR_FILE_NOT_FOUND = "无法找到需要导入的卡池。请将需要导入的卡池放置于{0}";
+
         public async Task<bool> importCardPool()
         {
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_EDITOR
@@ -142,6 +162,28 @@ namespace Game
             if (selectedPathes.Length == 0)
                 return false;
             var importPath = selectedPathes[0];
+            return await importCardPool(importPath);
+#elif UNITY_IOS || UNITY_ANDROID
+            var t = new TaskCompletionSource<bool>();
+            NativeFilePicker.PickFile(async (string path) =>
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    t.SetResult(false);
+                    return;
+                }
+
+                try
+                {
+                    var result = await importCardPool(path);
+                    t.SetResult(result);
+                }
+                catch (Exception e)
+                {
+                    t.SetException(e);
+                }
+            }, "*/*");
+            return await t.Task;
 #else
             var importPath = Path.Combine(Application.persistentDataPath, "import.dcpp");
             if (!File.Exists(importPath))
@@ -149,7 +191,12 @@ namespace Game
                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.ERROR), game.i18n._(ERROR_FILE_NOT_FOUND, importPath));
                 return false;
             }
+            return await importCardPool(importPath);
 #endif
+        }
+
+        private async Task<bool> importCardPool(string importPath)
+        {
             prepareCardpoolDir();
 
             using (var fs = File.OpenRead(importPath))
