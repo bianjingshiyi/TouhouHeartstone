@@ -385,7 +385,7 @@ namespace Controllers
         /// 尝试保存卡池，会检查有没有过时节点。
         /// </summary>
         /// <returns></returns>
-        private void trySaveCardPool(Action<bool> onEndAction = null)
+        private async void trySaveCardPool(Action<bool> onEndAction = null)
         {
             if (hasUnsavedChanges)
             {
@@ -400,6 +400,11 @@ namespace Controllers
                         () => {
                             onEndAction?.Invoke(false);
                         });
+                }
+                else
+                {
+                    await saveCardPool();
+                    onEndAction?.Invoke(true);
                 }
             }
         }
