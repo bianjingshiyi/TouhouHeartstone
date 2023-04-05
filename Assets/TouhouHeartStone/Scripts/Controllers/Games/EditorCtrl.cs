@@ -365,19 +365,29 @@ namespace Controllers
         /// <returns></returns>
         private void tryReturn()
         {
-            game.ui.dialog.ShowQuestion(game.langManager.getString(StringTable.WARNING), game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES),
-                () =>
+            string[] options = new string[3]
+            {
+                game.lang._(EDITOR_OPTION_SAVE),
+                game.lang._(EDITOR_OPTION_DONT_SAVE),
+                game.lang._(EDITOR_OPTION_CANCEL),
+            };
+            game.ui.dialog.ShowOptions(game.langManager.getString(StringTable.WARNING), game.langManager.getString(StringTable.EDITOR_WARNING_UNSAVED_CHANGES),
+                options,
+                async (i) =>
                 {
-                    trySaveCardPool(async save => 
+                    switch (i)
                     {
-                        if (save) 
+                        case 0:
+                            trySaveCardPool(async save =>
+                            {
+                                if (save)
+                                    await returnToView();
+                            });
+                            break;
+                        case 1:
                             await returnToView();
-                    });
-                }
-                ,
-                async () =>
-                {
-                    await returnToView();
+                            break;
+                    }
                 });
         }
 
@@ -536,6 +546,12 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
+        [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
+        public const string EDITOR_OPTION_SAVE = "保存";
+        [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
+        public const string EDITOR_OPTION_DONT_SAVE = "不保存";
+        [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
+        public const string EDITOR_OPTION_CANCEL = "取消";
 
 
         public bool hasUnsavedChanges
