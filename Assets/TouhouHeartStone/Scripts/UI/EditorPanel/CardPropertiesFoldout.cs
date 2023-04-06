@@ -10,7 +10,7 @@ namespace UI
 {
     public class CardPropertiesFoldout : MonoBehaviour
     {
-        public void foldout(bool expand)
+        public void setFolded(bool expand)
         {
             _contentsObj.SetActive(expand);
             _arrow.localEulerAngles = expand ? Vector3.back * 90 : Vector3.zero;
@@ -77,7 +77,7 @@ namespace UI
         }
         private void onClickHeaderButtonCallback()
         {
-            foldout(!isExpanded());
+            setFolded(!isExpanded());
         }
         private void onClickPropButtonCallback(string name)
         {

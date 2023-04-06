@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TouhouHeartstone;
 using TouhouCardEngine;
 using Controllers;
+using System.Linq;
 
 namespace UI
 {
@@ -297,8 +298,8 @@ namespace UI
             rect =>
             {
                 CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
-                item.setPiles(CardEditorCtrl.pileNames, CardEditorCtrl.piles);
-                item.setKeywords(CardEditorCtrl.getKeywordNames(), CardEditorCtrl.getKeywords());
+                item.setPiles(CardEditorCtrl.piles.Select(p => (p.Key, p.Value)));
+                item.setKeywords(CardEditorCtrl.getKeywords());
                 item.onClickItemButton += onClickCustomPropertyItemButtonCallback;
                 item.onItemValueChanged += onCustomPropertyItemValueChangedCallback;
                 item.onClickButton += onClickCustomPropertyButtonCallback;

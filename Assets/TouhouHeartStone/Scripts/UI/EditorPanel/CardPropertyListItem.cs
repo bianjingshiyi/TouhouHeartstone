@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Game;
 using TouhouCardEngine;
@@ -69,9 +70,17 @@ namespace UI
         {
             _valueInputField.initPileNames(pileNames, pileValues);
         }
+        public void setPiles(IEnumerable<(string name, string value)> piles)
+        {
+            setPiles(piles.Select(p => p.name).ToArray(), piles.Select(p => p.value).ToArray());
+        }
         public void setKeywords(string[] keywordNames, string[] keywordValues)
         {
             _valueInputField.initKeywords(keywordNames, keywordValues);
+        }
+        public void setKeywords(IEnumerable<(string name, string value)> keywords)
+        {
+            setKeywords(keywords.Select(p => p.name).ToArray(), keywords.Select(p => p.value).ToArray());
         }
 
 

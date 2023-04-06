@@ -168,7 +168,6 @@ namespace Controllers
             _ui.init(
                 languages,
                 getEventTypeNamesForEditor(),
-                Array.ConvertAll(CardEditorCtrl.getKeywordNames(), s => game.langManager.getString(s)),
                 CardEditorCtrl.getKeywords());
         }
         #endregion
