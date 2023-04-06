@@ -675,6 +675,8 @@ namespace Game
         }
         public CardSkinData getCardSkin(CardDefine cardDefine)
         {
+            if (cardDefine == null)
+                return null;
             return getCardSkin(getCardPoolReferenceOfCard(cardDefine), cardDefine.id);
         }
         Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();
