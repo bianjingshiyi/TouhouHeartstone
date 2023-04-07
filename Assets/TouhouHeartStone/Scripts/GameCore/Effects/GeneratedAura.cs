@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
-using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using UnityEngine;
-using static TouhouHeartstone.HearthStoneRule;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TouhouHeartstone
 {
@@ -216,7 +211,14 @@ namespace TouhouHeartstone
         }
         private Dictionary<Card, Buff> getBuffDic(CardEngine game, Card card, Buff buff)
         {
-            const string propName = "BuffDict";
+            var propName = "BuffDict";
+            string effectStr = Array.IndexOf(card.define.getEffects(), this).ToString();
+            propName = $"Aura{effectStr}/{propName}";
+            if (buff != null)
+            {
+                propName = $"Buff{buff.instanceID}/{propName}";
+            }
+
             Dictionary<Card, Buff> buffDict = buff != null ? buff.getProp<Dictionary<Card, Buff>>(game, propName) : card.getProp<Dictionary<Card, Buff>>(game, propName);
             if (buffDict == null)
             {
