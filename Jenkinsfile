@@ -8,6 +8,7 @@ import org.lotlab.pipeline.Docker
 import org.lotlab.pipeline.UnityBuilder
 import org.lotlab.pipeline.TencentCOS
 import org.lotlab.pipeline.BackblazeB2
+import org.lotlab.pipeline.Mail
 
 pipeline {
     agent {
@@ -185,14 +186,28 @@ pipeline {
                     sshPublisher(publishers: [sshPublisherDesc(configName: 'IGensoukyo Test Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd /home/jim/test-serv/account && ./new_update.sh ${BUILD_GIT_TAG} \"${downloadURL}\"", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'account', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
                 }
                 if (!env.BRANCH_NAME.startsWith('PR')) {
-                    mail bcc: '', body: "项目地址： ${BUILD_URL} \n\n下载链接: \n${DOWNLOAD_LINK}", cc: '', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", to: 'ci-result@igsk.fun'
+                    withCredentials([string(credentialsId: 'WeworkMailToken', variable: 'TOKEN')]) {
+                        def m = new Mail(this, env.TOKEN)
+                        try {
+                            m.SendMail(['ci-result@igsk.fun'], "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "项目地址： ${BUILD_URL} \n\n下载链接: \n${DOWNLOAD_LINK}")
+                        } catch (Exception e) {
+                            echo e.toString()
+                        }
+                    }
                 }
             }
         }
         failure {
             script {
                 if (!env.BRANCH_NAME.startsWith('PR')) {
-                    mail bcc: '', body: "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包", cc: '', from: 'info@lotlab.org', replyTo: '', subject: "醉梦传说构建失败通知 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", to: 'ci-result@igsk.fun'
+                    withCredentials([string(credentialsId: 'WeworkMailToken', variable: 'TOKEN')]) {
+                        def m = new Mail(this, env.TOKEN)
+                        try {
+                            m.SendMail(['ci-result@igsk.fun'], "醉梦传说构建失败通知 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包")
+                        } catch (Exception e) {
+                            echo e.toString()
+                        }
+                    }
                 }
             }
         }
