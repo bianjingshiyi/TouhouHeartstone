@@ -22,229 +22,31 @@ namespace Controllers
             if (displayInfo is DisplayInfo info)
             {
                 //加载卡池
-                if (info.cardPoolInfos != null)
-                {
-                    _cardPoolInfoList.Clear();
-                    _cardPoolInfoList.AddRange(info.cardPoolInfos);
-                }
-                else
-                {
-                    var result = await game.card.loadCardPoolInfosAsync();
-                    _cardPoolInfoList = new List<CardPoolInfo>(result.Values);
-                }
-                _cardPoolInfoList.Sort((a, b) => (int)(a.cardPoolId - b.cardPoolId));
-                if (info.cardPoolFiltersId != null)
-                {
-                    //更改卡池过滤器的值
-                    _cardPoolFilterValue = new bool[_cardPoolInfoList.Count + 1];
-                    for (int i = 0; i < _cardPoolInfoList.Count; i++)
-                    {
-                        _cardPoolFilterValue[i] =
-                            //game.card.isStandardCardPool(_cardPoolInfoList[i]) || //标准卡池一定包含
-                            Array.Exists(info.cardPoolFiltersId, cardPoolId => cardPoolId == _cardPoolInfoList[i].cardPoolId);
-                    }
-                }
-                else if (_cardPoolFilterValue == null || _cardPoolFilterValue.Length != _cardPoolInfoList.Count + 1)
-                {
-                    _cardPoolFilterValue = new bool[_cardPoolInfoList.Count + 1];
-                }
-                if (info.hideBuiltinCards != null)
-                {
-                    _cardPoolFilterValue[_cardPoolFilterValue.Length - 1] = !info.hideBuiltinCards.Value;
-                }
-                //加载卡片
-                _cardDefineList = new List<CardDefine>();
-                if (_cardPoolFilterValue[_cardPoolFilterValue.Length - 1])
-                {
-                    //反射硬编码卡牌
-                    _cardDefineList.AddRange(game.card.GetCardDefines(d =>
-                        d.GetType().Assembly == typeof(THHGame).Assembly &&
-                        d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));
-                }
-                for (int i = 0; i < _cardPoolInfoList.Count; i++)
-                {
-                    //卡池卡牌
-                    CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].ToReference());
-                    if (!_cardPoolFilterValue[i])
-                    {
-                        continue;
-                    }
-                    _cardDefineList.AddRange(cardDefines);
-                }
-                //过滤
-                if (info.cardFilter != null)
-                {
-                    _cardFilter = info.cardFilter;
-                }
-                _filteredCardDefineList = new List<CardDefine>(_cardDefineList);
-                if (_cardFilter == null)
-                {
-                    _filteredCardDefineList.RemoveAll(c =>
-                    {
-                        if (c.isToken())
-                        {
-                            //衍生物
-                            return true;
-                        }
-                        if (c.isMaster())
-                        {
-                            //角色卡
-                            return true;
-                        }
-                        if (c.isSkill())
-                        {
-                            //技能卡
-                            return true;
-                        }
-                        return false;
-                    });
-                }
-                else
-                {
-                    _filteredCardDefineList.RemoveAll(c => !_cardFilter(c));
-                }
-                List<DefineReference> characterRefList = new List<DefineReference>()
-                {
-                    new DefineReference(0,CATEGORY.CHARACTER_NEUTRAL)
-                };
-                for (int i = 0; i < _cardDefineList.Count; i++)
-                {
-                    if (_cardPoolFilterValue.Any(v => v))
-                    {
-                        //有对卡池进行过滤
-                        CardPoolInfo cardPoolInfo = game.card.getCardPoolInfoOfCard(_cardDefineList[i]);
-                        if (cardPoolInfo != null)
-                        {
-                            int cardPoolInfoIndex = _cardPoolInfoList.FindIndex(c => c.cardPoolId == cardPoolInfo.cardPoolId);
-                            if ((cardPoolInfoIndex < 0) || !_cardPoolFilterValue[cardPoolInfoIndex])
-                            {
-                                //忽略不在选中卡池中的角色
-                                continue;
-                            }
-                        }
-                    }
-                    if (_cardDefineList[i].isMaster())
-                    {
-                        characterRefList.Add(new DefineReference(_cardDefineList[i].cardPoolId, _cardDefineList[i].id));
-                    }
-                }
-                _characterFilters = characterRefList.ToArray();
-                if (info.characterFilterRefs != null)
-                {
-                    _characterFiltersValue = new bool[_characterFilters.Length];
-                    for (int i = 0; i < _characterFiltersValue.Length; i++)
-                    {
-                        _characterFiltersValue[i] = Array.Exists(info.characterFilterRefs, characterId => characterId == _characterFilters[i]);
-                    }
-                }
-                else if (_characterFiltersValue == null || _characterFiltersValue.Length != _characterFilters.Length)
-                {
-                    _characterFiltersValue = new bool[_characterFilters.Length];
-                }
-                if (_characterFiltersValue.Any(v => v))
-                {
-                    //过滤角色
-                    _filteredCardDefineList.RemoveAll(c =>
-                    {
-                        int index = Array.IndexOf(_characterFilters, c.getCharacterRef());
-                        if (index < 0)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return !_characterFiltersValue[index];
-                        }
-                    });
-                }
-                if (_costFiltersValue == null || _costFiltersValue.Length != _costFilters.Length)
-                {
-                    _costFiltersValue = new bool[_costFilters.Length];
-                }
-                if (_costFiltersValue.Any(v => v))
-                {
-                    //过滤费用
-                    _filteredCardDefineList.RemoveAll(c =>
-                    {
-                        int cost = c.getCost();
-                        if (cost >= 7)
-                        {
-                            return !_costFiltersValue[7];
-                        }
-                        else if (cost <= 0)
-                        {
-                            return !_costFiltersValue[0];
-                        }
-                        else
-                        {
-                            return !_costFiltersValue[cost];
-                        }
-                    });
-                }
-                if (_typeFiltersValue == null || _typeFiltersValue.Length != _typeFilters.Length)
-                {
-                    _typeFiltersValue = new bool[_typeFilters.Length];
-                }
-                if (_typeFiltersValue.Any(v => v))
-                {
-                    //过滤类型
-                    _filteredCardDefineList.RemoveAll(c =>
-                    {
-                        int index = Array.IndexOf(_typeFilters, c.type);
-                        if (index < 0)
-                            return true;
-                        else
-                            return !_typeFiltersValue[index];
-                    });
-                }
-                //排序
-                if (_sortType == 0)
-                {
-                    //费用排序
-                    _filteredCardDefineList.Sort((a, b) => a.getCost() - b.getCost());
-                }
-                else if (_sortType == 1)
-                {
-                    //名称排序
-                    _filteredCardDefineList.Sort((a, b) =>
-                    {
-                        string nameA = game.card.getDefaultSkin(a).name;
-                        string nameB = game.card.getDefaultSkin(b).name;
-                        return nameA.CompareTo(nameB);
-                    });
-                }
+                await loadCardPoolInfos(info);
+
+                // 更新卡池过滤器。
+                updateCardPoolFilters(info);
+
+                // 加载卡牌定义。
+                await loadCardDefines();
+
+                // 更新筛选器。
+                updateFilters(info);
+
+                // 筛选。
+                var cardDefines = new List<CardDefine>(_cardDefineList);
+                filterCards(cardDefines);
+
+                // 排序
+                sortCards(cardDefines);
+
+                _filteredCardDefineList = cardDefines;
+
                 //更新UI
                 _ui.gameObject.SetActive(true);
-                string[] cardPoolNames = new string[_cardPoolInfoList.Count + 1];
-                for (int i = 0; i < _cardPoolInfoList.Count; i++)
-                {
-                    cardPoolNames[i] = _cardPoolInfoList[i].cardPoolName;
-                }
-                cardPoolNames[cardPoolNames.Length - 1] = game.langManager.getString(StringTable.CARDPOOL_NAME_BUILTIN);
-                _ui.setCardPoolOptions(cardPoolNames);
+                _ui.setCardPoolOptions(getCardPoolNames());
                 _ui.setCardPoolValues(_cardPoolFilterValue);
-                string[] characterNames = new string[_characterFilters.Length];
-                for (int i = 0; i < characterNames.Length; i++)
-                {
-                    if (_characterFilters[i].cardPoolId == 0 && _characterFilters[i].defineId == CATEGORY.CHARACTER_NEUTRAL)
-                    {
-                        characterNames[i] = game.langManager.getString(StringTable.CARDVIEW_CHARACTER_NEUTRAL);
-                    }
-                    else
-                    {
-                        characterNames[i] = game.card.getDefaultSkin(game.card.getLocalCardDefine(_characterFilters[i])).name;
-                    }
-                }
-                List<string> characterNameList = new List<string>();
-                characterNameList.Add(StringTable.CARDVIEW_CHARACTER_NEUTRAL);
-                for (int i = 0; i < _cardDefineList.Count; i++)
-                {
-                    if (_cardDefineList[i].isMaster())
-                    {
-                        characterNameList.Add(game.card.getDefaultSkin(_cardDefineList[i]).name);
-                    }
-                }
-                _ui.setCharacterFilters(characterNameList.ToArray());
+                _ui.setCharacterFilters(getCharacterNames());
                 _ui.setCharacterFilter(_characterFiltersValue);
                 _ui.setSortTypes(_sortTypes);
                 _ui.setSortType(_sortType);
@@ -457,6 +259,265 @@ namespace Controllers
             }
         }
         #endregion
+        private async Task loadCardPoolInfos(DisplayInfo info)
+        {
+            if (info.cardPoolInfos != null)
+            {
+                _cardPoolInfoList.Clear();
+                _cardPoolInfoList.AddRange(info.cardPoolInfos);
+            }
+            else
+            {
+                var result = await game.card.loadCardPoolInfosAsync();
+                _cardPoolInfoList = new List<CardPoolInfo>(result.Values);
+            }
+            _cardPoolInfoList.Sort((a, b) => (int)(a.cardPoolId - b.cardPoolId));
+        }
+        /// <summary>
+        /// 获取所有卡池的名称。
+        /// </summary>
+        /// <returns>卡池名称数组。</returns>
+        private string[] getCardPoolNames()
+        {
+            string[] cardPoolNames = new string[_cardPoolInfoList.Count + 1];
+            for (int i = 0; i < _cardPoolInfoList.Count; i++)
+            {
+                cardPoolNames[i] = _cardPoolInfoList[i].cardPoolName;
+            }
+            cardPoolNames[cardPoolNames.Length - 1] = game.langManager.getString(StringTable.CARDPOOL_NAME_BUILTIN);
+            return cardPoolNames;
+        }
+        /// <summary>
+        /// 获取所有人物的名称。
+        /// </summary>
+        /// <returns>人物名称数组。</returns>
+        private string[] getCharacterNames()
+        {
+            List<string> characterNameList = new List<string>
+            {
+                StringTable.CARDVIEW_CHARACTER_NEUTRAL
+            };
+            for (int i = 0; i < _cardDefineList.Count; i++)
+            {
+                if (_cardDefineList[i].isMaster())
+                {
+                    characterNameList.Add(game.card.getDefaultSkin(_cardDefineList[i]).name);
+                }
+            }
+            return characterNameList.ToArray();
+        }
+        /// <summary>
+        /// 根据卡池的过滤器，读取指定卡牌内的所有卡牌定义。
+        /// </summary>
+        /// <returns></returns>
+        private async Task loadCardDefines()
+        {
+            // 加载卡片
+            var defines = new List<CardDefine>();
+            // 内置卡池。
+            if (_cardPoolFilterValue[_cardPoolFilterValue.Length - 1])
+            {
+                //反射硬编码卡牌
+                defines.AddRange(game.card.GetCardDefines(d =>
+                    d.GetType().Assembly == typeof(THHGame).Assembly &&
+                    d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));
+            }
+            // 外部卡池。
+            for (int i = 0; i < _cardPoolInfoList.Count; i++)
+            {
+                //卡池卡牌
+                CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].ToReference());
+                if (!_cardPoolFilterValue[i])
+                    continue;
+                defines.AddRange(cardDefines);
+            }
+            _cardDefineList = defines;
+        }
+        /// <summary>
+        /// 筛选一张卡牌定义。
+        /// </summary>
+        /// <param name="define">卡牌定义。</param>
+        /// <returns>如果一张卡牌可以显示，则返回true，否则返回false。</returns>
+        private bool filter(CardDefine define)
+        {
+            // 自定义筛选器。
+            if (_cardFilter != null)
+            {
+                if (!_cardFilter(define))
+                    return false;
+            }
+            else
+            {
+                // 不可收藏。
+                if (define.isToken() || define.isMaster() || define.isSkill())
+                    return false;
+            }
+
+            // 筛选角色。
+            if (_characterFiltersValue.Contains(true))
+            {
+                int index = Array.IndexOf(_characterFilters, define.getCharacterRef());
+                if (index < 0 || !_characterFiltersValue[index])
+                    return false;
+            }
+
+            // 筛选费用。
+            if (_costFiltersValue.Contains(true))
+            {
+                int index = Mathf.Clamp(define.getCost(), 0, _costFiltersValue.Length - 1);
+                if (index < 0 || !_costFiltersValue[index])
+                    return false;
+            }
+
+            // 筛选类型。
+            if (_typeFiltersValue.Contains(true))
+            {
+                int index = Array.IndexOf(_typeFilters, define.type);
+                if (index < 0 || !_typeFiltersValue[index])
+                    return false;
+            }
+            return true;
+        }
+        /// <summary>
+        /// 筛选所有卡牌。
+        /// </summary>
+        /// <param name="cardDefines">要筛选的卡牌。</param>
+        private void filterCards(List<CardDefine> cardDefines)
+        {
+            cardDefines.RemoveAll(c => !filter(c));
+        }
+        /// <summary>
+        /// 排序所有卡牌。
+        /// </summary>
+        /// <param name="cardDefines">要排序的卡牌。</param>
+        private void sortCards(List<CardDefine> cardDefines)
+        {
+            //排序
+            if (_sortType == 0)
+            {
+                //费用排序
+                cardDefines.Sort((a, b) =>
+                {
+                    var compared = a.getCost() - b.getCost();
+                    if (compared == 0)
+                    {
+                        return a.id.CompareTo(b.id);
+                    }
+                    return compared;
+                });
+            }
+            else if (_sortType == 1)
+            {
+                //名称排序
+                cardDefines.Sort((a, b) =>
+                {
+                    string nameA = game.card.getDefaultSkin(a).name;
+                    string nameB = game.card.getDefaultSkin(b).name;
+                    var compared = nameA.CompareTo(nameB);
+                    if (compared == 0)
+                    {
+                        return a.id.CompareTo(b.id);
+                    }
+                    return compared;
+                });
+            }
+        }
+        /// <summary>
+        /// 更新所有卡牌筛选器。（卡池筛选器除外）
+        /// </summary>
+        private void updateFilters(DisplayInfo info)
+        {
+            // 自定义筛选器。
+            if (info.cardFilter != null)
+            {
+                _cardFilter = info.cardFilter;
+            }
+            // 人物筛选
+            _characterFilters = getCardDefineCharacters(_cardDefineList);
+            updateCharacterFilterValues(info);
+            updateCostFilters();
+            updateTypeFilters();
+        }
+        private void updateCardPoolFilters(DisplayInfo info)
+        {
+            var poolInfos = _cardPoolInfoList;
+            bool[] values = _cardPoolFilterValue;
+            if (info.cardPoolFiltersId != null)
+            {
+                //更改卡池过滤器的值
+                values = new bool[poolInfos.Count + 1];
+                for (int i = 0; i < poolInfos.Count; i++)
+                {
+                    values[i] = Array.Exists(info.cardPoolFiltersId, c => c == poolInfos[i].cardPoolId);
+                }
+            }
+            else if (values == null || values.Length != poolInfos.Count + 1)
+            {
+                values = new bool[poolInfos.Count + 1];
+            }
+            // 显示内置卡池。
+            if (info.hideBuiltinCards != null)
+            {
+                values[values.Length - 1] = !info.hideBuiltinCards.Value;
+            }
+            _cardPoolFilterValue = values;
+        }
+        /// <summary>
+        /// 根据所有卡牌定义，获取所有可用的人物。
+        /// </summary>
+        /// <param name="cardDefines">卡牌定义列表。</param>
+        /// <returns></returns>
+        private DefineReference[] getCardDefineCharacters(IEnumerable<CardDefine> cardDefines)
+        {
+            HashSet<DefineReference> characterRefList = new HashSet<DefineReference>()
+            {
+                new DefineReference(0, CATEGORY.CHARACTER_NEUTRAL)
+            };
+            foreach (var define in cardDefines)
+            {
+                if (define.isMaster())
+                {
+                    characterRefList.Add(define.getDefineRef());
+                }
+            }
+            return characterRefList.ToArray();
+        }
+        /// <summary>
+        /// 更新人物筛选器的已选人物。
+        /// </summary>
+        /// <param name="info">显示信息。</param>
+        private void updateCharacterFilterValues(DisplayInfo info)
+        {
+            if (info.characterFilterRefs != null)
+            {
+                _characterFiltersValue = new bool[_characterFilters.Length];
+                for (int i = 0; i < _characterFiltersValue.Length; i++)
+                {
+                    _characterFiltersValue[i] = Array.Exists(info.characterFilterRefs, c => c == _characterFilters[i]);
+                }
+            }
+            else if (_cardPoolFilterValue == null || _cardPoolFilterValue.Length != _cardPoolInfoList.Count + 1)
+            {
+                _cardPoolFilterValue = new bool[_cardPoolInfoList.Count + 1];
+            }
+        }
+
+        private void updateCostFilters()
+        {
+            if (_costFiltersValue == null || _costFiltersValue.Length != _costFilters.Length)
+            {
+                _costFiltersValue = new bool[_costFilters.Length];
+            }
+        }
+        private void updateTypeFilters()
+        {
+            if (_typeFiltersValue == null || _typeFiltersValue.Length != _typeFilters.Length)
+            {
+                _typeFiltersValue = new bool[_typeFilters.Length];
+            }
+        }
+
+
         /// <summary>
         /// 为了引用过滤而重新显示界面
         /// </summary>
