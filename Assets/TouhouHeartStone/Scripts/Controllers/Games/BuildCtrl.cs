@@ -268,7 +268,7 @@ namespace Controllers
             if (needUpdateUI)
             {
                 //更新可用信息
-                await _cardPoolViewPanelCtrl.display();
+                _cardPoolViewPanelCtrl.updateContents();
                 //更新UI
                 await updateDeckCardListUI();
             }
@@ -290,6 +290,12 @@ namespace Controllers
                 return 0;
             }).ToArray();
 
+            // 超出卡组上下限，刷新卡牌列表。
+            if (index < 0 || index >= cards.Length)
+            {
+                await updateDeckCardListUI();
+                return;
+            }
             _dragCard = game.card.getLocalCardDefine(cards[index].cardRef);
             index = deckList.IndexOf(cards[index]);
             //从卡组中删除一张卡牌
@@ -298,7 +304,7 @@ namespace Controllers
             if (deckItem.count <= 0)
                 deckList.RemoveAt(index);
             //刷新卡池显示
-            await _cardPoolViewPanelCtrl.display();
+            _cardPoolViewPanelCtrl.updateContents();
             //这里本来应该刷新卡组显示，但是因为列表物体销毁会导致拖拽事件不再触发，所以移动到停止拖拽
             //await updateDeckCardListUI();
             //刷新拖拽卡牌显示
@@ -324,7 +330,7 @@ namespace Controllers
                 if (tryAddCardToDeck(_dragCard, out string errorTip))
                 {
                     // 更新可用信息
-                    await _cardPoolViewPanelCtrl.display();
+                    _cardPoolViewPanelCtrl.updateContents();
                 }
                 else
                     _ui.showErrorTip(errorTip);

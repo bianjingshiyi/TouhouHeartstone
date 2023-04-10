@@ -17,6 +17,11 @@ namespace Controllers
     class CardPoolViewPanelCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 公有方法
+        /// <summary>
+        /// 显示，并加载卡池信息。
+        /// </summary>
+        /// <param name="displayInfo"></param>
+        /// <returns></returns>
         public async Task display(UIDisplayInfo displayInfo)
         {
             if (displayInfo is DisplayInfo info)
@@ -33,35 +38,7 @@ namespace Controllers
                 // 更新筛选器。
                 updateFilters(info);
 
-                // 筛选。
-                var cardDefines = new List<CardDefine>(_cardDefineList);
-                filterCards(cardDefines);
-
-                // 排序
-                sortCards(cardDefines);
-
-                _filteredCardDefineList = cardDefines;
-
-                //更新UI
-                _ui.gameObject.SetActive(true);
-                _ui.setCardPoolOptions(getCardPoolNames());
-                _ui.setCardPoolValues(_cardPoolFilterValue);
-                _ui.setCharacterFilters(getCharacterNames());
-                _ui.setCharacterFilter(_characterFiltersValue);
-                _ui.setSortTypes(_sortTypes);
-                _ui.setSortType(_sortType);
-                _ui.setCostFilters(_costFilters);
-                _ui.setCostFilter(_costFiltersValue);
-                string[] typesName = new string[]
-                {
-                    game.langManager.getString(StringTable.GAME_CARD_TYPE_SERVANT),
-                    game.langManager.getString(StringTable.GAME_CARD_TYPE_SPELL),
-                    game.langManager.getString(StringTable.GAME_CARD_TYPE_ITEM)
-                };
-                _ui.setTypeFilters(typesName);
-                _ui.setTypeFilter(_typeFiltersValue);
-                _ui.setSearchInputField(_searchFilterString);
-                _ui.updateCardListCount(_filteredCardDefineList.Count);
+                updateContents();
             }
         }
         public Task display(int cardId, long[] cardPoolsId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
@@ -102,6 +79,39 @@ namespace Controllers
                 cardPoolFiltersId = new long[] { cardPoolInfo.cardPoolId },
                 cardFilter = cardFilter
             });
+        }
+        
+        public void updateContents()
+        {
+            // 筛选。
+            var cardDefines = new List<CardDefine>(_cardDefineList);
+            filterCards(cardDefines);
+
+            // 排序
+            sortCards(cardDefines);
+
+            _filteredCardDefineList = cardDefines;
+
+            //更新UI
+            _ui.gameObject.SetActive(true);
+            _ui.setCardPoolOptions(getCardPoolNames());
+            _ui.setCardPoolValues(_cardPoolFilterValue);
+            _ui.setCharacterFilters(getCharacterNames());
+            _ui.setCharacterFilter(_characterFiltersValue);
+            _ui.setSortTypes(_sortTypes);
+            _ui.setSortType(_sortType);
+            _ui.setCostFilters(_costFilters);
+            _ui.setCostFilter(_costFiltersValue);
+            string[] typesName = new string[]
+            {
+                    game.langManager.getString(StringTable.GAME_CARD_TYPE_SERVANT),
+                    game.langManager.getString(StringTable.GAME_CARD_TYPE_SPELL),
+                    game.langManager.getString(StringTable.GAME_CARD_TYPE_ITEM)
+            };
+            _ui.setTypeFilters(typesName);
+            _ui.setTypeFilter(_typeFiltersValue);
+            _ui.setSearchInputField(_searchFilterString);
+            _ui.updateCardListCount(_filteredCardDefineList.Count);
         }
         public UIDisplayInfo getCurrentDisplayInfo()
         {
@@ -144,30 +154,30 @@ namespace Controllers
         }
         #endregion
         #region 事件回调
-        private async void onCardPoolValuesChanged(bool[] value)
+        private void onCardPoolValuesChanged(bool[] value)
         {
             _cardPoolFilterValue = value;
-            await displayForApplyFilters();
+            updateContents();
         }
-        private async void onSortTypeValueChanged(int value)
+        private void onSortTypeValueChanged(int value)
         {
             _sortType = value;
-            await displayForApplyFilters();
+            updateContents();
         }
-        private async void onCharacterFiltersValueChanged(bool[] value)
+        private void onCharacterFiltersValueChanged(bool[] value)
         {
             _characterFiltersValue = value;
-            await displayForApplyFilters();
+            updateContents();
         }
-        private async void onCostFiltersValueChanged(bool[] value)
+        private void onCostFiltersValueChanged(bool[] value)
         {
             _costFiltersValue = value;
-            await displayForApplyFilters();
+            updateContents();
         }
-        private async void onTypeFilterValueChanged(bool[] value)
+        private void onTypeFilterValueChanged(bool[] value)
         {
             _typeFiltersValue = value;
-            await displayForApplyFilters();
+            updateContents();
         }
         private void onEnableCardListItemCallback(int index, RectTransform itemRect)
         {
@@ -272,6 +282,7 @@ namespace Controllers
                 _cardPoolInfoList = new List<CardPoolInfo>(result.Values);
             }
             _cardPoolInfoList.Sort((a, b) => (int)(a.cardPoolId - b.cardPoolId));
+            _cardPoolIdList = _cardPoolInfoList.Select(i => i.cardPoolId).ToArray();
         }
         /// <summary>
         /// 获取所有卡池的名称。
@@ -307,28 +318,22 @@ namespace Controllers
             return characterNameList.ToArray();
         }
         /// <summary>
-        /// 根据卡池的过滤器，读取指定卡牌内的所有卡牌定义。
+        /// 读取所有卡牌定义。
         /// </summary>
         /// <returns></returns>
         private async Task loadCardDefines()
         {
-            // 加载卡片
             var defines = new List<CardDefine>();
             // 内置卡池。
-            if (_cardPoolFilterValue[_cardPoolFilterValue.Length - 1])
-            {
-                //反射硬编码卡牌
-                defines.AddRange(game.card.GetCardDefines(d =>
-                    d.GetType().Assembly == typeof(THHGame).Assembly &&
-                    d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));
-            }
+            //反射硬编码卡牌
+            defines.AddRange(game.card.GetCardDefines(d =>
+                d.GetType().Assembly == typeof(THHGame).Assembly &&
+                d.GetType().GetCustomAttribute<IgnoreCardDefineAttribute>() == null, includeExternalCard: false));
             // 外部卡池。
             for (int i = 0; i < _cardPoolInfoList.Count; i++)
             {
                 //卡池卡牌
                 CardDefine[] cardDefines = await game.card.getOrLoadCardDefines(_cardPoolInfoList[i].ToReference());
-                if (!_cardPoolFilterValue[i])
-                    continue;
                 defines.AddRange(cardDefines);
             }
             _cardDefineList = defines;
@@ -340,6 +345,18 @@ namespace Controllers
         /// <returns>如果一张卡牌可以显示，则返回true，否则返回false。</returns>
         private bool filter(CardDefine define)
         {
+            if (game.card.isBuiltinCard(define))
+            {
+                if (!_cardPoolFilterValue[_cardPoolFilterValue.Length - 1])
+                    return false;
+            }
+            else
+            {
+                int index = Array.IndexOf(_cardPoolIdList, define.cardPoolId);
+                if (index < 0 || !_cardPoolFilterValue[index])
+                    return false;
+            }
+
             // 自定义筛选器。
             if (_cardFilter != null)
             {
@@ -516,43 +533,6 @@ namespace Controllers
                 _typeFiltersValue = new bool[_typeFilters.Length];
             }
         }
-
-
-        /// <summary>
-        /// 为了引用过滤而重新显示界面
-        /// </summary>
-        /// <returns></returns>
-        private async Task displayForApplyFilters()
-        {
-            List<long> cardPoolsIdList = new List<long>();
-            for (int i = 0; i < _cardPoolInfoList.Count; i++)
-            {
-                if (_cardPoolFilterValue[i])
-                {
-                    cardPoolsIdList.Add(_cardPoolInfoList[i].cardPoolId);
-                }
-            }
-            List<DefineReference> charactersIdList = new List<DefineReference>();
-            for (int i = 0; i < _characterFiltersValue.Length; i++)
-            {
-                if (_characterFiltersValue[i])
-                {
-                    charactersIdList.Add(_characterFilters[i]);
-                }
-            }
-            await display(new DisplayInfo()
-            {
-                cardPoolInfos = _cardPoolInfoList.ToArray(),
-                hideBuiltinCards = !_cardPoolFilterValue[_cardPoolFilterValue.Length - 1],
-                cardPoolFiltersId = cardPoolsIdList.ToArray(),
-                sortType = _sortType,
-                characterFilterRefs = charactersIdList.ToArray(),
-                costFiltersValue = _costFiltersValue,
-                typeFiltersValue = _typeFiltersValue,
-                searchFilterValue = _searchFilterString,
-                cardFilter = _cardFilter
-            });
-        }
         #endregion
         #region 事件
         public event Action<CardDefine> onClickCard;
@@ -576,6 +556,8 @@ namespace Controllers
         List<CardPoolInfo> _cardPoolInfoList = new List<CardPoolInfo>();
         List<CardDefine> _cardDefineList = new List<CardDefine>();
         List<CardDefine> _filteredCardDefineList = new List<CardDefine>();
+        [SerializeField]
+        long[] _cardPoolIdList;
         [SerializeField]
         bool _hideCount = false;
         [SerializeField]
