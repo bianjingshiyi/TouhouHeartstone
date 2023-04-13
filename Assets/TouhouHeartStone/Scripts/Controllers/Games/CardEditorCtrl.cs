@@ -890,7 +890,7 @@ namespace Controllers
 
         public static (string name, string value)[] getKeywords()
         {
-            return keywordInfos.Select(p => (p.Key, p.Value.displayName)).ToArray();
+            return keywordInfos.Select(p => (p.Value.displayName, p.Key)).ToArray();
         }
         #region 自定义属性
         /// <summary>

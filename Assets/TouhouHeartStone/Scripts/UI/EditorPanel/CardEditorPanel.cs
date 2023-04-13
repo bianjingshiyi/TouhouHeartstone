@@ -306,7 +306,7 @@ namespace UI
             rect =>
             {
                 CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
-                item.setPiles(CardEditorCtrl.piles.Select(p => (p.Key, p.Value)));
+                item.setPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)));
                 item.setKeywords(CardEditorCtrl.getKeywords());
                 item.onClickItemButton += onClickCustomPropertyItemButtonCallback;
                 item.onItemValueChanged += onCustomPropertyItemValueChangedCallback;
