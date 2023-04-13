@@ -35,6 +35,10 @@ namespace Controllers
             {
                 _buffEditor = TransformHelper.findComponentInScene<BuffEditorCtrl>(gameObject.scene);
             }
+            if (_actionEditor == null)
+            {
+                _actionEditor = TransformHelper.findComponentInScene<ActionEditorCtrl>(gameObject.scene);
+            }
             if (_effectEditor == null)
             {
                 _effectEditor = TransformHelper.findComponentInScene<EffectEditorCtrl>(gameObject.scene);
@@ -54,6 +58,7 @@ namespace Controllers
             _editor.gameObject.SetActive(false);
             _cardEditor.gameObject.SetActive(false);
             _buffEditor.gameObject.SetActive(false);
+            _actionEditor.gameObject.SetActive(false);
             _effectEditor.gameObject.SetActive(false);
             _actionNodeGraphCtrl.gameObject.SetActive(false);
             _chatCtrl.gameObject.SetActive(false);
@@ -65,6 +70,7 @@ namespace Controllers
         public EditorCtrl editor => _editor;
         public CardEditorCtrl cardEditor => _cardEditor;
         public BuffEditorCtrl buffEditor => _buffEditor;
+        public ActionEditorCtrl actionEditor => _actionEditor;
         public ChatCtrl chatCtrl => _chatCtrl;
         [SerializeField]
         MainMenuCtrl _menu;
@@ -78,6 +84,8 @@ namespace Controllers
         EditorCtrl _editor;
         [SerializeField]
         CardEditorCtrl _cardEditor;
+        [SerializeField]
+        ActionEditorCtrl _actionEditor;
         [SerializeField]
         BuffEditorCtrl _buffEditor;
         [SerializeField]

@@ -175,13 +175,7 @@ namespace Controllers
                 else if (index == 1)//编辑
                 {
                     GeneratedActionDefine generatedActionDefine = getActionDefine(_curEditActionNode.defineName) as GeneratedActionDefine;
-                    await game.ui.displayUIWithReturn(_effectEditor, new EffectEditorCtrl.DisplayInfo(
-                        _curCardPoolId,
-                        generatedActionDefine,
-                        new DisplayInfo(
-                            _curCardPoolId,
-                            generatedActionDefine,
-                            null, game.card.getOrCreateActionDefineActionNodeGraphInfo(_curCardPoolId, generatedActionDefine.id))));
+                    await scene.editor.openActionEditor(_curCardPoolId, generatedActionDefine);
                 }
                 closeMenu();
             }
@@ -223,7 +217,7 @@ namespace Controllers
                         GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(
                             _curCardPoolId,
                             game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT));
-                        await _effectEditor.display(_curCardPoolId, generatedActionDefine);
+                        await scene.editor.openActionEditor(_curCardPoolId, generatedActionDefine);
                     }
                 }
                 else

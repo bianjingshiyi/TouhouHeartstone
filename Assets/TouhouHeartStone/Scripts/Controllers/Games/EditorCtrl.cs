@@ -96,6 +96,14 @@ namespace Controllers
                 displayObj = cardDefine
             });
         }
+        public Task openActionEditor(long cardPoolId, GeneratedActionDefine actionDefine)
+        {
+            return openEditorPanel(new CardPoolDisplayInfo()
+            {
+                cardPoolId = cardPoolId,
+                displayObj = actionDefine
+            });
+        }
         public Task openBuffEditor(long cardPoolId, GeneratedBuffDefine buffDefine)
         {
             return openEditorPanel(new CardPoolDisplayInfo()
@@ -596,6 +604,9 @@ namespace Controllers
             {
                 case CardDefine _:
                     editor = scene.cardEditor;
+                    break;
+                case GeneratedActionDefine _:
+                    editor = scene.actionEditor;
                     break;
                 case GeneratedBuffDefine _:
                     editor = scene.buffEditor;
