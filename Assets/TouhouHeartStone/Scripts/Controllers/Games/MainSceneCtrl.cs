@@ -31,6 +31,10 @@ namespace Controllers
             {
                 _cardEditor = TransformHelper.findComponentInScene<CardEditorCtrl>(gameObject.scene);
             }
+            if (_buffEditor == null)
+            {
+                _buffEditor = TransformHelper.findComponentInScene<BuffEditorCtrl>(gameObject.scene);
+            }
             if (_effectEditor == null)
             {
                 _effectEditor = TransformHelper.findComponentInScene<EffectEditorCtrl>(gameObject.scene);
@@ -49,6 +53,7 @@ namespace Controllers
             _pveRoom.gameObject.SetActive(false);
             _editor.gameObject.SetActive(false);
             _cardEditor.gameObject.SetActive(false);
+            _buffEditor.gameObject.SetActive(false);
             _effectEditor.gameObject.SetActive(false);
             _actionNodeGraphCtrl.gameObject.SetActive(false);
             _chatCtrl.gameObject.SetActive(false);
@@ -59,6 +64,7 @@ namespace Controllers
         public PVERoomCtrl pveRoom => _pveRoom;
         public EditorCtrl editor => _editor;
         public CardEditorCtrl cardEditor => _cardEditor;
+        public BuffEditorCtrl buffEditor => _buffEditor;
         public EffectEditorCtrl effectEditor => _effectEditor;
         public ActionNodeGraphCtrl actionNodeGraphCtrl => _actionNodeGraphCtrl;
         public ChatCtrl chatCtrl => _chatCtrl;
@@ -74,6 +80,8 @@ namespace Controllers
         EditorCtrl _editor;
         [SerializeField]
         CardEditorCtrl _cardEditor;
+        [SerializeField]
+        BuffEditorCtrl _buffEditor;
         [SerializeField]
         EffectEditorCtrl _effectEditor;
         [SerializeField]
