@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEngine;
 
 namespace UI
 {
@@ -9,31 +8,17 @@ namespace UI
         public ActionNodeItem createNodeForBuff(float posX, float posY, ActionNodeBuffViewData viewData, string[] outputNames)
         {
             ActionNodeItem node = createNode(posX, posY);
+            node.onBuffChanged += onItemBuffChangedCallback;
+            node.onClickEditBuffButton += onClickItemEditBuffButtonCallback;
             node.switchToBuffNode();
+            updateBuffActionNode(node, viewData);
+            node.setOutputs(outputNames);
+            return node;
+        }
+        public void updateBuffActionNode(ActionNodeItem node, ActionNodeBuffViewData viewData)
+        {
             node.setBuffValues(viewData.buffNames);
             node.setBuffValue(viewData.buffIndex);
-            node.setBuffLanguage(viewData.buffLanguageIndex);
-            node.setBuffSkin(viewData.buffName, viewData.buffDesc, viewData.buffImage);
-            node.setupPropModifierTemplate(viewData.propertyTypes);
-            node.updatePropModifierList(viewData.propModifiersViewData);
-            node.updateEffectList(viewData.effectTypeNames, viewData.effectNames);
-            node.setOutputs(outputNames);
-            node.onBuffChanged += onItemBuffChangedCallback;
-            node.onClickNewBuffButton += onClickItemNewBuffButtonCallback;
-            node.onClickDeleteBuffButton += onClickItemDeleteBuffButtonCallback;
-            node.onClickAddPropModifierButton += onClickItemAddPropModifierButtonCallback;
-            node.onClickRemovePropModifierButton += onClickItemRemovePropModifierButtonCallback;
-            node.onPropModifierPropertyTypeChanged += onItemPropModifierPropertyTypeChangedCallback;
-            node.onPropModifierModifyTypeChanged += onItemPropModifierModifyTypeChangedCallback;
-            node.onPropModifierValueChanged += onItemPropModifierValueChangedCallback;
-            node.onPropModifierAddEffect += onItemPropModifierAddEffectCallback;
-            node.onPropModifierRemoveEffect += onItemPropModifierRemoveEffectCallback;
-            node.onPropModifierEditEffect += onItemPropModifierEditEffectCallback;
-            node.onBuffNameChanged += onItemBuffNameChangedCallback;
-            node.onBuffDescChanged += onItemBuffDescChangedCallback;
-            node.onBuffLanguageChanged += onItemBuffLanguageChangedCallback;
-            node.onNeedSelectBuffImage += onItemNeedSelectBuffImageCallback;
-            return node;
         }
         #endregion
         #region 私有方法
@@ -41,94 +26,20 @@ namespace UI
         {
             onItemBuffChanged?.Invoke(item, index);
         }
-        private void onClickItemNewBuffButtonCallback(ActionNodeItem item)
+        private void onClickItemEditBuffButtonCallback(ActionNodeItem item)
         {
-            onClickItemNewBuffButton?.Invoke(item);
-        }
-        private void onClickItemDeleteBuffButtonCallback(ActionNodeItem item)
-        {
-            onClickItemDeleteBuffButton?.Invoke(item);
-        }
-        private void onClickItemAddPropModifierButtonCallback(ActionNodeItem item)
-        {
-            onClickItemAddPropModifierButton?.Invoke(item);
-        }
-        private void onClickItemRemovePropModifierButtonCallback(ActionNodeItem item, int index)
-        {
-            onClickItemRemovePropModifierButton?.Invoke(item, index);
-        }
-        private void onItemPropModifierPropertyTypeChangedCallback(ActionNodeItem item, int index, int propTypeIndex)
-        {
-            onItemPropModifierPropertyTypeChanged?.Invoke(item, index, propTypeIndex);
-        }
-        private void onItemPropModifierModifyTypeChangedCallback(ActionNodeItem item, int index, int modifyTypeIndex)
-        {
-            onItemPropModifierModifyTypeChanged?.Invoke(item, index, modifyTypeIndex);
-        }
-        private void onItemPropModifierValueChangedCallback(ActionNodeItem item, int index, object value)
-        {
-            onItemPropModifierValueChanged?.Invoke(item, index, value);
-        }
-        private void onItemPropModifierAddEffectCallback(ActionNodeItem item, int index)
-        {
-            onItemPropModifierAddEffect?.Invoke(item, index);
-        }
-        private void onItemPropModifierRemoveEffectCallback(ActionNodeItem item, int index)
-        {
-            onItemPropModifierRemoveEffect?.Invoke(item, index);
-        }
-        private void onItemPropModifierEditEffectCallback(ActionNodeItem item, int index)
-        {
-            onItemPropModifierEditEffect?.Invoke(item, index);
-        }
-        private void onItemBuffNameChangedCallback(ActionNodeItem item, string value)
-        {
-            onItemBuffNameChanged?.Invoke(item, value);
-        }
-        private void onItemBuffDescChangedCallback(ActionNodeItem item, string value)
-        {
-            onItemBuffDescChanged?.Invoke(item, value);
-        }
-        private void onItemBuffLanguageChangedCallback(ActionNodeItem item, int value)
-        {
-            onItemBuffLanguageChanged?.Invoke(item, value);
-        }
-        private void onItemNeedSelectBuffImageCallback(ActionNodeItem item)
-        {
-            onItemNeedSelectBuffImage?.Invoke(item);
+            onClickItemEditBuffButton?.Invoke(item);
         }
         #endregion
         #region 事件
         public event Action<ActionNodeItem, int> onItemBuffChanged;
-        public event Action<ActionNodeItem> onClickItemNewBuffButton;
-        public event Action<ActionNodeItem> onClickItemDeleteBuffButton;
-        public event Action<ActionNodeItem> onClickItemAddPropModifierButton;
-        public event Action<ActionNodeItem, int> onClickItemRemovePropModifierButton;
-        public event Action<ActionNodeItem, int, int> onItemPropModifierPropertyTypeChanged;
-        public event Action<ActionNodeItem, int, int> onItemPropModifierModifyTypeChanged;
-        public event Action<ActionNodeItem, int, object> onItemPropModifierValueChanged;
-        public event Action<ActionNodeItem, int> onItemPropModifierAddEffect;
-        public event Action<ActionNodeItem, int> onItemPropModifierRemoveEffect;
-        public event Action<ActionNodeItem, int> onItemPropModifierEditEffect;
-        public event Action<ActionNodeItem, string> onItemBuffNameChanged;
-        public event Action<ActionNodeItem, string> onItemBuffDescChanged;
-        public event Action<ActionNodeItem, int> onItemBuffLanguageChanged;
-        public event Action<ActionNodeItem> onItemNeedSelectBuffImage;
-
+        public event Action<ActionNodeItem> onClickItemEditBuffButton;
         #endregion
     }
     public class ActionNodeBuffViewData
     {
         public string[] buffNames;
         public int buffIndex;
-        public int buffLanguageIndex;
-        public string buffName;
-        public string buffDesc;
-        public Sprite buffImage;
-        public string[] propertyTypes;
-        public ActionNodePropertyModifierViewData[] propModifiersViewData;
-        public string[] effectTypeNames;
-        public string[] effectNames;
     }
     public class ActionNodePropertyModifierViewData
     {

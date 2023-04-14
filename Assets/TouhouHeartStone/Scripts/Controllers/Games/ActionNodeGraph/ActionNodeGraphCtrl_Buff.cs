@@ -1,12 +1,12 @@
-﻿using TouhouCardEngine;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Boo.Lang;
+using Game;
+using MukioI18n;
+using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
-using System;
-using UnityEngine;
-using System.Threading.Tasks;
-using SFB;
-using Game;
-using System.Linq;
 
 namespace Controllers
 {
@@ -22,157 +22,27 @@ namespace Controllers
                 return;
             }
 
+            if (index == 0)
+            {
+                GeneratedBuffDefine newBuffDefine = game.card.createBuffDefine(_curCardPoolId);
+                await updateBuffActionNode(item, newBuffDefine);
+                OnEdited();
+                return;
+            }
+            index--;
+
             GeneratedBuffDefine buffDefine = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)
                 .ThenBy(p => p.Value.id)
                 .ElementAt(index).Value as GeneratedBuffDefine;
-            await updateBuffActionNode(item, buffDefine, getOrCreateBuffSkin(buffDefine));
+            await updateBuffActionNode(item, buffDefine);
+            OnEdited();
         }
-        private async void onClickItemNewBuffButtonCallback(ActionNodeItem item)
-        {
-            GeneratedBuffDefine newBuffDefine = game.card.createBuffDefine(_curCardPoolId);
-            await updateBuffActionNode(item, newBuffDefine, getOrCreateBuffSkin(newBuffDefine));
-        }
-        private async void onClickItemDeleteBuffButtonCallback(ActionNodeItem item)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine) &&
-                game.card.removeBuffDefine(_curCardPoolId, buffDefine))
-            {
-                var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
-                if (cardPoolRef == null)
-                {
-                    return;
-                }
-
-                buffDefine = game.card.getBuffDefines(cardPoolRef)
-                    .OrderBy(p => p.Value.cardPoolId)
-                    .ThenBy(p => p.Value.id)
-                    .Last().Value as GeneratedBuffDefine;
-                await updateBuffActionNode(item, buffDefine, getOrCreateBuffSkin(buffDefine));
-            }
-        }
-        private async void onClickItemAddPropModifierButtonCallback(ActionNodeItem item)
-        {
-            if (getActionNode(item) is ActionNode actionNode &&
-               actionNode.consts != null &&
-               actionNode.consts.Length > 0)
-            {
-                if (tryGetBuffDefine(actionNode.consts[0], out GeneratedBuffDefine buffDefine))
-                {
-                    PropModifier propModifier = new CostModifier(0);
-                    buffDefine.propModifierList.Add(propModifier);
-                    await updateBuffActionNode(item, buffDefine, null);
-                }
-            }
-        }
-        private async void onClickItemRemovePropModifierButtonCallback(ActionNodeItem item, int index)
+        private async void onItemEditBuffCallback(ActionNodeItem item)
         {
             if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                buffDefine.propModifierList.RemoveAt(index);
-                await updateBuffActionNode(item, buffDefine, null);
-            }
-        }
-        private async void onItemPropModifierPropertyTypeChangedCallback(ActionNodeItem item, int index, int propTypeIndex)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine) &&
-                propTypeIndex != getPropertyModifierIndex(buffDefine.propModifierList[index]))
-            {
-                buffDefine.propModifierList[index] = createPropertyModifierByIndex(propTypeIndex);
-                await updateBuffActionNode(item, buffDefine, null);
-            }
-        }
-        private async void onItemPropModifierModifyTypeChangedCallback(ActionNodeItem item, int index, int modifyTypeIndex)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine) &&
-                modifyTypeIndex != getModifyTypeIndex(buffDefine.propModifierList[index]))
-            {
-                setModifyTypeByIndex(buffDefine.propModifierList[index], modifyTypeIndex);
-                await updateBuffActionNode(item, buffDefine, null);
-            }
-        }
-        private async void onItemPropModifierValueChangedCallback(ActionNodeItem item, int index, object value)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
-            {
-                PropModifier propModifier = buffDefine.propModifierList[index];
-                if (propModifier.relatedPropName != null)
-                {
-                    propModifier.relatedPropName = (string)value;
-                }
-                else
-                {
-                    if (propModifier is IntPropModifier intPropModifier)
-                    {
-                        intPropModifier.value = (int)value;
-                    }
-                    else if (propModifier is KeywordsModifier keywordsModifier)
-                    {
-                        keywordsModifier.value = ((KeywordCollection)value).ToArray();
-                    }
-                }
-                await updateBuffActionNode(item, buffDefine, null);
-            }
-        }
-        private async void onItemPropModifierAddEffectCallback(ActionNodeItem item, int index)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
-            {
-                buffDefine.effectList.Add(game.card.createEffectByIndex(index));
-                await updateBuffActionNode(item, buffDefine, null);
-            }
-        }
-        private async void onItemPropModifierRemoveEffectCallback(ActionNodeItem item, int index)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
-            {
-                buffDefine.effectList.RemoveAt(index);
-                await updateBuffActionNode(item, buffDefine, null);
-            }
-        }
-        private async void onItemPropModifierEditEffectCallback(ActionNodeItem item, int index)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
-            {
-                await scene.effectEditor.display(_curCardPoolId, buffDefine, buffDefine.effectList[index]);
-            }
-        }
-        private async void onItemBuffNameChangedCallback(ActionNodeItem item, string value)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
-            {
-                var buffSkin = getOrCreateBuffSkin(buffDefine);
-                buffSkin.name = value;
-                await updateBuffActionNode(item, buffDefine, buffSkin);
-            }
-        }
-        private async void onItemBuffDescChangedCallback(ActionNodeItem item, string value)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
-            {
-                var buffSkin = getOrCreateBuffSkin(buffDefine);
-                buffSkin.desc = value;
-                await updateBuffActionNode(item, buffDefine, buffSkin);
-            }
-        }
-        private async void onItemBuffLanguageChangedCallback(ActionNodeItem item, int index)
-        {
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
-            {
-                var buffSkin = getOrCreateBuffSkin(buffDefine);
-                string[] languages = game.langManager.getLanguages();
-                buffSkin.language = languages[index];
-                await updateBuffActionNode(item, buffDefine, buffSkin);
-            }
-        }
-        private async void onItemNeedSelectBuffImage(ActionNodeItem item)
-        {
-            Sprite sprite = await game.card.selectExternalImage();
-            if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
-            {
-                var buffSkin = getOrCreateBuffSkin(buffDefine);
-                buffSkin.imagePath = sprite != null ? game.card.getSpritePath(sprite) : null;
-                await updateBuffActionNode(item, buffDefine, buffSkin);
+                await scene.buffEditor.display(_curCardPoolId, buffDefine);
             }
         }
         #endregion
@@ -211,13 +81,13 @@ namespace Controllers
 
             buffDefine = null;
             return false;
-        }    
-        private async Task updateBuffActionNode(ActionNodeItem item, GeneratedBuffDefine buffDefine, BuffSkin buffSkin)
+        }
+        private Task updateBuffActionNode(ActionNodeItem item, GeneratedBuffDefine buffDefine)
         {
             var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
             if (cardPoolRef == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             getActionNode(item).consts = new object[] { new DefineReference(buffDefine.cardPoolId, buffDefine.id) };
@@ -226,249 +96,24 @@ namespace Controllers
                 .ThenBy(p => p.Value.id)
                 .Select(p => p.Value)
                 .ToArray();
-            item.setBuffValues(game.card.getBuffDefineNames(buffDefines));
-            item.setBuffValue(Array.IndexOf(buffDefines, buffDefine));
-            ActionNodePropertyModifierViewData[] propModifiersViewData = getBuffDefinePropModifiersViewData(buffDefine);
-            item.updatePropModifierList(propModifiersViewData);
-            item.updateEffectList(game.card.getEffectNames(), game.card.getEffectNames(buffDefine.effectList.ToArray()));
-            if (buffSkin != null)
+
+            var buffNames = new List<string>()
             {
-                int languageIndex = Array.IndexOf(game.langManager.getLanguages(), buffSkin.language);
-                item.setBuffLanguage(languageIndex);
-                Sprite sprite = await game.card.loadImage(buffSkin.imagePath, _curCardPoolId);
-                item.setBuffSkin(buffSkin.name, buffSkin.desc, sprite);
-            }
-            OnEdited();
-        }
-        private string[] getBuffDefinePropertyTypes()
-        {
-            return Array.ConvertAll(_propertyTypes, s => game.langManager.getString(s));
-        }
-        private string[] getBuffDefineModifyTypes(string propertyType)
-        {
-            if (propertyType == StringTable.GAME_CARD_PROP_NAME_KEYWORDS)
-                return Array.ConvertAll(_keywordsModifyTypes, s => game.langManager.getString(s));
-            else
-                return Array.ConvertAll(_intModifyTypes, s => game.langManager.getString(s));
-        }
-        private ActionNodePropertyModifierViewData[] getBuffDefinePropModifiersViewData(GeneratedBuffDefine buffDefine)
-        {
-            ActionNodePropertyModifierViewData[] propModifiersViewData = new ActionNodePropertyModifierViewData[buffDefine.propModifierList.Count];
-            for (int i = 0; i < buffDefine.propModifierList.Count; i++)
+                game.lang._(ACTION_NODE_NEW_BUFF)
+            };
+            buffNames.AddRange(game.card.getBuffDefineNames(buffDefines));
+            var viewData = new ActionNodeBuffViewData()
             {
-                PropModifier propModifier = buffDefine.propModifierList[i];
-                ActionNodePropertyModifierViewData propModifierViewData = new ActionNodePropertyModifierViewData();
-                propModifiersViewData[i] = propModifierViewData;
-                propModifierViewData.propertyTypeIndex = getPropertyModifierIndex(propModifier);
-                propModifierViewData.modifyTypes = getBuffDefineModifyTypes(
-                    propModifierViewData.propertyTypeIndex < 0 ? string.Empty :
-                    getBuffDefinePropertyTypes()[propModifierViewData.propertyTypeIndex]);
-                propModifierViewData.modifyTypeIndex = getModifyTypeIndex(propModifier);
-                propModifierViewData.valueType = getPropModifierValueType(propModifier);
-                propModifierViewData.value = getPropModifierValue(propModifier);
-            }
-            return propModifiersViewData;
-        }
-        private PropModifier createPropertyModifierByIndex(int index)
-        {
-            if (index == 5)
-                return new SpellDamageModifier(0);
-            if (index == 4)
-                return new KeywordsModifier(KeywordsModifier.ModifyType.add);
-            if (index == 3)
-                return new DamageReduceModifier(0);
-            if (index == 2)
-                return new LifeModifier(0);
-            if (index == 1)
-                return new AttackModifier(0);
-            return new CostModifier(0);
-        }
-        private int getPropertyModifierIndex(PropModifier propModifier)
-        {
-            if (propModifier is SpellDamageModifier)
-                return 5;
-            if (propModifier is KeywordsModifier)
-                return 4;
-            if (propModifier is DamageReduceModifier)
-                return 3;
-            if (propModifier is LifeModifier)
-                return 2;
-            if (propModifier is AttackModifier)
-                return 1;
-            return 0;
-        }
-        private int getModifyTypeIndex(PropModifier propModifier)
-        {
-            if (propModifier is KeywordsModifier keywordsModifier)
-            {
-                if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.set)
-                {
-                    if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
-                        return 2;
-                    else
-                        return 5;
-                }
-                else if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.remove)
-                {
-                    if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
-                        return 1;
-                    else
-                        return 4;
-                }
-                else if (keywordsModifier.modifyType == KeywordsModifier.ModifyType.add)
-                {
-                    if (string.IsNullOrWhiteSpace(propModifier.relatedPropName))
-                        return 0;
-                    else
-                        return 3;
-                }
-            }
-            else if (propModifier is IntPropModifier intPropModifier)
-            {
-                if (propModifier.relatedPropName != null && intPropModifier.isSet)
-                    return 3;
-                else if (propModifier.relatedPropName != null)
-                    return 2;
-                else if (intPropModifier.isSet)
-                    return 1;
-                else
-                    return 0;
-            }
-            throw new NotImplementedException();
-        }
-        private void setModifyTypeByIndex(PropModifier propModifier, int index)
-        {
-            if (propModifier is KeywordsModifier keywordsModifier)
-            {
-                if (index == 5)
-                {
-                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.set;
-                }
-                else if (index == 4)
-                {
-                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.remove;
-                }
-                else if (index == 3)
-                {
-                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.add;
-                }
-                else if (index == 2)
-                {
-                    propModifier.relatedPropName = null;
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.set;
-                }
-                else if (index == 1)
-                {
-                    propModifier.relatedPropName = null;
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.remove;
-                }
-                else
-                {
-                    propModifier.relatedPropName = null;
-                    keywordsModifier.modifyType = KeywordsModifier.ModifyType.add;
-                }
-            }
-            else if (propModifier is IntPropModifier intPropModifier)
-            {
-                if (index == 3)
-                {
-                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
-                    intPropModifier.isSet = true;
-                }
-                else if (index == 2)
-                {
-                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
-                    intPropModifier.isSet = false;
-                }
-                else if (index == 1)
-                {
-                    propModifier.relatedPropName = null;
-                    intPropModifier.isSet = true;
-                }
-                else
-                {
-                    propModifier.relatedPropName = null;
-                    intPropModifier.isSet = false;
-                }
-            }
-        }
-        private ActionNodeValueType getPropModifierValueType(PropModifier propModifier)
-        {
-            if (propModifier.relatedPropName != null)
-            {
-                return ActionNodeValueType.text;
-            }
-            else
-            {
-                if (propModifier is CostModifier)
-                    return ActionNodeValueType.integer;
-                else if (propModifier is AttackModifier)
-                    return ActionNodeValueType.integer;
-                else if (propModifier is LifeModifier)
-                    return ActionNodeValueType.integer;
-                else if (propModifier is DamageReduceModifier)
-                    return ActionNodeValueType.integer;
-                else if (propModifier is KeywordsModifier)
-                    return ActionNodeValueType.keywords;
-                else if (propModifier is SpellDamageModifier)
-                    return ActionNodeValueType.integer;
-                throw new NotImplementedException();
-            }
-        }
-        private object getPropModifierValue(PropModifier propModifier)
-        {
-            if (!string.IsNullOrWhiteSpace(propModifier.relatedPropName))
-                return propModifier.relatedPropName;
-            else if (propModifier is KeywordsModifier keywordsModifier)
-                return new KeywordCollection(keywordsModifier.value);
-            else
-                return propModifier.getValue();
-        }
-        private BuffSkin getOrCreateBuffSkin(GeneratedBuffDefine buffDefine)
-        {
-            BuffSkin buffSkin = null;
-            var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
-            if (cardPoolRef != null)
-            {
-                BuffSkin[] buffSkins = game.card.getBuffSkins(cardPoolRef, buffDefine.id);
-                buffSkin = buffSkins.Length > 0 ?
-                    Array.Find(buffSkins, s => s.language == game.langManager.getLanguage()) :
-                    game.card.createBuffSkin(_curCardPoolId, buffDefine.id, game.langManager.getLanguage());
-                if (buffSkin == null)
-                    buffSkin = buffSkins[0];
-            }
-            return buffSkin;
+                buffNames = buffNames.ToArray(),
+                buffIndex = Array.IndexOf(buffDefines, buffDefine) + 1
+            };
+            _ui.updateBuffActionNode(item, viewData);
+            return Task.CompletedTask;
         }
         #endregion
         #region 属性字段
-        string[] _propertyTypes = new string[]
-        {
-            StringTable.GAME_CARD_PROP_NAME_COST,
-            StringTable.GAME_CARD_PROP_NAME_ATTACK,
-            StringTable.GAME_CARD_PROP_NAME_LIFE,
-            StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE,
-            StringTable.GAME_CARD_PROP_NAME_KEYWORDS,
-            StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE,
-        };
-        string[] _intModifyTypes = new string[]
-        {
-            StringTable.GAME_CARD_PROP_MODIFY_ADD,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO,
-            StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
-        };
-        string[] _keywordsModifyTypes = new string[]
-        {
-            StringTable.GAME_CARD_PROP_MODIFY_ADD,
-            StringTable.GAME_CARD_PROP_MODIFY_SUB,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO,
-            StringTable.GAME_CARD_PROP_MODIFY_ADD_PROP,
-            StringTable.GAME_CARD_PROP_MODIFY_SUB_PROP,
-            StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
-        };
+        [TranslateMsg("动作节点/增益下拉选框/新建增益项")]
+        public const string ACTION_NODE_NEW_BUFF = "新建增益";
         #endregion
     }
 }

@@ -426,10 +426,10 @@ namespace Controllers
         private void onClickEditEffectButton(int index)
         {
             // TODO：在加入获取当前正在查看的效果的方法时改掉这个条件。
-            if (false)
+            if (true)
             {
-                //GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
-                //scene.effectEditor.display(_cardPoolId, _cardDefine, effect);
+                GeneratedEffect effect = _cardDefine.getEffects().OfType<GeneratedEffect>().ElementAt(index);
+                scene.effectEditor.display(_cardPoolId, _cardDefine, effect);
             }
             else
             {

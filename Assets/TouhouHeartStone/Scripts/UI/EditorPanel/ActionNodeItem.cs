@@ -1,13 +1,10 @@
 ﻿using System;
-using BJSYGameCore.UI;
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
-using System.Reflection;
 using Controllers;
-using UnityEngine.EventSystems;
 using MukioI18n;
-using Game;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
@@ -352,10 +349,6 @@ namespace UI
             _eventTypeDropdown.onValueChanged.AddListener(onChangeSelectedEventIndex);
             _editConditionButton.onClick.AddListener(onClickEditConditionButtonCallback);
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
-            _addPropModifierButton.onClick.AddListener(onClickAddPropModifierButtonCallback);
-            _effectList.onClickAddEffect += onClickPropertyModifierAddEffectMenuCallback;
-            _effectList.onClickItemRemoveButton += onClickPropertyModifierEffectRemoveButtonCallback;
-            _effectList.onClickItemEditButton += onClickPropertyModifierEffectEditButtonCallback;
             _warningObj.onClick.AddListener(onClickObsoleteBtn);
             _helpBtn.onClick.AddListener(onClickHelpBtn);
             //增益

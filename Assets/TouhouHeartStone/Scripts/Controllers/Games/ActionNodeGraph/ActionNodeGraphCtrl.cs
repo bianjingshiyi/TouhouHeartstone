@@ -142,20 +142,7 @@ namespace Controllers
             _ui.onClickReturnButton += onClickReturnButton;
             //增益
             _ui.onItemBuffChanged += onItemBuffChangedCallback;
-            _ui.onClickItemNewBuffButton += onClickItemNewBuffButtonCallback;
-            _ui.onClickItemDeleteBuffButton += onClickItemDeleteBuffButtonCallback;
-            _ui.onClickItemAddPropModifierButton += onClickItemAddPropModifierButtonCallback;
-            _ui.onClickItemRemovePropModifierButton += onClickItemRemovePropModifierButtonCallback;
-            _ui.onItemPropModifierPropertyTypeChanged += onItemPropModifierPropertyTypeChangedCallback;
-            _ui.onItemPropModifierModifyTypeChanged += onItemPropModifierModifyTypeChangedCallback;
-            _ui.onItemPropModifierValueChanged += onItemPropModifierValueChangedCallback;
-            _ui.onItemPropModifierAddEffect += onItemPropModifierAddEffectCallback;
-            _ui.onItemPropModifierRemoveEffect += onItemPropModifierRemoveEffectCallback;
-            _ui.onItemPropModifierEditEffect += onItemPropModifierEditEffectCallback;
-            _ui.onItemBuffNameChanged += onItemBuffNameChangedCallback;
-            _ui.onItemBuffDescChanged += onItemBuffDescChangedCallback;
-            _ui.onItemBuffLanguageChanged += onItemBuffLanguageChangedCallback;
-            _ui.onItemNeedSelectBuffImage += onItemNeedSelectBuffImage;
+            _ui.onClickItemEditBuffButton += onItemEditBuffCallback;
 
             _cardPoolViewPanelCtrl.enableCount(false);
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
@@ -165,10 +152,7 @@ namespace Controllers
             {
                 languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
             }
-            _ui.init(
-                languages,
-                getEventTypeNamesForEditor(),
-                CardEditorCtrl.getKeywords());
+            _ui.init(getEventTypeNamesForEditor());
         }
         #endregion
         #region 事件回调
@@ -1135,18 +1119,17 @@ namespace Controllers
                     .ThenBy(p => p.Value.id)
                     .Select(p => p.Value)
                     .ToArray();
+
+
+                var buffNames = new List<string>()
+                {
+                    game.lang._(ACTION_NODE_NEW_BUFF)
+                };
+                buffNames.AddRange(game.card.getBuffDefineNames(buffDefines));
                 actionNodeItem = _ui.createNodeForBuff(posX, posY, new ActionNodeBuffViewData()
                 {
-                    buffNames = buffDefines.Select(b => b.ToString()).ToArray(),
-                    buffIndex = Array.IndexOf(buffDefines, generatedBuffDefine),
-                    buffLanguageIndex = Array.IndexOf(game.langManager.getLanguages(), buffSkin.language),
-                    buffName = buffSkin.name,
-                    buffDesc = buffSkin.desc,
-                    buffImage = await game.card.loadImage(buffSkin.imagePath, generatedBuffDefine.cardPoolId),
-                    propertyTypes = getBuffDefinePropertyTypes(),
-                    propModifiersViewData = getBuffDefinePropModifiersViewData(generatedBuffDefine),
-                    effectTypeNames = game.card.getEffectNames(),
-                    effectNames = game.card.getEffectNames(generatedBuffDefine.effectList.ToArray())
+                    buffNames = buffNames.ToArray(),
+                    buffIndex = Array.IndexOf(buffDefines, generatedBuffDefine) + 1
                 }, getActionNodeOutputNames(actionNode));
             }
             else if (actionDefine != null)

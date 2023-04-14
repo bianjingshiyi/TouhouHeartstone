@@ -360,13 +360,8 @@ namespace UI
         {
             _cardSelectPanel.SetActive(value);
         }
-        public void init(string[] languages, string[] eventTypes, (string name, string value)[] keywords)
+        public void init(string[] eventTypes)
         {
-            init(languages, eventTypes, keywords.Select(i => i.name).ToArray(), keywords.Select(i => i.value).ToArray());
-        }
-        public void init(string[] languages, string[] eventTypes, string[] keywordNames, string[] keywordValues)
-        {
-            _actionNodeItemTemplate.initBuffLanguages(languages, keywordNames, keywordValues);
             _actionNodeItemTemplate.initEventTypes(eventTypes);
         }
         public void resetView()

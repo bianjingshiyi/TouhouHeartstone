@@ -1,19 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using BJSYGameCore;
+using Game;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using TouhouHeartstone.Builtin;
 using UI;
-using System;
-using System.Linq;
-using Game;
 using UnityEngine;
-using System.Threading.Tasks;
-using UnityEngine.UI;
-using MukioI18n;
-using BJSYGameCore;
-using System.Security.Policy;
-using TouhouCardEngine.Interfaces;
-using System.Reflection;
 
 namespace Controllers
 {
@@ -32,6 +26,7 @@ namespace Controllers
             _ui.setId(buffDefine.id);
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             updateEffectList(effects);
+            updateModifiers();
             _ui.closeAllEdit();
             await setCurSkinIndex(0);
         }
@@ -44,6 +39,7 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<BuffEditorPanel>();
             }
+            _ui.init(getBuffDefinePropertyTypes(), CardEditorCtrl.getKeywords());
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
@@ -128,6 +124,7 @@ namespace Controllers
             {
                 markBuffUnsaved();
                 _curBuffSkin.imagePath = game.card.getSpritePath(sprite);
+                _ui.setImage(sprite);
             }
         }
         /// <summary>

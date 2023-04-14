@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 namespace UI
 {
@@ -21,9 +22,9 @@ namespace UI
             _modifyTypeDropdown.SetValueWithoutNotify(modifyTypeIndex);
             _valueField.setValueInfo(valueInfo);
         }
-        public void init(string[] keywordNames, string[] keywordValues)
+        public void init((string name, string value)[] keywords)
         {
-            _valueField.initKeywords(keywordNames, keywordValues);
+            _valueField.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
         }
         #endregion
         #region 私有方法
