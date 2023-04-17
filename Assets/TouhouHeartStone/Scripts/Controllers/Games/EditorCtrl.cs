@@ -96,6 +96,14 @@ namespace Controllers
                 displayObj = cardDefine
             });
         }
+        public Task openBuffEditor(long cardPoolId, GeneratedBuffDefine buffDefine)
+        {
+            return openEditorPanel(new CardPoolDisplayInfo()
+            {
+                cardPoolId = cardPoolId,
+                displayObj = buffDefine
+            });
+        }
         /// <summary>
         /// 关闭当前的卡牌/增益/自定义动作编辑器。
         /// </summary>
@@ -588,6 +596,9 @@ namespace Controllers
             {
                 case CardDefine _:
                     editor = scene.cardEditor;
+                    break;
+                case GeneratedBuffDefine _:
+                    editor = scene.buffEditor;
                     break;
             }
             if (editor != null)

@@ -42,7 +42,7 @@ namespace Controllers
         {
             if (tryGetBuffDefine(getActionNode(item).consts[0], out GeneratedBuffDefine buffDefine))
             {
-                await scene.buffEditor.display(_curCardPoolId, buffDefine);
+                await scene.editor.openBuffEditor(_curCardPoolId, buffDefine);
             }
         }
         #endregion

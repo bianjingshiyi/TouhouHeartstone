@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Controllers
 {
-    class BuffEditorCtrl : GameObjectCtrl<MainSceneCtrl>
+    class BuffEditorCtrl : CardPoolEditor
     {
         #region 公有方法
         /// <summary>
@@ -29,6 +29,14 @@ namespace Controllers
             updateModifiers();
             _ui.closeAllEdit();
             await setCurSkinIndex(0);
+        }
+        public override Task display(CardPoolDisplayInfo info)
+        {
+            if (info == null)
+                return Task.CompletedTask;
+            if (info.displayObj is GeneratedBuffDefine buffDefine)
+                return display(info.cardPoolId, buffDefine);
+            return Task.CompletedTask;
         }
         #endregion
         #region 私有方法
@@ -209,14 +217,13 @@ namespace Controllers
         }
         #endregion
 
-        private void onClickDeleteCardButton()
+        private async void onClickDeleteCardButton()
         {
             scene.editor.hasUnsavedChanges = true;
             //删除当前卡牌
             game.card.removeBuffDefine(_cardPoolId, _buffDefine);
             //返回上个界面
-            gameObject.SetActive(false);
-            scene.editor.display(false, false, -1, true);
+            await scene.editor.closeEditorPanel();
             clearBuffUnsaved();
         }
         private void onClickSaveButton()
@@ -225,14 +232,6 @@ namespace Controllers
         }
         private void onClickCloseButton()
         {
-            void exit()
-            {
-                //返回上一个界面
-                gameObject.SetActive(false);
-                scene.editor.display(false, false, -1, false);
-                clearBuffUnsaved();
-            }
-
             if (hasUnsavedChanges)
             {
                 string title = game.lang._(StringTable.WARNING);
@@ -295,6 +294,12 @@ namespace Controllers
         {
             var poolReference = game.card.getLocalCardPoolReference(_buffDefine.cardPoolId);
             return game.card.getBuffSkins(poolReference, _buffDefine.id);
+        }
+        private async void exit()
+        {
+            //返回上一个界面
+            await scene.editor.closeEditorPanel();
+            clearBuffUnsaved();
         }
         #region 修改器
         private void updateModifiers()
