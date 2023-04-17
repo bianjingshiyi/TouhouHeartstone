@@ -77,6 +77,44 @@ namespace Controllers
                 });
             }
         }
+        /// <summary>
+        /// 打开一个卡牌/增益/自定义动作编辑器。
+        /// </summary>
+        /// <param name="displayInfo"></param>
+        public async Task openEditorPanel(CardPoolDisplayInfo displayInfo)
+        {
+            _ui.gameObject.SetActive(false);
+            _currentEditor?.hide();
+            _currentEditor = await displayPanel(displayInfo);
+            _stack.Push(displayInfo);
+        }
+        public Task openCardEditor(long cardPoolId, CardDefine cardDefine)
+        {
+            return openEditorPanel(new CardPoolDisplayInfo()
+            {
+                cardPoolId = cardPoolId,
+                displayObj = cardDefine
+            });
+        }
+        /// <summary>
+        /// 关闭当前的卡牌/增益/自定义动作编辑器。
+        /// </summary>
+        public async Task closeEditorPanel()
+        {
+            _currentEditor.hide();
+            _currentEditor = null;
+            if (_stack.Count > 1)
+            {
+                _stack.Pop();
+                var displayInfo = _stack.Peek();
+                _currentEditor = await displayPanel(displayInfo);
+            }
+            else
+            {
+                _stack.Clear();
+                display(false, false, -1, true);
+            }
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -182,7 +220,7 @@ namespace Controllers
         /// <param name="index"></param>
         private async void onClickCard(CardDefine cardDefine)
         {
-            await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, cardDefine, getSelectableCharacters());
+            await openCardEditor(_curCardPoolInfo.cardPoolId, cardDefine);
         }
         /// <summary>
         /// 当点击新建卡牌按钮
@@ -191,7 +229,7 @@ namespace Controllers
         {
             hasUnsavedChanges = true;
             game.card.createCard(_curCardPoolInfo, out CardDefine newCardDefine, out _);
-            await scene.cardEditor.display(_curCardPoolInfo.cardPoolId, newCardDefine, getSelectableCharacters());
+            await openCardEditor(_curCardPoolInfo.cardPoolId, newCardDefine);
         }
         /// <summary>
         /// 当点击保存按钮，保存当前编辑的卡池
@@ -511,12 +549,6 @@ namespace Controllers
             await updateDeckListUI();
             await _cardPoolViewPanelCtrl.hide();
         }
-        private CardDefine[] getSelectableCharacters()
-        {
-            List<CardDefine> cardList = new List<CardDefine>();
-            cardList.AddRange(game.card.GetCardDefines(c => c.isMaster(), true));
-            return cardList.ToArray();
-        }
         /// <summary>
         /// 更新卡池列表UI
         /// </summary>
@@ -543,6 +575,26 @@ namespace Controllers
                 viewData[i].count = 0;
             }
             _ui.updateDeckCardList(viewData);
+        }
+        /// <summary>
+        /// 根据卡池显示信息显示卡牌编辑器、增益编辑器等。
+        /// </summary>
+        /// <param name="displayInfo">卡池显示信息</param>
+        /// <returns>显示的编辑器。</returns>
+        private async Task<CardPoolEditor> displayPanel(CardPoolDisplayInfo displayInfo)
+        {
+            CardPoolEditor editor = null;
+            switch (displayInfo.displayObj)
+            {
+                case CardDefine _:
+                    editor = scene.cardEditor;
+                    break;
+            }
+            if (editor != null)
+            {
+                await editor.display(displayInfo);
+            }
+            return editor;
         }
         #endregion
         #region 属性字段
@@ -589,6 +641,8 @@ namespace Controllers
         CardPoolInfo _curCardPoolInfo;
         [SerializeField]
         bool _hasUnsavedChanges;
+        private Stack<CardPoolDisplayInfo> _stack = new Stack<CardPoolDisplayInfo>();
+        private CardPoolEditor _currentEditor;
         #endregion
     }
 }

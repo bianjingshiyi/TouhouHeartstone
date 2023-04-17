@@ -14,15 +14,16 @@ using MukioI18n;
 
 namespace Controllers
 {
-    class CardEditorCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>
+    class CardEditorCtrl : CardPoolEditor, IController<MainCtrl>
     {
         #region 公有方法
         /// <summary>
         /// 打开一张卡片进行编辑
         /// </summary>
-        public async Task display(long cardPoolId, CardDefine cardDefine, CardDefine[] selectableCharacters)
+        public async Task display(long cardPoolId, CardDefine cardDefine)
         {
             gameObject.SetActive(true);
+            var selectableCharacters = getSelectableCharacters();
             _selectableCharacters = selectableCharacters;
             _cardPoolId = cardPoolId;
             _cardDefine = cardDefine;
@@ -81,6 +82,14 @@ namespace Controllers
             updateCustomProperties();
             updateKeywords();
 
+        }
+        public override Task display(CardPoolDisplayInfo info)
+        {
+            if (info == null)
+                return Task.CompletedTask;
+            if (info.displayObj is CardDefine cardDefine)
+                return display(info.cardPoolId, cardDefine);
+            return Task.CompletedTask;
         }
         #endregion
         #region 私有方法
@@ -471,14 +480,13 @@ namespace Controllers
             updateEffectList(effects.ToArray());
         }
 
-        private void onClickDeleteCardButton()
+        private async void onClickDeleteCardButton()
         {
             scene.editor.hasUnsavedChanges = true;
             //删除当前卡牌
             game.card.removeCard(_cardDefine);
             //返回上个界面
-            gameObject.SetActive(false);
-            scene.editor.display(false, false, -1, true);
+            await scene.editor.closeEditorPanel();
             ClearCardUnsaved();
         }
         private void onClickSaveButton()
@@ -728,6 +736,12 @@ namespace Controllers
         }
         #endregion
 
+        private CardDefine[] getSelectableCharacters()
+        {
+            List<CardDefine> cardList = new List<CardDefine>();
+            cardList.AddRange(game.card.GetCardDefines(c => c.isMaster(), true));
+            return cardList.ToArray();
+        }
         private void _textChangedByType()
         {
             if (_cardDefine.type == DEFINE.SPELL || _cardDefine.type == DEFINE.ITEM || _cardDefine.type == DEFINE.SKILL)
@@ -793,10 +807,9 @@ namespace Controllers
         /// <summary>
         /// 返回上一个界面
         /// </summary>
-        private void exit()
+        private async void exit()
         {
-            gameObject.SetActive(false);
-            scene.editor.display(false, false, -1, false);
+            await scene.editor.closeEditorPanel();
             ClearCardUnsaved();
         }
         #endregion
