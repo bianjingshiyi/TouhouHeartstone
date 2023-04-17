@@ -828,6 +828,7 @@ namespace Game
             }
             catch (NetClientException e)
             {
+                Debug.Log(e);
                 panel.ShowMessage(e.Message);
                 panel.setCaptcha(await getCaptchaImage());
             }
@@ -852,6 +853,7 @@ namespace Game
             }
             catch (NetClientException e)
             {
+                Debug.Log(e);
                 panel.ShowMessage(e.Message);
             }
         }
@@ -882,6 +884,7 @@ namespace Game
                 }
                 catch (NetClientException e)
                 {
+                    Debug.Log(e);
                     panel.ShowMessage(e.Message);
                 }
                 panel.setCaptcha(await getCaptchaImage());
@@ -922,6 +925,7 @@ namespace Game
                 }
                 catch (NetClientException e)
                 {
+                    Debug.Log(e);
                     panel.ShowMessage(e.Message);
                     panel.setCaptcha(await getCaptchaImage());
                 }
