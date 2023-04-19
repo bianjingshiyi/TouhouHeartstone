@@ -112,13 +112,8 @@ namespace Controllers
             _cardPoolViewPanelCtrl.enableCount(false);
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
-            string[] languages = game.langManager.getLanguages();
-            for (int i = 0; i < languages.Length; i++)
-            {
-                languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
-            }
             _ui.init(
-                languages,
+                _eventTypeInfoList.getEventTypeNamesForEditor(),
                 CardEditorCtrl.getKeywords(),
                 CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
         }
