@@ -179,7 +179,9 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[] {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.damage(game,card,card.getOwner().getMaster().getArmor(game));
+                int damage = card.getOwner().getMaster().getArmor(game);
+                damage = card.getOwner().getSpellDamage(game, damage);
+                await target.damage(game,card,damage);
             },PileFlag.both | PileFlag.field)
         };
 

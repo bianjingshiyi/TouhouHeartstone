@@ -945,7 +945,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, 2);
+            int damage = card.getOwner().getSpellDamage(game, 2);
+            await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, damage);
             await Patchouli.tryMix(game, card);
         }
     }
@@ -1103,7 +1104,8 @@ namespace TouhouHeartstone.Builtin
                 {
                     await buffcard.addBuff(game,new CodeBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                 }
-                await target.damage(game,card,card.getOwner().getField().count);
+                int damage = card.getOwner().getSpellDamage(game, card.getOwner().getField().count);
+                await target.damage(game, card, damage);
                 await Patchouli.tryMix(game, card);
             },PileFlag.oppo | PileFlag.field)
         };
@@ -1507,7 +1509,9 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect((g1,c1)=>
             {
-                return c1.getOwner().getMaster().damage(g1,c1,c1.getProp<int>(g1,"damage"));
+                int damage = c1.getProp<int>(g1,"damage");
+                damage = c1.getOwner().getSpellDamage(g1, damage);
+                return c1.getOwner().getMaster().damage(g1,c1,damage);
             })
         };
 

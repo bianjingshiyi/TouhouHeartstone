@@ -62,7 +62,7 @@ namespace TouhouHeartstone.Builtin
 
     /// <summary>
     /// 超短脑波
-    /// 2费，奥秘,当敌方角色攻击时，取消攻击并使其受到相当于其攻击力的伤害。+
+    /// 2费，奥秘,当敌方角色攻击时，取消攻击并使其对自身造成等同于其攻击力的伤害。
     /// </summary>
     public class XWave : SpellCardDefine
     {
@@ -409,7 +409,8 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await game.getOpponent(card.getOwner()).getMaster().damage(game, card, 5);
+            int damage = card.getOwner().getSpellDamage(game, 5);
+            await game.getOpponent(card.getOwner()).getMaster().damage(game, card, damage);
         }
     }
 

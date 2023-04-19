@@ -642,7 +642,7 @@ namespace TouhouHeartstone.Builtin
 
     [IgnoreCardDefine]
     /// <summary>
-    /// 暴力取材
+    /// 暴力取材：3费，对你的英雄和一个随机敌方仆从造成4点伤害，抽3张牌。
     /// </summary>
     public class Aya15 : SpellCardDefine
     {
@@ -667,8 +667,9 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await card.getOwner().getMaster().damage(game, card, 4);
-            await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, 4);
+            int damage = card.getOwner().getSpellDamage(game, 4);
+            await card.getOwner().getMaster().damage(game, card, damage);
+            await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, damage);
             await card.getOwner().draw(game);
             await card.getOwner().draw(game);
             await card.getOwner().draw(game);
