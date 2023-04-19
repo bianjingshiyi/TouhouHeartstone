@@ -93,7 +93,7 @@ namespace TouhouHeartstone
                 await card.setProp(null, effectName, trigger);
                 game.logger.log("Effect", card + "注册效果" + effectName);
                 onRegisterTrigger?.Invoke(game, card, buff);
-                game.triggers.register(time.getEventName(game.triggers), trigger);
+                game.triggers.registerDelayed(time.getEventName(game.triggers), trigger);
             }
         }
 
