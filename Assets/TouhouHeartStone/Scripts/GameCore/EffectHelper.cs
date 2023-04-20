@@ -11,11 +11,11 @@ namespace TouhouHeartstone
         }
         public static bool isDeathRattle(this IEffect effect)
         {
-            return effect is DeathRattle || effect is GeneratedDeathRattle || effect is GeneratedEffect;
+            return effect is DeathRattle || effect is GeneratedDeathRattle;
         }
         public static bool isBattlecry(this IEffect effect)
         {
-            return effect is GeneratedBattlecry || effect is GeneratedEffect;
+            return effect is GeneratedBattlecry;
         }
     }
 }

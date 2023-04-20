@@ -11,7 +11,8 @@ namespace UI
         }
         public void setActive(bool active)
         {
-            _itemImage.sprite = active ? _selectedSprite : _normalSprite;
+            if (_itemImage)
+                _itemImage.sprite = active ? _selectedSprite : _normalSprite;
         }
         public void showInputField(string value)
         {

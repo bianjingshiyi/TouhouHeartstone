@@ -120,7 +120,8 @@ namespace Controllers
             _ui.init(
                 languages,
                 _eventTypeInfoList.getEventTypeNamesForEditor(),
-                CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray(),
+                CardEditorCtrl.getKeywords(),
+                CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
         }
         #endregion
         #region 事件回调
