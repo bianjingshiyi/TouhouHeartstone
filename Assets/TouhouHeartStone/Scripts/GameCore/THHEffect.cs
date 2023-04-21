@@ -338,14 +338,14 @@ namespace TouhouHeartstone
             return new string[0];
         }
 
-        Task IPassiveEffect.onEnable(IGame game, ICard card, IBuff buff)
+        Task IEffect.onEnable(IGame game, ICard card, IBuff buff)
         {
             return onEnable(game as CardEngine, card as Card, buff as Buff);
         }
 
         public abstract Task onEnable(CardEngine game, Card card, Buff buff);
 
-        Task IPassiveEffect.onDisable(IGame game, ICard card, IBuff buff)
+        Task IEffect.onDisable(IGame game, ICard card, IBuff buff)
         {
             return onDisable(game as CardEngine, card as Card, buff as Buff);
         }
@@ -362,18 +362,27 @@ namespace TouhouHeartstone
             _name = name;
         }
 
+        Task IEffect.onEnable(IGame game, ICard card, IBuff buff)
+        {
+            return Task.CompletedTask;
+        }
+
+        Task IEffect.onDisable(IGame game, ICard card, IBuff buff)
+        {
+            return Task.CompletedTask;
+        }
         public string[] getEvents(ITriggerManager manager)
         {
             return new string[] { manager.getName<HearthStoneRule.ActiveEventArg>() };
         }
 
-        public bool checkCondition(IGame game, ICard card, object[] vars)
+        public bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg arg)
         {
             return checkCondition(game as CardEngine, card as Card);
         }
 
         public abstract bool checkCondition(CardEngine game, Card card);
-        public abstract Task execute(IGame game, ICard card, object[] vars, object[] targets);
+        public abstract Task execute(IGame game, ICard card, IBuff buff, IEventArg arg);
 
         public override string ToString()
         {
@@ -400,7 +409,7 @@ namespace TouhouHeartstone
             return _onCheckCondition == null || _onCheckCondition(game, card);
         }
 
-        public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
+        public override Task execute(IGame game, ICard card, IBuff buff, IEventArg arg)
         {
             if (_onExecute != null)
                 return _onExecute(game as CardEngine, card as Card);
@@ -466,8 +475,12 @@ namespace TouhouHeartstone
             return ranges.getPiles(game, card.getOwner()).Any(p => p.Contains(target));
         }
 
-        public override Task execute(IGame game, ICard card, object[] vars, object[] targets)
+        public override Task execute(IGame game, ICard card, IBuff buff, IEventArg arg)
         {
+            if (!(arg is HearthStoneRule.ActiveEventArg activeEvent))
+                return Task.CompletedTask;
+
+            var targets = activeEvent.targets;
             if (targets != null &&
                 targets.Length > 0 &&
                 targets[0] is Card target)

@@ -11,7 +11,7 @@ namespace TouhouHeartstone
     /// 新版光环类型的效果
     /// </summary>
     [Serializable]
-    public class GeneratedAura : GeneratedEffect
+    public class GeneratedAura : GeneratedEffect, IPileRangedEffect
     {
         #region 公有方法
         /// <summary>
@@ -42,6 +42,10 @@ namespace TouhouHeartstone
         {
             await base.onDisable(game, card, buff);
             await updateAura(game, card, buff, null);
+        }
+        public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        {
+            return true;
         }
         public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
@@ -141,10 +145,6 @@ namespace TouhouHeartstone
             yield return getAuraBuffDefine;
             yield return affectCondition;
             yield return updateAction;
-            foreach (var prop in base.getTraversableProps())
-            {
-                yield return prop;
-            }
         }
         private async Task<bool> checkAuraCondition(IGame game, ICard card, IBuff buff, Card targetCard)
         {
@@ -206,7 +206,10 @@ namespace TouhouHeartstone
         }
         #endregion
         #region 属性字段
-        protected override PileNameCollection pileList => getEntryNode()?.getConst<PileNameCollection>(AuraDataDefine.pileListName);
+        /// <summary>
+        /// 光环的生效范围
+        /// </summary>
+        protected virtual PileNameCollection pileList => getEntryNode().getConst<PileNameCollection>(AuraDataDefine.pileListName);
         /// <summary>
         /// 光环的作用范围
         /// </summary>
@@ -223,6 +226,7 @@ namespace TouhouHeartstone
         /// 光环的更新动作
         /// </summary>
         public ControlOutput updateAction => getEntryNode()?.getOutputPort<ControlOutput>(AuraDataDefine.updateActionName);
+        public string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
         #endregion
     }
 }

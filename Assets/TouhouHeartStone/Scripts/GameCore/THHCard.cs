@@ -1167,9 +1167,8 @@ namespace TouhouHeartstone
             if (activeEffect != null)
             {
                 var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                var vars = new object[] { eventArg };
-                if (activeEffect.checkCondition(game, card, vars))
-                    return activeEffect.execute(game, card, vars, targets);
+                if (activeEffect.checkCondition(game, card, null, eventArg))
+                    return activeEffect.execute(game, card, null, eventArg);
             }
             if (card.isServant() || card.isItem() || card.isMaster())
             {
@@ -1207,8 +1206,8 @@ namespace TouhouHeartstone
                 {
                     var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
                     var vars = new object[] { eventArg };
-                    if (activeEffect.checkCondition(game, card, vars))
-                        return activeEffect.execute(game, card, vars, targets);
+                    if (activeEffect.checkCondition(game, card, null, eventArg))
+                        return activeEffect.execute(game, card, null, eventArg);
                 }
                 var effect = define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
                 if (effect != null)
@@ -1232,36 +1231,36 @@ namespace TouhouHeartstone
         public static async Task triggerCardDefineBattlecries(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
         {
             var battlecries = define.getBattlecries();
+            var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
             foreach (var battlecry in battlecries)
             {
                 if (battlecry is GeneratedBattlecry cry)
                 {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
                     if (cry.checkCondition(game, card, null, eventArg))
                         await cry.execute(game, card, null, eventArg);
                 }
                 else if (battlecry is ActiveEffect active)
                 {
-                    if (active.checkCondition(game, card))
-                        await active.execute(game, card, new object[0], targets);
+                    if (active.checkCondition(game, card, null, eventArg))
+                        await active.execute(game, card, null, eventArg);
                 }
             }
         }
         public static async Task triggerBattlecries(this Card card, CardEngine game, Player player, Card[] targets)
         {
             var battlecries = getBattlecries(card, game);
+            var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
             foreach (var (effect, buff) in battlecries)
             {
                 if (effect is GeneratedBattlecry cry)
                 {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
                     if (cry.checkCondition(game, card, buff, eventArg))
                         await cry.execute(game, card, buff, eventArg);
                 }
                 else if (effect is ActiveEffect active)
                 {
-                    if (active.checkCondition(game, card))
-                        await active.execute(game, card, new object[0], targets);
+                    if (active.checkCondition(game, card, buff, eventArg))
+                        await active.execute(game, card, buff, eventArg);
                 }
             }
         }
@@ -1932,14 +1931,14 @@ namespace TouhouHeartstone
             foreach (Card card in cards)
             {
                 // 卡牌定义自带的效果。
-                foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>().Where(e => !e.piles.Contains(PILE.GRAVE) && !e.isDeathRattle()))
+                foreach (var effect in card.define.getEffects().OfType<IPileRangedEffect>().Where(e => !e.piles.Contains(PILE.GRAVE) && !e.isDeathRattle()))
                 {
                     await effect.onDisable(game, card, null);
                 }
                 // BUFF给予的效果。
                 foreach (var buff in card.getBuffs())
                 {
-                    foreach (var effect in buff.getEffects(game).OfType<IPassiveEffect>().Where(e => !e.piles.Contains(PILE.GRAVE) && !e.isDeathRattle()))
+                    foreach (var effect in buff.getEffects(game).OfType<IPileRangedEffect>().Where(e => !e.piles.Contains(PILE.GRAVE) && !e.isDeathRattle()))
                     {
                         await effect.onDisable(game, card, buff);
                     }

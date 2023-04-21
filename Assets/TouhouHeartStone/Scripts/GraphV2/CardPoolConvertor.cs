@@ -220,27 +220,27 @@ namespace Game
         private GeneratedEffect ConvertEffect(SerializableEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             GeneratedEffect generatedEffect;
-            Type type = !string.IsNullOrEmpty(effect.typeName) && typeFinder != null ? typeFinder(effect.typeName) : null;
+            string typeName = effect.typeName;
 
 
-            if (type == typeof(GeneratedBattlecry))
+            if (typeName == "GeneratedBattlecry")
             {
                 generatedEffect = ConvertEffectToBattlecry(effect, card, buff, effectIndex);
             }
-            else if (type == typeof(GeneratedDeathRattle))
+            else if (typeName == "GeneratedDeathRattle")
             {
                 generatedEffect = ConvertEffectToDeathRattle(effect, card, buff, effectIndex);
             }
-            else if (type == typeof(GeneratedAura))
+            else if (typeName == "GeneratedAura")
             {
                 generatedEffect = ConvertEffectToAura(effect, card, buff, effectIndex);
             }
-            else if (type == typeof(GeneratedEffect))
+            else if (typeName == "GeneratedEffect")
             {
                 generatedEffect = ConvertEffectToCommon(effect, card, buff, effectIndex);
             }
             else
-                throw new InvalidCastException($"无法将\"{type.FullName}\"类型的效果反序列化");
+                throw new InvalidCastException($"无法将\"{typeName}\"类型的效果反序列化");
 
 
             foreach (var pair in effect.propDict)

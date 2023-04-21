@@ -18,6 +18,10 @@ namespace TouhouHeartstone
             var entryNode = graph.createTriggerEntryNode("ActiveEvent");
             entryNode.hideEvents = true;
         }
+        public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        {
+            throw new System.NotImplementedException();
+        }
         public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
             if (activeTrigger != null)

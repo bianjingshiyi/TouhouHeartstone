@@ -266,7 +266,7 @@ namespace TouhouHeartstone.Builtin
 
         private readonly IPassiveEffect[] effects1;
 
-        public override IPassiveEffect[] getEffects(CardEngine game)
+        public override IEffect[] getEffects(CardEngine game)
         {
             return effects1;
         }
