@@ -42,7 +42,6 @@ namespace Controllers
 
             // Action Graph V2.
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActionNode))) BsonClassMap.RegisterClassMap<SerializableActionNode>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableTriggerNode))) BsonClassMap.RegisterClassMap<SerializableTriggerNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedEntryNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedEntryNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedReturnNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedReturnNode>();
             isInited = true;

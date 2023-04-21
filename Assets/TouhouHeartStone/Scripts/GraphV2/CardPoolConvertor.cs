@@ -73,17 +73,7 @@ namespace Game
             for (int i = 0; i < effectList.Count; i++)
             {
                 var effect = effectList[i];
-                if (SplitToBattlecryAndDeathrattle(effect, seri, null, i, out var battlecry, out var deathrattle))
-                {
-                    if (battlecry != null)
-                        effects.Add(battlecry);
-                    if (deathrattle != null)
-                        effects.Add(deathrattle);
-                }
-                else
-                {
-                    effects.Add(ConvertEffect(effect, seri, null, i));
-                }
+                ConvertEffect(effects, effect, seri, null, i);
             }
             CardDefine v2 = new CardDefine(seri.id, seri.type, props, effects.ToArray())
             {
@@ -103,17 +93,7 @@ namespace Game
             for (int i = 0; i < seriEffects.Count; i++)
             {
                 var effect = seriEffects[i];
-                if (SplitToBattlecryAndDeathrattle(effect, null, seri, i, out var battlecry, out var deathrattle))
-                {
-                    if (battlecry != null)
-                        effects.Add(battlecry);
-                    if (deathrattle != null)
-                        effects.Add(deathrattle);
-                }
-                else
-                {
-                    effects.Add(ConvertEffect(effect, null, seri, i));
-                }
+                ConvertEffect(effects, effect, null, seri, i);
             }
             GeneratedBuffDefine buff = new GeneratedBuffDefine(seri.id, seri.propModifierList.ToArray(), effects)
             {
@@ -219,41 +199,31 @@ namespace Game
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
         /// <exception cref="InvalidCastException"></exception>
-        private GeneratedEffect ConvertEffect(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private void ConvertEffect(List<GeneratedEffect> list, SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
-            GeneratedEffect generatedEffect;
-            string typeName = effect.typeName;
-
+            var typeName = effect.typeName;
 
             if (typeName == "GeneratedBattlecry")
             {
-                generatedEffect = ConvertEffectToBattlecry(effect, card, buff, effectIndex);
+                ConvertGeneratedBattlecry(list, effect, card, buff, effectIndex);
             }
             else if (typeName == "GeneratedDeathRattle")
             {
-                generatedEffect = ConvertEffectToDeathRattle(effect, card, buff, effectIndex);
+                ConvertGeneratedDeathRattle(list, effect, card, buff, effectIndex);
             }
             else if (typeName == "GeneratedAura")
             {
-                generatedEffect = ConvertEffectToAura(effect, card, buff, effectIndex);
+                ConvertGeneratedAura(list, effect, card, buff, effectIndex);
             }
             else if (typeName == "GeneratedEffect")
             {
-                generatedEffect = ConvertEffectToCommon(effect, card, buff, effectIndex);
+                ConvertCommonEffect(list, effect, card, buff, effectIndex);
             }
             else
                 throw new InvalidCastException($"无法将\"{typeName}\"类型的效果反序列化");
-
-
-            foreach (var pair in effect.propDict)
-            {
-                generatedEffect.propDict.Add(pair.Key, pair.Value);
-            }
-
-            return generatedEffect;
         }
         /// <summary>
-        /// 将一个SerializableGeneratedEffect转换为宣言效果。
+        /// 将一个宣言效果转换为主动效果。
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="card"></param>
@@ -261,7 +231,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedActiveEffect ConvertEffectToBattlecry(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private void ConvertGeneratedBattlecry(List<GeneratedEffect> list, SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -271,12 +241,11 @@ namespace Game
                 // 创建节点图。
                 var graph = new ActionGraph();
                 GeneratedActiveEffect active = new GeneratedActiveEffect(graph);
-                active.setTags(EFFECTTAG.ACTIVE_PLAYED);
                 active.name = effect.name;
-
+                active.Init();
+                graph.DefineNodes(definer);
 
                 // 宣言触发器。
-                active.graph.Clear();
                 var seriTrigger = effect.triggerList?[0];
                 if (seriTrigger != null)
                 {
@@ -285,14 +254,19 @@ namespace Game
 
                     // 将触发器的序列化文档转换为根节点。
                     var param = new ActionNodeGraphParams(graph: graph, graphInfo: graphInfo, eventName: seriTrigger.eventName, actionNodeList: seriTrigger.actionList);
-                    var trigger = ConvertTriggerEntryNode(seriTrigger, param);
-                    trigger.hideEvents = true;
+                    ConvertTriggerToActiveEntryNode(seriTrigger, param);
 
                     // 添加离散节点。
                     CreateFreeNodesToGraph(param);
                 }
+                // 添加属性
+                foreach (var pair in effect.propDict)
+                {
+                    active.propDict.Add(pair.Key, pair.Value);
+                }
 
-                return active;
+                active.setTags(EFFECTTAG.ACTIVE_PLAYED);
+                list.Add(active);
             }
             catch (Exception e)
             {
@@ -300,7 +274,7 @@ namespace Game
             }
         }
         /// <summary>
-        /// 将一个SerializableGeneratedEffect转换为遗言效果。
+        /// 将一个遗言效果转换为被动效果。
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="card"></param>
@@ -308,7 +282,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedPassiveEffect ConvertEffectToDeathRattle(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private void ConvertGeneratedDeathRattle(List<GeneratedEffect> list, SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -317,12 +291,12 @@ namespace Game
 
                 // 创建节点图。
                 var graph = new ActionGraph();
-                GeneratedPassiveEffect passive = new GeneratedPassiveEffect(graph);
-                passive.setTags(EFFECTTAG.PASSIVE_LASTWORD);
-                passive.name = effect.name;
+                GeneratedPassiveEffect deathrattle = new GeneratedPassiveEffect(graph);
+                deathrattle.name = effect.name;
+                deathrattle.Init();
+                graph.DefineNodes(definer);
 
                 // 遗言触发器。
-                passive.graph.Clear();
                 var seriTrigger = effect.triggerList?[0];
                 if (seriTrigger != null)
                 {
@@ -331,14 +305,19 @@ namespace Game
 
                     // 将触发器的序列化文档转换为根节点。
                     var param = new ActionNodeGraphParams(graph: graph, graphInfo: graphInfo, eventName: seriTrigger.eventName, actionNodeList: seriTrigger.actionList);
-                    var trigger = ConvertTriggerEntryNode(seriTrigger, param);
-                    trigger.hideEvents = true;
+                    var entryNode = ConvertTriggerToPassiveEntryNode(seriTrigger, param);
 
                     // 添加离散节点。
                     CreateFreeNodesToGraph(param);
                 }
 
-                return passive;
+                // 添加属性
+                foreach (var pair in effect.propDict)
+                {
+                    deathrattle.propDict.Add(pair.Key, pair.Value);
+                }
+                deathrattle.setTags(EFFECTTAG.PASSIVE_LASTWORD);
+                list.Add(deathrattle);
             }
             catch (Exception e)
             {
@@ -354,7 +333,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedAura ConvertEffectToAura(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private void ConvertGeneratedAura(List<GeneratedEffect> list, SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -364,8 +343,8 @@ namespace Game
                 // 创建节点。
                 var graph = new ActionGraph();
                 GeneratedAura aura = new GeneratedAura(graph);
-                aura.Init();
                 aura.name = effect.name;
+                aura.Init();
                 graph.DefineNodes(definer);
 
                 // 创建光环数据节点。
@@ -436,7 +415,12 @@ namespace Game
                     // 添加离散节点。
                     CreateFreeNodesToGraph(param);
                 }
-                return aura;
+                // 添加属性
+                foreach (var pair in effect.propDict)
+                {
+                    aura.propDict.Add(pair.Key, pair.Value);
+                }
+                list.Add(aura);
             }
             catch (Exception e)
             {
@@ -444,7 +428,7 @@ namespace Game
             }
         }
         /// <summary>
-        /// 将一个SerializableGeneratedEffect转换为通用效果。
+        /// 将一个通用效果转换。
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="card"></param>
@@ -452,77 +436,31 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedEventEffect ConvertEffectToCommon(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private void ConvertCommonEffect(List<GeneratedEffect> list, SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
-                int cardId = card?.id ?? 0;
-                int buffId = buff?.id ?? 0;
-
-                var graph = new ActionGraph();
-                GeneratedEventEffect common = new GeneratedEventEffect(graph);
-                common.Init();
-                common.name = effect.name;
-                // 生效牌堆。
-                common.getDataNode().setConst(GeneratedEffectData.pileListName, effect.pileList);
-                graph.DefineNodes(definer);
-
-                // 生效事件。
-                if (effect.onEnableRootActionNodeId != 0)
-                {
-                    // 获取通用效果的生效事件节点图信息。
-                    var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onEnableAction");
-
-                    // 将对生效事件的控制引用转换为根节点。
-                    var param = new ActionNodeGraphParams(new Vector2(0, 1000), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
-                    var actionNode = ConvertActionNodeChain(param, effect.onEnableRootActionNodeId);
-
-                    // 连接光环生效事件节点的控制输出和根节点的控制输入。
-                    graph.connect(common.onEnableAction, actionNode.getEnterPort());
-
-                    // 添加离散节点。
-                    CreateFreeNodesToGraph(param);
-                }
-
-                // 失效事件。
-                if (effect.onDisableRootActionNodeId != 0)
-                {
-                    // 获取通用效果的失效事件节点图信息。
-                    var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onDisableAction");
-
-                    // 将对失效事件的控制引用转换为根节点。
-                    var param = new ActionNodeGraphParams(new Vector2(0, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
-                    var actionNode = ConvertActionNodeChain(param, effect.onDisableRootActionNodeId);
-
-                    // 连接光环失效事件节点的控制输出和根节点的控制输入。
-                    graph.connect(common.onDisableAction, actionNode.getEnterPort());
-
-                    // 添加离散节点。
-                    CreateFreeNodesToGraph(param);
-                }
-
-                // 触发器列表。
-                foreach (var node in common.graph.nodes.OfType<TriggerEntryNode>().ToArray())
-                {
-                    graph.removeNode(node);
-                }
                 for (int i = 0; i < effect.triggerList.Count; i++)
                 {
-                    var seriTrigger = effect.triggerList[i];
-                    if (seriTrigger == null)
+                    var trigger = effect.triggerList[i];
+                    if (trigger == null)
                         continue;
-
-                    // 获取通用效果的触发器的节点图信息。
-                    var graphInfo = getGraphInfo(cardId, buffId, effectIndex, i);
-
-                    // 将触发器的序列化文档转换为根节点。
-                    var param = new ActionNodeGraphParams(graph: graph, graphInfo: graphInfo, eventName: seriTrigger.eventName, actionNodeList: seriTrigger.actionList);
-                    var trigger = ConvertTriggerEntryNode(seriTrigger, param);
-
-                    // 添加离散节点。
-                    CreateFreeNodesToGraph(param);
+                    GeneratedEffect e;
+                    if (trigger.eventName == "ActiveEvent" && !effect.tagList.Contains(KEYWORD.DEATHRATTLE))
+                    {
+                        e = ConvertCommonToActive(effect, card, buff, effectIndex, i);
+                    }
+                    else
+                    {
+                        e = ConvertCommonToPassive(effect, card, buff, effectIndex, i);
+                    }
+                    // 添加属性
+                    foreach (var pair in effect.propDict)
+                    {
+                        e.propDict.Add(pair.Key, pair.Value);
+                    }
+                    list.Add(e);
                 }
-                return common;
             }
             catch (Exception e)
             {
@@ -530,89 +468,157 @@ namespace Game
             }
         }
 
-        /// <summary>
-        /// 将一个SerializableGeneratedEffect分离为宣言和遗言效果。
-        /// </summary>
-        /// <param name="seri"></param>
-        /// <param name="card"></param>
-        /// <param name="buff"></param>
-        /// <param name="effectIndex"></param>
-        /// <returns></returns>
-        /// <exception cref="FormatException"></exception>
-        private bool SplitToBattlecryAndDeathrattle(SerializableGeneratedEffect seri, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex, out GeneratedEffect battlecry, out GeneratedEffect deathrattle)
+        private GeneratedActiveEffect ConvertCommonToActive(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex, int triggerIndex)
         {
-            try
+            int cardId = card?.id ?? 0;
+            int buffId = buff?.id ?? 0;
+
+            var trigger = effect.triggerList[triggerIndex];
+
+            var graph = new ActionGraph();
+            GeneratedActiveEffect active = new GeneratedActiveEffect(graph);
+            active.name = effect.name;
+            active.Init();
+            graph.DefineNodes(definer);
+
+            // 生效事件。
+            if (effect.onEnableRootActionNodeId != 0)
             {
-                int cardId = card?.id ?? 0;
-                int buffId = buff?.id ?? 0;
+                // 获取通用效果的生效事件节点图信息。
+                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onEnableAction");
 
+                // 将对生效事件的控制引用转换为根节点。
+                var param = new ActionNodeGraphParams(new Vector2(0, 1000), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
+                var actionNode = ConvertActionNodeChain(param, effect.onEnableRootActionNodeId);
 
-                battlecry = null;
-                deathrattle = null;
+                // 连接光环生效事件节点的控制输出和根节点的控制输入。
+                graph.connect(active.onEnableAction, actionNode.getEnterPort());
 
-                Type type = typeFinder?.Invoke(seri.typeName);
-                if (type != typeof(GeneratedEffect))
-                    return false;
-
-                SerializableTrigger activeTrigger = null;
-                if (seri.triggerList.Count() == 1)
-                {
-                    var trigger = seri.triggerList.FirstOrDefault();
-                    if (trigger != null && trigger.eventName == "ActiveEvent")
-                    {
-                        activeTrigger = trigger;
-                    }
-                }
-
-                if (activeTrigger == null)
-                    return false;
-
-                void LoadTrigger(GeneratedEffect effect)
-                {
-                    // 触发器列表。
-                    effect.graph.Clear();
-                    // 获取通用效果的触发器的节点图信息。
-                    var graphInfo = getGraphInfo(cardId, buffId, effectIndex, 0);
-
-                    // 将触发器的序列化文档转换为根节点。
-                    var param = new ActionNodeGraphParams(graph: effect.graph, graphInfo: graphInfo, eventName: activeTrigger.eventName, actionNodeList: activeTrigger.actionList);
-                    var trigger = ConvertTriggerEntryNode(activeTrigger, param);
-                    trigger.hideEvents = true;
-
-                    // 添加离散节点。
-                    CreateFreeNodesToGraph(param);
-
-                    foreach (var pair in seri.propDict)
-                    {
-                        effect.propDict.Add(pair.Key, pair.Value);
-                    }
-                }
-
-                if (seri.tagList.Contains(KEYWORD.BATTLECRY))
-                {
-                    var graph = new ActionGraph();
-                    var active = new GeneratedActiveEffect(graph);
-                    active.setTags(EFFECTTAG.ACTIVE_PLAYED);
-                    active.name = seri.name;
-                    LoadTrigger(battlecry);
-                    battlecry = active;
-                }
-
-                if (seri.tagList.Contains(KEYWORD.DEATHRATTLE))
-                {
-                    var graph = new ActionGraph();
-                    var passive = new GeneratedPassiveEffect(graph);
-                    passive.setTags(EFFECTTAG.PASSIVE_LASTWORD);
-                    passive.name = seri.name;
-                    LoadTrigger(passive);
-                    deathrattle = passive;
-                }
-                return battlecry != null || deathrattle != null;
+                // 添加离散节点。
+                CreateFreeNodesToGraph(param);
             }
-            catch (Exception e)
+
+            // 失效事件。
+            if (effect.onDisableRootActionNodeId != 0)
             {
-                throw new FormatException("反序列化效果的生效效果失败", e);
+                // 获取通用效果的失效事件节点图信息。
+                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onDisableAction");
+
+                // 将对失效事件的控制引用转换为根节点。
+                var param = new ActionNodeGraphParams(new Vector2(0, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
+                var actionNode = ConvertActionNodeChain(param, effect.onDisableRootActionNodeId);
+
+                // 连接光环失效事件节点的控制输出和根节点的控制输入。
+                graph.connect(active.onDisableAction, actionNode.getEnterPort());
+
+                // 添加离散节点。
+                CreateFreeNodesToGraph(param);
             }
+
+            // 触发器。
+            if (trigger != null)
+            {
+                // 获取通用效果的触发器的节点图信息。
+                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, triggerIndex);
+
+                // 将触发器的序列化文档转换为根节点。
+                var param = new ActionNodeGraphParams(graph: graph, graphInfo: graphInfo, eventName: trigger.eventName, actionNodeList: trigger.actionList);
+                ConvertTriggerToActiveEntryNode(trigger, param);
+
+                // 添加离散节点。
+                CreateFreeNodesToGraph(param);
+            }
+            if (effect.tagList.Contains(KEYWORD.BATTLECRY))
+            {
+                active.setTags(EFFECTTAG.ACTIVE_PLAYED);
+            }
+            return active;
+        }
+
+        private GeneratedPassiveEffect ConvertCommonToPassive(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex, int triggerIndex)
+        {
+            int cardId = card?.id ?? 0;
+            int buffId = buff?.id ?? 0;
+
+            var trigger = effect.triggerList[triggerIndex];
+
+            var graph = new ActionGraph();
+
+            // 创建效果。
+            GeneratedPassiveEffect passive;
+            if (effect.tagList.Contains(KEYWORD.DEATHRATTLE) || trigger.eventName == "ActiveEvent")
+            {
+                // 遗言/发动事件
+                passive = new GeneratedPassiveEffect(graph);
+            }
+            else
+            {
+                // 事件效果
+                passive = new GeneratedEventEffect(graph);
+            }
+            passive.Init();
+            passive.name = effect.name;
+
+            // 生效事件。
+            if (effect.onEnableRootActionNodeId != 0)
+            {
+                // 获取通用效果的生效事件节点图信息。
+                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onEnableAction");
+
+                // 将对生效事件的控制引用转换为根节点。
+                var param = new ActionNodeGraphParams(new Vector2(0, 1000), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
+                var actionNode = ConvertActionNodeChain(param, effect.onEnableRootActionNodeId);
+
+                // 连接光环生效事件节点的控制输出和根节点的控制输入。
+                graph.connect(passive.onEnableAction, actionNode.getEnterPort());
+
+                // 添加离散节点。
+                CreateFreeNodesToGraph(param);
+            }
+
+            // 失效事件。
+            if (effect.onDisableRootActionNodeId != 0)
+            {
+                // 获取通用效果的失效事件节点图信息。
+                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onDisableAction");
+
+                // 将对失效事件的控制引用转换为根节点。
+                var param = new ActionNodeGraphParams(new Vector2(0, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
+                var actionNode = ConvertActionNodeChain(param, effect.onDisableRootActionNodeId);
+
+                // 连接光环失效事件节点的控制输出和根节点的控制输入。
+                graph.connect(passive.onDisableAction, actionNode.getEnterPort());
+
+                // 添加离散节点。
+                CreateFreeNodesToGraph(param);
+            }
+
+            // 触发器。
+            if (trigger != null)
+            {
+                // 获取通用效果的触发器的节点图信息。
+                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, triggerIndex);
+
+                // 将触发器的序列化文档转换为根节点。
+                var param = new ActionNodeGraphParams(graph: graph, graphInfo: graphInfo, eventName: trigger.eventName, actionNodeList: trigger.actionList);
+                ConvertTriggerToPassiveEntryNode(trigger, param);
+
+                // 添加离散节点。
+                CreateFreeNodesToGraph(param);
+            }
+
+            graph.DefineNodes(definer);
+
+            if (passive is GeneratedEventEffect eventEffect)
+            {
+                eventEffect.getEventDataNode().setConst(EventEffectData.pileListName, effect.pileList);
+            }
+            if (effect.tagList.Contains(KEYWORD.DEATHRATTLE))
+            {
+                // 遗言
+                passive.setTags(EFFECTTAG.PASSIVE_LASTWORD);
+            }
+            return passive;
         }
         #endregion
 
@@ -710,24 +716,27 @@ namespace Game
             return actionNode;
         }
         /// <summary>
-        /// 将SerializableTrigger转换为一个触发器入口节点。
+        /// 将触发器入口节点转换为一个主动效果入口节点。
         /// </summary>
         /// <param name="seriTrigger"></param>
         /// <param name="param"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private TriggerEntryNode ConvertTriggerEntryNode(SerializableTrigger seriTrigger, ActionNodeGraphParams param)
+        private ActiveEntryNode ConvertTriggerToActiveEntryNode(SerializableTrigger seriTrigger, ActionNodeGraphParams param)
         {
             // 参数。
             var graph = param.graph;
             var posOffset = param.posOffset;
 
             // 创建节点。
-            float posX = 0, posY = 0;
-            posX += posOffset.x;
-            posY += posOffset.y;
-            var eventTypeInfo = eventInfoFinder?.Invoke(seriTrigger.eventName);
-            TriggerEntryNode trigger = graph.createTriggerEntryNode(eventTypeInfo, posX, posY);
+            var trigger = graph.findActiveEntryNode();
+            if (trigger == null)
+            {
+                float posX = 0, posY = 0;
+                posX += posOffset.x;
+                posY += posOffset.y;
+                trigger = graph.createActiveEntryNode(posX, posY);
+            }
 
             // 触发条件。
             if (seriTrigger.condition != null)
@@ -783,6 +792,71 @@ namespace Game
             }
 
             return trigger;
+        }
+
+        /// <summary>
+        /// 将触发器入口节点转换为一个事件入口节点。
+        /// </summary>
+        /// <param name="seriTrigger"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
+        private PassiveEntryNode ConvertTriggerToPassiveEntryNode(SerializableTrigger seriTrigger, ActionNodeGraphParams param)
+        {
+            // 参数。
+            var graph = param.graph;
+            var posOffset = param.posOffset;
+
+            // 创建节点。
+            var passiveEntry = graph.findPassiveEntryNode();
+            if (passiveEntry == null)
+            {
+                float posX = 0, posY = 0;
+                posX += posOffset.x;
+                posY += posOffset.y;
+                if (seriTrigger.eventName != null && seriTrigger.eventName != "ActiveEvent")
+                {
+                    var eventTypeInfo = eventInfoFinder?.Invoke(seriTrigger.eventName);
+                    passiveEntry = graph.createEventEntryNode(eventTypeInfo, posX, posY);
+                }
+                else
+                {
+                    passiveEntry = graph.createPassiveEntryNode(posX, posY);
+                    passiveEntry.Define();
+                }
+            }
+
+            // 触发条件。
+            if (seriTrigger.condition != null)
+            {
+                try
+                {
+                    var valueRef = ConvertActionValueRef(seriTrigger.condition, param);
+                    ConnectValueRef(passiveEntry.getTriggerCondtionValuePort(), valueRef, param);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException("反序列化触发器条件失败", e);
+                }
+            }
+
+            // 根动作节点。
+            if (seriTrigger.actionId != 0)
+            {
+                try
+                {
+                    var node = ConvertActionNodeChain(param, seriTrigger.actionId);
+                    var input = node.getEnterPort();
+                    var output = passiveEntry.getActionOutputPort();
+                    graph.connect(output, input);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException("反序列化触发器动作失败", e);
+                }
+            }
+
+            return passiveEntry;
         }
         /// <summary>
         /// 创建节点图内的所有离散节点。
@@ -1041,8 +1115,17 @@ namespace Game
             else if (!string.IsNullOrEmpty(valueRef.eventVarName))
             {
                 // 触发器事件入口节点。
-                var triggerNode = graph?.nodes?.OfType<TriggerEntryNode>().FirstOrDefault(n => n.eventName == param.eventName);
-                port = triggerNode?.getOutputPort<ValueOutput>(valueRef.eventVarName);
+                Node node = graph?.findActiveEntryNode();
+                if (node == null)
+                    node = graph?.findEventEntryNode(param.eventName);
+                if (node == null)
+                    node = graph?.findPassiveEntryNode();
+
+                if (node != null)
+                {
+                    var varName = valueRef.eventVarName;
+                    port = node.getOutputPort<ValueOutput>(varName);
+                }
             }
             else
             {

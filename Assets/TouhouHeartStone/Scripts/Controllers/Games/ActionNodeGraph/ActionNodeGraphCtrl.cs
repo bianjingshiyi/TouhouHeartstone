@@ -99,7 +99,6 @@ namespace Controllers
             _ui.onClickActionNodeConstValueItemEditButton += onClickActionNodeConstValueItemEditButton;
             _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
             //触发
-            _ui.onTriggerEventTypeChanged += onChangeTriggerTypeIndex;
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
             _ui.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
@@ -491,21 +490,6 @@ namespace Controllers
                 {
                     await createNodeUI4ActionNode(action);
                 }
-                else if (node is TriggerEntryNode trigger)
-                {
-                    string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_TRIGGER);
-                    var targetTypes = getTranslatedTargetCheckerTypes();
-                    var checkers = getTriggerTargetCheckerViewData(trigger);
-                    var inputViewData = getTriggerInputViewData(trigger);
-                    var outputViewData = getTriggerOutputViewData(trigger);
-
-                    var actionNodeItem = _ui.createTriggerNode(trigger.posX, trigger.posY, nodeName, inputViewData, 
-                        targetTypes, _eventTypeInfoList.getEventTypeIndex(trigger.eventName), checkers,
-                        outputViewData);
-                    actionNodeItem.displayEventType(!trigger.hideEvents);
-                    _actionNodeItemList.Add(actionNodeItem);
-                    _actionNodeList.Add(node);
-                }
                 else if (node is GeneratedActionEntryNode genEntry)
                 {
                     string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
@@ -630,7 +614,7 @@ namespace Controllers
                     getActionNodeName(actionNode),
                     getActionNodeInputViewData(actionNode),
                     constsInfo,
-                    getActionNodeOutputViewData(actionNode),
+                    getNodeOutputViewData(actionNode),
                     getActionNodeObsoleteMsg(actionNode),
                     nodeKey);
                 for (int i = 0; i < constsInfo.Length; i++)
@@ -1152,10 +1136,10 @@ namespace Controllers
             return outputNames;
 
         }
-        private PortItemInfo[] getActionNodeOutputViewData(ActionNode actionNode)
+        private PortItemInfo[] getNodeOutputViewData(Node node)
         {
             List<PortItemInfo> outputList = new List<PortItemInfo>();
-            foreach (var output in actionNode.outputPorts)
+            foreach (var output in node.outputPorts)
             {
                 // 翻译输出节点
                 var outputName = tryTranslateWithDict(output.define.getDisplayName());
