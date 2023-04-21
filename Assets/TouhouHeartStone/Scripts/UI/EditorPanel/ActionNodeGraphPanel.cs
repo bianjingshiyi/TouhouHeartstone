@@ -45,7 +45,6 @@ namespace UI
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
-            actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
@@ -61,16 +60,11 @@ namespace UI
             return actionNodeItem;
         }
         /// <summary>
-        /// 在指定位置上创建一个触发器节点。
+        /// 在指定位置上创建一个主动效果入口节点。
         /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        /// <param name="eventName"></param>
-        /// <param name="targetCheckerCount"></param>
-        /// <returns></returns>
-        public ActionNodeItem createTriggerNode(float posX, float posY, string nodeName,
-            PortItemInfo[] inputViewData, 
-            string[] targetCheckerTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers,
+        public ActionNodeItem createActiveEntryNode(float posX, float posY, string nodeName,
+            PortItemInfo[] inputViewData,
+            string[] targetCheckerTypes, (int typeIndex, string name, string errorTip)[] targetCheckers,
             PortItemInfo[] outputViewData)
         {
             ActionNodeItem actionNodeItem = Instantiate(_actionNodeItemTemplate, _actionNodesRoot);
@@ -79,8 +73,8 @@ namespace UI
             RectTransform itemRect = actionNodeItem.transform as RectTransform;
             itemRect.anchoredPosition = new Vector2(posX, posY);
             actionNodeItem.setName(nodeName);
-            actionNodeItem.switchToTriggerNode();
-            actionNodeItem.setTrigger(targetCheckerTypes, eventIndex, targetCheckers);
+            actionNodeItem.switchToActiveEntryNode();
+            actionNodeItem.setActiveEntry(targetCheckerTypes, targetCheckers);
             actionNodeItem.setInputs(inputViewData);
             actionNodeItem.setOutputs(outputViewData);
 
@@ -100,12 +94,24 @@ namespace UI
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
-            actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.onUpdateTransform += onActionNodeItemUpdateTransform;
+            return actionNodeItem;
+        }
+
+        /// <summary>
+        /// 在指定位置上创建一个主动效果入口节点。
+        /// </summary>
+        public ActionNodeItem createPassiveEntryNode(float posX, float posY, string nodeName,
+            PortItemInfo[] inputViewData,
+            PortItemInfo[] outputViewData)
+        {
+            ActionNodeItem actionNodeItem = createNode(posX, posY, nodeName);
+            actionNodeItem.setInputs(inputViewData);
+            actionNodeItem.setOutputs(outputViewData);
             return actionNodeItem;
         }
         /// <summary>
@@ -120,7 +126,6 @@ namespace UI
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
-            actionNodeItem.onEventTypeDropdownValueChanged += onTriggerNodeEventIndexChanged;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
@@ -354,13 +359,12 @@ namespace UI
         {
             _cardSelectPanel.SetActive(value);
         }
-        public void init(string[] eventTypes, (string name, string value)[] keywords, (string name, string value)[] piles)
+        public void init((string name, string value)[] piles)
         {
-            init(eventTypes, piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray(), keywords.Select(i => i.name).ToArray(), keywords.Select(i => i.value).ToArray());
+            init(piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray());
         }        
-        public void init(string[] eventTypes, string[] pileNames, string[] pileValues, string[] keywordNames, string[] keywordValues)
+        public void init(string[] pileNames, string[] pileValues)
         {
-            _actionNodeItemTemplate.initEventTypes(eventTypes);
             _actionNodeItemTemplate.initPileNames(pileNames, pileValues);
         }
         public void resetView()
@@ -800,7 +804,6 @@ namespace UI
                     onConnectNodes?.Invoke(item, outputIndex, inputItem, inputIndex);
                     return;
                 }
-                return;
             }
             // 不在任何点上：
             //如果（该输出端点是值端点）并且（有多个连接），跳过。
@@ -1359,10 +1362,6 @@ namespace UI
         /// 关键词
         /// </summary>
         keywords,
-        /// <summary>
-        /// 函数节点
-        /// </summary>
-        functionNode,
         /// <summary>
         /// 卡牌引用（外观为长条）
         /// </summary>

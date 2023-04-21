@@ -12,7 +12,7 @@ namespace UI
     public partial class ActionNodeItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         #region 公有方法
-        public void switchToTriggerNode()
+        public void switchToActiveEntryNode()
         {
             _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(true);
@@ -33,11 +33,6 @@ namespace UI
         public void setName(string name)
         {
             _nameText.text = name;
-            SetDirty();
-        }
-        public void displayEventType(bool value)
-        {
-            _eventTypeDropdown.transform.parent.gameObject.SetActive(value);
             SetDirty();
         }
         public void setInputs(PortItemInfo[] inputViewData)
@@ -117,19 +112,19 @@ namespace UI
         /// 初始化事件类型名称
         /// </summary>
         /// <param name="eventNames"></param>
-        public void initEventTypes(string[] eventNames)
-        {
-            _eventTypeDropdown.ClearOptions();
-            _eventTypeDropdown.AddOptions(new List<string>(eventNames));
-        }
-        /// <summary>
-        /// 初始化事件类型名称
-        /// </summary>
-        /// <param name="eventNames"></param>
         public void initPileNames(string[] pileNames, string[] pileValues)
         {
             ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
             item.initPileNames(pileNames, pileValues);
+        }
+        /// <summary>
+        /// 初始化效果标签
+        /// </summary>
+        /// <param name="eventNames"></param>
+        public void initEffectTags(string[] effectTagNames, string[] effectTagValues)
+        {
+            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            item.initEffectTagNames(effectTagNames, effectTagValues);
         }
 
 
@@ -241,9 +236,8 @@ namespace UI
             }
             SetDirty();
         }
-        public void setTrigger(string[] targetTypes, int eventIndex, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        public void setActiveEntry(string[] targetTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {
-            _eventTypeDropdown.SetValueWithoutNotify(eventIndex);
             updateTargetCheckerList(targetTypes, targetCheckers);
         }
 
@@ -356,9 +350,6 @@ namespace UI
             {
                 _targetCheckerTemplate.gameObject.SetActive(false);
             }
-            // _eventNameInputField.onEndEdit.AddListener(onEndEditEventNameInputField);
-            _eventTypeDropdown.onValueChanged.AddListener(onChangeSelectedEventIndex);
-            _editConditionButton.onClick.AddListener(onClickEditConditionButtonCallback);
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
             _warningObj.onClick.AddListener(onClickObsoleteBtn);
             _helpBtn.onClick.AddListener(onClickHelpBtn);
@@ -419,14 +410,6 @@ namespace UI
         private void onConstValueItemButtonClickCallback(ValueInputField item, int index)
         {
             onClickConstValueItemButton?.Invoke(this, _valueList.IndexOf(item.transform as RectTransform), index);
-        }
-        private void onChangeSelectedEventIndex(int eventIndex)
-        {
-            onEventTypeDropdownValueChanged?.Invoke(this, eventIndex);
-        }
-        private void onClickEditConditionButtonCallback()
-        {
-            onClickEditConditionButton?.Invoke(this);
         }
         private void onClickAddTargetCheckerButtonCallback()
         {
@@ -510,8 +493,6 @@ namespace UI
         public event Action<ActionNodeItem, int, object> onConstValueChanged;
         public event Action<ActionNodeItem, int> onClickConstValueButton;
         public event Action<ActionNodeItem, int, int> onClickConstValueItemButton;
-        public event Action<ActionNodeItem, string> onEventNameChanged;
-        public event Action<ActionNodeItem, int> onEventTypeDropdownValueChanged;
         public event Action<ActionNodeItem> onClickEditConditionButton;
         public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
         public event Action<ActionNodeItem, int, int> onTargetCheckerTypeValueChanged;
@@ -535,6 +516,7 @@ namespace UI
         string documentKey = "";
         private bool _dirty;
 
+        [Header("基本")]
         [SerializeField]
         Text _nameText;
         [SerializeField]
@@ -543,12 +525,16 @@ namespace UI
         Button _warningObj;
         [SerializeField]
         Button _helpBtn;
+
+        [Header("输入")]
         [SerializeField]
         RectTransform _inputRoot;
         [SerializeField]
         RectTransform _inputTemplate;
         [SerializeField]
         List<RectTransform> _inputList = new List<RectTransform>();
+
+        [Header("值")]
         [SerializeField]
         RectTransform _valueNameRoot;
         [SerializeField]
@@ -561,18 +547,20 @@ namespace UI
         RectTransform _valueTemplate;
         [SerializeField]
         List<RectTransform> _valueList = new List<RectTransform>();
+
+        [Header("输出")]
         [SerializeField]
         RectTransform _outputRoot;
         [SerializeField]
         RectTransform _outputTemplate;
         [SerializeField]
         List<RectTransform> _outputList = new List<RectTransform>();
+
+        [Header("触发器")]
         [SerializeField]
         RectTransform _triggerFieldsRoot;
-        [SerializeField]
-        Dropdown _eventTypeDropdown;
-        [SerializeField]
-        Button _editConditionButton;
+
+        [Header("目标检查器")]
         [SerializeField]
         RectTransform _targetCheckerRoot;
         [SerializeField]
@@ -582,6 +570,7 @@ namespace UI
         [SerializeField]
         Button _addTargetCheckerButton;
 
+        [Header("颜色")]
         [SerializeField]
         Color _normalTitleColor;
         [SerializeField]

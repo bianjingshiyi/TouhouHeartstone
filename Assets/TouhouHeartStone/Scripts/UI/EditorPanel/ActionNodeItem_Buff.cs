@@ -51,6 +51,8 @@ namespace UI
         public event Action<ActionNodeItem> onClickEditBuffButton;
         #endregion
         #region 属性字段
+
+        [Header("增益")]
         [SerializeField]
         RectTransform _buffFieldsRoot;
         [SerializeField]

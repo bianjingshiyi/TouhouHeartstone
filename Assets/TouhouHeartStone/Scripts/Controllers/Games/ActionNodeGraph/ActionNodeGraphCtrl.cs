@@ -111,10 +111,7 @@ namespace Controllers
             _cardPoolViewPanelCtrl.enableCount(false);
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
-            _ui.init(
-                _eventTypeInfoList.getEventTypeNamesForEditor(),
-                CardEditorCtrl.getKeywords(),
-                CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
+            _ui.init(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
         }
         #endregion
         #region 事件回调
@@ -490,6 +487,59 @@ namespace Controllers
                 {
                     await createNodeUI4ActionNode(action);
                 }
+                else if (node is ActiveEntryNode activeEntry)
+                {
+                    string nodeName = game.lang._(EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE);
+                    var targetTypes = getTranslatedTargetCheckerTypes();
+                    var checkers = getActiveEntryTargetCheckerViewData(activeEntry);
+                    var inputViewData = getActiveEntryInputViewData(activeEntry);
+                    var constViewData = new ActionNodeValueInfo[]
+                    {
+                        new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, activeEntry.tags)
+                    };
+                    var outputViewData = getNodeOutputViewData(activeEntry);
+
+                    var actionNodeItem = _ui.createActiveEntryNode(activeEntry.posX, activeEntry.posY, nodeName,
+                        inputViewData,
+                        targetTypes, checkers,
+                        outputViewData);
+                    actionNodeItem.initEffectTags(_activeEffectTagNames, _activeEffectTags);
+                    actionNodeItem.setConsts(constViewData);
+
+                    _actionNodeItemList.Add(actionNodeItem);
+                    _actionNodeList.Add(node);
+                }
+                else if (node is PassiveEntryNode passiveEntry)
+                {
+                    string nodeName;
+                    if (passiveEntry is EventEntryNode eventEntry)
+                    {
+                        var typeIndex = _eventTypeInfoList.getEventTypeIndex(eventEntry.eventName);
+                        var editorNames = _eventTypeInfoList.getEventTypeNamesForEditor();
+                        nodeName = editorNames[typeIndex];
+                    }
+                    else
+                    {
+                        nodeName = EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE;
+                    }
+                    nodeName = game.lang._(nodeName);
+                    var inputViewData = getNodeInputViewData(passiveEntry);
+                    var constViewData = new ActionNodeValueInfo[]
+                    {
+                        new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags)
+                    };
+                    var outputViewData = getNodeOutputViewData(passiveEntry);
+
+                    var actionNodeItem = _ui.createPassiveEntryNode(passiveEntry.posX, passiveEntry.posY,
+                        nodeName,
+                        inputViewData,
+                        outputViewData);
+                    actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
+                    actionNodeItem.setConsts(constViewData);
+
+                    _actionNodeItemList.Add(actionNodeItem);
+                    _actionNodeList.Add(node);
+                }
                 else if (node is GeneratedActionEntryNode genEntry)
                 {
                     string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
@@ -602,7 +652,7 @@ namespace Controllers
                 {
                     buffNames = buffNames.ToArray(),
                     buffIndex = Array.IndexOf(buffDefines, generatedBuffDefine) + 1
-                }, getActionNodeOutputNames(actionNode));
+                }, getNodeOutputNames(actionNode));
             }
             else if (actionDefine != null)
             {
@@ -612,7 +662,7 @@ namespace Controllers
                     actionNode.posX,
                     actionNode.posY,
                     getActionNodeName(actionNode),
-                    getActionNodeInputViewData(actionNode),
+                    getNodeInputViewData(actionNode),
                     constsInfo,
                     getNodeOutputViewData(actionNode),
                     getActionNodeObsoleteMsg(actionNode),
@@ -763,9 +813,9 @@ namespace Controllers
             //更新ui
             _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.value);
             //更新变长参数。
-            if (inputPort.node is ActionNode actionNode && actionNode.define?.isParams == true)
+            if (inputPort.node is ActionNode actionNode && getActionDefine(actionNode.defineName)?.isParams == true)
             {
-                inputNodeItem.setInputs(getActionNodeInputViewData(actionNode));
+                inputNodeItem.setInputs(getNodeInputViewData(actionNode));
             }
         }
 
@@ -920,9 +970,9 @@ namespace Controllers
             _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
             graph.disconnect(outputPort, inputPort);
             //更新变长参数。
-            if (inputPort is ValueInput && inputPort.node is ActionNode actionNode && actionNode.define?.isParams == true)
+            if (inputPort is ValueInput && inputPort.node is ActionNode actionNode && getActionDefine(actionNode.defineName)?.isParams == true)
             {
-                inputNodeItem.setInputs(getActionNodeInputViewData(actionNode));
+                inputNodeItem.setInputs(getNodeInputViewData(actionNode));
             }
         }
         /// 断开：动作节点----所有节点
@@ -1046,6 +1096,11 @@ namespace Controllers
         /// </summary>
         /// <returns></returns>
         #region 节点信息
+        private void updateNode(ActionNodeItem item, Node node)
+        {
+            item.setInputs(getNodeInputViewData(node));
+            item.setOutputs(getNodeOutputViewData(node));
+        }
         private ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
             var actionDefine = getActionDefine(actionNode.defineName);
@@ -1101,22 +1156,22 @@ namespace Controllers
             }
             return infoArray;
         }
-        private string[] getActionNodeInputNames(ActionNode actionNode)
+        private string[] getNodeInputNames(Node node)
         {
-            string[] inputNames = new string[actionNode.inputPorts.Count()];
+            string[] inputNames = new string[node.inputPorts.Count()];
             for (int i = 0; i < inputNames.Length; i++)
             {
                 // 翻译输出节点
-                var outputName = actionNode.inputPorts.ElementAt(i).define.getDisplayName();
+                var outputName = node.inputPorts.ElementAt(i).define.getDisplayName();
                 inputNames[i] = tryTranslateWithDict(outputName);
             }
             return inputNames;
         }
-        private PortItemInfo[] getActionNodeInputViewData(ActionNode actionNode)
+        private PortItemInfo[] getNodeInputViewData(Node node)
         {
             List<PortItemInfo> viewDataList = new List<PortItemInfo>();
             //值输入
-            foreach (var inputPort in actionNode.inputPorts)
+            foreach (var inputPort in node.inputPorts)
             {
                 // 翻译输出节点
                 var inputName = tryTranslateWithDict(inputPort.define.getDisplayName());
@@ -1124,13 +1179,13 @@ namespace Controllers
             }
             return viewDataList.ToArray();
         }
-        private string[] getActionNodeOutputNames(ActionNode actionNode)
+        private string[] getNodeOutputNames(Node node)
         {
-            string[] outputNames = new string[actionNode.outputPorts.Count()];
+            string[] outputNames = new string[node.outputPorts.Count()];
             for (int i = 0; i < outputNames.Length; i++)
             {
                 // 翻译输出节点
-                var outputName = actionNode.outputPorts.ElementAt(i).define.getDisplayName();
+                var outputName = node.outputPorts.ElementAt(i).define.getDisplayName();
                 outputNames[i] = tryTranslateWithDict(outputName);
             }
             return outputNames;
@@ -1278,6 +1333,10 @@ namespace Controllers
         public const string EDITOR_PARAM_NAME_AFFECT_CONDITION = "作用条件";
         [TranslateMsg("编辑器-参数名称-目标增益（自定义光环-更新动作-输出值）")]
         public const string EDITOR_PARAM_NAME_TARGETS_BUFF = "目标增益";
+        [TranslateMsg("编辑器-节点名称-主动效果入口节点")]
+        public const string EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE = "主动效果入口";
+        [TranslateMsg("编辑器-节点名称-被动效果入口节点")]
+        public const string EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE = "被动效果入口";
 
         [Obsolete]
         public IAppManager app { get; }
@@ -1360,7 +1419,7 @@ namespace Controllers
         const string EDITOR_PARAM_TARGET_NAME = "目标名";
         [TranslateMsg("节点参数 TargetBuff")]
         const string EDITOR_PARAM_TARGET_BUFF = "目标增益";
-        
+
 
         [TranslateMsg("整数运算符，加法 +")]
         const string EDITOR_ENUM_INT_OPERATOR_ADD = "加";
@@ -1493,6 +1552,22 @@ namespace Controllers
             { "Game.CardDefineSelect.Skill", EDITOR_ENUM_CARD_TYPE_SKILL },
             { "Game.CardDefineSelect.Master", EDITOR_ENUM_CARD_TYPE_MASTER },
             { "Game.CardDefineSelect.Item", EDITOR_ENUM_CARD_TYPE_ITEM },
+        };
+        static readonly string[] _activeEffectTags = new string[]
+        {
+            EFFECTTAG.ACTIVE_PLAYED
+        };
+        static readonly string[] _activeEffectTagNames = new string[]
+        {
+            StringTable.GAME_KEYWORD_BATTLECRY
+        };
+        static readonly string[] _passiveEffectTags = new string[]
+        {
+            EFFECTTAG.PASSIVE_LASTWORD
+        };
+        static readonly string[] _passiveEffectTagNames = new string[]
+        {
+            StringTable.GAME_KEYWORD_DEATHRATTLE
         };
         #endregion
         #region 内部类

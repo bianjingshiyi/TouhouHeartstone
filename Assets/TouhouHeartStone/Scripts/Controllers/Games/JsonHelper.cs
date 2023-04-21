@@ -23,8 +23,6 @@ namespace Controllers
                 BsonClassMap.RegisterClassMap<ObjectProxy>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(ActionValueRef)))
                 BsonClassMap.RegisterClassMap<ActionValueRef>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(FunctionNode)))
-                BsonClassMap.RegisterClassMap<FunctionNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActionValueRef)))
                 BsonClassMap.RegisterClassMap<SerializableActionValueRef>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableFunctionNode)))
@@ -40,10 +38,20 @@ namespace Controllers
             if (!BsonClassMap.IsClassMapRegistered(typeof(LogicOperator)))
                 BsonClassMap.RegisterClassMap<LogicOperator>();
 
-            // Action Graph V2.
+            // Nodes.
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActionNode))) BsonClassMap.RegisterClassMap<SerializableActionNode>();
+
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActiveEntryNode))) BsonClassMap.RegisterClassMap<SerializableActiveEntryNode>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializablePassiveEntryNode))) BsonClassMap.RegisterClassMap<SerializablePassiveEntryNode>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableEventEntryNode))) BsonClassMap.RegisterClassMap<SerializableEventEntryNode>();
+
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedEntryNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedEntryNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedReturnNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedReturnNode>();
+
+            // Effects.
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActiveEffect))) BsonClassMap.RegisterClassMap<SerializableActiveEffect>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializablePassiveEffect))) BsonClassMap.RegisterClassMap<SerializablePassiveEffect>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableAuraEffect))) BsonClassMap.RegisterClassMap<SerializableAuraEffect>();
             isInited = true;
         }
         public static string toJson(this object obj, bool readFriendly = false)

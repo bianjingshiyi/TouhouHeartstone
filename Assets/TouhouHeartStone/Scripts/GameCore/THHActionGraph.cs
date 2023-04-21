@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {

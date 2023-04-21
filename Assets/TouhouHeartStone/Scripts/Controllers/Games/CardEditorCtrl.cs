@@ -1074,8 +1074,6 @@ namespace Controllers
         string[] _types;
 
         [SerializeField]
-        EffectEditorCtrl _effectEditorCtrl;
-        [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
         Button _cancelCardPoolSelectButton;
