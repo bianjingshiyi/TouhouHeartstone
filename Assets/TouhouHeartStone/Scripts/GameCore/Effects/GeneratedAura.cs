@@ -36,14 +36,18 @@ namespace TouhouHeartstone
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
         {
             await base.onEnable(game, card, buff);
-            await execute(game, card, buff, null);
+            await updateAura(game, card, buff, null);
         }
         public override async Task onDisable(IGame game, ICard card, IBuff buff)
         {
             await base.onDisable(game, card, buff);
-            await execute(game, card, buff, null);
+            await updateAura(game, card, buff, null);
         }
-        public override async Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        {
+            return updateAura(game, card, buff, eventArg);
+        }
+        public async Task updateAura(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
             CardEngine cardEngine = game as CardEngine;
             Card selfCard = card as Card;
@@ -51,7 +55,9 @@ namespace TouhouHeartstone
             EventArg selfEventArg = eventArg as EventArg;
             Dictionary<Card, Buff> buffDict = getBuffDic(cardEngine, selfCard, selfBuff);
             // 如果该光环已被禁用。
-            if (isDisabled(game, card, buff) || (selfCard != null && !piles.Contains(selfCard.pile.name)))
+            if (isDisabled(game, card, buff) || 
+                (selfCard != null && 
+                (pileList == null || !pileList.Contains(selfCard.pile.name))))
             {
                 // 遍历已经记录的卡牌和增益列表。
                 foreach (var pair in buffDict)
@@ -66,19 +72,26 @@ namespace TouhouHeartstone
             }
 
             //获取光环的作用范围
-            Pile[] ranges;
+            IEnumerable<Pile> ranges = null;
             if (rangeList != null && rangeList.Count > 0 && cardEngine != null)
             {
-                ranges = cardEngine.players.SelectMany(p => p.getPiles(rangeList)).ToArray();
+                ranges = cardEngine.players.SelectMany(p => p.getPiles(rangeList));
             }
-            else
-            {
-                ranges = new Pile[0];
-            }
-
-            List<Card> checkedCards = new List<Card>();
 
             // 检测已经记录的卡牌和增益列表。
+            await updateBuffedCards(game, card, buff, buffDict, ranges);
+
+            // 检测范围内的所有卡牌。
+            await checkAndAddBuffedCards(game, card, buff, buffDict, ranges, buffDict.Keys);
+        }
+        public ActionNode getEntryNode()
+        {
+            return graph?.findActionNode(AuraDataDefine.defName);
+        }
+        #endregion
+        #region 私有方法
+        private async Task updateBuffedCards(IGame game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges)
+        {
             foreach (var pair in buffDict.ToArray())
             {
                 Card buffedCard = pair.Key;
@@ -90,54 +103,39 @@ namespace TouhouHeartstone
                     continue;
                 }
                 // 卡牌不再具有增益条件。
-                if (!ranges.Contains(buffedCard.pile) || !await checkAuraCondition(game, card, buff, buffedCard))
+                if (ranges == null || !ranges.Contains(buffedCard.pile) || !await checkAuraCondition(game, card, buff, buffedCard))
                 {
                     // 移除该卡牌的增益，并删除记录。
                     await buffedCard.removeBuff(game, cardBuff);
                     buffDict.Remove(buffedCard);
+                    continue;
                 }
                 // 卡牌仍然具有增益条件。
-                else
-                {
-                    // 更新增益。
-                    await updateAuraBuff(game, card, buff, buffedCard, cardBuff);
-                    await buffedCard.updateBuff(cardEngine, cardBuff);
-                }
-                checkedCards.Add(buffedCard);
-            }
-
-            // 检测范围内的所有卡牌。
-            if (ranges != null)
-            {
-                foreach (Pile pile in ranges)
-                {
-                    foreach (var target in pile)
-                    {
-                        if (checkedCards.Contains(target))
-                        {
-                            continue;
-                        }
-                        // 卡牌进入作用范围
-                        if (!buffDict.ContainsKey(target) && ranges.Contains(target.pile) && await checkAuraCondition(game, card, buff, target))
-                        {
-                            // 添加增益，并记录增益。
-                            var flow = new Flow(game, selfCard, selfBuff, null);
-                            BuffDefine buffDefine = await game.getValue<BuffDefine>(flow, getAuraBuffDefine);
-                            Buff auraBuff = new GeneratedBuff(buffDefine);
-                            await updateAuraBuff(game, card, buff, target, auraBuff);
-                            await target.addBuff(game, auraBuff);
-                            buffDict.Add(target, auraBuff);
-                        }
-                    }
-                }
+                // 更新增益。
+                await updateAuraBuff(game, card, buff, buffedCard, cardBuff);
+                await buffedCard.updateBuff(game as CardEngine, cardBuff);
             }
         }
-        public ActionNode getEntryNode()
+        private async Task checkAndAddBuffedCards(IGame game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges, IEnumerable<Card> excludedCards)
         {
-            return graph?.findActionNode(AuraDataDefine.defName);
+            if (ranges == null)
+                return;
+
+            foreach (var target in ranges.SelectMany(r => r).Except(excludedCards))
+            {
+                // 卡牌进入作用范围
+                if (!buffDict.ContainsKey(target) && ranges.Contains(target.pile) && await checkAuraCondition(game, card, buff, target))
+                {
+                    // 添加增益，并记录增益。
+                    var flow = new Flow(game, card, buff, null);
+                    BuffDefine buffDefine = await game.getValue<BuffDefine>(flow, getAuraBuffDefine);
+                    Buff auraBuff = new GeneratedBuff(buffDefine);
+                    await updateAuraBuff(game, card, buff, target, auraBuff);
+                    await target.addBuff(game, auraBuff);
+                    buffDict.Add(target, auraBuff);
+                }
+            }
         }
-        #endregion
-        #region 私有方法
         protected override IEnumerable<ITraversable> getTraversableProps()
         {
             yield return getAuraBuffDefine;
