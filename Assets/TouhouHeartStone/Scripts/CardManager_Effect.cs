@@ -37,7 +37,7 @@ namespace Game
             if (index == 3)
                 effect = new GeneratedDeathRattle(graph);
             else if (index == 2)
-                effect = new GeneratedBattlecry(graph);
+                effect = new GeneratedActiveEffect(graph);
             else if (index == 1)
                 effect = new GeneratedAura(graph);
             else
@@ -52,7 +52,7 @@ namespace Game
         {
             if (effect is GeneratedDeathRattle)
                 return 3;
-            else if (effect is GeneratedBattlecry)
+            else if (effect is GeneratedActiveEffect)
                 return 2;
             else if (effect is GeneratedAura)
                 return 1;

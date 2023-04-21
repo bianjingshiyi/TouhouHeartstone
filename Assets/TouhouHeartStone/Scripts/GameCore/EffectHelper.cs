@@ -15,7 +15,7 @@ namespace TouhouHeartstone
         }
         public static bool isBattlecry(this IEffect effect)
         {
-            return effect is GeneratedBattlecry;
+            return effect is GeneratedActiveEffect active && active.hasTag(EFFECTTAG.ACTIVE_PLAYED);
         }
     }
 }

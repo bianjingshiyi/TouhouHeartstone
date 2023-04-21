@@ -261,7 +261,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedBattlecry ConvertEffectToBattlecry(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private GeneratedActiveEffect ConvertEffectToBattlecry(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -270,7 +270,8 @@ namespace Game
 
                 // 创建节点图。
                 var graph = new ActionGraph();
-                GeneratedBattlecry active = new GeneratedBattlecry(graph);
+                GeneratedActiveEffect active = new GeneratedActiveEffect(graph);
+                active.setTags(EFFECTTAG.ACTIVE_PLAYED);
                 active.name = effect.name;
 
 
@@ -589,7 +590,8 @@ namespace Game
                 if (seri.tagList.Contains(KEYWORD.BATTLECRY))
                 {
                     var graph = new ActionGraph();
-                    var active = new GeneratedBattlecry(graph);
+                    var active = new GeneratedActiveEffect(graph);
+                    active.setTags(EFFECTTAG.ACTIVE_PLAYED);
                     active.name = seri.name;
                     LoadTrigger(genEffect);
                     genEffect = active;

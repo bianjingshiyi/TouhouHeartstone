@@ -18,6 +18,9 @@ namespace TouhouHeartstone
                     action.define = defineFinder?.Invoke(action.defineName);
                     action.Define();
                     break;
+                case ActiveEntryNode active:
+                    active.Define();
+                    break;
             }
         }
 

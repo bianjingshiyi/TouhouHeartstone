@@ -417,11 +417,9 @@ namespace Game
             // 用于遍历卡牌/增益效果的方法。
             void effectAction(GeneratedEffect effect)
             {
-                foreach (var trigger in effect.triggerList)
+                if (effect is GeneratedActiveEffect active)
                 {
-                    if (trigger == null)
-                        continue;
-                    fixTriggerIncorrectData(trigger);
+                    fixActiveEntryIncorrectData(active.entryNode);
                 }
                 effect.traverseActionNode(fixData);
             }
@@ -473,9 +471,9 @@ namespace Game
                     }
                 }
             }
-            void fixTriggerIncorrectData(TriggerEntryNode trigger)
+            void fixActiveEntryIncorrectData(ActiveEntryNode activeEntry)
             {
-                foreach (var targetChecker in trigger.targetCheckerList)
+                foreach (var targetChecker in activeEntry.targetCheckerList)
                 {
                     if (string.IsNullOrEmpty(targetChecker.targetType))
                     {
