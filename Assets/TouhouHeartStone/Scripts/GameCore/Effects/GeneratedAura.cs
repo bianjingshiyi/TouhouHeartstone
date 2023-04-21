@@ -11,7 +11,7 @@ namespace TouhouHeartstone
     /// 新版光环类型的效果
     /// </summary>
     [Serializable]
-    public class GeneratedAura : GeneratedEffect, IPileRangedEffect
+    public class GeneratedAura : GeneratedPassiveEffect, IPileRangedEffect
     {
         #region 公有方法
         /// <summary>
@@ -94,7 +94,7 @@ namespace TouhouHeartstone
         }
         public override SerializableEffect Serialize()
         {
-            throw new NotImplementedException();
+            return new SerializableAuraEffect(this);
         }
         #endregion
         #region 私有方法
@@ -232,5 +232,24 @@ namespace TouhouHeartstone
         public ControlOutput updateAction => getEntryNode()?.getOutputPort<ControlOutput>(AuraDataDefine.updateActionName);
         public string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
         #endregion
+    }
+    [Serializable]
+    public class SerializableAuraEffect : SerializableEffect
+    {
+        public SerializableAuraEffect(GeneratedAura effect)
+        {
+            name = effect.name;
+            propDict = effect.propDict;
+            graph = new SerializableActionNodeGraph(effect.graph);
+        }
+
+        public override GeneratedEffect Deserialize(INodeDefiner nodeDefiner)
+        {
+            GeneratedAura effect = new GeneratedAura();
+            effect.name = name;
+            effect.propDict = propDict;
+            effect.graph = graph.toActionGraph(nodeDefiner);
+            return effect;
+        }
     }
 }
