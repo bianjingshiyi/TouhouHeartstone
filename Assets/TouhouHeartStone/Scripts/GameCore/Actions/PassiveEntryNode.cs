@@ -124,7 +124,7 @@ namespace TouhouCardEngine
             id = eventEntryNode.id;
             posX = eventEntryNode.posX;
             posY = eventEntryNode.posY;
-            tags = eventEntryNode.tags.ToArray();
+            tags = eventEntryNode.tags?.ToArray() ?? Array.Empty<string>();
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {

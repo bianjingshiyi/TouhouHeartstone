@@ -1388,6 +1388,8 @@ namespace Controllers
 
         [TranslateMsg("内置节点名称，用于通用效果设置属性")]
         const string EDITOR_NODE_NAME_GENERATED_EFFECT_DATA = "通用效果属性";
+        [TranslateMsg("内置节点名称，用于事件效果设置属性")]
+        const string EDITOR_NODE_NAME_EVENT_EFFECT_DATA = "事件效果属性";
         [TranslateMsg("内置节点名称，用于光环效果设置属性")]
         const string EDITOR_NODE_NAME_AURA_DATA = "光环效果属性";
 
@@ -1500,6 +1502,7 @@ namespace Controllers
             { "SetVariable", StringTable.EDITOR_NODE_NAME_SET_VARIABLE },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
             { "GeneratedEffectData", EDITOR_NODE_NAME_GENERATED_EFFECT_DATA },
+            { "EventEffectData", EDITOR_NODE_NAME_EVENT_EFFECT_DATA },
             { "AuraData", EDITOR_NODE_NAME_AURA_DATA },
             // 内置参数
             { "value", StringTable.EDITOR_PARAM_NAME_VALUE },

@@ -28,11 +28,6 @@ namespace TouhouHeartstone
         public GeneratedAura()
         {
         }
-        public override void Init()
-        {
-            graph.createActionNode(AuraDataDefine.defName, 0, 0);
-        }
-
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
         {
             await base.onEnable(game, card, buff);
@@ -98,6 +93,11 @@ namespace TouhouHeartstone
         }
         #endregion
         #region 私有方法
+        protected override void createEntryNode()
+        {
+            graph.createActionNode(AuraDataDefine.defName, 0, 0);
+        }
+
         private async Task updateBuffedCards(IGame game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges)
         {
             foreach (var pair in buffDict.ToArray())

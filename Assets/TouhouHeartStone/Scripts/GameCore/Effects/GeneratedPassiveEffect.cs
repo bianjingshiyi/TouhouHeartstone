@@ -20,7 +20,8 @@ namespace TouhouHeartstone
         #endregion
         public override void Init()
         {
-            graph.createPassiveEntryNode();
+            base.Init();
+            createEntryNode();
         }
         public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
@@ -75,6 +76,10 @@ namespace TouhouHeartstone
         {
             if (entryNode != null)
                 yield return entryNode;
+        }
+        protected virtual void createEntryNode()
+        {
+            graph.createPassiveEntryNode();
         }
         #endregion
         #region 属性字段

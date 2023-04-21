@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine.Interfaces;
@@ -149,7 +150,7 @@ namespace TouhouCardEngine
         public SerializableActiveEntryNode(ActiveEntryNode activeEntry)
         {
             id = activeEntry.id;
-            tags = activeEntry.tags.ToArray();
+            tags = activeEntry.tags?.ToArray() ?? Array.Empty<string>();
             targetCheckerList = activeEntry.targetCheckerList.ConvertAll(t => new SerializableTargetChecker(t));
             posX = activeEntry.posX;
             posY = activeEntry.posY;

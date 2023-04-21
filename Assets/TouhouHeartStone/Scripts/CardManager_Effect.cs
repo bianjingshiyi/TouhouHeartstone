@@ -36,7 +36,7 @@ namespace Game
             GeneratedEffect effect;
             if (index == 3)
                 effect = new GeneratedAura(graph);
-            if (index == 2)
+            else if (index == 2)
                 effect = new GeneratedEventEffect(graph);
             else if (index == 1)
                 effect = new GeneratedPassiveEffect(graph);
@@ -52,7 +52,7 @@ namespace Game
         {
             if (effect is GeneratedAura)
                 return 3;
-            if (effect is GeneratedEventEffect)
+            else if (effect is GeneratedEventEffect)
                 return 2;
             else if (effect is GeneratedPassiveEffect)
                 return 1;

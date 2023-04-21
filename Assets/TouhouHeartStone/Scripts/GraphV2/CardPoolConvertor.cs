@@ -488,7 +488,7 @@ namespace Game
                 var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onEnableAction");
 
                 // 将对生效事件的控制引用转换为根节点。
-                var param = new ActionNodeGraphParams(new Vector2(0, 1000), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
+                var param = new ActionNodeGraphParams(new Vector2(-1000, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
                 var actionNode = ConvertActionNodeChain(param, effect.onEnableRootActionNodeId);
 
                 // 连接光环生效事件节点的控制输出和根节点的控制输入。
@@ -505,7 +505,7 @@ namespace Game
                 var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onDisableAction");
 
                 // 将对失效事件的控制引用转换为根节点。
-                var param = new ActionNodeGraphParams(new Vector2(0, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
+                var param = new ActionNodeGraphParams(new Vector2(-1000, -500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
                 var actionNode = ConvertActionNodeChain(param, effect.onDisableRootActionNodeId);
 
                 // 连接光环失效事件节点的控制输出和根节点的控制输入。
@@ -566,7 +566,7 @@ namespace Game
                 var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onEnableAction");
 
                 // 将对生效事件的控制引用转换为根节点。
-                var param = new ActionNodeGraphParams(new Vector2(0, 1000), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
+                var param = new ActionNodeGraphParams(new Vector2(1000, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
                 var actionNode = ConvertActionNodeChain(param, effect.onEnableRootActionNodeId);
 
                 // 连接光环生效事件节点的控制输出和根节点的控制输入。
@@ -583,7 +583,7 @@ namespace Game
                 var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onDisableAction");
 
                 // 将对失效事件的控制引用转换为根节点。
-                var param = new ActionNodeGraphParams(new Vector2(0, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
+                var param = new ActionNodeGraphParams(new Vector2(-1000, -500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
                 var actionNode = ConvertActionNodeChain(param, effect.onDisableRootActionNodeId);
 
                 // 连接光环失效事件节点的控制输出和根节点的控制输入。
@@ -1137,7 +1137,7 @@ namespace Game
                     if (n is GeneratedActionEntryNode entryNode)
                         return entryNode.getOutputPortAt(valueRef.argIndex + 1);
                     return null;
-                }).FirstOrDefault();
+                })?.Where(p => p != null)?.FirstOrDefault();
             }
             return port;
         }

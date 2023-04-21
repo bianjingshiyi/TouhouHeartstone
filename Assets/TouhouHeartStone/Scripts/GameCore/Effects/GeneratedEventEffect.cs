@@ -51,10 +51,6 @@ namespace TouhouHeartstone
             }
             await base.onDisable(game, card, buff);
         }
-        public override void Init()
-        {
-            graph.createActionNode(EventEffectData.defName, 0, 500);
-        }
         public ActionNode getEventDataNode()
         {
             return graph?.findActionNode(EventEffectData.defName);
@@ -62,6 +58,12 @@ namespace TouhouHeartstone
         public override SerializableEffect Serialize()
         {
             return new SerializableEventEffect(this);
+        }
+        #endregion
+        #region 私有方法
+        protected override void createEntryNode()
+        {
+            graph.createActionNode(EventEffectData.defName, 0, 500);
         }
         #endregion
         #region 属性字段

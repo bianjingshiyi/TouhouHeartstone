@@ -21,6 +21,7 @@ namespace TouhouHeartstone
 
         public override void Init()
         {
+            base.Init();
             graph.createActiveEntryNode();
         }
         public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
