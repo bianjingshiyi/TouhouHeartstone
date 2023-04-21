@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
+
+namespace TouhouHeartstone
+{
+    public class GeneratedPassiveEffect : GeneratedEffect, IPassiveEffect
+    {
+        #region 公有方法
+        #region 构造方法
+        public GeneratedPassiveEffect(ActionGraph graph) : base(graph)
+        {
+        }
+        public GeneratedPassiveEffect() : base()
+        {
+        }
+        #endregion
+        public override void Init()
+        {
+            graph.createPassiveEntryNode();
+        }
+        public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        {
+            var entryNode = this.entryNode;
+            if (entryNode != null)
+            {
+                var condition = entryNode.getTriggerCondtionValuePort();
+                if (condition == null || condition.getConnectedOutputPort() == null)
+                    return true;
+
+                var flow = new Flow(game, card, buff, eventArg);
+                var task = game.getValue<bool>(flow, condition);
+                if (task.IsCompleted)
+                {
+                    return task.Result;
+                }
+                else
+                    throw new InvalidOperationException("不能在条件中调用需要等待的动作");
+            }
+            else
+                return false;
+        }
+        public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        {
+            var entryNode = this.entryNode;
+            if (entryNode != null)
+            {
+                var flow = new Flow(game, card, buff, eventArg);
+                return game.runActions(flow, entryNode.getActionOutputPort());
+            }
+            return Task.CompletedTask;
+        }
+        public void setTags(params string[] tags)
+        {
+            entryNode?.setTags(tags);
+        }
+        public string[] getTags()
+        {
+            return entryNode?.tags?.ToArray() ?? Array.Empty<string>();
+        }
+        public bool hasTag(string tag)
+        {
+            return entryNode?.tags?.Contains(tag) ?? false;
+        }
+        public override SerializableEffect Serialize()
+        {
+            return new SerializablePassiveEffect(this);
+        }
+        #endregion
+        #region 私有方法
+        protected override IEnumerable<ITraversable> getTraversableProps()
+        {
+            if (entryNode != null)
+                yield return entryNode;
+        }
+        #endregion
+        #region 属性字段
+        public virtual PassiveEntryNode entryNode => graph?.nodes?.OfType<PassiveEntryNode>().FirstOrDefault();
+        #endregion
+    }
+
+    [Serializable]
+    public class SerializablePassiveEffect : SerializableEffect
+    {
+        public SerializablePassiveEffect(GeneratedPassiveEffect effect)
+        {
+            name = effect.name;
+            propDict = effect.propDict;
+            graph = new SerializableActionNodeGraph(effect.graph);
+        }
+
+        public override GeneratedEffect Deserialize(INodeDefiner definer)
+        {
+            GeneratedPassiveEffect effect = new GeneratedPassiveEffect();
+            effect.name = name;
+            effect.propDict = propDict;
+            effect.graph = graph.toActionGraph(definer);
+            return effect;
+        }
+    }
+}

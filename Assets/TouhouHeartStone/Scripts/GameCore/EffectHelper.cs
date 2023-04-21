@@ -11,7 +11,7 @@ namespace TouhouHeartstone
         }
         public static bool isDeathRattle(this IEffect effect)
         {
-            return effect is DeathRattle || effect is GeneratedDeathRattle;
+            return effect is DeathRattle || (effect is GeneratedPassiveEffect passive && passive.hasTag(EFFECTTAG.PASSIVE_LASTWORD));
         }
         public static bool isBattlecry(this IEffect effect)
         {

@@ -35,7 +35,7 @@ namespace Game
             ActionGraph graph = new ActionGraph();
             GeneratedEffect effect;
             if (index == 3)
-                effect = new GeneratedDeathRattle(graph);
+                effect = new GeneratedPassiveEffect(graph);
             else if (index == 2)
                 effect = new GeneratedActiveEffect(graph);
             else if (index == 1)
@@ -50,7 +50,7 @@ namespace Game
         }
         public int getEffectTypeIndex(GeneratedEffect effect)
         {
-            if (effect is GeneratedDeathRattle)
+            if (effect is GeneratedPassiveEffect)
                 return 3;
             else if (effect is GeneratedActiveEffect)
                 return 2;

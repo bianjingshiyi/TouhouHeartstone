@@ -17,6 +17,18 @@ namespace TouhouHeartstone
             graph.updateSize();
             return node;
         }
+        public static PassiveEntryNode createPassiveEntryNode(this ActionGraph graph, float posX = 0, float posY = 0)
+        {
+            int id = graph.getUniqueNodeId();
+            var node = new PassiveEntryNode();
+            node.id = id;
+            node.posX = posX;
+            node.posY = posY;
+            node.graph = graph;
+            graph.addNode(node);
+            graph.updateSize();
+            return node;
+        }
         public static ActiveEntryNode findActiveEntryNode(this ActionGraph graph)
         {
             return graph.nodes.OfType<ActiveEntryNode>().FirstOrDefault();

@@ -1256,9 +1256,14 @@ namespace TouhouHeartstone
             var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
             foreach (var (effect, buff) in battlecries)
             {
-                if (effect is IActiveEffect active)
+                if (effect is GeneratedActiveEffect genActive)
                 {
-                    if (active.checkCondition(game, card, buff, eventArg))
+                    if (genActive.checkCondition(game, card, buff, eventArg))
+                        await genActive.execute(game, card, buff, eventArg);
+                }
+                else if (effect is ActiveEffect active)
+                {
+                    if (active.checkCondition(game, card))
                         await active.execute(game, card, buff, eventArg);
                 }
             }
@@ -1273,13 +1278,13 @@ namespace TouhouHeartstone
         public static async Task triggerCardDefineDeathRattles(this Card card, CardEngine game, CardDefine define)
         {
             var deathRattles = define.getDeathRattles();
+            var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
             foreach (var deathRattle in deathRattles)
             {
-                if (deathRattle is GeneratedDeathRattle genRattle)
+                if (deathRattle is GeneratedPassiveEffect genPassive)
                 {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
-                    if (genRattle.checkCondition(game, card, null, eventArg))
-                        await genRattle.execute(game, card, null, eventArg);
+                    if (genPassive.checkCondition(game, card, null, eventArg))
+                        await genPassive.execute(game, card, null, eventArg);
                 }
                 else if (deathRattle is DeathRattle rattle)
                 {
@@ -1290,13 +1295,13 @@ namespace TouhouHeartstone
         public static async Task triggerDeathRattles(this Card card, CardEngine game)
         {
             var deathRattles = getDeathRattles(card, game);
+            var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
             foreach (var (effect, buff) in deathRattles)
             {
-                if (effect is GeneratedDeathRattle genRattle)
+                if (effect is GeneratedPassiveEffect genPassive)
                 {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new object[] { card });
-                    if (genRattle.checkCondition(game, card, null, eventArg))
-                        await genRattle.execute(game, card, buff, eventArg);
+                    if (genPassive.checkCondition(game, card, buff, eventArg))
+                        await genPassive.execute(game, card, buff, eventArg);
                 }
                 else if (effect is DeathRattle rattle)
                 {

@@ -1117,7 +1117,6 @@ namespace TouhouHeartstone
                 setVar("玩家", player);
                 setVar("卡牌", card);
                 setVar("目标卡牌", targets != null && targets.Length > 0 ? targets[0] : null);
-                setVar("Targets", targets);
             }
             public ActiveEventArg(): this(null, null, new object[0])
             {
@@ -1170,6 +1169,65 @@ namespace TouhouHeartstone
             public object[] targets;
         }
 
+        public class LastwordEventArg : EventArg, IDescribableEventArg
+        {
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){ name = "卡牌", type = typeof(Card)},
+                    new EventVariableInfo() { name = "玩家",type = typeof(Player)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){ name = "卡牌", type = typeof(Card)},
+                    new EventVariableInfo() { name = "玩家",type = typeof(Player)}
+                };
+            }
+            public LastwordEventArg(Player player, Card card)
+            {
+                this.player = player;
+                this.card = card;
+                setVar("玩家", player);
+                setVar("卡牌", card);
+            }
+            public LastwordEventArg() : this(null, null)
+            {
+            }
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
+            const string TEMPLATE_NO_TARGET = "{0} 的 {1} 触发遗言";
+
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE_NO_TARGET;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name,
+                    card.getFormatString()
+                };
+            }
+            public Player player;
+            public Card card;
+        }
         public class CreateTokenEventArg : EventArg, IDescribableEventArg
         {
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)

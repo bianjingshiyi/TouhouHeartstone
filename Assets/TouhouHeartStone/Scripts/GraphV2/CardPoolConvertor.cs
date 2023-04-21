@@ -308,7 +308,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedDeathRattle ConvertEffectToDeathRattle(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private GeneratedPassiveEffect ConvertEffectToDeathRattle(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -317,11 +317,12 @@ namespace Game
 
                 // 创建节点图。
                 var graph = new ActionGraph();
-                GeneratedDeathRattle deathrattle = new GeneratedDeathRattle(graph);
-                deathrattle.name = effect.name;
+                GeneratedPassiveEffect passive = new GeneratedPassiveEffect(graph);
+                passive.setTags(EFFECTTAG.PASSIVE_LASTWORD);
+                passive.name = effect.name;
 
                 // 遗言触发器。
-                deathrattle.graph.Clear();
+                passive.graph.Clear();
                 var seriTrigger = effect.triggerList?[0];
                 if (seriTrigger != null)
                 {
@@ -337,7 +338,7 @@ namespace Game
                     CreateFreeNodesToGraph(param);
                 }
 
-                return deathrattle;
+                return passive;
             }
             catch (Exception e)
             {
@@ -538,7 +539,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private bool SplitToBattlecryAndDeathrattle(SerializableGeneratedEffect seri, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex, out GeneratedEffect genEffect, out GeneratedEffect deathrattle)
+        private bool SplitToBattlecryAndDeathrattle(SerializableGeneratedEffect seri, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex, out GeneratedEffect battlecry, out GeneratedEffect deathrattle)
         {
             try
             {
@@ -546,7 +547,7 @@ namespace Game
                 int buffId = buff?.id ?? 0;
 
 
-                genEffect = null;
+                battlecry = null;
                 deathrattle = null;
 
                 Type type = typeFinder?.Invoke(seri.typeName);
@@ -593,18 +594,20 @@ namespace Game
                     var active = new GeneratedActiveEffect(graph);
                     active.setTags(EFFECTTAG.ACTIVE_PLAYED);
                     active.name = seri.name;
-                    LoadTrigger(genEffect);
-                    genEffect = active;
+                    LoadTrigger(battlecry);
+                    battlecry = active;
                 }
 
                 if (seri.tagList.Contains(KEYWORD.DEATHRATTLE))
                 {
                     var graph = new ActionGraph();
-                    deathrattle = new GeneratedDeathRattle(graph);
-                    deathrattle.name = seri.name;
-                    LoadTrigger(deathrattle);
+                    var passive = new GeneratedPassiveEffect(graph);
+                    passive.setTags(EFFECTTAG.PASSIVE_LASTWORD);
+                    passive.name = seri.name;
+                    LoadTrigger(passive);
+                    deathrattle = passive;
                 }
-                return genEffect != null || deathrattle != null;
+                return battlecry != null || deathrattle != null;
             }
             catch (Exception e)
             {
