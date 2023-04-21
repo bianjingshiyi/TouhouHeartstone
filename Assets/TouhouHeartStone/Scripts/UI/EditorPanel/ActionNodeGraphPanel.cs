@@ -354,13 +354,12 @@ namespace UI
         {
             _cardSelectPanel.SetActive(value);
         }
-        public void init(string[] languages, string[] eventTypes, (string name, string value)[] keywords, (string name, string value)[] piles)
+        public void init(string[] eventTypes, (string name, string value)[] keywords, (string name, string value)[] piles)
         {
-            init(languages, eventTypes, piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray(), keywords.Select(i => i.name).ToArray(), keywords.Select(i => i.value).ToArray());
+            init(eventTypes, piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray(), keywords.Select(i => i.name).ToArray(), keywords.Select(i => i.value).ToArray());
         }        
-        public void init(string[] languages, string[] eventTypes, string[] pileNames, string[] pileValues, string[] keywordNames, string[] keywordValues)
+        public void init(string[] eventTypes, string[] pileNames, string[] pileValues, string[] keywordNames, string[] keywordValues)
         {
-            _actionNodeItemTemplate.initBuffLanguages(languages, keywordNames, keywordValues);
             _actionNodeItemTemplate.initEventTypes(eventTypes);
             _actionNodeItemTemplate.initPileNames(pileNames, pileValues);
         }

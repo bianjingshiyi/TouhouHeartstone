@@ -5,9 +5,11 @@ using BJSYGameCore;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Controllers
 {
@@ -25,10 +27,12 @@ namespace Controllers
             updateSkinNames();
             _ui.setId(buffDefine.id);
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
-            updateEffectList(effects);
             updateModifiers();
             _ui.closeAllEdit();
             await setCurSkinIndex(0);
+
+            _effectEditorCtrl.hideActionGraph();
+            updateEffectList(effects);
         }
         public override Task display(CardPoolDisplayInfo info)
         {
@@ -59,10 +63,10 @@ namespace Controllers
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
             _ui.setEffectTypes(game.card.getEffectNames());
             _ui.onClickAddEffectMenu += onClickAddEffectMenu;
+            _ui.onEffectListItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
             _ui.onClickDeleteCardButton += onClickDeleteCardButton;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
-
 
             _ui.onAddModifier += onAddModifier;
             _ui.OnRemoveModifier += onRemoveModifier;
@@ -153,13 +157,30 @@ namespace Controllers
         /// </summary>
         private void onClickEditEffectButton(int index)
         {
-            GeneratedEffect effect = _buffDefine.effectList.OfType<GeneratedEffect>().ElementAt(index);
-            scene.effectEditor.display(_cardPoolId, _buffDefine, effect);
+            var effects = _buffDefine.effectList.OfType<GeneratedEffect>();
+            GeneratedEffect effect = effects.ElementAt(index);
+            if (_effectEditorCtrl.getCurrentEffect() != effect)
+            {
+                _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
+                updateEffectList(effects.ToArray());
+            }
+            else
+            {
+                string name = effect?.name ?? string.Empty;
+                _ui.showEffectListItemInputField(index, name);
+            }
         }
         private void onClickRemoveEffectButton(int index)
         {
             markBuffUnsaved();
-            _buffDefine.effectList.RemoveAt(index);
+            if (index < 0 || index >= _buffDefine.effectList.Count)
+                return;
+            var removedEffect = _buffDefine.effectList[index];
+            _buffDefine.effectList.Remove(removedEffect);
+            if (_effectEditorCtrl.getCurrentEffect() == removedEffect)
+            {
+                _effectEditorCtrl.hideActionGraph();
+            }
             updateEffectList(_buffDefine.effectList.ToArray());
         }
         /// <summary>
@@ -168,8 +189,23 @@ namespace Controllers
         private void onClickAddEffectMenu(int index)
         {
             markBuffUnsaved();
-            _buffDefine.effectList.Add(game.card.createEffectByIndex(index));
+            var effect = game.card.createEffectByIndex(_cardPoolId, index);
+            _buffDefine.effectList.Add(effect);
+
+            _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
             updateEffectList(_buffDefine.effectList.ToArray());
+        }
+        private void onEffectListItemInputFieldEndEditCallback(int index, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+            var effects = _buffDefine.effectList.OfType<GeneratedEffect>();
+            GeneratedEffect effect = effects.ElementAt(index);
+            effect.name = value;
+            _ui.hideEffectListItemInputField(index);
+            updateEffectList(effects.ToArray());
         }
         #endregion
 
@@ -495,9 +531,9 @@ namespace Controllers
             return 0;
         }
         #endregion
-        private void updateEffectList(GeneratedEffect[] effects)
+        protected override void setUIEffects(string[] names, int activeIndex)
         {
-            _ui.setEffects(game.card.getEffectNames(effects));
+            _ui.setEffects(names, activeIndex);
         }
         private void saveBuff()
         {
@@ -516,6 +552,10 @@ namespace Controllers
         BuffEditorPanel _ui;
 
         #region 属性字段
+        [SerializeField]
+        CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
+        [SerializeField]
+        Button _cancelCardPoolSelectButton;
 
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的警告")]
         public const string CARD_WARNING_UNSAVED_CHANGES = "是否将更改保存到该增益中？";

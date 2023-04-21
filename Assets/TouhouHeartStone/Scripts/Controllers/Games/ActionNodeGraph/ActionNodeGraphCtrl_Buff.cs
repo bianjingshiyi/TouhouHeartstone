@@ -91,7 +91,7 @@ namespace Controllers
             }
             var action = getActionNode(item) as ActionNode;
             if (action == null)
-                return;
+                return Task.CompletedTask;
             action.setConst(GetBuffDefineAction.constName, new DefineReference(buffDefine.cardPoolId, buffDefine.id));
             BuffDefine[] buffDefines = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)

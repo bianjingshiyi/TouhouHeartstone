@@ -429,7 +429,6 @@ namespace Controllers
         {
             var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
             GeneratedEffect effect = effects.ElementAt(index);
-            // TODO：在加入获取当前正在查看的效果的方法时改掉这个条件。
             if (_effectEditorCtrl.getCurrentEffect() != effect)
             {
                 _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
@@ -762,12 +761,6 @@ namespace Controllers
                 _ui.NameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
             }
         }
-        private string getEffectDefaultName(GeneratedEffect effect, int num)
-        {
-            var names = game.card.getEffectNames();
-            var index = game.card.getEffectTypeIndex(effect);
-            return game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, names?[index] ?? CARD_EFFECT_DEFAULT_NAME, num);
-        }
 
         private void setCardProp(bool isCustom, string name, object value)
         {
@@ -807,7 +800,11 @@ namespace Controllers
             }
             _cardDefine.setKeywords(keywords);
         }
-        
+
+        protected override void setUIEffects(string[] names, int activeIndex)
+        {
+            _ui.setEffects(names, activeIndex);
+        }
         /// <summary>
         /// 返回上一个界面
         /// </summary>
@@ -851,26 +848,6 @@ namespace Controllers
         private int getSkinCount()
         {
             return getCurrentCardSkins().GroupBy(s => s.skinId).Count();
-        }
-        private void updateEffectList(GeneratedEffect[] effects)
-        {
-            var currentEffect = _effectEditorCtrl.getCurrentEffect();
-            int activeIndex = -1;
-            string[] names = new string[effects.Length];
-            for (int i = 0; i < effects.Length; i++)
-            {
-                var effect = effects[i];
-                if (string.IsNullOrEmpty(effect.name))
-                {
-                    effect.name = getEffectDefaultName(effect, i + 1);
-                }
-                names[i] = effect.name;
-                if (currentEffect == effect)
-                {
-                    activeIndex = i;
-                }
-            }
-            _ui.setEffects(names, activeIndex);
         }
         private CardSkinData[] getCurrentCardSkins()
         {
@@ -1097,8 +1074,6 @@ namespace Controllers
         string[] _types;
 
         [SerializeField]
-        EffectEditorCtrl _effectEditorCtrl;
-        [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
         Button _cancelCardPoolSelectButton;
@@ -1110,10 +1085,6 @@ namespace Controllers
         public const string CARD_WARNING_OPTION_SAVE = "保存";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
         public const string CARD_WARNING_OPTION_CANCEL = "取消";
-        [TranslateMsg("效果默认名称")]
-        public const string CARD_EFFECT_DEFAULT_NAME = "效果";
-        [TranslateMsg("效果默认名称的模板（{0}为效果名，{1}为效果序号）")]
-        public const string CARD_EFFECT_DEFAULT_NAME_TEMPLATE = "{0}{1}";
         [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
         public const string CARD_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
         [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]

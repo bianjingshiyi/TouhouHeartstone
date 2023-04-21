@@ -119,7 +119,6 @@ namespace Controllers
             }
             _ui.init(
                 languages,
-                _eventTypeInfoList.getEventTypeNamesForEditor(),
                 CardEditorCtrl.getKeywords(),
                 CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
         }
@@ -626,7 +625,7 @@ namespace Controllers
                     game.lang._(ACTION_NODE_NEW_BUFF)
                 };
                 buffNames.AddRange(game.card.getBuffDefineNames(buffDefines));
-                actionNodeItem = _ui.createNodeForBuff(posX, posY, new ActionNodeBuffViewData()
+                actionNodeItem = _ui.createNodeForBuff(actionNode.posX, actionNode.posY, new ActionNodeBuffViewData()
                 {
                     buffNames = buffNames.ToArray(),
                     buffIndex = Array.IndexOf(buffDefines, generatedBuffDefine) + 1

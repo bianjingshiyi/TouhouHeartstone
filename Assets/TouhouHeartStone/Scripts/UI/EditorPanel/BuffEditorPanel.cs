@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
+using Controllers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -103,6 +104,14 @@ namespace UI
         #endregion
 
         #region 效果
+        public void showEffectListItemInputField(int index, string value)
+        {
+            _effectList.showItemInputField(index, value);
+        }
+        public void hideEffectListItemInputField(int index)
+        {
+            _effectList.hideItemInputField(index);
+        }
         public void setEffectTypes(string[] effectTypeNames)
         {
             _effectList.setAddEffectMenu(effectTypeNames);
@@ -111,9 +120,9 @@ namespace UI
         /// 设置效果列表
         /// </summary>
         /// <param name="effectNames"></param>
-        public void setEffects(string[] effectNames)
+        public void setEffects(string[] effectNames, int activeIndex = -1)
         {
-            _effectList.updateList(effectNames);
+            _effectList.updateList(effectNames, activeIndex);
         }
         #endregion
         public void closeAllEdit()
@@ -158,6 +167,7 @@ namespace UI
             _effectList.onClickAddEffect += onAddEffectButtonClicked;
             _effectList.onClickItemEditButton += onClickEffectListItemEditButton;
             _effectList.onClickItemRemoveButton += onClickEffectListItemRemoveButton;
+            _effectList.onItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
 
             // Pages.
             _basicPageButton.onClick.AddListener(() => displayPage(_basicPage));
@@ -257,6 +267,10 @@ namespace UI
         {
             onClickAddEffectMenu?.Invoke(index);
         }
+        private void onEffectListItemInputFieldEndEditCallback(int index, string value)
+        {
+            onEffectListItemInputFieldEndEdit?.Invoke(index, value);
+        }
         private void onClickDeleteCardButtonCallback()
         {
             onClickDeleteCardButton?.Invoke();
@@ -331,6 +345,10 @@ namespace UI
         /// 当点击添加效果按钮
         /// </summary>
         public event Action<int> onClickAddEffectMenu;
+        /// <summary>
+        /// 当效果标题输入框结束编辑
+        /// </summary>
+        public event Action<int, string> onEffectListItemInputFieldEndEdit;
         /// <summary>
         /// 当点击删除卡牌按钮
         /// </summary>
