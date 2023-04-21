@@ -49,14 +49,14 @@ namespace TouhouCardEngine
         }
         public void setTags(params string[] value)
         {
-            var tags = getConst<List<string>>(tagsConstName);
+            var tags = getConst<EffectTagCollection>(tagsConstName);
             if (tags == null)
             {
-                constList.Add(tagsConstName, new List<string>(value));
-                return;
+                tags = new EffectTagCollection();
+                constList.Add(tagsConstName, tags);
             }
             tags.Clear();
-            tags.AddRange(tags);
+            tags.AddRange(value);
         }
         public void AddTargetChecker(TargetChecker checker)
         {
@@ -128,14 +128,14 @@ namespace TouhouCardEngine
 
         #endregion
         public List<TargetChecker> targetCheckerList { get; private set; } = new List<TargetChecker>();
-        public IEnumerable<string> tags => getConst<List<string>>(tagsConstName);
+        public IEnumerable<string> tags => getConst<EffectTagCollection>(tagsConstName);
 
         public const string conditionPortName = "condition";
         public const string targetConditionName = "targetCondition";
         public const string actionPortName = "action";
-        public const string playerPortName = "player";
-        public const string cardPortName = "card";
-        public const string targetsPortName = "targets";
+        public const string playerPortName = "玩家";
+        public const string cardPortName = "卡牌";
+        public const string targetsPortName = "目标卡牌";
         public const string tagsConstName = "tags";
         private static PortDefine targetConditionPortDefine = PortDefine.Value(typeof(bool), targetConditionName, "目标{0}条件");
         private static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, "触发条件");
