@@ -21,6 +21,10 @@ namespace TouhouHeartstone
                 case ActiveEntryNode active:
                     active.Define();
                     break;
+                case EventEntryNode evt:
+                    evt.define = eventDefineFinder?.Invoke(evt.eventName);
+                    evt.Define();
+                    break;
                 case PassiveEntryNode passive:
                     passive.Define();
                     break;

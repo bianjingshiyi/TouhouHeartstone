@@ -28,8 +28,14 @@ namespace Game
         public const string EDITOR_EFFECT_PROP_NAME_ACTIVE_TRIGGER = "生效触发";
         [TranslateMsg("编辑器中效果类型名称之通用效果")]
         public const string EDITOR_EFFECT_NAME_NORMAL_EFFECT = "通用效果";
+        [TranslateMsg("编辑器中效果类型名称之主动效果")]
+        public const string EDITOR_EFFECT_NAME_ACTIVE_EFFECT = "主动效果";
+        [TranslateMsg("编辑器中效果类型名称之被动效果")]
+        public const string EDITOR_EFFECT_NAME_PASSIVE_EFFECT = "被动效果";
+        [TranslateMsg("编辑器中效果类型名称之事件效果")]
+        public const string EDITOR_EFFECT_NAME_EVENT_EFFECT = "事件效果";
         [TranslateMsg("编辑器中效果类型名称之光环效果")]
-        public const string EDITOR_EFFECT_NAME_HALO_EFFECT = "光环效果";
+        public const string EDITOR_EFFECT_NAME_AURA_EFFECT = "光环效果";
         [TranslateMsg("编辑器中效果类型名称之宣言效果")]
         public const string EDITOR_EFFECT_NAME_BATTLECRY_EFFECT = "宣言效果";
         [TranslateMsg("编辑器中效果类型名称之遗言效果")]

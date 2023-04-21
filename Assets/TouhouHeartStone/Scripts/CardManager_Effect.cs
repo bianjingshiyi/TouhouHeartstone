@@ -35,13 +35,13 @@ namespace Game
             ActionGraph graph = new ActionGraph();
             GeneratedEffect effect;
             if (index == 3)
-                effect = new GeneratedPassiveEffect(graph);
-            else if (index == 2)
-                effect = new GeneratedActiveEffect(graph);
-            else if (index == 1)
                 effect = new GeneratedAura(graph);
+            if (index == 2)
+                effect = new GeneratedEventEffect(graph);
+            else if (index == 1)
+                effect = new GeneratedPassiveEffect(graph);
             else
-                effect = new GeneratedEffect(graph);
+                effect = new GeneratedActiveEffect(graph);
             effect.Init();
 
             var nodeDefiner = new THHNodeDefiner(name => game.getActionDefine(name, cardPoolId), EventTypeInfoLoader.FindEventTypeInfo);
@@ -50,11 +50,11 @@ namespace Game
         }
         public int getEffectTypeIndex(GeneratedEffect effect)
         {
-            if (effect is GeneratedPassiveEffect)
+            if (effect is GeneratedAura)
                 return 3;
-            else if (effect is GeneratedActiveEffect)
+            if (effect is GeneratedEventEffect)
                 return 2;
-            else if (effect is GeneratedAura)
+            else if (effect is GeneratedPassiveEffect)
                 return 1;
             else
                 return 0;
@@ -63,10 +63,10 @@ namespace Game
         #region 属性字段
         readonly string[] _effectTypes = new string[]
         {
-            StringTable.EDITOR_EFFECT_NAME_NORMAL_EFFECT,
-            StringTable.EDITOR_EFFECT_NAME_HALO_EFFECT,
-            StringTable.EDITOR_EFFECT_NAME_BATTLECRY_EFFECT,
-            StringTable.EDITOR_EFFECT_NAME_DEATH_RATTLE_EFFECT
+            StringTable.EDITOR_EFFECT_NAME_ACTIVE_EFFECT,
+            StringTable.EDITOR_EFFECT_NAME_PASSIVE_EFFECT,
+            StringTable.EDITOR_EFFECT_NAME_EVENT_EFFECT,
+            StringTable.EDITOR_EFFECT_NAME_AURA_EFFECT,
         };
         #endregion
     }

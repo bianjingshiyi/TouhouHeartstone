@@ -452,7 +452,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedEffect ConvertEffectToCommon(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private GeneratedEventEffect ConvertEffectToCommon(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -460,7 +460,7 @@ namespace Game
                 int buffId = buff?.id ?? 0;
 
                 var graph = new ActionGraph();
-                GeneratedEffect common = new GeneratedEffect(graph);
+                GeneratedEventEffect common = new GeneratedEventEffect(graph);
                 common.Init();
                 common.name = effect.name;
                 // 生效牌堆。

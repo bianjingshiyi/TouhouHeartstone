@@ -92,6 +92,10 @@ namespace TouhouHeartstone
         {
             return graph?.findActionNode(AuraDataDefine.defName);
         }
+        public override SerializableEffect Serialize()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
         #region 私有方法
         private async Task updateBuffedCards(IGame game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges)
