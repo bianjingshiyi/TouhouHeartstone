@@ -1234,12 +1234,7 @@ namespace TouhouHeartstone
             var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
             foreach (var battlecry in battlecries)
             {
-                if (battlecry is GeneratedBattlecry cry)
-                {
-                    if (cry.checkCondition(game, card, null, eventArg))
-                        await cry.execute(game, card, null, eventArg);
-                }
-                else if (battlecry is ActiveEffect active)
+                if (battlecry is IActiveEffect active)
                 {
                     if (active.checkCondition(game, card, null, eventArg))
                         await active.execute(game, card, null, eventArg);
@@ -1252,12 +1247,7 @@ namespace TouhouHeartstone
             var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
             foreach (var (effect, buff) in battlecries)
             {
-                if (effect is GeneratedBattlecry cry)
-                {
-                    if (cry.checkCondition(game, card, buff, eventArg))
-                        await cry.execute(game, card, buff, eventArg);
-                }
-                else if (effect is ActiveEffect active)
+                if (effect is IActiveEffect active)
                 {
                     if (active.checkCondition(game, card, buff, eventArg))
                         await active.execute(game, card, buff, eventArg);

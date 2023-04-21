@@ -18,6 +18,7 @@ namespace Game
         private ActionDefineFinder defineFinder;
         private EventTypeInfoFinder eventInfoFinder;
         private List<GeneratedActionDefine> convertedActionDefines;
+        private INodeDefiner definer;
         public CardPoolConvertor(long poolId, SerializableCardPool pool, ActionDefineFinder defineFinder, EventTypeInfoFinder eventFinder, TypeFinder typeFinder)
         {
             _cardPool = pool;
@@ -26,6 +27,7 @@ namespace Game
             this.typeFinder = typeFinder;
             this.defineFinder = defineFinder;
             eventInfoFinder = eventFinder;
+            definer = new THHNodeDefiner(getActionDefine, eventInfoFinder);
             convertedActionDefines = new List<GeneratedActionDefine>();
         }
         /// <summary>
@@ -208,7 +210,7 @@ namespace Game
 
         #region 效果
         /// <summary>
-        /// 将一个SerializableEffect根据其类型转换为特定的GeneratedEffect。
+        /// 将一个SerializableGeneratedEffect根据其类型转换为特定的GeneratedEffect。
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="card"></param>
@@ -217,7 +219,7 @@ namespace Game
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
         /// <exception cref="InvalidCastException"></exception>
-        private GeneratedEffect ConvertEffect(SerializableEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private GeneratedEffect ConvertEffect(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             GeneratedEffect generatedEffect;
             string typeName = effect.typeName;
@@ -251,7 +253,7 @@ namespace Game
             return generatedEffect;
         }
         /// <summary>
-        /// 将一个SerializableEffect转换为宣言效果。
+        /// 将一个SerializableGeneratedEffect转换为宣言效果。
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="card"></param>
@@ -259,7 +261,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedBattlecry ConvertEffectToBattlecry(SerializableEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private GeneratedBattlecry ConvertEffectToBattlecry(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -268,12 +270,12 @@ namespace Game
 
                 // 创建节点图。
                 var graph = new ActionGraph();
-                GeneratedBattlecry battlecry = new GeneratedBattlecry(graph);
-                battlecry.name = effect.name;
+                GeneratedBattlecry active = new GeneratedBattlecry(graph);
+                active.name = effect.name;
 
 
                 // 宣言触发器。
-                battlecry.graph.Clear();
+                active.graph.Clear();
                 var seriTrigger = effect.triggerList?[0];
                 if (seriTrigger != null)
                 {
@@ -289,7 +291,7 @@ namespace Game
                     CreateFreeNodesToGraph(param);
                 }
 
-                return battlecry;
+                return active;
             }
             catch (Exception e)
             {
@@ -297,7 +299,7 @@ namespace Game
             }
         }
         /// <summary>
-        /// 将一个SerializableEffect转换为遗言效果。
+        /// 将一个SerializableGeneratedEffect转换为遗言效果。
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="card"></param>
@@ -305,7 +307,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedDeathRattle ConvertEffectToDeathRattle(SerializableEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private GeneratedDeathRattle ConvertEffectToDeathRattle(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -342,7 +344,7 @@ namespace Game
             }
         }
         /// <summary>
-        /// 将一个SerializableEffect转换为光环效果。
+        /// 将一个SerializableGeneratedEffect转换为光环效果。
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="card"></param>
@@ -350,7 +352,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedAura ConvertEffectToAura(SerializableEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private GeneratedAura ConvertEffectToAura(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -362,7 +364,7 @@ namespace Game
                 GeneratedAura aura = new GeneratedAura(graph);
                 aura.Init();
                 aura.name = effect.name;
-                graph.DefineNodes(defineFinder, eventInfoFinder);
+                graph.DefineNodes(definer);
 
                 // 创建光环数据节点。
                 var dataNode = aura.getEntryNode();
@@ -440,7 +442,7 @@ namespace Game
             }
         }
         /// <summary>
-        /// 将一个SerializableEffect转换为通用效果。
+        /// 将一个SerializableGeneratedEffect转换为通用效果。
         /// </summary>
         /// <param name="effect"></param>
         /// <param name="card"></param>
@@ -448,7 +450,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private GeneratedEffect ConvertEffectToCommon(SerializableEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        private GeneratedEffect ConvertEffectToCommon(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
         {
             try
             {
@@ -461,7 +463,7 @@ namespace Game
                 common.name = effect.name;
                 // 生效牌堆。
                 common.getDataNode().setConst(GeneratedEffectData.pileListName, effect.pileList);
-                graph.DefineNodes(defineFinder, eventInfoFinder);
+                graph.DefineNodes(definer);
 
                 // 生效事件。
                 if (effect.onEnableRootActionNodeId != 0)
@@ -527,7 +529,7 @@ namespace Game
         }
 
         /// <summary>
-        /// 将一个SerializableEffect分离为宣言和遗言效果。
+        /// 将一个SerializableGeneratedEffect分离为宣言和遗言效果。
         /// </summary>
         /// <param name="seri"></param>
         /// <param name="card"></param>
@@ -535,7 +537,7 @@ namespace Game
         /// <param name="effectIndex"></param>
         /// <returns></returns>
         /// <exception cref="FormatException"></exception>
-        private bool SplitToBattlecryAndDeathrattle(SerializableEffect seri, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex, out GeneratedEffect battlecry, out GeneratedEffect deathrattle)
+        private bool SplitToBattlecryAndDeathrattle(SerializableGeneratedEffect seri, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex, out GeneratedEffect genEffect, out GeneratedEffect deathrattle)
         {
             try
             {
@@ -543,7 +545,7 @@ namespace Game
                 int buffId = buff?.id ?? 0;
 
 
-                battlecry = null;
+                genEffect = null;
                 deathrattle = null;
 
                 Type type = typeFinder?.Invoke(seri.typeName);
@@ -587,9 +589,10 @@ namespace Game
                 if (seri.tagList.Contains(KEYWORD.BATTLECRY))
                 {
                     var graph = new ActionGraph();
-                    battlecry = new GeneratedBattlecry(graph);
-                    battlecry.name = seri.name;
-                    LoadTrigger(battlecry);
+                    var active = new GeneratedBattlecry(graph);
+                    active.name = seri.name;
+                    LoadTrigger(genEffect);
+                    genEffect = active;
                 }
 
                 if (seri.tagList.Contains(KEYWORD.DEATHRATTLE))
@@ -599,7 +602,7 @@ namespace Game
                     deathrattle.name = seri.name;
                     LoadTrigger(deathrattle);
                 }
-                return battlecry != null || deathrattle != null;
+                return genEffect != null || deathrattle != null;
             }
             catch (Exception e)
             {
@@ -1144,12 +1147,12 @@ namespace Game
             }
             return new List<SerializableActionNode>();
         }
-        private bool tryGetEffectsActionNodeList(SerializableActionNodeGraphInfo graphInfo, List<SerializableEffect> effects, out List<SerializableActionNode> nodeList)
+        private bool tryGetEffectsActionNodeList(SerializableActionNodeGraphInfo graphInfo, List<SerializableGeneratedEffect> effects, out List<SerializableActionNode> nodeList)
         {
             var effectIndex = graphInfo.effectIndex;
             if (effectIndex >= 0 && effectIndex < effects.Count)
             {
-                SerializableEffect effect = effects[effectIndex];
+                SerializableGeneratedEffect effect = effects[effectIndex];
                 if (effect != null)
                 {
                     if (graphInfo.entryType == "onEnableAction")

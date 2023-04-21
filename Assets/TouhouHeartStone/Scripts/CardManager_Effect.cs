@@ -43,7 +43,9 @@ namespace Game
             else
                 effect = new GeneratedEffect(graph);
             effect.Init();
-            graph.DefineNodes(name => game.getActionDefine(name, cardPoolId), EventTypeInfoLoader.FindEventTypeInfo);
+
+            var nodeDefiner = new THHNodeDefiner(name => game.getActionDefine(name, cardPoolId), EventTypeInfoLoader.FindEventTypeInfo);
+            graph.DefineNodes(nodeDefiner);
             return effect;
         }
         public int getEffectTypeIndex(GeneratedEffect effect)
