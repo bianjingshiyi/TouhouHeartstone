@@ -27,6 +27,13 @@ namespace UI
                 _isArrayToggle.SetIsOnWithoutNotify(value);
             }
         }
+        public void setShowParams(bool value)
+        {
+            if (_isParamsObj != null)
+            {
+                _isParamsObj.SetActive(value);
+            }
+        }
         public void setIsParams(bool value)
         {
             if (_isParamsToggle != null)
@@ -89,6 +96,8 @@ namespace UI
         InputField _nameInputField;
         [SerializeField]
         Toggle _isArrayToggle;
+        [SerializeField]
+        GameObject _isParamsObj;
         [SerializeField]
         Toggle _isParamsToggle;
         [SerializeField]

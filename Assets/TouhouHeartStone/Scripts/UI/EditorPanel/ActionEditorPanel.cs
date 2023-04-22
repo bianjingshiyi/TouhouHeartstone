@@ -48,6 +48,7 @@ namespace UI
                 input.setType(viewData.typeIndex);
                 input.setName(viewData.name);
                 input.setIsArray(viewData.isArray);
+                input.setShowParams(viewData.showParams);
                 input.setIsParams(viewData.isParams);
             },
             rect =>
@@ -81,6 +82,7 @@ namespace UI
                 cst.setType(viewData.typeIndex);
                 cst.setName(viewData.name);
                 cst.setIsArray(viewData.isArray);
+                cst.setShowParams(viewData.showParams);
                 cst.setIsParams(viewData.isParams);
             },
             rect =>
@@ -89,7 +91,6 @@ namespace UI
                 cst.onTypeDropdownValueChanged += onChangeConstTypeCallback;
                 cst.onNameInputFieldValueChanged += onChangeConstNameCallback;
                 cst.onIsArrayToggleValueChanged += onChangeConstIsArrayCallback;
-                cst.onIsParamsToggleValueChanged += onChangeConstIsParamsCallback;
                 cst.onDeleteButtonClicked += onDeleteConstCallback;
             },
             rect =>
@@ -98,7 +99,6 @@ namespace UI
                 cst.onTypeDropdownValueChanged -= onChangeConstTypeCallback;
                 cst.onNameInputFieldValueChanged -= onChangeConstNameCallback;
                 cst.onIsArrayToggleValueChanged -= onChangeConstIsArrayCallback;
-                cst.onIsParamsToggleValueChanged -= onChangeConstIsParamsCallback;
                 cst.onDeleteButtonClicked -= onDeleteConstCallback;
             });
         }
@@ -115,6 +115,7 @@ namespace UI
                 output.setType(viewData.typeIndex);
                 output.setName(viewData.name);
                 output.setIsArray(viewData.isArray);
+                output.setShowParams(viewData.showParams);
                 output.setIsParams(viewData.isParams);
             },
             rect =>
@@ -123,7 +124,6 @@ namespace UI
                 output.onTypeDropdownValueChanged += onChangeOutputTypeCallback;
                 output.onNameInputFieldValueChanged += onChangeOutputNameCallback;
                 output.onIsArrayToggleValueChanged += onChangeOutputIsArrayCallback;
-                output.onIsParamsToggleValueChanged += onChangeOutputIsParamsCallback;
                 output.onDeleteButtonClicked += onDeleteOutputCallback;
             },
             rect =>
@@ -132,7 +132,6 @@ namespace UI
                 output.onTypeDropdownValueChanged -= onChangeOutputTypeCallback;
                 output.onNameInputFieldValueChanged -= onChangeOutputNameCallback;
                 output.onIsArrayToggleValueChanged -= onChangeOutputIsArrayCallback;
-                output.onIsParamsToggleValueChanged -= onChangeOutputIsParamsCallback;
                 output.onDeleteButtonClicked -= onDeleteOutputCallback;
             });
         }
@@ -251,11 +250,6 @@ namespace UI
             var itemIndex = _constItemList.IndexOf(item.transform as RectTransform);
             onChangeConstIsArray?.Invoke(itemIndex, isArray);
         }
-        void onChangeConstIsParamsCallback(EffectEditorValueDefineItem item, bool isParams)
-        {
-            var itemIndex = _constItemList.IndexOf(item.transform as RectTransform);
-            onChangeConstIsParams?.Invoke(itemIndex, isParams);
-        }
         void onDeleteConstCallback(EffectEditorValueDefineItem item)
         {
             var itemIndex = _constItemList.IndexOf(item.transform as RectTransform);
@@ -282,11 +276,6 @@ namespace UI
         {
             var itemIndex = _outputItemList.IndexOf(item.transform as RectTransform);
             onChangeOutputIsArray?.Invoke(itemIndex, isArray);
-        }
-        void onChangeOutputIsParamsCallback(EffectEditorValueDefineItem item, bool isParams)
-        {
-            var itemIndex = _outputItemList.IndexOf(item.transform as RectTransform);
-            onChangeOutputIsParams?.Invoke(itemIndex, isParams);
         }
         void onDeleteOutputCallback(EffectEditorValueDefineItem item)
         {
@@ -377,11 +366,6 @@ namespace UI
         /// </summary>
         public event Action<int, bool> onChangeConstIsArray;
         /// <summary>
-        /// 当输入常量的是否是变长变量属性被改变
-        /// 参数：输入常量索引、是否是变长变量。
-        /// </summary>
-        public event Action<int, bool> onChangeConstIsParams;
-        /// <summary>
         /// 当输入常量被删除
         /// 参数：输入常量索引。
         /// </summary>
@@ -408,11 +392,6 @@ namespace UI
         /// 参数：输出变量索引、是否是数组。
         /// </summary>
         public event Action<int, bool> onChangeOutputIsArray;
-        /// <summary>
-        /// 当输出变量的是否是变长变量属性被改变
-        /// 参数：输出变量索引、是否是变长变量。
-        /// </summary>
-        public event Action<int, bool> onChangeOutputIsParams;
         /// <summary>
         /// 当输出变量被删除
         /// 参数：输出变量索引。
@@ -488,6 +467,7 @@ namespace UI
         public int typeIndex;
         public string name;
         public bool isArray;
+        public bool showParams;
         public bool isParams;
     }
 }

@@ -7,7 +7,6 @@ using TouhouCardEngine;
 using UnityEngine;
 using UI;
 using System.Linq;
-using UnityEngine.XR;
 
 namespace Controllers
 {
@@ -78,14 +77,12 @@ namespace Controllers
             _ui.onChangeConstType += onChangeConstType;
             _ui.onChangeConstName += onChangeConstName;
             _ui.onChangeConstIsArray += onChangeConstIsArray;
-            _ui.onChangeConstIsParams += onChangeConstIsParams;
             _ui.onDeleteConst += onDeleteConst;
 
             _ui.onAddOutput += onAddOutput;
             _ui.onChangeOutputType += onChangeOutputType;
             _ui.onChangeOutputName += onChangeOutputName;
             _ui.onChangeOutputIsArray += onChangeOutputIsArray;
-            _ui.onChangeOutputIsParams += onChangeOutputIsParams;
             _ui.onDeleteOutput += onDeleteOutput;
 
             _ui.onClickDeleteActionButton += onClickDeleteActionButton;
@@ -98,7 +95,7 @@ namespace Controllers
         /// 当用户更改动作名
         /// </summary>
         /// <param name="name"></param>
-        void onChangeName(string name)
+        private void onChangeName(string name)
         {
             _actionDefine.defineName = name;
             _ui.setName(name);
@@ -108,9 +105,9 @@ namespace Controllers
         /// 当用户更改动作分类
         /// </summary>
         /// <param name="index"></param>
-        void onChangeCategory(int index)
+        private void onChangeCategory(int index)
         {
-            _actionDefine.setCategory(categories[index]);
+            _actionDefine.setCategory(index == 0 ? null : categories[index]);
             _ui.setCategory(index);
             markActionUnsaved();
         }
@@ -154,7 +151,7 @@ namespace Controllers
             }
         }
         #region 输入变量
-        void onAddInput()
+        private void onAddInput()
         {
             string defaultName = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT);
             int index = _actionDefine.inputDefines.Count() + 1;
@@ -164,40 +161,47 @@ namespace Controllers
             updateInputs();
             markActionUnsaved();
         }
-        void onChangeInputType(int inputIndex, int categoryIndex)
+        private void onChangeInputType(int inputIndex, int typeIndex)
         {
-            var targetType = game.editor.getEditorVarTypeAt(categoryIndex);
-            var curType = _actionDefine.inputDefines.ElementAt(inputIndex).type;
-            if (curType.IsArray)
-                targetType = targetType.MakeArrayType();
-            _actionDefine.inputDefines.ElementAt(inputIndex).type = targetType;
+            var newType = game.editor.getEditorVarTypeAt(typeIndex);
+            var port = _actionDefine.inputDefines.ElementAt(inputIndex);
+            var curType = port.type;
+            bool isArray = isTypeArray(curType);
+            // 变长参数的类型是数组。
+            isArray |= inputIndex == _actionDefine.inputDefines.Count() - 1 && _actionDefine.isParams;
+            port.type = getTargetType(newType, isArray);
             updateInputs();
             markActionUnsaved();
         }
-        void onChangeInputName(int inputIndex, string name)
+        private void onChangeInputName(int inputIndex, string name)
         {
             _actionDefine.inputDefines.ElementAt(inputIndex).name = name;
             updateInputs();
             markActionUnsaved();
         }
-        void onChangeInputIsArray(int inputIndex, bool isArray)
+        private void onChangeInputIsArray(int inputIndex, bool isArray)
         {
-            var targetType = _actionDefine.inputDefines.ElementAt(inputIndex).type;
-            if (isArray && !targetType.IsArray)
-                targetType = targetType.MakeArrayType();
-            else if (!isArray && targetType.IsArray)
-                targetType = targetType.GetElementType();
-            _actionDefine.inputDefines.ElementAt(inputIndex).type = targetType;
+            var port = _actionDefine.inputDefines.ElementAt(inputIndex);
+            // 变长参数的类型是数组。
+            isArray |= inputIndex == _actionDefine.inputDefines.Count() - 1 && _actionDefine.isParams;
+            port.type = getTargetType(port.type, isArray);
             updateInputs();
             markActionUnsaved();
         }
-        void onChangeInputIsParams(int inputIndex, bool isParams)
+        private void onChangeInputIsParams(int inputIndex, bool isParams)
         {
             _actionDefine.isParams = isParams;
+
+            int lastIndex = _actionDefine.inputDefines.Count() - 1;
+            var port = _actionDefine.inputDefines.ElementAt(lastIndex);
+            var curType = port.type;
+            bool isArray = isTypeArray(curType) || isParams;
+            port.type = getTargetType(port.type, isArray);
+
             updateInputs();
             markActionUnsaved();
         }
-        void onDeleteInput(int inputIndex)
+        private void onDeleteInput(int inputIndex)
         {
             var portDefine = _actionDefine.inputDefines.ElementAt(inputIndex);
             _actionDefine.removeInput(portDefine);
@@ -207,7 +211,7 @@ namespace Controllers
         #endregion
 
         #region 输入常量
-        void onAddConst()
+        private void onAddConst()
         {
             string defaultName = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT);
             int index = _actionDefine.constDefines.Count() + 1;
@@ -217,40 +221,31 @@ namespace Controllers
             updateConsts();
             markActionUnsaved();
         }
-        void onChangeConstType(int constIndex, int categoryIndex)
+        private void onChangeConstType(int constIndex, int typeIndex)
         {
-            var targetType = game.editor.getEditorVarTypeAt(categoryIndex);
-            var curType = _actionDefine.constDefines.ElementAt(constIndex).type;
-            if (curType.IsArray)
-                targetType = targetType.MakeArrayType();
-            _actionDefine.constDefines.ElementAt(constIndex).type = targetType;
+            var newType = game.editor.getEditorVarTypeAt(typeIndex);
+            var port = _actionDefine.constDefines.ElementAt(constIndex);
+            var curType = port.type;
+            bool isArray = isTypeArray(curType);
+            port.type = getTargetType(newType, isArray);
+
             updateConsts();
             markActionUnsaved();
         }
-        void onChangeConstName(int constIndex, string name)
+        private void onChangeConstName(int constIndex, string name)
         {
             _actionDefine.constDefines.ElementAt(constIndex).name = name;
             updateConsts();
             markActionUnsaved();
         }
-        void onChangeConstIsArray(int constIndex, bool isArray)
+        private void onChangeConstIsArray(int constIndex, bool isArray)
         {
-            var targetType = _actionDefine.constDefines.ElementAt(constIndex).type;
-            if (isArray && !targetType.IsArray)
-                targetType = targetType.MakeArrayType();
-            else if (!isArray && targetType.IsArray)
-                targetType = targetType.GetElementType();
-            _actionDefine.constDefines.ElementAt(constIndex).type = targetType;
+            var port = _actionDefine.constDefines.ElementAt(constIndex);
+            port.type = getTargetType(port.type, isArray);
             updateConsts();
             markActionUnsaved();
         }
-        void onChangeConstIsParams(int constIndex, bool isParams)
-        {
-            _actionDefine.isParams = isParams;
-            updateConsts();
-            markActionUnsaved();
-        }
-        void onDeleteConst(int constIndex)
+        private void onDeleteConst(int constIndex)
         {
             var constDefine = _actionDefine.constDefines.ElementAt(constIndex);
             _actionDefine.removeConst(constDefine);
@@ -260,7 +255,7 @@ namespace Controllers
         #endregion
 
         #region 输出变量
-        void onAddOutput()
+        private void onAddOutput()
         {
             string defaultName = game.langManager.getString(EDITOR_ACTION_DEFINE_OUTPUT_NAME_DEFAULT);
             int index = _actionDefine.outputDefines.Count() + 1;
@@ -270,40 +265,31 @@ namespace Controllers
             updateOutputs();
             markActionUnsaved();
         }
-        void onChangeOutputType(int outputIndex, int categoryIndex)
+        private void onChangeOutputType(int outputIndex, int typeIndex)
         {
-            var targetType = game.editor.getEditorVarTypeAt(categoryIndex);
-            var curType = _actionDefine.outputDefines.ElementAt(outputIndex).type;
-            if (curType.IsArray)
-                targetType = targetType.MakeArrayType();
-            _actionDefine.outputDefines.ElementAt(outputIndex).type = targetType;
+            var newType = game.editor.getEditorVarTypeAt(typeIndex);
+            var port = _actionDefine.outputDefines.ElementAt(outputIndex);
+            var curType = port.type;
+            bool isArray = isTypeArray(curType);
+            port.type = getTargetType(newType, isArray);
+
             updateOutputs();
             markActionUnsaved();
         }
-        void onChangeOutputName(int outputIndex, string name)
+        private void onChangeOutputName(int outputIndex, string name)
         {
             _actionDefine.outputDefines.ElementAt(outputIndex).name = name;
             updateOutputs();
             markActionUnsaved();
         }
-        void onChangeOutputIsArray(int outputIndex, bool isArray)
+        private void onChangeOutputIsArray(int outputIndex, bool isArray)
         {
-            var targetType = _actionDefine.outputDefines.ElementAt(outputIndex).type;
-            if (isArray && !targetType.IsArray)
-                targetType = targetType.MakeArrayType();
-            else if (!isArray && targetType.IsArray)
-                targetType = targetType.GetElementType();
-            _actionDefine.outputDefines.ElementAt(outputIndex).type = targetType;
+            var port = _actionDefine.outputDefines.ElementAt(outputIndex);
+            port.type = getTargetType(port.type, isArray);
             updateOutputs();
             markActionUnsaved();
         }
-        void onChangeOutputIsParams(int outputIndex, bool isParams)
-        {
-            _actionDefine.isParams = isParams;
-            updateOutputs();
-            markActionUnsaved();
-        }
-        void onDeleteOutput(int outputIndex)
+        private void onDeleteOutput(int outputIndex)
         {
             var portDefine = _actionDefine.outputDefines.ElementAt(outputIndex);
             _actionDefine.removeOutput(portDefine);
@@ -341,12 +327,18 @@ namespace Controllers
             var inputs = _actionDefine.inputDefines;
             ActionPortDefineViewData[] viewDatas = inputs.Select((input, i) =>
             {
-                int typeIndex = game.editor.getEditorVarTypeNameIndex(input.type.Name);
-                bool isArray = input.type.IsArray;
+                Type type = input.type;
+                bool isArray = isTypeArray(type);
+                if (isArray)
+                {
+                    type = type.GetElementType();
+                }
+                int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
                 return new ActionPortDefineViewData()
                 {
                     name = input.name,
                     isParams = _actionDefine.isParams,
+                    showParams = i == inputs.Count() - 1,
                     isArray = isArray,
                     typeIndex = typeIndex
                 };
@@ -360,12 +352,17 @@ namespace Controllers
             var consts = _actionDefine.constDefines;
             ActionPortDefineViewData[] viewDatas = consts.Select((cst, i) =>
             {
-                int typeIndex = game.editor.getEditorVarTypeNameIndex(cst.type.Name);
-                bool isArray = cst.type.IsArray;
+                Type type = cst.type;
+                bool isArray = isTypeArray(type);
+                if (isArray)
+                {
+                    type = type.GetElementType();
+                }
+                int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
                 return new ActionPortDefineViewData()
                 {
                     name = cst.name,
-                    isParams = _actionDefine.isParams,
+                    showParams = false,
                     isArray = isArray,
                     typeIndex = typeIndex
                 };
@@ -379,12 +376,17 @@ namespace Controllers
             var outputs = _actionDefine.outputDefines;
             ActionPortDefineViewData[] viewDatas = outputs.Select((output, i) =>
             {
-                int typeIndex = game.editor.getEditorVarTypeNameIndex(output.type.Name);
-                bool isArray = output.type.IsArray;
+                Type type = output.type;
+                bool isArray = isTypeArray(type);
+                if (isArray)
+                {
+                    type = type.GetElementType();
+                }
+                int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
                 return new ActionPortDefineViewData()
                 {
                     name = output.name,
-                    isParams = _actionDefine.isParams,
+                    showParams = false,
                     isArray = isArray,
                     typeIndex = typeIndex
                 };
@@ -393,7 +395,20 @@ namespace Controllers
             _ui.updateOutputList(viewDatas);
             _actionNodeGraphCtrl.updateActionDefineEntryAndReturnNodes();
         }
-
+        private bool isTypeArray(Type type)
+        {
+            return type.IsArray && type != typeof(Array);
+        }
+        private Type getTargetType(Type originType, bool isArray)
+        {
+            var targetType = originType;
+            bool currentIsArray = isTypeArray(targetType);
+            if (isArray && !currentIsArray)
+                targetType = targetType.MakeArrayType();
+            else if (!isArray && currentIsArray)
+                targetType = targetType.GetElementType();
+            return targetType;
+        }
         #endregion
 
 
