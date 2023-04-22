@@ -2,7 +2,6 @@
 using Controllers;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using UnityEngine;
 
 namespace UI

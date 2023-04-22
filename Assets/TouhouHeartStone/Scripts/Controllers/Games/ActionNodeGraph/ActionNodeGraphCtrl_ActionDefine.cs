@@ -257,18 +257,12 @@ namespace Controllers
             entryNode.Define();
 
             var outputs = entryNode.outputPorts;
-            var consts = _generatedActionDefine.constDefines;
 
-            PortItemInfo[] viewData = new PortItemInfo[outputs.Count() + consts.Count()];
+            PortItemInfo[] viewData = new PortItemInfo[outputs.Count()];
             for (int i = 0; i < outputs.Count(); i++)
             {
                 var input = outputs.ElementAt(i);
                 viewData[i] = new PortItemInfo(input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
-            }
-            for (int i = 0; i < consts.Count(); i++)
-            {
-                var constDef = consts.ElementAt(i);
-                viewData[i + consts.Count()] = new PortItemInfo(constDef.name, game.editor.getColorByType(constDef.type), false);
             }
             var entryNodeItem = getActionNodeItem(entryNode);
             entryNodeItem.setOutputs(viewData);

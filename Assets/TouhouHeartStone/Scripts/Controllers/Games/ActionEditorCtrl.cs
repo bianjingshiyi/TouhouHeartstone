@@ -154,8 +154,9 @@ namespace Controllers
         private void onAddInput()
         {
             string defaultName = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT);
-            int index = _actionDefine.inputDefines.Count() + 1;
-            string name = game.lang._(EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE, defaultName, index);
+            int inputIndex = _actionDefine.inputDefines.Count() - 1;
+            inputIndex++; //去掉了UI的动作端口，索引+1。
+            string name = game.lang._(EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE, defaultName, inputIndex);
             var valueDefine = PortDefine.Value(typeof(int), name);
             _actionDefine.addInput(valueDefine);
             updateInputs();
@@ -163,27 +164,30 @@ namespace Controllers
         }
         private void onChangeInputType(int inputIndex, int typeIndex)
         {
+            inputIndex++; //去掉了UI的动作端口，索引+1。
             var newType = game.editor.getEditorVarTypeAt(typeIndex);
             var port = _actionDefine.inputDefines.ElementAt(inputIndex);
             var curType = port.type;
             bool isArray = isTypeArray(curType);
             // 变长参数的类型是数组。
-            isArray |= inputIndex == _actionDefine.inputDefines.Count() - 1 && _actionDefine.isParams;
+            isArray |= isLastInput(inputIndex) && _actionDefine.isParams;
             port.type = getTargetType(newType, isArray);
             updateInputs();
             markActionUnsaved();
         }
         private void onChangeInputName(int inputIndex, string name)
         {
+            inputIndex++; //去掉了UI的动作端口，索引+1。
             _actionDefine.inputDefines.ElementAt(inputIndex).name = name;
             updateInputs();
             markActionUnsaved();
         }
         private void onChangeInputIsArray(int inputIndex, bool isArray)
         {
+            inputIndex++; //去掉了UI的动作端口，索引+1。
             var port = _actionDefine.inputDefines.ElementAt(inputIndex);
             // 变长参数的类型是数组。
-            isArray |= inputIndex == _actionDefine.inputDefines.Count() - 1 && _actionDefine.isParams;
+            isArray |= isLastInput(inputIndex) && _actionDefine.isParams;
             port.type = getTargetType(port.type, isArray);
             updateInputs();
             markActionUnsaved();
@@ -203,6 +207,7 @@ namespace Controllers
         }
         private void onDeleteInput(int inputIndex)
         {
+            inputIndex++; //去掉了UI的动作端口，索引+1。
             var portDefine = _actionDefine.inputDefines.ElementAt(inputIndex);
             _actionDefine.removeInput(portDefine);
             updateInputs();
@@ -324,9 +329,10 @@ namespace Controllers
         }
         private void updateInputs()
         {
-            var inputs = _actionDefine.inputDefines;
+            var inputs = _actionDefine.inputDefines.Where(i => i.name != ActionNode.enterControlName);
             ActionPortDefineViewData[] viewDatas = inputs.Select((input, i) =>
             {
+                i++; //UI隐藏了动作端口，索引+1。
                 Type type = input.type;
                 bool isArray = isTypeArray(type);
                 if (isArray)
@@ -338,7 +344,7 @@ namespace Controllers
                 {
                     name = input.name,
                     isParams = _actionDefine.isParams,
-                    showParams = i == inputs.Count() - 1,
+                    showParams = isLastInput(i),
                     isArray = isArray,
                     typeIndex = typeIndex
                 };
@@ -409,6 +415,10 @@ namespace Controllers
                 targetType = targetType.GetElementType();
             return targetType;
         }
+        private bool isLastInput(int index)
+        {
+            return index == _actionDefine.inputDefines.Count() - 1;
+        }
         #endregion
 
 
@@ -420,11 +430,11 @@ namespace Controllers
         public const string EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE = "{0}{1}";
         [TranslateMsg("自定义动作的默认输出值名称前缀")]
         public const string EDITOR_ACTION_DEFINE_OUTPUT_NAME_DEFAULT = "输出值";
-        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的警告")]
+        [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的警告")]
         public const string ACTION_WARNING_UNSAVED_CHANGES = "是否将更改保存到该自定义动作中？";
-        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
+        [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
         public const string ACTION_WARNING_OPTION_SAVE = "保存";
-        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
+        [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
         public const string ACTION_WARNING_OPTION_CANCEL = "取消";
         [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
         public const string ACTION_ERROR_NAME_TAKEN = "该动作名已被使用！";
