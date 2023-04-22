@@ -95,11 +95,23 @@ namespace Controllers
         /// 当用户更改动作名
         /// </summary>
         /// <param name="name"></param>
-        private void onChangeName(string name)
+        private void onChangeName(string value)
         {
-            _actionDefine.defineName = name;
-            _ui.setName(name);
-            markActionUnsaved();
+            if (!_actionNodeGraphCtrl.isActionDefineNameExist(value))
+            {
+                _actionDefine.defineName = value;
+                _ui.setName(value);
+                markActionUnsaved();
+            }
+            else
+            {
+                //重名
+                game.ui.dialog.ShowConfirm(
+                    game.langManager.getString(StringTable.ERROR),
+                    game.langManager.getString(StringTable.EDITOR_ERROR_ACTION_DEFINE_NAME_ALREADY_EXIST));
+                _actionDefine.defineName = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT);
+                _ui.setName(_actionDefine.defineName);
+            }
         }
         /// <summary>
         /// 当用户更改动作分类
@@ -111,14 +123,21 @@ namespace Controllers
             _ui.setCategory(index);
             markActionUnsaved();
         }
-        private async void onClickDeleteActionButton()
+        private void onClickDeleteActionButton()
         {
-            scene.editor.hasUnsavedChanges = true;
-            //删除当前动作
-            game.card.removeActionDefine(_cardPoolId, _actionDefine);
-            //返回上个界面
-            await scene.editor.closeEditorPanel();
-            clearActionUnsaved();
+            //询问玩家
+            game.ui.dialog.ShowQuestion(
+               game.langManager.getString(StringTable.WARNING),
+               game.langManager.getString(StringTable.EDITOR_WARNING_DELETE_ACTION_DFINE),
+               async () =>
+               {
+                   //删除动作定义
+                   game.card.removeActionDefine(_cardPoolId, _actionDefine);
+                   //返回上个界面
+                   await scene.editor.closeEditorPanel();
+                   scene.editor.hasUnsavedChanges = true;
+                   clearActionUnsaved();
+               });
         }
         private void onClickSaveButton()
         {
@@ -154,12 +173,18 @@ namespace Controllers
         private void onAddInput()
         {
             string defaultName = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_VAR_NAME_DEFAULT);
-            int inputIndex = _actionDefine.inputDefines.Count() - 1;
-            inputIndex++; //去掉了UI的动作端口，索引+1。
-            string name = game.lang._(EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE, defaultName, inputIndex);
-            var valueDefine = PortDefine.Value(typeof(int), name);
+            int id = 0;
+            string name = $"input{id}";
+            while (_actionDefine.inputDefines.Any(d => d.name == name))
+            {
+                id++;
+                name = $"input{id}";
+            }
+            string displayName = game.lang._(EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE, defaultName, id + 1);
+            var valueDefine = PortDefine.Value(typeof(int), name, displayName);
             _actionDefine.addInput(valueDefine);
             updateInputs();
+            _actionNodeGraphCtrl.onAddActionDefineInputPort();
             markActionUnsaved();
         }
         private void onChangeInputType(int inputIndex, int typeIndex)
@@ -173,12 +198,13 @@ namespace Controllers
             isArray |= isLastInput(inputIndex) && _actionDefine.isParams;
             port.type = getTargetType(newType, isArray);
             updateInputs();
+            _actionNodeGraphCtrl.onChangeActionDefineInputType(port.name);
             markActionUnsaved();
         }
         private void onChangeInputName(int inputIndex, string name)
         {
             inputIndex++; //去掉了UI的动作端口，索引+1。
-            _actionDefine.inputDefines.ElementAt(inputIndex).name = name;
+            _actionDefine.inputDefines.ElementAt(inputIndex).displayName = name;
             updateInputs();
             markActionUnsaved();
         }
@@ -190,6 +216,7 @@ namespace Controllers
             isArray |= isLastInput(inputIndex) && _actionDefine.isParams;
             port.type = getTargetType(port.type, isArray);
             updateInputs();
+            _actionNodeGraphCtrl.onChangeActionDefineInputType(port.name);
             markActionUnsaved();
         }
         private void onChangeInputIsParams(int inputIndex, bool isParams)
@@ -203,12 +230,14 @@ namespace Controllers
             port.type = getTargetType(port.type, isArray);
 
             updateInputs();
+            _actionNodeGraphCtrl.onChangeActionDefineInputType(port.name);
             markActionUnsaved();
         }
         private void onDeleteInput(int inputIndex)
         {
             inputIndex++; //去掉了UI的动作端口，索引+1。
             var portDefine = _actionDefine.inputDefines.ElementAt(inputIndex);
+            _actionNodeGraphCtrl.onDeleteActionDefineInputPort(portDefine.name);
             _actionDefine.removeInput(portDefine);
             updateInputs();
             markActionUnsaved();
@@ -219,27 +248,34 @@ namespace Controllers
         private void onAddConst()
         {
             string defaultName = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_CONST_NAME_DEFAULT);
-            int index = _actionDefine.constDefines.Count() + 1;
-            string name = game.lang._(EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE, defaultName, index);
-            var valueDefine = PortDefine.Const(typeof(int), name);
+            int id = 0;
+            string name = $"const{id}";
+            while (_actionDefine.constDefines.Any(d => d.name == name))
+            {
+                id++;
+                name = $"const{id}";
+            }
+            string displayName = game.lang._(EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE, defaultName, id + 1);
+            var valueDefine = PortDefine.Const(typeof(int), name, displayName);
             _actionDefine.addConst(valueDefine);
             updateConsts();
             markActionUnsaved();
         }
         private void onChangeConstType(int constIndex, int typeIndex)
         {
-            var newType = game.editor.getEditorVarTypeAt(typeIndex);
+            var newType = game.editor.getEditorConstTypeAt(typeIndex);
             var port = _actionDefine.constDefines.ElementAt(constIndex);
             var curType = port.type;
             bool isArray = isTypeArray(curType);
             port.type = getTargetType(newType, isArray);
 
             updateConsts();
+            _actionNodeGraphCtrl.onChangeActionDefineConstType(port.name);
             markActionUnsaved();
         }
         private void onChangeConstName(int constIndex, string name)
         {
-            _actionDefine.constDefines.ElementAt(constIndex).name = name;
+            _actionDefine.constDefines.ElementAt(constIndex).displayName = name;
             updateConsts();
             markActionUnsaved();
         }
@@ -248,11 +284,13 @@ namespace Controllers
             var port = _actionDefine.constDefines.ElementAt(constIndex);
             port.type = getTargetType(port.type, isArray);
             updateConsts();
+            _actionNodeGraphCtrl.onChangeActionDefineConstType(port.name);
             markActionUnsaved();
         }
         private void onDeleteConst(int constIndex)
         {
             var constDefine = _actionDefine.constDefines.ElementAt(constIndex);
+            _actionNodeGraphCtrl.onDeleteActionDefineConstPort(constDefine.name);
             _actionDefine.removeConst(constDefine);
             updateConsts();
             markActionUnsaved();
@@ -263,9 +301,15 @@ namespace Controllers
         private void onAddOutput()
         {
             string defaultName = game.langManager.getString(EDITOR_ACTION_DEFINE_OUTPUT_NAME_DEFAULT);
-            int index = _actionDefine.outputDefines.Count() + 1;
-            string name = game.lang._(EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE, defaultName, index);
-            var valueDefine = PortDefine.Value(typeof(int),name);
+            int id = 0;
+            string name = $"output{id}";
+            while (_actionDefine.outputDefines.Any(d => d.name == name))
+            {
+                id++;
+                name = $"output{id}";
+            }
+            string displayName = game.lang._(EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE, defaultName, id + 1);
+            var valueDefine = PortDefine.Value(typeof(int), name, displayName);
             _actionDefine.addOutput(valueDefine);
             updateOutputs();
             markActionUnsaved();
@@ -279,11 +323,12 @@ namespace Controllers
             port.type = getTargetType(newType, isArray);
 
             updateOutputs();
+            _actionNodeGraphCtrl.onChangeActionDefineOutputType(port.name);
             markActionUnsaved();
         }
         private void onChangeOutputName(int outputIndex, string name)
         {
-            _actionDefine.outputDefines.ElementAt(outputIndex).name = name;
+            _actionDefine.outputDefines.ElementAt(outputIndex).displayName = name;
             updateOutputs();
             markActionUnsaved();
         }
@@ -292,11 +337,13 @@ namespace Controllers
             var port = _actionDefine.outputDefines.ElementAt(outputIndex);
             port.type = getTargetType(port.type, isArray);
             updateOutputs();
+            _actionNodeGraphCtrl.onChangeActionDefineOutputType(port.name);
             markActionUnsaved();
         }
         private void onDeleteOutput(int outputIndex)
         {
             var portDefine = _actionDefine.outputDefines.ElementAt(outputIndex);
+            _actionNodeGraphCtrl.onDeleteActionDefineOutputPort(portDefine.name);
             _actionDefine.removeOutput(portDefine);
             updateOutputs();
             markActionUnsaved();
@@ -342,7 +389,7 @@ namespace Controllers
                 int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
                 return new ActionPortDefineViewData()
                 {
-                    name = input.name,
+                    name = input.getDisplayName(),
                     isParams = _actionDefine.isParams,
                     showParams = isLastInput(i),
                     isArray = isArray,
@@ -364,10 +411,10 @@ namespace Controllers
                 {
                     type = type.GetElementType();
                 }
-                int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
+                int typeIndex = game.editor.getEditorConstTypeNameIndex(type.Name);
                 return new ActionPortDefineViewData()
                 {
-                    name = cst.name,
+                    name = cst.getDisplayName(),
                     showParams = false,
                     isArray = isArray,
                     typeIndex = typeIndex
@@ -391,7 +438,7 @@ namespace Controllers
                 int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
                 return new ActionPortDefineViewData()
                 {
-                    name = output.name,
+                    name = output.getDisplayName(),
                     showParams = false,
                     isArray = isArray,
                     typeIndex = typeIndex

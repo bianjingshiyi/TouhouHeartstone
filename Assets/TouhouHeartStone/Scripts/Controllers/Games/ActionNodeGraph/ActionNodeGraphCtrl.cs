@@ -516,7 +516,7 @@ namespace Controllers
                     string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_INPUT);
                     var inputViewData = new PortItemInfo[0];
                     ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
-                    var outputViewData = getActionDefineInputViewData(_generatedActionDefine);
+                    var outputViewData = getActionDefineEntryNodeOutputViewData(genEntry);
 
                     var actionNodeItem = _ui.createNode(genEntry.posX, genEntry.posY, nodeName, inputViewData, constsInfo, outputViewData);
                     _actionNodeItemList.Add(actionNodeItem);
@@ -525,7 +525,7 @@ namespace Controllers
                 else if (node is GeneratedActionReturnNode genReturn)
                 {
                     string nodeName = game.lang._(StringTable.EDITOR_NODE_NAME_OUTPUT);
-                    var inputViewData = getActionDefineOutputViewData(_generatedActionDefine);
+                    var inputViewData = getActionDefineReturnNodeInputViewData(genReturn);
                     ActionNodeValueInfo[] constsInfo = new ActionNodeValueInfo[0];
                     var outputViewData = new PortItemInfo[0];
 
@@ -832,8 +832,107 @@ namespace Controllers
                 connectValuePorts(vo, vi);
             }
         }
+        /// <summary>
+        /// <para>当端口被增加或删除时，移动所有端口的连接。</para>
+        /// <para><b>请在增加端口之后，或删除端口之前调用该方法。</b></para>
+        /// </summary>
+        /// <param name="port">发生变化的端口。</param>
+        /// <param name="direction">向下移动为正，向上移动为负。</param>
+        private void movePortConnections(IPort port, int direction)
+        {
+            if (direction == 0)
+                return;
+
+            var node = port.node;
+            int portIndex = port.GetPortIndex();
+            List<NodeConnection> movedConnections = new List<NodeConnection>();
+            var ports = (port.isOutput ? node.outputPorts : node.inputPorts).ToArray();
+            for (int i = portIndex + 1; i < ports.Length; i++)
+            {
+                var movedPort = ports[i];
+                if (movedPort == null)
+                    return;
+                movedConnections.AddRange(movedPort.connections);
+            }
+
+            foreach (var connection in movedConnections)
+            {
+                if (connection == null)
+                    continue;
+                var outputPort = connection.source;
+                var inputPort = connection.destination;
+                var inputNodeItem = getActionNodeItem(inputPort.node);
+                var outputNodeItem = getActionNodeItem(outputPort.node);
+                if (outputPort == null || inputPort == null || inputNodeItem == null || outputNodeItem == null)
+                    continue;
+
+                int outputIndex = outputPort.GetPortIndex();
+                int inputIndex = inputPort.GetPortIndex();
+                int oldOutputIndex = outputIndex;
+                int oldInputIndex = inputIndex;
+                // 向下移动。
+                if (direction > 0)
+                {
+                    if (port.isOutput)
+                    {
+                        oldOutputIndex = outputIndex - direction;
+                    }
+                    else
+                    {
+                        oldInputIndex = inputIndex - direction;
+                    }
+                }
+                else //向上移动。
+                {
+                    if (port.isOutput)
+                    {
+                        outputIndex += direction;
+                    }
+                    else
+                    {
+                        inputIndex += direction;
+                    }
+                }
+
+                _ui.unconnectNode(outputNodeItem, oldOutputIndex, inputNodeItem, oldInputIndex);
+                _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, port is IValuePort ? ActionNodeConnectionType.value : ActionNodeConnectionType.action);
+            }
+        }
         #endregion
         #region 节点断开
+        /// <summary>
+        /// 断开连接到该端口上的，所有不合法的连接。
+        /// </summary>
+        /// <param name="port"></param>
+        private void disconnectPortInvalidConnections(IPort port)
+        {
+            //更新ui
+            var connections = port.connections.Where(c => !isValidTypeForConnection(c.source.define.type, c.destination.define.type));
+            foreach (var connection in connections.ToArray())
+            {
+                if (connection == null)
+                    continue;
+                IPort src = connection.source;
+                IPort dest = connection.destination;
+                disconnectPorts(src, dest);
+            }
+        }
+        /// <summary>
+        /// 断开连接到该端口上的所有连接。
+        /// </summary>
+        /// <param name="port"></param>
+        private void disconnectPortAll(IPort port)
+        {
+            //更新ui
+            foreach (var connection in port.connections.ToArray())
+            {
+                if (connection == null)
+                    continue;
+                IPort src = connection.source;
+                IPort dest = connection.destination;
+                disconnectPorts(src, dest);
+            }
+        }
         private void disconnectPorts(IPort outputPort, IPort inputPort)
         {
             //更新ui

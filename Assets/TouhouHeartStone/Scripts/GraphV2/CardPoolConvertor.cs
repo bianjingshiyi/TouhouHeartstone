@@ -138,7 +138,7 @@ namespace Game
                     for (int i = 0; i < inputs.Length; i++)
                     {
                         var input = seri.inputList[i];
-                        inputs[i] = PortDefine.Value(typeFinder(input.typeName), input.name, input.name);
+                        inputs[i] = PortDefine.Value(typeFinder(input.typeName), $"input{i}", input.name);
                     }
                 }
                 if (seri.constList != null)
@@ -147,7 +147,7 @@ namespace Game
                     for (int i = 0; i < consts.Length; i++)
                     {
                         var input = seri.constList[i];
-                        consts[i] = PortDefine.Const(typeFinder(input.typeName), input.name, input.name);
+                        consts[i] = PortDefine.Const(typeFinder(input.typeName), $"const{i}", input.name);
                     }
                 }
                 if (seri.outputList != null)
@@ -156,7 +156,7 @@ namespace Game
                     for (int i = 0; i < outputs.Length; i++)
                     {
                         var input = seri.outputList[i];
-                        outputs[i] = PortDefine.Value(typeFinder(input.typeName), input.name, input.name);
+                        outputs[i] = PortDefine.Value(typeFinder(input.typeName), $"output{i}", input.name);
                     }
                 }
 

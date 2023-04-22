@@ -1,222 +1,118 @@
-﻿using TouhouCardEngine;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using UnityEngine;
-using UI;
-using Game;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using TouhouHeartstone;
-using System.Linq;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using UI;
 
 namespace Controllers
 {
     partial class ActionNodeGraphCtrl
     {
         #region 公有方法
-        /// <summary>
-        /// 打开一个自定义动作的动作节点图
-        /// </summary>
-        /// <param name="trigger"></param>
-        public void openGeneratedActionDefine(int cardPoolId, GeneratedActionDefine actionDefine, ActionNodeGraphInfo graphInfo)
-        {
-            display(new DisplayInfo(cardPoolId, actionDefine, null, graphInfo));
-        }
         public void updateActionDefineEntryAndReturnNodes()
         {
             updateActionDefineEntryNode();
             updateActionDefineReturnNodes();
         }
         /// <summary>
-        /// 为自定义动作添加一个输入值。
+        /// 添加自定义动作的一个输入值时，重新连接所有常量UI的连接。
         /// </summary>
-        /// <param name="portDefine"></param>
-        public void addActionDefineInput(PortDefine portDefine)
+        /// <param name="name"></param>
+        public void onAddActionDefineInputPort()
         {
-            _generatedActionDefine.addInput(portDefine);
-            updateActionDefineEntryNode();
-        }
-        /// <summary>
-        /// 删除自定义动作的一个输入值。
-        /// </summary>
-        /// <param name="portDefine"></param>
-        public void deleteActionDefineInput(PortDefine portDefine)
-        {
-            _generatedActionDefine.removeInput(portDefine);
-            updateActionDefineEntryNode();
-        }
-        /// <summary>
-        /// 删除自定义动作的一个常量值。
-        /// </summary>
-        /// <param name="portDefine"></param>
-        public void deleteActionDefineConst(PortDefine portDefine)
-        {
-            _generatedActionDefine.removeConst(portDefine);
-            updateActionDefineEntryNode();
-        }
-        /// <summary>
-        /// 删除自定义动作的一个返回值。
-        /// </summary>
-        /// <param name="inputIndex"></param>
-        public void deleteActionDefineOutput(PortDefine portDefine)
-        {
-            _generatedActionDefine.removeOutput(portDefine);
-            updateActionDefineReturnNodes();
-        }
-        /// <summary>
-        /// 改变自定义动作的一个输入值的类型，并检查连接到该值的线的合法性。
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="type"></param>
-        public void changeActionDefineInputType(string name, Type type)
-        {
-            var input = _generatedActionDefine.getInputDefine(name);
-            if (input == null)
-                return;
-
-            input.type = type;
-
-            // 检查连接合法性。
-            // 断开不合法的，连接到返回节点上的连接
+            // 常量连接向下移动。
             var entryNode = _generatedActionDefine.getEntryNode();
-            var changedPort = entryNode.getOutputPort(name);
+            var portDefine = _generatedActionDefine.inputDefines.LastOrDefault();
+            if (portDefine == null)
+                return;
+            var port = entryNode.getOutputPort(portDefine.name);
+            if (port == null)
+                return;
+            movePortConnections(port, 1);
+        }
+        /// <summary>
+        /// 删除自定义动作的一个输入值时，断开所有连接。
+        /// </summary>
+        /// <param name="name"></param>
+        public void onDeleteActionDefineInputPort(string name)
+        {
+            var entryNode = _generatedActionDefine.getEntryNode();
+            var deletedPort = entryNode?.getOutputPort(name);
+            if (deletedPort == null)
+                return;
+            disconnectPortAll(deletedPort);
+
+            // 连接向上移动。
+            movePortConnections(deletedPort, -1);
+        }
+        /// <summary>
+        /// 删除自定义动作的一个输入常量时，断开所有连接。
+        /// </summary>
+        /// <param name="name"></param>
+        public void onDeleteActionDefineConstPort(string name)
+        {
+            var entryNode = _generatedActionDefine.getEntryNode();
+            var deletedPort = entryNode?.getOutputPort(name);
+            if (deletedPort == null)
+                return;
+            disconnectPortAll(deletedPort);
+            // 连接向上移动。
+            movePortConnections(deletedPort, -1);
+        }
+        /// <summary>
+        /// 删除自定义动作的一个输出值时，断开所有连接。
+        /// </summary>
+        /// <param name="name"></param>
+        public void onDeleteActionDefineOutputPort(string name)
+        {
             var returnNode = _generatedActionDefine.getReturnNode();
-            foreach (var returnInput in returnNode.inputPorts)
-            {
-                if (returnInput == null)
-                    continue;
-
-                var connection = graph.getConnection(changedPort, returnInput);
-                if (connection != null)
-                {
-                    if (!isValidTypeForConnection(type, returnInput.define.type))
-                    {
-                        disconnectPorts(changedPort, returnInput);
-                    }
-                }
-            }
-
-            // 断开不合法的，连接到其他节点上的连接
-            foreach (var node in _actionNodeList)
-            {
-                if (node == null)
-                    continue;
-                foreach (var nodeInput in node.inputPorts)
-                {
-                    if (nodeInput == null)
-                        continue;
-                    if (!graph.isConnected(changedPort, nodeInput))
-                        continue;
-
-                    if (!isValidTypeForConnection(type, nodeInput.define.type))
-                    {
-                        disconnectPorts(changedPort, nodeInput);
-                    }
-                }
-            }
+            var deletedPort = returnNode?.getInputPort(name);
+            if (deletedPort == null)
+                return;
+            disconnectPortAll(deletedPort);
+            // 连接向上移动。
+            movePortConnections(deletedPort, -1);
+        }
+        /// <summary>
+        /// 改变自定义动作的一个输入值的类型时，检查连接到该值的线的合法性。
+        /// </summary>
+        /// <param name="name"></param>
+        public void onChangeActionDefineInputType(string name)
+        {
+            // 检查连接合法性。
+            var entryNode = _generatedActionDefine.getEntryNode();
+            var changedPort = entryNode?.getOutputPort(name);
+            if (changedPort == null)
+                return;
+            disconnectPortInvalidConnections(changedPort);
             updateActionDefineEntryNode();
         }
         /// <summary>
-        /// 改变自定义动作的一个常量值的类型，并检查连接到该值的线的合法性。
+        /// 改变自定义动作的一个常量值的类型时，检查连接到该值的线的合法性。
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="type"></param>
-        public void changeActionDefineConstType(string name, Type type)
+        /// <param name="name"></param>
+        public void onChangeActionDefineConstType(string name)
         {
-            var constDefine = _generatedActionDefine.getConstDefine(name);
-            if (constDefine == null)
-                return;
-            constDefine.type = type;
             // 检查连接合法性。
-            // 断开不合法的，连接到返回节点上的连接
             var entryNode = _generatedActionDefine.getEntryNode();
-            var changedPort = entryNode.getOutputPort(name);
-            var returnNode = _generatedActionDefine.getReturnNode();
-            foreach (var returnInput in returnNode.inputPorts)
-            {
-                if (returnInput == null)
-                    continue;
-
-                var connection = graph.getConnection(changedPort, returnInput);
-                if (connection != null)
-                {
-                    if (!isValidTypeForConnection(type, returnInput.define.type))
-                    {
-                        disconnectPorts(changedPort, returnInput);
-                    }
-                }
-            }
-
-            // 断开不合法的，连接到其他节点上的连接
-            foreach (var node in _actionNodeList)
-            {
-                if (node == null)
-                    continue;
-                foreach (var nodeInput in node.inputPorts)
-                {
-                    if (nodeInput == null)
-                        continue;
-                    if (!graph.isConnected(changedPort, nodeInput))
-                        continue;
-
-                    if (!isValidTypeForConnection(type, nodeInput.define.type))
-                    {
-                        disconnectPorts(changedPort, nodeInput);
-                    }
-                }
-            }
+            var changedPort = entryNode?.getOutputPort(name);
+            if (changedPort == null)
+                return;
+            disconnectPortInvalidConnections(changedPort);
             updateActionDefineEntryNode();
         }
         /// <summary>
-        /// 改变自定义动作的一个返回值的类型，并检查连接到该值的线的合法性。
+        /// 改变自定义动作的一个返回值的类型时，检查连接到该值的线的合法性。
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="type"></param>
-        public void changeActionDefineOutputType(string name, Type type)
+        /// <param name="name"></param>
+        public void onChangeActionDefineOutputType(string name)
         {
-            var outputDefine = _generatedActionDefine.getOutputDefine(name);
-            if (outputDefine == null)
-                return;
-            outputDefine.type = type;
             // 检查连接合法性。
-            // 断开不合法的，连接到返回节点上的连接
-            var entryNode = _generatedActionDefine.getEntryNode();
             var returnNode = _generatedActionDefine.getReturnNode();
-            var changedPort = returnNode.getInputPort(name);
-            foreach (var entryOutput in entryNode.outputPorts)
-            {
-                if (entryOutput == null)
-                    continue;
-
-                var connection = graph.getConnection(entryOutput, changedPort);
-                if (connection != null)
-                {
-                    if (!isValidTypeForConnection(entryOutput.define.type, type))
-                    {
-                        disconnectPorts(entryOutput, changedPort);
-                    }
-                }
-            }
-
-            // 断开不合法的，连接到其他节点上的连接
-            foreach (var node in _actionNodeList)
-            {
-                if (node == null)
-                    continue;
-                foreach (var nodeOutput in node.outputPorts)
-                {
-                    if (nodeOutput == null)
-                        continue;
-                    if (!graph.isConnected(nodeOutput, changedPort))
-                        continue;
-
-                    if (!isValidTypeForConnection(type, nodeOutput.define.type))
-                    {
-                        disconnectPorts(nodeOutput, changedPort);
-                    }
-                }
-            }
+            var changedPort = returnNode?.getInputPort(name);
+            if (changedPort == null)
+                return;
+            disconnectPortInvalidConnections(changedPort);
             updateActionDefineEntryNode();
         }
         #endregion
@@ -240,13 +136,8 @@ namespace Controllers
             var returnNode = _generatedActionDefine.getReturnNode();
             returnNode.Define();
 
-            var inputs = returnNode.inputPorts;
-            PortItemInfo[] viewData = new PortItemInfo[inputs.Count()];
-            for (int i = 0; i < inputs.Count(); i++)
-            {
-                var input = inputs.ElementAt(i);
-                viewData[i] = new PortItemInfo(input.define?.name, game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
-            }
+            var viewData = getActionDefineReturnNodeInputViewData(returnNode);
+
             var returnNodeItem = getActionNodeItem(returnNode);
             returnNodeItem.setInputs(viewData);
         }
@@ -256,6 +147,13 @@ namespace Controllers
             var entryNode = _generatedActionDefine.getEntryNode();
             entryNode.Define();
 
+            var viewData = getActionDefineEntryNodeOutputViewData(entryNode);
+
+            var entryNodeItem = getActionNodeItem(entryNode);
+            entryNodeItem.setOutputs(viewData);
+        }
+        private PortItemInfo[] getActionDefineEntryNodeOutputViewData(GeneratedActionEntryNode entryNode)
+        {
             var outputs = entryNode.outputPorts;
 
             PortItemInfo[] viewData = new PortItemInfo[outputs.Count()];
@@ -264,8 +162,18 @@ namespace Controllers
                 var input = outputs.ElementAt(i);
                 viewData[i] = new PortItemInfo(input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
             }
-            var entryNodeItem = getActionNodeItem(entryNode);
-            entryNodeItem.setOutputs(viewData);
+            return viewData;
+        }
+        private PortItemInfo[] getActionDefineReturnNodeInputViewData(GeneratedActionReturnNode returnNode)
+        {
+            var inputs = returnNode.inputPorts;
+            PortItemInfo[] viewData = new PortItemInfo[inputs.Count()];
+            for (int i = 0; i < inputs.Count(); i++)
+            {
+                var input = inputs.ElementAt(i);
+                viewData[i] = new PortItemInfo(input.define?.getDisplayName(), game.editor.getColorByType(input.define?.type), input.GetPortType() == PortType.Control);
+            }
+            return viewData;
         }
         private PortItemInfo[] getActionDefineInputViewData(GeneratedActionDefine actionDefine)
         {
@@ -293,42 +201,6 @@ namespace Controllers
             }
             return outputs;
         }
-        #region 节点连接
-        /// <summary>
-        /// 将输入节点的输出值连接到输入上
-        /// </summary>
-        /// <param name="outputIndex"></param>
-        /// <param name="inputActionNode"></param>
-        /// <param name="inputIndex"></param>
-        private void connectNode4ActionDefineArg(string outputName, ActionNode inputActionNode, string inputName)
-        {
-            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort<ValueOutput>(outputName);
-            var inputPort = inputActionNode.getInputPort<ValueInput>(inputName);
-
-            connectValuePorts(outputPort, inputPort);
-        }
-        private void connectNode4ActionDefineArgToReturn(string outputName, string inputName)
-        {
-            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort<ValueOutput>(outputName);
-            var inputPort = _generatedActionDefine.getReturnNode().getInputPort<ValueInput>(inputName);
-
-            connectValuePorts(outputPort, inputPort);
-        }
-        private void unconnectNode4ActionDefineArg(string outputName, ActionNode inputActionNode, string inputName)
-        {
-            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort<ValueOutput>(outputName);
-            var inputPort = inputActionNode.getInputPort<ValueInput>(inputName);
-
-            disconnectPorts(outputPort, inputPort);
-        }
-        private void unconnectNode4ActionDefineArgToReturn(string outputName, string inputName)
-        {
-            var outputPort = _generatedActionDefine.getEntryNode().getOutputPort<ValueOutput>(outputName);
-            var inputPort = _generatedActionDefine.getReturnNode().getInputPort<ValueInput>(inputName);
-
-            disconnectPorts(outputPort, inputPort);
-        }
-        #endregion
         #region 动作定义
         private ActionDefine getActionDefine(string name)
         {

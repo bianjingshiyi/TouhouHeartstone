@@ -304,7 +304,7 @@ namespace Game
         public void Update(PortDefine val)
         {
             type = val.type.IsArray ? val.type.GetElementType().FullName : val.type.FullName;
-            name = val.name;
+            name = val.getDisplayName();
             isParams = false;
             isArray = val.type.IsArray;
         }
@@ -330,7 +330,7 @@ namespace Game
                 bool hasOld = false;
                 foreach (var item in orig)
                 {
-                    if (item.name == defines[i].name)
+                    if (item.name == defines[i].getDisplayName())
                     {
                         item.Update(input);
                         list.Add(item);
