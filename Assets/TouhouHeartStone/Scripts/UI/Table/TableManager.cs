@@ -15,6 +15,7 @@ using UCard = UI.Card;
 using BJSYGameCore.UI;
 using TouhouHeartstone.Builtin;
 using MukioI18n;
+using System.Threading.Tasks;
 
 namespace Game
 {
@@ -1409,7 +1410,6 @@ namespace Game
             _showCardTimer.start();
             _servant = servant;
             _pointer = pointer;
-            //displayLargeCard(pointer.position.x < Screen.width / 2, getCard(servant));
         }
         void onExitServant(ServantItem servant, PointerEventData pointer)
         {
@@ -1709,7 +1709,69 @@ namespace Game
             ui.ServantPlaceHolder.Servant.hide();
             ui.ServantPlaceHolder.hide();
         }
+        private async Task<CardBuffListItemViewData[]> getCardBuffViewDatas(IEnumerable<Buff> buffs)
+        {
+            // 增益列表。
+            var cards = getManager<CardManager>();
 
+            // 合并同样的增益。
+            var buffCountList = new List<(DefineReference defRef, int count)>();
+            DefineReference curBuffRef = null;
+            foreach (var buff in buffs)
+            {
+                var defineRef = buff is GeneratedBuff genBuff ? genBuff.defineRef : new DefineReference(0, buff.id);
+                if (curBuffRef == defineRef && buffCountList.Count > 0)
+                {
+                    var lastTuple = buffCountList[buffCountList.Count - 1];
+                    lastTuple.count++;
+                    buffCountList[buffCountList.Count - 1] = lastTuple;
+                    continue;
+                }
+                curBuffRef = defineRef;
+                buffCountList.Add((defineRef, 1));
+            }
+
+            // 将增益转化为显示数据。
+            int maxCount = Mathf.Min(buffCountList.Count, _maxBuffDisplayCount);
+            var viewDatas = new CardBuffListItemViewData[maxCount];
+            for (int i = 0; i < viewDatas.Length; i++)
+            {
+                var (defineRef, count) = buffCountList[i];
+                var buffDefine = game.getBuffDefine(defineRef);
+
+                Sprite sprite;
+                string name;
+                string desc;
+                if (buffDefine == null)
+                {
+                    sprite = await cards.getDefaultSprite();
+                    name = lang._(CARD_BUFF_UNKNOWN_NAME);
+                    desc = lang._(CARD_BUFF_UNKNOWN_DESC);
+                }
+                else
+                {
+                    var skin = cards.getBuffSkin(buffDefine);
+                    sprite = await cards.loadImage(skin.imagePath, defineRef.cardPoolId);
+                    name = skin.name;
+                    desc = skin.desc;
+                }
+                if (name.Length > _maxBuffNameLength)
+                    name = lang._(CARD_BUFF_LIST_TRIM_TEMPLATE, name.Substring(0, _maxBuffNameLength));
+                if (desc.Length > _maxBuffDescLength)
+                    desc = lang._(CARD_BUFF_LIST_TRIM_TEMPLATE, desc.Substring(0, _maxBuffDescLength));
+                if (count > 1)
+                    name = lang._(CARD_BUFF_LIST_MULTIPLE_TEMPLATE, name, count);
+
+                CardBuffListItemViewData viewData = new CardBuffListItemViewData
+                {
+                    sprite = sprite,
+                    name = name,
+                    desc = desc
+                };
+                viewDatas[i] = viewData;
+            }
+            return viewDatas;
+        }
 
 
         public void displayDiscoverDialog(DefineReference[] cardRefs, string title)
@@ -1876,20 +1938,25 @@ namespace Game
             ui.TipText.text = lang._(tip);
             _tipTimer.start();
         }
-        public void displayLargeCard(bool isRight, Card card)
+        public async void displayLargeCard(bool isRight, Card card)
         {
             if (isRight)
                 ui.LargeCard.rectTransform.localPosition = new Vector3(250, 0);
             else
                 ui.LargeCard.rectTransform.localPosition = new Vector3(-250, 0);
-            ui.LargeCard.display();
             if (tryGetServant(card, out var servant))
                 setServant(servant, card);
+
+            var buffViewDatas = await getCardBuffViewDatas(card.getBuffs());
+            ui.showCardDisplayer(true);
+            ui.LargeCard.display();
+            ui.setCardDisplayerBuffs(buffViewDatas);
             setCard(ui.LargeCard, card, true);
         }
         public void hideLargeCard()
         {
             ui.LargeCard.hide();
+            ui.showCardDisplayer(false);
         }
         void onTurnEndButtonClick()
         {
@@ -1934,6 +2001,22 @@ namespace Game
         }
         #endregion
         #region 属性字段
+        [TranslateMsg("游戏中的增益列表项的未知增益名称")]
+        public const string CARD_BUFF_UNKNOWN_NAME = "未知增益";
+        [TranslateMsg("游戏中的增益列表项的未知增益描述")]
+        public const string CARD_BUFF_UNKNOWN_DESC = "不知道这是干什么的……";
+        [TranslateMsg("游戏中的增益列表项的增益名称模板，在同样的增益属性多于1时显示（{0}：增益名称；{1}：增益数量）")]
+        public const string CARD_BUFF_LIST_MULTIPLE_TEMPLATE = "{0} x{1}";
+        [TranslateMsg("游戏中的增益列表项的增益文本模板，在过长时显示（{0}：被截断的增益文字）")]
+        public const string CARD_BUFF_LIST_TRIM_TEMPLATE = "{0}...";
+
+        [SerializeField]
+        int _maxBuffDisplayCount = 15;
+        [SerializeField]
+        int _maxBuffNameLength = 10;
+        [SerializeField]
+        int _maxBuffDescLength = 32;
+
         Card _selfItemCard;
         Card _enemyItemCard;
         #endregion

@@ -1,26 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using System;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using TouhouHeartstone;
-using BJSYGameCore;
-using TouhouCardEngine.Interfaces;
 using BJSYGameCore.UI;
-using TouhouCardEngine;
-using TouhouHeartstone.Builtin;
 using Game;
 using MukioI18n;
+using TouhouCardEngine;
+using TouhouHeartstone;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace UI
 {
     partial class Table
     {
+        #region 公有方法
+        public void showCardDisplayer(bool display)
+        {
+            _cardDisplayerObj.SetActive(display);
+        }
+        public void setCardDisplayerBuffs(CardBuffListItemViewData[] viewDatas)
+        {
+            _cardDisplayerBuffList.updateBuffs(viewDatas);
+        }
+        #endregion
         [Obsolete]
         public CardEngine game
         {
@@ -193,5 +195,13 @@ namespace UI
         {
             TurnTipImage.sprite = self ? YourTurn : OppoTurn;
         }
+
+        #region 属性字段
+        [Header("卡牌显示")]
+        [SerializeField]
+        GameObject _cardDisplayerObj;
+        [SerializeField]
+        CardBuffList _cardDisplayerBuffList;
+        #endregion
     }
 }

@@ -412,7 +412,7 @@ namespace UI
             }
         }
         public Card _LargeCard;
-        public const string PATH_LargeCard = "LargeCard";
+        public const string PATH_LargeCard = "ServantDisplayer/LargeCard";
         public Card LargeCard
         {
             get
@@ -425,7 +425,7 @@ namespace UI
             }
         }
         public Image _LeftDisplayImage;
-        public const string PATH_LeftDisplayImage = "LeftDisplay";
+        public const string PATH_LeftDisplayImage = "Overlay/LeftDisplay";
         public Image LeftDisplayImage
         {
             get
@@ -438,7 +438,7 @@ namespace UI
             }
         }
         public Image _CenterDisplayImage;
-        public const string PATH_CenterDisplayImage = "CenterDisplay";
+        public const string PATH_CenterDisplayImage = "Overlay/CenterDisplay";
         public Image CenterDisplayImage
         {
             get
@@ -451,7 +451,7 @@ namespace UI
             }
         }
         public Image _RightDisplayImage;
-        public const string PATH_RightDisplayImage = "RightDisplay";
+        public const string PATH_RightDisplayImage = "Overlay/RightDisplay";
         public Image RightDisplayImage
         {
             get
@@ -464,7 +464,7 @@ namespace UI
             }
         }
         public Text _TipText;
-        public const string PATH_TipText = "TipText";
+        public const string PATH_TipText = "Overlay/TipText";
         public Text TipText
         {
             get
@@ -477,7 +477,7 @@ namespace UI
             }
         }
         public Fatigue _Fatigue;
-        public const string PATH_Fatigue = "Fatigue";
+        public const string PATH_Fatigue = "Overlay/Fatigue";
         public Fatigue Fatigue
         {
             get
@@ -490,7 +490,7 @@ namespace UI
             }
         }
         public Image _TurnTipImage;
-        public const string PATH_TurnTipImage = "TurnTipImage";
+        public const string PATH_TurnTipImage = "Overlay/TurnTipImage";
         public Image TurnTipImage
         {
             get
@@ -503,7 +503,7 @@ namespace UI
             }
         }
         public Text _TurnTipText;
-        public const string PATH_TurnTipText = "TurnTipImage/TurnTipText";
+        public const string PATH_TurnTipText = "Overlay/TurnTipImage/TurnTipText";
         public Text TurnTipText
         {
             get
@@ -516,7 +516,7 @@ namespace UI
             }
         }
         public Discover _Discover;
-        public const string PATH_Discover = "Discover";
+        public const string PATH_Discover = "Overlay/Discover";
         public Discover Discover
         {
             get
@@ -529,7 +529,7 @@ namespace UI
             }
         }
         public PilePanel _PilePanel;
-        public const string PATH_PilePanel = "PilePanel";
+        public const string PATH_PilePanel = "Overlay/PilePanel";
         public PilePanel PilePanel
         {
             get
@@ -542,7 +542,7 @@ namespace UI
             }
         }
         public TipBox _TipBox;
-        public const string PATH_TipBoX = "TipBox";
+        public const string PATH_TipBoX = "Overlay/TipBox";
         public TipBox TipBox
         {
             get
