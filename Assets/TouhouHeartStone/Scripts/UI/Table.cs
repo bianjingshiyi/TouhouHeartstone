@@ -197,6 +197,8 @@ namespace UI
         }
 
         #region 属性字段
+        public GameObject CardDisplayerObj => _cardDisplayerObj;
+
         [Header("卡牌显示")]
         [SerializeField]
         GameObject _cardDisplayerObj;

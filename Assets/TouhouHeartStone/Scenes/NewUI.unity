@@ -3372,7 +3372,7 @@ PrefabInstance:
     - target: {fileID: 5674198571174154980, guid: ab1642dda014b634d9baa808937d958a,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000023841858
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5674198571821558940, guid: ab1642dda014b634d9baa808937d958a,
         type: 3}
@@ -3627,7 +3627,7 @@ PrefabInstance:
     - target: {fileID: 5674198572302859722, guid: ab1642dda014b634d9baa808937d958a,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000023841858
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5674198572409793934, guid: ab1642dda014b634d9baa808937d958a,
         type: 3}
@@ -11604,6 +11604,9 @@ MonoBehaviour:
     startTime: -1
     updateTime: -1
     duration: 3
+  _maxBuffDisplayCount: 15
+  _maxBuffNameLength: 8
+  _maxBuffDescLength: 25
   _editableAnims: []
   _animationQueue: []
 --- !u!4 &1728063060
@@ -16637,6 +16640,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.x
       value: 318
+      objectReference: {fileID: 0}
+    - target: {fileID: 3017732517181266495, guid: 83c0b33294cc7ac4295dbe5157864e9d,
+        type: 3}
+      propertyPath: m_PreferredHeight
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3510209669288985255, guid: 83c0b33294cc7ac4295dbe5157864e9d,
         type: 3}

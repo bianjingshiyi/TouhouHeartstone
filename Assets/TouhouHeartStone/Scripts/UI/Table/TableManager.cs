@@ -1752,8 +1752,8 @@ namespace Game
                 {
                     var skin = cards.getBuffSkin(buffDefine);
                     sprite = await cards.loadImage(skin.imagePath, defineRef.cardPoolId);
-                    name = skin.name;
-                    desc = skin.desc;
+                    name = skin.name ?? string.Empty;
+                    desc = skin.desc ?? string.Empty;
                 }
                 if (name.Length > _maxBuffNameLength)
                     name = lang._(CARD_BUFF_LIST_TRIM_TEMPLATE, name.Substring(0, _maxBuffNameLength));
@@ -1940,10 +1940,10 @@ namespace Game
         }
         public async void displayLargeCard(bool isRight, Card card)
         {
-            if (isRight)
-                ui.LargeCard.rectTransform.localPosition = new Vector3(250, 0);
-            else
-                ui.LargeCard.rectTransform.localPosition = new Vector3(-250, 0);
+            var pos = ui.CardDisplayerObj.transform.localPosition;
+            pos.x = isRight ? 250 : -250;
+            ui.CardDisplayerObj.transform.localPosition = pos;
+
             if (tryGetServant(card, out var servant))
                 setServant(servant, card);
 
@@ -2006,7 +2006,7 @@ namespace Game
         [TranslateMsg("游戏中的增益列表项的未知增益描述")]
         public const string CARD_BUFF_UNKNOWN_DESC = "不知道这是干什么的……";
         [TranslateMsg("游戏中的增益列表项的增益名称模板，在同样的增益属性多于1时显示（{0}：增益名称；{1}：增益数量）")]
-        public const string CARD_BUFF_LIST_MULTIPLE_TEMPLATE = "{0} x{1}";
+        public const string CARD_BUFF_LIST_MULTIPLE_TEMPLATE = "{0}×{1}";
         [TranslateMsg("游戏中的增益列表项的增益文本模板，在过长时显示（{0}：被截断的增益文字）")]
         public const string CARD_BUFF_LIST_TRIM_TEMPLATE = "{0}...";
 

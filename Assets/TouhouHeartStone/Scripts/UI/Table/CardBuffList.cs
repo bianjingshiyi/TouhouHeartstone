@@ -9,10 +9,13 @@ namespace UI
     {
         public void updateBuffs(CardBuffListItemViewData[] viewDatas)
         {
-            UIHelper.updateList(_columnRoot, _columnTemplate, _columnList, Mathf.CeilToInt((float)viewDatas.Length / _itemCountPerColumn), (index, rect) =>
+            int count = viewDatas.Length > 0 ? 1 : 0;
+            count = _itemCountPerColumn > 0 ? Mathf.CeilToInt((float)viewDatas.Length / _itemCountPerColumn) : count;
+            UIHelper.updateList(_columnRoot, _columnTemplate, _columnList, count, (index, rect) =>
             {
                 var item = rect.GetComponent<CardBuffListColumn>();
-                item.updateBuffs(viewDatas.Skip(index * _itemCountPerColumn).Take(_itemCountPerColumn).ToArray());
+                var buffDatas = _itemCountPerColumn > 0 ? viewDatas.Skip(index * _itemCountPerColumn).Take(_itemCountPerColumn).ToArray() : viewDatas;
+                item.updateBuffs(buffDatas);
             });
         }
         [SerializeField]
