@@ -138,7 +138,7 @@ namespace Controllers
         /// <param name="posY">y坐标</param>
         private void onLeftClickBackground(float posX, float posY)
         {
-            _curEditActionNode = null;
+            _curEditNode = null;
             closeMenu();
         }
         /// <summary>
@@ -156,82 +156,15 @@ namespace Controllers
         /// <param name="index"></param>
         private async void onClickMenuItem(int index)
         {
-            if (_curEditActionNode != null)
+            if (_curEditNode != null)
             {
-                //节点菜单
-                if (index == 0)//删除
-                {
-                    removeActionNode();
-                }
-                else if (index == 1)//编辑
-                {
-                    GeneratedActionDefine generatedActionDefine = getActionDefine(_curEditActionNode.defineName) as GeneratedActionDefine;
-                    var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
-                    await scene.editor.openActionEditor(_curCardPoolId, clone);
-                }
-                closeMenu();
+                await clickMenuItemForNode(_curEditNode, index);
             }
             else
             {
-                //背景菜单
-                if (_curCategroy == null)
-                {
-                    var categroyGroups = getActionDefineGroups();
-                    if (index < categroyGroups.Length)
-                    {
-                        ActionDefine[] actions = categroyGroups[index].ToArray();
-                        if (actions.Length == 1)
-                        {
-                            //直接创建节点
-                            closeMenu();
-                            await createActionNodeAtCurPos(actions[0]);
-                        }
-                        else
-                        {
-                            //打开子菜单
-                            _curCategroy = categroyGroups[index].Key;
-                            string[] options = new string[actions.Length + 1];
-                            options[0] = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN) + " <";
-                            Array.Copy(actions.Select(a =>
-                            {
-                                string name = a.defineName;
-                                if (_nameTextDict.ContainsKey(name))
-                                    name = _nameTextDict[name];
-                                return game.langManager.getString(name);
-                            }).ToArray(), 0, options, 1, actions.Length);
-                            _ui.updateMenu(options);
-                        }
-                    }
-                    else
-                    {
-                        closeMenu();
-                        //新建自定义动作
-                        GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(
-                            _curCardPoolId,
-                            game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT));
-                        var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
-                        await scene.editor.openActionEditor(_curCardPoolId, clone);
-                    }
-                }
-                else
-                {
-                    if (index == 0)
-                    {
-                        //返回上一层
-                        _curCategroy = null;
-                        updateMenuForCategory();
-                    }
-                    else
-                    {
-                        //创建节点
-                        var categroyGroups = getActionDefineGroups();
-                        ActionDefine[] actions = Array.Find(categroyGroups, g => g.Key == _curCategroy).ToArray();
-                        closeMenu();
-                        await createActionNodeAtCurPos(actions[index - 1]);
-                    }
-                }
+                await clickMenuItemForBackground(index);
             }
-            _curEditActionNode = null;
+            _curEditNode = null;
             OnEdited();
         }
         /// <summary>
@@ -283,7 +216,7 @@ namespace Controllers
         /// <param name="actionNodeItem"></param>
         private void onLeftClickActionNode(ActionNodeItem actionNodeItem)
         {
-            _curEditActionNode = null;
+            _curEditNode = null;
             closeMenu();
         }
         /// <summary>
@@ -358,7 +291,7 @@ namespace Controllers
                         return true;
                     });
                 }
-                _curEditActionNode = action;
+                _curEditNode = action;
                 _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = -1;
             }
@@ -396,7 +329,7 @@ namespace Controllers
                         return true;
                     });
                 }
-                _curEditActionNode = action;
+                _curEditNode = action;
                 _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = itemIndex;
             }
@@ -404,11 +337,11 @@ namespace Controllers
         }
         private async void onClickCardSelectPanelCard(CardDefine cardDefine)
         {
-            if (_curEditActionNode == null)
+            if (_curEditNode == null)
             {
                 return;
             }
-            var consts = _curEditActionNode.consts;
+            var consts = _curEditNode.consts;
             if (_curEditActionNodeConstItemIndex < 0)
             {
                 consts[_curEditActionNodeConstName] = cardDefine.getDefineRef();
@@ -417,7 +350,7 @@ namespace Controllers
             {
                 (consts[_curEditActionNodeConstName] as DefineReference[])[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
             }
-            ActionNodeItem actionNodeItem = getActionNodeItem(_curEditActionNode);
+            ActionNodeItem actionNodeItem = getActionNodeItem(_curEditNode);
 
             var constIndex = consts.Keys.ToList().IndexOf(_curEditActionNodeConstName);
             ValueInputField cardInputField = actionNodeItem.getConstInputField(constIndex);
@@ -436,7 +369,7 @@ namespace Controllers
             cardInputField.setCard(cardDefine, cardSkin, image);
             OnEdited();
             //重置字段
-            _curEditActionNode = null;
+            _curEditNode = null;
             _curEditActionNodeConstName = string.Empty;
             _curEditActionNodeConstItemIndex = -1;
             //隐藏UI
@@ -445,7 +378,7 @@ namespace Controllers
         private void onClickCancelSelectCardButton()
         {
             //重置字段
-            _curEditActionNode = null;
+            _curEditNode = null;
             _curEditActionNodeConstName = string.Empty;
             _curEditActionNodeConstItemIndex = -1;
             //隐藏UI
@@ -513,34 +446,7 @@ namespace Controllers
                 }
                 else if (node is PassiveEntryNode passiveEntry)
                 {
-                    string nodeName;
-                    if (passiveEntry is EventEntryNode eventEntry)
-                    {
-                        var typeIndex = _eventTypeInfoList.getEventTypeIndex(eventEntry.eventName);
-                        var editorNames = _eventTypeInfoList.getEventTypeNamesForEditor();
-                        nodeName = editorNames[typeIndex];
-                    }
-                    else
-                    {
-                        nodeName = EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE;
-                    }
-                    nodeName = game.lang._(nodeName);
-                    var inputViewData = getNodeInputViewData(passiveEntry);
-                    var constViewData = new ActionNodeValueInfo[]
-                    {
-                        new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags)
-                    };
-                    var outputViewData = getNodeOutputViewData(passiveEntry);
-
-                    var actionNodeItem = _ui.createPassiveEntryNode(passiveEntry.posX, passiveEntry.posY,
-                        nodeName,
-                        inputViewData,
-                        outputViewData);
-                    actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
-                    actionNodeItem.setConsts(constViewData);
-
-                    _actionNodeItemList.Add(actionNodeItem);
-                    _actionNodeList.Add(node);
+                    createNodeUI4PassiveEntryNode(passiveEntry);
                 }
                 else if (node is GeneratedActionEntryNode genEntry)
                 {
@@ -742,6 +648,39 @@ namespace Controllers
             }
             return actionNodeItem;
         }
+        private ActionNodeItem createNodeUI4PassiveEntryNode(PassiveEntryNode passiveEntry)
+        {
+            string nodeName;
+            if (passiveEntry is EventEntryNode eventEntry)
+            {
+                var typeIndex = _eventTypeInfoList.getEventTypeIndex(eventEntry.eventName);
+                var editorNames = _eventTypeInfoList.getEventTypeNamesForEditor();
+                nodeName = editorNames[typeIndex];
+            }
+            else
+            {
+                nodeName = EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE;
+            }
+            nodeName = game.lang._(nodeName);
+            var inputViewData = getNodeInputViewData(passiveEntry);
+            var constViewData = new ActionNodeValueInfo[]
+            {
+                new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags)
+            };
+            var outputViewData = getNodeOutputViewData(passiveEntry);
+
+            var actionNodeItem = _ui.createPassiveEntryNode(passiveEntry.posX, passiveEntry.posY,
+                nodeName,
+                inputViewData,
+                outputViewData);
+            actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
+            actionNodeItem.setConsts(constViewData);
+
+            _actionNodeItemList.Add(actionNodeItem);
+            _actionNodeList.Add(passiveEntry);
+
+            return actionNodeItem;
+        }
         private async Task<ActionNodeItem> createActionNodeAtCurPos(ActionDefine actionDefine)
         {
             var actionNode = graph.createActionNode(actionDefine, _curPosX, _curPosY);
@@ -750,16 +689,15 @@ namespace Controllers
             updateContentSize();
             return actionNodeItem;
         }
-        private void removeActionNode()
+        private void removeActionNode(Node node)
         {
-            ActionNode actionNode = _curEditActionNode;
-            int actionNodeIndex = _actionNodeList.IndexOf(_curEditActionNode);
-            ActionNodeItem actionNodeItem = getActionNodeItem(actionNode);
-            disconnectNodeAll(actionNode);
+            int actionNodeIndex = _actionNodeList.IndexOf(node);
+            ActionNodeItem actionNodeItem = getActionNodeItem(node);
+            disconnectNodeAll(node);
             //从列表中移除
             _actionNodeList.RemoveAt(actionNodeIndex);
             _actionNodeItemList.RemoveAt(actionNodeIndex);
-            graph.removeNode(actionNode);
+            graph.removeNode(node);
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
             updateContentSize();
@@ -1205,6 +1143,25 @@ namespace Controllers
         }
         #endregion
         #region 节点菜单
+        private string[] getCategoryMenuOptions()
+        {
+            var options = getActionDefineGroups().Select(g =>
+            {
+                string name = game.i18n._(g.Key);
+                if (g.Count() > 1)
+                {
+                    name = game.i18n._(EDITOR_CATEGORY_TEMPLATE, name);
+                }
+                return name;
+            }).ToList();
+            options.Add(game.i18n._(EDITOR_CATEGORY_TEMPLATE, game.i18n._(EDITOR_CATEGORY_EVENT_ENTRY_NODE)));
+            options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
+            return options.ToArray();
+        }
+        private void updateMenuForCategory()
+        {
+            _ui.updateMenu(getCategoryMenuOptions());
+        }
         /// <summary>
         /// 在对应位置打开菜单
         /// </summary>
@@ -1217,49 +1174,191 @@ namespace Controllers
             _curPosY = posY;
             _ui.openMenu(posX, posY, options);
         }
-        private void openMenuForCategory(float posX, float posY)
-        {
-            var options = getActionDefineGroups().Select(g => game.i18n._(g.Key) + (g.Count() > 1 ? " >" : "")).ToList();
-            options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
-            _curEditActionNode = null;
-            openMenu(posX, posY, options.ToArray());
-        }
-        private void updateMenuForCategory()
-        {
-            var options = getActionDefineGroups().Select(g => game.i18n._(g.Key) + (g.Count() > 1 ? " >" : "")).ToList();
-            options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
-            _ui.updateMenu(options.ToArray());
-        }
-        private void openMenuForNodeItem(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
-        {
-            var node = getActionNode(actionNodeItem);
-            //不能通过长按编辑
-            if (!(node is ActionNode action))
-                return;
-            var define = getActionDefine(action.defineName);
-            if (define != null && define.disableMenu)
-                return;
-            _curEditActionNode = action;
-            Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
-            List<string> optionList = new List<string>()
-            {
-                game.langManager.getString(StringTable.DELETE)//删除
-            };
-            if (getActionDefine(action.defineName) is GeneratedActionDefine)
-            {
-                optionList.Add(game.langManager.getString(StringTable.EDIT));//编辑
-            }
-            openMenu(position, optionList.ToArray());
-        }
         /// <summary>
         /// 在对应位置打开菜单
         /// </summary>
         /// <param name="position"></param>
         /// <param name="options">菜单选项</param>
-        private void openMenu(Vector2 postion, string[] options)
+        private void openMenu(Vector2 position, string[] options)
         {
-            openMenu(postion.x, postion.y, options);
+            openMenu(position.x, position.y, options);
         }
+        private void openMenuForCategory(float posX, float posY)
+        {
+            _curEditNode = null;
+            openMenu(posX, posY, getCategoryMenuOptions());
+            updateMenuForCategory();
+        }
+        private void openMenuForNodeItem(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
+        {
+            var node = getActionNode(actionNodeItem);
+            Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
+            List<string> optionList = new List<string>();
+            // 动作节点
+            if (node is ActionNode action)
+            {
+                var define = getActionDefine(action.defineName);
+                if (define != null && define.disableMenu)
+                    return;
+                _curEditNode = action;
+                optionList.Add(game.langManager.getString(StringTable.DELETE));//删除
+                if (getActionDefine(action.defineName) is GeneratedActionDefine)
+                {
+                    optionList.Add(game.langManager.getString(StringTable.EDIT));//编辑
+                }
+                openMenu(position, optionList.ToArray());
+            }
+            // 事件入口节点
+            else if (node is EventEntryNode eventEntry)
+            {
+                _curEditNode = eventEntry;
+                optionList.Add(game.langManager.getString(StringTable.DELETE));//删除
+                openMenu(position, optionList.ToArray());
+            }
+        }
+
+        #region 点击菜单
+        /// <summary>
+        /// 点击节点的菜单的项。
+        /// </summary>
+        /// <param name="node">要操作的节点。</param>
+        /// <param name="index">点击的项的索引。</param>
+        /// <returns></returns>
+        private async Task clickMenuItemForNode(Node node, int index)
+        {
+            //节点菜单
+            if (index == 0)//删除
+            {
+                removeActionNode(node);
+            }
+            else if (index == 1)//编辑
+            {
+                if (!(node is ActionNode actionNode))
+                    return;
+                GeneratedActionDefine generatedActionDefine = getActionDefine(actionNode.defineName) as GeneratedActionDefine;
+                var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
+                await scene.editor.openActionEditor(_curCardPoolId, clone);
+            }
+            closeMenu();
+        }
+        /// <summary>
+        /// 点击背景的菜单的项。
+        /// </summary>
+        /// <param name="index">点击的项的索引。</param>
+        /// <returns></returns>
+        private async Task clickMenuItemForBackground(int index)
+        {
+            //背景菜单
+            if (_curCategroy == null)
+            {
+                await clickMenuItemForRoot(index);
+            }
+            else
+            {
+                await clickMenuItemForCategory(_curCategroy, index);
+            }
+        }
+        /// <summary>
+        /// 点击背景的菜单的根页面的项。
+        /// </summary>
+        /// <param name="index">点击的项的索引。</param>
+        /// <returns></returns>
+        private async Task clickMenuItemForRoot(int index)
+        {
+            var categroyGroups = getActionDefineGroups();
+            if (index < categroyGroups.Length)
+            {
+                ActionDefine[] actions = categroyGroups[index].ToArray();
+                if (actions.Length == 1)
+                {
+                    //直接创建节点
+                    closeMenu();
+                    await createActionNodeAtCurPos(actions[0]);
+                }
+                else
+                {
+                    //打开子菜单
+                    _curCategroy = categroyGroups[index].Key;
+                    string[] options = new string[actions.Length + 1];
+                    options[0] = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN) + " <";
+                    Array.Copy(actions.Select(a =>
+                    {
+                        string name = a.defineName;
+                        if (_nameTextDict.ContainsKey(name))
+                            name = _nameTextDict[name];
+                        return game.langManager.getString(name);
+                    }).ToArray(), 0, options, 1, actions.Length);
+                    _ui.updateMenu(options);
+                }
+            }
+            else if (index == categroyGroups.Length)
+            {
+                //事件入口
+                //打开子菜单
+                _curCategroy = EDITOR_CATEGORY_EVENT_ENTRY_NODE;
+                var events = _eventTypeInfoList;
+                string[] options = new string[events.Count + 1];
+                options[0] = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN) + " <";
+                Array.Copy(events.getEventTypeNamesForEditor(), 0, options, 1, events.Count);
+                _ui.updateMenu(options);
+            }
+            else
+            {
+                closeMenu();
+                //新建自定义动作
+                GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(
+                    _curCardPoolId,
+                    game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT));
+                var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
+                await scene.editor.openActionEditor(_curCardPoolId, clone);
+            }
+        }
+        /// <summary>
+        /// 点击背景的菜单的节点分类内的项。
+        /// </summary>
+        /// <param name="category">分类名。</param>
+        /// <param name="index">点击的项的索引。</param>
+        /// <returns></returns>
+        private async Task clickMenuItemForCategory(string category, int index)
+        {
+            if (index == 0)
+            {
+                //返回上一层
+                _curCategroy = null;
+                updateMenuForCategory();
+            }
+            else if (category == EDITOR_CATEGORY_EVENT_ENTRY_NODE)
+            {
+                // 创建事件入口节点。
+                var events = _eventTypeInfoList;
+                closeMenu();
+
+                // 尝试为非事件效果创建事件入口节点。
+                if (!(_effect is GeneratedEventEffect eventEffect))
+                {
+                    _ui.showErrorTip(game.lang._(EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT));
+                    return;
+                }
+                // 已经有事件入口节点。
+                if (eventEffect.entryNode != null)
+                {
+                    _ui.showErrorTip(game.lang._(EDITOR_ERROR_ALREADY_HAS_EVENT_ENTRY));
+                    return;
+                }
+                var entryNode = graph.createEventEntryNode(events[index - 1], _curPosX, _curPosY);
+                createNodeUI4PassiveEntryNode(entryNode);
+            }
+            else
+            {
+                //创建节点
+                var categroyGroups = getActionDefineGroups();
+                ActionDefine[] actions = Array.Find(categroyGroups, g => g.Key == category).ToArray();
+                closeMenu();
+                await createActionNodeAtCurPos(actions[index - 1]);
+            }
+        }
+
+        #endregion
         private void closeMenu()
         {
             _curCategroy = null;
@@ -1333,6 +1432,10 @@ namespace Controllers
         public event Action OnGraphEdited;
         #endregion
         #region 属性字段
+        [TranslateMsg("编辑器-分类模板({0}为分类名称)")]
+        public const string EDITOR_CATEGORY_TEMPLATE = "{0} >";
+        [TranslateMsg("编辑器-分类名称-事件入口节点")]
+        public const string EDITOR_CATEGORY_EVENT_ENTRY_NODE = "事件入口";
         [TranslateMsg("编辑器-参数名称-作用条件（自定义光环-作用条件-输出值）")]
         public const string EDITOR_PARAM_NAME_AFFECT_CONDITION = "作用条件";
         [TranslateMsg("编辑器-参数名称-目标增益（自定义光环-更新动作-输出值）")]
@@ -1341,6 +1444,11 @@ namespace Controllers
         public const string EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE = "主动效果入口";
         [TranslateMsg("编辑器-节点名称-被动效果入口节点")]
         public const string EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE = "被动效果入口";
+
+        [TranslateMsg("编辑器-错误提示")]
+        public const string EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT = "非事件效果不能添加事件入口节点。";
+        [TranslateMsg("编辑器-错误提示")]
+        public const string EDITOR_ERROR_ALREADY_HAS_EVENT_ENTRY = "该事件效果已包含入口节点，请将其删除。";
 
         [Obsolete]
         public IAppManager app { get; }
@@ -1374,7 +1482,7 @@ namespace Controllers
         /// <summary>
         /// 当前正在编辑的动作节点
         /// </summary>
-        ActionNode _curEditActionNode = null;
+        Node _curEditNode = null;
         /// <summary>
         /// 当前正在编辑的动作节点常量名
         /// </summary>

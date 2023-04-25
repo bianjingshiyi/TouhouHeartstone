@@ -73,17 +73,6 @@ namespace Controllers
                 }
             }
             //一些无法通过反射加载的事件类型
-            _eventTypeInfoList.Add(new EventDefine()
-            {
-                eventName = "ActiveEvent",
-                editorName = StringTable.EDITOR_EVENT_NAME_ACTIVE,
-                variableInfos = new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { type = typeof(Player), name = "玩家"},
-                    new EventVariableInfo() { type = typeof(Card), name = "卡牌" },
-                    new EventVariableInfo() { type = typeof(Card), name = "目标卡牌" },
-                }
-            });
             _eventTypeInfoList.Find(e => e.eventName == "BeforeTurnStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_TURN_START;
             _eventTypeInfoList.Find(e => e.eventName == "AfterTurnStartEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_TURN_START;
             _eventTypeInfoList.Find(e => e.eventName == "BeforeUseEvent").editorName = StringTable.EDITOR_EVENT_NAME_BEFORE_USE;
@@ -200,6 +189,8 @@ namespace Controllers
             //_eventTypeInfoList.Find(e => e.eventName == "AfterElementEvent").editorName = StringTable.EDITOR_EVENT_NAME_AFTER_ELEMENT;
             _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeElementMixEvent");
             _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterElementMixEvent");
+            _eventTypeInfoList.RemoveAll(e => e.eventName == "BeforeLastwordEvent");
+            _eventTypeInfoList.RemoveAll(e => e.eventName == "AfterLastwordEvent");
             _eventTypeInfoList.Sort((a, b) => a.eventName.CompareTo(b.eventName));
             //以后可能有自定义的事件类型，不过先不管
             return _eventTypeInfoList.ToArray();
