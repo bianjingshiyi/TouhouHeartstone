@@ -111,8 +111,16 @@ namespace Game
             if (_showCardTimer.isExpired())
             {
                 // 显示卡面
+                Card hoveringCard = null;
                 if (_servant != null)
-                    displayLargeCard(_pointer.position.x < Screen.width / 2, getCard(_servant));
+                    hoveringCard = getCard(_servant);
+                else if (_hoveredItem != null)
+                    hoveringCard = _hoveredItem == ui.SelfItem ? player.getItem() : game.getOpponent(player).getItem();
+
+                if (hoveringCard != null)
+                {
+                    displayLargeCard(false, hoveringCard);
+                }
                 _showCardTimer.reset();
             }
 
@@ -588,13 +596,16 @@ namespace Game
         }
         private void onItemPointerExit(Item item, PointerEventData pointer)
         {
-            ui.TipBox.hide();
+            _showCardTimer.reset();
+            _hoveredItem = null;
+            hideLargeCard();
         }
 
         private void onItemPointerEnter(Item item, PointerEventData pointer)
         {
-            if (item.card != null)
-                ui.TipBox.display(getSkin(item.card).desc, pointer.position + _tipBoxOffset);
+            _showCardTimer.start();
+            _hoveredItem = item;
+            _pointer = pointer;
         }
 
         void displayArrow(RectTransform source, Vector2 from, Vector2 to)
@@ -1403,6 +1414,7 @@ namespace Game
         }
         [SerializeField]
         BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
+        Item _hoveredItem;
         ServantItem _servant;
         PointerEventData _pointer;
         void onEnterServant(ServantItem servant, PointerEventData pointer)
@@ -1414,6 +1426,7 @@ namespace Game
         void onExitServant(ServantItem servant, PointerEventData pointer)
         {
             _showCardTimer.reset();
+            _servant = null;
             hideLargeCard();
         }
         /// <summary>
