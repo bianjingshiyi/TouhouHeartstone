@@ -99,11 +99,11 @@ namespace Controllers
         private (int typeIndex, string name, string errorTip)[] getTriggerTargetCheckerViewData(TriggerEntryNode trigger)
         {
             var targetList = trigger.targetCheckerList;
-            var targetCheckers = new (int typeIndex, string name, string errorTip)[targetList.Count];
-            for (int i = 0; i < targetCheckers.Length; i++)
+            var viewDatas = new (int typeIndex, string name, string errorTip)[targetList.Count];
+            for (int i = 0; i < viewDatas.Length; i++)
             {
                 var targetChecker = targetList[i];
-                var viewData = targetCheckers[i];
+                var viewData = viewDatas[i];
                 viewData.typeIndex = Array.IndexOf(_targetCheckerTypes, targetChecker.targetType);
                 if (viewData.typeIndex < 0)
                 {
@@ -111,9 +111,10 @@ namespace Controllers
                     viewData.typeIndex = Array.IndexOf(_targetCheckerTypes, DEFINE.TARGET_TYPE_SERVANT);
                 }
                 viewData.name = "目标" + (i + 1);
-                targetChecker.errorTip = targetList[i].errorTip;
+                viewData.errorTip = targetList[i].errorTip;
+                viewDatas[i] = viewData;
             }
-            return targetCheckers;
+            return viewDatas;
         }
         private PortItemInfo[] getTriggerInputViewData(TriggerEntryNode trigger)
         {

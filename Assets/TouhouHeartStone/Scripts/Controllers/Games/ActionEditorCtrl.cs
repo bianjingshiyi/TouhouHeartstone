@@ -316,6 +316,7 @@ namespace Controllers
         }
         private void onChangeOutputType(int outputIndex, int typeIndex)
         {
+            outputIndex++; //去掉了UI的输出端口，索引+1。
             var newType = game.editor.getEditorVarTypeAt(typeIndex);
             var port = _actionDefine.outputDefines.ElementAt(outputIndex);
             var curType = port.type;
@@ -328,12 +329,14 @@ namespace Controllers
         }
         private void onChangeOutputName(int outputIndex, string name)
         {
+            outputIndex++; //去掉了UI的输出端口，索引+1。
             _actionDefine.outputDefines.ElementAt(outputIndex).displayName = name;
             updateOutputs();
             markActionUnsaved();
         }
         private void onChangeOutputIsArray(int outputIndex, bool isArray)
         {
+            outputIndex++; //去掉了UI的输出端口，索引+1。
             var port = _actionDefine.outputDefines.ElementAt(outputIndex);
             port.type = getTargetType(port.type, isArray);
             updateOutputs();
@@ -342,6 +345,7 @@ namespace Controllers
         }
         private void onDeleteOutput(int outputIndex)
         {
+            outputIndex++; //去掉了UI的输出端口，索引+1。
             var portDefine = _actionDefine.outputDefines.ElementAt(outputIndex);
             _actionNodeGraphCtrl.onDeleteActionDefineOutputPort(portDefine.name);
             _actionDefine.removeOutput(portDefine);
@@ -426,7 +430,7 @@ namespace Controllers
         }
         private void updateOutputs()
         {
-            var outputs = _actionDefine.outputDefines;
+            var outputs = _actionDefine.outputDefines.Where(i => i.name != ActionNode.exitControlName);
             ActionPortDefineViewData[] viewDatas = outputs.Select((output, i) =>
             {
                 Type type = output.type;
