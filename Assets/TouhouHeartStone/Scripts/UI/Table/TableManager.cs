@@ -232,6 +232,17 @@ namespace Game
             ui.EnemySkill.onPointerEnter.set(onEnemySkillPointerEnter);
             ui.EnemySkill.onPointerExit.set(onSkillPointerExit);
             ui.EnemySkill.onPointerMove.set(onSkillPointerMove);
+
+            // 敌方牌库。
+            ui.EnemyDeck.onPointerEnter.set(onDeckPointerEnter);
+            ui.EnemyDeck.onPointerExit.set(onDeckPointerExit);
+            ui.EnemyDeck.onPointerMove.set(onDeckPointerMove);
+
+            // 敌方墓地。
+            ui.EnemyGraveDeck.onPointerEnter.set(onGravePointerEnter);
+            ui.EnemyGraveDeck.onPointerExit.set(onGravePointerExit);
+            ui.EnemyGraveDeck.onPointerMove.set(onDeckPointerMove);
+
             ui.AttackArrowImage.hide();
             ui.Fatigue.hide();
             ui.Discover.ButtonButtonBlack.asButton.onClick.set(onDiscoverHideButtonClick);
@@ -1799,10 +1810,11 @@ namespace Game
         }
         void onDeckPointerEnter(UI.Deck deck, PointerEventData pointer)
         {
-            if (player.getDeck().count > 0)
-                ui.TipBox.display(lang._(TAB_BOX_HAS, player.getDeck().count), pointer.position + _tipBoxOffset);
-            else
-                ui.TipBox.display(lang._(TAB_YOUR_NO_HAVE_CARD), pointer.position + _tipBoxOffset);
+            var curDeck = (deck == ui.SelfDeck ? player : game.getOpponent(player)).getDeck();
+            string tip = curDeck.count > 0 ?
+                lang._(TAB_BOX_HAS, curDeck.count) :
+                lang._(TAB_YOUR_NO_HAVE_CARD);
+            ui.TipBox.display(tip, pointer.position + _tipBoxOffset);
         }
         void onDeckPointerExit(UI.Deck deck, PointerEventData pointer)
         {
@@ -1827,10 +1839,11 @@ namespace Game
         private const String TAB_GRAVEYARD_NULL = "墓地是空的";
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
         {
-            if (player.getGrave().count > 0)
-                ui.TipBox.display(lang._(TAB_GRAVEYARD_HAS, player.getGrave().count), pointer.position + _tipBoxOffset);
-            else
-                ui.TipBox.display(lang._(TAB_GRAVEYARD_NULL), pointer.position + _tipBoxOffset);
+            var curGrave = (deck == ui.SelfDeck ? player : game.getOpponent(player)).getGrave();
+            string tip = curGrave.count > 0 ?
+                lang._(TAB_GRAVEYARD_HAS, curGrave.count) :
+                lang._(TAB_GRAVEYARD_NULL);
+            ui.TipBox.display(tip, pointer.position + _tipBoxOffset);
         }
 
         private void onDeckPointerMove(UI.Deck arg1, Vector2 arg2)
