@@ -2826,6 +2826,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3245694026945874053, guid: f0f75289f42c2634ea872f3f76135178,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3323961273579052418, guid: f0f75289f42c2634ea872f3f76135178,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -3118,6 +3123,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8549132574401311345, guid: f0f75289f42c2634ea872f3f76135178,
         type: 3}
+      propertyPath: _effectEditor
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8549132574401311345, guid: f0f75289f42c2634ea872f3f76135178,
+        type: 3}
       propertyPath: _cardPoolViewPanelCtrl
       value: 
       objectReference: {fileID: 5564887323529923047}
@@ -3131,7 +3141,9 @@ PrefabInstance:
       propertyPath: m_AnchorMin.y
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9191389881596237302, guid: f0f75289f42c2634ea872f3f76135178, type: 3}
+    - {fileID: 3504722841853152961, guid: f0f75289f42c2634ea872f3f76135178, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f0f75289f42c2634ea872f3f76135178, type: 3}
 --- !u!114 &1149397679422586296 stripped
 MonoBehaviour:

@@ -6,7 +6,6 @@ using BJSYGameCore;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -84,7 +83,8 @@ namespace Controllers
             _ui.OnChangeModifierProperty += onChangeModifierProperty;
             _ui.OnChangeModifierOperator += onChangeModifierOperator;
             _ui.OnChangeModifierValue += onChangeModifierValue;
-            
+
+            _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
         }
         #endregion
@@ -170,6 +170,14 @@ namespace Controllers
         #endregion
 
         #region 效果
+        private void onCreateEffect(GeneratedEffect effect)
+        {
+            markBuffUnsaved();
+            _buffDefine.effectList.Add(effect);
+
+            _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
+            updateEffectList(_buffDefine.effectList.ToArray());
+        }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
@@ -206,12 +214,7 @@ namespace Controllers
         /// </summary>
         private void onClickAddEffectMenu(int index)
         {
-            markBuffUnsaved();
-            var effect = game.card.createEffectByIndex(_cardPoolId, index);
-            _buffDefine.effectList.Add(effect);
-
-            _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
-            updateEffectList(_buffDefine.effectList.ToArray());
+            _effectEditorCtrl.createEffectByIndex(index);
         }
         private void onEffectListItemInputFieldEndEditCallback(int index, string value)
         {

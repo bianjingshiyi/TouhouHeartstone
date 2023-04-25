@@ -2,7 +2,10 @@
 using System.Threading.Tasks;
 using BJSYGameCore;
 using BJSYGameCore.UI;
+using Game;
 using TouhouCardEngine;
+using TouhouHeartstone;
+using UI;
 using UnityEngine;
 
 namespace Controllers
@@ -74,21 +77,64 @@ namespace Controllers
             _effect = null;
             _actionNodeGraphCtrl.hide();
         }
-        #endregion
-        #region 私有方法
-        void Awake()
+
+        public void createEffectByIndex(int index)
         {
+            // 事件效果。
+            if (index == CardManager.EVENT_EFFECT_IDX)
+            {
+                _ui.displayEventEffectDialog(true);
+                return;
+            }
+            createEffect(index);
+        }
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+        public void Awake()
+        {
+            _eventTypeInfoList.Clear();
+            _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventTypes());
+            _ui.setEventTypeNames(_eventTypeInfoList.getEventTypeNamesForEditor());
+            _ui.onConfirmCreateEventEffect += onConfirmCreateEventEffectCallback;
             _actionNodeGraphCtrl.OnGraphEdited += OnGraphEditedCallback;
         }
+        #endregion
+
+        #region 事件回调
         private void OnGraphEditedCallback()
         {
             OnGraphEdited?.Invoke();
         }
+        
+        private void onConfirmCreateEventEffectCallback(int index)
+        {
+            var effect = game.card.createEffectByIndex(_cardPoolId, CardManager.EVENT_EFFECT_IDX);
+            effect.graph.createEventEntryNode(_eventTypeInfoList[index]);
+            onCreateEffect?.Invoke(effect);
+            _ui.displayEventEffectDialog(false);
+        }
         #endregion
+
+        private GeneratedEffect createEffect(int index)
+        {
+            var effect = game.card.createEffectByIndex(_cardPoolId, index);
+            onCreateEffect?.Invoke(effect);
+            return effect;
+        }
+
+        #endregion
+
         #region 事件
+        public event Action<GeneratedEffect> onCreateEffect;
         public event Action OnGraphEdited;
         #endregion
+
         #region 属性字段
+        [SerializeField]
+        EffectEditorPanel _ui;
 
         [SerializeField]
         ActionNodeGraphCtrl _actionNodeGraphCtrl;
@@ -96,7 +142,9 @@ namespace Controllers
         CardDefine _cardDefine;
         GeneratedBuffDefine _buffDefine;
         GeneratedEffect _effect;
+        EventTypeInfoCollection _eventTypeInfoList = new EventTypeInfoCollection();
         #endregion
+
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {

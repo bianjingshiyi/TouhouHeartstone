@@ -34,11 +34,11 @@ namespace Game
         {
             ActionGraph graph = new ActionGraph();
             GeneratedEffect effect;
-            if (index == 3)
+            if (index == AURA_EFFECT_IDX)
                 effect = new GeneratedAura(graph);
-            else if (index == 2)
+            else if (index == EVENT_EFFECT_IDX)
                 effect = new GeneratedEventEffect(graph);
-            else if (index == 1)
+            else if (index == PASSIVE_EFFECT_IDX)
                 effect = new GeneratedPassiveEffect(graph);
             else
                 effect = new GeneratedActiveEffect(graph);
@@ -51,13 +51,13 @@ namespace Game
         public int getEffectTypeIndex(GeneratedEffect effect)
         {
             if (effect is GeneratedAura)
-                return 3;
+                return AURA_EFFECT_IDX;
             else if (effect is GeneratedEventEffect)
-                return 2;
+                return EVENT_EFFECT_IDX;
             else if (effect is GeneratedPassiveEffect)
-                return 1;
+                return PASSIVE_EFFECT_IDX;
             else
-                return 0;
+                return ACTIVE_EFFECT_IDX;
         }
         #endregion
         #region 属性字段
@@ -68,6 +68,10 @@ namespace Game
             StringTable.EDITOR_EFFECT_NAME_EVENT_EFFECT,
             StringTable.EDITOR_EFFECT_NAME_AURA_EFFECT,
         };
+        public const int ACTIVE_EFFECT_IDX = 0;
+        public const int PASSIVE_EFFECT_IDX = 1;
+        public const int EVENT_EFFECT_IDX = 2;
+        public const int AURA_EFFECT_IDX = 3;
         #endregion
     }
 }

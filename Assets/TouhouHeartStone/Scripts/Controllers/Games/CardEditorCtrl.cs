@@ -210,6 +210,7 @@ namespace Controllers
             _ui.onClickPropertyAddItemButton += onClickPropertyAddItemButtonCallback;
             _ui.onClickPropertyRemoveItemButton += onClickPropertyRemoveItemButtonCallback;
 
+            _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
         }
         #endregion
@@ -439,6 +440,17 @@ namespace Controllers
         }
 
         #region Effects
+        private void onCreateEffect(GeneratedEffect effect)
+        {
+            MarkCardUnsaved();
+            var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
+            effect.name = getEffectDefaultName(effect, effects.Count() + 1);
+            var effectArray = effects.Append(effect).ToArray();
+            _cardDefine.setEffects(effectArray);
+
+            _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
+            updateEffectList(effectArray);
+        }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
@@ -476,15 +488,7 @@ namespace Controllers
         /// </summary>
         private void onClickAddEffectMenu(int index)
         {
-            MarkCardUnsaved();
-            var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
-            var effect = game.card.createEffectByIndex(_cardPoolId, index);
-            effect.name = getEffectDefaultName(effect, effects.Count() + 1);
-            var effectArray = effects.Append(effect).ToArray();
-            _cardDefine.setEffects(effectArray);
-
-            _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
-            updateEffectList(effectArray);
+            _effectEditorCtrl.createEffectByIndex(index);
         }
         private void onEffectListItemInputFieldEndEditCallback(int index, string value)
         {
