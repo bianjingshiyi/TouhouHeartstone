@@ -19,6 +19,8 @@ namespace Game
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELSE_ACTION, isOut: true)] ControlInput elseAction)
         {
             var port = isTrue ? thenAction : elseAction;
+            if (port == null)
+                return;
             flow.EnterScope();
             await game.runActions(flow, port);
             flow.ExitScope();
