@@ -735,14 +735,20 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
+            Task<IResponse> surrenderResponseTask =
+                game.answers.askAny(game.players.Select(p => p.id).ToArray(), new SurrenderRequest(), getOption(game).timeoutForTurn * 2, null);
             for (int i = 0; i < 100; i++)
             {
                 if (!game.isRunning)
                     return;
                 if (getTurnTimer(game) == null) //超时，结束回合
                     return;
-                IResponse response =
-                    await game.answers.ask(player.id, new FreeActRequest(), getOption(game).timeoutForTurn * 2);
+                Task<IResponse> responseTask =
+                    game.answers.ask(player.id, new FreeActRequest(), getOption(game).timeoutForTurn * 2);
+
+                var finishedTask = await Task.WhenAny(surrenderResponseTask, responseTask);
+                var response = await finishedTask;
+
                 switch (response)
                 {
                     //自由输入
@@ -760,8 +766,8 @@ namespace TouhouHeartstone
                         break;
                     case TurnEndResponse _:
                         return;
-                    case SurrenderResponse _:
-                        await game.surrender(player);
+                    case SurrenderResponse surrender:
+                        await game.surrender(game.getPlayer(surrender.playerId));
                         return;
                 }
                 await game.updateDeath();

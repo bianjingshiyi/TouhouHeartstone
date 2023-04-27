@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using BJSYGameCore.UI;
 using Game;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -11,6 +12,8 @@ namespace UI
     {
         [MukioI18n.TranslateMsg]
         const string QUIT_GAME_QUESTION = "是否要结束本场游戏？";
+        [MukioI18n.TranslateMsg("尝试认输时的提醒")]
+        const string SURRENDER_QUESTION = "确定要向对手认输吗？";
 
         protected override void Awake()
         {
@@ -23,12 +26,25 @@ namespace UI
 
             quitButton.onClick.AddListener(() =>
             {
-                ui.getObject<UIDialog>()?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () => {
+                ui.getObject<UIDialog>()?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () =>
+                {
                     Main main = GetComponentInParent<Main>();
                     main.game.quitGame();
                     main.display(main.MainMenu);
                 });
             });
+            surrenderButton.onClick.AddListener(() =>
+            {
+                ui.getObject<UIDialog>()?.ShowQuestion(StringTable.HINT_TITLE, SURRENDER_QUESTION, () => {
+                    Main main = GetComponentInParent<Main>();
+                    main.game.surrender();
+                });
+            });
+        }
+        public void showSurrenderButton(bool display)
+        {
+            quitButton.gameObject.SetActive(!display);
+            surrenderButton.gameObject.SetActive(display);
         }
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -50,6 +66,9 @@ namespace UI
         {
             onPageClose?.Invoke();
         }
+
+        [SerializeField]
+        private Button surrenderButton;
 
         public GameResultDialog GameResultDialog => gameResultDialog;
         public Table Table => table;

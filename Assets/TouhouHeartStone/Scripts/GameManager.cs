@@ -119,6 +119,7 @@ namespace Game
         {
             //创建游戏
             mode = GameMode.local;
+            ui.showSurrenderButton(false);
             CardEngine game = await createGame(room);
             //初始化本地玩家，AI，UI
             foreach (var player in game.players)
@@ -166,6 +167,7 @@ namespace Game
         public async Task startRemoteGame(IClient client, RoomData room, bool headless = false)
         {
             mode = GameMode.remote;
+            ui.showSurrenderButton(true);
             //创建游戏
             CardEngine game = await createGame(room);
             //将游戏与网络连接
@@ -190,6 +192,11 @@ namespace Game
             localPlayer = game.players.First();
             displayGameUI(game, localPlayer);
             await runGame(game);
+        }
+
+        public void surrender()
+        {
+            game.answers.answer(localPlayer.id, new SurrenderResponse());
         }
         public event Action onGameStart;
         #endregion
