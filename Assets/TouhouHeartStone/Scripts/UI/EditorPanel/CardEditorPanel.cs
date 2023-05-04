@@ -83,15 +83,6 @@ namespace UI
         {
             _isTokenToggle.SetIsOnWithoutNotify(value);
         }
-        public void setSpellDamage(int value)
-        {
-            _spellDamageInputField.SetTextWithoutNotify(value.ToString());
-        }
-        public void initTags(string[] tagNames)
-        {
-            //_noRaceTagDropdown.ClearOptions();
-            //_noRaceTagDropdown.AddOptions(new List<string>(tagNames));
-        }
         public void setInitTags(string[] tags)
         {
             List<string> tagList = new List<string>(tags);
@@ -367,7 +358,6 @@ namespace UI
             _skillRef.onClick += onSkillIDInputFieldEndEdit;
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
             _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
-            //_noRaceTagDropdown.onValueChanged.AddListener(onNoRaceTagDropdownValueChangedCallback);
             _skinDropdown.gameObject.SetActive(true);
             _skinDropdown.onValueChanged.AddListener(onSkinDropdownValueChanged);
             _changeSkinNameButton.gameObject.SetActive(true);
@@ -391,7 +381,6 @@ namespace UI
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
             _tagDropdown.onValueChanged.AddListener(onTagDropdownValueChangedCallback);
             _tagInputField.onEndEdit.AddListener(onTagInputFieldEndEdit);
-            _spellDamageInputField.onEndEdit.AddListener(onSpellDamageInputFieldEndEdit);
             EventTrigger trigger = _tagDropdown.gameObject.AddComponent<EventTrigger>();
             EventTrigger.Entry entry = new EventTrigger.Entry();
             entry.eventID = EventTriggerType.Deselect;
@@ -444,10 +433,6 @@ namespace UI
         private void onIsTokenToggleValueChangedCallback(bool value)
         {
             onIsTokenToggleValueChanged?.Invoke(value);
-        }
-        private void onNoRaceTagDropdownValueChangedCallback(bool[] value)
-        {
-            onTagDropdownValueChanged?.Invoke(value);
         }
         private void onCharacterDropdownValueChanged(int value)
         {
@@ -682,14 +667,6 @@ namespace UI
             onChangeTag?.Invoke(text);
 
         }
-        private void onSpellDamageInputFieldEndEdit(string text)
-        {
-            if (int.TryParse(text, out int value))
-            {
-                onChangeSpellDamage?.Invoke(value);
-            }
-
-        }
         private void onSkillIDInputFieldEndEdit()
         {
             onClickSkillRefButton?.Invoke();
@@ -821,12 +798,7 @@ namespace UI
         /// 当更改卡牌标签，参数为更改后的卡牌标签。
         /// </summary>
         public event Action<string> onChangeTag;
-        /// <summary>
-        /// 当更改法术伤害时，参数为更改后的法术伤害。
-        /// </summary>
-        public event Action<int> onChangeSpellDamage;
         public event Action<int> onChangeRace;
-        public event Action<bool[]> onTagDropdownValueChanged;
         /// <summary>
         /// 当点击编辑效果按钮，参数为效果索引。
         /// </summary>
@@ -890,10 +862,6 @@ namespace UI
         BuildDeckListItem _skillRef;
         [SerializeField]
         CardPropertiesFoldout _keywordsFoldout;
-        [SerializeField]
-        InputField _spellDamageInputField;
-        [SerializeField]
-        MultiSelectDropdown _noRaceTagDropdown;
         [SerializeField]
         Dropdown _characterDropdown;
         [SerializeField]

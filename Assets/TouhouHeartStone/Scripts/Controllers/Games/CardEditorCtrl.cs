@@ -33,7 +33,6 @@ namespace Controllers
             _ui.setId(cardDefine.id);
             _ui.setType(Array.IndexOf(_types, cardDefine.type), cardDefine.type);
             _ui.setIsToken(cardDefine.isToken());
-            _ui.setSpellDamage(cardDefine.getSpellDamage());
             bool[] tagsValue = new bool[_tags.Length];
             for (int i = 0; i < _tags.Length; i++)
             {
@@ -149,8 +148,6 @@ namespace Controllers
                 Patchouli.FIRE,
                 Patchouli.EARTH
             };
-            _ui.initTags(tagNames);
-            _ui.onTagDropdownValueChanged += onTagDropdownValueChanged;
             _ui.onChangeCharacter += onChangeCharacter;
             _ui.onChangeCost += onChangeCost;
             _ui.onChangeName += onChangeName;
@@ -192,7 +189,6 @@ namespace Controllers
             _ui.onClickCloseButton += onClickCloseButton;
             _ui.onClickSkillRefButton += onClickSkillRefButton;
             _ui.onChangeTag += onChangeTag;
-            _ui.onChangeSpellDamage += onChangeSpellDamage;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
             _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
@@ -293,26 +289,6 @@ namespace Controllers
         {
             MarkCardUnsaved();
             _cardDefine.setIsToken(value);
-        }
-        private void onTagDropdownValueChanged(bool[] value)
-        {
-            MarkCardUnsaved();
-            string[] tags = _cardDefine.getTags();
-            string race = tags.Length > 0 ? tags[0] : null;
-            List<string> tagList = new List<string>();
-            tagList.Add(race);
-            for (int i = 0; i < _tags.Length; i++)
-            {
-                if (value[i] && !tagList.Contains(_tags[i]))
-                {
-                    tagList.Add(_tags[i]);
-                }
-                else
-                {
-                    tagList.RemoveAll(s => s == _tags[i]);
-                }
-            }
-            _cardDefine.setTags(tagList.ToArray());
         }
         private void onChangeCharacter(int characterIndex)
         {
@@ -432,11 +408,6 @@ namespace Controllers
         {
             MarkCardUnsaved();
             _cardDefine.setTags(text.Split(',', ' ', '，'));
-        }
-        private void onChangeSpellDamage(int value)
-        {
-            MarkCardUnsaved();
-            _cardDefine.setSpellDamage(value);
         }
 
         #region Effects
