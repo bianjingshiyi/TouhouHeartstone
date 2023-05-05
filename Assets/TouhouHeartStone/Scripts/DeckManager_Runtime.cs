@@ -51,13 +51,13 @@ namespace Game
         /// <returns></returns>
         public bool isValidDeck(Deck deck)
         {
-#if !(UNITY_EDITOR || DEBUG)
             //检查数量是否合法，合法数量是可编辑的数量加上一张角色卡
-            if (deck.getCardCount() != deckValidSize)
+            DebugManager debug = getManager<DebugManager>();
+            if (!debug.SkipCardNumberCheck && deck.getCardCount() != deckValidSize)
             {
                 return false;
             }
-#endif
+
             //检查是否使用了不合法的卡牌
             MainManager game = getManager<MainManager>();
             for (int i = 0; i < deck.cardList.Count; i++)

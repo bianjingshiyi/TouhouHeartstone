@@ -123,6 +123,8 @@ namespace Game
 
         LANPanel lanPanel => ui.NetworkingPageGroup.LANPanel;
 
+        string version => CustomBuilder.BuildInformation.Instance.Version;
+
         NetworkingLogic _logic;
         public NetworkingLogic logic
         {
@@ -130,7 +132,6 @@ namespace Game
             {
                 if (_logic == null)
                 {
-                    var version = CustomBuilder.BuildInformation.Instance.Version;
                     _logic = new NetworkingLogic(serverBaseUri, version, cacheManager, _ports);
                 }
 
@@ -295,6 +296,16 @@ namespace Game
         protected void Update()
         {
             logic.update();
+        }
+
+        /// <summary>
+        /// 设置服务器地址
+        /// </summary>
+        /// <param name="addr"></param>
+        public void SetServerAddr(string addr)
+        {
+            logic.ServerClient.SetClientBaseUri(addr);
+            _ = startSequence();
         }
 
         async Task startSequence()

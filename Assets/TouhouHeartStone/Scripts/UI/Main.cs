@@ -15,5 +15,9 @@ namespace UI
         {
             display(Loading);
         }
+
+        [SerializeField]
+        DebugPage _debug;
+        public DebugPage DebugPage => _debug;
     }
 }

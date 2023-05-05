@@ -147,6 +147,7 @@ namespace UI
                     this.NetworkingPage,
                     this.RoomPanel,
                     this.SettingPage,
+                    this.DebugPage,
                     this.Loading,
                     this.Dialog,
             };
