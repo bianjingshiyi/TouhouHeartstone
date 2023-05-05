@@ -32,6 +32,11 @@ namespace Controllers
             await setCurSkinIndex(0);
 
             _effectEditorCtrl.hideActionGraph();
+
+            if (effects.Length > 0)
+            {
+                await _effectEditorCtrl.display(_cardPoolId, _buffDefine, effects[0]);
+            }
             updateEffectList(effects);
         }
         public override Task display(CardPoolDisplayInfo info)
