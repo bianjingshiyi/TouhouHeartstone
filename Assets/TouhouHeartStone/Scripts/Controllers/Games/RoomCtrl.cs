@@ -125,7 +125,7 @@ namespace Controllers
                 if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
                 {
                     AddCardPools(addPools);
-                    game.network.AnwserCardPoolsSuggestion(playerId, suggestion, true);
+                    game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, true);
                     await CheckCardPoolsUpdate(addPools.ToArray());
                 }
                 else
@@ -136,7 +136,7 @@ namespace Controllers
 
             void CancelSuggestion()
             {
-                game.network.AnwserCardPoolsSuggestion(playerId, suggestion, false);
+                game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, false);
             }
         }
         public async void ReceiveCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
@@ -306,7 +306,7 @@ namespace Controllers
         {
             _ui.setRoomPassword(string.IsNullOrEmpty(value) ? "" : "******");
             _currentRoomData?.setRoomPassword(value);
-            game.network.SetRoomProp(RoomData.PROP_ROOM_PASSWORD, value);
+            game.network.roomClient.SetRoomProp(RoomData.PROP_ROOM_PASSWORD, value);
         }
         private void onRandomSeedInputFieldValueChanged(string value)
         {
@@ -366,7 +366,7 @@ namespace Controllers
         {
             _ui.setRoomName(name);
             _currentRoomData.setProp(RoomData.PROP_ROOM_NAME, name);
-            game.network.SetRoomProp(RoomData.PROP_ROOM_NAME, name);
+            game.network.roomClient.SetRoomProp(RoomData.PROP_ROOM_NAME, name);
         }
         private async void onViewDeckClick(DefineReference[] cards)
         {
@@ -951,7 +951,7 @@ namespace Controllers
         {
             if (CanUploadCardPools(suggestion.cardPools, out string errorMessage))
             {
-                game.network.SuggestCardPools(suggestion);
+                game.network.roomClient.SuggestCardPools(suggestion);
             }
             else
             {

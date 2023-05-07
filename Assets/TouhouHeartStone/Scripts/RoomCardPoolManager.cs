@@ -73,7 +73,7 @@ namespace Game
 
                         // 远端是否有该卡池。
                         // 局域网房主的远端就是本地。
-                        bool hasRemotePool = lanHost ? hasLocalPool : await game.network.ResourceExistsAsync(ResourceType.CardDefine, id);
+                        bool hasRemotePool = lanHost ? hasLocalPool : await game.network.roomClient.ResourceExistsAsync(ResourceType.CardDefine, id);
 
                         // 如果没有读取卡池，尝试读取卡池对象。
                         CardPool localCardPool = null;
@@ -113,7 +113,7 @@ namespace Game
                                 token.ThrowIfCancellationRequested();
 
                                 // 如果有远端不存在的图片，上传该卡图
-                                bool[] resExists = await game.network.ResourceExistsBatchAsync(resList.ToArray());
+                                bool[] resExists = await game.network.roomClient.ResourceBatchExistsAsync(resList.ToArray());
                                 if (resExists.Contains(false))
                                 {
                                     uploadPools.Add(roomPool);
@@ -604,7 +604,7 @@ namespace Game
             try
             {
                 byte[] bytes = await plan.GetBytes(game);
-                await game.network.UploadResourceAsync(plan.type, plan.id, bytes);
+                await game.network.roomClient.UploadResourceAsync(plan.type, plan.id, bytes);
                 plan.completed = true;
             }
             catch (FileNotFoundException)
@@ -625,7 +625,7 @@ namespace Game
         {
             try
             {
-                byte[] bytes = await game.network.GetResourceAsync(plan.type, plan.id);
+                byte[] bytes = await game.network.roomClient.GetResourceAsync(plan.type, plan.id);
                 plan.completed = true;
                 return bytes;
             }
@@ -728,7 +728,7 @@ namespace Game
             // 下载这些ResourcePlan。
             var tuples = notCompleted.Select(p => new Tuple<ResourceType, string>(p.type, p.id)).ToArray();
             // 检查资源是否存在。
-            bool[] exists = await game.network.ResourceExistsBatchAsync(tuples);
+            bool[] exists = await game.network.roomClient.ResourceBatchExistsAsync(tuples);
             for (int i = 0; i < notCompleted.Length; i++)
             {
                 // 资源不存在则跳过。

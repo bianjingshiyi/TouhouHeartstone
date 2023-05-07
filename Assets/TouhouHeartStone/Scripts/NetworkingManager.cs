@@ -25,49 +25,6 @@ namespace Game
             return logic.ServerClient.GetLatestUpdateAsync();
         }
         /// <summary>
-        /// 向房主提议增加卡池。
-        /// </summary>
-        /// <param name="cardPools">卡池信息列表。</param>
-        public void SuggestCardPools(CardPoolSuggestion suggestion)
-        {
-            logic.SuggestCardPools(suggestion);
-        }
-        /// <summary>
-        /// 房主同意增加卡池的提议。
-        /// </summary>
-        /// <param name="playerId">同意的玩家ID。</param>
-        public void AnwserCardPoolsSuggestion(int playerId, CardPoolSuggestion suggestion, bool agree)
-        {
-            logic.AnwserCardPoolsSuggestion(playerId, suggestion, agree);
-        }
-        public void SetRoomProp(string name, object val)
-        {
-            if (isRoomOwner)
-            {
-                logic.SetRoomProp(name, val);
-            }
-        }
-        public void SetPlayerProp(string name, object val)
-        {
-            logic.SetPlayerProp(name, val);
-        }
-        public Task<byte[]> GetResourceAsync(TouhouCardEngine.ResourceType type, string id)
-        {
-            return logic.GetResourceAsync(type, id);
-        }
-        public Task UploadResourceAsync(TouhouCardEngine.ResourceType type, string id, byte[] bytes)
-        {
-            return logic.UploadResourceAsync(type, id, bytes);
-        }
-        public Task<bool> ResourceExistsAsync(TouhouCardEngine.ResourceType type, string id)
-        {
-            return logic.ResourceExistsAsync(type, id);
-        }
-        public Task<bool[]> ResourceExistsBatchAsync(Tuple<TouhouCardEngine.ResourceType, string>[] res)
-        {
-            return logic.ResourceExistsBatchAsync(res);
-        }
-        /// <summary>
         /// 向每个玩家分发卡池。
         /// </summary>
         /// <param name="cardPools">卡池信息列表。</param>
@@ -138,6 +95,9 @@ namespace Game
                 return _logic;
             }
         }
+
+        public IRoomClient roomClient => logic.roomClient;
+
         // 对MainSceneCtrl的引用，用于调用RoomCtrl的display。
         // 也要调用ChatPanel的display
         private MainSceneCtrl _sceneCtrl;
@@ -661,7 +621,9 @@ namespace Game
                 //quitRoom();
                 ui.parent.display(ui);
             };
-            roomCtrl.onRoomPropChanged += SetRoomProp;
+            roomCtrl.onRoomPropChanged += (key, val) => {
+                roomClient.SetRoomProp(key, val);
+            };
             roomCtrl.onPlayerRemove += (id) =>
             {
                 if (isRoomOwner)
@@ -671,7 +633,7 @@ namespace Game
             };
             roomCtrl.onLocalPlayerPropChanged += (name, cards) =>
             {
-                SetPlayerProp(name, cards);
+                roomClient.SetPlayerProp(name, cards);
             };
 
             ui.hide();

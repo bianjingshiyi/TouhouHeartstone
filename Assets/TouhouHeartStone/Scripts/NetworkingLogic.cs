@@ -20,6 +20,8 @@ namespace Game
         /// </summary>
         ClientLogic localLanLogic;
 
+        public IRoomClient roomClient => localLanLogic;
+
         public NetworkingLogic(string serverUri, string version, IResourceProvider resProvider, int[] ports = null)
         {
             Debug.Log("Init server uri: " + serverUri);
@@ -29,7 +31,7 @@ namespace Game
 
             localLanLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
             localLanLogic.onGameStart += onGameStartEvtHandler;
-            localLanLogic.OnPlayerDataChange += roomPlayerDataChangeEvtHandler;
+            localLanLogic.OnRoomPlayerDataChanged += roomPlayerDataChangeEvtHandler;
             localLanLogic.OnRoomDataChange += roomDataChangeEvtHandler;
             localLanLogic.PostRoomPropChange += roomPropChangeEvtHandler;
             localLanLogic.OnReceiveData += roomReceiveEvtHandler;
@@ -143,7 +145,7 @@ namespace Game
         /// <summary>
         /// 是否为房主
         /// </summary>
-        public bool isRoomOwner => CurrentRoom?.ownerId == localPlayer?.id;
+        public bool isRoomOwner => localLanLogic.isRoomOwner;
 
         /// <summary>
         /// 当前是否在一个房间里面
@@ -164,12 +166,13 @@ namespace Game
 
             // 初始化房间设置
             var option = new HearthstoneOption();
-            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.RandomSeed), option.randomSeed);
-            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.Shuffle), option.shuffle);
-            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.StartGem), option.startGem);
-            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForInitReplace), (int)option.timeoutForInitReplace);
-            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.TimeoutForTurn), (int)option.timeoutForTurn);
-            await localLanLogic.setRoomProp(nameof(RoomDataPropName.Option.CardPools), option.cardPools);
+            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.RandomSeed), option.randomSeed);
+            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.Shuffle), option.shuffle);
+            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.StartGem), option.startGem);
+            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.TimeoutForInitReplace), (int)option.timeoutForInitReplace);
+            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.TimeoutForTurn), (int)option.timeoutForTurn);
+            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.CardPools), option.cardPools);
+
 
             isInitialRoomOwner = true;
         }
@@ -212,53 +215,6 @@ namespace Game
         }
 
         /// <summary>
-        /// 发送聊天消息
-        /// </summary>
-        /// <param name="channel"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public Task SendChat(int channel, string message)
-        {
-            return localLanLogic.sendChat(channel, message);
-        }
-        /// <summary>
-        /// 向房主提议添加卡池。
-        /// </summary>
-        /// <param name="cardPools">卡池信息列表。</param>
-        /// <returns></returns>
-        public Task SuggestCardPools(CardPoolSuggestion suggestion)
-        {
-            return localLanLogic.SuggestCardPools(suggestion);
-        }
-        /// <summary>
-        /// 房主回应添加卡池的提议。
-        /// </summary>
-        /// <param name="suggestion">建议。</param>
-        /// <param name="agree">是否同意建议。</param>
-        /// <returns></returns>
-        public Task AnwserCardPoolsSuggestion(int playerId, CardPoolSuggestion suggestion, bool agree)
-        {
-            return localLanLogic.AnwserCardPoolsSuggestion(playerId, suggestion, agree);
-        }
-
-        public Task<byte[]> GetResourceAsync(ResourceType type, string id)
-        {
-            return localLanLogic.GetResourceAsync(type, id);
-        }
-        public Task UploadResourceAsync(ResourceType type, string id, byte[] bytes)
-        {
-            return localLanLogic.UploadResourceAsync(type, id, bytes);
-        }
-        public Task<bool> ResourceExistsAsync(ResourceType type, string id)
-        {
-            return localLanLogic.ResourceExistsAsync(type, id);
-        }
-        public Task<bool[]> ResourceExistsBatchAsync(Tuple<ResourceType, string>[] res)
-        {
-            return localLanLogic.ResourceExistsBatchAsync(res);
-        }
-
-        /// <summary>
         /// 请求重载房间列表
         /// </summary>
         public void ReloadRoomList()
@@ -293,19 +249,9 @@ namespace Game
             return localLanLogic.addAIPlayer();
         }
 
-        public Task SetRoomProp(string name, object val)
-        {
-            return localLanLogic.setRoomProp(name, val);
-        }
-
         public void RemovePlayer(int uid)
         {
             // todo: 移除一个玩家
-        }
-
-        public Task SetPlayerProp(string name, object val)
-        {
-            return localLanLogic.curNetwork.SetPlayerProp(name, val);
         }
 
         #endregion

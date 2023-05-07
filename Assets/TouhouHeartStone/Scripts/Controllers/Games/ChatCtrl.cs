@@ -151,7 +151,7 @@ namespace Controllers
         /// <returns></returns>
         private bool trySendMessage(string message)
         {
-            game.network?.logic?.SendChat(0, message);
+            game.network?.logic?.roomClient?.SendChat(0, message);
             return true;
         }
         /// <summary>
