@@ -155,8 +155,9 @@ namespace UI
             _saveCardButton.onClick.AddListener(onClickSaveButtonCallback);
             _closeCardButton.onClick.AddListener(onClickCloseButtonCallback);
 
-            _basicPageButton.onClick.AddListener(onClickBasicPageButtonCallback);
+            _actionPageButton.onClick.AddListener(onClickBasicPageButtonCallback);
             _propertiesPageButton.onClick.AddListener(onClickPropertiesPageButtonCallback);
+            _nodesPageButton.onClick.AddListener(onClickNodesPageButtonCallback);
         }
         #endregion
 
@@ -172,13 +173,21 @@ namespace UI
         }
         void onClickBasicPageButtonCallback()
         {
-            _basicPage.SetActive(true);
+            _actionPage.SetActive(true);
             _propertiesPage.SetActive(false);
+            _nodesPage.SetActive(false);
         }
         void onClickPropertiesPageButtonCallback()
         {
-            _basicPage.SetActive(false);
+            _actionPage.SetActive(false);
             _propertiesPage.SetActive(true);
+            _nodesPage.SetActive(false);
+        }
+        void onClickNodesPageButtonCallback()
+        {
+            _actionPage.SetActive(false);
+            _propertiesPage.SetActive(false);
+            _nodesPage.SetActive(true);
         }
         void onClickDeleteActionButtonCallback()
         {
@@ -447,13 +456,17 @@ namespace UI
 
         [Header("Pages")]
         [SerializeField]
-        Button _basicPageButton;
+        Button _actionPageButton;
         [SerializeField]
         Button _propertiesPageButton;
         [SerializeField]
-        GameObject _basicPage;
+        Button _nodesPageButton;
+        [SerializeField]
+        GameObject _actionPage;
         [SerializeField]
         GameObject _propertiesPage;
+        [SerializeField]
+        GameObject _nodesPage;
         #endregion
     }
 

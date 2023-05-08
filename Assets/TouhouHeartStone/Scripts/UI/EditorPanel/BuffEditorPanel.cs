@@ -193,9 +193,9 @@ namespace UI
             _effectList.onItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
 
             // Pages.
-            _basicPageButton.onClick.AddListener(() => displayPage(_basicPage));
+            _buffPageButton.onClick.AddListener(() => displayPage(_buffPage));
             _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage));
-            _skinPageButton.onClick.AddListener(() => displayPage(_skinPage));
+            _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage));
         }
         #endregion
         #region 事件回调
@@ -316,9 +316,9 @@ namespace UI
         #endregion
         private void displayPage(GameObject toDisplay)
         {
-            _basicPage.SetActive(false);
+            _buffPage.SetActive(false);
             _propertyPage.SetActive(false);
-            _skinPage.SetActive(false);
+            _nodesPage.SetActive(false);
 
             toDisplay.SetActive(true);
         }
@@ -447,17 +447,17 @@ namespace UI
 
         [Header("Pages")]
         [SerializeField]
-        Button _basicPageButton;
+        Button _buffPageButton;
         [SerializeField]
         Button _propertyPageButton;
         [SerializeField]
-        Button _skinPageButton;
+        Button _nodesPageButton;
         [SerializeField]
-        GameObject _basicPage;
+        GameObject _buffPage;
         [SerializeField]
         GameObject _propertyPage;
         [SerializeField]
-        GameObject _skinPage;
+        GameObject _nodesPage;
         #endregion
     }
 

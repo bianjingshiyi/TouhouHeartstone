@@ -406,9 +406,9 @@ namespace UI
 
 
             // Pages.
-            _basicPageButton.onClick.AddListener(() => displayPage(_basicPage));
+            _cardPageButton.onClick.AddListener(() => displayPage(_cardPage));
             _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage));
-            _skinPageButton.onClick.AddListener(() => displayPage(_skinPage));
+            _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage));
 
             // Custom Properties.
             _addCustomPropertyButton.onClick.AddListener(() => displayCustomPropertyDialog(true));
@@ -733,9 +733,9 @@ namespace UI
 
         private void displayPage(GameObject toDisplay)
         {
-            _basicPage.SetActive(false);
+            _cardPage.SetActive(false);
             _propertyPage.SetActive(false);
-            _skinPage.SetActive(false);
+            _nodesPage.SetActive(false);
 
             toDisplay.SetActive(true);
         }
@@ -925,17 +925,17 @@ namespace UI
 
         [Header("Pages")]
         [SerializeField]
-        Button _basicPageButton;
+        Button _cardPageButton;
         [SerializeField]
         Button _propertyPageButton;
         [SerializeField]
-        Button _skinPageButton;
+        Button _nodesPageButton;
         [SerializeField]
-        GameObject _basicPage;
+        GameObject _cardPage;
         [SerializeField]
         GameObject _propertyPage;
         [SerializeField]
-        GameObject _skinPage;
+        GameObject _nodesPage;
 
         [Header("Custom Properties")]
         [SerializeField]
