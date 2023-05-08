@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace TouhouHeartstone
 {
-    public class THHEffect : ITriggerEffect
+    public class THHEffect : ITriggerEffect, IPileRangedEffect
     {
         protected string _name;
         public TriggerTime[] triggers { get; }
@@ -328,7 +328,7 @@ namespace TouhouHeartstone
         }
     }
 
-    public abstract class PassiveEffect : IPassiveEffect
+    public abstract class PassiveEffect : IPassiveEffect, IPileRangedEffect 
     {
         public string[] events => throw new NotImplementedException();
         public abstract string[] piles { get; }
