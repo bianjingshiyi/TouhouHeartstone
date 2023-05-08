@@ -252,6 +252,7 @@ namespace UI
         {
             // 设置节点位置
             (item.transform as RectTransform).anchoredPosition = graphPosition; //+ _dragItemPositionOffset;
+            item.SetDirty();
         }
         /// <summary>
         /// 从图上移除一个指定节点
@@ -368,6 +369,7 @@ namespace UI
             _currentSelectedKnob = default;
             _content.localPosition = Vector3.zero;
             _content.localScale = Vector3.one;
+            _selectFrameTrans.gameObject.SetActive(false);
         }
         public void updateNodeLines(ActionNodeItem item)
         {
@@ -380,6 +382,10 @@ namespace UI
         public Vector2 getNodesRootPosition()
         {
             return _actionNodesRoot.anchoredPosition;
+        }
+        public void setOperationMode(GraphOperationMode mode)
+        {
+            _operationMode = mode;
         }
         public void displayCreateActionDefineDialog(bool display)
         {
@@ -575,6 +581,11 @@ namespace UI
         public void onBackgroundDrag(BaseEventData eventData)
         {
             _isDragging = true;
+            if (_operationMode == GraphOperationMode.MultiSelect)
+            {
+                updateSelectFrame();
+                return;
+            }
             if (!_isTouchZooming)
             {
                 _content.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
@@ -587,6 +598,7 @@ namespace UI
         public void OnBackgroundEndDrag(BaseEventData eventData)
         {
             _isDragging = false;
+            _selectFrameTrans.gameObject.SetActive(false);
         }
         /// <summary>
         /// 开始拖拽输入接口，创建一根跟着鼠标移动的连线
@@ -1080,6 +1092,41 @@ namespace UI
                 //MenuScrollComponent.enabled = true;
             }
         }
+        private void updateSelectFrame()
+        {
+            _selectFrameTrans.gameObject.SetActive(true);
+            var startPos = _backgroundDragStartPosition + (Vector2)_content.position;
+            var endPos = (Vector2)Input.mousePosition;
+
+            var minPos = Vector2.Min(startPos, endPos);
+            var maxPos = Vector2.Max(startPos, endPos);
+            _selectFrameTrans.position = minPos;
+            _selectFrameTrans.sizeDelta = maxPos - (Vector2)_selectFrameTrans.position;
+
+
+            var minContentPos = _content.InverseTransformPoint(minPos);
+            var maxContentPos = _content.InverseTransformPoint(maxPos);
+            var rect = new Rect(minContentPos, maxContentPos - minContentPos);
+
+            _frameSelectedNodes.Clear();
+            foreach (var item in _actionNodeItemList)
+            {
+                var itemRectTrans = item.transform as RectTransform;
+                if (!itemRectTrans)
+                {
+                    continue;
+                }
+                var size = itemRectTrans.sizeDelta;
+                var pos = itemRectTrans.anchoredPosition - Vector2.Scale(size, itemRectTrans.pivot);
+                var itemRect = new Rect(pos, size);
+                if (itemRect.Overlaps(rect))
+                {
+                    _frameSelectedNodes.Add(item);
+                }
+            }
+
+            onUpdateSelectFrame?.Invoke(_frameSelectedNodes.ToArray());
+        }
         #endregion
         #region 事件
         /// <summary>
@@ -1094,6 +1141,10 @@ namespace UI
         /// 当长按背景，参数为长按点的x坐标与y坐标
         /// </summary>
         public event Action<float, float> onLongPressBackground;
+        /// <summary>
+        /// 当拖拽选框，参数为被选中的节点项。
+        /// </summary>
+        public event Action<IEnumerable<ActionNodeItem>> onUpdateSelectFrame;
         /// <summary>
         /// 当点击菜单项，参数为菜单项索引
         /// </summary>
@@ -1177,6 +1228,10 @@ namespace UI
         /// 自动生成位置的高度间隔
         /// </summary>
         public float autoPosSpacingHeight => _autoPosSpacingHeight;
+        public bool IsDragging => _isDragging;
+
+        private GraphOperationMode _operationMode;
+        private List<ActionNodeItem> _frameSelectedNodes = new List<ActionNodeItem>();
 
         [Header("模板属性和UI控件")]
         [SerializeField]
@@ -1199,6 +1254,8 @@ namespace UI
         RectTransform _content;
         [SerializeField]
         CreateActionDefineDialog _createActionDefineDialog;
+        [SerializeField]
+        RectTransform _selectFrameTrans;
 
         [Header("Nodes")]
         [SerializeField]

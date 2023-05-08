@@ -41,6 +41,8 @@ namespace Controllers
                     _ui.setReturnButtonActive(false);
                 _curCardPoolId = info.cardPoolId;
                 _graphInfo = info.graphInfo;
+                SetOperationMode(GraphOperationMode.Select);
+                clearSelection();
                 //更新UI
                 _ui.gameObject.SetActive(true);
                 _ui.displayCardSelectPanel(false);
@@ -74,6 +76,13 @@ namespace Controllers
         {
             return getActionDefine(name) != null;
         }
+        #region 操作模式
+        public void SetOperationMode(GraphOperationMode mode) 
+        {
+            _operationMode = mode;
+            _ui.setOperationMode(mode);
+        }
+        #endregion
         #endregion
         #region 私有方法
         #region 生命周期
@@ -87,6 +96,9 @@ namespace Controllers
             _ui.onLeftClickBackground += onLeftClickBackground;
             _ui.onRightClickBackground += onRightClickBackground;
             _ui.onLongPressBackground += onLongPressBackground;
+            _ui.onUpdateSelectFrame += onUpdateSelectFrame;
+
+
             _ui.onClickMenuItem += onClickMenuItem;
             _ui.onConnectNodes += onConnectNodes;
             _ui.onUnconnectNodes += onUnconnectNodes;
@@ -133,6 +145,25 @@ namespace Controllers
         {
             openMenuForCategory(posX, posY);
         }
+        private void onUpdateSelectFrame(IEnumerable<ActionNodeItem> items)
+        {
+            foreach (var item in _actionNodeItemList)
+            {
+                bool selected = isActionNodeSelected(item);
+                if (selected == items.Contains(item))
+                {
+                    continue;
+                }
+                if (selected)
+                {
+                    deselectActionNode(item);
+                }
+                else
+                {
+                    selectActionNode(item);
+                }
+            }
+        }
         /// <summary>
         /// 当用户左击背景，隐藏菜单。
         /// </summary>
@@ -142,6 +173,11 @@ namespace Controllers
         {
             _curEditNode = null;
             closeMenu();
+
+            if (!_ui.IsDragging)
+            {
+                clearSelection();
+            }
         }
         /// <summary>
         /// 当用户右击背景，打开菜单。
@@ -220,6 +256,15 @@ namespace Controllers
         {
             _curEditNode = null;
             closeMenu();
+
+            if (_operationMode == GraphOperationMode.Select)
+            {
+                clickAndSelectActionNode(actionNodeItem);
+            }
+            else if (_operationMode == GraphOperationMode.MultiSelect)
+            {
+                toggleActionNodeSelection(actionNodeItem);
+            }
         }
         /// <summary>
         /// 当右击动作节点
@@ -239,11 +284,21 @@ namespace Controllers
         }
         private void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
+            if (!isActionNodeSelected(actionNodeItem))
+            {
+                clickAndSelectActionNode(actionNodeItem);
+            }
+            // 同时拖动所有被选中的节点
             Vector2 rootPosition = _ui.getNodesRootPosition();
-            Node node = getActionNode(actionNodeItem);
-            node.posX = graphPosition.x - rootPosition.x;
-            node.posY = graphPosition.y - rootPosition.y;
-            _ui.moveActionNodeTo(actionNodeItem, graphPosition);
+            float movedX = graphPosition.x - rootPosition.x - actionNodeItem.posX;
+            float movedY = graphPosition.y - rootPosition.y - actionNodeItem.posY;
+            foreach (ActionNodeItem item in _selectedNodes)
+            {
+                Node node = getActionNode(item);
+                node.posX += movedX;
+                node.posY += movedY;
+                _ui.moveActionNodeTo(item, new Vector2(item.posX + movedX, item.posY + movedY));
+            }
             updateContentSize();
             OnEdited();
         }
@@ -1403,6 +1458,53 @@ namespace Controllers
             _ui.closeMenu();
         }
         #endregion
+        #region 节点选择
+        private void selectActionNode(ActionNodeItem item)
+        {
+            _selectedNodes.Add(item);
+            item.select();
+        }
+        private void deselectActionNode(ActionNodeItem item)
+        {
+            _selectedNodes.Remove(item);
+            item.deselect();
+        }
+        private bool isActionNodeSelected(ActionNodeItem item)
+        {
+            return _selectedNodes.Contains(item);
+        }
+        /// <summary>
+        /// 点击并选择一个节点。如果是单选模式，先取消所有选择。
+        /// </summary>
+        /// <param name="item">要选择的节点。</param>
+        private void clickAndSelectActionNode(ActionNodeItem item)
+        {
+            if (_operationMode == GraphOperationMode.Select)
+            {
+                clearSelection();
+            }
+            selectActionNode(item);
+        }
+        private void toggleActionNodeSelection(ActionNodeItem item)
+        {
+            if (isActionNodeSelected(item))
+            {
+                deselectActionNode(item);
+            }
+            else
+            {
+                selectActionNode(item);
+            }
+        }
+        private void clearSelection()
+        {
+            foreach (ActionNodeItem item in _selectedNodes)
+            {
+                item.deselect();
+            }
+            _selectedNodes.Clear();
+        }
+        #endregion
         /// <summary>
         /// 重置所有对于编辑物体的引用。
         /// </summary>
@@ -1503,6 +1605,10 @@ namespace Controllers
         string _curCategroy = null;
         float _curPosX;
         float _curPosY;
+        #region 多选/操作模式
+        GraphOperationMode _operationMode;
+        List<ActionNodeItem> _selectedNodes = new List<ActionNodeItem>();
+        #endregion
         readonly List<Node> _actionNodeList = new List<Node>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
         ActionGraph graph
@@ -1741,5 +1847,10 @@ namespace Controllers
             public ActionNodeGraphInfo graphInfo;
         }
         #endregion
+    }
+    public enum GraphOperationMode
+    {
+        Select,
+        MultiSelect
     }
 }

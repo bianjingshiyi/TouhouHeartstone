@@ -34,6 +34,7 @@ namespace Controllers
                         null,
                         game.card.getOrCreateActionDefineActionNodeGraphInfo(cardPoolId, actionDefine.id)));
             updateProperties();
+            _graphEditorPanelCtrl.setOperationMode(GraphOperationMode.Select);
         }
         public override Task display(CardPoolDisplayInfo info)
         {
@@ -482,6 +483,8 @@ namespace Controllers
         ActionEditorPanel _ui;
         [SerializeField]
         ActionNodeGraphCtrl _actionNodeGraphCtrl;
+        [SerializeField]
+        GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
         [TranslateMsg("自定义动作的端口名称模板（{0}：端口类型（输入/常量/输出），{1}：序号）")]
         public const string EDITOR_ACTION_DEFINE_PORT_NAME_TEMPLATE = "{0}{1}";

@@ -88,6 +88,8 @@ namespace Controllers
                 await _effectEditorCtrl.display(_cardPoolId, _cardDefine, effects[0]);
             }
             updateEffectList(effects);
+
+            _graphEditorPanelCtrl.setOperationMode(GraphOperationMode.Select);
         }
         public override Task display(CardPoolDisplayInfo info)
         {
@@ -1078,6 +1080,8 @@ namespace Controllers
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
         Button _cancelCardPoolSelectButton;
+        [SerializeField]
+        GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
 
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的警告")]

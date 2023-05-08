@@ -329,6 +329,17 @@ namespace UI
         {
             _dirty = true;
         }
+
+        #region 选择
+        public void select()
+        {
+            _selectedIndicator.SetActive(true);
+        }
+        public void deselect()
+        {
+            _selectedIndicator.SetActive(false);
+        }
+        #endregion
         #endregion
         #region 私有方法
         #region 生命周期
@@ -529,6 +540,8 @@ namespace UI
         Button _warningObj;
         [SerializeField]
         Button _helpBtn;
+        [SerializeField]
+        GameObject _selectedIndicator;
 
         [Header("输入")]
         [SerializeField]

@@ -45,6 +45,7 @@ namespace Controllers
                 await _effectEditorCtrl.display(_cardPoolId, _buffDefine, effects[0]);
             }
             updateEffectList(effects);
+            _graphEditorPanelCtrl.setOperationMode(GraphOperationMode.Select);
         }
         public override Task display(CardPoolDisplayInfo info)
         {
@@ -640,6 +641,8 @@ namespace Controllers
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
         Button _cancelCardPoolSelectButton;
+        [SerializeField]
+        GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的警告")]
         public const string BUFF_WARNING_UNSAVED_CHANGES = "是否将更改保存到该增益中？";
