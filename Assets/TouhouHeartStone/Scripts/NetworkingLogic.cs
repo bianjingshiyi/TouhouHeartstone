@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
@@ -166,14 +167,14 @@ namespace Game
 
             // 初始化房间设置
             var option = new HearthstoneOption();
-            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.RandomSeed), option.randomSeed);
-            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.Shuffle), option.shuffle);
-            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.StartGem), option.startGem);
-            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.TimeoutForInitReplace), (int)option.timeoutForInitReplace);
-            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.TimeoutForTurn), (int)option.timeoutForTurn);
-            await roomClient.SetRoomProp(nameof(RoomDataPropName.Option.CardPools), option.cardPools);
-
-
+            await roomClient.SetRoomPropBatch(new List<KeyValuePair<string, object>> {
+                new KeyValuePair<string, object>(nameof(RoomDataPropName.Option.RandomSeed), option.randomSeed),
+                new KeyValuePair<string, object>(nameof(RoomDataPropName.Option.Shuffle), option.shuffle),
+                new KeyValuePair<string, object>(nameof(RoomDataPropName.Option.StartGem), option.startGem),
+                new KeyValuePair<string, object>(nameof(RoomDataPropName.Option.TimeoutForInitReplace), (int)option.timeoutForInitReplace),
+                new KeyValuePair<string, object>(nameof(RoomDataPropName.Option.TimeoutForTurn), (int)option.timeoutForTurn),
+                new KeyValuePair<string, object>(nameof(RoomDataPropName.Option.CardPools), option.cardPools),
+            });
             isInitialRoomOwner = true;
         }
 
