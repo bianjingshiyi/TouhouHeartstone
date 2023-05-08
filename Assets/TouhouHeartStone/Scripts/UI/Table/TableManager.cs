@@ -1914,7 +1914,7 @@ namespace Game
         private const String TAB_GRAVEYARD_NULL = "墓地是空的";
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
         {
-            var curGrave = (deck == ui.SelfDeck ? player : game.getOpponent(player)).getGrave();
+            var curGrave = (deck == ui.SelfGraveDeck ? player : game.getOpponent(player)).getGrave();
             string tip = curGrave.count > 0 ?
                 lang._(TAB_GRAVEYARD_HAS, curGrave.count) :
                 lang._(TAB_GRAVEYARD_NULL);
