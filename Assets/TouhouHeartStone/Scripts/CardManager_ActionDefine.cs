@@ -2,6 +2,7 @@
 using System.Linq;
 using Controllers;
 using TouhouCardEngine;
+using TouhouHeartstone;
 
 namespace Game
 {
@@ -28,11 +29,19 @@ namespace Game
                 var graph = new ActionGraph();
                 GeneratedActionDefine actionDefine = new GeneratedActionDefine(graph, id, null, name, null, null, null);
                 actionDefine.InitNodes();
-                cardPool.actionDefineList.Add(actionDefine);
+                addActionDefine(cardPoolId, actionDefine);
 
                 return actionDefine;
             }
             return null;
+        }
+        public void addActionDefine(long cardPoolId, GeneratedActionDefine actionDefine)
+        {
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
+            {
+                cardPool.actionDefineList.Add(actionDefine);
+            }
         }
         public bool removeActionDefine(long cardPoolId, GeneratedActionDefine actionDefine)
         {
@@ -53,6 +62,30 @@ namespace Game
             }
             actionDefine = null;
             return false;
+        }
+        public GeneratedActionDefine cloneActionDefine(long cardPoolId, GeneratedActionDefine define)
+        {
+            var json = new SerializableActionDefine(define).toJson();
+            var cloneSeri = JsonHelper.fromJson<SerializableActionDefine>(json);
+
+            // 铺设节点。
+            var clone = cloneSeri.toGeneratedActionDefine(game.editor.getTypeByName);
+            // 定义所有节点。
+            clone.graph.DefineGeneratedActionDefine(clone);
+
+            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
+            var nodeDefiner = new THHNodeDefiner(name => {
+                if (name == clone.defineName)
+                    return clone;
+                return game.getActionDefine(name, cardPoolId);
+            }, eventFinder);
+            clone.graph.DefineNodes(nodeDefiner);
+            // 连接所有节点。
+            var graph = clone.graph;
+            var nodes = cloneSeri.graph.GetConnections(graph);
+            graph.AddConnections(nodes);
+
+            return clone;
         }
         public GeneratedActionDefine getActionDefine(long cardPoolId, int id)
         {

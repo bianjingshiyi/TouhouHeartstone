@@ -150,9 +150,10 @@ namespace Controllers
                 string title = game.lang._(StringTable.WARNING);
 
                 string desc = game.lang._(ACTION_WARNING_UNSAVED_CHANGES);
-                string[] optNames = new string[2]
+                string[] optNames = new string[]
                 {
                     game.lang._(ACTION_WARNING_OPTION_SAVE),
+                    game.lang._(ACTION_WARNING_OPTION_DONT_SAVE),
                     game.lang._(ACTION_WARNING_OPTION_CANCEL)
                 };
                 game.ui.dialog.ShowOptions(title, desc, optNames, (index) =>
@@ -160,6 +161,10 @@ namespace Controllers
                     if (index == 0)
                     {
                         saveAction();
+                        exit();
+                    }
+                    else if (index == 1)
+                    {
                         exit();
                     }
                 });
@@ -368,6 +373,9 @@ namespace Controllers
         }
         private void saveAction()
         {
+            game.card.removeActionDefine(_cardPoolId, game.card.getActionDefine(_cardPoolId, _actionDefine.id));
+            game.card.addActionDefine(_cardPoolId, _actionDefine);
+
             scene.editor.hasUnsavedChanges = true;
             clearActionUnsaved();
         }
@@ -485,6 +493,8 @@ namespace Controllers
         public const string ACTION_WARNING_UNSAVED_CHANGES = "是否将更改保存到该自定义动作中？";
         [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
         public const string ACTION_WARNING_OPTION_SAVE = "保存";
+        [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
+        public const string ACTION_WARNING_OPTION_DONT_SAVE = "不保存";
         [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
         public const string ACTION_WARNING_OPTION_CANCEL = "取消";
         [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]

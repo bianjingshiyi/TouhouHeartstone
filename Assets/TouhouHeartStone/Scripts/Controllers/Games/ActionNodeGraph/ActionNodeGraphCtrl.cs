@@ -166,7 +166,8 @@ namespace Controllers
                 else if (index == 1)//编辑
                 {
                     GeneratedActionDefine generatedActionDefine = getActionDefine(_curEditActionNode.defineName) as GeneratedActionDefine;
-                    await scene.editor.openActionEditor(_curCardPoolId, generatedActionDefine);
+                    var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
+                    await scene.editor.openActionEditor(_curCardPoolId, clone);
                 }
                 closeMenu();
             }
@@ -208,7 +209,8 @@ namespace Controllers
                         GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(
                             _curCardPoolId,
                             game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT));
-                        await scene.editor.openActionEditor(_curCardPoolId, generatedActionDefine);
+                        var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
+                        await scene.editor.openActionEditor(_curCardPoolId, clone);
                     }
                 }
                 else
