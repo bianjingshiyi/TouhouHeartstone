@@ -609,33 +609,32 @@ namespace Controllers
                 {
                     //节点没有增益，那么就为它新建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
+                    game.card.addBuffDefine(_curCardPoolId, generatedBuffDefine);
                     actionNode.setConst(constName, new DefineReference(generatedBuffDefine.cardPoolId, generatedBuffDefine.id));
-                    //同时还有增益的皮肤，也要新建一个
-                    buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
                 else if (!tryGetBuffDefine(actionNode.getConst(constName), out GeneratedBuffDefine buffDefine))
                 {
                     //读到了增益id，但是查无此增益，那么重新创建一个
                     generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
+                    game.card.addBuffDefine(_curCardPoolId, generatedBuffDefine);
                     actionNode.setConst(constName, new DefineReference(_curCardPoolId, generatedBuffDefine.id));
-                    //皮肤也要新建一个
-                    buffSkin = game.card.createBuffSkin(_curCardPoolId, generatedBuffDefine.id, game.langManager.getLanguage());
                 }
                 else
                 {
                     //获取到了增益id，并且确实存在对应的增益
                     generatedBuffDefine = buffDefine;
-                    //获取增益对应的皮肤
-                    buffSkin = game.card.getBuffSkin(generatedBuffDefine);
-                    if (buffSkin == null)
-                    {
-                        //如果不存在皮肤，那就创建一个
-                        buffSkin = game.card.createBuffSkin(
-                            generatedBuffDefine.cardPoolId,
-                            generatedBuffDefine.id,
-                            game.langManager.getLanguage());
-                    }
                 }
+                //获取增益对应的皮肤
+                buffSkin = game.card.getBuffSkin(generatedBuffDefine);
+                if (buffSkin == null)
+                {
+                    //如果不存在皮肤，那就创建一个
+                    buffSkin = game.card.createBuffSkin(
+                        generatedBuffDefine.cardPoolId,
+                        generatedBuffDefine.id,
+                        game.langManager.getLanguage());
+                }
+                game.card.addBuffSkin(_curCardPoolId, buffSkin);
                 BuffDefine[] buffDefines = game.card.getBuffDefines(game.card.getLocalCardPoolReference(_curCardPoolId))
                     .OrderBy(p => p.Value.cardPoolId)
                     .ThenBy(p => p.Value.id)

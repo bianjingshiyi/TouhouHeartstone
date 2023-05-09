@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
@@ -19,11 +20,13 @@ namespace Controllers
         /// <summary>
         /// 打开一个增益进行编辑
         /// </summary>
-        public async Task display(long cardPoolId, GeneratedBuffDefine buffDefine)
+        public async Task display(long cardPoolId, GeneratedBuffDefine buffDefine, BuffSkin[] skins)
         {
             gameObject.SetActive(true);
             _cardPoolId = cardPoolId;
             _buffDefine = buffDefine;
+            _buffSkins.Clear();
+            _buffSkins.AddRange(skins);
             updateSkinNames();
             _ui.setId(buffDefine.id);
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
@@ -44,7 +47,10 @@ namespace Controllers
             if (info == null)
                 return Task.CompletedTask;
             if (info.displayObj is GeneratedBuffDefine buffDefine)
-                return display(info.cardPoolId, buffDefine);
+            {
+                var skins = info.skins as BuffSkin[] ?? new BuffSkin[0];
+                return display(info.cardPoolId, buffDefine, skins);
+            }
             return Task.CompletedTask;
         }
         #endregion
@@ -89,6 +95,7 @@ namespace Controllers
                 markBuffUnsaved();
                 //新建皮肤
                 _curBuffSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, getCurrentLanguage());
+                _buffSkins.Add(_curBuffSkin);
                 updateSkinNames();
             }
             await setCurSkinIndex(skinIndex);
@@ -277,17 +284,22 @@ namespace Controllers
             {
                 string title = game.lang._(StringTable.WARNING);
 
-                string desc = game.lang._(CARD_WARNING_UNSAVED_CHANGES);
-                string[] optNames = new string[2]
+                string desc = game.lang._(BUFF_WARNING_UNSAVED_CHANGES);
+                string[] optNames = new string[]
                 {
-                    game.lang._(CARD_WARNING_OPTION_SAVE),
-                    game.lang._(CARD_WARNING_OPTION_CANCEL)
+                    game.lang._(BUFF_WARNING_OPTION_SAVE),
+                    game.lang._(BUFF_WARNING_OPTION_DONT_SAVE),
+                    game.lang._(BUFF_WARNING_OPTION_CANCEL)
                 };
                 game.ui.dialog.ShowOptions(title, desc, optNames, (index) =>
                 {
                     if (index == 0)
                     {
                         saveBuff();
+                        exit();
+                    }
+                    else if (index == 1)
+                    {
                         exit();
                     }
                 });
@@ -310,6 +322,7 @@ namespace Controllers
             if (skins.Length < 1)
             {
                 BuffSkin skin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, getCurrentLanguage());
+                _buffSkins.Add(skin);
                 skins = new BuffSkin[] { skin };
             }
             _ui.setSkinNames(skins.Select(g => g.name).ToArray());
@@ -333,8 +346,7 @@ namespace Controllers
         }
         private BuffSkin[] getCurrentBuffSkins()
         {
-            var poolReference = game.card.getLocalCardPoolReference(_buffDefine.cardPoolId);
-            return game.card.getBuffSkins(poolReference, _buffDefine.id);
+            return _buffSkins.ToArray();
         }
         private async void exit()
         {
@@ -542,6 +554,15 @@ namespace Controllers
         }
         private void saveBuff()
         {
+            game.card.removeBuffDefine(_cardPoolId, _buffDefine.id);
+            game.card.addBuffDefine(_cardPoolId, _buffDefine);
+
+            game.card.removeAllBuffSkins(_cardPoolId, _buffDefine.id);
+            foreach (var skin in _buffSkins)
+            {
+                game.card.addBuffSkin(_cardPoolId, skin);
+            }
+
             scene.editor.hasUnsavedChanges = true;
             clearBuffUnsaved();
         }
@@ -563,11 +584,13 @@ namespace Controllers
         Button _cancelCardPoolSelectButton;
 
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的警告")]
-        public const string CARD_WARNING_UNSAVED_CHANGES = "是否将更改保存到该增益中？";
+        public const string BUFF_WARNING_UNSAVED_CHANGES = "是否将更改保存到该增益中？";
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]
-        public const string CARD_WARNING_OPTION_SAVE = "保存";
+        public const string BUFF_WARNING_OPTION_SAVE = "保存";
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]
-        public const string CARD_WARNING_OPTION_CANCEL = "取消";
+        public const string BUFF_WARNING_OPTION_DONT_SAVE = "不保存";
+        [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]
+        public const string BUFF_WARNING_OPTION_CANCEL = "取消";
 
         public static string[] propertyTypes = new string[]
         {
@@ -604,6 +627,10 @@ namespace Controllers
         /// 正在编辑的增益定义的皮肤。
         /// </summary>
         BuffSkin _curBuffSkin;
+        /// <summary>
+        /// 正在编辑的增益定义的所有皮肤。
+        /// </summary>
+        List<BuffSkin> _buffSkins = new List<BuffSkin>();
         #endregion
     }
 }

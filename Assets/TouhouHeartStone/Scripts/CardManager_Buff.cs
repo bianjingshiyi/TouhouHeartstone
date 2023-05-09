@@ -5,6 +5,8 @@ using UI;
 using UnityEngine;
 using System.Linq;
 using TouhouCardEngine.Shared;
+using Controllers;
+using TouhouHeartstone;
 
 namespace Game
 {
@@ -42,8 +44,37 @@ namespace Game
             {
                 cardPoolId = cardPoolId
             };
-            cardPool.buffDefineList.Add(buffDefine);
             return buffDefine;
+        }
+        public void addBuffDefine(long cardPoolId, GeneratedBuffDefine define)
+        {
+            var cardPool = getLocalCardPool(cardPoolId);
+            if (cardPool == null)
+            {
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+            }
+            cardPool.buffDefineList.Add(define);
+        }
+        public GeneratedBuffDefine cloneBuffDefine(GeneratedBuffDefine buffDefine)
+        {
+            var json = new SerializableBuffDefine(buffDefine).toJson();
+            var cloneSeri = JsonHelper.fromJson<SerializableBuffDefine>(json);
+
+            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
+
+            var nodeDefiner = new THHNodeDefiner(name => game.getActionDefine(name, buffDefine.cardPoolId), eventFinder);
+            var clone = cloneSeri.toGeneratedBuffDefine(nodeDefiner);
+            clone.cardPoolId = buffDefine.cardPoolId;
+            return clone;
+        }
+        public bool removeBuffDefine(long cardPoolId, int buffId)
+        {
+            var poolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetBuffDefine(poolRef, buffId, out var buffDefine))
+            {
+                return removeBuffDefine(cardPoolId, buffDefine);
+            }
+            return false;
         }
         public bool removeBuffDefine(long cardPoolId, GeneratedBuffDefine buffDefine)
         {
@@ -106,8 +137,40 @@ namespace Game
             {
                 Debug.LogWarning("已经存在增益" + buffId + "的语言为" + language + "的皮肤");
             }
-            cardPool.buffSkinList.Add(buffSkin);
             return buffSkin;
+        }
+        public void addBuffSkin(long cardPoolId, BuffSkin buffSkin)
+        {
+            var cardPool = getLocalCardPool(cardPoolId);
+            if (cardPool == null)
+            {
+                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+            }
+            cardPool.buffSkinList.Add(buffSkin);
+        }
+        public BuffSkin[] cloneBuffSkins(long cardPoolId, int buffId)
+        {
+            var poolRef = getLocalCardPoolReference(cardPoolId);
+            var skins = getBuffSkins(poolRef, buffId);
+            return cloneBuffSkins(skins);
+        }
+        public BuffSkin[] cloneBuffSkins(CardPoolInfo info, int buffId)
+        {
+            return cloneBuffSkins(getBuffSkins(info.ToReference(), buffId));
+        }
+        public BuffSkin[] cloneBuffSkins(BuffSkin[] skins)
+        {
+            var json = skins.toJson();
+            var clone = JsonHelper.fromJson<BuffSkin[]>(json);
+            return clone;
+        }
+        public void removeAllBuffSkins(long cardPoolId, int buffId)
+        {
+            var pool = getLocalCardPool(cardPoolId);
+            if (pool != null)
+            {
+                pool.buffSkinList.RemoveAll(s => s.buffId == buffId);
+            }
         }
         public bool removeBuffSkin(BuffSkin buffSkin)
         {

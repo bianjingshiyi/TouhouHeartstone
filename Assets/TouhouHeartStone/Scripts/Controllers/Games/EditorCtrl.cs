@@ -106,11 +106,12 @@ namespace Controllers
                 displayObj = actionDefine
             });
         }
-        public Task openBuffEditor(long cardPoolId, GeneratedBuffDefine buffDefine)
+        public Task openBuffEditor(long cardPoolId, GeneratedBuffDefine buffDefine, BuffSkin[] skins)
         {
             return openEditorPanel(new CardPoolDisplayInfo()
             {
                 cardPoolId = cardPoolId,
+                skins = skins,
                 displayObj = buffDefine
             });
         }

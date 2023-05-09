@@ -25,6 +25,7 @@ namespace Controllers
             if (index == 0)
             {
                 GeneratedBuffDefine newBuffDefine = game.card.createBuffDefine(_curCardPoolId);
+                game.card.addBuffDefine(_curCardPoolId, newBuffDefine);
                 await updateBuffActionNode(item, newBuffDefine);
                 OnEdited();
                 return;
@@ -42,7 +43,9 @@ namespace Controllers
         {
             if (tryGetBuffDefine(getActionNode(item).getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
             {
-                await scene.editor.openBuffEditor(_curCardPoolId, buffDefine);
+                var clone = game.card.cloneBuffDefine(buffDefine);
+                var skins = game.card.cloneBuffSkins(_curCardPoolId, buffDefine.id);
+                await scene.editor.openBuffEditor(_curCardPoolId, clone, skins);
             }
         }
         #endregion
