@@ -752,9 +752,13 @@ namespace Controllers
             //更新ui
             _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.value);
             //更新变长参数。
-            if (inputPort.node is ActionNode actionNode && getActionDefine(actionNode.defineName)?.isParams == true)
+            if (inputPort.node is ActionNode actionNode)
             {
-                inputNodeItem.setInputs(getNodeInputViewData(actionNode));
+                var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
+                if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
+                {
+                    inputNodeItem.setInputs(getNodeInputViewData(actionNode));
+                }
             }
         }
 
@@ -909,9 +913,13 @@ namespace Controllers
             _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
             graph.disconnect(outputPort, inputPort);
             //更新变长参数。
-            if (inputPort is ValueInput && inputPort.node is ActionNode actionNode && getActionDefine(actionNode.defineName)?.isParams == true)
+            if (inputPort.node is ActionNode actionNode)
             {
-                inputNodeItem.setInputs(getNodeInputViewData(actionNode));
+                var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
+                if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
+                {
+                    inputNodeItem.setInputs(getNodeInputViewData(actionNode));
+                }
             }
         }
         /// 断开：动作节点----所有节点

@@ -205,8 +205,6 @@ namespace Controllers
             var port = _actionDefine.inputDefines.ElementAt(inputIndex);
             var curType = port.type;
             bool isArray = isTypeArray(curType);
-            // 变长参数的类型是数组。
-            isArray |= isLastInput(inputIndex) && _actionDefine.isParams;
             port.type = getTargetType(newType, isArray);
             updateInputs();
             _actionNodeGraphCtrl.onChangeActionDefineInputType(port.name);
@@ -223,8 +221,6 @@ namespace Controllers
         {
             inputIndex++; //去掉了UI的动作端口，索引+1。
             var port = _actionDefine.inputDefines.ElementAt(inputIndex);
-            // 变长参数的类型是数组。
-            isArray |= isLastInput(inputIndex) && _actionDefine.isParams;
             port.type = getTargetType(port.type, isArray);
             updateInputs();
             _actionNodeGraphCtrl.onChangeActionDefineInputType(port.name);
@@ -232,13 +228,9 @@ namespace Controllers
         }
         private void onChangeInputIsParams(int inputIndex, bool isParams)
         {
-            _actionDefine.isParams = isParams;
-
-            int lastIndex = _actionDefine.inputDefines.Count() - 1;
-            var port = _actionDefine.inputDefines.ElementAt(lastIndex);
-            var curType = port.type;
-            bool isArray = isTypeArray(curType) || isParams;
-            port.type = getTargetType(port.type, isArray);
+            inputIndex++; //去掉了UI的动作端口，索引+1。
+            var port = _actionDefine.inputDefines.ElementAt(inputIndex);
+            port.isParams = isParams;
 
             updateInputs();
             _actionNodeGraphCtrl.onChangeActionDefineInputType(port.name);
@@ -399,6 +391,7 @@ namespace Controllers
             {
                 i++; //UI隐藏了动作端口，索引+1。
                 Type type = input.type;
+                bool isParams = input.isParams;
                 bool isArray = isTypeArray(type);
                 if (isArray)
                 {
@@ -408,7 +401,7 @@ namespace Controllers
                 return new ActionPortDefineViewData()
                 {
                     name = input.getDisplayName(),
-                    isParams = _actionDefine.isParams,
+                    isParams = isParams,
                     showParams = isLastInput(i),
                     isArray = isArray,
                     typeIndex = typeIndex

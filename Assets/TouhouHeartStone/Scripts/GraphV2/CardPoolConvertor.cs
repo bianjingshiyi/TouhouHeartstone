@@ -1055,7 +1055,8 @@ namespace Game
                 index++;
             }
             var input = node.inputPorts.ElementAtOrDefault(index);
-            if (input == null && define.isParams && define.inputDefines.Count() > 0 && index >= define.inputDefines.Count())
+            var lastInputDefine = define.inputDefines.LastOrDefault();
+            if (input == null && lastInputDefine != null && lastInputDefine.isParams && index >= define.inputDefines.Count())
             {
                 do
                 {

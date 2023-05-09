@@ -36,8 +36,8 @@ namespace Game
             var repeatTimePort = node.getOutputPort<ValueOutput>(nameof(repeatTime));
             for (int i = 1; i <= count; i++)
             {
-                flow.setValue(repeatTimePort, i);
                 flow.EnterScope();
+                flow.setValue(repeatTimePort, i);
                 await game.runActions(flow, action);
                 flow.ExitScope();
             }
@@ -863,8 +863,8 @@ namespace Game
             var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
             foreach (object ele in array)
             {
-                flow.setValue(elementPort, ele);
                 flow.EnterScope();
+                flow.setValue(elementPort, ele);
                 await game.runActions(flow, action);
                 flow.ExitScope();
             }
