@@ -51,6 +51,7 @@ namespace Controllers
             // Effects.
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActiveEffect))) BsonClassMap.RegisterClassMap<SerializableActiveEffect>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializablePassiveEffect))) BsonClassMap.RegisterClassMap<SerializablePassiveEffect>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableEventEffect))) BsonClassMap.RegisterClassMap<SerializableEventEffect>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableAuraEffect))) BsonClassMap.RegisterClassMap<SerializableAuraEffect>();
             isInited = true;
         }
