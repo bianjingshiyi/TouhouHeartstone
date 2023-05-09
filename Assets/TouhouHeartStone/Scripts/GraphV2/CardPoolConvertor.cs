@@ -557,6 +557,7 @@ namespace Game
                 passive = new GeneratedEventEffect(graph);
             }
             passive.Init();
+            graph.DefineNodes(definer);
             passive.name = effect.name;
 
             // 生效事件。
@@ -606,8 +607,6 @@ namespace Game
                 // 添加离散节点。
                 CreateFreeNodesToGraph(param);
             }
-
-            graph.DefineNodes(definer);
 
             if (passive is GeneratedEventEffect eventEffect)
             {
