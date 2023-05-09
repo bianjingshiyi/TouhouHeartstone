@@ -58,5 +58,6 @@ namespace UI
     {
         public long cardPoolId;
         public object displayObj;
+        public object[] skins;
     }
 }

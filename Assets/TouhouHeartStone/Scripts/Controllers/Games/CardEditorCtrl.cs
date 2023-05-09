@@ -20,13 +20,15 @@ namespace Controllers
         /// <summary>
         /// 打开一张卡片进行编辑
         /// </summary>
-        public async Task display(long cardPoolId, CardDefine cardDefine)
+        public async Task display(long cardPoolId, CardDefine cardDefine, CardSkinData[] skins)
         {
             gameObject.SetActive(true);
             var selectableCharacters = getSelectableCharacters();
             _selectableCharacters = selectableCharacters;
             _cardPoolId = cardPoolId;
             _cardDefine = cardDefine;
+            _cardSkins.Clear();
+            _cardSkins.AddRange(skins);
             updateSkinNames();
             _ui.setId(cardDefine.id);
             _ui.setType(Array.IndexOf(_types, cardDefine.type), cardDefine.type);
@@ -93,7 +95,10 @@ namespace Controllers
             if (info == null)
                 return Task.CompletedTask;
             if (info.displayObj is CardDefine cardDefine)
-                return display(info.cardPoolId, cardDefine);
+            {
+                var skins = info.skins as CardSkinData[] ?? Array.Empty<CardSkinData>();
+                return display(info.cardPoolId, cardDefine, skins);
+            }
             return Task.CompletedTask;
         }
         #endregion
@@ -214,6 +219,7 @@ namespace Controllers
                 MarkCardUnsaved();
                 //新建皮肤
                 _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
+                _cardSkins.Add(_curCardSkin);
                 updateSkinNames();
             }
             await setCurSkinIndex(skinIndex);
@@ -240,7 +246,7 @@ namespace Controllers
                 Debug.LogWarning("你不能删除卡牌的最后一个皮肤");
                 return;
             }
-            game.card.removeSkin(_cardPoolId, _cardDefine.id, _curCardSkin.skinId);
+            _cardSkins.Remove(_curCardSkin);
             updateSkinNames();
             await setCurSkinIndex(0);
         }
@@ -254,6 +260,7 @@ namespace Controllers
                 MarkCardUnsaved();
                 //不存在对应语言的皮肤，新建一个
                 targetSkin = game.card.createSkinForDiffLanguage(_cardPoolId, _curCardSkin, language);
+                _cardSkins.Add(targetSkin);
             }
             _curCardSkin = targetSkin;
             _ui.setLanguage(languageIndex);
@@ -508,9 +515,10 @@ namespace Controllers
                 string title = game.lang._(StringTable.WARNING);
 
                 string desc = game.lang._(CARD_WARNING_UNSAVED_CHANGES);
-                string[] optNames = new string[2]
+                string[] optNames = new string[]
                 {
                     game.lang._(CARD_WARNING_OPTION_SAVE),
+                    game.lang._(CARD_WARNING_OPTION_DONT_SAVE),
                     game.lang._(CARD_WARNING_OPTION_CANCEL)
                 };
                 game.ui.dialog.ShowOptions(title, desc, optNames, (index) =>
@@ -518,6 +526,10 @@ namespace Controllers
                     if (index == 0)
                     {
                         saveCard();
+                        exit();
+                    }
+                    else if(index == 1)
+                    {
                         exit();
                     }
                 });
@@ -828,6 +840,7 @@ namespace Controllers
             {
                 CardSkinData skin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 skins = new CardSkinData[] { skin };
+                _cardSkins.Add(skin);
             }
             _ui.setSkinNames(skins.GroupBy(s => s.skinId)
                 .Select(g => g.FirstOrDefault(s => s.language == game.langManager.getLanguage()) is CardSkinData s2 ? s2.skinName : g.First().skinName)
@@ -856,7 +869,7 @@ namespace Controllers
         }
         private CardSkinData[] getCurrentCardSkins()
         {
-            return game.card.getAllLocalSkins(_cardDefine.cardPoolId, _cardDefine.id);
+            return _cardSkins.ToArray();
         }
 
         private async Task setSkillRef(DefineReference defRef)
@@ -872,14 +885,14 @@ namespace Controllers
 
         private void saveCard()
         {
-            // TODO : 目前单张卡牌无法单独保存，需要解决卡牌效果列表的深复制。
-            //game.card.replaceCardDefine(_cardPoolId, _curCardDefine.id, _curCardDefine);
+            game.card.removeCard(_cardPoolId, _cardDefine.id);
+            game.card.addCard(_cardPoolId, _cardDefine);
 
-            //game.card.removeAllSkins(_cardPoolId, _curCardDefine.id);
-            //foreach (var skin in _curCardSkins)
-            //{
-            //    game.card.addSkin(_cardPoolId, skin);
-            //}
+            game.card.removeAllCardSkins(_cardPoolId, _cardDefine.id);
+            foreach (var skin in _cardSkins)
+            {
+                game.card.addCardSkin(_cardPoolId, skin);
+            }
 
             scene.editor.hasUnsavedChanges = true;
             ClearCardUnsaved();
@@ -1089,6 +1102,8 @@ namespace Controllers
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
         public const string CARD_WARNING_OPTION_SAVE = "保存";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
+        public const string CARD_WARNING_OPTION_DONT_SAVE = "不保存";
+        [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]
         public const string CARD_WARNING_OPTION_CANCEL = "取消";
         [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
         public const string CARD_CUSTOM_PROP_NAME_TAKEN = "该属性名已被使用！";
@@ -1216,6 +1231,10 @@ namespace Controllers
         /// 正在编辑的卡牌定义的皮肤。
         /// </summary>
         CardSkinData _curCardSkin;
+        /// <summary>
+        /// 正在编辑的卡牌定义的所有的皮肤。
+        /// </summary>
+        List<CardSkinData> _cardSkins = new List<CardSkinData>();
         CardDefine[] _selectableCharacters;
     }
 }

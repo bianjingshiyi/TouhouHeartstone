@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
@@ -88,12 +89,13 @@ namespace Controllers
             _currentEditor = await displayPanel(displayInfo);
             _stack.Push(displayInfo);
         }
-        public Task openCardEditor(long cardPoolId, CardDefine cardDefine)
+        public Task openCardEditor(long cardPoolId, CardDefine cardDefine, CardSkinData[] skins)
         {
             return openEditorPanel(new CardPoolDisplayInfo()
             {
                 cardPoolId = cardPoolId,
-                displayObj = cardDefine
+                displayObj = cardDefine,
+                skins = skins
             });
         }
         public Task openActionEditor(long cardPoolId, GeneratedActionDefine actionDefine)
@@ -236,7 +238,9 @@ namespace Controllers
         /// <param name="index"></param>
         private async void onClickCard(CardDefine cardDefine)
         {
-            await openCardEditor(_curCardPoolInfo.cardPoolId, cardDefine);
+            var define = game.card.cloneCardDefine(cardDefine);
+            var skins = game.card.cloneCardSkins(_curCardPoolInfo, cardDefine.id);
+            await openCardEditor(_curCardPoolInfo.cardPoolId, define, skins);
         }
         /// <summary>
         /// 当点击新建卡牌按钮
@@ -244,8 +248,13 @@ namespace Controllers
         private async void onClickNewCardButton()
         {
             hasUnsavedChanges = true;
-            game.card.createCard(_curCardPoolInfo, out CardDefine newCardDefine, out _);
-            await openCardEditor(_curCardPoolInfo.cardPoolId, newCardDefine);
+            game.card.createCard(_curCardPoolInfo, out CardDefine newCardDefine, out var skin);
+            game.card.addCard(_curCardPoolInfo, newCardDefine);
+            game.card.addCardSkin(_curCardPoolInfo.cardPoolId, skin);
+
+            var define = game.card.cloneCardDefine(newCardDefine);
+            var skins = game.card.cloneCardSkins(_curCardPoolInfo, newCardDefine.id);
+            await openCardEditor(_curCardPoolInfo.cardPoolId, define, skins);
         }
         /// <summary>
         /// 当点击保存按钮，保存当前编辑的卡池
