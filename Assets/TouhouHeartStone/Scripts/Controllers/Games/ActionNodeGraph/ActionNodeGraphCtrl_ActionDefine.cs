@@ -254,10 +254,8 @@ namespace Controllers
             if (parent == null)
                 parent = string.Empty;
             parent = parent.Replace('\\', '/').Trim('/');
-            return getAllActionDefines().Where(d => !d.disableCreate).Select(actionDefine =>
+            return getAllActionDefines().Where(d => CanActionDefineBeCreated(d)).Select(actionDefine =>
             {
-                if (actionDefine.disableCreate)
-                    return null;
                 var nodeCategory = getActionDefineCategory(actionDefine);
                 // 去掉父类别。
                 if (!string.IsNullOrEmpty(parent))
@@ -289,7 +287,7 @@ namespace Controllers
             parent = parent.Replace('\\', '/').Trim('/');
             return getAllActionDefines().Where(actionDefine => 
             {
-                if (actionDefine.disableCreate)
+                if (!CanActionDefineBeCreated(actionDefine))
                     return false;
                 var nodeCategory = getActionDefineCategory(actionDefine);
                 return nodeCategory == parent;

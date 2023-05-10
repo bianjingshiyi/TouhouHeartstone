@@ -643,6 +643,7 @@ namespace Controllers
             get { return _hasUnsavedChanges; }
             set { _hasUnsavedChanges = value; }
         }
+        public string nodeClipboard { get; set; }
         public string CurCardPoolPath
         {
             get { return _curCardPoolPath; }

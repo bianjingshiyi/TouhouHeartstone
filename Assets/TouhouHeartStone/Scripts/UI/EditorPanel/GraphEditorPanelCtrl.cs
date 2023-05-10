@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class GraphEditorPanelCtrl : MonoBehaviour
+    internal class GraphEditorPanelCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         public void setOperationMode(GraphOperationMode mode)
         {
@@ -16,6 +16,14 @@ namespace UI
         {
             _singleSelectButton.onClick.AddListener(OnClickSingleSelectButton);
             _multiSelectButton.onClick.AddListener(OnClickMultiSelectButton);
+            _copyButton.onClick.AddListener(OnClickCopyButton);
+            _pasteButton.onClick.AddListener(OnClickPasteButton);
+
+            updatePasteButton();
+        }
+        private void updatePasteButton()
+        {
+            _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard);
         }
 
         private void OnClickSingleSelectButton()
@@ -25,6 +33,20 @@ namespace UI
         private void OnClickMultiSelectButton()
         {
             setOperationMode(GraphOperationMode.MultiSelect);
+        }
+        private void OnClickCopyButton()
+        {
+            var clipboard = _actionGraphCtrl.copySelection();
+            scene.editor.nodeClipboard = clipboard;
+            updatePasteButton();
+        }
+        private async void OnClickPasteButton()
+        {
+            var clipboard = scene.editor.nodeClipboard;
+            if (string.IsNullOrEmpty(clipboard))
+                return;
+            await _actionGraphCtrl.pasteClipboard(clipboard);
+            updatePasteButton();
         }
         [SerializeField]
         ActionNodeGraphCtrl _actionGraphCtrl;

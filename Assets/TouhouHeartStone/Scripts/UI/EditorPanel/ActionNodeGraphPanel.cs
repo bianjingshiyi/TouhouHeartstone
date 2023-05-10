@@ -383,6 +383,10 @@ namespace UI
         {
             return _actionNodesRoot.anchoredPosition;
         }
+        public Vector2 getViewCenterPosition()
+        {
+            return -new Vector2(_content.anchoredPosition.x / _content.localScale.y, _content.anchoredPosition.y / _content.localScale.y);
+        }
         public void setOperationMode(GraphOperationMode mode)
         {
             _operationMode = mode;

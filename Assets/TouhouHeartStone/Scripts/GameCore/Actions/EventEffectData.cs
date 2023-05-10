@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using TouhouCardEngine.Interfaces;
 
 namespace TouhouCardEngine
 {
@@ -14,9 +13,6 @@ namespace TouhouCardEngine
                 PortDefine.Value(typeof(PileNameCollection), pileListName, "PileList")
             };
             _outputs = new PortDefine[0];
-            hideDocument = true;
-            disableMenu = true;
-            disableCreate = true;
         }
         public override Task<ControlOutput> run(Flow flow, Node node)
         {
