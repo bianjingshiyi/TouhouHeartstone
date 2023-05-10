@@ -120,7 +120,7 @@ namespace Controllers
         /// </summary>
         private void OnEdited()
         {
-            scene.cardEditor.MarkCardUnsaved();
+            OnGraphEdited?.Invoke();
         }
         /// <summary>
         /// 当用户长按背景，展开菜单。目前点菜单内容只有创建节点。
@@ -1328,6 +1328,9 @@ namespace Controllers
             }
 
         }
+        #endregion
+        #region 事件
+        public event Action OnGraphEdited;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-参数名称-作用条件（自定义光环-作用条件-输出值）")]

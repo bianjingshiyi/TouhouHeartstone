@@ -84,15 +84,21 @@ namespace Controllers
             _ui.OnChangeModifierProperty += onChangeModifierProperty;
             _ui.OnChangeModifierOperator += onChangeModifierOperator;
             _ui.OnChangeModifierValue += onChangeModifierValue;
+            
+            _effectEditorCtrl.OnGraphEdited += onGraphEdited;
         }
         #endregion
         #region 事件回调
+        private void onGraphEdited()
+        {
+            markBuffUnsaved();
+        }
         #region 皮肤
         private async void onChangeSkin(int skinIndex)
         {
+            markBuffUnsaved();
             if (skinIndex == getSkinCount())
             {
-                markBuffUnsaved();
                 //新建皮肤
                 _curBuffSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, getCurrentLanguage());
                 _buffSkins.Add(_curBuffSkin);
@@ -218,6 +224,7 @@ namespace Controllers
             effect.name = value;
             _ui.hideEffectListItemInputField(index);
             updateEffectList(effects.ToArray());
+            markBuffUnsaved();
         }
         #endregion
 
@@ -227,21 +234,25 @@ namespace Controllers
             PropModifier propModifier = new CostModifier(0);
             _buffDefine.propModifierList.Add(propModifier);
             updateModifiers();
+            markBuffUnsaved();
         }
         private void onRemoveModifier(int modifierIndex)
         {
             _buffDefine.propModifierList.RemoveAt(modifierIndex);
             updateModifiers();
+            markBuffUnsaved();
         }
         private void onChangeModifierProperty(int modifierIndex, int propertyIndex)
         {
             _buffDefine.propModifierList[modifierIndex] = createPropertyModifierByIndex(propertyIndex);
             updateModifiers();
+            markBuffUnsaved();
         }
         private void onChangeModifierOperator(int modifierIndex, int operatorIndex)
         {
             setModifyTypeByIndex(_buffDefine.propModifierList[modifierIndex], operatorIndex);
             updateModifiers();
+            markBuffUnsaved();
         }
         private void onChangeModifierValue(int modifierIndex, object value)
         {
@@ -262,6 +273,7 @@ namespace Controllers
                 }
             }
             updateModifiers();
+            markBuffUnsaved();
         }
         #endregion
 

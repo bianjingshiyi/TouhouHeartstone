@@ -88,9 +88,15 @@ namespace Controllers
             _ui.onClickDeleteActionButton += onClickDeleteActionButton;
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
+
+            _actionNodeGraphCtrl.OnGraphEdited += onGraphEdited;
         }
         #endregion
         #region 事件回调
+        private void onGraphEdited()
+        {
+            markActionUnsaved();
+        }
         /// <summary>
         /// 当用户更改动作名
         /// </summary>

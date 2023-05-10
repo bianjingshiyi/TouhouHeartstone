@@ -209,14 +209,20 @@ namespace Controllers
             _ui.onClickPropertyItemButton += onClickPropertyItemButtonCallback;
             _ui.onClickPropertyAddItemButton += onClickPropertyAddItemButtonCallback;
             _ui.onClickPropertyRemoveItemButton += onClickPropertyRemoveItemButtonCallback;
+
+            _effectEditorCtrl.OnGraphEdited += onGraphEdited;
         }
         #endregion
         #region 事件回调
+        private void onGraphEdited()
+        {
+            MarkCardUnsaved();
+        }
         private async void onChangeSkin(int skinIndex)
         {
+            MarkCardUnsaved();
             if (skinIndex == getSkinCount())
             {
-                MarkCardUnsaved();
                 //新建皮肤
                 _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 _cardSkins.Add(_curCardSkin);

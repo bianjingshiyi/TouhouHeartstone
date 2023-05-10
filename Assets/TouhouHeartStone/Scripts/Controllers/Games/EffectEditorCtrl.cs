@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BJSYGameCore;
 using BJSYGameCore.UI;
 using TouhouCardEngine;
@@ -73,6 +74,19 @@ namespace Controllers
             _effect = null;
             _actionNodeGraphCtrl.hide();
         }
+        #endregion
+        #region 私有方法
+        void Awake()
+        {
+            _actionNodeGraphCtrl.OnGraphEdited += OnGraphEditedCallback;
+        }
+        private void OnGraphEditedCallback()
+        {
+            OnGraphEdited?.Invoke();
+        }
+        #endregion
+        #region 事件
+        public event Action OnGraphEdited;
         #endregion
         #region 属性字段
 
