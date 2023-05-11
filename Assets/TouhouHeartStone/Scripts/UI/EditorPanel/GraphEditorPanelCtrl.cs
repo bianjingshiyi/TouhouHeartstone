@@ -8,6 +8,7 @@ namespace UI
     {
         public void setOperationMode(GraphOperationMode mode)
         {
+            scene.editor.graphOperationMode = mode;
             _actionGraphCtrl.SetOperationMode(mode);
             _singleSelectObj.SetActive(mode == GraphOperationMode.Select);
             _multiSelectObj.SetActive(mode == GraphOperationMode.MultiSelect);

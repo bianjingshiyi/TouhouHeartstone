@@ -1645,7 +1645,6 @@ namespace Controllers
         /// </summary>
         private void resetEditObjects()
         {
-            SetOperationMode(GraphOperationMode.Select);
             clearSelection();
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();

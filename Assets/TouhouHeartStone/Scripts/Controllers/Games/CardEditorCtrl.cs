@@ -89,7 +89,7 @@ namespace Controllers
             }
             updateEffectList(effects);
 
-            _graphEditorPanelCtrl.setOperationMode(GraphOperationMode.Select);
+            _graphEditorPanelCtrl.setOperationMode(scene.editor.graphOperationMode);
         }
         public override Task display(CardPoolDisplayInfo info)
         {

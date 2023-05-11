@@ -45,7 +45,7 @@ namespace Controllers
                 await _effectEditorCtrl.display(_cardPoolId, _buffDefine, effects[0]);
             }
             updateEffectList(effects);
-            _graphEditorPanelCtrl.setOperationMode(GraphOperationMode.Select);
+            _graphEditorPanelCtrl.setOperationMode(scene.editor.graphOperationMode);
         }
         public override Task display(CardPoolDisplayInfo info)
         {

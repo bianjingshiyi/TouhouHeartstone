@@ -1104,13 +1104,15 @@ namespace UI
 
             var minPos = Vector2.Min(startPos, endPos);
             var maxPos = Vector2.Max(startPos, endPos);
-            _selectFrameTrans.position = minPos;
-            _selectFrameTrans.sizeDelta = maxPos - (Vector2)_selectFrameTrans.position;
-
 
             var minContentPos = _content.InverseTransformPoint(minPos);
             var maxContentPos = _content.InverseTransformPoint(maxPos);
             var rect = new Rect(minContentPos, maxContentPos - minContentPos);
+
+            var minFramePos = _selectFrameTrans.parent.InverseTransformPoint(minPos);
+            var maxFramePos = _selectFrameTrans.parent.InverseTransformPoint(maxPos);
+            _selectFrameTrans.localPosition = minFramePos;
+            _selectFrameTrans.sizeDelta = maxFramePos - minFramePos;
 
             _frameSelectedNodes.Clear();
             foreach (var item in _actionNodeItemList)
