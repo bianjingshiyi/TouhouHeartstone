@@ -125,16 +125,16 @@ namespace Controllers
                 node.posY += pos.y - centerPos.y;
                 node.graph = graph;
                 graph.addNode(node);
+                await createNodeUI4Node(node);
             }
             graph.AddConnections(clipGraph.connections);
+            foreach (var connection in clipGraph.connections)
+            {
+                connectPorts4UI(connection.source, connection.destination);
+            }
 
             SetOperationMode(GraphOperationMode.Select);
             clearSelection();
-            _actionNodeList.Clear();
-            _actionNodeItemList.Clear();
-            _ui.clearGraph();
-            //创建动作节点
-            await ApplyGraph(graph);
             updateContentSize();
         }
 
@@ -1473,10 +1473,12 @@ namespace Controllers
             //节点菜单
             if (index == 0)//删除
             {
-                var nodes = _selectedNodes.Where(i => i).Select(i => getActionNode(i) as ActionNode).Where(n => CanNodeOpenDocument(n)).ToArray();
-                foreach (var actionNode in nodes)
+                foreach (var item in _selectedNodes)
                 {
-                    removeActionNode(actionNode);
+                    var itemNode = getActionNode(item);
+                    if (!CanNodeOpenDocument(itemNode))
+                        continue;
+                    removeActionNode(action);
                 }
             }
             else if (index == 1)//编辑
