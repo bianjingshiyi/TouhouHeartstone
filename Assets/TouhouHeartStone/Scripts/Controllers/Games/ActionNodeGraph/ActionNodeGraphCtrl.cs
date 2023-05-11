@@ -124,6 +124,16 @@ namespace Controllers
                 node.posX += pos.x - centerPos.x;
                 node.posY += pos.y - centerPos.y;
                 node.graph = graph;
+                // 防止增益被跨卡池引用
+                // 虽然这以后肯定是要实现的，但是不是现在要做的事情
+                if (node is ActionNode action && action.defineName == GetBuffDefineAction.defName)
+                {
+                    var pairs = node.consts.Where(p => p.Value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId).ToArray();
+                    foreach (var pair in pairs)
+                    {
+                        node.setConst(pair.Key, new DefineReference(_curCardPoolId, 0));
+                    }
+                }
                 graph.addNode(node);
                 await createNodeUI4Node(node);
             }
@@ -133,9 +143,9 @@ namespace Controllers
                 connectPorts4UI(connection.source, connection.destination);
             }
 
-            SetOperationMode(GraphOperationMode.Select);
             clearSelection();
             updateContentSize();
+            OnEdited();
         }
 
         public bool CanNodeBeCloned(Node node)
@@ -367,6 +377,7 @@ namespace Controllers
         private void onRightClickActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
             openMenuForNodeItem(actionNodeItem, pointerPosition);
+            clickAndSelectActionNode(actionNodeItem);
         }
         /// <summary>
         /// 当用户长按节点，展开节点菜单。
@@ -375,6 +386,7 @@ namespace Controllers
         private void onLongPressActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
             openMenuForNodeItem(actionNodeItem, pointerPosition);
+            clickAndSelectActionNode(actionNodeItem);
         }
         private void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
@@ -839,6 +851,7 @@ namespace Controllers
             int actionNodeIndex = _actionNodeList.IndexOf(node);
             ActionNodeItem actionNodeItem = getActionNodeItem(node);
             disconnectNodeAll(node);
+            deselectActionNode(actionNodeItem);
             //从列表中移除
             _actionNodeList.RemoveAt(actionNodeIndex);
             _actionNodeItemList.RemoveAt(actionNodeIndex);
@@ -1473,12 +1486,10 @@ namespace Controllers
             //节点菜单
             if (index == 0)//删除
             {
-                foreach (var item in _selectedNodes)
+                var nodes = _selectedNodes.Where(i => i).Select(i => getActionNode(i)).Where(n => CanNodeOpenDocument(n)).ToArray();
+                foreach (var actionNode in nodes)
                 {
-                    var itemNode = getActionNode(item);
-                    if (!CanNodeOpenDocument(itemNode))
-                        continue;
-                    removeActionNode(action);
+                    removeActionNode(actionNode);
                 }
             }
             else if (index == 1)//编辑
@@ -1735,7 +1746,7 @@ namespace Controllers
         float _curPosY;
         #region 多选/操作模式
         GraphOperationMode _operationMode;
-        List<ActionNodeItem> _selectedNodes = new List<ActionNodeItem>();
+        HashSet<ActionNodeItem> _selectedNodes = new HashSet<ActionNodeItem>();
         #endregion
         readonly List<Node> _actionNodeList = new List<Node>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
