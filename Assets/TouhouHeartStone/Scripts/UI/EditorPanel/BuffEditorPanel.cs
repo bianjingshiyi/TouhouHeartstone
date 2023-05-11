@@ -193,9 +193,9 @@ namespace UI
             _effectList.onItemInputFieldEndEdit += onEffectListItemInputFieldEndEditCallback;
 
             // Pages.
-            _buffPageButton.onClick.AddListener(() => displayPage(_buffPage));
-            _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage));
-            _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage));
+            _buffPageButton.onClick.AddListener(() => displayPage(_buffPage, _buffPageIndicator));
+            _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage, _propertyPageIndicator));
+            _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage, _nodesPageIndicator));
         }
         #endregion
         #region 事件回调
@@ -314,13 +314,18 @@ namespace UI
             onClickCloseButton?.Invoke();
         }
         #endregion
-        private void displayPage(GameObject toDisplay)
+        private void displayPage(GameObject toDisplay, GameObject indicator)
         {
             _buffPage.SetActive(false);
             _propertyPage.SetActive(false);
             _nodesPage.SetActive(false);
 
+            _buffPageIndicator.SetActive(false);
+            _propertyPageIndicator.SetActive(false);
+            _nodesPageIndicator.SetActive(false);
+
             toDisplay.SetActive(true);
+            indicator.SetActive(true);
         }
         #endregion
 
@@ -458,6 +463,12 @@ namespace UI
         GameObject _propertyPage;
         [SerializeField]
         GameObject _nodesPage;
+        [SerializeField]
+        GameObject _buffPageIndicator;
+        [SerializeField]
+        GameObject _propertyPageIndicator;
+        [SerializeField]
+        GameObject _nodesPageIndicator;
         #endregion
     }
 

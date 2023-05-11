@@ -173,21 +173,15 @@ namespace UI
         }
         void onClickBasicPageButtonCallback()
         {
-            _actionPage.SetActive(true);
-            _propertiesPage.SetActive(false);
-            _nodesPage.SetActive(false);
+            displayPage(_actionPage, _actionPageIndicator);
         }
         void onClickPropertiesPageButtonCallback()
         {
-            _actionPage.SetActive(false);
-            _propertiesPage.SetActive(true);
-            _nodesPage.SetActive(false);
+            displayPage(_propertiesPage, _propertiesPageIndicator);
         }
         void onClickNodesPageButtonCallback()
         {
-            _actionPage.SetActive(false);
-            _propertiesPage.SetActive(false);
-            _nodesPage.SetActive(true);
+            displayPage(_nodesPage, _nodesPageIndicator);
         }
         void onClickDeleteActionButtonCallback()
         {
@@ -290,6 +284,20 @@ namespace UI
 
 
         #endregion
+
+        private void displayPage(GameObject pageObj, GameObject indicator)
+        {
+            _actionPage.SetActive(false);
+            _propertiesPage.SetActive(false);
+            _nodesPage.SetActive(false);
+
+            _actionPageIndicator.SetActive(false);
+            _propertiesPageIndicator.SetActive(false);
+            _nodesPageIndicator.SetActive(false);
+
+            pageObj.SetActive(true);
+            indicator.SetActive(true);
+        }
         #endregion
 
         #region 事件
@@ -467,6 +475,12 @@ namespace UI
         GameObject _propertiesPage;
         [SerializeField]
         GameObject _nodesPage;
+        [SerializeField]
+        GameObject _actionPageIndicator;
+        [SerializeField]
+        GameObject _propertiesPageIndicator;
+        [SerializeField]
+        GameObject _nodesPageIndicator;
         #endregion
     }
 

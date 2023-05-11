@@ -406,9 +406,9 @@ namespace UI
 
 
             // Pages.
-            _cardPageButton.onClick.AddListener(() => displayPage(_cardPage));
-            _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage));
-            _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage));
+            _cardPageButton.onClick.AddListener(() => displayPage(_cardPage, _cardPageIndicator));
+            _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage, _propertyPageIndicator));
+            _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage, _nodesPageIndicator));
 
             // Custom Properties.
             _addCustomPropertyButton.onClick.AddListener(() => displayCustomPropertyDialog(true));
@@ -731,13 +731,18 @@ namespace UI
         #endregion
         #endregion
 
-        private void displayPage(GameObject toDisplay)
+        private void displayPage(GameObject toDisplay, GameObject indicator)
         {
             _cardPage.SetActive(false);
             _propertyPage.SetActive(false);
             _nodesPage.SetActive(false);
 
+            _cardPageIndicator.SetActive(false);
+            _propertyPageIndicator.SetActive(false);
+            _nodesPageIndicator.SetActive(false);
+
             toDisplay.SetActive(true);
+            indicator.SetActive(true);
         }
         #endregion
         #region 事件
@@ -936,6 +941,12 @@ namespace UI
         GameObject _propertyPage;
         [SerializeField]
         GameObject _nodesPage;
+        [SerializeField]
+        GameObject _cardPageIndicator;
+        [SerializeField]
+        GameObject _propertyPageIndicator;
+        [SerializeField]
+        GameObject _nodesPageIndicator;
 
         [Header("Custom Properties")]
         [SerializeField]
