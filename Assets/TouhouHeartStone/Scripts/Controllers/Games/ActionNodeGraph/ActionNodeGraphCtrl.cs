@@ -743,7 +743,7 @@ namespace Controllers
                     graph.disconnect(inputPort, connectedPort);
                     var connectedNodeItem = getActionNodeItem(connectedPort.node);
                     var connectedNodeIndex = connectedPort.GetPortIndex();
-                    _ui.unconnectNode(outputNodeItem, outputIndex, connectedNodeItem, connectedNodeIndex);
+                    _ui.unconnectNode(connectedNodeItem, connectedNodeIndex, inputNodeItem, inputIndex);
                 }
             }
 
