@@ -70,6 +70,8 @@ namespace TouhouHeartstone
         protected virtual PileNameCollection pileList => getEventDataNode().getConst<PileNameCollection>(EventEffectData.pileListName);
         public override PassiveEntryNode entryNode => eventEntry;
         public virtual EventEntryNode eventEntry => graph?.nodes?.OfType<EventEntryNode>().FirstOrDefault();
+        public override ControlOutput onEnableAction => null;
+        public override ControlOutput onDisableAction => null;
         public string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
         #endregion
     }

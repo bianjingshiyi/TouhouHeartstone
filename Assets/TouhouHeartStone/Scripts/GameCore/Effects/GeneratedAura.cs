@@ -230,6 +230,8 @@ namespace TouhouHeartstone
         /// 光环的更新动作
         /// </summary>
         public ControlOutput updateAction => getEntryNode()?.getOutputPort<ControlOutput>(AuraDataDefine.updateActionName);
+        public override ControlOutput onEnableAction => null;
+        public override ControlOutput onDisableAction => null;
         public string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
         #endregion
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
 
 namespace TouhouCardEngine
 {
@@ -66,10 +67,11 @@ namespace TouhouCardEngine
         }
         private void DefinitionOutputs()
         {
-            var outputs = new List<IPort>()
+            var outputs = new List<IPort>();
+            foreach (PortDefine portDefine in GetControlOutputDefines())
             {
-                DefineControlOutput()
-            };
+                outputs.Add(DefineControlOutput(portDefine));
+            }
             foreach (PortDefine portDefine in GetValueOutputDefines())
             {
                 outputs.Add(DefineValueOutput(portDefine));
@@ -88,15 +90,22 @@ namespace TouhouCardEngine
             yield return cardPortDefine;
             yield break;
         }
+        protected virtual IEnumerable<PortDefine> GetControlOutputDefines()
+        {
+            yield return actionPortDefine;
+            yield return GeneratedPassiveEffect.enableActionPortDefine;
+            yield return GeneratedPassiveEffect.disableActionPortDefine;
+            yield break;
+        }
         protected ValueOutput DefineValueOutput(PortDefine portDefine)
         {
             var existed = outputList.OfType<ValueOutput>().FirstOrDefault(d => d != null && d.define.Equals(portDefine));
             return existed ?? new ValueOutput(this, portDefine);
         }
-        protected ControlOutput DefineControlOutput()
+        protected ControlOutput DefineControlOutput(PortDefine portDefine)
         {
-            var exists = outputList.OfType<ControlOutput>().FirstOrDefault();
-            return exists ?? new ControlOutput(this, actionPortDefine);
+            var exists = outputList.OfType<ControlOutput>().FirstOrDefault(d => d != null && d.define.Equals(portDefine));
+            return exists ?? new ControlOutput(this, portDefine);
         }
         public override ISerializableNode ToSerializableNode()
         {

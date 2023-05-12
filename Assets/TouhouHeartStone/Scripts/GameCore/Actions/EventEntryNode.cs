@@ -27,6 +27,11 @@ namespace TouhouCardEngine
             }
             yield break;
         }
+        protected override IEnumerable<PortDefine> GetControlOutputDefines()
+        {
+            yield return actionPortDefine;
+            yield break;
+        }
 
         #endregion
         public EventDefine define { get; set; }

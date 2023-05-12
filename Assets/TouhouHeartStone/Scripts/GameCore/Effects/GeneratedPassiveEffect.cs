@@ -84,6 +84,12 @@ namespace TouhouHeartstone
         #endregion
         #region 属性字段
         public virtual PassiveEntryNode entryNode => graph?.nodes?.OfType<PassiveEntryNode>().FirstOrDefault();
+        public override ControlOutput onEnableAction => entryNode?.getOutputPort<ControlOutput>(enableActionName);
+        public override ControlOutput onDisableAction => entryNode?.getOutputPort<ControlOutput>(disableActionName);
+        public const string enableActionName = "enableAction";
+        public const string disableActionName = "disableAction";
+        public static readonly PortDefine enableActionPortDefine = PortDefine.Control(enableActionName, "EnableAction");
+        public static readonly PortDefine disableActionPortDefine = PortDefine.Control(disableActionName, "DisableAction");
         #endregion
     }
 
