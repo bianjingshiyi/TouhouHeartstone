@@ -39,14 +39,6 @@ namespace Controllers
             {
                 _actionEditor = TransformHelper.findComponentInScene<ActionEditorCtrl>(gameObject.scene);
             }
-            if (_effectEditor == null)
-            {
-                _effectEditor = TransformHelper.findComponentInScene<EffectEditorCtrl>(gameObject.scene);
-            }
-            if (_actionNodeGraphCtrl == null)
-            {
-                _actionNodeGraphCtrl = TransformHelper.findComponentInScene<ActionNodeGraphCtrl>(gameObject.scene);
-            }
             if (_chatCtrl == null)
             {
                 _chatCtrl = TransformHelper.findComponentInScene<ChatCtrl>(gameObject.scene);
@@ -59,8 +51,6 @@ namespace Controllers
             _cardEditor.gameObject.SetActive(false);
             _buffEditor.gameObject.SetActive(false);
             _actionEditor.gameObject.SetActive(false);
-            _effectEditor.gameObject.SetActive(false);
-            _actionNodeGraphCtrl.gameObject.SetActive(false);
             _chatCtrl.gameObject.SetActive(false);
         }
         public MainMenuCtrl menu => _menu;
@@ -88,10 +78,6 @@ namespace Controllers
         ActionEditorCtrl _actionEditor;
         [SerializeField]
         BuffEditorCtrl _buffEditor;
-        [SerializeField]
-        EffectEditorCtrl _effectEditor;
-        [SerializeField]
-        ActionNodeGraphCtrl _actionNodeGraphCtrl;
         [SerializeField]
         ChatCtrl _chatCtrl;
     }
