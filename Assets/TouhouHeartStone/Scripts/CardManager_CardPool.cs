@@ -201,10 +201,16 @@ namespace Game
             _cardPoolDict.Remove(cardPoolRef);
             _cardPoolDict.Add(cardPoolInfo.ToReference(), cardPool);
 
+            bool readFriendly;
+#if UNITY_EDITOR
+            readFriendly = true;
+#else
+            readFriendly = false;
+#endif
             await game.fileManager.saveFile(path, new string[]
             {
                 cardPoolInfo.toJson(),//文件头信息
-                seriCardPool.toJson(true)//内容对象
+                seriCardPool.toJson(readFriendly)//内容对象
             });
             Debug.Log("保存卡池" + path + "成功");
             return true;
