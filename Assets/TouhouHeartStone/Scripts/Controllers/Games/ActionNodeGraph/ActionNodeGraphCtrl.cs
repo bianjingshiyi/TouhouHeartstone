@@ -77,7 +77,6 @@ namespace Controllers
         #region 操作模式
         public void SetOperationMode(GraphOperationMode mode) 
         {
-            _operationMode = mode;
             _ui.setOperationMode(mode);
         }
         #endregion
@@ -85,10 +84,11 @@ namespace Controllers
         #region 节点选择
         public string copySelection()
         {
-            if (_selectedNodes.Count <= 0)
+            var selectedNodes = _ui.getSelectedNodes();
+            if (selectedNodes.Count() <= 0)
                 return null;
             var graph = new ActionGraph();
-            var nodes = _selectedNodes.Select(i => getActionNode(i)).Where(n => CanNodeBeCloned(n));
+            var nodes = selectedNodes.Select(i => getActionNode(i)).Where(n => CanNodeBeCloned(n));
             foreach (var node in nodes)
             {
                 graph.addNode(node);
@@ -143,7 +143,7 @@ namespace Controllers
                 connectPorts4UI(connection.source, connection.destination);
             }
 
-            clearSelection();
+            _ui.clearSelection();
             updateContentSize();
             OnEdited();
         }
@@ -205,7 +205,6 @@ namespace Controllers
             _ui.onLeftClickBackground += onLeftClickBackground;
             _ui.onRightClickBackground += onRightClickBackground;
             _ui.onLongPressBackground += onLongPressBackground;
-            _ui.onUpdateSelectFrame += onUpdateSelectFrame;
 
 
             _ui.onClickMenuItem += onClickMenuItem;
@@ -214,7 +213,7 @@ namespace Controllers
             _ui.onLeftClickActionNode += onLeftClickActionNode;
             _ui.onRightClickActionNode += onRightClickActionNode;
             _ui.onLongPressActionNode += onLongPressActionNode;
-            _ui.onDragActionNode += onDragActionNode;
+            _ui.onMoveActionNode += onMoveActionNode;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
             _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
             _ui.onClickActionNodeConstValueItemEditButton += onClickActionNodeConstValueItemEditButton;
@@ -254,27 +253,6 @@ namespace Controllers
         {
             openMenuForCategory(posX, posY);
         }
-        private void onUpdateSelectFrame(IEnumerable<ActionNodeItem> items)
-        {
-            foreach (var item in _actionNodeItemList)
-            {
-                if (!item)
-                    continue;
-                bool selected = isActionNodeSelected(item);
-                if (selected == items.Contains(item))
-                {
-                    continue;
-                }
-                if (selected)
-                {
-                    deselectActionNode(item);
-                }
-                else
-                {
-                    selectActionNode(item);
-                }
-            }
-        }
         /// <summary>
         /// 当用户左击背景，隐藏菜单。
         /// </summary>
@@ -284,11 +262,6 @@ namespace Controllers
         {
             _curEditNode = null;
             closeMenu();
-
-            if (!_ui.IsDragging)
-            {
-                clearSelection();
-            }
         }
         /// <summary>
         /// 当用户右击背景，打开菜单。
@@ -360,15 +333,6 @@ namespace Controllers
         {
             _curEditNode = null;
             closeMenu();
-
-            if (_operationMode == GraphOperationMode.Select)
-            {
-                clickAndSelectActionNode(actionNodeItem);
-            }
-            else if (_operationMode == GraphOperationMode.MultiSelect)
-            {
-                toggleActionNodeSelection(actionNodeItem);
-            }
         }
         /// <summary>
         /// 当右击动作节点
@@ -377,7 +341,6 @@ namespace Controllers
         private void onRightClickActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
             openMenuForNodeItem(actionNodeItem, pointerPosition);
-            clickAndSelectActionNode(actionNodeItem);
         }
         /// <summary>
         /// 当用户长按节点，展开节点菜单。
@@ -386,25 +349,21 @@ namespace Controllers
         private void onLongPressActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
         {
             openMenuForNodeItem(actionNodeItem, pointerPosition);
-            clickAndSelectActionNode(actionNodeItem);
         }
-        private void onDragActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
+        private void onMoveActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
-            if (!isActionNodeSelected(actionNodeItem))
-            {
-                clickAndSelectActionNode(actionNodeItem);
-            }
             // 同时拖动所有被选中的节点
             Vector2 rootPosition = _ui.getNodesRootPosition();
             float movedX = graphPosition.x - rootPosition.x - actionNodeItem.posX;
             float movedY = graphPosition.y - rootPosition.y - actionNodeItem.posY;
-            foreach (ActionNodeItem item in _selectedNodes)
+            foreach (ActionNodeItem item in _ui.getSelectedNodes())
             {
                 Node node = getActionNode(item);
                 node.posX += movedX;
                 node.posY += movedY;
                 _ui.moveActionNodeTo(item, new Vector2(item.posX + movedX, item.posY + movedY));
             }
+
             updateContentSize();
             OnEdited();
         }
@@ -851,7 +810,7 @@ namespace Controllers
             int actionNodeIndex = _actionNodeList.IndexOf(node);
             ActionNodeItem actionNodeItem = getActionNodeItem(node);
             disconnectNodeAll(node);
-            deselectActionNode(actionNodeItem);
+            _ui.deselectNode(actionNodeItem);
             //从列表中移除
             _actionNodeList.RemoveAt(actionNodeIndex);
             _actionNodeItemList.RemoveAt(actionNodeIndex);
@@ -1486,7 +1445,8 @@ namespace Controllers
             //节点菜单
             if (index == 0)//删除
             {
-                var nodes = _selectedNodes.Where(i => i).Select(i => getActionNode(i)).Where(n => CanNodeOpenDocument(n)).ToArray();
+                var selectedNodes = _ui.getSelectedNodes();
+                var nodes = selectedNodes.Where(i => i).Select(i => getActionNode(i)).Where(n => CanNodeOpenDocument(n)).ToArray();
                 foreach (var actionNode in nodes)
                 {
                     removeActionNode(actionNode);
@@ -1589,63 +1549,12 @@ namespace Controllers
             _ui.closeMenu();
         }
         #endregion
-        #region 节点选择
-        private void selectActionNode(ActionNodeItem item)
-        {
-            _selectedNodes.Add(item);
-            item.select();
-        }
-        private void deselectActionNode(ActionNodeItem item)
-        {
-            _selectedNodes.Remove(item);
-            item.deselect();
-        }
-        private bool isActionNodeSelected(ActionNodeItem item)
-        {
-            return _selectedNodes.Contains(item);
-        }
-        /// <summary>
-        /// 点击并选择一个节点。如果是单选模式，先取消所有选择。
-        /// </summary>
-        /// <param name="item">要选择的节点。</param>
-        private void clickAndSelectActionNode(ActionNodeItem item)
-        {
-            if (_operationMode == GraphOperationMode.Select)
-            {
-                clearSelection();
-            }
-            selectActionNode(item);
-        }
-        private void toggleActionNodeSelection(ActionNodeItem item)
-        {
-            if (!item)
-                return;
-            if (isActionNodeSelected(item))
-            {
-                deselectActionNode(item);
-            }
-            else
-            {
-                selectActionNode(item);
-            }
-        }
-        private void clearSelection()
-        {
-            foreach (ActionNodeItem item in _selectedNodes)
-            {
-                if (!item)
-                    continue;
-                item.deselect();
-            }
-            _selectedNodes.Clear();
-        }
-        #endregion
         /// <summary>
         /// 重置所有对于编辑物体的引用。
         /// </summary>
         private void resetEditObjects()
         {
-            clearSelection();
+            _ui.clearSelection();
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
             _ui.clearGraph();
@@ -1743,10 +1652,6 @@ namespace Controllers
         string _curCategroy = null;
         float _curPosX;
         float _curPosY;
-        #region 多选/操作模式
-        GraphOperationMode _operationMode;
-        HashSet<ActionNodeItem> _selectedNodes = new HashSet<ActionNodeItem>();
-        #endregion
         readonly List<Node> _actionNodeList = new List<Node>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
         ActionGraph graph

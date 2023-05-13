@@ -387,10 +387,51 @@ namespace UI
         {
             return -new Vector2(_content.anchoredPosition.x / _content.localScale.y, _content.anchoredPosition.y / _content.localScale.y);
         }
+        
+        #region 操作模式/节点选择
         public void setOperationMode(GraphOperationMode mode)
         {
             _operationMode = mode;
         }
+        public IEnumerable<ActionNodeItem> getSelectedNodes()
+        {
+            return _selectedNodes;
+        }
+        public void clearSelection()
+        {
+            foreach (ActionNodeItem item in _selectedNodes)
+            {
+                if (!item)
+                    continue;
+                item.deselect();
+            }
+            _selectedNodes.Clear();
+        }
+        public void selectNode(ActionNodeItem item)
+        {
+            _selectedNodes.Add(item);
+            item.select();
+        }
+        public void deselectNode(ActionNodeItem item)
+        {
+            _selectedNodes.Remove(item);
+            item.deselect();
+        }
+        public bool isNodeSelected(ActionNodeItem item)
+        {
+            return _selectedNodes.Contains(item);
+        }
+        /// <summary>
+        /// 取消所有选择，并选择一个节点。。
+        /// </summary>
+        /// <param name="item">要选择的节点。</param>
+        public void clearAndSelectNode(ActionNodeItem item)
+        {
+            clearSelection();
+            selectNode(item);
+        }
+        #endregion
+
         public void displayCreateActionDefineDialog(bool display)
         {
             if (display)
@@ -510,6 +551,10 @@ namespace UI
                 }
                 else
                 {
+                    if (!_isDragging)
+                    {
+                        clearSelection();
+                    }
                     onLeftClickBackground?.Invoke(localPoistion.x, localPoistion.y);
                 }
             }
@@ -597,6 +642,11 @@ namespace UI
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
         {
+            if (_operationMode == GraphOperationMode.MultiSelect)
+            {
+                _selectFrameDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
+                return;
+            }
             _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
         }
         public void OnBackgroundEndDrag(BaseEventData eventData)
@@ -908,6 +958,7 @@ namespace UI
             {
                 if (_longPressTimer.isExpired())
                 {
+                    clearAndSelectNode(item);
                     onLongPressActionNode?.Invoke(_pointerOverActionNodeItem, eventData.position);
                     _pointerOverActionNodeItem = null;
                     _longPressTimer.reset();
@@ -916,10 +967,15 @@ namespace UI
                 {
                     if (eventData.button == PointerEventData.InputButton.Right)
                     {
+                        if (!isNodeSelected(item))
+                        {
+                            clearAndSelectNode(item);
+                        }
                         onRightClickActionNode?.Invoke(item, eventData.position);
                     }
                     else
                     {
+                        clearAndSelectNode(item);
                         onLeftClickActionNode?.Invoke(item);
                     }
                 }
@@ -933,19 +989,42 @@ namespace UI
                 _pointerOverActionNodeItem = null;
                 _longPressTimer.reset();
             }
+
+
+            if (_operationMode == GraphOperationMode.MultiSelect && !isNodeSelected(item))
+            {
+                _isDragging = true;
+                _selectFrameDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
+                return;
+            }
+
             _dragItem = item;
             _dragItemPositionOffset = (item.transform as RectTransform).anchoredPosition - (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position);
         }
         private void onDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
+            if (_operationMode == GraphOperationMode.MultiSelect && _isDragging)
+            {
+                updateSelectFrame();
+                return;
+            }
+
+
             if (item != _dragItem)
                 return;
+
             Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
-            onDragActionNode?.Invoke(item, graphPosition);
+            if (!isNodeSelected(item))
+            {
+                clearAndSelectNode(item);
+            }
+            onMoveActionNode?.Invoke(item, graphPosition);
             updateNodeLines(item);
         }
         private void onEndDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
+            _isDragging = false;
+            _selectFrameTrans.gameObject.SetActive(false);
             _dragItem = null;
             _dragItemPositionOffset = Vector3.zero;
         }
@@ -1096,10 +1175,11 @@ namespace UI
                 //MenuScrollComponent.enabled = true;
             }
         }
+        #region 节点选择
         private void updateSelectFrame()
         {
             _selectFrameTrans.gameObject.SetActive(true);
-            var startPos = _backgroundDragStartPosition + (Vector2)_content.position;
+            var startPos = _selectFrameDragStartPosition + (Vector2)_content.position;
             var endPos = (Vector2)Input.mousePosition;
 
             var minPos = Vector2.Min(startPos, endPos);
@@ -1114,7 +1194,7 @@ namespace UI
             _selectFrameTrans.localPosition = minFramePos;
             _selectFrameTrans.sizeDelta = maxFramePos - minFramePos;
 
-            _frameSelectedNodes.Clear();
+            clearSelection();
             foreach (var item in _actionNodeItemList)
             {
                 var itemRectTrans = item.transform as RectTransform;
@@ -1127,12 +1207,11 @@ namespace UI
                 var itemRect = new Rect(pos, size);
                 if (itemRect.Overlaps(rect))
                 {
-                    _frameSelectedNodes.Add(item);
+                    selectNode(item);
                 }
             }
-
-            onUpdateSelectFrame?.Invoke(_frameSelectedNodes.ToArray());
         }
+        #endregion
         #endregion
         #region 事件
         /// <summary>
@@ -1147,10 +1226,6 @@ namespace UI
         /// 当长按背景，参数为长按点的x坐标与y坐标
         /// </summary>
         public event Action<float, float> onLongPressBackground;
-        /// <summary>
-        /// 当拖拽选框，参数为被选中的节点项。
-        /// </summary>
-        public event Action<IEnumerable<ActionNodeItem>> onUpdateSelectFrame;
         /// <summary>
         /// 当点击菜单项，参数为菜单项索引
         /// </summary>
@@ -1172,9 +1247,9 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, Vector2> onRightClickActionNode;
         /// <summary>
-        /// 当拖拽节点，参数为拖拽的节点和图坐标位置
+        /// 当移动节点，参数为拖拽的节点和图坐标位置
         /// </summary>
-        public event Action<ActionNodeItem, Vector2> onDragActionNode;
+        public event Action<ActionNodeItem, Vector2> onMoveActionNode;
         /// <summary>
         /// 当长按节点，参数为长按的节点和长按的屏幕坐标
         /// </summary>
@@ -1236,8 +1311,12 @@ namespace UI
         public float autoPosSpacingHeight => _autoPosSpacingHeight;
         public bool IsDragging => _isDragging;
 
-        private GraphOperationMode _operationMode;
-        private List<ActionNodeItem> _frameSelectedNodes = new List<ActionNodeItem>();
+        #region 多选/操作模式
+        GraphOperationMode _operationMode;
+        HashSet<ActionNodeItem> _selectedNodes = new HashSet<ActionNodeItem>();
+        [SerializeField]
+        private Vector2 _selectFrameDragStartPosition;
+        #endregion
 
         [Header("模板属性和UI控件")]
         [SerializeField]
