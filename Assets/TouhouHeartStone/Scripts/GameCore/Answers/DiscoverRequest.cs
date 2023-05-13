@@ -1,14 +1,19 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
     [Serializable]
+    [MessagePackObject]
     public class DiscoverRequest : Request
     {
+        [Key(3)]
         public string title;
+        [Key(4)]
         public int[] cardIdArray;
+        [Key(5)]
         public DefineReference[] cardRefArray;
         public override IResponse getDefaultResponse(IGame game, int playerId)
         {

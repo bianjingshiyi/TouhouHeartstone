@@ -1,9 +1,11 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
     [Serializable]
+    [MessagePackObject]
     public class FreeActRequest : Request
     {
         public override IResponse getDefaultResponse(IGame game, int playerId)

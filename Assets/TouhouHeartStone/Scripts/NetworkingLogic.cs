@@ -45,9 +45,17 @@ namespace Game
 
         int IClient.id => localLanLogic.localPlayer.id;
 
-        Task<T> IClient.send<T>(T obj)
+        async Task<T> IClient.send<T>(T obj)
         {
-            return localLanLogic.curNetwork.Send<T>(obj);
+            if (obj is INetworkData data)
+            {
+                var bytes = MessagePack.MessagePackSerializer.Serialize(data);
+                var recv = await localLanLogic.curNetwork.Send(bytes);
+                
+                return (T)MessagePack.MessagePackSerializer.Deserialize<INetworkData>(recv);
+            }
+
+            throw new ArgumentException("要发送接收的数据必须是INetworkData");
         }
 
         #region 事件代理
@@ -75,8 +83,9 @@ namespace Game
             PostRoomPropChange?.Invoke(key, value);
         }
 
-        private Task roomReceiveEvtHandler(int clientID, object obj)
+        private Task roomReceiveEvtHandler(int clientID, byte[] data)
         {
+            var obj = MessagePack.MessagePackSerializer.Deserialize<INetworkData>(data);
             return onReceive?.Invoke(clientID, obj);
         }
 
