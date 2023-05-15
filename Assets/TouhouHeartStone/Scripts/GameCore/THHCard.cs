@@ -1613,9 +1613,9 @@ namespace TouhouHeartstone
                             lifesteal |= item.isDrain(g);
                         }
                     }
-                    if (poisonous && !c.isMaster())
+                    if (poisonous && c.isServant())
                         await c.kill(game);
-                    if (lifesteal)
+                    if (lifesteal && (c.isServant() || c.isMaster()))
                         await s.getOwner().getMaster().heal(g, c, d);
                 }
             }
