@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -13,6 +14,11 @@ namespace UI
         {
             _addEffectMenu.ClearOptions();
             _addEffectMenu.AddOptions(effectNames.ToList());
+        }
+        public void setScrollValue(float value)
+        {
+            if (_scrollRect)
+                _scrollRect.horizontalNormalizedPosition = value;
         }
         public void updateList(string[] effectNames, int activeIndex = -1)
         {
@@ -33,7 +39,7 @@ namespace UI
                 item.onEditButtonClick -= onClickItemEditButtonCallback;
                 item.onRemoveButtonClick -= onClickItemRemoveButtonCallback;
                 item.onInputFieldEndEdit -= onItemInputFieldEndEditCallback;
-            });
+            }, rebuild: true);
         }
 
         public void showItemInputField(int index, string name)
@@ -95,6 +101,8 @@ namespace UI
         DropdownMenu _addEffectMenu;
 
         [Header("效果列表")]
+        [SerializeField]
+        ScrollRect _scrollRect;
         [SerializeField]
         RectTransform _itemRoot;
         [SerializeField]

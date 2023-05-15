@@ -177,6 +177,8 @@ namespace Controllers
 
             _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
             updateEffectList(_buffDefine.effectList.ToArray());
+            
+            _ui.setEffectScrollValue(1);
         }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。

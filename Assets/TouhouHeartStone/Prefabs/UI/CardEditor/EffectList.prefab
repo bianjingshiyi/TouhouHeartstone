@@ -142,6 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _addEffectMenu: {fileID: 8570620022522789200}
+  _scrollRect: {fileID: 2309186474933517542}
   _itemRoot: {fileID: 2365284305322944645}
   _itemTemplate: {fileID: 7287181804325167487}
   _itemList: []

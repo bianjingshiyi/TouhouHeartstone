@@ -188,6 +188,10 @@ namespace UI
         {
             _effectList.setAddEffectMenu(effectTypeNames);
         }
+        public void setEffectScrollValue(float value)
+        {
+            _effectList.setScrollValue(value);
+        }
         /// <summary>
         /// 设置效果列表
         /// </summary>
