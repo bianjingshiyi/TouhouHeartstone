@@ -26,6 +26,11 @@ namespace Controllers
             _buffDefine = buffDefine;
             _buffSkins.Clear();
             _buffSkins.AddRange(skins);
+
+            _curLanguage = game.langManager.getLanguage();
+            string[] languages = game.langManager.getLanguages();
+            _ui.setLanguage(languages.indexOf(_curLanguage));
+
             updateSkinNames();
             _ui.setId(buffDefine.id);
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
@@ -69,6 +74,16 @@ namespace Controllers
             _ui.onNeedSelectImage += onNeedSelectImage;
             _ui.onChangeDesc += onChangeDesc;
             _ui.onChangeBuffImage += onChangeBuffImage;
+
+            string[] languages = game.langManager.getLanguages();
+            for (int i = 0; i < languages.Length; i++)
+            {
+                languages[i] = game.langManager.getString(game.ui.getTranslateNameForLanguage(languages[i]));
+            }
+            _ui.initLanguages(languages);
+            _ui.onChangeLanguage += onChangeLanguage;
+
+
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
             _ui.setEffectTypes(game.card.getEffectNames());
@@ -100,7 +115,7 @@ namespace Controllers
             if (skinIndex == getSkinCount())
             {
                 //新建皮肤
-                _curBuffSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, getCurrentLanguage());
+                _curBuffSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, _curLanguage);
                 _buffSkins.Add(_curBuffSkin);
                 updateSkinNames();
             }
@@ -109,7 +124,7 @@ namespace Controllers
         private async void onChangeSkinName(string skinName)
         {
             markBuffUnsaved();
-            var skinGroup = getCurrentBuffSkins();
+            var skinGroup = getCurrentLangSkins();
             int index = skinGroup.indexOf(_curBuffSkin);
             _curBuffSkin.name = skinName;
             updateSkinNames();
@@ -118,13 +133,14 @@ namespace Controllers
         private async void onDeleteSkin()
         {
             markBuffUnsaved();
-            var skinGroup = getCurrentBuffSkins();
-            if (skinGroup.Length <= 1)
+            var skinGroup = getCurrentLangSkins();
+            if (skinGroup.Count() <= 1)
             {
                 Debug.LogWarning("你不能删除增益的最后一个皮肤");
                 return;
             }
             game.card.removeBuffSkin(_curBuffSkin);
+            _buffSkins.Remove(_curBuffSkin);
             updateSkinNames();
             await setCurSkinIndex(0);
         }
@@ -168,6 +184,31 @@ namespace Controllers
             _ui.setDesc(desc);
         }
         #endregion
+
+
+        private async void onChangeLanguage(int languageIndex)
+        {
+            string language = game.langManager.getLanguages()[languageIndex];
+            _curLanguage = language;
+            var skins = getCurrentBuffSkins().Where(s => s.language == language);
+            var targetSkin = skins.FirstOrDefault();
+            if (targetSkin == null)
+            {
+                markBuffUnsaved();
+                //不存在对应语言的皮肤，新建一个
+                targetSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, language);
+                _buffSkins.Add(targetSkin);
+            }
+            updateSkinNames();
+            _curBuffSkin = targetSkin;
+            _ui.setLanguage(languageIndex);
+            _ui.setName(targetSkin.name);
+            _ui.setDesc(targetSkin.desc);
+            _ui.setSkin(getCurrentLangSkins().indexOf(targetSkin));
+            string path = targetSkin.imagePath;
+            Sprite image = await game.card.loadImage(targetSkin.imagePath, _buffDefine.cardPoolId);
+            _ui.setImage(image);
+        }
 
         #region 效果
         private void onCreateEffect(GeneratedEffect effect)
@@ -329,16 +370,12 @@ namespace Controllers
         #endregion
 
         #endregion
-        private string getCurrentLanguage()
-        {
-            return game.langManager.getLanguage();
-        }
         private void updateSkinNames()
         {
-            BuffSkin[] skins = getCurrentBuffSkins();
+            BuffSkin[] skins = getCurrentLangSkins();
             if (skins.Length < 1)
             {
-                BuffSkin skin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, getCurrentLanguage());
+                BuffSkin skin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, _curLanguage);
                 _buffSkins.Add(skin);
                 skins = new BuffSkin[] { skin };
             }
@@ -346,7 +383,7 @@ namespace Controllers
         }
         private async Task setCurSkinIndex(int skinIndex)
         {
-            var skinGroup = getCurrentBuffSkins();
+            var skinGroup = getCurrentLangSkins();
             //获取对应语言的皮肤
             var skin = skinGroup[skinIndex];
 
@@ -359,7 +396,11 @@ namespace Controllers
         }
         private int getSkinCount()
         {
-            return getCurrentBuffSkins().Length;
+            return getCurrentLangSkins().Length;
+        }
+        private BuffSkin[] getCurrentLangSkins()
+        {
+            return _buffSkins.Where(s => s.language == _curLanguage).ToArray();
         }
         private BuffSkin[] getCurrentBuffSkins()
         {
@@ -648,6 +689,7 @@ namespace Controllers
         /// 正在编辑的增益定义的所有皮肤。
         /// </summary>
         List<BuffSkin> _buffSkins = new List<BuffSkin>();
+        string _curLanguage;
         #endregion
     }
 }

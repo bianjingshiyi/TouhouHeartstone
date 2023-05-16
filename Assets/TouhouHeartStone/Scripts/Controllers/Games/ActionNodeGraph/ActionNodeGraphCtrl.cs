@@ -541,8 +541,8 @@ namespace Controllers
                         generatedBuffDefine.cardPoolId,
                         generatedBuffDefine.id,
                         game.langManager.getLanguage());
+                    game.card.addBuffSkin(_curCardPoolId, buffSkin);
                 }
-                game.card.addBuffSkin(_curCardPoolId, buffSkin);
                 BuffDefine[] buffDefines = game.card.getBuffDefines(game.card.getLocalCardPoolReference(_curCardPoolId))
                     .OrderBy(p => p.Value.cardPoolId)
                     .ThenBy(p => p.Value.id)

@@ -103,6 +103,22 @@ namespace UI
         }
         #endregion
 
+        #region 语言
+        public void initLanguages(string[] languages)
+        {
+            _languageDropdown.ClearOptions();
+            _languageDropdown.AddOptions(new List<string>(languages));
+        }
+        /// <summary>
+        /// 设置当前语言索引
+        /// </summary>
+        /// <param name="languageIndex"></param>
+        public void setLanguage(int languageIndex)
+        {
+            _languageDropdown.SetValueWithoutNotify(languageIndex);
+        }
+        #endregion
+
         #region 效果
         public void showEffectListItemInputField(int index, string value)
         {
@@ -133,6 +149,7 @@ namespace UI
         {
             _skinDropdown.Hide();
             _skinNameInputField.DeactivateInputField();
+            _languageDropdown.Hide();
             _nameInputField.DeactivateInputField();
             _descInputField.DeactivateInputField();
         }
@@ -164,6 +181,8 @@ namespace UI
             _deleteSkinButton.onClick.AddListener(onDeleteSkinButtonClicked);
             _skinNameInputField.gameObject.SetActive(false);
             _skinNameInputField.onEndEdit.AddListener(onSkinNameInputFieldEndEdit);
+            _languageDropdown.onValueChanged.AddListener(onLanguageDropdownValueChanged);
+
             _nameInputField.onEndEdit.AddListener(onNameInputFieldEndEdit);
             _descInputField.onEndEdit.AddListener(onDescInputFieldEndEdit);
 
@@ -235,6 +254,13 @@ namespace UI
         private void onDescInputFieldEndEdit(string text)
         {
             onChangeDesc?.Invoke(text);
+        }
+        #endregion
+
+        #region 语言
+        private void onLanguageDropdownValueChanged(int value)
+        {
+            onChangeLanguage?.Invoke(value);
         }
         #endregion
         #region 修改器
@@ -330,6 +356,11 @@ namespace UI
         public event Action<string> onChangeDesc;
         #endregion
 
+        /// <summary>
+        /// 当更换了语言，参数为更换的语言索引。
+        /// </summary>
+        public event Action<int> onChangeLanguage;
+
         #region 修改器
         public event Action<int> OnRemoveModifier;
         public event Action onAddModifier;
@@ -410,6 +441,9 @@ namespace UI
         InputField _nameInputField;
         [SerializeField]
         InputField _descInputField;
+
+        [SerializeField]
+        Dropdown _languageDropdown;
 
         [Header("Pages")]
         [SerializeField]
