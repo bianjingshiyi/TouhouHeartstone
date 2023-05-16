@@ -1757,7 +1757,7 @@ namespace Game
                 string desc;
                 if (buffDefine == null)
                 {
-                    sprite = await cards.getDefaultSprite();
+                    sprite = cards.getDefaultSprite();
                     name = lang._(CARD_BUFF_UNKNOWN_NAME);
                     desc = lang._(CARD_BUFF_UNKNOWN_DESC);
                 }
@@ -1990,7 +1990,7 @@ namespace Game
                 {
                     id = card.define.id,
                     desc = card.define.ToString() + "（这张卡随时可能爆炸！）",
-                    image = getManager<CardManager>().getDefaultSprite().Result,
+                    image = getManager<CardManager>().getDefaultSprite(),
                     name = card.define.GetType().Name
                 };
             }
@@ -2007,7 +2007,7 @@ namespace Game
                 {
                     id = define.id,
                     desc = define.ToString() + "（这张卡随时可能爆炸！）",
-                    image = getManager<CardManager>().getDefaultSprite().Result,
+                    image = getManager<CardManager>().getDefaultSprite(),
                     name = define.GetType().Name
                 };
             }

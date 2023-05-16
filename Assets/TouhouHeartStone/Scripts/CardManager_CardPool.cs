@@ -971,7 +971,7 @@ namespace Game
                 // 如果是空数组，返回默认Sprite.
                 if (bytes.Length <= 0)
                 {
-                    return getDefaultSprite().Result;
+                    return getDefaultSprite();
                 }
                 Texture2D texture = new Texture2D(512, 512);
                 texture.LoadImage(bytes);
@@ -989,7 +989,7 @@ namespace Game
             CardSkinData skin = getCardSkin(cardPoolRef, cardId);
             if (skin == null)
             {
-                return getDefaultSprite();
+                return Task.FromResult(getDefaultSprite());
             }
             if (skin.image != null)
                 return Task.FromResult(skin.image);

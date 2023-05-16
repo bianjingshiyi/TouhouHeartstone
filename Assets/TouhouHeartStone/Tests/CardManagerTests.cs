@@ -129,9 +129,7 @@ namespace Tests
             var cm = task.Result;
 
             var task2 = cm.getDefaultSprite();
-            yield return new WaitUntil(() => task2.IsCompleted);
-            Assert.Null(task2.Exception);
-            Assert.NotNull(task2.Result);
+            Assert.NotNull(task2);
         }
 
         [UnityTest]

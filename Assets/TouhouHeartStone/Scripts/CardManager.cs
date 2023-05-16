@@ -41,13 +41,8 @@ namespace Game
         /// 获取默认卡片贴图
         /// </summary>
         /// <returns></returns>
-        public async Task<Sprite> getDefaultSprite()
+        public Sprite getDefaultSprite()
         {
-            if (_defaultImage == null)
-            {
-                Texture2D texture = await getManager<THHResourceManager>().loadTexture(_defaultImagePath, null);
-                _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
-            }
             return _defaultImage;
         }
         public void setDefaultImagePath(string path)
@@ -166,7 +161,7 @@ namespace Game
             foreach (CardSkinData skin in _skins)
             {
                 if (skin.image == null)
-                    skin.image = await getDefaultSprite();
+                    skin.image = getDefaultSprite();
                 skinDic[skin.id] = skin;
             }
             //加载外置皮肤
@@ -338,7 +333,7 @@ namespace Game
                     {
                         if (string.IsNullOrEmpty(imagePath))
                         {
-                            skin.image = await getDefaultSprite();
+                            skin.image = getDefaultSprite();
                         }
                         else
                         {
@@ -351,7 +346,7 @@ namespace Game
                 catch (Exception e)
                 {
                     Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
-                    skin.image = await getDefaultSprite();
+                    skin.image = getDefaultSprite();
                 }
             }
             else
@@ -399,7 +394,7 @@ namespace Game
                 catch (Exception e)
                 {
                     Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
-                    skin.image = await getDefaultSprite();
+                    skin.image = getDefaultSprite();
                 }
             }
             else

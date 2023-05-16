@@ -9,6 +9,7 @@ using Controllers;
 using UI;
 using System.Linq;
 using System.Security.Cryptography;
+using BJSYGameCore;
 
 namespace Game
 {
@@ -340,7 +341,7 @@ namespace Game
                         catch (FileNotFoundException)
                         {
                             Debug.LogWarning($"读取外部卡池的图片{absPath}时遇到问题：无法找到该图片文件。");
-                            return useFallbackSprite ? await getDefaultSprite() : null;
+                            return useFallbackSprite ? getDefaultSprite() : null;
                         }
                     }
                 }
@@ -351,7 +352,7 @@ namespace Game
                 // 如果是空数组，返回默认Sprite.
                 if (bytes.Length <= 0)
                 {
-                    return useFallbackSprite ? await getDefaultSprite() : null;
+                    return useFallbackSprite ? getDefaultSprite() : null;
                 }
                 Texture2D texture = new Texture2D(512, 512);
                 texture.LoadImage(bytes);
@@ -567,9 +568,14 @@ namespace Game
 
         #endregion
         #region 私有方法
-        private void onAwake_Sprite()
+        private async void onAwake_Sprite()
         {
             externalImageDir = Path.Combine(Application.persistentDataPath, textureDirName);
+            if (_defaultImage == null)
+            {
+                Texture2D texture = await getManager<THHResourceManager>().loadTexture(_defaultImagePath, null);
+                _defaultImage = Sprite.Create(texture, new Rect(0, 0, 512, 512), new Vector2(.5f, .5f), 100);
+            }
         }
         #endregion
         #region 属性字段
