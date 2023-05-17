@@ -111,6 +111,7 @@ namespace UI
                 {
                     _onFaceupControllerFalse.Invoke();
                 }
+                animator.SetBool("isFaceUp", value);
             }
         }
         public int type

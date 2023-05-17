@@ -4,369 +4,312 @@ using UnityEngine;
 using UI;
 using BJSYGameCore.UI;
 using System.Linq;
-using System.Threading.Tasks;
+using TouhouCardEngine;
+using System.Collections;
 
 namespace Game
 {
-    class UseAnimation : EventAnimation<HearthStoneRule.UseEventArg>
+    using Arg = HearthStoneRule.UseEventArg;
+    class UseAnimation : EventAnimation<Arg>
     {
-        TableAnimation _moveAnim;
-        AnimAnim _useAnim;
-        TableAnimation _targetedAnim;
-        bool _enemyAnimPlayed;
-        Task<AudioClip> _loadSoundTask;
-        Task<Projectile> _loadProjectileTask;
-
-
-        public override bool update(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        CardSnapshot _card;
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            if (!updateCard(table, eventArg, time))
+            while (!record.isCompleted)
             {
-                return false;
+                yield return null;
             }
-            if (table.game.answers.getRequests(eventArg.player.id).FirstOrDefault() is DiscoverRequest && eventArg.player != table.player)
+            yield return updateCard(table, record, arg);
+
+            var player = arg.player;
+            if (table.game.answers.getRequests(player.id).FirstOrDefault() is DiscoverRequest && player != table.player)
                 table.ui.Waiting.SetActive(true);
-            return true;
         }
-        private bool updateCard(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        private IEnumerator updateCard(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.card.isServant())
+            _card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+            if (_card.isServant())
             {
-                return updateServant(table, eventArg, time);
+                yield return updateServant(table, record, arg);
             }
-            else if (eventArg.card.isSpell())
+            else if (_card.isSpell())
             {
-                return updateSpell(table, eventArg, time);
+                yield return updateSpell(table, record, arg);
             }
-            else if (eventArg.card.isSkill())
+            else if (_card.isSkill())
             {
-                return updateSkill(table, eventArg, time);
+                yield return updateSkill(table, record, arg);
             }
-            else if (eventArg.card.isItem())
+            else if (_card.isItem())
             {
-                return updateItem(table, eventArg, time);
+                yield return updateItem(table, record, arg);
             }
-            return true;
         }
         #region Servant
-        private bool updateServant(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        private IEnumerator updateServant(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.player == table.player)
+            var player = arg.player;
+            var isCanceled = record.isCanceled;
+            var position = arg.position;
+            if (player == table.player)
             {
-                if (!eventArg.isCanceled)
+                if (!isCanceled)
                 {
                     if (!table.ui.ServantPlaceHolder.isDisplaying)
                     {
-                        HandListItem item = table.getHand(eventArg.card);
-                        if (_moveAnim == null)
-                            _moveAnim = new HandToFieldAnim(table, item, table.ui.SelfFieldList, eventArg.position);
-                        if (!_moveAnim.update(table, time))
-                            return false;
+                        HandListItem item = table.getHand(_card);
+                        var moveAnim = new HandToFieldAnim(table, item, table.ui.SelfFieldList, position);
+                        while (!moveAnim.update(table, _time))
+                            yield return null;
                     }
-                    //table.ui.SelfHandList.removeItem(table.getHand(eventArg.card));
+                    //table.ui.SelfHandList.removeItem(table.getHand(_card));
                     //将使用随从的移除手牌转移至TryEnterFiledAnim
-                    if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
-                        return false;
+                    yield return tryTargetedAnim(table, table.ui.ServantPlaceHolder, record, arg);
                     table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                     table.ui.ServantPlaceHolder.hide();
                 }
                 else
                 {
-                    HandListItem item = table.getHand(eventArg.card);
-                    if (item == null)
-                        throw new ActorNotFoundException(eventArg.card);
+                    HandListItem item = table.getHand(_card);
                     if (table.ui.ServantPlaceHolder.isDisplaying)
                     {
                         table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                         table.ui.ServantPlaceHolder.hide();
                     }
-                    if (_moveAnim == null)
-                    {
-                        item.Card.display();
-                        table.setCard(item.Card, eventArg.card, true);
-                        _moveAnim = new CardTransAnim(item.Card, item.rectTransform.position, table.handToFieldCurve);
-                    }
-                    if (!_moveAnim.update(table, time))
-                        return false;
+
+                    item.Card.display();
+                    table.setCard(item.Card, _card, true);
+                    var moveAnim = new CardTransAnim(item.Card, item.rectTransform.position, table.handToFieldCurve);
+
+                    while (!moveAnim.update(table, _time))
+                        yield return null;
                 }
             }
             else
             {
-                table.tryGetHand(eventArg.card, out var hand);
+                table.tryGetHand(_card, out var hand);
 
-                if (!playEnemyUseCardAnim(table, hand, eventArg, time))
+                yield return playEnemyUseCardAnim(table, hand, record);
+
+                if (isCanceled)
                 {
-                    return false;
-                }
-                else
-                {
-                    if (!eventArg.isCanceled)
-                    {
-                        if (hand != null)
-                        {
-                            if (_moveAnim == null)
-                                _moveAnim = new HandToFieldAnim(table, hand, table.ui.EnemyFieldList, eventArg.position);
-                            if (!_moveAnim.update(table, time))
-                                return false;
-                        }
-                        if (tryTargetedAnim(table, table.ui.ServantPlaceHolder, eventArg, time))
-                            return false;
-                    }
-                    else
-                    {
-                        cancelEnemyUseCard(table, eventArg);
-                    }
+                    cancelEnemyUseCard(table, record);
                 }
                 table.ui.addChild(table.ui.ServantPlaceHolder.rectTransform);
                 table.ui.ServantPlaceHolder.hide();
             }
-            return true;
         }
         #endregion
 
         #region Spell
-        private bool updateSpell(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        private IEnumerator updateSpell(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.player == table.player)
+            
+            var player = arg.player;
+            var isCanceled = record.isCanceled;
+            if (player == table.player)
             {
-                if (!eventArg.isCanceled)
+                if (!isCanceled)
                 {
-                    if (table.tryGetHand(eventArg.card, out var hand))
+                    if (table.tryGetHand(_card, out var hand))
                     {
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator, time))
-                            return false;
-                        table.removeHand(eventArg.card);
+                        AnimAnim useAnim = null;
+                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _time))
+                            yield return null;
+                        table.removeHand(_card);
                     }
-                    table.getManager<SEManager>().playSE(table.getSkin(eventArg.card).sound_onUse);
-                    if (tryTargetedAnim(table, table.ui.SelfMaster, eventArg, time))
-                        return false;
+                    table.getManager<SEManager>().playSE(table.getSkin(_card).sound_onUse);
+                    yield return tryTargetedAnim(table, table.ui.SelfMaster, record, arg);
                 }
                 else
                 {
-                    HandListItem item = table.getHand(eventArg.card);
-                    if (item == null)
-                        throw new ActorNotFoundException(eventArg.card);
-                    if (_moveAnim == null)
-                    {
-                        item.Card.display();
-                        table.setCard(item.Card, eventArg.card, true);
-                        _moveAnim = new CardTransAnim(item.Card, item.rectTransform.position, table.handToFieldCurve);
-                    }
-                    if (!_moveAnim.update(table, time))
-                        return false;
+                    HandListItem item = table.getHand(_card);
+                    item.Card.display();
+                    table.setCard(item.Card, _card, true);
+                    var moveAnim = new CardTransAnim(item.Card, item.rectTransform.position, table.handToFieldCurve);
+                    while (!moveAnim.update(table, _time))
+                        yield return null;
                 }
             }
             else
             {
-                table.tryGetHand(eventArg.card, out var hand);
+                table.tryGetHand(_card, out var hand);
 
-                if (!playEnemyUseCardAnim(table, hand, eventArg, time))
+                yield return playEnemyUseCardAnim(table, hand, record);
+
+                if (!isCanceled)
                 {
-                     return false;
+                    // 播放音效。
+                    CardSkinData skin = table.getSkin(_card);
+                    yield return loadAndPlaySound(table, skin?.soundPath_onUse);
+                    yield return tryTargetedAnim(table, table.ui.EnemyMaster, record, arg);
                 }
                 else
                 {
-                    if (!eventArg.isCanceled)
-                    {
-                        // 播放音效。
-                        CardSkinData skin = table.getSkin(eventArg.card);
-                        bool soundLoaded = loadAndPlaySound(table, skin?.soundPath_onUse);
-                        if (!soundLoaded)
-                        {
-                            return false;
-                        }
-
-                        if (tryTargetedAnim(table, table.ui.EnemyMaster, eventArg, time))
-                            return false;
-                    }
-                    else
-                    {
-                        cancelEnemyUseCard(table, eventArg);
-                    }
+                    cancelEnemyUseCard(table, record);
                 }
             }
-            return true;
         }
         #endregion
 
         #region Skill
-        private bool updateSkill(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        private IEnumerator updateSkill(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.isCanceled)
-            {
-                return true;
-            }
+            
+            var player = arg.player;
+            var isCanceled = record.isCanceled;
+            if (isCanceled)
+                yield break;
 
-            Skill sourceActor = eventArg.player == table.player ? table.ui.SelfSkill : table.ui.EnemySkill;
+            Skill sourceActor = player == table.player ? table.ui.SelfSkill : table.ui.EnemySkill;
 
-            table.setSkill(sourceActor, eventArg.card);
+            table.setSkill(sourceActor, _card);
 
-            CardSkinData skin = table.getSkin(eventArg.card);
-            loadAndPlaySound(table, skin?.soundPath_onUse);
+            CardSkinData skin = table.getSkin(_card);
+            yield return loadAndPlaySound(table, skin?.soundPath_onUse);
 
-            if (tryTargetedAnim(table, sourceActor, eventArg, time))
-                return false;
-            return true;
+            yield return tryTargetedAnim(table, sourceActor, record, arg);
         }
         #endregion
 
         #region Item
-        private bool updateItem(TableManager table, HearthStoneRule.UseEventArg eventArg, float time)
+        private IEnumerator updateItem(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.player == table.player)
+            
+            var player = arg.player;
+            var isCanceled = record.isCanceled;
+            if (player == table.player)
             {
-                if (!eventArg.isCanceled)
+                if (!isCanceled)
                 {
-                    if (table.tryGetHand(eventArg.card, out var hand))
+                    if (table.tryGetHand(_card, out var hand))
                     {
-                        if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onSelfUse, hand.animator, time))
-                            return false;
-                        table.removeHand(eventArg.card);
+                        AnimAnim useAnim = null;
+                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _time))
+                            yield return null;
+                        table.removeHand(_card);
                     }
-                    table.setMaster(table.ui.SelfMaster, table.player.getMaster());
-                    if (tryTargetedAnim(table, table.ui.SelfItem, eventArg, time))
-                        return false;
+                    yield return tryTargetedAnim(table, table.ui.SelfItem, record, arg);
                 }
                 else
                 {
-                    HandListItem item = table.getHand(eventArg.card);
-                    if (item == null)
-                        throw new ActorNotFoundException(eventArg.card);
-                    if (_moveAnim == null)
-                    {
-                        item.Card.display();
-                        table.setCard(item.Card, eventArg.card, true);
-                        _moveAnim = new CardTransAnim(item.Card, item.rectTransform.position, table.handToFieldCurve);
-                    }
-                    if (!_moveAnim.update(table, time))
-                        return false;
+                    HandListItem item = table.getHand(_card);
+                    item.Card.display();
+                    table.setCard(item.Card, _card, true);
+                    var moveAnim = new CardTransAnim(item.Card, item.rectTransform.position, table.handToFieldCurve);
+                    while (!moveAnim.update(table, _time))
+                        yield return null;
                 }
             }
             else
             {
-                table.tryGetHand(eventArg.card, out var hand);
-                if (!playEnemyUseCardAnim(table, hand, eventArg, time))
+                table.tryGetHand(_card, out var hand);
+
+                yield return playEnemyUseCardAnim(table, hand, record);
+
+                if (!isCanceled)
                 {
-                    return false;
+                    yield return tryTargetedAnim(table, table.ui.EnemyItem, record, arg);
                 }
                 else
                 {
-                    if (!eventArg.isCanceled)
-                    {
-                        table.setMaster(table.ui.EnemyMaster, table.game.getOpponent(table.player).getMaster());
-                        if (tryTargetedAnim(table, table.ui.EnemyItem, eventArg, time))
-                            return false;
-                    }
-                    else
-                    {
-                        cancelEnemyUseCard(table, eventArg);
-                    }
+                    cancelEnemyUseCard(table, record);
                 }
             }
-            return true;
         }
         #endregion
 
-        bool playEnemyUseCardAnim(TableManager table, HandListItem hand, HearthStoneRule.UseEventArg eventArg, float time)
+        IEnumerator playEnemyUseCardAnim(TableManager table, HandListItem hand, EventRecord record)
         {
-            if (!_enemyAnimPlayed)
+            
+            // 播放使用动画。
+            if (hand)
             {
-                // 播放使用动画。
-                if (hand != null)
-                {
-                    if (eventArg.card.hasKeyword(table.game, KEYWORD.SECRET))
-                        table.setCard(hand.Card, eventArg.card, false);
-                    else
-                        table.setCard(hand.Card, eventArg.card, true);
-                    hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
-                    if (!SimpleAnimHelper.update(table, ref _useAnim, hand.onEnemyUse, hand.animator, time))
-                        return false;
-                    table.removeHand(eventArg.card);
-                }
-                _enemyAnimPlayed = true;
+                table.setCard(hand.Card, _card, !_card.hasKeyword(table.game, KEYWORD.SECRET));
+                hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
+                AnimAnim useAnim = null;
+                while (!SimpleAnimHelper.update(table, ref useAnim, hand.onEnemyUse, hand.animator, _time))
+                    yield return null;
+                table.removeHand(_card);
             }
-            return true;
         }
-        void cancelEnemyUseCard(TableManager table, HearthStoneRule.UseEventArg eventArg)
+        void cancelEnemyUseCard(TableManager table, EventRecord record)
         {
-            var card = eventArg.card;
-            table.createHand(card, card.pile.indexOf(card));
+            
+            table.createHand(_card, _card.position);
         }
-        bool loadAndPlaySound(TableManager table, string path)
+        IEnumerator loadAndPlaySound(TableManager table, string path)
         {
             if (!string.IsNullOrEmpty(path))
             {
                 AudioClip sound;
-                if (_loadSoundTask == null)
-                {
-                    _loadSoundTask = table.getManager<THHResourceManager>().loadAudio(path);
-                }
-                if (!_loadSoundTask.IsCompleted)
-                    return false;
-                else
-                {
-                    sound = _loadSoundTask.Result;
-                    _loadSoundTask = null;
-                }
+                var loadSoundTask = table.getManager<THHResourceManager>().loadAudio(path);
+                while (!loadSoundTask.IsCompleted)
+                    yield return null;
+
+                sound = loadSoundTask.Result;
                 table.getManager<SEManager>().playSE(sound);
             }
-            return true;
         }
-        bool tryTargetedAnim(TableManager table, UIObject sourceActor, HearthStoneRule.UseEventArg eventArg, float time)
+        IEnumerator tryTargetedAnim(TableManager table, UIObject sourceActor, EventRecord record, Arg arg)
         {
-            if (eventArg.targets != null && eventArg.targets.Length > 0 && eventArg.targets[0] is var targetCard)
+            
+            var targets = arg.targets;
+            if (targets != null && targets.Length > 0 && targets[0] is var targetCard)
             {
-                if (table.getSkin(eventArg.card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
+                if (table.getSkin(_card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
                 {
-                    if (_loadProjectileTask == null)
-                    {
-                        _loadProjectileTask = table.getManager<THHResourceManager>().loadObject<Projectile>(skin.projectilePath);
-                    }
-                    if (!_loadProjectileTask.IsCompleted)
-                        return true;
+                    var loadProjectileTask = table.getManager<THHResourceManager>().loadObject<Projectile>(skin.projectilePath);
+
+                    while (!loadProjectileTask.IsCompleted)
+                        yield return null;
+
+                    UIObject targetActor;
+                    if (table.tryGetMaster(targetCard, out var targetMaster))
+                        targetActor = targetMaster;
+                    else if (table.tryGetServant(targetCard, out var targetServant))
+                        targetActor = targetServant;
                     else
-                    {
-                        UIObject targetActor;
-                        if (table.tryGetMaster(targetCard, out var targetMaster))
-                            targetActor = targetMaster;
-                        else if (table.tryGetServant(targetCard, out var targetServant))
-                            targetActor = targetServant;
-                        else
-                            throw new ActorNotFoundException(targetCard);
-                        if (_targetedAnim == null)
-                        {
-                            _targetedAnim = new ProjectileAnimation(
-                                table.createProjectile(_loadProjectileTask.Result, sourceActor.rectTransform, targetActor.rectTransform),
-                                targetActor);
-                        }
-                        if (!_targetedAnim.update(table, time))
-                            return true;
-                    }
+                        throw new ActorNotFoundException(targetCard);
+
+                    var targetedAnim = new ProjectileAnimation(
+                        table.createProjectile(loadProjectileTask.Result, sourceActor.rectTransform, targetActor.rectTransform),
+                        targetActor);
+
+                    while (!targetedAnim.update(table, _time))
+                        yield return null;
                 }
                 else
                 {
                     SimpleAnim simpleAnim = null;
                     Animator animator = null;
-                    if (_targetedAnim == null)
+                    if (table.tryGetMaster(targetCard, out var targetMaster))
                     {
-                        if (table.tryGetMaster(targetCard, out var targetMaster))
-                        {
-                            simpleAnim = targetMaster.onTargeted;
-                            animator = targetMaster.animator;
-                        }
-                        else if (table.tryGetServant(targetCard, out var targetServant))
-                        {
-                            simpleAnim = targetServant.onTargeted;
-                            animator = targetServant.servantAnimator;
-                        }
-                        else
-                            throw new ActorNotFoundException(targetCard);
+                        simpleAnim = targetMaster.onTargeted;
+                        animator = targetMaster.animator;
                     }
-                    if (!SimpleAnimHelper.update(table, ref _targetedAnim, simpleAnim, animator, time, next => false))
-                        return true;
+                    else if (table.tryGetServant(targetCard, out var targetServant))
+                    {
+                        simpleAnim = targetServant.onTargeted;
+                        animator = targetServant.servantAnimator;
+                    }
+                    else
+                        throw new ActorNotFoundException(targetCard);
+
+                    AnimAnim targetedAnim = null;
+                    while (!SimpleAnimHelper.update(table, ref targetedAnim, simpleAnim, animator, _time, next => false))
+                        yield return null;
                 }
             }
-            return false;
+        }
+
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            if (!record.isCompleted)
+            {
+                return false;
+            }
+            return base.blockAnim(nextAnim);
         }
     }
 }

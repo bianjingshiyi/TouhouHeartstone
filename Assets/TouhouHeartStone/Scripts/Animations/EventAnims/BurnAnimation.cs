@@ -1,36 +1,41 @@
 ﻿using TouhouHeartstone;
 using UnityEngine;
-using BJSYGameCore;
 using UI;
+using TouhouCardEngine;
+using Timer = BJSYGameCore.Timer;
+using System.Collections;
+
 namespace Game
 {
-    class BurnAnimation : EventAnimation<HearthStoneRule.BurnEventArg>
+    using Arg = HearthStoneRule.BurnEventArg;
+    class BurnAnimation : EventAnimation<Arg>
     {
         Timer _timer = new Timer() { duration = .2f };
-        Card _card;
-        public override bool update(TableManager table, HearthStoneRule.BurnEventArg eventArg, float time)
+
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.isCanceled)
+            yield break; // 以MoveCardAnim暂时代替
+
+            while (!record.isCompleted)
+                yield return null;
+            if (record.isCanceled)
+                yield break;
+
+            var player = arg.player;
+            var card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+
+            var deck = player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
+            var grave = player == table.player ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck;
+
+            var cardItem = Object.Instantiate(deck.Card_5, deck.rectTransform.position, Quaternion.identity, table.ui.rectTransform);
+            table.setCard(cardItem, card, true);
+            _timer.start();
+            while (!_timer.isExpired())
             {
-                return true;
+                cardItem.rectTransform.position = Vector3.Lerp(deck.rectTransform.position, grave.rectTransform.position, _timer.progress);
+                yield return null;
             }
-            if (!_timer.isStarted)
-            {
-                if (eventArg.player == table.player)
-                    _card = UnityEngine.Object.Instantiate(table.ui.SelfDeck.Card_5, table.ui.SelfDeck.rectTransform.position, Quaternion.identity, table.ui.rectTransform);
-                else
-                    _card = UnityEngine.Object.Instantiate(table.ui.EnemyDeck.Card_5, table.ui.EnemyDeck.rectTransform.position, Quaternion.identity, table.ui.rectTransform);
-                table.setCard(_card, eventArg.card, true);
-                _timer.start();
-            }
-            if (eventArg.player == table.player)
-                _card.rectTransform.position = Vector3.Lerp(table.ui.SelfDeck.rectTransform.position, table.ui.SelfGraveDeck.rectTransform.position, _timer.progress);
-            else
-                _card.rectTransform.position = Vector3.Lerp(table.ui.EnemyDeck.rectTransform.position, table.ui.EnemyGraveDeck.rectTransform.position, _timer.progress);
-            if (!_timer.isExpired())
-                return false;
-            UnityEngine.Object.Destroy(_card.gameObject);
-            return true;
+            Object.Destroy(cardItem.gameObject);
         }
     }
 }

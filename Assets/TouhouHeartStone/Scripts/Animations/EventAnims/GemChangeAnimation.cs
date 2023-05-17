@@ -1,17 +1,19 @@
-﻿using TouhouHeartstone;
+﻿using System.Collections;
+using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 namespace Game
 {
-    class GemChangeAnimation : EventAnimation<HearthStoneRule.SetGemEventArg>
+    using Arg = HearthStoneRule.SetGemEventArg;
+    class GemChangeAnimation : EventAnimation<Arg>
     {
-        public override bool update(TableManager table, HearthStoneRule.SetGemEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.player == table.player)
-                table.ui.SelfGem.Text.text = eventArg.player.getGem().ToString();
-            else
-                table.ui.EnemyGem.Text.text = eventArg.player.getGem().ToString();
-            table.setSkill(table.ui.SelfSkill, table.player.getSkill());
-            return true;
+            var player = arg.player;
+            var value = arg.value;
+            var gem = player == table.player ? table.ui.SelfGem : table.ui.EnemyGem;
+            gem.Text.text = value.ToString();
+            yield break;
         }
     }
 }
