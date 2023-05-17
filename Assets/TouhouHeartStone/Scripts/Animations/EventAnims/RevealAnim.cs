@@ -1,179 +1,165 @@
 ﻿using System.Collections;
+using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UObject = UnityEngine.Object;
+using Card = UI.Card;
 
 namespace Game
 {
-    class RevealAnim : EventAnimation<HearthStoneRule.RevealEventArg>
+    using Arg = HearthStoneRule.RevealEventArg;
+    class RevealAnim : EventAnimation<Arg>
     {
-        Card _card;
-        TableAnimation _moveAnim;
-        AnimAnim _flipFaceAnim;
-        AnimAnim _flipBackAnim;
-        TableAnimation _moveBackAnim;
-        float _time = 0;
-        Coroutine _coroutine;
-        WaitAnim _waitAnim;
-        bool completed = false;
+        private CardSnapshot _card;
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
+        {
+            _card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+            var player = arg.player;
+            var shouldAnimate = arg.shouldAnimate;
 
-        public override bool update(TableManager table, HearthStoneRule.RevealEventArg eventArg, float time)
-        {
-            _time = time;
-            if (_coroutine == null)
+            if (!shouldAnimate || _card == null)
             {
-                _coroutine = table.StartCoroutine(coroutine(table, eventArg));
-            }
-            if (table.tryGetHand(eventArg.card, out var handItem))
-            {
-                handItem.alpha = completed ? 1 : 0;
-            }
-            return completed;
-        }
-        private IEnumerator coroutine(TableManager table, HearthStoneRule.RevealEventArg eventArg)
-        {
-            if (!eventArg.shouldAnimate || eventArg.card == null)
-            {
-                completed = true;
                 yield break;
             }
             //在对应的卡组上创建卡牌实例
 
             // 获取卡牌源位置。
-            var targetTransform = getCardTargetTransfrom(table, eventArg);
-            var startHeight = getCardStartHeight(table, eventArg);
+            var targetTransform = getCardTargetTransfrom(table, record, arg);
+            var startHeight = getCardStartHeight(table, record, arg);
 
             // 如果该牌在你的手牌里，起始正面朝上。
-            bool startFaceUp = eventArg.player == table.player && eventArg.card.pile.name == PILE.HAND;
-            if (_card == null)
-            {
-                _card = table.createInvokeCard(eventArg.card, targetTransform?.position ?? Vector3.zero, -1, startFaceUp);
-            }
-            var startScale = Vector3.one * startHeight / _card.rectTransform.rect.height;
-            _card.transform.localScale = startScale;
+            bool startFaceUp = player == table.player && _card.pile.name == PILE.HAND;
+            Card cardUI = table.createInvokeCard(_card, targetTransform?.position ?? Vector3.zero, -1, startFaceUp);
 
+
+            var startScale = Vector3.one * startHeight / cardUI.rectTransform.rect.height;
+            cardUI.transform.localScale = startScale;
+
+            if (table.tryGetHand(_card, out var hand))
+            {
+                hand.alpha = 0;
+            }
 
             //播放位移曲线动画到对应的位置
-            RectTransform targetRect;
-            if (_moveAnim == null)
-            {
-                targetRect = table.ui.LeftDisplayImage.rectTransform;
-                _moveAnim = new CardTransAnim(_card, targetRect, Vector3.one * targetRect.rect.height / _card.rectTransform.rect.height, table.cardShowCurve);
-            }
-            while (!_moveAnim.update(table, _time))
+            RectTransform targetRect = table.ui.LeftDisplayImage.rectTransform;
+            TableAnimation animMove = new CardTransAnim(cardUI, targetRect, Vector3.one * targetRect.rect.height / cardUI.rectTransform.rect.height, table.cardShowCurve);
+            while (!animMove.update(table, _time))
             {
                 yield return null;
-            }
+            }
+
 
             //翻转揭示
             if (!startFaceUp)
             {
-                if (_flipFaceAnim == null)
-                {
-                    _flipFaceAnim = new AnimAnim(_card.animator, _card._flipToFaceAnimName);
-                    table.setCard(_card, eventArg.card);
-                }
-                while (!_flipFaceAnim.update(table, _time))
+                AnimAnim animFlipFace = new AnimAnim(cardUI.animator, cardUI._flipToFaceAnimName);
+                table.setCard(cardUI, _card);
+                while (!animFlipFace.update(table, _time))
                 {
                     yield return null;
-                }
+                }
+
             }
 
             // 等待1秒。
-            if (_waitAnim == null)
-                _waitAnim = new WaitAnim(1);
-            while (!_waitAnim.update(table, _time))
+            WaitAnim animWait = new WaitAnim(1);
+            while (!animWait.update(table, _time))
             {
                 yield return null;
-            }
+            }
+
 
             //重新翻回
             if (!startFaceUp)
             {
-                if (_flipBackAnim == null)
-                {
-                    _card.asAnimator.SetBool("isFaceUp", false);
-                    _flipBackAnim = new AnimAnim(_card.animator, _card._flipToBackAnimName);
-                }
-                while (!_flipBackAnim.update(table, _time))
+                cardUI.asAnimator.SetBool("isFaceUp", false);
+                AnimAnim animFlipBack = new AnimAnim(cardUI.animator, cardUI._flipToBackAnimName);
+                while (!animFlipBack.update(table, _time))
                 {
                     yield return null;
-                }
+                }
+
             }
 
-            targetTransform = getCardTargetTransfrom(table, eventArg);
+            targetTransform = getCardTargetTransfrom(table, record, arg);
             //放回去
-            if (_moveBackAnim == null)
-            {
-                _moveBackAnim = new CardTransAnim(_card, targetTransform, startScale, table.cardShowCurve);
-            }
-            while (!_moveBackAnim.update(table, _time))
+            TableAnimation animMoveBack = new CardTransAnim(cardUI, targetTransform, startScale, table.cardShowCurve);
+            while (!animMoveBack.update(table, _time))
             {
                 yield return null;
-            }
+            }
+
 
 
             //销毁实例
-            if (_card != null)
-                UObject.Destroy(_card.gameObject);
-            completed = true;
+            if (cardUI)
+                UObject.Destroy(cardUI.gameObject);
+
+            if (hand)
+            {
+                hand.alpha = 1;
+            }
             yield break;
         }
 
-        private Transform getCardTargetTransfrom(TableManager table, HearthStoneRule.RevealEventArg eventArg)
+        private Transform getCardTargetTransfrom(TableManager table, EventRecord record, Arg arg)
         {
+            var player = arg.player;
+
             Transform trans = null;
-            var pile = eventArg.card.pile;
+            var pile = _card.pile;
             if (pile != null)
             {
                 if (pile.name == PILE.DECK)
                 {
-                    trans = (eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck).transform;
+                    trans = (player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck).transform;
                 }
                 else if (pile.name == PILE.HAND)
                 {
-                    if (table.tryGetHand(eventArg.card, out var handItem))
+                    if (table.tryGetHand(_card, out var handItem))
                     {
                         trans = handItem.transform;
                     }
                     else
                     {
-                        trans = (eventArg.player == table.player ? table.ui.SelfHandList : table.ui.EnemyHandList).transform;
+                        trans = (player == table.player ? table.ui.SelfHandList : table.ui.EnemyHandList).transform;
                     }
                 }
                 else if (pile.name == PILE.GRAVE)
                 {
-                    trans = (eventArg.player == table.player ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck).transform;
+                    trans = (player == table.player ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck).transform;
                 }
             }
             return trans;
         }
 
-        private float getCardStartHeight(TableManager table, HearthStoneRule.RevealEventArg eventArg)
+        private float getCardStartHeight(TableManager table, EventRecord record, Arg arg)
         {
+            var player = arg.player;
+
             float height = 1;
-            var pile = eventArg.card.pile;
+            var pile = _card.pile;
             if (pile != null)
             {
                 if (pile.name == PILE.DECK)
                 {
-                    height = (eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck).getCardHeight();
+                    height = (player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck).getCardHeight();
                 }
                 else if (pile.name == PILE.HAND)
                 {
-                    if (table.tryGetHand(eventArg.card, out var handItem))
+                    if (table.tryGetHand(_card, out var handItem))
                     {
                         height = handItem.rectTransform.rect.height * handItem.transform.lossyScale.y;
                     }
                     else
                     {
-                        height = (eventArg.player == table.player ? table.ui.SelfHandList : table.ui.EnemyHandList).rectTransform.rect.height;
+                        height = (player == table.player ? table.ui.SelfHandList : table.ui.EnemyHandList).rectTransform.rect.height;
                     }
                 }
                 else if (pile.name == PILE.GRAVE)
                 {
-                    height = (eventArg.player == table.player ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck).getCardHeight();
+                    height = (player == table.player ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck).getCardHeight();
                 }
             }
             return height;

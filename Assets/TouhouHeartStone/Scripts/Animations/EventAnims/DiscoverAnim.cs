@@ -1,32 +1,54 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using BJSYGameCore;
+﻿using UnityEngine;
 using TouhouHeartstone;
 using UI;
-using Game;
-using System.Linq;
+using Card = UI.Card;
+using TouhouCardEngine;
+using System.Collections;
 
-public class DiscoverAnim : EventAnimation<THHPlayer.DiscoverEventArg>
+namespace Game
 {
-    Card _Discover;
-    TableAnimation _anim;
-    public override bool forceQueueAnimations => true;
-    public override bool update(TableManager table, THHPlayer.DiscoverEventArg eventArg, float time)
+    using Arg = THHPlayer.DiscoverEventArg;
+    public class DiscoverAnim : EventAnimation<Arg>
     {
-        if (eventArg.player == table.player)
-            return true;
-        if (table.ui.Waiting.activeSelf)
-            table.ui.Waiting.SetActive(false);
-        if (_Discover == null && eventArg.discovered != null && eventArg.isShow)
+        TableAnimation _anim;
+        public override bool forceQueueAnimations => true;
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            _Discover = table.createInvokeCard(eventArg.discovered, table.ui.LeftDisplayImage.rectTransform.position, table.cardPrefab.rectTransform.rect.height * table.ui.SelfHandList.rectTransform.localScale.y * 1.2f, eventArg.isShow);
-            _Discover.asAnimator.SetBool("isFaceUp", eventArg.isShow);
+            var player = arg.player;
+            var defines = arg.defines;
+
+            if (player == table.player)
+            {
+                yield break;
+            }
+
+            table.ui.Waiting.SetActive(true);
+
+            while (!record.isCompleted)
+                yield return null;
+
+            table.ui.Waiting.SetActive(false);
+
+            if (record.isCanceled)
+            {
+                yield break;
+            }
+            var discovered = table.getRecordCardSnapshot(record, EVENTVAR.CHOSEN_CARD);
+
+            Card discoveredUI = null;
+            var isShow = arg.isShow;
+            if (isShow)
+            {
+                discoveredUI = table.createInvokeCard(discovered, table.ui.LeftDisplayImage.rectTransform.position, table.cardPrefab.rectTransform.rect.height * table.ui.SelfHandList.rectTransform.localScale.y * 1.2f, isShow);
+                discoveredUI.asAnimator.SetBool("isFaceUp", isShow);
+            }
+            if (discoveredUI != null)
+            {
+                while (!SimpleAnimHelper.update(table, ref _anim, discoveredUI.ShowAnim, discoveredUI.animator, _time))
+                    yield return null;
+                Object.Destroy(discoveredUI.gameObject);
+            }
         }
-        if (!SimpleAnimHelper.update(table, ref _anim, _Discover.ShowAnim, _Discover.animator, time))
-            return false;
-        if (_Discover != null)
-            Object.Destroy(_Discover.gameObject);
-        return true;
     }
+
 }

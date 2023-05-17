@@ -1,33 +1,64 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UI;
-using BJSYGameCore;
+using TouhouCardEngine;
 using TouhouHeartstone;
-using Game;
-public class ChooseOneAnim : EventAnimation<HearthStoneRule.ChooseOneEventArg>
+using UI;
+using UnityEngine;
+using Card = UI.Card;
+namespace Game
 {
-
-    Card _ChooseOne;
-    TableAnimation _anim;
-    public override bool forceQueueAnimations => true;
-
-    public override bool update(TableManager table, HearthStoneRule.ChooseOneEventArg eventArg, float time)
+    using Arg = HearthStoneRule.ChooseOneEventArg;
+    public class ChooseOneAnim : EventAnimation<Arg>
     {
-        //自己打出的效果不展示
-        if (eventArg.player == table.player)
-            return true;
-        if (table.ui.Waiting.activeSelf)
-            table.ui.Waiting.SetActive(false);
-        if (_ChooseOne == null && eventArg.choose != null && eventArg.isShow)
+        public override bool forceQueueAnimations => true;
+
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            _ChooseOne = table.createInvokeCard(table.game.createCard(eventArg.choose), table.ui.LeftDisplayImage.rectTransform.position, table.cardPrefab.rectTransform.rect.height*table.ui.SelfHandList.rectTransform.localScale.y * 1.2f, eventArg.isShow);
-            _ChooseOne.asAnimator.SetBool("isFaceUp", eventArg.isShow);
+            var player = arg.player;
+            //自己打出的效果不展示
+            if (player == table.player)
+            {
+                yield break;
+            }
+
+            table.ui.Waiting.SetActive(true);
+
+            while (!record.isCompleted)
+                yield return null;
+
+            table.ui.Waiting.SetActive(false);
+
+            if (record.isCanceled)
+            {
+                yield break;
+            }
+            var choose = table.getRecordCardSnapshot(record, EVENTVAR.CHOSEN_CARD);
+
+            table.ui.Waiting.SetActive(false);
+
+            var isShow = arg.isShow;
+            Card chooseCard = null;
+            if (isShow)
+            {
+                chooseCard = table.createInvokeCard(choose, table.ui.LeftDisplayImage.rectTransform.position, table.cardPrefab.rectTransform.rect.height * table.ui.SelfHandList.rectTransform.localScale.y * 1.2f, isShow);
+                chooseCard.asAnimator.SetBool("isFaceUp", isShow);
+            }
+            if (chooseCard)
+            {
+                AnimAnim anim = null;
+                while (!SimpleAnimHelper.update(table, ref anim, chooseCard.ShowAnim, chooseCard.animator, _time))
+                    yield return null;
+                Object.Destroy(chooseCard.gameObject);
+            }
         }
-        if (!SimpleAnimHelper.update(table, ref _anim, _ChooseOne.ShowAnim, _ChooseOne.animator, time))
-            return false;
-        if (_ChooseOne != null)
-            Object.Destroy(_ChooseOne.gameObject);
-        return true;
+
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            if (nextAnim is RequestAnimation)
+            {
+                return false;
+            }
+            return base.blockAnim(nextAnim);
+        }
     }
+
 }

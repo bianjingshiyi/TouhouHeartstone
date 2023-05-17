@@ -1,26 +1,28 @@
-﻿using TouhouHeartstone;
+﻿using System.Collections;
+using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
+
 namespace Game
 {
-    class SecretTriggerAnim : EventAnimation<THHCard.SecretTriggerEventArg>
+    using Arg = THHCard.SecretTriggerEventArg;
+    public class SecretTriggerAnim : EventAnimation<Arg>
     {
-        AnimAnim _anim;
-        public override bool update(TableManager table, THHCard.SecretTriggerEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            if (table.tryGetSecret(eventArg.card, out var secret))
+            var card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+            if (table.tryGetSecret(card, out var secret))
             {
-                if (_anim == null)
+                secret.getChild("DummyTarget").GetComponent<RectTransform>().position = table.ui.CenterDisplayImage.rectTransform.position;
+
+                AnimAnim anim = null;
+                while (!SimpleAnimHelper.update(table, ref anim, secret.onTrigger, secret.animator, _time))
                 {
-                    secret.getChild("DummyTarget").GetComponent<RectTransform>().position = table.ui.CenterDisplayImage.rectTransform.position;
-                }
-                if (!SimpleAnimHelper.update(table, ref _anim, secret.onTrigger, secret.animator, time))
-                {
-                    table.setCard(secret.Card, eventArg.card, true);
-                    return false;
+                    table.setCard(secret.Card, card, true);
+                    yield return null;
                 }
             }
-            return true;
         }
     }
 }

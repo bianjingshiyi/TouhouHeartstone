@@ -1,16 +1,22 @@
-﻿using BJSYGameCore.UI;
+﻿using System.Collections;
+using BJSYGameCore.UI;
+using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 
 namespace Game
 {
-    class PreHeatAnim : EventAnimation<THHCard.BeChargedEventArg>
+    using Arg = THHCard.BeChargedEventArg;
+    class PreHeatAnim : EventAnimation<Arg>
     {
-        public override bool update(TableManager table, THHCard.BeChargedEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            if (table.tryGetHand(eventArg.card, out var hand))
+            var card = arg.card;
+            var value = arg.value;
+
+            if (table.tryGetHand(card, out var hand))
             {
-                if (eventArg.value > 0)
+                if (value > 0)
                 {
                     hand.Card.cardBackEffectImage.display();
                     hand.Card.cardFaceEffectImage.display();
@@ -21,7 +27,7 @@ namespace Game
                     hand.Card.cardFaceEffectImage.hide();
                 }
             }
-            return true;
+            yield break;
         }
     }
 }
