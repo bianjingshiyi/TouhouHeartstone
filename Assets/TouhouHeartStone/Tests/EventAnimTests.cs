@@ -97,7 +97,6 @@ namespace Tests
         class AtomAnim : EventAnimation
         {
             public override string eventName { get; } = ANIM_NAME_ATOM;
-            public override IEventArg eventArg { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
             Timer _timer = new Timer() { duration = .5f };
             public override bool update(TableManager table, float time)
             {
@@ -112,7 +111,6 @@ namespace Tests
         class CompAnim : EventAnimation
         {
             public override string eventName { get; } = ANIM_NAME_COMP;
-            public override IEventArg eventArg { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
             public override bool update(TableManager table, float time)
             {
                 throw new System.NotImplementedException();

@@ -151,6 +151,13 @@ namespace Game
                 }
                 if (!canAddToQueue)
                     continue;
+                if (anim is EventAnimation eventAnim)
+                {
+                    var record = game.triggers.getEventRecord(eventAnim.eventArg, true, true);
+                    if (record == null)
+                        continue;
+                    eventAnim.record = record;
+                }
                 insertingAnims.Insert(0, anim);
                 _animationCache.RemoveAt(i);
             }

@@ -2,6 +2,12 @@
 using UnityEngine;
 using TouhouCardEngine.Interfaces;
 using Game;
+using TouhouCardEngine;
+using System.Collections.Generic;
+using System.Linq;
+using GameCard = TouhouCardEngine.Card;
+using System.Collections;
+
 namespace UI
 {
     [Serializable]
@@ -78,39 +84,96 @@ namespace UI
     public abstract class EventAnimation : TableAnimation
     {
         public virtual string eventName { get => throw new NotImplementedException(); }//ToString();
-        public abstract IEventArg eventArg { get; set; }
+        public IEventArg eventArg { get; set; }
+        public EventRecord record { get; set; }
+        protected Stack<IEnumerator> _coroutineStack;
+        protected IEnumerator _coroutine;
+        protected float _time;
+        protected bool _finished = true;
+        public virtual void postEvent(TableManager table)
+        {
+        }
         public virtual EventAnimation clone()
         {
             return MemberwiseClone() as EventAnimation;
+        }
+        protected CardSnapshot snapshotCard(TableManager table, GameCard card)
+        {
+            return table.game.snapshotCard(card);
+        }
+        protected CardSnapshot[] snapshotCardArray(TableManager table, IEnumerable<GameCard> cards)
+        {
+            return cards.Select(c => table.game.snapshotCard(c)).ToArray();
+        }
+        protected void finish()
+        {
+            _finished = true;
         }
     }
     [Serializable]
     public abstract class EventAnimation<T> : EventAnimation where T : IEventArg
     {
-        [SerializeField]
-        T _eventArg;
-        public override IEventArg eventArg
-        {
-            get { return _eventArg; }
-            set { _eventArg = value is T t ? t : default; }
-        }
-        public T tEventArg
-        {
-            get { return eventArg is T t ? t : default; }
-        }
+        public T tEventArg => eventArg is T t ? t : default;
         public sealed override void init(TableManager table)
         {
             base.init(table);
-            init(table, eventArg is T t ? t : default);
+            init(table, tEventArg);
+        }
+        public sealed override void postEvent(TableManager table)
+        {
+            base.postEvent(table);
+            postEvent(table, tEventArg);
         }
         public virtual void init(TableManager table, T eventArg)
         {
         }
+        public virtual void postEvent(TableManager table, T eventArg)
+        {
+        }
         public sealed override bool update(TableManager table, float time)
         {
-            return update(table, eventArg is T t ? t : default, time);
+            _time = time;
+            if (_coroutine == null)
+            {
+                _coroutineStack = _coroutineStack ?? new Stack<IEnumerator>();
+                _finished = false;
+                _coroutine = update(table, record, tEventArg);
+            }
+            updateCoroutine();
+            return update(table, tEventArg, time) && _finished;
         }
-        public abstract bool update(TableManager table, T eventArg, float time);
+        public virtual bool update(TableManager table, T arg, float time)
+        {
+            return true;
+        }
+        public virtual IEnumerator update(TableManager table, EventRecord record, T arg)
+        {
+            yield break;
+        }
+        private void updateCoroutine()
+        {
+            while (_coroutine.MoveNext())
+            {
+                var result = _coroutine.Current;
+                if (result is IEnumerator enumerator)
+                {
+                    _coroutineStack.Push(_coroutine);
+                    _coroutine = enumerator;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            if (_coroutineStack.Count > 0)
+            {
+                _coroutine = _coroutineStack.Pop();
+            }
+            else
+            {
+                finish();
+            }
+        }
     }
     [Serializable]
     public abstract class UIAnimation<T> : UIAnimation where T : IEventArg

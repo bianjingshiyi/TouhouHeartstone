@@ -320,6 +320,14 @@ namespace Game
         /// <param name="arg"></param>
         private void onEventAfter(IEventArg arg)
         {
+            foreach (var anim in _animationCache.OfType<EventAnimation>().Where(a => a.eventArg == arg))
+            {
+                anim.postEvent(this);
+            }
+            foreach (var anim in _animationQueue.OfType<EventAnimation>().Where(a => a.eventArg == arg))
+            {
+                anim.postEvent(this);
+            }
         }
         #endregion
         #endregion 私有方法
