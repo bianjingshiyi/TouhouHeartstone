@@ -9,7 +9,7 @@ namespace Game
         public override bool update(TableManager table, HearthStoneRule.RebornEventArg eventArg, float time)
         {
             if (!table.tryGetServant(eventArg.card, out var servant))
-                servant = table.createServant(eventArg.card, eventArg.position, eventArg.card.getAttack(table.game), eventArg.card.getLife(table.game));
+                servant = table.createServant(eventArg.card, eventArg.position);
             if (!SimpleAnimHelper.update(table, ref _anim, servant.onSummon, servant.servantAnimator, time))
                 return false;
             return true;

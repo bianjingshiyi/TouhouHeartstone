@@ -10,6 +10,7 @@ public class ChooseOneAnim : EventAnimation<HearthStoneRule.ChooseOneEventArg>
 
     Card _ChooseOne;
     TableAnimation _anim;
+    public override bool forceQueueAnimations => true;
 
     public override bool update(TableManager table, HearthStoneRule.ChooseOneEventArg eventArg, float time)
     {

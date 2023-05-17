@@ -60,6 +60,11 @@ namespace UI
     [Serializable]
     public abstract class TableAnimation : UIAnimation
     {
+        /// <summary>
+        /// 该动画是否会强制播放之前的动画，以及自身。
+        /// 一般用于检视卡牌这种需要等待玩家操作的事件。
+        /// </summary>
+        public virtual bool forceQueueAnimations => false;
         [Obsolete("请使用update(table,time)替代")]
         public sealed override bool update(Table table)
         {

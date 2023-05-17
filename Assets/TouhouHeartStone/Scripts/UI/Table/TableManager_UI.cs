@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BJSYGameCore.UI;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UI;
@@ -20,6 +21,30 @@ namespace Game
     {
         #region 公有方法
 
+        /// <summary>
+        /// 设置所有卡牌的控制绿光需要更新。
+        /// </summary>
+        /// <param name="card">卡牌。</param>
+        public void setAllCardControlDirty() => _allControlDirty = true;
+        /// <summary>
+        /// 设置某张卡牌的控制绿光需要更新。
+        /// </summary>
+        /// <param name="card">卡牌。</param>
+        public void setCardControlDirty(ICardData card)
+        {
+            if (card == null)
+                return;
+            setCardControlDirty(card.id);
+        }
+        /// <summary>
+        /// 设置某张卡牌的控制绿光需要更新。
+        /// </summary>
+        /// <param name="cardId">卡牌ID。</param>
+        public void setCardControlDirty(int cardId)
+        {
+            _controlDirtyCards.Add(cardId);
+        }
+
         #region 英雄
         /// <summary>
         /// 初始化Master的事件
@@ -28,6 +53,8 @@ namespace Game
 
         public void initMaster(Master master)
         {
+            master.onDrag.add(onDragMaster);
+            master.onDragEnd.add(onDragEndMaster);
             master.onClick.add(onClickMaster);
             master.Head.clearSecret();
             master.LifePropNumber.WhiteText.invokeBeforeAnim();
@@ -38,7 +65,7 @@ namespace Game
             master.asAnimator.SetBool("hasArmor", false);
             master.HealImage.hide();
             master.Image.color = new Color(1, 1, 1, 1);
-            ResetPos(master);
+            resetMasterPosition(master);
             master.rectTransform.localScale = new Vector3(1, 1, 1);
         }
         /// <summary>
@@ -47,14 +74,21 @@ namespace Game
         /// <param name="card"></param>
         /// <param name="master"></param>
         /// <returns></returns>
-        public bool tryGetMaster(Card card, out Master master)
+        public bool tryGetMaster(ICardData card, out Master master) => tryGetMaster(card?.id ?? 0, out master);
+        /// <summary>
+        /// 尝试获取一张卡对应的Master
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="master"></param>
+        /// <returns></returns>
+        public bool tryGetMaster(int cardId, out Master master)
         {
-            if (player.getMaster() == card)
+            if (player.getMaster().id == cardId)
             {
                 master = ui.SelfMaster;
                 return true;
             }
-            else if (game.getOpponent(player).getMaster() == card)
+            else if (game.getOpponent(player).getMaster().id == cardId)
             {
                 master = ui.EnemyMaster;
                 return true;
@@ -71,25 +105,30 @@ namespace Game
         /// <param name="master"></param>
         /// <param name="card"></param>
         /// <param name="isSelectable"></param>
-        public async void setMaster(Master master, Card card, bool isSelectable = false)
+        public void setMaster(Master master, ICardData card, bool isSelectable = false) => setMaster(master, updateCardDescriptor(card), isSelectable);
+        /// <summary>
+        /// 设置Master的UI
+        /// </summary>
+        /// <param name="master"></param>
+        /// <param name="desc"></param>
+        /// <param name="isSelectable"></param>
+        public async void setMaster(Master master, CardDescriptor desc, bool isSelectable = false)
         {
-            CardSkinData skin = getSkin(card);
-            master.LifePropNumber.text.text = card.getCurrentLife(game).ToString();
-            if (card.getAttack(game) > 0)
+            master.LifePropNumber.text.text = desc.getCurrentLife().ToString();
+            if (desc.getAttack() > 0)
             {
-                master.AttackPropNumber.text.text = card.getAttack(game).ToString();
+                master.AttackPropNumber.text.text = desc.getAttack().ToString();
                 master.asAnimator.SetBool("ShowAttack", true);
                 master.AttackPropNumber.text.display();
-
             }
             else
             {
                 master.AttackPropNumber.text.hide();
                 master.asAnimator.SetBool("ShowAttack", false);
             }
-            if (card.getArmor(game) > 0)
+            if (desc.getArmor() > 0)
             {
-                master.ArmorPropNumber.text.text = card.getArmor(game).ToString();
+                master.ArmorPropNumber.text.text = desc.getArmor().ToString();
                 master.ArmorPropNumber.display();
             }
             else
@@ -108,27 +147,13 @@ namespace Game
                 master.onSelectableFalse.invokeBeforeAnim();
                 master.onSelectableFalse.invokeAfterAnim();
             }
-            if (card.getOwner() == player && currentAnimPlayer == player && card.canAttack(game))
-            {
-                // master.HighlightController = Master.Highlight.Green;
-                master.onCanAttackTrue.invokeBeforeAnim();
-                master.onCanAttackTrue.invokeAfterAnim();
-                master.onClick.add(onClickMaster);
-                master.onDrag.add(onDragMaster);
-                master.onDragEnd.add(onDragEndMaster);
-            }
-            else if (currentAnimPlayer == player)
-            {
-                // master.HighlightController = Master.Highlight.None;
-                master.onCanAttackFalse.invokeBeforeAnim();
-                master.onCanAttackFalse.invokeAfterAnim();
-            }
 
-            if (card.hasKeyword(game, KEYWORD.HAS_SHIELD))
+            if (desc.hasShield)
                 master.ShieldImage.display();
             else
                 master.ShieldImage.hide();
-            if (card.isFreeze(game))
+
+            if (desc.isFrozen)
             {
                 master.onShackleTrue.invokeBeforeAnim();
                 master.onShackleTrue.invokeAfterAnim();
@@ -139,14 +164,15 @@ namespace Game
                 master.onShackleFalse.invokeAfterAnim();
             }
             var cards = getManager<CardManager>();
-            var poolRef = cards.getCardPoolReferenceOfCard(card.define);
-            master.Image.sprite = await cards.loadCardImage(poolRef, card.define.id);
+            var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
+            master.Image.sprite = await cards.loadCardImage(poolRef, desc.define.id);
+            setCardControlDirty(desc.id);
         }
         /// <summary>
         /// 用于重置非正常退出后的英雄位置
         /// </summary>
         /// <param name="ReMaster"></param>
-        public void ResetPos(Master ReMaster)
+        public void resetMasterPosition(Master ReMaster)
         {
             ReMaster.GetComponentInChildren<PositionLerp>()._time = 0.0f;
             ReMaster.GetComponentInChildren<PositionLerp>().enabled = false;
@@ -167,14 +193,15 @@ namespace Game
         #endregion 英雄
 
         #region 技能
-        public bool tryGetSkill(Card card, out Skill skill)
+        public bool tryGetSkill(ICardData card, out Skill skill) => tryGetSkill(card?.id ?? 0, out skill);
+        public bool tryGetSkill(int cardId, out Skill skill)
         {
-            if (card == player.getSkill())
+            if (cardId == player.getSkill()?.id)
             {
                 skill = ui.SelfSkill;
                 return true;
             }
-            else if (card == game.getOpponent(player).getSkill())
+            else if (cardId == game.getOpponent(player).getSkill()?.id)
             {
                 skill = ui.EnemySkill;
                 return true;
@@ -185,61 +212,47 @@ namespace Game
                 return false;
             }
         }
+        public void setSkill(Skill skill, ICardData card) => setSkill(skill, updateCardDescriptor(card));
         /// <summary>
         /// 设置Skill的UI
         /// </summary>
         /// <param name="skill"></param>
-        /// <param name="card"></param>
-        public async void setSkill(Skill skill, Card card)
+        /// <param name="desc"></param>
+        public async void setSkill(Skill skill, CardDescriptor desc)
         {
-            skill.costPropNumber.text.text = card.getCost(game).ToString();
-            if (card.isUsed(game))
-            {
-                // skill.IsUsedController = Skill.IsUsed.True;
-                skill.isUsed = true;
-            }
-            else
-            {
-                // skill.IsUsedController = Skill.IsUsed.False;
-                skill.isUsed = false;
-            }
-            if (card.isUsable(game, player, out _) &&//技能是可用的
-                !isSelectingTarget &&//没有在选择目标
-                canControl//是自己的回合
-                )
-            {
-                // skill.IsUsableController = Skill.IsUsable.True;
-                skill.isUsable = true;
-                skill.asButton.interactable = true;
-            }
-            else
-            {
-                // skill.IsUsableController = Skill.IsUsable.False;
-                skill.isUsable = false;
-                skill.asButton.interactable = false;
-            }
+            skill.costPropNumber.text.text = desc.getCost().ToString();
+            skill.isUsed = desc.isUsed;
+
             var cards = getManager<CardManager>();
-            var poolRef = cards.getCardPoolReferenceOfCard(card.define);
-            skill.image.sprite = await cards.loadCardImage(poolRef, card.define.id);
+            var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
+            skill.image.sprite = await cards.loadCardImage(poolRef, desc.define.id);
+
+            setCardControlDirty(desc.id);
+        }
+        public Card getSkillCard(Skill skill)
+        {
+            if (skill == ui.SelfSkill)
+            {
+                return player.getSkill();
+            }
+            else if (skill == ui.EnemySkill)
+            {
+                return game.getOpponent(player).getSkill();
+            }
+            return null;
         }
         #endregion
 
         #region 道具
-        public Item GetRelatedItem(Card card) => card.owner == currentAnimPlayer ? ui.SelfItem : ui.EnemyItem;
-
-        public bool tryGetItem(Card card, out Item item)
+        public bool tryGetItem(ICardData card, out Item item) => tryGetItem(card?.id ?? 0, out item);
+        public bool tryGetItem(int cardId, out Item item)
         {
-            if (card == null)
-            {
-                item = null;
-                return false;
-            }
-            if (_selfItemCard == card)
+            if (_selfItemDesc?.id == cardId)
             {
                 item = ui.SelfItem;
                 return true;
             }
-            else if (_enemyItemCard == card)
+            else if (_enemyItemDesc?.id == cardId)
             {
                 item = ui.EnemyItem;
                 return true;
@@ -250,24 +263,25 @@ namespace Game
                 return false;
             }
         }
-        public async void setItem(Item item, Card card)
+        public void setItem(Item item, ICardData card) => setItem(item, updateCardDescriptor(card));
+        public async void setItem(Item item, CardDescriptor desc)
         {
-            if (card == null)
+            if (desc == null)
             {
                 item.hide();
                 if (item == ui.SelfItem)
-                    _selfItemCard = null;
+                    _selfItemDesc = null;
                 else if (item == ui.EnemyItem)
-                    _enemyItemCard = null;
+                    _enemyItemDesc = null;
                 return;
             }
             item.display();
             if (item == ui.SelfItem)
-                _selfItemCard = card;
+                _selfItemDesc = desc;
             else if (item == ui.EnemyItem)
-                _enemyItemCard = card;
+                _enemyItemDesc = desc;
 
-            if (card.getOwner() == currentAnimPlayer)
+            if (desc.getOwner() == currentAnimPlayer)
             {
                 if (item.animator.gameObject.activeSelf)
                 {
@@ -284,9 +298,12 @@ namespace Game
                 }
             }
 
+            item.AttackPropNumber.text.text = desc.getAttack().ToString();
+            item.DurabilityPropNumber.text.text = desc.getCurrentLife().ToString();
+
             var cards = getManager<CardManager>();
-            var poolRef = cards.getCardPoolReferenceOfCard(card.define);
-            item.Image.sprite = await cards.loadCardImage(poolRef, card.define.id);
+            var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
+            item.Image.sprite = await cards.loadCardImage(poolRef, desc.define.id);
         }
         #endregion 道具
 
@@ -295,24 +312,26 @@ namespace Game
         /// <summary>
         /// 创建一张手牌
         /// </summary>
-        /// <param name="card"></param>
+        /// <param name="desc"></param>
         /// <param name="position">默认为-1也就是最右手</param>
         /// <returns></returns>
-        public HandListItem createHand(Card card, int position = -1)
+        public HandListItem createHand(ICardData card, int position = -1) => createHand(updateCardDescriptor(card), position);
+        /// <summary>
+        /// 创建一张手牌
+        /// </summary>
+        /// <param name="desc"></param>
+        /// <param name="position">默认为-1也就是最右手</param>
+        /// <returns></returns>
+        public HandListItem createHand(CardDescriptor desc, int position = -1)
         {
-            if (cardHandDic.ContainsKey(card))
+            if (tryGetHand(desc.id, out var hand))
             {
-                if (cardHandDic[card] != null)
-                {
-                    UberDebug.LogErrorChannel("UI", "手牌中已经存在" + card + "对应UI" + cardHandDic[card]);
-                    return cardHandDic[card];
-                }
-                else
-                    cardHandDic[card] = null;
+                UberDebug.LogErrorChannel("UI", "手牌中已经存在" + desc + "对应UI" + hand);
+                return hand;
             }
-            UberDebug.LogTraceChannel("UI", "创建手牌UI：" + card);
+            UberDebug.LogTraceChannel("UI", "创建手牌UI：" + desc);
             HandListItem item;
-            if (card.getOwner() == player)
+            if (desc.getOwner() == player)
             {
                 item = ui.SelfHandList.addItem();
                 if (position >= 0)
@@ -321,7 +340,7 @@ namespace Game
                     item.rectTransform.SetSiblingIndex(position + 1);
                 }
                 item.isDragable = true;
-                setCard(item.Card, card, true);
+                setCardDesc(item.Card, desc, true);
             }
             else
             {
@@ -333,15 +352,15 @@ namespace Game
                 }
                 item.isDragable = false;
                 item.Card.setBoolFalse("isFaceUp");
-                setCard(item.Card, card, false);
+                setCardDesc(item.Card, desc, false);
             }
-            item.gameObject.name = card.ToString();
+            item.gameObject.name = desc.ToString();
             item.onDrag.set(onDragHand);
             item.onEndDrag.set(onDragHandEnd);
             item.onPointerEnter.set(onHandPointerEnter);
             item.onPointerExit.set(onHandPointerExit);
             item.onPointerMove.set(onHandPointerMove);
-            cardHandDic.Add(card, item);
+            cardHandDic.Add(desc.id, item);
             return item;
         }
 
@@ -350,28 +369,47 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public HandListItem getHand(Card card)
+        public HandListItem getHand(ICardData card) => getHand(card.id);
+        /// <summary>
+        /// 尝试获取UI手牌引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public bool tryGetHand(ICardData card, out HandListItem hand) => tryGetHand(card?.id ?? 0, out hand);
+
+        /// <summary>
+        /// 移除一个UI手牌。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public bool removeHand(ICardData card) => removeHand(card.id);
+        /// <summary>
+        /// 获取UI手牌引用
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public HandListItem getHand(int cardId)
         {
-            if (cardHandDic.ContainsKey(card))
-                return cardHandDic[card];
-            throw new ActorNotFoundException(card);
+            if (cardHandDic.ContainsKey(cardId))
+                return cardHandDic[cardId];
+            throw new ActorNotFoundException(game.getCard(cardId));
         }
         /// <summary>
         /// 尝试获取UI手牌引用
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public bool tryGetHand(Card card, out HandListItem hand)
+        public bool tryGetHand(int id, out HandListItem hand)
         {
-            if (cardHandDic.ContainsKey(card))
+            if (cardHandDic.ContainsKey(id))
             {
-                if (cardHandDic[card] != null)
+                if (cardHandDic[id] != null)
                 {
-                    hand = cardHandDic[card];
+                    hand = cardHandDic[id];
                     return true;
                 }
                 else
-                    cardHandDic.Remove(card);
+                    cardHandDic.Remove(id);
             }
             hand = null;
             return false;
@@ -382,14 +420,15 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public bool removeHand(Card card)
+        public bool removeHand(int id)
         {
-            if (cardHandDic.ContainsKey(card))
+            if (cardHandDic.ContainsKey(id))
             {
-                var item = cardHandDic[card];
-                cardHandDic.Remove(card);
+                var item = cardHandDic[id];
+                cardHandDic.Remove(id);
 
-                if (card.getOwner() == player)
+                var card = getCardDescriptor(id);
+                if (card?.getOwner() == player)
                 {
                     ui.SelfHandList.removeItem(item);
                 }
@@ -410,24 +449,30 @@ namespace Game
             foreach (var pair in cardHandDic)
             {
                 if (pair.Value == item)
-                    return pair.Key;
+                    return game.getCard(pair.Key);
             }
             return null;
         }
         #endregion 手牌
 
         #region 仆从
-
         /// <summary>
         /// 创建一个随从
         /// </summary>
-        /// <param name="card"></param>
+        /// <param name="desc"></param>
         /// <param name="position"></param>
         /// <returns></returns>
-        public ServantItem createServant(Card card, int position, int attack = -1, int life = -1)
+        public ServantItem createServant(ICardData card, int position) => createServant(updateCardDescriptor(card), position);
+        /// <summary>
+        /// 创建一个随从
+        /// </summary>
+        /// <param name="desc"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public ServantItem createServant(CardDescriptor desc, int position)
         {
             ServantItem servant;
-            if (card.getOwner() == player)
+            if (desc.getOwner() == player)
             {
                 servant = ui.SelfFieldList.addItem();
                 ui.SelfFieldList.defaultItem.rectTransform.SetAsFirstSibling();
@@ -437,126 +482,74 @@ namespace Game
                 servant = ui.EnemyFieldList.addItem();
                 ui.EnemyFieldList.defaultItem.rectTransform.SetAsFirstSibling();
             }
-            UberDebug.LogChannel(servant, "UI", "为" + card + "创建" + servant);
-            servant.gameObject.name = card.ToString();
+            UberDebug.LogChannel(servant, "UI", "为" + desc + "创建" + servant);
+            servant.gameObject.name = desc.ToString();
             servant.rectTransform.SetSiblingIndex(position + 1);
-            setServant(servant, card, attack, life);
+            setServant(servant, desc);
             servant.onClick.add(onClickServant);
             servant.onDrag.add(onDragServant);
             servant.onDragEnd.add(onDragEndServant);
             servant.onPointerEnter.set(onEnterServant);
             servant.onPointerExit.set(onExitServant);
-            cardServantDic.Add(card, servant);
+            cardServantDic.Add(desc.id, servant);
+            setCardControlDirty(desc.id);
             return servant;
         }
         /// <summary>
         /// 设置随从
         /// </summary>
         /// <param name="servant"></param>
-        /// <param name="card"></param>
+        /// <param name="desc"></param>
         /// <param name="isSelectable"></param>
-        public async void setServant(ServantItem servant, Card card, int attack = -1, int life = -1)
+        public void setServant(ServantItem servant, ICardData card) => setServant(servant, updateCardDescriptor(card));
+        /// <summary>
+        /// 设置随从
+        /// </summary>
+        /// <param name="servant"></param>
+        /// <param name="desc"></param>
+        /// <param name="isSelectable"></param>
+        public async void setServant(ServantItem servant, CardDescriptor desc)
         {
-            CardSkinData skin = getSkin(card);
-            servant.attackPropNumber.text.text = attack < 0 ? card.getAttack(game).ToString() : attack.ToString();
-            servant.lifePropNumber.text.text = life < 0 ? card.getCurrentLife(game).ToString() : life.ToString();
+            servant.attackPropNumber.text.text = desc.getAttack().ToString();
+            servant.lifePropNumber.text.text = desc.getCurrentLife().ToString();
 
-            servant.onDrag.remove(onDragServant);
-            if (player == card.getOwner() && currentAnimPlayer == player && card.canAttack(game))
-            {
-                servant.onCanAttackTrue.invokeBeforeAnim();
-                servant.onCanAttackTrue.invokeAfterAnim();
-                servant.onDrag.add(onDragServant);
-                servant.onDragEnd.add(onDragEndServant);
-            }
-            else
-            {
-                servant.onCanAttackFalse.invokeBeforeAnim();
-                servant.onCanAttackFalse.invokeAfterAnim();
-            }
-            if (card.isTaunt(game))
-            {
-                servant.onTauntTrue.invokeBeforeAnim();
-                servant.onTauntTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onTauntFalse.invokeBeforeAnim();
-                servant.onTauntFalse.invokeAfterAnim();
-            }
-            if (card.isShield(game))
-            {
-                servant.onShieldTrue.invokeBeforeAnim();
-                servant.onShieldTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onShieldFalse.invokeBeforeAnim();
-                servant.onShieldFalse.invokeAfterAnim();
-            }
-            if (card.isStealth(game))
-            {
-                servant.onStealthTrue.invokeBeforeAnim();
-                servant.onStealthTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onStealthFalse.invokeBeforeAnim();
-                servant.onStealthFalse.invokeAfterAnim();
-            }
-            if (card.hasDeathRattle(game))
-            {
-                servant.onDyingWishTrue.invokeBeforeAnim();
-                servant.onDyingWishTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onDyingWishFalse.invokeBeforeAnim();
-                servant.onDyingWishFalse.invokeAfterAnim();
-            }
-            if (card.hasKeyword(game, KEYWORD.POISONOUS))
-            {
-                servant.onLethalTrue.invokeBeforeAnim();
-                servant.onLethalTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onLethalFalse.invokeBeforeAnim();
-                servant.onLethalFalse.invokeAfterAnim();
-            }
-            if (card.hasKeyword(game, KEYWORD.DRAIN))
-            {
-                servant.onLifeStealTrue.invokeBeforeAnim();
-                servant.onLifeStealTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onLifeStealFalse.invokeBeforeAnim();
-                servant.onLifeStealFalse.invokeAfterAnim();
-            }
-            if (card.isFreeze(game))
-            {
-                servant.onShackleTrue.invokeBeforeAnim();
-                servant.onShackleTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onShackleFalse.invokeBeforeAnim();
-                servant.onShackleFalse.invokeAfterAnim();
-            }
-            if (card.isSilenced(game))
-            {
-                servant.onSilenceTrue.invokeBeforeAnim();
-                servant.onSilenceTrue.invokeAfterAnim();
-            }
-            else
-            {
-                servant.onSilenceFalse.invokeBeforeAnim();
-                servant.onSilenceFalse.invokeAfterAnim();
-            }
+            var tauntAnim = desc.isTaunt ? servant.onTauntTrue : servant.onTauntFalse;
+            tauntAnim.invokeBeforeAnim();
+            tauntAnim.invokeAfterAnim();
+
+            var shieldAnim = desc.hasShield ? servant.onShieldTrue : servant.onShieldFalse;
+            shieldAnim.invokeBeforeAnim();
+            shieldAnim.invokeAfterAnim();
+
+            var stealthAnim = desc.isStealth ? servant.onStealthTrue : servant.onStealthFalse;
+            stealthAnim.invokeBeforeAnim();
+            stealthAnim.invokeAfterAnim();
+
+            var deathrattleAnim = desc.hasDeathRattle ? servant.onDyingWishTrue : servant.onDyingWishFalse;
+            deathrattleAnim.invokeBeforeAnim();
+            deathrattleAnim.invokeAfterAnim();
+
+            var lethalAnim = desc.isLethal ? servant.onLethalTrue : servant.onLethalFalse;
+            lethalAnim.invokeBeforeAnim();
+            lethalAnim.invokeAfterAnim();
+
+            var drainAnim = desc.isDrain ? servant.onLifeStealTrue : servant.onLifeStealFalse;
+            drainAnim.invokeBeforeAnim();
+            drainAnim.invokeAfterAnim();
+
+            var frozenAnim = desc.isFrozen ? servant.onShackleTrue : servant.onShackleFalse;
+            frozenAnim.invokeBeforeAnim();
+            frozenAnim.invokeAfterAnim();
+
+            var silencedAnim = desc.isSilenced ? servant.onSilenceTrue : servant.onSilenceFalse;
+            silencedAnim.invokeBeforeAnim();
+            silencedAnim.invokeAfterAnim();
+
             var cards = getManager<CardManager>();
-            var poolRef = cards.getCardPoolReferenceOfCard(card.define);
-            servant.image.sprite = await cards.loadCardImage(poolRef, card.define.id);
+            var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
+            servant.image.sprite = await cards.loadCardImage(poolRef, desc.define.id);
+
+            setCardControlDirty(desc.id);
         }
         /// <summary>
         /// 设置随从定义
@@ -586,11 +579,17 @@ namespace Game
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public ServantItem getServant(Card card)
+        public ServantItem getServant(ICardData card) => getServant(card.id);
+        /// <summary>
+        /// 从卡获取对应的随从UI
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ServantItem getServant(int id)
         {
-            if (cardServantDic.ContainsKey(card))
-                return cardServantDic[card];
-            throw new ActorNotFoundException(card);
+            if (cardServantDic.ContainsKey(id))
+                return cardServantDic[id];
+            throw new ActorNotFoundException(game.getCard(id));
         }
         /// <summary>
         /// 尝试从卡获取对应的随从UI
@@ -598,16 +597,23 @@ namespace Game
         /// <param name="card"></param>
         /// <param name="servant"></param>
         /// <returns></returns>
-        public bool tryGetServant(Card card, out ServantItem servant)
+        public bool tryGetServant(ICardData card, out ServantItem servant) => tryGetServant(card?.id ?? 0, out servant);
+        /// <summary>
+        /// 尝试从卡获取对应的随从UI
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="servant"></param>
+        /// <returns></returns>
+        public bool tryGetServant(int id, out ServantItem servant)
         {
-            if (cardServantDic.ContainsKey(card))
+            if (cardServantDic.ContainsKey(id))
             {
-                if (cardServantDic[card] != null)
+                if (cardServantDic[id] != null)
                 {
-                    servant = cardServantDic[card];
+                    servant = cardServantDic[id];
                     return true;
                 }
-                cardServantDic.Remove(card);
+                cardServantDic.Remove(id);
                 servant = null;
                 return false;
             }
@@ -628,7 +634,7 @@ namespace Game
             foreach (var pair in cardServantDic)
             {
                 if (pair.Value == servant)
-                    return pair.Key;
+                    return game.getCard(pair.Key);
             }
             return null;
         }
@@ -644,10 +650,20 @@ namespace Game
         #endregion
 
         #region 揭示
-        public UICard createInvokeCard(Card card, Vector3 position, float height = -1, bool isFaceUp = true)
+        public UICard createInvokeCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createInvokeCard(updateCardDescriptor(card), position, height, isFaceUp);
+        public UICard createInvokeCard(CardDescriptor card, Vector3 position, float height = -1, bool isFaceUp = true)
         {
             var ui = Instantiate(cardPrefab, position, Quaternion.identity, this.ui.InvokeDisPlayRectTransform);
-            setCard(ui, card, isFaceUp);
+            setCardDesc(ui, card, isFaceUp);
+            if (height < 0)
+                return ui;
+            ui.transform.localScale = Vector3.one * height / ui.rectTransform.rect.height;
+            return ui;
+        }
+        public UICard createInvokeCard(CardDefine define, Vector3 position, float height = -1, bool isFaceUp = true)
+        {
+            var ui = Instantiate(cardPrefab, position, Quaternion.identity, this.ui.InvokeDisPlayRectTransform);
+            setCardDefine(ui, define, isFaceUp);
             if (height < 0)
                 return ui;
             ui.transform.localScale = Vector3.one * height / ui.rectTransform.rect.height;
@@ -659,8 +675,8 @@ namespace Game
         /// <param name="master"></param>
         public void DestroyInvokeCard()
         {
-            Transform[] Cards = this.ui.InvokeDisPlayRectTransform.GetComponentsInChildren<Transform>();
-            for (int i = 1; i < this.ui.InvokeDisPlayRectTransform.GetComponentsInChildren<Transform>().Count(); i++)
+            Transform[] Cards = ui.InvokeDisPlayRectTransform.GetComponentsInChildren<Transform>();
+            for (int i = 1; i < ui.InvokeDisPlayRectTransform.GetComponentsInChildren<Transform>().Count(); i++)
             {
                 Destroy(Cards[i].gameObject);
             }
@@ -707,7 +723,7 @@ namespace Game
                 var card = game.getCard(cardId);
                 if (card != null)
                 {
-                    setCard(item.Card, card, true);
+                    setCard(item.Card, newSnapshot(card), true);
                     item.asButton.onClick.set(() =>
                     {
                         game.answers.answer(player.id, new DiscoverResponse()
@@ -726,25 +742,32 @@ namespace Game
         #endregion
 
         #region 陷阱
-        public Secret createSecret(Card card)
+        public Secret createSecret(ICardData card) => createSecret(updateCardDescriptor(card));
+        public Secret createSecret(CardDescriptor desc)
         {
             Secret secret;
-            if (card.pile == player.getHead())
+            if (desc.getOwner() == player)
                 secret = ui.SelfMaster.Head.addSecret();
             else
                 secret = ui.EnemyMaster.Head.addSecret();
-            cardSecretDic.Add(card, secret);
+            cardSecretDic.Add(desc.id, secret);
             return secret;
         }
-        public bool tryGetSecret(Card card, out Secret secret)
+        public bool tryGetSecret(ICardData card, out Secret secret) => tryGetSecret(card?.id ?? 0, out secret);
+        public bool tryGetSecret(int id, out Secret secret)
         {
-            return cardSecretDic.TryGetValue(card, out secret);
+            return cardSecretDic.TryGetValue(id, out secret);
         }
-        public bool removeSecret(Card card)
+        public bool removeSecret(ICardData card) => removeSecret(card.id);
+        public bool removeSecret(CardDescriptor desc)
         {
-            if (cardSecretDic.TryGetValue(card, out var secret))
+            return removeSecret(desc.id);
+        }
+        public bool removeSecret(int cardId)
+        {
+            if (tryGetSecret(cardId, out var secret))
             {
-                cardSecretDic.Remove(card);
+                cardSecretDic.Remove(cardId);
                 DestroyImmediate(secret.gameObject);
                 ui.EnemyMaster.Head.UpdateSercret();
                 ui.SelfMaster.Head.UpdateSercret();
@@ -754,34 +777,94 @@ namespace Game
         }
         #endregion
 
-        public UICard createCard(Card card, Vector3 position, float height = -1, bool isFaceUp = true)
+        #region 初始换牌
+        public Card getInitCard(InitReplaceCardListItem init)
+        {
+            foreach (var pair in initDic)
+            {
+                if (pair.Value == init)
+                    return game.getCard(pair.Key);
+            }
+            return null;
+        }
+        public void setInitCard(InitReplaceCardListItem init, ICardData card)
+        {
+            setCard(init.Card, card, true);
+            init.MarkImage.enabled = false;
+            if (initDic.ContainsKey(card.id))
+            {
+                initDic[card.id] = init;
+            }
+            else
+            {
+                initDic.Add(card.id, init);
+            }
+        }
+        public void showInitReplaceDialog(InitReplaceRequest request)
+        {
+            var dialog = ui.InitReplaceDialog;
+            if (!dialog.isDisplaying)
+            {
+                dialog.display();
+
+                var cardList = dialog.InitReplaceCardList;
+                var initPile = player.getInit();
+                cardList.clearItems();
+                cardList.updateItems(initPile,
+                    (item, card) =>
+                    {
+                        return getInitCard(item) == card;
+                    },
+                    (item, card) =>
+                    {
+                        item.asButton.onClick.set(() =>
+                        {
+                            item.MarkImage.enabled = !item.MarkImage.enabled;
+                        });
+                        setInitCard(item, newSnapshot(card));
+                    });
+
+                cardList.sortItems((a, b) => initPile.indexOf(getInitCard(a)) - initPile.indexOf(getInitCard(b)));
+
+                dialog.WaitingText.SetActive(false);
+
+                dialog.ConfirmButtonBlack.gameObject.SetActive(true);
+                dialog.ConfirmButtonBlack.asButton.onClick.set(() =>
+                {
+                    player.cmdInitReplace(game, cardList.Where(item => item.MarkImage.enabled).Select(item => getInitCard(item)).ToArray());
+                    dialog.ConfirmButtonBlack.gameObject.SetActive(false);
+                    dialog.WaitingText.SetActive(true);
+                });
+            }
+        }
+        #endregion
+        public UICard createCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createCard(updateCardDescriptor(card), position, height, isFaceUp);
+        public UICard createCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
         {
             var ui = Instantiate(cardPrefab, position, Quaternion.identity, this.ui.FieldsImage.rectTransform);
-            setCard(ui, card, isFaceUp);
+            setCardDesc(ui, desc, isFaceUp);
             if (height < 0)
                 return ui;
             ui.transform.localScale = Vector3.one * height / ui.rectTransform.rect.height;
             return ui;
         }
+        public void setCard(UICard ui, ICardData card, bool isFaceUp = true) => setCardDesc(ui, updateCardDescriptor(card), isFaceUp);
         /// <summary>
         /// 设置卡片UI
         /// </summary>
         /// <param name="ui"></param>
-        /// <param name="card"></param>
+        /// <param name="desc"></param>
         /// <param name="isFaceup"></param>
-        public async void setCard(UICard ui, Card card, bool isFaceup = true)
+        public async void setCardDesc(UICard ui, CardDescriptor desc, bool isFaceup = true)
         {
             var cards = getManager<CardManager>();
-            await ui.setCard(game, card, cards, isFaceup);
+            await ui.setCard(desc, cards, isFaceup);
+            setCardDescriptor(desc);
         }
         public async void setCardDefine(UICard ui, CardDefine define, bool isFaceUp = true)
         {
             var cards = getManager<CardManager>();
             await ui.setCardDefine(define, cards, isFaceUp);
-        }
-        public void setCardSnapshot(UICard ui, CardSnapshot snapshot, bool isFaceup = true)
-        {
-            setCardDefine(ui, snapshot.define, isFaceup);
         }
         /// <summary>
         /// 取消攻击
@@ -803,20 +886,18 @@ namespace Game
             ui.TipText.text = lang._(tip);
             _tipTimer.start();
         }
-        public async void displayLargeCard(bool isRight, Card card)
+        public async void displayLargeCard(bool isRight, CardDescriptor desc)
         {
             var pos = ui.CardDisplayerObj.transform.localPosition;
             pos.x = isRight ? 250 : -250;
             ui.CardDisplayerObj.transform.localPosition = pos;
 
-            if (tryGetServant(card, out var servant))
-                setServant(servant, card);
+            setCardDesc(ui.LargeCard, desc, true);
 
-            var buffViewDatas = await getCardBuffViewDatas(card.getBuffs());
+            var buffViewDatas = await getCardBuffViewDatas(desc.getBuffs());
             ui.showCardDisplayer(true);
             ui.LargeCard.display();
             ui.setCardDisplayerBuffs(buffViewDatas);
-            setCard(ui.LargeCard, card, true);
         }
         public void hideLargeCard()
         {
@@ -837,13 +918,11 @@ namespace Game
                 {
                     master.onSelectableTrue.invokeBeforeAnim();
                     master.onSelectableTrue.invokeAfterAnim();
-                    master.onClick.add(onClickMaster);
                 }
                 else if (tryGetServant(target, out var servant))
                 {
                     servant.onSelectableTrue.invokeBeforeAnim();
                     servant.onSelectableTrue.invokeAfterAnim();
-                    servant.onClick.add(onClickServant);
                 }
             }
         }
@@ -1426,7 +1505,7 @@ namespace Game
             foreach (var card in player.getDeck().OrderBy(c => c.define.getCost()))
             {
                 var item = ui.PilePanel.VerticalOverflowCardList.addItem();
-                setCard(item.Card, card, true);
+                setCard(item.Card, newSnapshot(card), true);
             }
         }
         void onDeckPointerEnter(UI.Deck deck, PointerEventData pointer)
@@ -1456,7 +1535,7 @@ namespace Game
             foreach (var card in player.getGrave())
             {
                 var item = ui.PilePanel.VerticalOverflowCardList.addItem();
-                setCard(item.Card, card, true);
+                setCard(item.Card, newSnapshot(card), true);
             }
         }
         void onGravePointerEnter(UI.Deck deck, PointerEventData pointer)
@@ -1565,7 +1644,8 @@ namespace Game
             {
                 HandListItem usingHand = getHand(usingCard);
                 usingHand.Card.display();
-                setCard(usingHand.Card, usingCard, true);
+                var desc = getCardDescriptor(usingCard);
+                setCardDesc(usingHand.Card, desc, true);
                 usingHand.Card.rectTransform.localScale = Vector3.one;
                 usingHand.Card.rectTransform.localPosition = Vector2.zero;
             }
@@ -1640,6 +1720,65 @@ namespace Game
             }
             return viewDatas;
         }
+
+        #region 更新可控制高光
+        private void updateAllControlable()
+        {
+            foreach (var player in game.players)
+            {
+                updateCardControlable(player.getMaster());
+                updateCardControlable(player.getSkill());
+                foreach (Card servant in player.getField())
+                {
+                    updateCardControlable(servant);
+                }
+            }
+        }
+
+        private void updateCardControlable(Card card)
+        {
+            if (card == null)
+                return;
+            var owner = card.getOwner();
+            bool highlight = owner == player && game.getCurrentPlayer() == player && canControl && !isSelectingTarget;
+
+            if (card.isMaster())
+            {
+                if (tryGetMaster(card.id, out Master master))
+                {
+                    var anim = highlight && card.canAttack(game) ? master.onCanAttackTrue : master.onCanAttackFalse;
+                    anim.invokeBeforeAnim();
+                    anim.invokeAfterAnim();
+                }
+            }
+            else if (card.isSkill())
+            {
+                if (tryGetSkill(card.id, out Skill skill))
+                {
+                    bool skillUsable = highlight && //是自己的回合
+                        card.isUsable(game, player, out _);//技能是可用的
+
+                    skill.isUsable = skillUsable;
+                    skill.asButton.interactable = skillUsable;
+                }
+            }
+            else if (card.isServant())
+            {
+                if (tryGetServant(card.id, out ServantItem servant))
+                {
+                    var servantAnim = highlight && card.canAttack(game) ? servant.onCanAttackTrue : servant.onCanAttackFalse;
+                    servantAnim.invokeBeforeAnim();
+                    servantAnim.invokeAfterAnim();
+                }
+            }
+
+        }
+        private void updateCardControlable(int cardId)
+        {
+            var card = game.getCard(cardId);
+            updateCardControlable(card);
+        }
+        #endregion
         #endregion
         #region 属性字段
         [TranslateMsg]
@@ -1693,12 +1832,13 @@ namespace Game
             }
             set { _TranslateTagDic = value; }
         }
-        Dictionary<Card, ServantItem> cardServantDic { get; } = new Dictionary<Card, ServantItem>();
+        Dictionary<int, ServantItem> cardServantDic { get; } = new Dictionary<int, ServantItem>();
         /// <summary>
         /// 当前手牌列表
         /// </summary>
-        Dictionary<Card, HandListItem> cardHandDic { get; } = new Dictionary<Card, HandListItem>();
-        Dictionary<Card, Secret> cardSecretDic { get; } = new Dictionary<Card, Secret>();
+        Dictionary<int, HandListItem> cardHandDic { get; } = new Dictionary<int, HandListItem>();
+        Dictionary<int, Secret> cardSecretDic { get; } = new Dictionary<int, Secret>();
+        Dictionary<int, InitReplaceCardListItem> initDic { get; } = new Dictionary<int, InitReplaceCardListItem>();
         [SerializeField]
         int _maxBuffDisplayCount = 15;
         [SerializeField]
@@ -1714,6 +1854,14 @@ namespace Game
         ServantItem _servant;
         PointerEventData _pointer;
         Item _hoveredItem;
+        /// <summary>
+        /// 需要更新所有卡牌的可控绿光。
+        /// </summary>
+        bool _allControlDirty;
+        /// <summary>
+        /// 需要更新可控绿光的卡牌列表。
+        /// </summary>
+        HashSet<int> _controlDirtyCards = new HashSet<int>();
         #endregion
     }
 }

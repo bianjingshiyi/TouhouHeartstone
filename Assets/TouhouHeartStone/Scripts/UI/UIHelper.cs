@@ -134,6 +134,62 @@ namespace Game
             }
             ui.setImage(image);
         }
+
+        public static void setCard(this UICard ui, CardDescriptor card, CardSkinData skin, bool isFaceUp = true)
+        {
+            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string subName = string.Empty;
+            string description = string.Empty;
+            if (skin != null)
+            {
+                name = skin.name;
+                subName = skin.subname;
+                description = skin.desc;
+            }
+            ui.isFaceup = isFaceUp;
+            setName(ui, name);
+            setSubname(ui, subName);
+            setDesc(ui, description);
+
+            setCost(ui, card.getCost().ToString());
+            if (card.define.type == DEFINE.MASTER)
+            {
+                ui.type = CATEGORY.MASTER;
+                ui.setLife("30");
+            }
+            else if (card.define.type == DEFINE.SERVANT)
+            {
+                ui.type = CATEGORY.SERVANT;
+                ui.servantCardFace.attackPropNumber.text.text = card.getAttack().ToString();
+                ui.servantCardFace.lifePropNumber.text.text = card.getLife().ToString();
+            }
+            else if (card.define.type == DEFINE.SPELL)
+                ui.type = CATEGORY.SPELL;
+            else if (card.define.type == DEFINE.SKILL)
+                ui.type = CATEGORY.SKILL;
+            else if (card.define.type == DEFINE.ITEM)
+            {
+                ui.type = CATEGORY.ITEM;
+                ui.itemCardFace.attackPropNumber.text.text = card.getAttack().ToString();
+                ui.itemCardFace.lifePropNumber.text.text = card.getLife().ToString();
+            }
+            else
+                throw new NotImplementedException();
+            setTag(ui, card.getTags().FirstOrDefault());
+        }
+        public static async Task setCard(this UICard ui, CardDescriptor desc, CardManager cardManager, bool isFaceUp = true)
+        {
+            var define = desc.define;
+            var skin = cardManager.getCardSkin(define);
+            ui.setCard(desc, skin, isFaceUp);
+
+            Sprite image = skin.image;
+            if (!image)
+            {
+                image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
+            }
+            ui.setImage(image);
+        }
         public static void setAttack(this UICard ui, string attack)
         {
             ui.servantCardFace.attackPropNumber.text.text = attack;
@@ -221,9 +277,9 @@ namespace Game
         {
             return ui.servantCardFace.costPropNumber.text.text;
         }
-        public static PropNumber getCostPropNum(this UICard ui, Card card)
+        public static PropNumber getCostPropNum(this UICard ui, string cardType)
         {
-            switch (card.define.type)
+            switch (cardType)
             {
                 case DEFINE.SERVANT:
                     return ui.servantCardFace.costPropNumber;
@@ -235,9 +291,9 @@ namespace Game
                     return null;
             }
         }
-        public static PropNumber getAttackPropNum(this UICard ui, Card card)
+        public static PropNumber getAttackPropNum(this UICard ui, string cardType)
         {
-            switch (card.define.type)
+            switch (cardType)
             {
                 case DEFINE.SERVANT:
                     return ui.servantCardFace.attackPropNumber;
@@ -247,9 +303,9 @@ namespace Game
                     return null;
             }
         }
-        public static PropNumber getLifePropNum(this UICard ui, Card card)
+        public static PropNumber getLifePropNum(this UICard ui, string cardType)
         {
-            switch (card.define.type)
+            switch (cardType)
             {
                 case DEFINE.SERVANT:
                     return ui.servantCardFace.lifePropNumber;
@@ -262,6 +318,19 @@ namespace Game
         public static RectTransform getRoot(this ServantItem servant)
         {
             return servant.getChild("Servant");
+        }
+
+        public static PropNumber getCostPropNum(this UICard ui, Card card)
+        {
+            return ui.getCostPropNum(card.define.type);
+        }
+        public static PropNumber getAttackPropNum(this UICard ui, Card card)
+        {
+            return ui.getAttackPropNum(card.define.type);
+        }
+        public static PropNumber getLifePropNum(this UICard ui, Card card)
+        {
+            return ui.getLifePropNum(card.define.type);
         }
     }
 }

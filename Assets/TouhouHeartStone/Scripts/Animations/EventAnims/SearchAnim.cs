@@ -11,6 +11,7 @@ public class SearchAnim : EventAnimation<HearthStoneRule.SearchPileEventArg>
 {
     Card _ChooseOne;
     TableAnimation _anim;
+    public override bool forceQueueAnimations => true;
     public override bool update(TableManager table, HearthStoneRule.SearchPileEventArg eventArg, float time)
     {
         //自己打出的效果不展示

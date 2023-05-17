@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using TouhouCardEngine.Interfaces;
 using System.Reflection;
 using TouhouCardEngine;
-using System.Linq;
-using UnityEngine.UI;
 namespace Game
 {
     partial class TableManager
@@ -128,10 +126,39 @@ namespace Game
         List<EditableAnim> _editableAnims = new List<EditableAnim>();
         #endregion
         [SerializeField]
+        List<UIAnimation> _animationCache = new List<UIAnimation>();
+        [SerializeField]
         List<UIAnimation> _animationQueue = new List<UIAnimation>();
+        List<UIAnimation> insertingAnims = new List<UIAnimation>();
         public void addAnim(UIAnimation anim)
         {
-            _animationQueue.Add(anim);
+            _animationCache.Add(anim);
+        }
+        public void queueAnims()
+        {
+            bool canAddToQueue = false;
+            if (game.triggers.currentEvent == null)
+            {
+                canAddToQueue = true;
+            }
+            insertingAnims.Clear();
+            for (int i = _animationCache.Count - 1; i >= 0; i--)
+            {
+                var anim = _animationCache[i];
+                if (anim is TableAnimation tableAnim && tableAnim.forceQueueAnimations) 
+                {
+                    canAddToQueue = true;
+                }
+                if (!canAddToQueue)
+                    continue;
+                insertingAnims.Insert(0, anim);
+                _animationCache.RemoveAt(i);
+            }
+            if (insertingAnims.Count > 0)
+            {
+                _animationQueue.AddRange(insertingAnims);
+                insertingAnims.Clear();
+            }
         }
         public UIAnimation[] getAnimQueue()
         {

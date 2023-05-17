@@ -7,6 +7,7 @@ namespace UI
 {
     public abstract class RequestAnimation : TableAnimation
     {
+        public override bool forceQueueAnimations => true;
         public abstract IRequest request { get; set; }
     }
     [Serializable]

@@ -11,6 +11,7 @@ public class DiscoverAnim : EventAnimation<THHPlayer.DiscoverEventArg>
 {
     Card _Discover;
     TableAnimation _anim;
+    public override bool forceQueueAnimations => true;
     public override bool update(TableManager table, THHPlayer.DiscoverEventArg eventArg, float time)
     {
         if (eventArg.player == table.player)

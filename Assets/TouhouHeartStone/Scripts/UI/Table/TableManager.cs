@@ -10,7 +10,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
 using UICard = UI.Card;
-using System.Threading.Tasks;
 
 namespace Game
 {
@@ -88,8 +87,11 @@ namespace Game
             ui.PilePanel.hide();
             ui.TipBox.hide();
             eventCache.clear();
+            _animationCache.Clear();
             _animationQueue.Clear();
+            _descriptors.Clear();
             DestroyInvokeCard();
+            this.player = player;
             if (game != null)
             {
                 game.triggers.onEventBefore -= onEventBeforeHandler;
@@ -104,28 +106,24 @@ namespace Game
                 game.triggers.onEventAfter += onEventAfterHandler;
                 game.answers.onRequest += onRequestHandler;
                 game.answers.onResponse += onResponseHandler;
+
+                setMaster(ui.SelfMaster, newSnapshot(player.getMaster()));
+                setSkill(ui.SelfSkill, newSnapshot(player.getSkill()));
+                var oppo = game.getOpponent(player);
+                setMaster(ui.EnemyMaster, newSnapshot(oppo.getMaster()));
+                setSkill(ui.EnemySkill, newSnapshot(oppo.getSkill()));
             }
-            this.player = player;
         }
 
         #region 皮肤
-        public CardSkinData getSkin(Card card)
+        public CardSkinData getSkin(ICardData card)
         {
-            CardSkinData skin = getManager<CardManager>().getCardSkin(card.define);
-            if (skin != null)
-                return skin;
-            else
-            {
-                game.logger.logError("没有找到" + card + "对应的皮肤");
-                return new CardSkinData()
-                {
-                    id = card.define.id,
-                    desc = card.define.ToString() + "（这张卡随时可能爆炸！）",
-                    image = getManager<CardManager>().getDefaultSprite(),
-                    name = card.define.GetType().Name
-                };
-            }
+            return getSkin(card.define);
         }
+        public CardSkinData getSkin(CardDescriptor desc)
+        {
+            return getSkin(desc.define);
+        }        
         public CardSkinData getSkin(CardDefine define)
         {
             CardSkinData skin = getManager<CardManager>().getCardSkin(define);
@@ -167,7 +165,7 @@ namespace Game
 
                 if (hoveringCard != null)
                 {
-                    displayLargeCard(false, hoveringCard);
+                    displayLargeCard(false, getCardDescriptor(hoveringCard));
                 }
                 _showCardTimer.reset();
             }
@@ -215,10 +213,8 @@ namespace Game
                 if (_handToFieldAnim.update(this, Time.time))
                 {
                     _handToFieldAnim = null;
-                    if (tryGetHand(usingCard, out var hand))
-                        hand.Card.hide();
-                    else
-                        throw new ActorNotFoundException(usingCard);
+                    var hand = getHand(usingCard.id);
+                    hand.Card.hide();
                     //显示占位随从
                     ui.ServantPlaceHolder.Servant.display();
                     try
@@ -233,7 +229,23 @@ namespace Game
             }
             //游戏事件处理
             eventCache.poll();
+            if (_allControlDirty)
+            {
+                updateAllControlable();
+                _allControlDirty = false;
+
+                _controlDirtyCards.Clear();
+            }
+            else
+            {
+                foreach (var cardId in _controlDirtyCards)
+                {
+                    updateCardControlable(cardId);
+                }
+                _controlDirtyCards.Clear();
+            }
             //动画
+            queueAnims();
             updateAnim();
         }
         #endregion 生命周期
@@ -248,11 +260,13 @@ namespace Game
         }
         void onEventBeforeHandler(IEventArg arg)
         {
-            eventCache.cache(onEventBefore, arg);
+            onEventBefore(arg);
+            //eventCache.cache(onEventBefore, arg);
         }
         private void onEventAfterHandler(IEventArg arg)
         {
-            eventCache.cache(onEventAfter, arg);
+            onEventAfter(arg);
+            //eventCache.cache(onEventAfter, arg);
         }
         #endregion
 
@@ -295,18 +309,10 @@ namespace Game
         /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
-            UIAnimation anim;
-            switch (arg)
-            {
-                case Card.AddModiEventArg addMod:
-                    anim = new AddModiAnim() { eventArg = addMod };
-                    break;
-                default:
-                    anim = getEventAnim(arg);
-                    break;
-            }
+            UIAnimation anim = getEventAnim(arg);
             if (anim != null)
                 addAnim(anim);
+            _allControlDirty = true;
         }
         /// <summary>
         /// 事件后处理
@@ -314,7 +320,6 @@ namespace Game
         /// <param name="arg"></param>
         private void onEventAfter(IEventArg arg)
         {
-
         }
         #endregion
         #endregion 私有方法
@@ -391,8 +396,8 @@ namespace Game
         }
         public Card attackingCard { get; set; } = null;
 
-        Card _selfItemCard;
-        Card _enemyItemCard;
+        CardDescriptor _selfItemDesc;
+        CardDescriptor _enemyItemDesc;
         #endregion
     }
 }
