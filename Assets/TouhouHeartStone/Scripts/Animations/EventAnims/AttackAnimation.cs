@@ -1,62 +1,69 @@
-﻿using TouhouHeartstone;
-using BJSYGameCore;
-using UnityEngine;
+﻿using System.Collections;
+using BJSYGameCore.UI;
+using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
+
 namespace Game
 {
-    class AttackAnimation : EventAnimation<THHCard.AttackEventArg>
+    using Arg = THHCard.AttackEventArg;
+    class AttackAnimation : EventAnimation<Arg>
     {
         AnimAnim _attackAnim;
         AnimAnim _attackedAnim;
-        public override bool update(TableManager table, THHCard.AttackEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.isCanceled)
-                return true;
-            if (table.tryGetMaster(eventArg.card, out var attackMaster))
+            while (!record.isCompleted)
+                yield return null;
+            if (record.isCanceled)
+                yield break;
+
+            var card = arg.card;
+            var target = arg.target;
+            SimpleAnim attackSimpleAnim = null;
+            SimpleAnim attackedSimpleAnim = null;
+
+            UIObject attackObj = null;
+            UIObject attackedObj = null;
+
+            if (table.tryGetMaster(card, out var attackMaster))
             {
-                if (table.tryGetMaster(eventArg.target, out var targetMaster))
-                {
-                    attackMaster.GetComponentInChildren<PositionLerp>().setTarget(targetMaster.rectTransform, targetMaster.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackMaster.onAttack, attackMaster.animator, time))
-                        return false;
-                    if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetMaster.onAttacked, targetMaster.animator, time))
-                        return false;
-                }
-                else if (table.tryGetServant(eventArg.target, out var targetServant))
-                {
-                    attackMaster.GetComponentInChildren<PositionLerp>().setTarget(targetServant.rectTransform, targetServant.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackMaster.onAttack, attackMaster.animator, time))
-                        return false;
-                    if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetServant.onAttacked, targetServant.animator, time))
-                        return false;
-                }
-                table.setMaster(attackMaster, eventArg.card);
+                attackObj = attackMaster;
+                attackSimpleAnim = attackMaster.onAttack;
             }
-            else if (table.tryGetServant(eventArg.card, out var attackServant))
+            else if (table.tryGetServant(card, out var attackServant))
             {
-                if (table.tryGetMaster(eventArg.target, out var targetMaster))
-                {
-                    attackServant.GetComponentInChildren<PositionLerp>().setTarget(targetMaster.rectTransform, targetMaster.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.asAnimator, time))
-                        return false;
-                    if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetMaster.onAttacked, targetMaster.animator, time))
-                        return false;
-                }
-                else if (table.tryGetServant(eventArg.target, out var targetServant))
-                {
-                    attackServant.GetComponentInChildren<PositionLerp>().setTarget(targetServant.rectTransform, targetServant.rectTransform.sizeDelta.x / 2);
-                    if (!SimpleAnimHelper.update(table, ref _attackAnim, attackServant.onAttack, attackServant.asAnimator, time))
-                        return false;
-                    if (!SimpleAnimHelper.update(table, ref _attackedAnim, targetServant.onAttacked, targetServant.asAnimator, time))
-                        return false;
-                }
-                table.setServant(attackServant, eventArg.card);
+                attackObj = attackServant;
+                attackSimpleAnim = attackServant.onAttack;
             }
-            return true;
+            if (table.tryGetMaster(target, out var targetMaster))
+            {
+                attackedObj = targetMaster;
+                attackedSimpleAnim = targetMaster.onAttacked;
+            }
+            else if (table.tryGetServant(target, out var targetServant))
+            {
+                attackedObj = targetServant;
+                attackedSimpleAnim = targetServant.onAttacked;
+            }
+            if (attackObj && attackedObj)
+                attackObj.GetComponentInChildren<PositionLerp>().setTarget(attackedObj.rectTransform, attackedObj.rectTransform.sizeDelta.x / 2);
+
+
+            if (attackObj && attackSimpleAnim != null)
+            {
+                while (!SimpleAnimHelper.update(table, ref _attackAnim, attackSimpleAnim, attackObj.animator, _time))
+                    yield return null;
+            }
+            if (attackedObj && attackedSimpleAnim != null)
+            {
+                while (!SimpleAnimHelper.update(table, ref _attackedAnim, attackedSimpleAnim, attackedObj.animator, _time))
+                    yield return null;
+            }
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {
-            if (/*_timer2.isStarted &&*/ _attackAnim == null && nextAnim is DamageAnimation)
+            if (_attackAnim == null && nextAnim is DamageAnimation)
                 return false;
             return base.blockAnim(nextAnim);
         }

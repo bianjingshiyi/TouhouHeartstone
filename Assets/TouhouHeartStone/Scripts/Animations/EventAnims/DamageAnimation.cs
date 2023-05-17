@@ -1,45 +1,44 @@
 ﻿using TouhouHeartstone;
 using UI;
-using System.Collections.Generic;
+using TouhouCardEngine;
+using System.Collections;
+
 namespace Game
 {
-    class DamageAnimation : EventAnimation<THHCard.DamageEventArg>
+    using Arg = THHCard.DamageEventArg;
+    class DamageAnimation : EventAnimation<Arg>
     {
-        List<AnimAnim> _animList = null;
-        public override bool update(TableManager table, THHCard.DamageEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            if (_animList == null)
-            {
-                _animList = new List<AnimAnim>();
-                var card = eventArg.target;
-                if (table.tryGetServant(card, out var servant))
-                {
-                    servant.damageText.text = "-" + eventArg.damagedValue;
-                    servant.onDamage.invokeBeforeAnim();
-                    _animList.Add(new AnimAnim(servant.servantAnimator, servant.onDamage.animName));
-                }
-                else if (table.tryGetMaster(card, out Master master))
-                {
-                    master.DamageText.text = "-" + eventArg.damagedValue;
-                    master.onDamage.invokeBeforeAnim();
-                    _animList.Add(new AnimAnim(master.animator, master.onDamage.animName));
-                }
-                else if (table.tryGetItem(card, out var item))
-                {
-                    item.onLifeDown.invokeBeforeAnim();
-                    _animList.Add(new AnimAnim(item.animator, item.onLifeDown.animName));
-                }
-            }
-            bool isAllAnimDone = true;
-            foreach (var anim in _animList)
-            {
-                if (!anim.update(table, time))
-                    isAllAnimDone = false;
-            }
-            if (!isAllAnimDone)
-                return false;
+            while (!record.isCompleted)
+                yield return null;
+            if (record.isCanceled)
+                yield break;
 
-            var target = eventArg.target;
+            var target = arg.target;
+            var damagedValue = arg.damagedValue;
+
+            AnimAnim anim = null;
+            if (table.tryGetServant(target, out var servant))
+            {
+                servant.damageText.text = "-" + damagedValue;
+                servant.onDamage.invokeBeforeAnim();
+                anim = new AnimAnim(servant.servantAnimator, servant.onDamage.animName);
+            }
+            else if (table.tryGetMaster(target, out Master master))
+            {
+                master.DamageText.text = "-" + damagedValue;
+                master.onDamage.invokeBeforeAnim();
+                anim = new AnimAnim(master.animator, master.onDamage.animName);
+            }
+            else if (table.tryGetItem(target, out var item))
+            {
+                item.onLifeDown.invokeBeforeAnim();
+                anim = new AnimAnim(item.animator, item.onLifeDown.animName);
+            }
+            while (anim != null && !anim.update(table, _time))
+                yield return null;
+
             if (table.tryGetServant(target, out var animServant))
             {
                 animServant.onDamage.invokeAfterAnim();
@@ -52,7 +51,6 @@ namespace Game
             {
                 animItem.onLifeDown.invokeAfterAnim();
             }
-            return true;
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {
@@ -60,13 +58,7 @@ namespace Game
                 return true;
             if (nextAnim is TurnEndAnimation)
                 return true;
-            //if (nextAnim is DamageAnimation damage && damage.tEventArg.cards.Intersect(tEventArg.cards).Count() > 0)
-            //    return true;
             return false;
         }
-    }
-    public interface IActorAnimation
-    {
-
     }
 }

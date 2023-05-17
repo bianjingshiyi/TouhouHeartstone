@@ -88,9 +88,11 @@ namespace TouhouHeartstone
                 async Task onFatigue(HearthStoneRule.FatigueEventArg arg)
                 {
                     Player p = arg.player;
-                    p.setFatigue(p.getFatigue() + 1);
-                    game.logger.logTrace(p + "已经没有卡牌了，当前疲劳值：" + p.getFatigue());
-                    var damage = await p.getMaster().damage(game, null, p.getFatigue());
+                    var damage = p.getFatigue() + 1;
+                    p.setFatigue(damage);
+                    game.logger.logTrace(p + "已经没有卡牌了，当前疲劳值：" + damage);
+                    arg.damage = damage;
+                    await p.getMaster().damage(game, null, damage);
                 }
             }
             else
@@ -1034,12 +1036,19 @@ namespace TouhouHeartstone
             public override void Record(IGame game, EventRecord record)
             {
                 record.setVar(EVENTVAR.PLAYER, player);
+                record.setVar(VAR_DAMAGE, damage);
             }
             public Player player
             {
                 get { return getVar<Player>(EVENTVAR.PLAYER); }
                 set { setVar(EVENTVAR.PLAYER, value); }
             }
+            public int damage
+            {
+                get { return getVar<int>(VAR_DAMAGE); }
+                set { setVar(VAR_DAMAGE, value); }
+            }
+            public const string VAR_DAMAGE = "伤害";
         }
 
         /// <summary>

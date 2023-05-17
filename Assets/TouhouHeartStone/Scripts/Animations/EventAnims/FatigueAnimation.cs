@@ -1,30 +1,30 @@
 ﻿using TouhouHeartstone;
-using UnityEngine;
-using BJSYGameCore;
 using UI;
+using TouhouCardEngine;
+using System.Collections;
+
 namespace Game
 {
-    class FatigueAnimation : EventAnimation<HearthStoneRule.FatigueEventArg>
+    using Arg = HearthStoneRule.FatigueEventArg;
+    class FatigueAnimation : EventAnimation<Arg>
     {
         AnimAnim _anim;
 
-        public override bool update(TableManager table, HearthStoneRule.FatigueEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            if (eventArg.isCanceled)
-            {
-                return true;
-            }
-            if (_anim == null) 
-            {
-                table.ui.Fatigue.Text.text = "没有牌了，你受到了" + eventArg.player.getFatigue() + "点伤害！";
-                var deck = eventArg.player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
-                table.ui.Fatigue.display();
-                table.ui.Fatigue.rectTransform.position = deck.rectTransform.position;
-                _anim = new AnimAnim(table.ui.Fatigue.animator, deck.onFatigue.animName);
-            }
+            if (record.isCanceled)
+                yield break;
 
-            if (!_anim.update(table,time))
-                return false;
+            var player = arg.player;
+            var damage = arg.damage;
+
+            table.ui.Fatigue.Text.text = "没有牌了，你受到了" + damage + "点伤害！";
+            var deck = player == table.player ? table.ui.SelfDeck : table.ui.EnemyDeck;
+            table.ui.Fatigue.rectTransform.position = deck.rectTransform.position;
+            table.ui.Fatigue.display();
+            _anim = new AnimAnim(table.ui.Fatigue.animator, deck.onFatigue.animName);
+            while (!_anim.update(table, _time))
+                yield return null;
             #region 注释代码
             //table.ui.Fatigue.rectTransform.localScale = Vector3.Lerp(Vector3.one * .5f, Vector3.one, table.ui.Fatigue.moveCurve.Evaluate(_timer.getProgress(0, .5f)));
             //if (eventArg.player == table.player)
@@ -36,9 +36,7 @@ namespace Game
             //    return false;
             //table.ui.Fatigue.hide();
             #endregion
-            table.ui.Fatigue.GetComponent<PositionLerp>().resetPosition();
             table.ui.Fatigue.hide();
-            return true;
         }
     }
 }
