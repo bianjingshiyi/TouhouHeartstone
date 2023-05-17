@@ -130,7 +130,7 @@ namespace Game
                 {
                     propNum.WhiteText.invokeBeforeAnim();
                 }
-                table.setCard(hand.Card, _card);
+                table.setCard(hand.Card, _card, _card.getOwner() == table.player);
             }
 
             AnimAnim anim = null;

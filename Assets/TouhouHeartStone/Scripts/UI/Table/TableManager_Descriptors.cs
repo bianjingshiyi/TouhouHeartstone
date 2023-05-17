@@ -13,6 +13,8 @@ namespace Game
         public CardSnapshot getRecordCardSnapshot(EventRecord record, string varName)
         {
             var state = record.getVar<CardState>(varName);
+            if (state.card == null || state.stateIndex < 0)
+                return null;
             var snapshot = newSnapshot(state.card);
             state.card.revertToHistory(snapshot, state.stateIndex);
             return snapshot;

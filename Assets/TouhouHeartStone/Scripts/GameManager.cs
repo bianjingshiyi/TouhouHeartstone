@@ -676,6 +676,8 @@ namespace Game
                 {
                     foreach (var target in describable.getTargets(game, localPlayer))
                     {
+                        if (target == null)
+                            continue;
                         var targetItem = ui.LogScrollView.LogInfoHorizantal.TargetGridList.addItem();
                         CardDefine card = target.define as CardDefine;
                         await targetItem.Card.setCardDefine(card, main.card);

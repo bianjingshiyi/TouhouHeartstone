@@ -74,6 +74,7 @@ namespace Game
             Sprite image = skin.image;
             if (!image)
             {
+                ui.setImage(null);
                 var cardPoolRef = cardManager.getCardPoolReferenceOfCard(card);
                 image = await cardManager.loadCardImage(cardPoolRef, card.id);
             }
@@ -130,6 +131,7 @@ namespace Game
             Sprite image = skin.image;
             if (!image)
             {
+                ui.setImage(null);
                 image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
             }
             ui.setImage(image);
@@ -186,6 +188,7 @@ namespace Game
             Sprite image = skin.image;
             if (!image)
             {
+                ui.setImage(null);
                 image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
             }
             ui.setImage(image);

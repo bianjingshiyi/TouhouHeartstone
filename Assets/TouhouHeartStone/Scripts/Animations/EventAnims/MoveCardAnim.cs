@@ -71,7 +71,7 @@ namespace Game
                     yield return moveFromGrave(table);
                     break;
                 case PILE.FIELD:
-                    yield return moveFromField(table);
+                    yield return moveFromField(table, arg);
                     break;
                 case PILE.ITEM:
                     yield return moveFromItem(table);
@@ -271,7 +271,7 @@ namespace Game
                 yield return moveToField(table);
             }
         }
-        private IEnumerator moveFromField(TableManager table)
+        private IEnumerator moveFromField(TableManager table, Arg arg)
         {
             string toName = _to?.name;
             RectTransform fieldTransform = _from == table.player.getField() ? table.ui.SelfFieldList.rectTransform : table.ui.SelfFieldList.rectTransform;
@@ -335,6 +335,35 @@ namespace Game
                         //摧毁卡牌
                         Object.Destroy(cardUI.gameObject);
                         //放完了
+                    }
+                    break;
+                case PILE.GRAVE:
+                    {
+                        //置入墓地
+                        if (arg.parent is THHCard.DeathEventArg) // 阻止死亡触发该动画
+                        {
+                            yield break;
+                        }
+                        if (table.tryGetServant(_card, out var servant)) // 必须要场上有这个仆从才行
+                        {
+                            Vector2 sourcePosition = servant.transform.position;
+                            table.ui.SelfFieldList.removeItem(servant);
+                            table.ui.EnemyFieldList.removeItem(servant);
+                            //创建卡牌
+                            var cardUI = table.createCard(_card, sourcePosition, servant.rectTransform.rect.height);
+                            //播放动画
+                            UDeck targetDeck = _to == table.player.getGrave() ? table.ui.SelfGraveDeck : table.ui.EnemyGraveDeck;
+                            var anim = new CardTransAnim(cardUI,
+                                targetDeck.transform,
+                                targetDeck.bottom.rect.height * targetDeck.bottom.lossyScale / cardUI.rectTransform.rect.height,
+                                table.fieldToDeckCurve);
+
+                            while (!anim.update(table, _time))//没放完动画就让它接着放
+                                yield return null;
+                            //摧毁卡牌
+                            Object.Destroy(cardUI.gameObject);
+                            //放完了
+                        }
                     }
                     break;
             }
