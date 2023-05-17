@@ -165,13 +165,13 @@ namespace Game
                 }
                 AddUploadPools(uploadPools.ToArray());
                 AddDownloadPools(downloadPools.ToArray());
-                ChangeLoadState(PlayerLoadState.None);
                 // 开始执行计划。
                 if (startPlan)
                 {
                     _cts = null;
                     await StartPlans();
                 }
+                ChangeLoadState(PlayerLoadState.None);
                 LoadRoomCardPoolsFromCache(cardPools);
             }
             catch (OperationCanceledException)
@@ -262,7 +262,7 @@ namespace Game
         /// <exception cref="TaskNotCompleteException">重试次数过多，传输卡池失败。</exception>
         public async Task StartPlans()
         {
-            if (state != PlayerLoadState.None)
+            if (running)
                 return;
 
             running = true;
@@ -332,8 +332,6 @@ namespace Game
                 ChangeLoadState(PlayerLoadState.Upload);
 
                 await UploadCardPoolPlans(uploadList);
-
-                ChangeLoadState(PlayerLoadState.None);
             }
         }
         /// <summary>
@@ -400,8 +398,6 @@ namespace Game
 
                 // 开始下载卡图。
                 await DownloadCardPoolPicturePlans(downloadList);
-
-                ChangeLoadState(PlayerLoadState.None);
             }
         }
         /// <summary>

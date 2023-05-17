@@ -125,8 +125,8 @@ namespace Controllers
                 if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
                 {
                     AddCardPools(addPools);
-                    game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, true);
-                    await CheckCardPoolsUpdate(addPools.ToArray());
+                    ApplyCardPools();
+                    await game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, true);
                 }
                 else
                 {
@@ -166,11 +166,13 @@ namespace Controllers
                     _ui.displayIPText(false);
                     _currentRoomData.setRoomName(game.lang._(ROOM_LOCAL_GAME_NAME));
                 }
+                bool needCheckCardPools = true;
                 if (isRoomOwner)
                 {
                     CardPoolInfoPack[] roomPools = new CardPoolInfoPack[] { CardPoolHelper.BuiltinCardPoolInfoPack };
                     _currentRoomData.setOption(Option.CardPools, roomPools);
                     setNotifyRoomSetting(Option.CardPools, roomPools);
+                    needCheckCardPools = false; // 设置远端卡池会有回调，在里面检测卡池，所以这里不检测
                 }
                 _ui.setRoomName(_currentRoomData.getRoomName());
                 _ui.setRoomPassword(string.IsNullOrEmpty(_currentRoomData.getRoomPassword()) ? "" : "******");
@@ -192,7 +194,10 @@ namespace Controllers
                 SetRoomData(_currentRoomData);
                 updateUIStateForRoomOwner();
 
-                _ = CheckCardPoolsUpdate(_currentRoomData.getCardPools());
+                if (needCheckCardPools)
+                {
+                    _ = CheckCardPoolsUpdate(_currentRoomData.getCardPools());
+                }
                 updateStartAndReadyButton();
                 updatePlayerListUI();
             }
@@ -298,31 +303,6 @@ namespace Controllers
             {
                 _cardPoolPanelDirty = false;
                 await RefreshRoomCardPoolPanels();
-            }
-
-            if (_currentLoadState != _incomingLoadState)
-            {
-                _currentLoadState = _incomingLoadState;
-                var localPlayer = getLocalPlayerData();
-                if (localPlayer == null)
-                {
-                    return;
-                }
-                if (_incomingLoadState != localPlayer.getLoadState())
-                {
-                    localPlayer.setLoadState(_incomingLoadState);
-                    onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)_incomingLoadState);
-                }
-                if (localPlayer.getReady())
-                {
-                    localPlayer.setReady(false);
-                    onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
-                }
-                // 玩家状态更新后，读取缓存中的卡池。
-                // 用于局域网联机，比如客场玩家向房主上传完卡池后，不需要下载卡池的场合。
-                cardPoolManager.LoadRoomCardPoolsFromCache(_currentRoomData.getCardPools());
-                updateStartAndReadyButton();
-                updatePlayerListUI();
             }
         }
         #endregion
@@ -494,8 +474,8 @@ namespace Controllers
                         if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
                         {
                             AddCardPools(addPools);
+                            ApplyCardPools();
                             SetPlayerDeck(_selectDeckPlayerId, deck);
-                            _ = CheckCardPoolsUpdate(_currentRoomData.getCardPools());
                         }
                         else
                         {
@@ -603,6 +583,7 @@ namespace Controllers
                     {
                         AddCardPools(addPools);
                         RemoveCardPools(removedCardPools);
+                        ApplyCardPools();
                         closeEditCardPoolsPanel();
                         updateStartAndReadyButton();
                     }
@@ -639,7 +620,7 @@ namespace Controllers
                         {
                             AddCardPools(addPools);
                             RemoveCardPools(removedCardPools);
-                            _ = CheckCardPoolsUpdate(_currentRoomData.getCardPools());
+                            ApplyCardPools();
                             closeEditCardPoolsPanel();
                         }
                         else
@@ -750,8 +731,26 @@ namespace Controllers
         }
         private void onCardPoolStateChanged(PlayerLoadState state)
         {
-            Debug.Log($"TEST2: 玩家加载状态被改变为：{state}");
-            _incomingLoadState = state;
+            var localPlayer = getLocalPlayerData();
+            if (localPlayer == null)
+            {
+                return;
+            }
+            if (state != localPlayer.getLoadState())
+            {
+                localPlayer.setLoadState(state);
+                onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
+            }
+            if (localPlayer.getReady())
+            {
+                localPlayer.setReady(false);
+                onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
+            }
+            // 玩家状态更新后，读取缓存中的卡池。
+            // 用于局域网联机，比如客场玩家向房主上传完卡池后，不需要下载卡池的场合。
+            cardPoolManager.LoadRoomCardPoolsFromCache(_currentRoomData.getCardPools());
+            updateStartAndReadyButton();
+            updatePlayerListUI();
         }
         private void onOutOfRetry(Exception e)
         {
@@ -856,9 +855,7 @@ namespace Controllers
                 }
                 newList.Add(pack);
             }
-            CardPoolInfoPack[] cardPools = newList.ToArray();
-            setNotifyRoomSetting(Option.CardPools, cardPools);
-            _cardPoolPanelDirty = true;
+            _currentRoomData?.setOption(Option.CardPools, newList.ToArray());
         }
         private void RemoveCardPools(IEnumerable<CardPoolInfoPack> packs)
         {
@@ -868,8 +865,12 @@ namespace Controllers
             {
                 newList.Remove(pack);
             }
-            CardPoolInfoPack[] cardPools = newList.ToArray();
-            setNotifyRoomSetting(Option.CardPools, cardPools);
+            _currentRoomData?.setOption(Option.CardPools, newList.ToArray());
+        }
+
+        private void ApplyCardPools()
+        {
+            setNotifyRoomSetting(Option.CardPools, _currentRoomData.getCardPools());
             _cardPoolPanelDirty = true;
         }
 
@@ -1400,14 +1401,6 @@ namespace Controllers
         /// 卡池显示面板是否需要更新。
         /// </summary>
         bool _cardPoolPanelDirty;
-        /// <summary>
-        /// 当前本地玩家的加载状态。
-        /// </summary>
-        PlayerLoadState _currentLoadState;
-        /// <summary>
-        /// 要修改为的本地玩家的加载状态。
-        /// </summary>
-        PlayerLoadState _incomingLoadState;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
