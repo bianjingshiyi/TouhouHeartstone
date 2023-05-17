@@ -1,26 +1,31 @@
-﻿using UI;
-using UnityEngine;
+﻿using System.Collections;
+using TouhouCardEngine;
 using TouhouHeartstone;
-using Card = TouhouCardEngine.Card;
-using System.Linq;
-using BJSYGameCore.UI;
+using UI;
+using UnityEngine;
 
 namespace Game
 {
-    class PropChangeAnim : EventAnimation<Card.PropChangeEventArg>
+    using Arg = TouhouCardEngine.Card.PropChangeEventArg;
+    class PropChangeAnim : EventAnimation<Arg>
     {
-        AnimAnim _anim;
-        public override bool update(TableManager table, Card.PropChangeEventArg eventArg, float time)
+        CardSnapshot _card;
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
+            _card = table.getRecordCardSnapshot(record, Arg.VAR_CARD);
+            var propName = arg.propName;
+            var beforeValue = arg.beforeValue;
+            var value = arg.value;
+
             SimpleAnim simpleAnim = null;
             Animator animator = null;
-            if (table.tryGetServant(eventArg.card, out var servant))
+            _card.setProp(propName, value);
+            if (table.tryGetServant(_card, out var servant))
             {
                 animator = servant.attackPropNumber.asAnimator;
-                if (eventArg.propName == DEFINE.ATTACK && eventArg.value is int attack)
+                if (propName == DEFINE.ATTACK)
                 {
-                    servant.attackPropNumber.text.text = attack.ToString();
-                    if (eventArg.card.getAttack(table.game) > eventArg.card.define.getAttack())
+                    if (_card.getAttack(table.game) > _card.define.getAttack())
                     {
                         simpleAnim = servant.attackPropNumber.GreenText;
                     }
@@ -29,17 +34,16 @@ namespace Game
                         simpleAnim = servant.attackPropNumber.WhiteText;
                     }
                 }
-                else if (eventArg.propName == CARD.CURRENT_LIFE && eventArg.value is int currentLife)
+                else if (propName == CARD.CURRENT_LIFE || propName == DEFINE.LIFE)
                 {
                     animator = servant.lifePropNumber.asAnimator;
-                    servant.lifePropNumber.text.text = currentLife.ToString();
 
                     //判断是否是红字
-                    if (eventArg.card.getCurrentLife(table.game) < eventArg.card.getLife(table.game))
+                    if (_card.getCurrentLife(table.game) < _card.getLife(table.game))
                     {
                         simpleAnim = servant.lifePropNumber.RedText;
                     }
-                    else if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
+                    else if (_card.getLife(table.game) > _card.define.getLife())
                     {
                         simpleAnim = servant.lifePropNumber.GreenText;
                     }
@@ -48,138 +52,137 @@ namespace Game
                         simpleAnim = servant.lifePropNumber.WhiteText;
                     }
                 }
-                else if (eventArg.propName == DEFINE.KEYWORDS)
+                else if (propName == CARD.SILENCE)
                 {
-                    if (eventArg.value is string[] keywords)
-                    {
-                        if (eventArg.beforeValue is string[] beforeKeywords)
-                        {
-
-                        }
-                        //if (keywords.Contains(KEYWORD.FREEZE))
-                        //    servant.freezeImage.display();
-                        //else
-                        //    servant.freezeImage.hide();
-                    }
-                    else
-                    {
-                        //servant.freezeImage.hide();
-                    }
+                    simpleAnim = _card.isSilenced(table.game) ? servant.onSilenceTrue : servant.onSilenceFalse;
                 }
-                else if (eventArg.propName == CARD.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)
-                {
 
-                }
-                table.setServant(servant, eventArg.card);
+                table.setServant(servant, _card);
             }
-            else if (table.tryGetMaster(eventArg.card, out var master))
+            else if (table.tryGetMaster(_card, out var master))
             {
-                animator = master.LifePropNumber.animator;
-                if (eventArg.propName == DEFINE.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
-                {
-                    animator = master.AttackPropNumber.animator;
-                    master.AttackPropNumber.text.text = attack.ToString();
-                }
-                else if (eventArg.propName == CARD.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
-                {
-
-                    master.LifePropNumber.text.text = currentLife.ToString();
-                }
-                else if (eventArg.propName == DEFINE.KEYWORDS)
-                {
-                    if (eventArg.value is string[] keywords)
-                    {
-                        if (eventArg.beforeValue is string[] beforeKeywords)
-                        {
-
-                        }
-                        //if (keywords.Contains(KEYWORD.FREEZE))
-                        //    master.FreezeImage.display();
-                        //else
-                        //    master.FreezeImage.hide();
-                    }
-                    else
-                    {
-                        //master.FreezeImage.hide();
-                    }
-                }
-                else if (eventArg.propName == CARD.SILENCE && eventArg.beforeValue is bool beforeSilence && eventArg.value is bool silence)
-                {
-
-                }
-
-                //判断是否是红字
-                if (eventArg.card.getCurrentLife(table.game) < eventArg.card.getLife(table.game))
-                {
-                    simpleAnim = master.LifePropNumber.RedText;
-                }
-                else if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
-                {
-                    simpleAnim = master.LifePropNumber.GreenText;
-                }
-                else
-                {
-                    simpleAnim = master.LifePropNumber.WhiteText;
-                }
-                table.setMaster(master, eventArg.card);
+                updateMaster(table, record, master, arg, out animator, out simpleAnim);
             }
-            else if (table.tryGetItem(eventArg.card, out var item))
+            else if (table.tryGetItem(_card, out var item))
             {
                 animator = item.DurabilityPropNumber.animator;
-                if (eventArg.propName == DEFINE.ATTACK && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
-                {
-                    item.AttackPropNumber.text.text = attack.ToString();
-                }
-                else if (eventArg.propName == CARD.CURRENT_LIFE && eventArg.beforeValue is int beforeCurrentLife && eventArg.value is int currentLife)
-                {
-
-                    item.DurabilityPropNumber.text.text = currentLife.ToString();
-                }
-
                 //判断是否是红字
-                if (eventArg.card.getCurrentLife(table.game) < eventArg.card.getLife(table.game))
+                if (propName == DEFINE.ATTACK && value is int)
                 {
-                    simpleAnim = item.DurabilityPropNumber.RedText;
+                    if (_card.getAttack(table.game) > _card.define.getAttack())
+                    {
+                        simpleAnim = servant.attackPropNumber.GreenText;
+                    }
+                    else
+                    {
+                        simpleAnim = servant.attackPropNumber.WhiteText;
+                    }
                 }
-                else if (eventArg.card.getLife(table.game) > eventArg.card.define.getLife())
+                else if (propName == CARD.CURRENT_LIFE && value is int)
                 {
-                    simpleAnim = item.DurabilityPropNumber.GreenText;
+                    if (_card.getCurrentLife(table.game) < _card.getLife(table.game))
+                    {
+                        simpleAnim = item.DurabilityPropNumber.RedText;
+                    }
+                    else if (_card.getLife(table.game) > _card.define.getLife())
+                    {
+                        simpleAnim = item.DurabilityPropNumber.GreenText;
+                    }
+                    else
+                    {
+                        simpleAnim = item.DurabilityPropNumber.WhiteText;
+                    }
                 }
-                else
-                {
-                    simpleAnim = item.DurabilityPropNumber.WhiteText;
-                }
-                table.setItem(item, eventArg.card);
+                table.setItem(item, _card);
             }
-            else if(table.tryGetHand(eventArg.card,out var hand))
+            else if (table.tryGetSkill(_card, out var skill))
             {
-                animator = hand.Card.getCostPropNum(eventArg.card).asAnimator;
-                if (eventArg.propName == DEFINE.COST && eventArg.beforeValue is int beforeAttack && eventArg.value is int attack)
+                var propNum = skill.costPropNumber;
+                animator = propNum.asAnimator;
+                if (_card.getCost(table.game) < _card.define.getCost())
                 {
-                    hand.Card.getCostPropNum(eventArg.card).text.text = eventArg.card.getCost(table.game).ToString();
+                    propNum.GreenText.invokeBeforeAnim();
                 }
-                if (eventArg.card.getCost(table.game) < eventArg.card.define.getCost())
+                else if (_card.getCost(table.game) > _card.define.getCost())
                 {
-                    hand.Card.getCostPropNum(eventArg.card).GreenText.invokeBeforeAnim();
-                }
-                else if(eventArg.card.getCost(table.game) > eventArg.card.define.getCost())
-                {
-                    hand.Card.getCostPropNum(eventArg.card).RedText.invokeBeforeAnim();
+                    propNum.RedText.invokeBeforeAnim();
                 }
                 else
                 {
-                    hand.Card.getCostPropNum(eventArg.card).WhiteText.invokeBeforeAnim();
+                    propNum.WhiteText.invokeBeforeAnim();
                 }
+                table.setSkill(skill, _card);
+            }
+            else if (table.tryGetHand(_card, out var hand))
+            {
+                var cardType = _card.define.type;
+                var propNum = hand.Card.getCostPropNum(cardType);
+                animator = hand.Card.getCostPropNum(cardType).asAnimator;
+                if (_card.getCost(table.game) < _card.define.getCost())
+                {
+                    propNum.GreenText.invokeBeforeAnim();
+                }
+                else if (_card.getCost(table.game) > _card.define.getCost())
+                {
+                    propNum.RedText.invokeBeforeAnim();
+                }
+                else
+                {
+                    propNum.WhiteText.invokeBeforeAnim();
+                }
+                table.setCard(hand.Card, _card);
             }
 
-            if (!SimpleAnimHelper.update(table, ref _anim, simpleAnim, animator, time))
-                return false;
-            return true;
+            AnimAnim anim = null;
+            while (!SimpleAnimHelper.update(table, ref anim, simpleAnim, animator, _time))
+            {
+                yield return null;
+            }
+        }
+
+        private void updateMaster(TableManager table, EventRecord record, Master master, Arg arg, out Animator animator, out SimpleAnim simpleAnim)
+        {
+            var propName = arg.propName;
+
+            animator = null;
+            simpleAnim = null;
+            switch (propName)
+            {
+                case DEFINE.LIFE:
+                case CARD.CURRENT_LIFE:
+                    animator = master.LifePropNumber.animator;
+                    master.LifePropNumber.text.text = _card.getCurrentLife(table.game).ToString();
+                    //判断是否是红字
+                    if (_card.getCurrentLife(table.game) < _card.getLife(table.game))
+                    {
+                        simpleAnim = master.LifePropNumber.RedText;
+                    }
+                    else if (_card.getLife(table.game) > _card.define.getLife())
+                    {
+                        simpleAnim = master.LifePropNumber.GreenText;
+                    }
+                    else
+                    {
+                        simpleAnim = master.LifePropNumber.WhiteText;
+                    }
+                    break;
+                case CARD.ARMOR:
+                    var armor = _card.getArmor(table.game);
+                    if (armor > 0)
+                    {
+                        master.setBoolTrue("hasArmor");
+                        master.ArmorPropNumber.text.text = armor.ToString();
+                    }
+                    else
+                        master.setBoolFalse("hasArmor");
+                    break;
+            }
+            table.setMaster(master, _card);
         }
 
         public override bool blockAnim(UIAnimation nextAnim)
         {
-                return false;
+            return false;
         }
     }
 }
