@@ -299,6 +299,31 @@ namespace Controllers
                 _cardPoolPanelDirty = false;
                 await RefreshRoomCardPoolPanels();
             }
+
+            if (_currentLoadState != _incomingLoadState)
+            {
+                _currentLoadState = _incomingLoadState;
+                var localPlayer = getLocalPlayerData();
+                if (localPlayer == null)
+                {
+                    return;
+                }
+                if (_incomingLoadState != localPlayer.getLoadState())
+                {
+                    localPlayer.setLoadState(_incomingLoadState);
+                    onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)_incomingLoadState);
+                }
+                if (localPlayer.getReady())
+                {
+                    localPlayer.setReady(false);
+                    onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
+                }
+                // 玩家状态更新后，读取缓存中的卡池。
+                // 用于局域网联机，比如客场玩家向房主上传完卡池后，不需要下载卡池的场合。
+                cardPoolManager.LoadRoomCardPoolsFromCache(_currentRoomData.getCardPools());
+                updateStartAndReadyButton();
+                updatePlayerListUI();
+            }
         }
         #endregion
         #region 事件回调
@@ -725,26 +750,8 @@ namespace Controllers
         }
         private void onCardPoolStateChanged(PlayerLoadState state)
         {
-            var localPlayer = getLocalPlayerData();
-            if (localPlayer == null)
-            {
-                return;
-            }
-            if (state != localPlayer.getLoadState())
-            {
-                localPlayer.setLoadState(state);
-                onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
-            }
-            if (localPlayer.getReady())
-            {
-                localPlayer.setReady(false);
-                onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
-            }
-            // 玩家状态更新后，读取缓存中的卡池。
-            // 用于局域网联机，比如客场玩家向房主上传完卡池后，不需要下载卡池的场合。
-            cardPoolManager.LoadRoomCardPoolsFromCache(_currentRoomData.getCardPools());
-            updateStartAndReadyButton();
-            updatePlayerListUI();
+            Debug.Log($"TEST2: 玩家加载状态被改变为：{state}");
+            _incomingLoadState = state;
         }
         private void onOutOfRetry(Exception e)
         {
@@ -1393,6 +1400,14 @@ namespace Controllers
         /// 卡池显示面板是否需要更新。
         /// </summary>
         bool _cardPoolPanelDirty;
+        /// <summary>
+        /// 当前本地玩家的加载状态。
+        /// </summary>
+        PlayerLoadState _currentLoadState;
+        /// <summary>
+        /// 要修改为的本地玩家的加载状态。
+        /// </summary>
+        PlayerLoadState _incomingLoadState;
         #endregion
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
