@@ -21,6 +21,7 @@ namespace Controllers
             gameObject.SetActive(true);
             _cardPoolId = cardPoolId;
             _actionDefine = actionDefine;
+            _startActionName = _actionDefine.defineName;
             var types = game.editor.getEditorVarTypeNames();
             var constTypes = game.editor.getEditorConstTypeNames();
             _ui.initPropertyItemTypes(types, constTypes);
@@ -100,6 +101,8 @@ namespace Controllers
         /// <param name="name"></param>
         private void onChangeName(string value)
         {
+            if (value == _actionDefine.defineName || value == _startActionName)
+                return;
             if (!_actionNodeGraphCtrl.isActionDefineNameExist(value))
             {
                 _actionDefine.defineName = value;
@@ -112,7 +115,6 @@ namespace Controllers
                 game.ui.dialog.ShowConfirm(
                     game.langManager.getString(StringTable.ERROR),
                     game.langManager.getString(StringTable.EDITOR_ERROR_ACTION_DEFINE_NAME_ALREADY_EXIST));
-                _actionDefine.defineName = game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT);
                 _ui.setName(_actionDefine.defineName);
             }
         }
@@ -370,6 +372,7 @@ namespace Controllers
         {
             game.card.removeActionDefine(_cardPoolId, game.card.getActionDefine(_cardPoolId, _actionDefine.id));
             game.card.addActionDefine(_cardPoolId, _actionDefine);
+            _startActionName = _actionDefine.defineName;
 
             scene.editor.hasUnsavedChanges = true;
             clearActionUnsaved();
@@ -506,5 +509,9 @@ namespace Controllers
         /// 正在编辑的动作定义。
         /// </summary>
         GeneratedActionDefine _actionDefine;
+        /// <summary>
+        /// 开始编辑时的动作定义名。
+        /// </summary>
+        string _startActionName;
     }
 }
