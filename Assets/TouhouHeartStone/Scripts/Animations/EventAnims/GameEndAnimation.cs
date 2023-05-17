@@ -1,15 +1,22 @@
-﻿using TouhouHeartstone;
-using UI;
+﻿using System.Collections;
 using System.Linq;
+using TouhouCardEngine;
+using TouhouHeartstone;
+using UI;
+
 namespace Game
 {
-    public class GameEndAnimation : EventAnimation<HearthStoneRule.GameEndEventArg>
+    using Arg = HearthStoneRule.GameEndEventArg;
+    public class GameEndAnimation : EventAnimation<Arg>
     {
-        public override bool update(TableManager table, HearthStoneRule.GameEndEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
+            if (record == null)
+                yield break;
+            var winners = arg.winners;
+
             var grd = table.ui.ui.getObject<GameResultDialog>();
-            grd.ShowGameResult(eventArg.winners.Contains(table.player));
-            return true;
+            grd.ShowGameResult(winners.Contains(table.player));
         }
     }
 }

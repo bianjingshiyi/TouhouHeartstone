@@ -1,56 +1,84 @@
-﻿using TouhouHeartstone;
-using UnityEngine;
-using BJSYGameCore;
-using UI;
+﻿using System.Collections;
 using BJSYGameCore.UI;
+using TouhouCardEngine;
+using TouhouHeartstone;
+using UI;
+using UnityEngine;
+using Timer = BJSYGameCore.Timer;
+
 namespace Game
 {
-    class TurnStartAnimation : EventAnimation<HearthStoneRule.TurnStartEventArg>
+    using Arg = HearthStoneRule.TurnStartEventArg;
+    class TurnStartAnimation : EventAnimation<Arg>
     {
-        Timer _timer = new Timer() { duration = 2 };
-        public override bool update(TableManager table, HearthStoneRule.TurnStartEventArg eventArg, float time)
+        CardSnapshot lastMasterSnapshot;
+        CardSnapshot lastItemSnapshot;
+        CardSnapshot masterSnapshot;
+        CardSnapshot itemSnapshot;
+        public override void init(TableManager table, Arg eventArg)
         {
+            base.init(table, eventArg);
 
-            if (!_timer.isStarted)
+            var player = eventArg.player;
+            masterSnapshot = table.game.snapshotCard(player.getMaster());
+            var item = player.getItem();
+            if (item != null)
+                itemSnapshot = table.game.snapshotCard(item);
+
+
+            var lastPlayer = table.game.getOpponent(eventArg.player);
+            lastMasterSnapshot = table.game.snapshotCard(lastPlayer.getMaster());
+            var lastItem = lastPlayer.getItem();
+            if (lastItem != null)
+                lastItemSnapshot = table.game.snapshotCard(lastItem);
+        }
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
+        {
+            var player = arg.player;
+
+            var timer = new Timer() { duration = 2 };
+            if (!timer.isStarted)
             {
-                _timer.start();
+                timer.start();
+                table.ui.SetTurnTipImage(player == table.player);
                 table.ui.TurnTipImage.display();
-                if (eventArg.player == table.player)
-                {
-                    table.ui.SetTurnTipImage(true);
-                    table.canControl = true;
-                }
-                else
-                {
-                    table.ui.SetTurnTipImage(false);
-                    table.canControl = false;
-                }
                 table.ui.TurnTipImage.GetComponent<Animator>().Play("Display");
-                table.currentAnimPlayer = eventArg.player;
-                foreach (var player in table.game.players)
-                {
-                    table.setSkill(player == table.player ? table.ui.SelfSkill : table.ui.EnemySkill, player.getSkill());
-                    foreach (var card in player.getField())
-                    {
-                        if (table.tryGetServant(card, out var servant))
-                        {
-                            table.setServant(servant, card);
-                        }
-                    }
-                    table.setItem(player == table.player ? table.ui.SelfItem : table.ui.EnemyItem, player.getItem());
-                    table.setMaster(player == table.player ? table.ui.SelfMaster: table.ui.EnemyMaster, player.getMaster());
-                }
+                table.currentAnimPlayer = player;
+                table.canControl = player == table.player;
+                table.setAllCardControlDirty();
+                updateMastersAndItems(table);
             }
-            if (!_timer.isExpired())
-                return false;
+            while (!timer.isExpired())
+                yield return null;
             table.ui.TurnTipImage.hide();
-            table.ui.TurnEndButton.interactable = eventArg.player == table.player;
+            table.ui.TurnEndButton.interactable = player == table.player;
+        }
 
-            return true;
+        private void updateMastersAndItems(TableManager table)
+        {
+            if (masterSnapshot != null && table.tryGetMaster(masterSnapshot, out Master master))
+            {
+                table.setMaster(master, masterSnapshot);
+            }
+            if (itemSnapshot != null && table.tryGetItem(itemSnapshot, out Item item))
+            {
+                table.setItem(item, itemSnapshot);
+            }
+
+            if (lastMasterSnapshot != null && table.tryGetMaster(lastMasterSnapshot, out Master lastMaster))
+            {
+                table.setMaster(lastMaster, lastMasterSnapshot);
+            }
+            if (lastItemSnapshot != null && table.tryGetItem(lastItemSnapshot, out Item lastItem))
+            {
+                table.setItem(lastItem, lastItemSnapshot);
+            }
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {
-            if (!(nextAnim is UseAnimation))
+            if (nextAnim is TurnStartAnimation)
+                return true;
+            else if (!(nextAnim is UseAnimation))
                 return false;
             else
                 return base.blockAnim(nextAnim);

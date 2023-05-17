@@ -1,31 +1,22 @@
-﻿using TouhouHeartstone;
-using UI;
+﻿using System.Collections;
 using BJSYGameCore.UI;
+using TouhouCardEngine;
+using TouhouHeartstone;
+using UI;
+
 namespace Game
 {
-    class TurnEndAnimation : EventAnimation<HearthStoneRule.TurnEndEventArg>
+    using Arg = HearthStoneRule.TurnEndEventArg;
+    class TurnEndAnimation : EventAnimation<Arg>
     {
-        public override bool update(TableManager table, HearthStoneRule.TurnEndEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
             table.canControl = false;
             table.cancelAttack();
             table.ui.TimeoutSlider.hide();
             table.closeDiscoverDialog();
             table.ui.TurnEndButton.interactable = false;
-
-            if (table.tryGetMaster(eventArg.player.getMaster(), out var master))
-            {
-                table.setMaster(master, eventArg.player.getMaster());
-            }
-
-            foreach (TouhouCardEngine.Card s in eventArg.player.getField())
-            {
-                if (table.tryGetServant(s, out var servant))
-                {
-                    table.setServant(servant, s);
-                }
-            }
-            return true;
+            yield break;
         }
     }
 }

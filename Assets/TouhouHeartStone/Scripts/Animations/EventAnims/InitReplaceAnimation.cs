@@ -1,13 +1,16 @@
-﻿using TouhouHeartstone;
+﻿using System.Collections;
+using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 namespace Game
 {
-    class InitReplaceAnimation : EventAnimation<HearthStoneRule.InitReplaceEventArg>
+    using Arg = HearthStoneRule.InitReplaceEventArg;
+    class InitReplaceAnimation : EventAnimation<Arg>
     {
-        public override bool update(TableManager table, HearthStoneRule.InitReplaceEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
             table.ui.InitReplaceDialog.hide();
-            return true;
+            yield break;
         }
     }
 }

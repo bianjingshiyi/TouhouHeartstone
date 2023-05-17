@@ -1,47 +1,57 @@
 ﻿using UI;
 using TouhouHeartstone;
 using Card = TouhouCardEngine.Card;
+using TouhouCardEngine;
+using System.Collections;
+using UnityEngine;
 
 namespace Game
 {
-    class SetDefineAnim : EventAnimation<Card.SetDefineEventArg>
+    using Arg = Card.SetDefineEventArg;
+    class SetDefineAnim : EventAnimation<Arg>
     {
-        TableAnimation _anim;
-        public override bool update(TableManager table, Card.SetDefineEventArg eventArg, float time)
+        public override IEnumerator update(TableManager table, EventRecord record, Arg arg)
         {
-            Card card = eventArg.card;
+            var card = table.getRecordCardSnapshot(record, Arg.VAR_CARD);
+            SimpleAnim simpleAnim = null;
+            Animator animator = null;
             if (table.tryGetServant(card, out var servant))
             {
-                if (!SimpleAnimHelper.update(table, ref _anim, servant.onSetDefine, servant.servantAnimator, time))
-                    return false;
+                simpleAnim = servant.onSetDefine;
+                animator = servant.servantAnimator;
                 table.setServant(servant, card);
             }
             else if (table.tryGetMaster(card, out var master))
             {
-                if (!SimpleAnimHelper.update(table, ref _anim, master.onSetDefine, master.animator, time))
-                    return false;
+                simpleAnim = master.onSetDefine;
+                animator = master.animator;
                 table.setMaster(master, card);
             }
             else if (table.tryGetItem(card, out var item))
             {
-                if (!SimpleAnimHelper.update(table, ref _anim, item.onSetDefine, item.animator, time))
-                    return false;
+                simpleAnim = item.onSetDefine;
+                animator = item.animator;
                 table.setItem(item, card);
             }
             else if (table.tryGetSkill(card, out var skill))
             {
-                if (!SimpleAnimHelper.update(table, ref _anim, skill.onSetDefine, skill.animator, time))
-                    return false;
+                simpleAnim = skill.onSetDefine;
+                animator = skill.animator;
                 table.setSkill(skill, card);
             }
             else if (table.tryGetHand(card, out var hand))
             {
-                if (!SimpleAnimHelper.update(table, ref _anim, hand.onSetDefine, hand.animator, time))
-                    return false;
+                simpleAnim = hand.onSetDefine;
+                animator = hand.animator;
                 if (card.getOwner() == table.player)
                     table.setCard(hand.Card, card, true);
             }
-            return true;
+            if (simpleAnim != null && animator)
+            {
+                AnimAnim anim = null;
+                while (!SimpleAnimHelper.update(table, ref anim, simpleAnim, animator, _time))
+                    yield return null;
+            }
         }
     }
 }

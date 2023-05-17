@@ -25,6 +25,7 @@ namespace Game
         {
             ui.onClickNoWhere.set(onClickNoWhere);
             ui.InitReplaceDialog.hide();
+            ui.InitReplaceDialog.InitReplaceCardList.clearItems();
             ui.TurnTipImage.hide();
             initMaster(ui.SelfMaster);
             ui.SelfGem.Text.text = "0";
