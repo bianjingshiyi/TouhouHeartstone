@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using UI;
+using UnityEngine.UIElements;
 
 namespace Controllers
 {
@@ -210,19 +211,63 @@ namespace Controllers
         {
             return game.getActionDefinesArray(_curCardPoolId);
         }
-        private IGrouping<string, ActionDefine>[] getActionDefineGroups()
+        private string getActionDefineCategory(ActionDefine actionDefine)
         {
-            return getAllActionDefines().Where(d => !d.disableCreate).GroupBy(actionDefine =>
+            string name = string.Empty;
+            if (!string.IsNullOrEmpty(actionDefine.category))
+                name = actionDefine.category;
+            if (_nameTextDict.ContainsKey(name))
+                name = _nameTextDict[name];
+            var category = game.langManager.getString(name);
+            category = category.Replace('\\', '/').Trim('/');
+            category = Regex.Replace(category, "/+", "/");
+            return category;
+        }
+        private string[] getActionDefineCategories(string parent)
+        {
+            if (parent == null)
+                parent = string.Empty;
+            parent = parent.Replace('\\', '/').Trim('/');
+            return getAllActionDefines().Where(d => !d.disableCreate).Select(actionDefine =>
             {
-                string name;
-                if (string.IsNullOrEmpty(actionDefine.category))
-                    name = actionDefine.defineName;
-                else
-                    name = actionDefine.category;
-                if (_nameTextDict.ContainsKey(name))
-                    name = _nameTextDict[name];
-                return game.langManager.getString(name);
-            }, a => a).OrderBy(g => g.Count() > 1).ThenBy(g => g.Key).ToArray();
+                if (actionDefine.disableCreate)
+                    return null;
+                var nodeCategory = getActionDefineCategory(actionDefine);
+                // 去掉父类别。
+                if (!string.IsNullOrEmpty(parent))
+                {
+                    string parentPath = parent + "/";
+                    int parentIndex = nodeCategory.IndexOf(parentPath);
+                    if (parentIndex == 0)
+                    {
+                        nodeCategory = nodeCategory.Substring(parentPath.Length, nodeCategory.Length - parentPath.Length).TrimStart('/');
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                // 去掉子类别。
+                int childIndex = nodeCategory.IndexOf('/');
+                if (childIndex > 0)
+                {
+                    nodeCategory = nodeCategory.Substring(0, childIndex);
+                }
+                return nodeCategory;
+            }).Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(g => g).ToArray();
+        }
+        private ActionDefine[] getActionDefinesInCategory(string parent)
+        {
+            if (parent == null)
+                parent = string.Empty;
+            parent = parent.Replace('\\', '/').Trim('/');
+            return getAllActionDefines().Where(actionDefine => 
+            {
+                if (actionDefine.disableCreate)
+                    return false;
+                var nodeCategory = getActionDefineCategory(actionDefine);
+                return nodeCategory == parent;
+            }).ToArray();
         }
         #endregion
         #endregion

@@ -14,14 +14,9 @@ namespace UI
         {
             _nameInputField.SetTextWithoutNotify(name);
         }
-        public void setCategory(int index)
+        public void setCategory(string category)
         {
-            _categoryDropdown.SetValueWithoutNotify(index);
-        }
-        public void initCategories(string[] categories)
-        {
-            _categoryDropdown.ClearOptions();
-            _categoryDropdown.AddOptions(new List<string>(categories));
+            _categoryInputField.SetTextWithoutNotify(category);
         }
         #endregion
 
@@ -150,7 +145,7 @@ namespace UI
         private void Awake()
         {
             _nameInputField.onEndEdit.AddListener(onChangeNameCallback);
-            _categoryDropdown.onValueChanged.AddListener(onChangeCategoryCallback);
+            _categoryInputField.onValueChanged.AddListener(onChangeCategoryCallback);
 
             _addInputItemButton.onClick.AddListener(onAddInputCallback);
             _addConstItemButton.onClick.AddListener(onAddConstCallback);
@@ -171,9 +166,9 @@ namespace UI
         {
             onChangeName?.Invoke(name);
         }
-        void onChangeCategoryCallback(int categoryIndex)
+        void onChangeCategoryCallback(string category)
         {
-            onChangeCategory?.Invoke(categoryIndex);
+            onChangeCategory?.Invoke(category);
         }
         void onClickBasicPageButtonCallback()
         {
@@ -299,7 +294,7 @@ namespace UI
         /// 当动作分类被更改。
         /// 参数：更改后的分类索引。
         /// </summary>
-        public event Action<int> onChangeCategory;
+        public event Action<string> onChangeCategory;
         /// <summary>
         /// 当点击删除动作按钮
         /// </summary>
@@ -415,7 +410,7 @@ namespace UI
         [SerializeField]
         InputField _nameInputField;
         [SerializeField]
-        Dropdown _categoryDropdown;
+        InputField _categoryInputField;
 
         [Header("Properties")]
         [Header("Inputs")]

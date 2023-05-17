@@ -26,10 +26,7 @@ namespace Controllers
             _ui.initPropertyItemTypes(types, constTypes);
             _ui.setName(actionDefine.defineName);
 
-            var categoryStrings = Array.ConvertAll(categories, c => game.langManager.getString(c));
-            _ui.initCategories(categoryStrings);
-            var categoryIndex = actionDefine.category == null ? 0 : categories.indexOf(actionDefine.category);
-            _ui.setCategory(categoryIndex);
+            _ui.setCategory(actionDefine.category);
 
             await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(
                         cardPoolId,
@@ -123,10 +120,10 @@ namespace Controllers
         /// 当用户更改动作分类
         /// </summary>
         /// <param name="index"></param>
-        private void onChangeCategory(int index)
+        private void onChangeCategory(string category)
         {
-            _actionDefine.setCategory(index == 0 ? null : categories[index]);
-            _ui.setCategory(index);
+            _actionDefine.setCategory(category);
+            _ui.setCategory(category);
             markActionUnsaved();
         }
         private void onClickDeleteActionButton()
@@ -509,19 +506,5 @@ namespace Controllers
         /// 正在编辑的动作定义。
         /// </summary>
         GeneratedActionDefine _actionDefine;
-
-
-        public readonly string[] categories = new string[]
-        {
-            ACTION_CATEGORY_NAME_NONE,
-            StringTable.EDITOR_NODE_CATEGORY_GAME,
-            StringTable.EDITOR_NODE_CATEGORY_PLAYER,
-            StringTable.EDITOR_NODE_CATEGORY_PILE,
-            StringTable.EDITOR_NODE_CATEGORY_CARD,
-            StringTable.EDITOR_NODE_CATEGORY_BUFF,
-            StringTable.EDITOR_NODE_CATEGORY_MODIFIER,
-            StringTable.EDITOR_NODE_CATEGORY_EVENT,
-            StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION
-        };
     }
 }
