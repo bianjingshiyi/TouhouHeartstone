@@ -10,19 +10,19 @@ namespace TouhouHeartstone
 {
     public static class THHCard
     {
-        public static bool isItem(this Card card)
+        public static bool isItem(this ICardData card)
         {
             return card.define.type == DEFINE.ITEM;
         }
-        public static bool isSkill(this Card card)
+        public static bool isSkill(this ICardData card)
         {
             return card.define.type == DEFINE.SKILL;
         }
-        public static bool isServant(this Card card)
+        public static bool isServant(this ICardData card)
         {
             return card.define.type == DEFINE.SERVANT;
         }
-        public static bool isMaster(this Card card)
+        public static bool isMaster(this ICardData card)
         {
             return card.define.type == DEFINE.MASTER;
         }
@@ -31,15 +31,15 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool isSpell(this Card card)
+        public static bool isSpell(this ICardData card)
         {
             return card.define.type == DEFINE.SPELL;
         }
-        public static Player getOwner(this Card card)
+        public static Player getOwner(this ICardData card)
         {
             return card.owner;
         }
-        public static int getCost(this Card card, CardEngine game)
+        public static int getCost(this ICardData card, IGame game)
         {
             int result = card.getProp<int>(game, DEFINE.COST);
             if (result < 0)
@@ -63,13 +63,20 @@ namespace TouhouHeartstone
                 return 0;
             return result;
         }
+        public static int getAttack(this ICardData card, IGame game)
+        {
+            int result = card.getProp<int>(game, DEFINE.ATTACK);
+            if (result < 0)
+                return 0;
+            return result;
+        }
 
         [Obsolete("Use buff or modifier instead")]
         public static Task<IPropChangeEventArg> setAttack(this Card card, IGame game, int value)
         {
             return card.setProp(game, DEFINE.ATTACK, value);
         }
-        public static int getLife(this Card card, IGame game)
+        public static int getLife(this ICardData card, IGame game)
         {
             return card.getProp<int>(game, DEFINE.LIFE);
         }
@@ -144,7 +151,7 @@ namespace TouhouHeartstone
             }
             return argList.ToArray();
         }
-        public static int getArmor(this Card card, CardEngine game)
+        public static int getArmor(this ICardData card, IGame game)
         {
             return card.getProp<int>(game, CARD.ARMOR);
         }
@@ -215,7 +222,7 @@ namespace TouhouHeartstone
                 set { setVar(EVENTVAR.VALUE, value); }
             }
         }
-        public static int getCurrentLife(this Card card, IGame game)
+        public static int getCurrentLife(this ICardData card, IGame game)
         {
             return card.getProp<int>(game, CARD.CURRENT_LIFE);
         }
@@ -353,7 +360,7 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        public static bool isUsed(this Card card, IGame game)
+        public static bool isUsed(this ICardData card, IGame game)
         {
             return card.getProp<bool>(game, "isUsed");
         }
@@ -366,15 +373,15 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, "isUsed", value);
         }
-        public static bool isTaunt(this Card card, IGame game)
+        public static bool isTaunt(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.TAUNT);
         }
-        public static bool isCharge(this Card card, IGame game)
+        public static bool isCharge(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.CHARGE);
         }
-        public static bool isRush(this Card card, IGame game)
+        public static bool isRush(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.RUSH);
         }
@@ -385,7 +392,7 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.RUSH);
         }
-        public static bool isShield(this Card card, IGame game)
+        public static bool isShield(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.SHIELD) && card.hasKeyword(game, KEYWORD.HAS_SHIELD);
         }
@@ -402,7 +409,7 @@ namespace TouhouHeartstone
                 card.removeKeywords(game, KEYWORD.HAS_SHIELD);
             }
         }
-        public static bool isStealth(this Card card, IGame game)
+        public static bool isStealth(this ICardData card, IGame game)
         {
             return (card.hasKeyword(game, KEYWORD.STEALTH) && card.hasKeyword(game, KEYWORD.HAS_STEALTH)) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
         }
@@ -419,7 +426,7 @@ namespace TouhouHeartstone
                 card.removeKeywords(game, KEYWORD.HAS_STEALTH);
             }
         }
-        public static bool isDrain(this Card card, IGame game)
+        public static bool isDrain(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.DRAIN);
         }
@@ -430,7 +437,7 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.DRAIN);
         }
-        public static bool isPoisonous(this Card card, IGame game)
+        public static bool isPoisonous(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.POISONOUS);
         }
@@ -441,7 +448,7 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.POISONOUS);
         }
-        public static bool isElusive(this Card card, IGame game)
+        public static bool isElusive(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.ELUSIVE);
         }
@@ -452,7 +459,7 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.ELUSIVE);
         }
-        public static bool isFreeze(this Card card, IGame game)
+        public static bool isFreeze(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.IS_FROZEN) || card.hasKeyword(game, KEYWORD.PERMANENT_FROZEN);
         }
@@ -470,7 +477,7 @@ namespace TouhouHeartstone
                 card.setFreeze(game, value);
             }
         }
-        public static bool isWindfury(this Card card, IGame game)
+        public static bool isWindfury(this ICardData card, IGame game)
         {
             if (card.isMaster())
             {
@@ -487,7 +494,7 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.WINDFURY);
         }
-        public static bool isImmunity(this Card card, IGame game)
+        public static bool isImmunity(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.IMMUNITY);
         }
@@ -498,7 +505,7 @@ namespace TouhouHeartstone
             else
                 card.removeKeywords(game, KEYWORD.IMMUNITY);
         }
-        public static bool isUnique(this Card card, IGame game)
+        public static bool isUnique(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.UNIQUE);
         }
@@ -535,16 +542,26 @@ namespace TouhouHeartstone
         /// <param name="game">游戏。</param>
         /// <param name="raw">是否忽略修改器。</param>
         /// <returns>关键词列表。</returns>
-        public static string[] getKeywords(this Card card, IGame game, bool raw = false)
+        public static string[] getKeywords(this ICard card, IGame game, bool raw)
         {
-            var keywords = card.getProp<string[]>(game, DEFINE.KEYWORDS, raw);
-            if (keywords != null)
+            if (card is ICard c)
             {
-                return keywords;
+                return c.getProp<string[]>(game, DEFINE.KEYWORDS, raw) ?? Array.Empty<string>();
             }
-            return Array.Empty<string>();
+            return card.getKeywords(game);
         }
-        public static bool hasKeyword(this Card card, IGame game, string keyword)
+        /// <summary>
+        /// 获取关键词数组。
+        /// </summary>
+        /// <param name="card">卡牌。</param>
+        /// <param name="game">游戏。</param>
+        /// <param name="raw">是否忽略修改器。</param>
+        /// <returns>关键词列表。</returns>
+        public static string[] getKeywords(this ICardData card, IGame game)
+        {
+            return card.getProp<string[]>(game, DEFINE.KEYWORDS) ?? Array.Empty<string>();
+        }
+        public static bool hasKeyword(this ICardData card, IGame game, string keyword)
         {
             string[] keywords = card.getKeywords(game);
             if (keywords == null)
@@ -619,7 +636,7 @@ namespace TouhouHeartstone
             });
         }
         #endregion 蓄力
-        public static int getSpellDamage(this Card card, IGame game)
+        public static int getSpellDamage(this ICardData card, IGame game)
         {
             return card.getProp<int>(game, DEFINE.SPELL_DAMAGE);
         }
@@ -627,7 +644,7 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, DEFINE.SPELL_DAMAGE, value);
         }
-        public static int getDamageReduce(this Card card, IGame game)
+        public static int getDamageReduce(this ICardData card, IGame game)
         {
             int result = card.getProp<int>(game, nameof(ServantCardDefine.damageReduce));
             if (result < 0)
@@ -716,7 +733,7 @@ namespace TouhouHeartstone
         {
             return silence(new Card[] { card }, game);
         }
-        public static bool isSilenced(this Card card, IGame game)
+        public static bool isSilenced(this ICardData card, IGame game)
         {
             return card.getProp<bool>(game, CARD.SILENCE);
         }
@@ -808,9 +825,9 @@ namespace TouhouHeartstone
                 return false;
             }).ToArray();
         }
-        public static bool hasDeathRattle(this Card card, IGame game)
+        public static bool hasDeathRattle(this ICardData card, IGame game)
         {
-            if (!card.getProp<bool>(game, CARD.SILENCE))
+            if (!card.isSilenced(game))
             {
                 if (card.define.hasDeathRattles())
                 {
@@ -827,18 +844,18 @@ namespace TouhouHeartstone
             }
             return false;
         }
-        public static bool hasTag(this Card card, IGame game, string tag)
+        public static bool hasTag(this ICardData card, IGame game, string tag)
         {
             string[] tags = card.getProp<string[]>(game, nameof(ServantCardDefine.tags));
             if (tags == null)
                 return false;
             return tags.Contains(tag);
         }
-        public static string getTag(this Card card, IGame game, int index)
+        public static string getTag(this ICardData card, IGame game, int index)
         {
             return card.getTags(game)[index];
         }
-        public static string[] getTags(this Card card, IGame game)
+        public static string[] getTags(this ICardData card, IGame game)
         {
             string[] tags = card.getProp<string[]>(game, nameof(DEFINE.TAGS));
             if (tags == null)
@@ -1882,11 +1899,12 @@ namespace TouhouHeartstone
             }
             public override void Record(IGame game, EventRecord record)
             {
-                var cardSnapshots = cards;
-                record.setCardStates(EVENTVAR.CARD, cardSnapshots);
+                record.setCardStates(EVENTVAR.CARD, cards);
                 record.setCardState(VAR_HEAL_SOURCE, source);
                 record.setVar(EVENTVAR.VALUE, value);
-                record.setVar(VAR_INFO_DIC, infoDic.ToDictionary(pair => cardSnapshots.FirstOrDefault(c => c.id == pair.Key.id), pair => pair.Value));
+
+                var cardStates = record.getVar<CardState[]>(EVENTVAR.CARD);
+                record.setVar(VAR_INFO_DIC, infoDic.ToDictionary(pair => pair.Key.id, pair => pair.Value));
             }
             [MukioI18n.TranslateMsg("{0}是卡，{1}是治疗量")]
             const string TEMPLATE = "治疗 {0} {1} 点生命值";
