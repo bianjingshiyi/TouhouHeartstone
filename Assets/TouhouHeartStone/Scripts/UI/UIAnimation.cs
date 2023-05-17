@@ -140,11 +140,7 @@ namespace UI
                 _coroutine = update(table, record, tEventArg);
             }
             updateCoroutine();
-            return update(table, tEventArg, time) && _finished;
-        }
-        public virtual bool update(TableManager table, T arg, float time)
-        {
-            return true;
+            return _finished;
         }
         public virtual IEnumerator update(TableManager table, EventRecord record, T arg)
         {

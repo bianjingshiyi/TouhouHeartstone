@@ -105,7 +105,7 @@ namespace Game
         /// <param name="master"></param>
         /// <param name="card"></param>
         /// <param name="isSelectable"></param>
-        public void setMaster(Master master, ICardData card, bool isSelectable = false) => setMaster(master, updateCardDescriptor(card), isSelectable);
+        public void setMaster(Master master, CardSnapshot card, bool isSelectable = false) => setMaster(master, updateCardDescriptor(card), isSelectable);
         /// <summary>
         /// 设置Master的UI
         /// </summary>
@@ -212,7 +212,7 @@ namespace Game
                 return false;
             }
         }
-        public void setSkill(Skill skill, ICardData card) => setSkill(skill, updateCardDescriptor(card));
+        public void setSkill(Skill skill, CardSnapshot card) => setSkill(skill, updateCardDescriptor(card));
         /// <summary>
         /// 设置Skill的UI
         /// </summary>
@@ -263,7 +263,7 @@ namespace Game
                 return false;
             }
         }
-        public void setItem(Item item, ICardData card) => setItem(item, updateCardDescriptor(card));
+        public void setItem(Item item, CardSnapshot card) => setItem(item, updateCardDescriptor(card));
         public async void setItem(Item item, CardDescriptor desc)
         {
             if (desc == null)
@@ -501,7 +501,7 @@ namespace Game
         /// <param name="servant"></param>
         /// <param name="desc"></param>
         /// <param name="isSelectable"></param>
-        public void setServant(ServantItem servant, ICardData card) => setServant(servant, updateCardDescriptor(card));
+        public void setServant(ServantItem servant, CardSnapshot card) => setServant(servant, updateCardDescriptor(card));
         /// <summary>
         /// 设置随从
         /// </summary>
@@ -787,7 +787,7 @@ namespace Game
             }
             return null;
         }
-        public void setInitCard(InitReplaceCardListItem init, ICardData card)
+        public void setInitCard(InitReplaceCardListItem init, CardSnapshot card)
         {
             setCard(init.Card, card, true);
             init.MarkImage.enabled = false;
@@ -848,7 +848,7 @@ namespace Game
             ui.transform.localScale = Vector3.one * height / ui.rectTransform.rect.height;
             return ui;
         }
-        public void setCard(UICard ui, ICardData card, bool isFaceUp = true) => setCardDesc(ui, updateCardDescriptor(card), isFaceUp);
+        public void setCard(UICard ui, CardSnapshot card, bool isFaceUp = true) => setCardDesc(ui, updateCardDescriptor(card), isFaceUp);
         /// <summary>
         /// 设置卡片UI
         /// </summary>
