@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using BJSYGameCore.UI;
@@ -473,10 +472,17 @@ namespace Controllers
                 }
             }
 
-            foreach (var connection in graph.connections)
+            foreach (var connection in graph.connections.ToArray())
             {
                 if (connection == null)
                     continue;
+
+                if (IsInvalidConnection(connection))
+                {
+                    graph.disconnect(connection);
+                    continue;
+                }
+
                 var outputNode = connection.source?.node;
                 var inputNode = connection.destination?.node;
                 if (outputNode == null || inputNode == null)
@@ -874,13 +880,49 @@ namespace Controllers
         #endregion
         #region 节点断开
         /// <summary>
+        /// 连接是否不合法。
+        /// </summary>
+        private bool IsInvalidConnection(NodeConnection connection)
+        {
+            var src = connection.source;
+            var dest = connection.destination;
+            if (src == null || dest == null) // 有一个端口不存在
+                return true;
+            if (src.node == null || dest.node == null) // 有一个端口的节点不存在
+                return true;
+            if (!src.node.outputPorts.Contains(src) || !dest.node.inputPorts.Contains(dest)) // 有一个端口的节点不包括该端口
+                return true;
+            if (!isValidTypeForConnection(src.define.type, dest.define.type)) // 端口类型不正确
+                return true;
+            return false;
+        }
+        /// <summary>
+        /// 断开所有不合法的连接。
+        /// </summary>
+        /// <param name="port"></param>
+        private void disconnectAllInvalidConnections(ActionGraph graph)
+        {
+            //更新ui
+            var connections = graph.connections.Where(c => IsInvalidConnection(c));
+
+            foreach (var connection in connections.ToArray())
+            {
+                if (connection == null)
+                    continue;
+                IPort src = connection.source;
+                IPort dest = connection.destination;
+                disconnectPorts(src, dest);
+            }
+        }
+        /// <summary>
         /// 断开连接到该端口上的，所有不合法的连接。
         /// </summary>
         /// <param name="port"></param>
         private void disconnectPortInvalidConnections(IPort port)
         {
             //更新ui
-            var connections = port.connections.Where(c => !isValidTypeForConnection(c.source.define.type, c.destination.define.type));
+            var connections = port.connections.Where(c => IsInvalidConnection(c));
+
             foreach (var connection in connections.ToArray())
             {
                 if (connection == null)

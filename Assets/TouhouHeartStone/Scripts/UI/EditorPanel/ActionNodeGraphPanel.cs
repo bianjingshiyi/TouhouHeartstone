@@ -189,6 +189,11 @@ namespace UI
 
             var output = node.getOutput(outputIndex);
             var input = targetNode.getInput(inputIndex);
+            if (!output || !input)
+            {
+                Debug.LogWarning("不存在" + node + ":" + outputIndex + "与" + targetNode + ":" + inputIndex + "之间的连接");
+                return;
+            }
             ActionNodeGraphLine line = createLine(output.gameObject, input.gameObject, output.GetColor());
 
             _connectionList.Add(new ActionNodeConnectionData()

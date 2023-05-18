@@ -312,10 +312,14 @@ namespace UI
         }
         public ActionNodeItemInput getInput(int index)
         {
+            if (index < 0 || index >= _inputList.Count)
+                return null;
             return _inputList[index].GetComponent<ActionNodeItemInput>();
         }
         public ActionNodeItemOutput getOutput(int index)
         {
+            if (index < 0 || index >= _outputList.Count)
+                return null;
             return _outputList[index].GetComponent<ActionNodeItemOutput>();
         }
         /// <summary>

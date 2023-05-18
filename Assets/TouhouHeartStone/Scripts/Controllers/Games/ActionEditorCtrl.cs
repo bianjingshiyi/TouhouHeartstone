@@ -135,7 +135,7 @@ namespace Controllers
                async () =>
                {
                    //删除动作定义
-                   game.card.removeActionDefine(_cardPoolId, _actionDefine);
+                   game.card.removeActionDefine(_cardPoolId, _actionDefine.id);
                    //返回上个界面
                    await scene.editor.closeEditorPanel();
                    scene.editor.hasUnsavedChanges = true;

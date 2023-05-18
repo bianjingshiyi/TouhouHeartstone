@@ -52,6 +52,15 @@ namespace Game
             }
             return false;
         }
+        public bool removeActionDefine(long cardPoolId, int id)
+        {
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
+            {
+                return cardPool.actionDefineList.RemoveAll(a => a.id == id) > 0;
+            }
+            return false;
+        }
         public bool getActionDefine(long cardPoolId, string name, out GeneratedActionDefine actionDefine)
         {
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
