@@ -708,6 +708,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: NameInputField
       objectReference: {fileID: 0}
+    - target: {fileID: 5046004509720727476, guid: 0acbac3ca2191e849bac9feaf02f3e2c,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5046004509720727477, guid: 0acbac3ca2191e849bac9feaf02f3e2c,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1105,6 +1110,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Toggle
       objectReference: {fileID: 0}
+    - target: {fileID: 8495326174463570640, guid: c6fee51890cb3fa4cb6ba04feb261fea,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6fee51890cb3fa4cb6ba04feb261fea, type: 3}
 --- !u!1 &8986043395266097137 stripped
@@ -1138,6 +1148,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7606423698597605243}
     m_Modifications:
+    - target: {fileID: 7828612899420356569, guid: 3ce2269361f968d4085b76fd07ce0433,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7828612899420356574, guid: 3ce2269361f968d4085b76fd07ce0433,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1390,6 +1405,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Toggle
+      objectReference: {fileID: 0}
+    - target: {fileID: 8495326174463570640, guid: c6fee51890cb3fa4cb6ba04feb261fea,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6fee51890cb3fa4cb6ba04feb261fea, type: 3}

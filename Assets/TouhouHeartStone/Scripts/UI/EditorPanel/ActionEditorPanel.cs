@@ -18,6 +18,22 @@ namespace UI
         {
             _categoryInputField.SetTextWithoutNotify(category);
         }
+        public void setActionPortTypes((Type type, string name)[] types)
+        {
+            _createPortDefineDialog.setTypes(types);
+        }
+        public void showCreatePortDefineDialogErrorTip(string errorTip)
+        {
+            _createPortDefineDialog.showErrorTip(errorTip);
+        }
+        public void displayCreatePortDefineDialog(ActionPortDefineType portType, string title)
+        {
+            _createPortDefineDialog.display(portType, title);
+        }
+        public void hideCreatePortDefineDialog()
+        {
+            _createPortDefineDialog.hide();
+        }
         #endregion
 
         #region 属性
@@ -49,19 +65,11 @@ namespace UI
             rect =>
             {
                 var input = rect.GetComponent<EffectEditorValueDefineItem>();
-                input.onTypeDropdownValueChanged += onChangeInputTypeCallback;
-                input.onNameInputFieldValueChanged += onChangeInputNameCallback;
-                input.onIsArrayToggleValueChanged += onChangeInputIsArrayCallback;
-                input.onIsParamsToggleValueChanged += onChangeInputIsParamsCallback;
                 input.onDeleteButtonClicked += onDeleteInputCallback;
             },
             rect =>
             {
                 var input = rect.GetComponent<EffectEditorValueDefineItem>();
-                input.onTypeDropdownValueChanged -= onChangeInputTypeCallback;
-                input.onNameInputFieldValueChanged -= onChangeInputNameCallback;
-                input.onIsArrayToggleValueChanged -= onChangeInputIsArrayCallback;
-                input.onIsParamsToggleValueChanged -= onChangeInputIsParamsCallback;
                 input.onDeleteButtonClicked -= onDeleteInputCallback;
             });
         }
@@ -83,17 +91,11 @@ namespace UI
             rect =>
             {
                 var cst = rect.GetComponent<EffectEditorValueDefineItem>();
-                cst.onTypeDropdownValueChanged += onChangeConstTypeCallback;
-                cst.onNameInputFieldValueChanged += onChangeConstNameCallback;
-                cst.onIsArrayToggleValueChanged += onChangeConstIsArrayCallback;
                 cst.onDeleteButtonClicked += onDeleteConstCallback;
             },
             rect =>
             {
                 var cst = rect.GetComponent<EffectEditorValueDefineItem>();
-                cst.onTypeDropdownValueChanged -= onChangeConstTypeCallback;
-                cst.onNameInputFieldValueChanged -= onChangeConstNameCallback;
-                cst.onIsArrayToggleValueChanged -= onChangeConstIsArrayCallback;
                 cst.onDeleteButtonClicked -= onDeleteConstCallback;
             });
         }
@@ -116,17 +118,11 @@ namespace UI
             rect =>
             {
                 var output = rect.GetComponent<EffectEditorValueDefineItem>();
-                output.onTypeDropdownValueChanged += onChangeOutputTypeCallback;
-                output.onNameInputFieldValueChanged += onChangeOutputNameCallback;
-                output.onIsArrayToggleValueChanged += onChangeOutputIsArrayCallback;
                 output.onDeleteButtonClicked += onDeleteOutputCallback;
             },
             rect =>
             {
                 var output = rect.GetComponent<EffectEditorValueDefineItem>();
-                output.onTypeDropdownValueChanged -= onChangeOutputTypeCallback;
-                output.onNameInputFieldValueChanged -= onChangeOutputNameCallback;
-                output.onIsArrayToggleValueChanged -= onChangeOutputIsArrayCallback;
                 output.onDeleteButtonClicked -= onDeleteOutputCallback;
             });
         }
@@ -136,7 +132,7 @@ namespace UI
 
         public void closeAllEdit()
         {
-            _nameInputField.DeactivateInputField();;
+            _nameInputField.DeactivateInputField(); ;
         }
         #endregion
 
@@ -146,6 +142,8 @@ namespace UI
         {
             _nameInputField.onEndEdit.AddListener(onChangeNameCallback);
             _categoryInputField.onValueChanged.AddListener(onChangeCategoryCallback);
+
+            _createPortDefineDialog.onConfirm += onCreatePortDefineCallback;
 
             _addInputItemButton.onClick.AddListener(onAddInputCallback);
             _addConstItemButton.onClick.AddListener(onAddConstCallback);
@@ -159,6 +157,7 @@ namespace UI
             _propertiesPageButton.onClick.AddListener(onClickPropertiesPageButtonCallback);
             _nodesPageButton.onClick.AddListener(onClickNodesPageButtonCallback);
         }
+
         #endregion
 
         #region 事件回调
@@ -183,6 +182,10 @@ namespace UI
         {
             displayPage(_nodesPage, _nodesPageIndicator);
         }
+        private void onCreatePortDefineCallback(ActionPortDefineItem item)
+        {
+            onCreatePortDefine?.Invoke(item);
+        }
         void onClickDeleteActionButtonCallback()
         {
             onClickDeleteActionButton?.Invoke();
@@ -201,26 +204,6 @@ namespace UI
         {
             onAddInput?.Invoke();
         }
-        void onChangeInputTypeCallback(EffectEditorValueDefineItem item, int typeIndex)
-        {
-            var itemIndex = _inputItemList.IndexOf(item.transform as RectTransform);
-            onChangeInputType?.Invoke(itemIndex, typeIndex);
-        }
-        void onChangeInputNameCallback(EffectEditorValueDefineItem item, string name)
-        {
-            var itemIndex = _inputItemList.IndexOf(item.transform as RectTransform);
-            onChangeInputName?.Invoke(itemIndex, name);
-        }
-        void onChangeInputIsArrayCallback(EffectEditorValueDefineItem item, bool isArray)
-        {
-            var itemIndex = _inputItemList.IndexOf(item.transform as RectTransform);
-            onChangeInputIsArray?.Invoke(itemIndex, isArray);
-        }
-        void onChangeInputIsParamsCallback(EffectEditorValueDefineItem item, bool isParams)
-        {
-            var itemIndex = _inputItemList.IndexOf(item.transform as RectTransform);
-            onChangeInputIsParams?.Invoke(itemIndex, isParams);
-        }
         void onDeleteInputCallback(EffectEditorValueDefineItem item)
         {
             var itemIndex = _inputItemList.IndexOf(item.transform as RectTransform);
@@ -233,21 +216,6 @@ namespace UI
         {
             onAddConst?.Invoke();
         }
-        void onChangeConstTypeCallback(EffectEditorValueDefineItem item, int typeIndex)
-        {
-            var itemIndex = _constItemList.IndexOf(item.transform as RectTransform);
-            onChangeConstType?.Invoke(itemIndex, typeIndex);
-        }
-        void onChangeConstNameCallback(EffectEditorValueDefineItem item, string name)
-        {
-            var itemIndex = _constItemList.IndexOf(item.transform as RectTransform);
-            onChangeConstName?.Invoke(itemIndex, name);
-        }
-        void onChangeConstIsArrayCallback(EffectEditorValueDefineItem item, bool isArray)
-        {
-            var itemIndex = _constItemList.IndexOf(item.transform as RectTransform);
-            onChangeConstIsArray?.Invoke(itemIndex, isArray);
-        }
         void onDeleteConstCallback(EffectEditorValueDefineItem item)
         {
             var itemIndex = _constItemList.IndexOf(item.transform as RectTransform);
@@ -259,21 +227,6 @@ namespace UI
         void onAddOutputCallback()
         {
             onAddOutput?.Invoke();
-        }
-        void onChangeOutputTypeCallback(EffectEditorValueDefineItem item, int typeIndex)
-        {
-            var itemIndex = _outputItemList.IndexOf(item.transform as RectTransform);
-            onChangeOutputType?.Invoke(itemIndex, typeIndex);
-        }
-        void onChangeOutputNameCallback(EffectEditorValueDefineItem item, string name)
-        {
-            var itemIndex = _outputItemList.IndexOf(item.transform as RectTransform);
-            onChangeOutputName?.Invoke(itemIndex, name);
-        }
-        void onChangeOutputIsArrayCallback(EffectEditorValueDefineItem item, bool isArray)
-        {
-            var itemIndex = _outputItemList.IndexOf(item.transform as RectTransform);
-            onChangeOutputIsArray?.Invoke(itemIndex, isArray);
         }
         void onDeleteOutputCallback(EffectEditorValueDefineItem item)
         {
@@ -313,6 +266,11 @@ namespace UI
         /// </summary>
         public event Action<string> onChangeCategory;
         /// <summary>
+        /// 当创建新的端口定义。
+        /// 参数：端口定义项。
+        /// </summary>
+        public event Action<ActionPortDefineItem> onCreatePortDefine;
+        /// <summary>
         /// 当点击删除动作按钮
         /// </summary>
         public event Action onClickDeleteActionButton;
@@ -331,26 +289,6 @@ namespace UI
         /// </summary>
         public event Action onAddInput;
         /// <summary>
-        /// 当输入变量的类型被更改
-        /// 参数：输入变量索引、类型索引。
-        /// </summary>
-        public event Action<int, int> onChangeInputType;
-        /// <summary>
-        /// 当输入变量的名称被更改
-        /// 参数：输入变量索引、名称。
-        /// </summary>
-        public event Action<int, string> onChangeInputName;
-        /// <summary>
-        /// 当输入变量的是否是数组属性被改变
-        /// 参数：输入变量索引、是否是数组。
-        /// </summary>
-        public event Action<int, bool> onChangeInputIsArray;
-        /// <summary>
-        /// 当输入变量的是否是变长变量属性被改变
-        /// 参数：输入变量索引、是否是变长变量。
-        /// </summary>
-        public event Action<int, bool> onChangeInputIsParams;
-        /// <summary>
         /// 当输入变量被删除
         /// 参数：输入变量索引。
         /// </summary>
@@ -362,22 +300,6 @@ namespace UI
         /// 当添加输入常量
         /// </summary>
         public event Action onAddConst;
-        /// <summary>
-        /// 当输入常量的类型被更改
-        /// 参数：输入常量索引、类型索引。
-        /// </summary>
-        public event Action<int, int> onChangeConstType;
-        /// <summary>
-        /// 当输入常量的名称被更改
-        /// 参数：输入常量索引、名称。
-        /// </summary>
-        public event Action<int, string> onChangeConstName;
-        /// <summary>
-        /// 当输入常量的是否是数组属性被改变
-        /// 参数：输入常量索引、是否是数组。
-        /// </summary>
-        public event Action<int, bool> onChangeConstIsArray;
-        /// <summary>
         /// 当输入常量被删除
         /// 参数：输入常量索引。
         /// </summary>
@@ -389,21 +311,6 @@ namespace UI
         /// 当添加输出变量
         /// </summary>
         public event Action onAddOutput;
-        /// <summary>
-        /// 当输出变量的类型被更改
-        /// 参数：输出变量索引、类型索引。
-        /// </summary>
-        public event Action<int, int> onChangeOutputType;
-        /// <summary>
-        /// 当输出变量的名称被更改
-        /// 参数：输出变量索引、名称。
-        /// </summary>
-        public event Action<int, string> onChangeOutputName;
-        /// <summary>
-        /// 当输出变量的是否是数组属性被改变
-        /// 参数：输出变量索引、是否是数组。
-        /// </summary>
-        public event Action<int, bool> onChangeOutputIsArray;
         /// <summary>
         /// 当输出变量被删除
         /// 参数：输出变量索引。
@@ -428,6 +335,8 @@ namespace UI
         InputField _nameInputField;
         [SerializeField]
         InputField _categoryInputField;
+        [SerializeField]
+        CreateActionPortDefineDialog _createPortDefineDialog;
 
         [Header("Properties")]
         [Header("Inputs")]

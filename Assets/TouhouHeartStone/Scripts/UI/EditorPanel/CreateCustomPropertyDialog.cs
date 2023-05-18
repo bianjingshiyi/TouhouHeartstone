@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
