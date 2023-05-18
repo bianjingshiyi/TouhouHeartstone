@@ -14,7 +14,7 @@ namespace UI
             _typeDropdown.ClearOptions();
             _typeDropdown.AddOptions(types.Select(a => a.name).ToList());
         }
-        public void display(ActionPortDefineType portType, string title)
+        public void display(ActionPortDefineType portType, string title, bool canBeParams)
         {
             gameObject.SetActive(true);
             _portType = portType;
@@ -22,6 +22,7 @@ namespace UI
             _propertyName.text = string.Empty;
             _isArrayToggle.isOn = false;
             _isParamsToggle.isOn = false;
+            _isParamsToggle.interactable = canBeParams;
             _errorTipObj.SetActive(false);
         }
         public void hide()

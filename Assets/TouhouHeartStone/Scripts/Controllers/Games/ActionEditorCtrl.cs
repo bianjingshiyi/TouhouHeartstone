@@ -157,11 +157,17 @@ namespace Controllers
             {
                 type = type.MakeArrayType();
             }
-            var valueDefine = PortDefine.Value(type, name, displayName, item.isArray);
+            var valueDefine = PortDefine.Value(type, name, displayName, item.isParams);
             switch (item.portType)
             {
                 case ActionPortDefineType.Input:
                     _actionDefine.addInput(valueDefine);
+                    var paramDefine = _actionDefine.inputDefines.FirstOrDefault(d => d.isParams);
+                    if (paramDefine != null)
+                    {
+                        _actionDefine.removeInput(paramDefine);
+                        _actionDefine.addInput(paramDefine);
+                    }
                     updateInputs();
                     break;
                 case ActionPortDefineType.Const:
@@ -254,7 +260,7 @@ namespace Controllers
         {
             string title = game.lang._(ACTION_NEW_INPUT_DIALOG_TITLE);
             _ui.setActionPortTypes(getEditorVarTypes());
-            _ui.displayCreatePortDefineDialog(ActionPortDefineType.Input, title);
+            _ui.displayCreatePortDefineDialog(ActionPortDefineType.Input, title, !_actionDefine.inputDefines.Any(d => d.isParams));
         }
         private void onDeleteInput(int inputIndex)
         {
@@ -347,7 +353,7 @@ namespace Controllers
                 {
                     name = input.getDisplayName(),
                     isParams = isParams,
-                    showParams = isLastInput(i),
+                    showParams = isParams,
                     isArray = isArray,
                     typeIndex = typeIndex
                 };

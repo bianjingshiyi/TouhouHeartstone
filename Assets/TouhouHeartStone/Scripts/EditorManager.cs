@@ -104,9 +104,16 @@ namespace Game
         {
             for (int i = 0; i < _editorTypeInfos.Length; i++)
             {
-                if (_editorTypeInfos[i].type.Name == name || _editorTypeInfos[i].type.FullName == name)
+                var type = _editorTypeInfos[i].type;
+                if (type.Name == name || type.FullName == name)
                 {
-                    return _editorTypeInfos[i].type;
+                    return type;
+                }
+                // 检查数组
+                var arrayType = type.MakeArrayType();
+                if (arrayType.Name == name || arrayType.FullName == name)
+                {
+                    return arrayType;
                 }
             }
             throw new ArgumentException("不存在名为" + name + "的类型");

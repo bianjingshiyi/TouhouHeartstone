@@ -26,9 +26,9 @@ namespace UI
         {
             _createPortDefineDialog.showErrorTip(errorTip);
         }
-        public void displayCreatePortDefineDialog(ActionPortDefineType portType, string title)
+        public void displayCreatePortDefineDialog(ActionPortDefineType portType, string title, bool canBeParams = false)
         {
-            _createPortDefineDialog.display(portType, title);
+            _createPortDefineDialog.display(portType, title, canBeParams);
         }
         public void hideCreatePortDefineDialog()
         {
