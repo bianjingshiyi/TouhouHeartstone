@@ -64,7 +64,7 @@ namespace UI
                     item.onDragNode -= onDragInputNodeCallback;
                     item.onEndDragNode -= onEndDragInputNodeCallback;
                     item.onClickNode -= onClickInputNodeCallback;
-                });
+                }, rebuild: true);
             }
             SetDirty();
         }
@@ -100,7 +100,7 @@ namespace UI
                     item.onValueChanged -= onConstValueChangedCallback;
                     item.onClickButton -= onConstValueButtonClickCallback;
                     item.onClickItemButton -= onConstValueItemButtonClickCallback;
-                });
+                }, rebuild: true);
             }
             SetDirty();
         }
@@ -196,7 +196,7 @@ namespace UI
                     item.onDragNode -= onDragOutputNodeCallback;
                     item.onEndDragNode -= onEndDragOutputNodeCallback;
                     item.onClickNode -= onClickOutputNodeCallback;
-                });
+                }, rebuild: true);
             }
             SetDirty();
         }
@@ -232,7 +232,7 @@ namespace UI
                     item.onDragNode -= onDragOutputNodeCallback;
                     item.onEndDragNode -= onEndDragOutputNodeCallback;
                     item.onClickNode -= onClickOutputNodeCallback;
-                });
+                }, rebuild: true);
             }
             SetDirty();
         }
@@ -291,7 +291,7 @@ namespace UI
                 item.onClickEditButton -= onClickEditTargetCheckerButtonCallback;
                 item.onClickRemoveButton -= onClickRemoveTargetCheckerButtonCallback;
                 item.onErrorTipInputFieldValueChanged -= onTargetCheckerErrorTipValueChangedCallback;
-            });
+            }, rebuild: true);
             SetDirty();
         }
         public int indexOfInput(ActionNodeItemInput input)
