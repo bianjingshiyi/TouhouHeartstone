@@ -336,15 +336,6 @@ namespace UI
         {
             _menuRoot.gameObject.SetActive(false);
         }
-        /// <summary>
-        /// 向玩家显示一条错误提示
-        /// </summary>
-        /// <param name="msg"></param>
-        public void showErrorTip(string msg)
-        {
-            //TODO:使用通用提示框实现
-            Debug.LogError(msg);
-        }
         public void setReturnButtonActive(bool value)
         {
             _returnButton.gameObject.SetActive(value);

@@ -1010,14 +1010,26 @@ namespace Controllers
             {
                 //相互连接的输入输出类型必须可以相互转化
                 if (showErrorTip)
-                    _ui.showErrorTip(game.lang._(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
+                {
+                    showTypeConnectError();
+                }
                 return false;
             }
             return true;
         }
-        private void ShowValueConnectActionError()
+        private void showErrorTip(string msg)
         {
-            _ui.showErrorTip(game.lang._(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+            string name = game.lang._(StringTable.ERROR);
+            string content = msg;
+            game.ui.dialog.ShowConfirm(name, content);
+        }
+        private void showOutputConnectError()
+        {
+            showErrorTip(game.lang._(StringTable.EDITOR_ERROR_OUTPUT_CONNECT_INPUT));
+        }
+        private void showTypeConnectError()
+        {
+            showErrorTip(game.lang._(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
         }
         private bool validatePortConnection(IPort outputPort, IPort inputPort, bool showErrorTip = true)
         {
@@ -1037,9 +1049,19 @@ namespace Controllers
             }
             else
             {
-                //值输出只能与值输入相互连接
                 if (showErrorTip)
-                    ShowValueConnectActionError();
+                {
+                    if (!ValueOutput.CanTypeConvert(outputPort.define?.type, inputPort.define?.type))
+                    {
+                        //类型必须可以转化
+                        showTypeConnectError();
+                    }
+                    else if (outputPort.isOutput == inputPort.isOutput)
+                    {
+                        //值输出只能与值输入相互连接
+                        showOutputConnectError();
+                    }
+                }
                 return false;
             }
         }
