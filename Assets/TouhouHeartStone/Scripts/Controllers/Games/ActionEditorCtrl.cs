@@ -21,7 +21,6 @@ namespace Controllers
             gameObject.SetActive(true);
             _cardPoolId = cardPoolId;
             _actionDefine = actionDefine;
-            _startActionName = _actionDefine.defineName;
             var types = game.editor.getEditorVarTypeNames();
             var constTypes = game.editor.getEditorConstTypeNames();
             _ui.initPropertyItemTypes(types, constTypes);
@@ -101,7 +100,8 @@ namespace Controllers
         /// <param name="name"></param>
         private void onChangeName(string value)
         {
-            if (value == _actionDefine.defineName || value == _startActionName)
+            // 因为动作编辑器的名称输入框不能交互，所以不会被用到。但还是留着
+            if (value == _actionDefine.defineName)
                 return;
             if (!_actionNodeGraphCtrl.isActionDefineNameExist(value))
             {
@@ -372,7 +372,6 @@ namespace Controllers
         {
             game.card.removeActionDefine(_cardPoolId, game.card.getActionDefine(_cardPoolId, _actionDefine.id));
             game.card.addActionDefine(_cardPoolId, _actionDefine);
-            _startActionName = _actionDefine.defineName;
 
             scene.editor.hasUnsavedChanges = true;
             clearActionUnsaved();
@@ -496,10 +495,6 @@ namespace Controllers
         public const string ACTION_WARNING_OPTION_DONT_SAVE = "不保存";
         [TranslateMsg("尝试退出自定义动作的编辑页面，但没有保存情况下的按钮名称")]
         public const string ACTION_WARNING_OPTION_CANCEL = "取消";
-        [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
-        public const string ACTION_ERROR_NAME_TAKEN = "该动作名已被使用！";
-        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
-        public const string ACTION_ERROR_NAME_EMPTY = "请输入动作名！";
         [TranslateMsg("没有分类的动作的分类")]
         public const string ACTION_CATEGORY_NAME_NONE = "无";
         public bool hasUnsavedChanges { get; private set; }
@@ -509,9 +504,5 @@ namespace Controllers
         /// 正在编辑的动作定义。
         /// </summary>
         GeneratedActionDefine _actionDefine;
-        /// <summary>
-        /// 开始编辑时的动作定义名。
-        /// </summary>
-        string _startActionName;
     }
 }

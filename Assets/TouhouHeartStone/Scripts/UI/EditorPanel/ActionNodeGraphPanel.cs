@@ -390,6 +390,21 @@ namespace UI
         {
             return _actionNodesRoot.anchoredPosition;
         }
+        public void displayCreateActionDefineDialog(bool display)
+        {
+            if (display)
+            {
+                _createActionDefineDialog.display();
+            }
+            else
+            {
+                _createActionDefineDialog.hide();
+            }
+        }
+        public void showCreateActionDefineDialogError(string message)
+        {
+            _createActionDefineDialog.showErrorTip(message);
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -419,6 +434,8 @@ namespace UI
             _cancelSelectButton.onClick.AddListener(onClickCancelSelectButtonCallback);
 
             displayCardSelectPanel(false);
+
+            _createActionDefineDialog.onConfirm += onCreateActionDefineCallback;
             #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
             _backgroundOriginScale = _content.localScale;//读取目前的缩放比例 
 
@@ -979,6 +996,11 @@ namespace UI
             _nodeDocument?.Show(key);
         }
 
+        public void onCreateActionDefineCallback(string name, string category)
+        {
+            onCreateActionDefine?.Invoke(name, category);
+        }
+
         #endregion
         /// <summary>
         /// 在指定位置创建连线
@@ -1149,6 +1171,11 @@ namespace UI
         /// 当点击取消选择卡牌按钮
         /// </summary>
         public event Action onClickCancelSelectButton;
+        /// <summary>
+        /// 当创建自定义动作。
+        /// 参数：动作名称、动作分类
+        /// </summary>
+        public event Action<string, string> onCreateActionDefine;
         #endregion
         #region 属性字段
         /// <summary>
@@ -1179,6 +1206,8 @@ namespace UI
         EventTriggerWithoutUseEvent _backgroundEventTrigger;
         [SerializeField]
         RectTransform _content;
+        [SerializeField]
+        CreateActionDefineDialog _createActionDefineDialog;
 
         [Header("Nodes")]
         [SerializeField]

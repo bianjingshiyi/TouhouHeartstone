@@ -108,6 +108,8 @@ namespace Controllers
             _ui.onItemBuffChanged += onItemBuffChangedCallback;
             _ui.onClickItemEditBuffButton += onItemEditBuffCallback;
 
+            _ui.onCreateActionDefine += onCreateActionDefine;
+
             _cardPoolViewPanelCtrl.enableCount(false);
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
@@ -1326,7 +1328,7 @@ namespace Controllers
             }
             else if (!inCategory)
             {
-                await clickNewCustomActionMenuItem();
+                clickNewCustomActionMenuItem();
             }
         }
         /// <summary>
@@ -1366,15 +1368,11 @@ namespace Controllers
         /// <summary>
         /// 点击自定义动作按钮。
         /// </summary>
-        private async Task clickNewCustomActionMenuItem()
+        private void clickNewCustomActionMenuItem()
         {
             closeMenu();
             //新建自定义动作
-            GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(
-                _curCardPoolId,
-                game.langManager.getString(StringTable.EDITOR_ACTION_DEFINE_NAME_DEFAULT));
-            var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
-            await scene.editor.openActionEditor(_curCardPoolId, clone);
+            _ui.displayCreateActionDefineDialog(true);
         }
         #endregion
         private void closeMenu()
