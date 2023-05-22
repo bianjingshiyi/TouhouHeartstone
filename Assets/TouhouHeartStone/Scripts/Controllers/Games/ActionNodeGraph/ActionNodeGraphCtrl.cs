@@ -160,15 +160,21 @@ namespace Controllers
                 return false;
             return true;
         }
-        public bool CanActionDefineOpenMenu(ActionDefine define)
+        public bool CanNodeBeDeleted(Node node)
         {
-            if (define == null) 
+            if (node is EventEntryNode) // 事件入口节点可以删除
+                return true;
+            if (!(node is ActionNode action))
                 return false;
-            if (define.defineName == EventEffectData.defName) //TODO: 先这样子，以后有个工单要改的
+            if (action.defineName == EventEffectData.defName) //TODO: 先这样子，以后有个工单要改的
                 return false;
-            if (define.defineName == AuraDataDefine.defName) //TODO: 先这样子，以后有个工单要改的
+            if (action.defineName == AuraDataDefine.defName) //TODO: 先这样子，以后有个工单要改的
                 return false;
             return true;
+        }
+        public bool CanNodeBeEdited(Node node)
+        {
+            return node is ActionNode action && getActionDefine(action.defineName) is GeneratedActionDefine;
         }
         public bool CanActionDefineBeCreated(ActionDefine define)
         {
@@ -1411,24 +1417,19 @@ namespace Controllers
             Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
             List<string> optionList = new List<string>();
             // 动作节点
-            if (node is ActionNode action)
+            var canDelete = CanNodeBeDeleted(node);
+            var canEdit = CanNodeBeEdited(node);
+            if (canDelete || canEdit)
             {
-                var define = getActionDefine(action.defineName);
-                if (!CanActionDefineOpenMenu(define))
-                    return;
-                _curEditNode = action;
-                optionList.Add(game.langManager.getString(StringTable.DELETE));//删除
-                if (getActionDefine(action.defineName) is GeneratedActionDefine)
+                _curEditNode = node;
+                if (canDelete)
+                {
+                    optionList.Add(game.langManager.getString(StringTable.DELETE));//删除
+                }
+                if (canEdit)
                 {
                     optionList.Add(game.langManager.getString(StringTable.EDIT));//编辑
                 }
-                openMenu(position, optionList.ToArray());
-            }
-            // 事件入口节点
-            else if (node is EventEntryNode eventEntry)
-            {
-                _curEditNode = eventEntry;
-                optionList.Add(game.langManager.getString(StringTable.DELETE));//删除
                 openMenu(position, optionList.ToArray());
             }
         }
@@ -1446,7 +1447,7 @@ namespace Controllers
             if (index == 0)//删除
             {
                 var selectedNodes = _ui.getSelectedNodes();
-                var nodes = selectedNodes.Where(i => i).Select(i => getActionNode(i)).Where(n => CanNodeOpenDocument(n)).ToArray();
+                var nodes = selectedNodes.Where(i => i).Select(i => getActionNode(i)).Where(n => CanNodeBeDeleted(n)).ToArray();
                 foreach (var actionNode in nodes)
                 {
                     removeActionNode(actionNode);
