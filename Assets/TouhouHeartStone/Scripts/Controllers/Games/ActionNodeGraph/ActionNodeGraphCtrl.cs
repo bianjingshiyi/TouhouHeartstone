@@ -1374,7 +1374,19 @@ namespace Controllers
                 options.Add(game.lang._(EDITOR_CATEGORY_BACK_TEMPLATE, backText));
             }
             options.AddRange(getActionDefineCategories(_curCategroy).Select(g => game.lang._(EDITOR_CATEGORY_TEMPLATE, tryTranslateWithDict(g))));
-            options.AddRange(getActionDefinesInCategory(_curCategroy).Select(g => tryTranslateWithDict(g.defineName)));
+
+            IEnumerable<string> nodeOptions;
+            if (_curCategroy == game.lang._(EDITOR_CATEGORY_EVENT_ENTRY_NODE))
+            {
+                // 事件入口。
+                nodeOptions = _eventTypeInfoList.getEventTypeNamesForEditor().Select(g => tryTranslateWithDict(g));
+            }
+            else
+            {
+                // 普通节点。
+                nodeOptions = getActionDefinesInCategory(_curCategroy).Select(g => tryTranslateWithDict(g.defineName));
+            }
+            options.AddRange(nodeOptions);
             if (string.IsNullOrEmpty(_curCategroy))
             {
                 options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
@@ -1491,9 +1503,30 @@ namespace Controllers
             }
             else if (index < categories.Length + nodes.Length)
             {
-                //直接创建节点
                 closeMenu();
+                //直接创建节点
                 await createActionNodeAtCurPos(nodes[index - categories.Length]);
+            }
+            else if (_curCategroy == EDITOR_CATEGORY_EVENT_ENTRY_NODE && index < categories.Length + nodes.Length + _eventTypeInfoList.Count)
+            {
+                closeMenu();
+                // 创建事件入口节点。
+                var events = _eventTypeInfoList;
+
+                // 尝试为非事件效果创建事件入口节点。
+                if (!(_effect is GeneratedEventEffect eventEffect))
+                {
+                    showErrorTip(game.lang._(EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT));
+                    return;
+                }
+                // 已经有事件入口节点。
+                if (eventEffect.entryNode != null)
+                {
+                    showErrorTip(game.lang._(EDITOR_ERROR_ALREADY_HAS_EVENT_ENTRY));
+                    return;
+                }
+                var entryNode = graph.createEventEntryNode(events[index - categories.Length], _curPosX, _curPosY);
+                createNodeUI4PassiveEntryNode(entryNode);
             }
             else if (!inCategory)
             {

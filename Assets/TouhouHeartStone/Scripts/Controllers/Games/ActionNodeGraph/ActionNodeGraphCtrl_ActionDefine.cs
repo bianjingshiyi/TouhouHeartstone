@@ -244,7 +244,7 @@ namespace Controllers
                 name = actionDefine.category;
             if (_nameTextDict.ContainsKey(name))
                 name = _nameTextDict[name];
-            var category = game.langManager.getString(name);
+            var category = name;
             category = category.Replace('\\', '/').Trim('/');
             category = Regex.Replace(category, "/+", "/");
             return category;
@@ -254,7 +254,7 @@ namespace Controllers
             if (parent == null)
                 parent = string.Empty;
             parent = parent.Replace('\\', '/').Trim('/');
-            return getAllActionDefines().Where(d => CanActionDefineBeCreated(d)).Select(actionDefine =>
+            var categories = getAllActionDefines().Where(d => CanActionDefineBeCreated(d)).Select(actionDefine =>
             {
                 var nodeCategory = getActionDefineCategory(actionDefine);
                 // 去掉父类别。
@@ -278,7 +278,13 @@ namespace Controllers
                     nodeCategory = nodeCategory.Substring(0, childIndex);
                 }
                 return nodeCategory;
-            }).Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(g => g).ToArray();
+            }).Where(c => !string.IsNullOrEmpty(c)).ToList();
+
+            if (string.IsNullOrEmpty(parent))
+            {
+                categories.Add(game.lang._(EDITOR_CATEGORY_EVENT_ENTRY_NODE));
+            }
+            return categories.Distinct().OrderBy(g => g).ToArray();
         }
         private ActionDefine[] getActionDefinesInCategory(string parent)
         {
