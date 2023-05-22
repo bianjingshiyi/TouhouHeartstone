@@ -352,12 +352,12 @@ namespace Game
 
                 // 光环的生效区域。
                 var pileList = effect.pileList;
-                dataNode.setConst(AuraDataDefine.pileListName, pileList);
+                dataNode.setConst(AuraEntryNode.pileListName, pileList);
 
                 // 光环的作用区域。
-                if (effect.propDict.TryGetValue(AuraDataDefine.rangeListName, out var rangeListObj) && rangeListObj is PileNameCollection rangeList)
+                if (effect.propDict.TryGetValue(AuraEntryNode.rangeListName, out var rangeListObj) && rangeListObj is PileNameCollection rangeList)
                 {
-                    dataNode.setConst(AuraDataDefine.rangeListName, rangeList);
+                    dataNode.setConst(AuraEntryNode.rangeListName, rangeList);
                 }
 
                 // 光环的增益定义。
@@ -610,7 +610,10 @@ namespace Game
 
             if (passive is GeneratedEventEffect eventEffect)
             {
-                eventEffect.getEventDataNode().setConst(EventEffectData.pileListName, effect.pileList);
+                if (eventEffect.eventEntry != null)
+                {
+                    eventEffect.eventEntry.setConst(EventEntryNode.pileListName, effect.pileList);
+                }
             }
             if (effect.tagList.Contains(KEYWORD.DEATHRATTLE))
             {
@@ -1132,8 +1135,8 @@ namespace Game
                 // FunctionNode入口节点，或者GeneratedActionDefine的入口节点。
                 port = graph?.nodes?.Select(n =>
                 {
-                    if (n is ActionNode action && (action.defineName == AuraDataDefine.defName))
-                        return getActionNodeValueOutput(action, valueRef.argIndex);
+                    if (n is AuraEntryNode auraEntryNode)
+                        return auraEntryNode.getOutputPortAt(valueRef.argIndex + 1);
                     if (n is GeneratedActionEntryNode entryNode)
                         return entryNode.getOutputPortAt(valueRef.argIndex + 1);
                     return null;

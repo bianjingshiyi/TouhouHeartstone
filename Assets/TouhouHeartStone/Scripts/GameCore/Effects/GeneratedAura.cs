@@ -83,9 +83,9 @@ namespace TouhouHeartstone
             // 检测范围内的所有卡牌。
             await checkAndAddBuffedCards(game, card, buff, buffDict, ranges, buffDict.Keys);
         }
-        public ActionNode getEntryNode()
+        public AuraEntryNode getEntryNode()
         {
-            return graph?.findActionNode(AuraDataDefine.defName);
+            return graph?.findAuraEntryNode();
         }
         public override SerializableEffect Serialize()
         {
@@ -95,7 +95,7 @@ namespace TouhouHeartstone
         #region 私有方法
         protected override void createEntryNode()
         {
-            graph.createActionNode(AuraDataDefine.defName, 0, 0);
+            graph.createAuraEntryNode(0, 0);
         }
 
         private async Task updateBuffedCards(IGame game, ICard card, IBuff buff, Dictionary<Card, Buff> buffDict, IEnumerable<Pile> ranges)
@@ -152,12 +152,12 @@ namespace TouhouHeartstone
         }
         private async Task<bool> checkAuraCondition(IGame game, ICard card, IBuff buff, Card targetCard)
         {
-            if (affectCondition == null)
-                return true;
+            if (affectCondition == null || affectCondition.getConnectedOutputPort() == null)
+                return false;
             try
             {
                 var flowEnv = new FlowEnv(game, card, buff, null);
-                flowEnv.SetArgument(AuraDataDefine.targetCardName, targetCard);
+                flowEnv.SetArgument(AuraEntryNode.targetCardName, targetCard);
                 var flow = new Flow(flowEnv);
                 return await game.getValue<bool>(flow, affectCondition);
             }
@@ -176,8 +176,8 @@ namespace TouhouHeartstone
                 try
                 {
                     var flowEnv = new FlowEnv(game, card, buff, null);
-                    flowEnv.SetArgument(AuraDataDefine.targetCardName, targetCard);
-                    flowEnv.SetArgument(AuraDataDefine.targetBuffName, targetBuff);
+                    flowEnv.SetArgument(AuraEntryNode.targetCardName, targetCard);
+                    flowEnv.SetArgument(AuraEntryNode.targetBuffName, targetBuff);
                     var flow = new Flow(flowEnv);
                     await game.runActions(flow, updateAction);
                 }
@@ -213,23 +213,23 @@ namespace TouhouHeartstone
         /// <summary>
         /// 光环的生效范围
         /// </summary>
-        protected virtual PileNameCollection pileList => getEntryNode().getConst<PileNameCollection>(AuraDataDefine.pileListName);
+        public PileNameCollection pileList => getEntryNode()?.getPiles();
         /// <summary>
         /// 光环的作用范围
         /// </summary>
-        public PileNameCollection rangeList => getEntryNode()?.getConst<PileNameCollection>(AuraDataDefine.rangeListName);
+        public PileNameCollection rangeList => getEntryNode()?.getRanges();
         /// <summary>
         /// 光环所添加的增益Id
         /// </summary>
-        public ValueInput getAuraBuffDefine => getEntryNode()?.getInputPort<ValueInput>(AuraDataDefine.buffDefineName);
+        public ValueInput getAuraBuffDefine => getEntryNode()?.getInputPort<ValueInput>(AuraEntryNode.buffDefineName);
         /// <summary>
         /// 光环的作用条件
         /// </summary>
-        public ValueInput affectCondition => getEntryNode()?.getInputPort<ValueInput>(AuraDataDefine.conditionName);
+        public ValueInput affectCondition => getEntryNode()?.getInputPort<ValueInput>(AuraEntryNode.conditionName);
         /// <summary>
         /// 光环的更新动作
         /// </summary>
-        public ControlOutput updateAction => getEntryNode()?.getOutputPort<ControlOutput>(AuraDataDefine.updateActionName);
+        public ControlOutput updateAction => getEntryNode()?.getOutputPort<ControlOutput>(AuraEntryNode.actionPortName);
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
         public string[] piles => pileList?.ToArray() ?? Array.Empty<string>();

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TouhouCardEngine.Interfaces;
 
 namespace TouhouCardEngine
 {
@@ -32,10 +31,23 @@ namespace TouhouCardEngine
             yield return actionPortDefine;
             yield break;
         }
+        public void setPiles(params string[] value)
+        {
+            var tags = getConst<PileNameCollection>(pileListName);
+            if (tags == null)
+            {
+                tags = new PileNameCollection();
+                constList.Add(pileListName, tags);
+            }
+            tags.Clear();
+            tags.AddRange(value);
+        }
 
         #endregion
         public EventDefine define { get; set; }
         public string eventName;
+        public PileNameCollection piles => getConst<PileNameCollection>(pileListName);
+        public const string pileListName = "pileList";
     }
     [Serializable]
     public class SerializableEventEntryNode : ISerializableNode
@@ -47,6 +59,7 @@ namespace TouhouCardEngine
             posX = eventEntryNode.posX;
             posY = eventEntryNode.posY;
             tags = eventEntryNode.tags?.ToArray() ?? Array.Empty<string>();
+            piles = eventEntryNode.piles?.ToArray() ?? Array.Empty<string>();
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {
@@ -57,6 +70,7 @@ namespace TouhouCardEngine
                 posY = posY
             };
             entry.setTags(tags);
+            entry.setPiles(piles);
             entry.graph = graph;
             return entry;
         }
@@ -67,5 +81,6 @@ namespace TouhouCardEngine
         public float posY;
         public string eventName;
         public string[] tags;
+        public string[] piles;
     }
 }

@@ -152,11 +152,7 @@ namespace Controllers
         {
             if (node == null)
                 return false;
-            if (!(node is ActionNode action))
-                return false;
-            if (action.defineName == EventEffectData.defName) //TODO: 先这样子，以后有个工单要改的
-                return false;
-            if (action.defineName == AuraDataDefine.defName) //TODO: 先这样子，以后有个工单要改的
+            if (!(node is ActionNode))
                 return false;
             return true;
         }
@@ -165,10 +161,6 @@ namespace Controllers
             if (node is EventEntryNode) // 事件入口节点可以删除
                 return true;
             if (!(node is ActionNode action))
-                return false;
-            if (action.defineName == EventEffectData.defName) //TODO: 先这样子，以后有个工单要改的
-                return false;
-            if (action.defineName == AuraDataDefine.defName) //TODO: 先这样子，以后有个工单要改的
                 return false;
             return true;
         }
@@ -180,19 +172,11 @@ namespace Controllers
         {
             if (define == null)
                 return false;
-            if (define.defineName == EventEffectData.defName) //TODO: 先这样子，以后有个工单要改的
-                return false;
-            if (define.defineName == AuraDataDefine.defName) //TODO: 先这样子，以后有个工单要改的
-                return false;
             return true;
         }
         public bool CanNodeOpenDocument(Node node)
         {
-            if (!(node is ActionNode action))
-                return false;
-            if (action.defineName == EventEffectData.defName) //TODO: 先这样子，以后有个工单要改的
-                return false;
-            if (action.defineName == AuraDataDefine.defName) //TODO: 先这样子，以后有个工单要改的
+            if (!(node is ActionNode))
                 return false;
             return true;
         }
@@ -381,13 +365,26 @@ namespace Controllers
         /// <param name="value"></param>
         private void onActionNodeValueChange(ActionNodeItem actionNodeItem, int constIndex, object value)
         {
-            var actionNode = getActionNode(actionNodeItem);
-            if (actionNode is ActionNode action)
+            var node = getActionNode(actionNodeItem);
+            if (node is ActionNode action)
             {
                 var actionDefine = getActionDefine(action.defineName);
                 var name = actionDefine.constDefines.ElementAt(constIndex).name;
                 action.setConst(name, value);
                 OnEdited();
+            }
+            else
+            {
+                string name = getNodeConstNameByIndex(node, constIndex);
+                if (!string.IsNullOrEmpty(name))
+                {
+                    node.setConst(name, value);
+                    OnEdited();
+                }
+                else
+                {
+                    Debug.LogError($"节点{node}不包含常量{name}。");
+                }
             }
         }
         private async void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
@@ -570,7 +567,7 @@ namespace Controllers
                 var inputViewData = getActiveEntryInputViewData(activeEntry);
                 var constViewData = new ActionNodeValueInfo[]
                 {
-                        new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, activeEntry.tags)
+                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, activeEntry.tags)
                 };
                 var outputViewData = getNodeOutputViewData(activeEntry);
 
@@ -612,6 +609,10 @@ namespace Controllers
                 _actionNodeItemList.Add(actionNodeItem);
                 _actionNodeList.Add(node);
                 return actionNodeItem;
+            }
+            else if (node is AuraEntryNode auraEntry)
+            {
+                return createNodeUI4AuraEntryNode(auraEntry);
             }
             return null;
         }
@@ -773,33 +774,66 @@ namespace Controllers
         private ActionNodeItem createNodeUI4PassiveEntryNode(PassiveEntryNode passiveEntry)
         {
             string nodeName;
+            var inputViewData = getNodeInputViewData(passiveEntry);
+            ActionNodeValueInfo[] constViewData;
+            var outputViewData = getNodeOutputViewData(passiveEntry);
             if (passiveEntry is EventEntryNode eventEntry)
             {
                 var typeIndex = _eventTypeInfoList.getEventTypeIndex(eventEntry.eventName);
                 var editorNames = _eventTypeInfoList.getEventTypeNamesForEditor();
                 nodeName = editorNames[typeIndex];
+                constViewData = new ActionNodeValueInfo[]
+                {
+                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags),
+                    new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, eventEntry.piles)
+                };
             }
             else
             {
                 nodeName = EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE;
+                constViewData = new ActionNodeValueInfo[]
+                {
+                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags)
+                };
             }
             nodeName = game.lang._(nodeName);
-            var inputViewData = getNodeInputViewData(passiveEntry);
-            var constViewData = new ActionNodeValueInfo[]
-            {
-                new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags)
-            };
-            var outputViewData = getNodeOutputViewData(passiveEntry);
 
-            var actionNodeItem = _ui.createPassiveEntryNode(passiveEntry.posX, passiveEntry.posY,
+            var actionNodeItem = _ui.createNode(passiveEntry.posX, passiveEntry.posY,
                 nodeName,
                 inputViewData,
+                Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData);
+            actionNodeItem.initPileNames(CardEditorCtrl.piles.Values.ToArray(), CardEditorCtrl.piles.Keys.ToArray());
             actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
             actionNodeItem.setConsts(constViewData);
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(passiveEntry);
+
+            return actionNodeItem;
+        }
+        private ActionNodeItem createNodeUI4AuraEntryNode(AuraEntryNode auraEntry)
+        {
+            string nodeName = EDITOR_NODE_NAME_AURA_ENTRY_NODE;
+            nodeName = game.lang._(nodeName);
+            var inputViewData = getNodeInputViewData(auraEntry);
+            var constViewData = new ActionNodeValueInfo[]
+            {
+                new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, auraEntry.getPiles()),
+                new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST, ActionNodeValueType.pileNameCollection, auraEntry.getRanges())
+            };
+            var outputViewData = getNodeOutputViewData(auraEntry);
+
+            var actionNodeItem = _ui.createNode(auraEntry.posX, auraEntry.posY,
+                nodeName,
+                inputViewData,
+                Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
+                outputViewData);
+            actionNodeItem.initPileNames(CardEditorCtrl.piles.Values.ToArray(), CardEditorCtrl.piles.Keys.ToArray());
+            actionNodeItem.setConsts(constViewData);
+
+            _actionNodeItemList.Add(actionNodeItem);
+            _actionNodeList.Add(auraEntry);
 
             return actionNodeItem;
         }
@@ -1646,6 +1680,17 @@ namespace Controllers
             }
 
         }
+        public string getNodeConstNameByIndex(Node node, int index)
+        {
+            if (_nodeConstNameDict.TryGetValue(node.GetType(), out var constNames))
+            {
+                if (index >= 0 && index < constNames.Length)
+                {
+                    return constNames[index];
+                }
+            }
+            return null;
+        }
         #endregion
         #region 事件
         public event Action OnGraphEdited;
@@ -1890,6 +1935,25 @@ namespace Controllers
             { "Game.CardDefineSelect.Skill", EDITOR_ENUM_CARD_TYPE_SKILL },
             { "Game.CardDefineSelect.Master", EDITOR_ENUM_CARD_TYPE_MASTER },
             { "Game.CardDefineSelect.Item", EDITOR_ENUM_CARD_TYPE_ITEM },
+        };
+
+        readonly Dictionary<Type, string[]> _nodeConstNameDict = new Dictionary<Type, string[]>()
+        {
+            //节点分类
+            { typeof(ActiveEntryNode), new string[] { 
+                ActiveEntryNode.tagsConstName 
+            } },
+            { typeof(PassiveEntryNode), new string[] { 
+                PassiveEntryNode.tagsConstName
+            } },
+            { typeof(EventEntryNode), new string[] { 
+                PassiveEntryNode.tagsConstName,
+                EventEntryNode.pileListName
+            } },
+            { typeof(AuraEntryNode), new string[] {
+                AuraEntryNode.pileListName,
+                AuraEntryNode.rangeListName
+            } },
         };
         static readonly string[] _activeEffectTags = new string[]
         {

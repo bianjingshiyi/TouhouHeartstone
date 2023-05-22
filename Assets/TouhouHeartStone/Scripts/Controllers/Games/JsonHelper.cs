@@ -44,6 +44,7 @@ namespace Controllers
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActiveEntryNode))) BsonClassMap.RegisterClassMap<SerializableActiveEntryNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializablePassiveEntryNode))) BsonClassMap.RegisterClassMap<SerializablePassiveEntryNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableEventEntryNode))) BsonClassMap.RegisterClassMap<SerializableEventEntryNode>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableAuraEntryNode))) BsonClassMap.RegisterClassMap<SerializableAuraEntryNode>();
 
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedEntryNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedEntryNode>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedReturnNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedReturnNode>();

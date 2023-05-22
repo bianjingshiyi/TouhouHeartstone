@@ -51,10 +51,6 @@ namespace TouhouHeartstone
             }
             await base.onDisable(game, card, buff);
         }
-        public ActionNode getEventDataNode()
-        {
-            return graph?.findActionNode(EventEffectData.defName);
-        }
         public override SerializableEffect Serialize()
         {
             return new SerializableEventEffect(this);
@@ -63,16 +59,15 @@ namespace TouhouHeartstone
         #region 私有方法
         protected override void createEntryNode()
         {
-            graph.createActionNode(EventEffectData.defName, 0, 500);
+            // 留空
         }
         #endregion
         #region 属性字段
-        protected virtual PileNameCollection pileList => getEventDataNode().getConst<PileNameCollection>(EventEffectData.pileListName);
         public override PassiveEntryNode entryNode => eventEntry;
         public virtual EventEntryNode eventEntry => graph?.nodes?.OfType<EventEntryNode>().FirstOrDefault();
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
-        public string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
+        public string[] piles => eventEntry?.getConst<PileNameCollection>(EventEntryNode.pileListName)?.ToArray() ?? Array.Empty<string>();
         #endregion
     }
 
