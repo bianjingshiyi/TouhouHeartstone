@@ -205,9 +205,9 @@ namespace Game
         public const int CreateTokenToDeck = Type_Action + Category_Card + 5;    // 创建衍生卡并洗入牌库
         public const int CreateTokenToItem = Type_Action + Category_Card + 6;    // 创建衍生卡兵装备到道具栏
         public const int SetCardProp = Type_Action + Category_Card + 7;    // 设置属性
-        public const int DealDamageOrSpellDamage = Type_Action + Category_Card + 8;    // 造成伤害或法伤
-        public const int DealDamageSplitAmong = Type_Action + Category_Card + 9;    // 造成伤害或法伤兵分配给目标
-        public const int DealDamageToRandomTargets = Type_Action + Category_Card + 10;    // 对固定数量的随机目标造成伤害或法伤
+        public const int DealDamageOrSpellDamage_Obsolete = Type_Action + Category_Card + 8;    // 造成伤害或法伤（过时）
+        public const int DealDamageSplitAmong_Obsolete = Type_Action + Category_Card + 9;    // 造成伤害或法伤兵分配给目标（过时）
+        public const int DealDamageToRandomTargets_Obsolete = Type_Action + Category_Card + 10;    // 对固定数量的随机目标造成伤害或法伤（过时）
         public const int DealSpellDamageToTargets = Type_Action + Category_Card + 11;    // 造成法术伤害
         public const int DealSpecificSpellDamageToRandomTargets = Type_Action + Category_Card + 12;    // 造成固定法术伤害并分配给随机目标
         public const int HealTargets = Type_Action + Category_Card + 13;    // 治疗目标卡牌
@@ -231,6 +231,9 @@ namespace Game
         public const int TriggerCardDefineDeathrattles = Type_Action + Category_Card + 31;    // 触发卡牌定义遗言
         public const int TriggerCardDefineActiveEffect = Type_Action + Category_Card + 32;    // 触发法术或技能卡牌定义效果
         public const int SetChargedLevel = Type_Action + Category_Card + 33;    // 设置蓄力层数
+        public const int DealDamageOrSpellDamage = Type_Action + Category_Card + 34;    // 造成伤害或法伤
+        public const int DealDamageSplitAmong = Type_Action + Category_Card + 35;    // 造成伤害或法伤兵分配给目标
+        public const int DealDamageToRandomTargets = Type_Action + Category_Card + 36;    // 对固定数量的随机目标造成伤害或法伤
 
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益

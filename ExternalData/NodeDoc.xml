@@ -3113,6 +3113,197 @@
   </ActionComment>
   <ActionComment>
     <defineId>202008</defineId>
+    <obsoleteNames>
+      <string>造成伤害或法伤</string>
+    </obsoleteNames>
+    <editorName>造成伤害或法伤（过时）</editorName>
+    <obsoleteMsg />
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>伤害</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要造成的伤害。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>目标卡牌</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要造成伤害的目标。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>伤害源</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
+        <name>伤害事件</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>是否为法术伤害</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>+</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[对一个或一些目标卡牌造成伤害或法术伤害。<br><b>注意：</b>该节点因伤害来源逻辑问题已过时。<br>请使用新版节点。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202009</defineId>
+    <obsoleteNames>
+      <string>造成伤害或法伤并分配给目标</string>
+    </obsoleteNames>
+    <editorName>造成伤害或法伤并分配给目标（过时）</editorName>
+    <obsoleteMsg />
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>伤害</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要造成的总伤害量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>目标卡牌</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[可能会将伤害分配到的目标列表。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>伤害源</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
+        <name>伤害事件</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>是否为法术伤害</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>+</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[选择一定目标，造成总量一定的伤害或法术伤害，随机分配到它们身上。<br><b>注意：</b>该节点因伤害来源逻辑问题已过时。<br>请使用新版节点。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202010</defineId>
+    <obsoleteNames>
+      <string>对固定数量的随机目标造成伤害或法伤</string>
+    </obsoleteNames>
+    <editorName>对固定数量的随机目标造成伤害或法伤（过时）</editorName>
+    <obsoleteMsg />
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>数量</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要造成伤害的随机目标的数量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>伤害</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要对每个目标造成的伤害。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>目标卡牌</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[可能会选中的目标列表。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>伤害源</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
+        <name>伤害事件</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>System.Boolean</type>
+        <name>是否为法术伤害</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>+</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的目标数量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>+</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[从一定目标中选择数个目标，对他们分别造成一定量的伤害。<br><b>注意：</b>该节点因伤害来源逻辑问题已过时。<br>请使用新版节点。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202034</defineId>
     <obsoleteNames />
     <editorName>造成伤害或法伤</editorName>
     <category>卡牌</category>
@@ -3122,21 +3313,21 @@
         <name>伤害</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要造成的伤害。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
         <name>目标卡牌</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要造成伤害的目标。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
         <name>伤害源</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -3145,7 +3336,7 @@
         <name>伤害事件</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts>
@@ -3154,21 +3345,21 @@
         <name>是否为法术伤害</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>System.Int32</type>
         <name>+</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
     </consts>
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[对一个或一些目标卡牌造成伤害或法术伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>202009</defineId>
+    <defineId>202035</defineId>
     <obsoleteNames />
     <editorName>造成伤害或法伤并分配给目标</editorName>
     <category>卡牌</category>
@@ -3178,21 +3369,21 @@
         <name>伤害</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要造成的总伤害量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
         <name>目标卡牌</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[可能会将伤害分配到的目标列表。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
         <name>伤害源</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -3201,7 +3392,7 @@
         <name>伤害事件</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts>
@@ -3210,21 +3401,21 @@
         <name>是否为法术伤害</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>System.Int32</type>
         <name>+</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
     </consts>
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[选择一定目标，造成总量一定的伤害或法术伤害，随机分配到它们身上。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>202010</defineId>
+    <defineId>202036</defineId>
     <obsoleteNames />
     <editorName>对固定数量的随机目标造成伤害或法伤</editorName>
     <category>卡牌</category>
@@ -3234,28 +3425,28 @@
         <name>数量</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要造成伤害的随机目标的数量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>System.Int32</type>
         <name>伤害</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要对每个目标造成的伤害。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
         <name>目标卡牌</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[可能会选中的目标列表。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
         <name>伤害源</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -3264,7 +3455,7 @@
         <name>伤害事件</name>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[产生的伤害事件。]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts>
@@ -3273,24 +3464,24 @@
         <name>是否为法术伤害</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>System.Int32</type>
         <name>+</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要增加的目标数量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>System.Int32</type>
         <name>+</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
       </ActionParameterComment>
     </consts>
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[从一定目标中选择数个目标，对他们分别造成一定量的伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>

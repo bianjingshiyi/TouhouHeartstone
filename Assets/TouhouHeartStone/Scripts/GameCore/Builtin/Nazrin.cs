@@ -109,7 +109,7 @@ namespace TouhouHeartstone.Builtin
                     if (selected == null)
                         return;
                     arg.card = selected.choose;
-                    await card.damage(game, card, 1);
+                    await card.damageItem(game, 1);
                     await game.updateDeath();
                 }),
         };

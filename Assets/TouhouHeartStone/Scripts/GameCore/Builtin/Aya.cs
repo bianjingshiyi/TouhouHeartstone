@@ -375,7 +375,7 @@ namespace TouhouHeartstone.Builtin
                 (g, c,b, a) => { return a.player == g.getOpponent(c.getOwner()); }, async (g, c,b, a) =>
                 {
                     await c.getOwner().getHand().add(g, g.createCard(a.card.define));
-                    await c.damage(g, c, 1);
+                    await c.damageItem(g, 1);
                 })
         };
 

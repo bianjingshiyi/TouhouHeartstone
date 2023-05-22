@@ -1428,7 +1428,7 @@ namespace TouhouHeartstone
                     {
                         if (p.getMaster() == card && p.getItem() != null)
                         {
-                            await p.getItem().damage(game, null, 1);
+                            await p.getItem().damageItem(game, 1);
                             break;
                         }
                     }
@@ -1520,7 +1520,98 @@ namespace TouhouHeartstone
             }
             return new DefineReference(cardDefine.cardPoolId, cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID));
         }
-        #region 动作定义
+        #region 弃牌
+        public static Task<DiscardEventArg> discard(this Card card, CardEngine game)
+        {
+            if (card == null)
+                return default;
+            return game.triggers.doEvent(new DiscardEventArg() { player = card.getOwner(), card = card }, arg =>
+            {
+                Player actualPlayer = arg.player;
+                Card actualCard = arg.card;
+                if (actualPlayer == null)
+                    return Task.CompletedTask;
+                if (actualCard == null)
+                    return Task.CompletedTask;
+                return actualPlayer.getHand().moveTo(game, actualCard, actualPlayer.getGrave());
+            });
+        }
+        public async static Task<DiscardEventArg[]> discard(this IEnumerable<Card> cards, CardEngine game)
+        {
+            List<DiscardEventArg> eventArgs = new List<DiscardEventArg>();
+            foreach (Card card in cards)
+            {
+                if (card == null)
+                    continue;
+                eventArgs.Add(await card.discard(game));
+            }
+            return eventArgs.ToArray();
+        }
+
+        public class DiscardEventArg : EventArg, IDescribableEventArg
+        {
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return new ICard[] { card };
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡牌列表")]
+            const string TEMPLATE = "{0} 丢弃 {1}";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] {
+                    player.name, card.getFormatString()
+                };
+            }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
+                };
+            }
+            public override void Record(IGame game, EventRecord record)
+            {
+                record.setCardState(EVENTVAR.CARD, card);
+                record.setVar(EVENTVAR.PLAYER, player);
+            }
+            public Player player
+            {
+                get { return getVar<Player>(EVENTVAR.PLAYER); }
+                set { setVar(EVENTVAR.PLAYER, value); }
+            }
+            public Card card
+            {
+                get { return getVar<Card>(EVENTVAR.CARD); }
+                set { setVar(EVENTVAR.CARD, value); }
+            }
+        }
+        #endregion
         public static Task<DamageEventArg> damage(this Card card, CardEngine game, Card source, int value)
         {
             if (card == null || value <= 0)
@@ -1620,7 +1711,6 @@ namespace TouhouHeartstone
                 }
             }
         }
-        #endregion
 
         #region 返回手牌
         /// <summary>
@@ -1660,99 +1750,6 @@ namespace TouhouHeartstone
         }
         #endregion
 
-        #region 弃牌
-
-        public static Task<DiscardEventArg> discard(this Card card, CardEngine game)
-        {
-            if (card == null)
-                return default;
-            return game.triggers.doEvent(new DiscardEventArg() { player = card.getOwner(), card = card }, arg =>
-            {
-                Player actualPlayer = arg.player;
-                Card actualCard = arg.card;
-                if (actualPlayer == null)
-                    return Task.CompletedTask;
-                if (actualCard == null)
-                    return Task.CompletedTask;
-                return actualPlayer.getHand().moveTo(game, actualCard, actualPlayer.getGrave());
-            });
-        }
-        public async static Task<DiscardEventArg[]> discard(this IEnumerable<Card> cards, CardEngine game)
-        {
-            List<DiscardEventArg> eventArgs = new List<DiscardEventArg>();
-            foreach (Card card in cards)
-            {
-                if (card == null)
-                    continue;
-                eventArgs.Add(await card.discard(game));
-            }
-            return eventArgs.ToArray();
-        }
-
-        public class DiscardEventArg : EventArg, IDescribableEventArg
-        {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return new ICard[] { card };
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡牌列表")]
-            const string TEMPLATE = "{0} 丢弃 {1}";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    player.name, card.getFormatString()
-                };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setCardState(EVENTVAR.CARD, card);
-                record.setVar(EVENTVAR.PLAYER, player);
-            }
-            public Player player
-            {
-                get { return getVar<Player>(EVENTVAR.PLAYER); }
-                set { setVar(EVENTVAR.PLAYER, value); }
-            }
-            public Card card
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
-        }
-        #endregion
         public static async Task<DamageEventArg[]> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
             if (cards.Count() <= 0)
@@ -1765,6 +1762,10 @@ namespace TouhouHeartstone
                 args.Add(await target.damage(game, source, value));
             }
             return args.ToArray();
+        }
+        public static Task<DamageEventArg> damageItem(this Card item, CardEngine game, int value)
+        {
+            return item.damage(game, null, value);
         }
         public static async Task<DamageEventArg[]> damageByRandom(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {

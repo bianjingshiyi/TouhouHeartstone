@@ -346,7 +346,7 @@ namespace TouhouHeartstone.Builtin
         {
             new NoTargetEffect((g1,c1)=>
             {
-                c1.damage(g1,c1,1);
+                c1.damageItem(g1,1);
                 return c1.getOwner().addRandomCardToHand(g1,g1.getDefines(new DefineReference[]
                 {
                     new DefineReference(0, MetalFatigue.ID),
@@ -388,7 +388,7 @@ namespace TouhouHeartstone.Builtin
                 : base(PileFlag.item, onCheckCondition, async (g, c, a) =>
                 {
                     await onExecute?.Invoke(g, c, a);
-                    await c.damage(g, c, 1);
+                    await c.damageItem(g, 1);
                 })
             {
             }
@@ -399,7 +399,7 @@ namespace TouhouHeartstone.Builtin
                 : base(PileFlag.item, onCheckCondition, async (g, c, b, a) =>
                 {
                     await onExecute?.Invoke(g, c, b, a);
-                    await c.damage(g, c, 1);
+                    await c.damageItem(g, 1);
                 })
             {
             }
