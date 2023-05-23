@@ -664,7 +664,8 @@ namespace UI
         {
             if (_isTouchZooming) return;
 
-            int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == item.indexOfInput(input));
+            int inputIndex = item.indexOfInput(input);
+            int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == inputIndex);
             if (index < 0 || input.isControl)
             {
                 GameObject from = input.getNode();
@@ -682,7 +683,7 @@ namespace UI
             {
                 _dragLine = _connectionList[index].line;
             }
-
+            onStartConnection?.Invoke(item, inputIndex, false);
         }
         /// <summary>
         /// 拖拽输入接口，使连线一段的位置跟着鼠标移动
@@ -716,6 +717,7 @@ namespace UI
             var inputIndex = item.indexOfInput(input);
             Destroy(_dragLine.gameObject);
             _dragLine = null;
+            onEndConnection?.Invoke(item, inputIndex, false);
             //使用射线判断是否在其他的输入点上
             List<RaycastResult> raycastList = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData as PointerEventData, raycastList);
@@ -767,6 +769,7 @@ namespace UI
                 // 取消选择。
                 input?.setSelected(false);
                 _currentSelectedKnob = default;
+                onEndConnection?.Invoke(item, inputIndex, false);
                 return;
             }
             else if(_currentSelectedKnob.outputNode != null && _currentSelectedKnob.outputIndex >= 0)
@@ -788,6 +791,7 @@ namespace UI
                 }
                 _currentSelectedKnob.outputKnob?.setSelected(false);
                 _currentSelectedKnob = default;
+                onEndConnection?.Invoke(item, inputIndex, false);
                 return;
             }
             else
@@ -799,6 +803,7 @@ namespace UI
                 _currentSelectedKnob.inputIndex = inputIndex;
                 _currentSelectedKnob.inputKnob = input;
                 _currentSelectedKnob.inputKnob?.setSelected(true);
+                onStartConnection?.Invoke(item, inputIndex, false);
             }
         }
         /// <summary>
@@ -811,7 +816,8 @@ namespace UI
         {
             if (!_isTouchZooming)
             {
-                int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
+                int outputIndex = item.indexOfOutput(output);
+                int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == outputIndex);
                 if (index < 0 || !output.isControl)
                 {
                     GameObject from = output.getNode();
@@ -828,6 +834,7 @@ namespace UI
                 {
                     _dragLine = _connectionList[index].line;
                 }
+                onStartConnection?.Invoke(item, outputIndex, true);
             }
         }
         /// <summary>
@@ -861,6 +868,7 @@ namespace UI
             int outputIndex = item.indexOfOutput(output);
             Destroy(_dragLine.gameObject);
             _dragLine = null;
+            onEndConnection?.Invoke(item, outputIndex, true);
             //使用射线判断是否在其他的输入点上
             List<RaycastResult> raycastList = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData as PointerEventData, raycastList);
@@ -912,6 +920,7 @@ namespace UI
                 // 取消选择。
                 output?.setSelected(false);
                 _currentSelectedKnob = default;
+                onEndConnection?.Invoke(item, outputIndex, output);
                 return;
             }
             else if (_currentSelectedKnob.inputNode != null && _currentSelectedKnob.inputIndex >= 0)
@@ -933,6 +942,7 @@ namespace UI
                 }
                 _currentSelectedKnob.inputKnob?.setSelected(false);
                 _currentSelectedKnob = default;
+                onEndConnection?.Invoke(item, outputIndex, output);
                 return;
             }
             else
@@ -944,6 +954,7 @@ namespace UI
                 _currentSelectedKnob.outputIndex = outputIndex;
                 _currentSelectedKnob.outputKnob = output;
                 _currentSelectedKnob.outputKnob?.setSelected(true);
+                onStartConnection?.Invoke(item, outputIndex, output);
             }
         }
         private void onPointerDownActionNodeItem(ActionNodeItem item, PointerEventData eventData)
@@ -1250,6 +1261,16 @@ namespace UI
         /// 当移动节点，参数为拖拽的节点和图坐标位置
         /// </summary>
         public event Action<ActionNodeItem, Vector2> onMoveActionNode;
+        /// <summary>
+        /// 当开始拖拽端口连线
+        /// 参数：节点UI，端口索引，是否是输出值
+        /// </summary>
+        public event Action<ActionNodeItem, int, bool> onStartConnection;
+        /// <summary>
+        /// 当结束拖拽端口连线
+        /// 参数：节点UI，端口索引，是否是输出值
+        /// </summary>
+        public event Action<ActionNodeItem, int, bool> onEndConnection;
         /// <summary>
         /// 当长按节点，参数为长按的节点和长按的屏幕坐标
         /// </summary>

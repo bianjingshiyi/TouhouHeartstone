@@ -204,6 +204,8 @@ namespace Controllers
             _ui.onRightClickActionNode += onRightClickActionNode;
             _ui.onLongPressActionNode += onLongPressActionNode;
             _ui.onMoveActionNode += onMoveActionNode;
+            _ui.onStartConnection += onStartConnection;
+            _ui.onEndConnection += onEndConnection;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
             _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
             _ui.onClickActionNodeConstValueItemEditButton += onClickActionNodeConstValueItemEditButton;
@@ -356,6 +358,16 @@ namespace Controllers
 
             updateContentSize();
             OnEdited();
+        }
+        private void onStartConnection(ActionNodeItem actionNodeItem, int index, bool isOutput)
+        {
+            var node = getActionNode(actionNodeItem);
+            var port = isOutput ? node.getOutputPortAt(index) : node.getInputPortAt(index);
+            updatePortHighlights(port);
+        }
+        private void onEndConnection(ActionNodeItem actionNodeItem, int index, bool isOutput)
+        {
+            clearPortHighlights();
         }
         /// <summary>
         /// 当用户更改节点的常量值，设置对应的常量。
@@ -1051,6 +1063,52 @@ namespace Controllers
                 _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, port is IValuePort ? ActionNodeConnectionType.value : ActionNodeConnectionType.action);
             }
         }
+
+        private void updatePortHighlights(IPort port)
+        {
+            clearPortHighlights();
+            addPortHighlights(port);
+        }
+        private void clearPortHighlights()
+        {
+            foreach (var item in _actionNodeItemList)
+            {
+                foreach (var input in item.getInputs())
+                {
+                    input.setHighlighted(false);
+                }
+                foreach (var input in item.getOutputs())
+                {
+                    input.setHighlighted(false);
+                }
+            }
+        }
+        private void addPortHighlights(IPort port)
+        {
+            foreach (var node in _actionNodeList)
+            {
+                var needsInput = port.isOutput;
+                var ports = needsInput ? node.inputPorts : node.outputPorts;
+                var validPorts = ports.Where(p => p.canConnectTo(port));
+                if (validPorts.Count() <= 0)
+                    continue;
+                var item = getActionNodeItem(node);
+                var portIndexes = validPorts.Select(p => p.GetPortIndex());
+                foreach (var index in portIndexes)
+                {
+                    ActionNodeItemKnob portItem;
+                    if (needsInput) 
+                    {
+                        portItem = item.getInput(index);
+                    }
+                    else
+                    {
+                        portItem = item.getOutput(index);
+                    }
+                    portItem.setHighlighted(true);
+                }
+            }
+        }
         #endregion
         #region 节点断开
         /// <summary>
@@ -1623,6 +1681,7 @@ namespace Controllers
         private void resetEditObjects()
         {
             _ui.clearSelection();
+            clearPortHighlights();
             _actionNodeList.Clear();
             _actionNodeItemList.Clear();
             _ui.clearGraph();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Controllers;
 using MukioI18n;
 using UnityEngine;
@@ -321,6 +322,14 @@ namespace UI
             if (index < 0 || index >= _outputList.Count)
                 return null;
             return _outputList[index].GetComponent<ActionNodeItemOutput>();
+        }
+        public ActionNodeItemInput[] getInputs()
+        {
+            return _inputList.Select(r => r.GetComponent<ActionNodeItemInput>()).ToArray();
+        }
+        public ActionNodeItemOutput[] getOutputs()
+        {
+            return _outputList.Select(r => r.GetComponent<ActionNodeItemOutput>()).ToArray();
         }
         /// <summary>
         /// 将该节点项设置为不洁净。会在本帧结束时调用onUpdateTransform回调。

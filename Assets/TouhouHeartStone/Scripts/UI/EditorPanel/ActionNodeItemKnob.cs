@@ -22,6 +22,17 @@ namespace UI
         {
             _nameText.text = name;
         }
+        /// <summary>
+        /// 设置节点高亮
+        /// </summary>
+        /// <param name="color"></param>
+        public void setHighlighted(bool highlight)
+        {
+            if (_highlightObj)
+            {
+                _highlightObj.SetActive(highlight);
+            }
+        }
 
         /// <summary>
         /// 设置节点颜色
@@ -113,6 +124,8 @@ namespace UI
         Image _slotImage;
         [SerializeField]
         Image _slotMaskImage;
+        [SerializeField]
+        GameObject _highlightObj;
         bool _selected;
         float _selectedMaskTime;
 
