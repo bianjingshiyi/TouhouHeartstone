@@ -2271,7 +2271,7 @@ namespace TouhouHeartstone.Builtin
                 await card.getOwner().draw(game, out var arg);
                 draw = arg.card;
                 top = card.getOwner().getDeck().top;
-            } while (top.getCost(game) > draw.getCost(game));
+            } while (top.getCost(game) <= draw.getCost(game));
         }
     }
 
