@@ -1,7 +1,6 @@
-﻿using BJSYGameCore.UI;
-using Game;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -68,7 +67,8 @@ namespace UI
             _inputField.onEndEdit.AddListener(onEndEditInputField);
             _toggle.onValueChanged.AddListener(onToggleValueChanged);
             _dropdown.onValueChanged.AddListener(onDropdownValueChangedCallback);
-            _multiSelectDropdown.onValueChanged.AddListener(onMultiSelectDropdownValueChangedCallback);
+            _inputDropdown.onValueChanged += onInputDropdownValueChangedCallback;
+            _multiInputDropdown.onValueChanged += onMultiInputDropdownValueChangedCallback;
             _button.onClick.AddListener(onClickButtonCallback);
             _addItemButton.onClick.AddListener(onClickAddItemButtonCallback);
             _removeItemButton.onClick.AddListener(onClickRemoveButtonCallback);
@@ -113,7 +113,11 @@ namespace UI
         {
             onValueChanged?.Invoke(this, _valueInfo.optionalValues[index]);
         }
-        private void onMultiSelectDropdownValueChangedCallback(bool[] value)
+        private void onInputDropdownValueChangedCallback(string value)
+        {
+            onValueChanged?.Invoke(this, value);
+        }
+        private void onMultiInputDropdownValueChangedCallback(string[] values)
         {
             if (_valueInfo.type == ActionNodeValueType.pileNameCollection)
             {
@@ -122,21 +126,25 @@ namespace UI
                     pileNameCollection = new PileNameCollection();
                 }
                 bool isValueChanged = false;
-                for (int i = 0; i < value.Length; i++)
+                if (values.Length != pileNameCollection.Count)
                 {
-                    if (value[i] && !pileNameCollection.Contains(_pileValues[i]))
+                    isValueChanged = true;
+                }
+                else
+                {
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        pileNameCollection.Add(_pileValues[i]);
-                        isValueChanged = true;
-                    }
-                    else if (!value[i])
-                    {
-                        pileNameCollection.Remove(_pileValues[i]);
-                        isValueChanged = true;
+                        if (values[i] != pileNameCollection[i])
+                        {
+                            isValueChanged = true;
+                            break;
+                        }
                     }
                 }
                 if (isValueChanged)
                 {
+                    pileNameCollection.Clear();
+                    pileNameCollection.AddRange(values);
                     onValueChanged?.Invoke(this, pileNameCollection);
                 }
             }
@@ -147,21 +155,25 @@ namespace UI
                     effectTagCol = new EffectTagCollection();
                 }
                 bool isValueChanged = false;
-                for (int i = 0; i < value.Length; i++)
+                if (values.Length != effectTagCol.Count)
                 {
-                    if (value[i] && !effectTagCol.Contains(_effectTagValues[i]))
+                    isValueChanged = true;
+                }
+                else
+                {
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        effectTagCol.Add(_effectTagValues[i]);
-                        isValueChanged = true;
-                    }
-                    else if (!value[i])
-                    {
-                        effectTagCol.Remove(_effectTagValues[i]);
-                        isValueChanged = true;
+                        if (values[i] != effectTagCol[i])
+                        {
+                            isValueChanged = true;
+                            break;
+                        }
                     }
                 }
                 if (isValueChanged)
                 {
+                    effectTagCol.Clear();
+                    effectTagCol.AddRange(values);
                     onValueChanged?.Invoke(this, effectTagCol);
                 }
             }
@@ -172,21 +184,25 @@ namespace UI
                     keywordCol = new KeywordCollection();
                 }
                 bool isValueChanged = false;
-                for (int i = 0; i < value.Length; i++)
+                if (values.Length != keywordCol.Count)
                 {
-                    if (value[i] && !keywordCol.Contains(_keywordValues[i]))
+                    isValueChanged = true;
+                }
+                else
+                {
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        keywordCol.Add(_keywordValues[i]);
-                        isValueChanged = true;
-                    }
-                    else if (!value[i])
-                    {
-                        keywordCol.Remove(_keywordValues[i]);
-                        isValueChanged = true;
+                        if (values[i] != keywordCol[i])
+                        {
+                            isValueChanged = true;
+                            break;
+                        }
                     }
                 }
                 if (isValueChanged)
                 {
+                    keywordCol.Clear();
+                    keywordCol.AddRange(values);
                     onValueChanged?.Invoke(this, keywordCol);
                 }
             }
@@ -266,7 +282,8 @@ namespace UI
                 updateInputField();
                 updateToggle();
                 updateDropdown();
-                updateMultiDropdown();
+                updateInputDropdown();
+                updateMultiInputDropdown();
                 updateButton();
                 updateList();
                 updateCard();
@@ -277,7 +294,8 @@ namespace UI
             _inputField.gameObject.SetActive(false);
             _toggle.gameObject.SetActive(false);
             _dropdown.gameObject.SetActive(false);
-            _multiSelectDropdown.gameObject.SetActive(false);
+            _inputDropdown.gameObject.SetActive(false);
+            _multiInputDropdown.gameObject.SetActive(false);
             _button.gameObject.SetActive(false);
             _listRoot.gameObject.SetActive(false);
             _buildItem.gameObject.SetActive(false);
@@ -373,92 +391,45 @@ namespace UI
                 _dropdown.SetValueWithoutNotify(index);
             }
         }
-        private void updateMultiDropdown()
+        private void updateInputDropdown()
         {
-            //多选下拉菜单
+            //自定义单选下拉菜单
+        }
+        private void updateMultiInputDropdown()
+        {
+            //可自定义多选下拉菜单
             if (_valueInfo.type == ActionNodeValueType.pileNameCollection)
             {
-                _multiSelectDropdown.gameObject.SetActive(true);
-                _multiSelectDropdown.ClearOptions();
-                _multiSelectDropdown.AddOptions(new List<string>(_pileNames));
+                _multiInputDropdown.gameObject.SetActive(true);
+                _multiInputDropdown.setDropdownValues(_pileNames, _pileValues);
                 if (_valueInfo.value is PileNameCollection pileNameCollection)
                 {
-                    for (int i = 0; i < pileNameCollection.Count; i++)
-                    {
-                        //剔除掉未知的PileName
-                        if (Array.IndexOf(_pileValues, pileNameCollection[i]) < 0)
-                        {
-                            pileNameCollection.RemoveAt(i);
-                            i--;
-                        }
-                    }
-                    bool[] boolValue = new bool[_pileValues.Length];
-                    for (int i = 0; i < boolValue.Length; i++)
-                    {
-                        boolValue[i] = pileNameCollection.Contains(_pileValues[i]);
-                    }
-                    _multiSelectDropdown.SetValueWithoutNotify(boolValue);
+                    _multiInputDropdown.setValuesWithoutNotify(pileNameCollection.ToArray());
                 }
                 else
-                    _multiSelectDropdown.SetValueWithoutNotify(new bool[_pileValues.Length]);
-                //{
-                //    //如果集合为null，则立刻给它新建一个空的并触发事件。
-                //    _valueInfo.value = new PileNameCollection();
-                //    _multiSelectDropdown.SetValueWithoutNotify(new bool[_pileValues.Length]);
-                //    onValueChanged?.Invoke(this, _valueInfo.value);
-                //}
+                    _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
             }
             else if (_valueInfo.type == ActionNodeValueType.effectTagCollection)
             {
-                _multiSelectDropdown.gameObject.SetActive(true);
-                _multiSelectDropdown.ClearOptions();
-                _multiSelectDropdown.AddOptions(new List<string>(_effectTagNames));
+                _multiInputDropdown.gameObject.SetActive(true);
+                _multiInputDropdown.setDropdownValues(_effectTagNames, _effectTagValues);
                 if (_valueInfo.value is EffectTagCollection effectTagCol)
                 {
-                    for (int i = 0; i < effectTagCol.Count; i++)
-                    {
-                        //剔除掉未知的值
-                        if (Array.IndexOf(_effectTagValues, effectTagCol[i]) < 0)
-                        {
-                            effectTagCol.RemoveAt(i);
-                            i--;
-                        }
-                    }
-                    bool[] boolValue = new bool[_effectTagValues.Length];
-                    for (int i = 0; i < boolValue.Length; i++)
-                    {
-                        boolValue[i] = effectTagCol.Contains(_effectTagValues[i]);
-                    }
-                    _multiSelectDropdown.SetValueWithoutNotify(boolValue);
+                    _multiInputDropdown.setValuesWithoutNotify(effectTagCol.ToArray());
                 }
                 else
-                    _multiSelectDropdown.SetValueWithoutNotify(new bool[_effectTagValues.Length]);
+                    _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
             }
             else if (_valueInfo.type == ActionNodeValueType.keywords)
             {
-                _multiSelectDropdown.gameObject.SetActive(true);
-                _multiSelectDropdown.ClearOptions();
-                _multiSelectDropdown.AddOptions(new List<string>(_keywordNames));
+                _multiInputDropdown.gameObject.SetActive(true);
+                _multiInputDropdown.setDropdownValues(_keywordNames, _keywordValues);
                 if (_valueInfo.value is KeywordCollection keywordCol)
                 {
-                    for (int i = 0; i < keywordCol.Count; i++)
-                    {
-                        //剔除掉未知的值
-                        if (Array.IndexOf(_keywordValues, keywordCol[i]) < 0)
-                        {
-                            keywordCol.RemoveAt(i);
-                            i--;
-                        }
-                    }
-                    bool[] boolValue = new bool[_keywordValues.Length];
-                    for (int i = 0; i < boolValue.Length; i++)
-                    {
-                        boolValue[i] = keywordCol.Contains(_keywordValues[i]);
-                    }
-                    _multiSelectDropdown.SetValueWithoutNotify(boolValue);
+                    _multiInputDropdown.setValuesWithoutNotify(keywordCol.ToArray());
                 }
                 else
-                    _multiSelectDropdown.SetValueWithoutNotify(new bool[_keywordValues.Length]);
+                    _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
             }
         }
         private void updateButton()
@@ -571,7 +542,9 @@ namespace UI
         [SerializeField]
         BuildDeckListItem _buildItem;
         [SerializeField]
-        MultiSelectDropdown _multiSelectDropdown;
+        InputDropdown _inputDropdown;
+        [SerializeField]
+        MultiInputDropdown _multiInputDropdown;
         [SerializeField]
         RectTransform _listRoot;
         [SerializeField]
