@@ -1265,6 +1265,35 @@ namespace Controllers
             CARD.ISREADY,
             CARD.ATTACK_TIMES
         };
+
+        [TranslateMsg("卡牌属性名/濒死")]
+        public const string CARD_PROP_NAME_ISDEAD = "濒死";
+        [TranslateMsg("卡牌属性名/当前生命值")]
+        public const string CARD_PROP_NAME_CURRENT_LIFE = "当前生命值";
+        [TranslateMsg("卡牌属性名/护甲值")]
+        public const string CARD_PROP_NAME_ARMOR = "护甲值";
+        [TranslateMsg("卡牌属性名/被封印")]
+        public const string CARD_PROP_NAME_SILENCED = "被封印";
+        [TranslateMsg("卡牌属性名/已就绪")]
+        public const string CARD_PROP_NAME_ISREADY = "已就绪";
+        [TranslateMsg("卡牌属性名/攻击次数")]
+        public const string CARD_PROP_NAME_ATTACK_TIMES = "攻击次数";
+        public static readonly List<CardPropertyNameItem> cardProps = new List<CardPropertyNameItem>
+        {
+            new CardPropertyNameItem(CARD.ISDEAD, CARD_PROP_NAME_ISDEAD, true, true),
+            new CardPropertyNameItem(CARD.CURRENT_LIFE, CARD_PROP_NAME_CURRENT_LIFE, true, true),
+            new CardPropertyNameItem(CARD.ARMOR, CARD_PROP_NAME_ARMOR, true, true),
+            new CardPropertyNameItem(CARD.SILENCE, CARD_PROP_NAME_SILENCED, true, true),
+            new CardPropertyNameItem(CARD.ISREADY, CARD_PROP_NAME_ISREADY, true, true),
+            new CardPropertyNameItem(CARD.ATTACK_TIMES, CARD_PROP_NAME_ATTACK_TIMES, true, true),
+
+            // 只读
+            new CardPropertyNameItem(DEFINE.ATTACK, StringTable.GAME_CARD_PROP_NAME_ATTACK),
+            new CardPropertyNameItem(DEFINE.COST, StringTable.GAME_CARD_PROP_NAME_COST),
+            new CardPropertyNameItem(DEFINE.LIFE, StringTable.GAME_CARD_PROP_NAME_LIFE),
+            new CardPropertyNameItem(DEFINE.DAMAGE_REDUCE, StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE),
+            new CardPropertyNameItem(DEFINE.SPELL_DAMAGE, StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE),
+        };
         string[] _races;
         string[] _tags;
         long _cardPoolId;

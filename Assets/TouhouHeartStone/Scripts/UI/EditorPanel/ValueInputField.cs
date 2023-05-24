@@ -67,6 +67,24 @@ namespace UI
             _keywordNames = keywordNames;
             _keywordValues = keywordValues;
         }
+        public void initCardProperties(CardPropertyNameItem[] values)
+        {
+            var setters = values.Where(v => v.canSet);
+            var setterNames = setters.Select(v => v.name).ToArray();
+            var setterValues = setters.Select(v => v.value).ToArray();
+
+            var getters = values.Where(v => v.canGet);
+            var getterNames = getters.Select(v => v.name).ToArray();
+            var getterValues = getters.Select(v => v.value).ToArray();
+            initCardProperties(setterNames, setterValues, getterNames, getterValues);
+        }
+        public void initCardProperties(string[] setterNames, string[] setterValues, string[] getterNames, string[] getterValues)
+        {
+            _cardPropertySetterNames = setterNames;
+            _cardPropertySetterValues = setterValues;
+            _cardPropertyGetterNames = getterNames;
+            _cardPropertyGetterValues = getterValues;
+        }
         #endregion
         #region 私有方法
         protected void Awake()
@@ -300,6 +318,7 @@ namespace UI
                 updateButton();
                 updateList();
                 updateCard();
+                updateMultiInputDropdown();
             }
         }
         private void updateArray()
@@ -313,7 +332,7 @@ namespace UI
                 _multiInputDropdown.gameObject.SetActive(false);
                 _button.gameObject.SetActive(false);
                 _buildItem.gameObject.SetActive(false);
-
+                _multiInputDropdown.gameObject.SetActive(false);
                 var valueType = array.GetType();
                 var elementType = valueType.GetElementType();
                 if (elementType == null)
@@ -439,7 +458,52 @@ namespace UI
         private void updateInputDropdown()
         {
             //自定义单选下拉菜单
-            if (_valueInfo.type == ActionNodeValueType.effectTag)
+
+            // 设置卡牌属性。
+            if (_valueInfo.type == ActionNodeValueType.cardPropertyNameSet)
+            {
+                _inputDropdown.gameObject.SetActive(true);
+                _inputDropdown.setDropdownValues(_cardPropertySetterNames, _cardPropertySetterValues);
+                string value = null;
+                if (_valueInfo.value is string str)
+                {
+                    value = str;
+                }
+                else if (_valueInfo.value is int index)
+                {
+                    value = _cardPropertySetterValues[index];
+                }
+                else if (_valueInfo.value is CardPropertySetterName propName)
+                {
+                    value = propName.name;
+                }
+                if (value == null)
+                    value = _cardPropertySetterValues.FirstOrDefault();
+                _inputDropdown.setValueWithoutNotify(value);
+            }
+            // 获取卡牌属性。
+            else if (_valueInfo.type == ActionNodeValueType.cardPropertyNameGet)
+            {
+                _inputDropdown.gameObject.SetActive(true);
+                _inputDropdown.setDropdownValues(_cardPropertyGetterNames, _cardPropertyGetterValues);
+                string value = null;
+                if (_valueInfo.value is string str)
+                {
+                    value = str;
+                }
+                else if (_valueInfo.value is int index)
+                {
+                    value = _cardPropertyGetterValues[index];
+                }
+                else if (_valueInfo.value is CardPropertyGetterName propName)
+                {
+                    value = propName.name;
+                }
+                if (value == null)
+                    value = _cardPropertyGetterValues.FirstOrDefault();
+                _inputDropdown.setValueWithoutNotify(value);
+            }
+            else if (_valueInfo.type == ActionNodeValueType.effectTag)
             {
                 _inputDropdown.gameObject.SetActive(true);
                 _inputDropdown.setDropdownValues(_effectTagNames, _effectTagValues);
@@ -457,7 +521,7 @@ namespace UI
                     value = tag.effectTag;
                 }
                 if (value == null)
-                    value = _effectTagValues[0];
+                    value = _effectTagValues.FirstOrDefault();
                 _inputDropdown.setValueWithoutNotify(value);
             }
             else
@@ -672,6 +736,14 @@ namespace UI
         private string[] _eventNames;
         [SerializeField]
         private string[] _eventValues;
+        [SerializeField]
+        private string[] _cardPropertySetterNames;
+        [SerializeField]
+        private string[] _cardPropertySetterValues;
+        [SerializeField]
+        private string[] _cardPropertyGetterNames;
+        [SerializeField]
+        private string[] _cardPropertyGetterValues;
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
         [SerializeField]

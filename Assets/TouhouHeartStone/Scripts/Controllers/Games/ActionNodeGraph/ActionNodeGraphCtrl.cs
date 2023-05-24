@@ -371,6 +371,7 @@ namespace Controllers
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
             _ui.initPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
+            _ui.initCardProperties(CardEditorCtrl.cardProps.ToArray());
             _ui.initEventNames(
                 _eventTypeNames.Select(n => EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, n)).ToArray(),
                 _eventTypeNames.ToArray());
@@ -1568,6 +1569,10 @@ namespace Controllers
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.keywords, value);
             else if (type == typeof(EventArgReference))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventReference, value);
+            else if (type == typeof(CardPropertySetterName))
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardPropertyNameSet, value);
+            else if (type == typeof(CardPropertyGetterName))
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardPropertyNameGet, value);
             else
                 throw new NotImplementedException("没有" + type + "对应的常数类型");
         }

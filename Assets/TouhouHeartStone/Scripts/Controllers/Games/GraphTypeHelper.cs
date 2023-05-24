@@ -9,6 +9,7 @@ namespace Game
         public static void init()
         {
             Flow.addConversion(new CardDefineConversion());
+            Flow.addConversion(new CardPropertyNameConversion());
             Flow.addConversion(new CollectionConversion());
         }
     }
@@ -29,6 +30,37 @@ namespace Game
                 }
             }
             return null;
+        }
+    }
+
+    public class CardPropertyNameConversion : ParamConversion
+    {
+        public override bool canConvert(Type from, Type to)
+        {
+            return (typeof(string).IsAssignableFrom(from) || typeof(CardPropertyName).IsAssignableFrom(from)) && 
+                (typeof(CardPropertyName).IsAssignableFrom(to) || typeof(string).IsAssignableFrom(to));
+        }
+        public override object convert(Flow flow, object input, Type to)
+        {
+            string str = null;
+            if (input is string inputStr)
+            {
+                str = inputStr;
+            }
+            else if (input is CardPropertyName propName)
+            {
+                str = propName.name;
+            }
+            if (str != null)
+            {
+                if (to == typeof(CardPropertyGetterName))
+                    return new CardPropertyGetterName(str);
+                else if (to == typeof(CardPropertySetterName))
+                    return new CardPropertySetterName(str);
+                else if (to == typeof(string))
+                    return str;
+            }
+            return input;
         }
     }
     public class CollectionConversion : ParamConversion

@@ -50,6 +50,10 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_ARMOR = "获取护甲值";
         [TranslateMsg("动作图编辑器中动作节点名称之获取相邻卡牌")]
         public const string EDITOR_NODE_NAME_GET_NEARBY_CARD = "获取相邻卡牌";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_CARD_PROPERTY = "获取卡牌属性";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_SET_CARD_PROPERTY = "设置卡牌属性";
 
         [TranslateMsg("是否濒死节点-常量")]
         private const string EDITOR_PARAM_NAME_CHECK_HEALTH_ZERO = "检查生命值<=0";
@@ -214,11 +218,37 @@ namespace Game
             return card;
         }
         /// <summary>
+        /// 获取卡牌属性
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_CARD_PROPERTY)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static object getCardProp(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardPropertyGetterName propName)
+        {
+            return card?.getProp(game, propName);
+        }
+        /// <summary>
+        /// 设置卡牌属性
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.SetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_SET_CARD_PROPERTY)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
+        public static Task setCardProp(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardPropertySetterName propName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
+        {
+            if (card != null)
+                return card.setProp(game, propName, value);
+            return Task.CompletedTask;
+        }
+        /// <summary>
         /// 获取属性
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_PROPERTY, "GetProperty")]
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardProp_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_PROPERTY, "GetProperty")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static object getProp(CardEngine game,
+        public static object getPropObsolete(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
@@ -227,9 +257,10 @@ namespace Game
         /// <summary>
         /// 设置属性
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SET_PROPERTY, "SetProperty")]
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardProp_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SET_PROPERTY, "SetProperty")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
-        public static Task<IPropChangeEventArg> setProp(CardEngine game,
+        public static Task<IPropChangeEventArg> setPropObsolete(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)

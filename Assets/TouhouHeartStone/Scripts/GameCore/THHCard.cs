@@ -661,7 +661,7 @@ namespace TouhouHeartstone
         }
         public static int getChargedLevel(this ICardData card, IGame game)
         {
-            return card.getProp<int>(game, DEFINE.CHARGED_LEVEL);
+            return card.getProp<int>(game, CARD.CHARGED_LEVEL);
         }
         public static Task setChargeLevel(this Card card, CardEngine game, int value)
         {
@@ -672,7 +672,7 @@ namespace TouhouHeartstone
                 card = arg.card;
                 value = arg.value;
                 game.logger.log(card + "改变蓄力层数 => " + value);
-                return card.setProp(game, DEFINE.CHARGED_LEVEL, value);
+                return card.setProp(game, CARD.CHARGED_LEVEL, value);
             });
         }
         #endregion 蓄力
@@ -686,14 +686,14 @@ namespace TouhouHeartstone
         }
         public static int getDamageReduce(this ICardData card, IGame game)
         {
-            int result = card.getProp<int>(game, nameof(ServantCardDefine.damageReduce));
+            int result = card.getProp<int>(game, nameof(DEFINE.DAMAGE_REDUCE));
             if (result < 0)
                 return 0;
             return result;
         }
         public static Task<IPropChangeEventArg> setDamageReduce(this Card card, IGame game, int value)
         {
-            return card.setProp(game, nameof(ServantCardDefine.damageReduce), value);
+            return card.setProp(game, nameof(DEFINE.DAMAGE_REDUCE), value);
         }
         public static Task<SilenceEventArg> silence(this IEnumerable<Card> cards, CardEngine game)
         {

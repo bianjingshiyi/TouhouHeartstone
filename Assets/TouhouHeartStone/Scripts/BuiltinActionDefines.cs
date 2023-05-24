@@ -60,7 +60,7 @@ namespace Game
         public const int ThisCard = Type_Function + Category_Card + 1; // 这张卡牌
         public const int IsCardOfType = Type_Function + Category_Card + 2;    // 卡牌类型判断
         public const int CardHasKeyword = Type_Function + Category_Card + 3;    // 卡牌关键词判断
-        public const int GetCardProp = Type_Function + Category_Card + 4;    // 获取属性
+        public const int GetCardProp_Obsolete = Type_Function + Category_Card + 4;    // 获取属性（过时）
         public const int GetCardCost = Type_Function + Category_Card + 5;    // 获取花费
         public const int GetCardAttack = Type_Function + Category_Card + 6;    // 获取攻击力
         public const int GetCardMaxLife = Type_Function + Category_Card + 7;    // 获取最大生命值
@@ -83,6 +83,7 @@ namespace Game
         public const int GetValidAttackTargets = Type_Function + Category_Card + 24;    // 获取合法攻击目标
         public const int IsCharged = Type_Function + Category_Card + 25;    // 是否已蓄力
         public const int GetChargedLevel = Type_Function + Category_Card + 26;    // 获取蓄力层数
+        public const int GetCardProp = Type_Function + Category_Card + 27;    // 获取卡牌属性
 
 
         // 卡牌定义
@@ -94,7 +95,7 @@ namespace Game
         public const int CardDefineHasKeyword = Type_Function + Category_CardDefine + 6;    // 卡牌定义关键词判断
         public const int GetCardDefinesOfCardArray = Type_Function + Category_CardDefine + 7;    // 获取目标卡牌的定义列表
         public const int GetCardDefineOfCard = Type_Function + Category_CardDefine + 8;    // 获取单张卡牌的定义
-        public const int GetCardDefineProp = Type_Function + Category_CardDefine + 9;    // 获取卡牌定义属性
+        public const int GetCardDefineProp_Obsolete = Type_Function + Category_CardDefine + 9;    // 获取卡牌定义属性（过时）
         public const int GetCardDefineCost = Type_Function + Category_CardDefine + 10;    // 获取卡牌定义花费
         public const int GetCardDefineAttack = Type_Function + Category_CardDefine + 11;    // 获取卡牌定义攻击力
         public const int GetCardDefineMaxLife = Type_Function + Category_CardDefine + 12;    // 获取卡牌定义生命值
@@ -105,6 +106,8 @@ namespace Game
         public const int CardDefineHasBattlecry = Type_Function + Category_CardDefine + 17;    // 卡牌定义具有宣言
         public const int CardDefineHasDeathrattle = Type_Function + Category_CardDefine + 18;    // 卡牌定义具有遗言
         public const int GetCardDefineTagList = Type_Function + Category_CardDefine + 19;    // 获取卡牌定义标签列表
+        public const int GetCardDefineProp = Type_Function + Category_CardDefine + 20;    // 获取卡牌定义属性
+
 
         // 卡牌快照
         public const int GetCardOfCardSnapshot = Type_Function + Category_CardSnapshot + 1;    // 获取卡牌快照对应卡牌
@@ -204,7 +207,7 @@ namespace Game
         public const int CreateTokenToHand = Type_Action + Category_Card + 4;    // 创建衍生卡并置入手牌
         public const int CreateTokenToDeck = Type_Action + Category_Card + 5;    // 创建衍生卡并洗入牌库
         public const int CreateTokenToItem = Type_Action + Category_Card + 6;    // 创建衍生卡兵装备到道具栏
-        public const int SetCardProp = Type_Action + Category_Card + 7;    // 设置属性
+        public const int SetCardProp_Obsolete = Type_Action + Category_Card + 7;    // 设置属性（过时）
         public const int DealDamageOrSpellDamage_Obsolete = Type_Action + Category_Card + 8;    // 造成伤害或法伤（过时）
         public const int DealDamageSplitAmong_Obsolete = Type_Action + Category_Card + 9;    // 造成伤害或法伤兵分配给目标（过时）
         public const int DealDamageToRandomTargets_Obsolete = Type_Action + Category_Card + 10;    // 对固定数量的随机目标造成伤害或法伤（过时）
@@ -234,6 +237,7 @@ namespace Game
         public const int DealDamageOrSpellDamage = Type_Action + Category_Card + 34;    // 造成伤害或法伤
         public const int DealDamageSplitAmong = Type_Action + Category_Card + 35;    // 造成伤害或法伤兵分配给目标
         public const int DealDamageToRandomTargets = Type_Action + Category_Card + 36;    // 对固定数量的随机目标造成伤害或法伤
+        public const int SetCardProp = Type_Action + Category_Card + 37;    // 设置卡牌属性
 
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益

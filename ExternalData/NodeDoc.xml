@@ -3078,11 +3078,81 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>102027</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌属性</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取属性的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的属性值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Game.CardPropertyGetterName</type>
+        <name>属性名称</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的属性名称。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[获取一张卡牌的某项属性。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202037</defineId>
+    <obsoleteNames />
+    <editorName>设置卡牌属性</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置属性的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的属性值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts>
+      <ActionParameterComment>
+        <type>Game.CardPropertySetterName</type>
+        <name>属性名称</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的属性名称。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[设置一张卡牌的某项属性，可以是任何值。<br>该值会一直保存到这张卡牌中，直到游戏结束。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>102004</defineId>
     <obsoleteNames>
       <string>GetProperty</string>
     </obsoleteNames>
     <editorName>获取属性</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -3113,7 +3183,7 @@
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[获取一张卡牌的某项属性，可以是任何值。]]></summary>
+    <summary><![CDATA[获取一张卡牌的某项属性，可以是任何值。<br>请使用<b>获取卡牌属性</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -3122,6 +3192,7 @@
       <string>SetProperty</string>
     </obsoleteNames>
     <editorName>设置属性</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -3160,7 +3231,7 @@
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[设置一张卡牌的某项属性，可以是任何值。<br>该值会一直保存到这张卡牌中，直到游戏结束。]]></summary>
+    <summary><![CDATA[设置一张卡牌的某项属性，可以是任何值。<br>该值会一直保存到这张卡牌中，直到游戏结束。<br>请使用<b>设置卡牌属性</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -5444,7 +5515,8 @@
   <ActionComment>
     <defineId>103009</defineId>
     <obsoleteNames />
-    <editorName>获取卡牌定义属性</editorName>
+    <editorName>获取卡牌定义属性（过时）</editorName>
+    <obsoleteMsg />
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
@@ -5475,6 +5547,41 @@
       </ActionParameterComment>
     </outputs>
     <consts />
+    <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>103020</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌定义属性</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardDefine</type>
+        <name>卡牌定义</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Game.CardPropertyGetterName</type>
+        <name>属性名称</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </consts>
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>

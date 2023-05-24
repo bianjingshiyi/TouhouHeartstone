@@ -3,10 +3,10 @@ namespace TouhouHeartstone
 {
     public class DamageReduceModifier : IntPropModifier
     {
-        public DamageReduceModifier(int value) : base(nameof(ServantCardDefine.damageReduce), value)
+        public DamageReduceModifier(int value) : base(nameof(DEFINE.DAMAGE_REDUCE), value)
         {
         }
-        public DamageReduceModifier(int value, bool isSet) : base(nameof(ServantCardDefine.damageReduce), value, isSet)
+        public DamageReduceModifier(int value, bool isSet) : base(nameof(DEFINE.DAMAGE_REDUCE), value, isSet)
         {
         }
         protected DamageReduceModifier(IntPropModifier origin) : base(origin)

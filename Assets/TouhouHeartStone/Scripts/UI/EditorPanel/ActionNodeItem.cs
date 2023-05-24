@@ -158,6 +158,15 @@ namespace UI
             ActionNodeItemEffectPropertyItem propItem = _effectPropertyItemTemplate.GetComponent<ActionNodeItemEffectPropertyItem>();
             propItem.setKeywords(keywordNames, keywordValues);
         }
+        /// <summary>
+        /// 初始化卡牌属性名。
+        /// </summary>
+        /// <param name="cardProperties"></param>
+        public void initCardProperties(CardPropertyNameItem[] cardProperties)
+        {
+            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            item.initCardProperties(cardProperties);
+        }
 
 
         /// <summary>

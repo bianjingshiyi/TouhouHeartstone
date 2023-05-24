@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
 namespace Game
@@ -23,8 +22,10 @@ namespace Game
         public const string EDITOR_NODE_CARD_SET_DEFINE = "变形为卡牌定义";
         [TranslateMsg("动作图编辑器中动作节点参数名称之是否重置卡牌")]
         public const string EDITOR_NODE_CARD_IS_RESET = "是否重置卡牌";
+        [TranslateMsg("编辑器-动作节点-获取卡牌定义属性（过时）")]
+        public const string EDITOR_NODE_CARD_DEFINE_GET_PROP_OBSOLETE = "获取卡牌定义属性（过时）";
         [TranslateMsg("编辑器-动作节点-获取卡牌定义属性")]
-        public const string EDITOR_NODE_CARD_DEFINE_GET_DEFINE = "获取卡牌定义属性";
+        public const string EDITOR_NODE_CARD_DEFINE_GET_PROP = "获取卡牌定义属性";
         [TranslateMsg("编辑器-动作节点-获取卡牌定义花费")]
         public const string EDITOR_NODE_CARD_DEFINE_GET_COST = "获取卡牌定义花费";
         [TranslateMsg("编辑器-动作节点-获取卡牌定义攻击力")]
@@ -122,7 +123,7 @@ namespace Game
         [ObsoletedKeyMethod(ObsoletedActionDefineID.GetRandomCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         [Obsolete]
-        public static CardDefine getRandomCardDefine(CardEngine game, 
+        public static CardDefine getRandomCardDefine(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine[] cardDefines)
         {
             if (cardDefines == null || cardDefines.Length < 1)
@@ -234,11 +235,23 @@ namespace Game
         /// <summary>
         /// 获取属性
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineProp, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_DEFINE)]
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineProp_Obsolete, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_PROP_OBSOLETE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getCardDefineProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
+        {
+            return card?.getProp<object>(propName);
+        }
+        /// <summary>
+        /// 获取属性
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetCardDefineProp, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_PROP)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static object getCardDefinePropByPropertyName(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardPropertyGetterName propName)
         {
             return card?.getProp<object>(propName);
         }

@@ -8,5 +8,10 @@
         public const string ISDEAD = "isDead";
         public const string ISREADY = "isReady";
         public const string ATTACK_TIMES = "attackTimes";
+        /// <summary>
+        /// 蓄力层数
+        /// </summary>
+        public const string CHARGED_LEVEL = "chargedLevel";
+
     }
 }

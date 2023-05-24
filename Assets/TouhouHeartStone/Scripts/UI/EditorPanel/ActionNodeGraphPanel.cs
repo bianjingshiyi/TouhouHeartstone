@@ -318,6 +318,10 @@ namespace UI
         {
             _actionNodeItemTemplate.initPileNames(pileNames, pileValues);
         }
+        public void initCardProperties(CardPropertyNameItem[] cardProperties)
+        {
+            _actionNodeItemTemplate.initCardProperties(cardProperties);
+        }
         public void initKeywords(string[] keywordNames, string[] keywordValues)
         {
             _actionNodeItemTemplate.initKeywords(keywordNames, keywordValues);
@@ -1720,7 +1724,15 @@ namespace UI
         /// <summary>
         /// 事件引用
         /// </summary>
-        eventReference
+        eventReference,
+        /// <summary>
+        /// 卡牌属性（可设置）
+        /// </summary>
+        cardPropertyNameSet,
+        /// <summary>
+        /// 卡牌属性（可读取）
+        /// </summary>
+        cardPropertyNameGet
     }
     public enum ActionNodeConnectionType
     {
