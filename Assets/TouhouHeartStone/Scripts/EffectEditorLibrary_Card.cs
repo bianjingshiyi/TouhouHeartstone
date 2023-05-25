@@ -6,6 +6,7 @@ using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
+using UnityEngine;
 
 namespace Game
 {

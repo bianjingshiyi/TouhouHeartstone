@@ -33,7 +33,7 @@ namespace Controllers
                         null,
                         game.card.getOrCreateActionDefineActionNodeGraphInfo(cardPoolId, actionDefine.id)));
             updateProperties();
-            _graphEditorPanelCtrl.setOperationMode(scene.editor.graphOperationMode);
+            _graphEditorPanelCtrl.display(_cardPoolId);
         }
         public override Task display(CardPoolDisplayInfo info)
         {

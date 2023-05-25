@@ -74,6 +74,14 @@ namespace Controllers
         {
             return getActionDefine(name) != null;
         }
+        public string tryTranslateWithDict(string input)
+        {
+            if (_nameTextDict.TryGetValue(input, out string text))
+            {
+                return game.i18n._(text);
+            }
+            return game.i18n._(input);
+        }
         #region 操作模式
         public void SetOperationMode(GraphOperationMode mode) 
         {
@@ -1348,14 +1356,6 @@ namespace Controllers
                 return game.lang._(actionNode.defineName);
             }
         }
-        private string tryTranslateWithDict(string input)
-        {
-            if (_nameTextDict.TryGetValue(input, out string text))
-            {
-                return game.i18n._(text);
-            }
-            return game.i18n._(input);
-        }
 
         private string getActionNodeObsoleteMsg(ActionNode actionNode)
         {
@@ -1988,7 +1988,7 @@ namespace Controllers
         [TranslateMsg("卡牌类型，道具")]
         const string EDITOR_ENUM_CARD_TYPE_ITEM = "道具";
 
-        readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
+        public static readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
         {
             { DEFINE.TARGET_TYPE_CHARACTER, StringTable.GAME_TARGET_TYPE_CHARACTER },
             { DEFINE.TARGET_TYPE_SERVANT, StringTable.GAME_TARGET_TYPE_SERVANT },
