@@ -463,6 +463,8 @@ namespace Game
         /// <returns></returns>
         public CardDefine getCardDefine(ICardPoolReference cardPoolRef, int cardId)
         {
+            if (cardPoolRef == null)
+                return null;
             if (cardPoolRef.CardPoolID == 0 && cardId < 0)
             {
                 cardPoolRef = new CardPoolReference(cardId << 1 >> 17, cardId);
@@ -625,8 +627,16 @@ namespace Game
             else if (getCardPoolPath(cardPoolRef) is string path)
             {
                 //未加载卡池但是存在地址
-                var result = await loadCardPool(path);
-                return result.cardPool.cardDefineList.ToArray();
+                try
+                {
+                    var result = await loadCardPool(path);
+                    return result.cardPool.cardDefineList.ToArray();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    return Array.Empty<CardDefine>();
+                }
             }
             else
             {

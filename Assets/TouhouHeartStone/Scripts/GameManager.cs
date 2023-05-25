@@ -118,9 +118,9 @@ namespace Game
         public async Task startLocalGame(RoomData room)
         {
             //创建游戏
+            CardEngine game = await createGame(room);
             mode = GameMode.local;
             ui.showSurrenderButton(false);
-            CardEngine game = await createGame(room);
             //初始化本地玩家，AI，UI
             foreach (var player in game.players)
             {
@@ -166,10 +166,10 @@ namespace Game
         }
         public async Task startRemoteGame(IClient client, RoomData room, bool headless = false)
         {
-            mode = GameMode.remote;
-            ui.showSurrenderButton(true);
             //创建游戏
             CardEngine game = await createGame(room);
+            mode = GameMode.remote;
+            ui.showSurrenderButton(true);
             //将游戏与网络连接
             game.answers.client = client;
             //初始化本地玩家与UI
@@ -186,8 +186,8 @@ namespace Game
         }
         public async Task startReplayGame(Replay rep)
         {
-            mode = GameMode.replay;
             CardEngine game = await createGame(rep.option, rep.players);
+            mode = GameMode.replay;
             new ReplayPlayer(rep, game);
             localPlayer = game.players.First();
             displayGameUI(game, localPlayer);
@@ -225,48 +225,19 @@ namespace Game
             }
 #endif
 
-            var cardManager = getManager<CardManager>();
             //加载外部卡牌
             Dictionary<long, Dictionary<int, CardDefine>> cardDict = new Dictionary<long, Dictionary<int, CardDefine>>();
             Dictionary<long, Dictionary<int, BuffDefine>> buffDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
-            // 尝试从本地获取卡组，否则读取缓存卡组。
-            foreach (var pool in option.cardPools)
+            try
             {
-                long poolId = pool.cardPoolId;
-
-                if (cards.isBuiltinCardPool(poolId))
-                {
-                    cardDict.Add(poolId, cards.GetCardDefines().ToDictionary(c => c.id));
-                    continue;
-                }
-                CardPool cardPool = null;
-                var poolInfo = cards.getCardPoolInfo(poolId);
-                // 尝试获取本地卡池的卡牌定义（要求版本正确）。
-                if (poolInfo != null && poolInfo.editTime == pool.version)
-                {
-                    if (!cards.tryGetCardPool(pool.GetReference(), out cardPool))
-                    {
-                        if (cards.getCardPoolPath(pool.GetReference()) is string path)
-                            cardPool = (await cards.loadCardPool(path)).cardPool;
-                    }
-                }
-                // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
-                if (cardPool == null)
-                {
-                    cardPool = (await cards.loadCachedCardPoolAsync(poolId, pool.version)).cardPool;
-                }
-                if (cardPool != null)
-                {
-                    var cardDefines = cardPool.cardDefineList.ToArray();
-                    var buffDefines = cardPool.buffDefineList.ToArray();
-                    cardDict.Add(poolId, cardDefines.ToDictionary(c => c.id));
-                    buffDict.Add(poolId, buffDefines.ToDictionary<BuffDefine, int>(c => c.id));
-                    // 加载自定义动作定义。
-                    foreach (var define in cardPool.actionDefineList)
-                    {
-                        game.addActionDefine(define.defineName, define);
-                    }
-                }
+                await LoadExternalCardsAndBuffs(option, cardDict, buffDict);
+            }
+            catch (Exception e)
+            {
+                var title = main.lang._(StringTable.ERROR);
+                var desc = main.lang._(GAME_CREATE_ERROR_LOAD_CARDS_FAILED);
+                main.ui.dialog.ShowConfirm(title, desc);
+                throw;
             }
             Rule rule = new HearthStoneRule(cardDict,buffDict);
             await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
@@ -334,6 +305,51 @@ namespace Game
         }
         public event Action onGameEnd;
         #endregion
+        private async Task LoadExternalCardsAndBuffs(HearthstoneOption option,
+            Dictionary<long, Dictionary<int, CardDefine>> cardDict,
+            Dictionary<long, Dictionary<int, BuffDefine>> buffDict)
+        {
+            var cardManager = getManager<CardManager>();
+            // 尝试从本地获取卡组，否则读取缓存卡组。
+            foreach (var pool in option.cardPools)
+            {
+                long poolId = pool.cardPoolId;
+
+                if (cards.isBuiltinCardPool(poolId))
+                {
+                    cardDict.Add(poolId, cards.GetCardDefines().ToDictionary(c => c.id));
+                    continue;
+                }
+                CardPool cardPool = null;
+                var poolInfo = cards.getCardPoolInfo(poolId);
+                // 尝试获取本地卡池的卡牌定义（要求版本正确）。
+                if (poolInfo != null && poolInfo.editTime == pool.version)
+                {
+                    if (!cards.tryGetCardPool(pool.GetReference(), out cardPool))
+                    {
+                        if (cards.getCardPoolPath(pool.GetReference()) is string path)
+                            cardPool = (await cards.loadCardPool(path)).cardPool;
+                    }
+                }
+                // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
+                if (cardPool == null)
+                {
+                    cardPool = (await cards.loadCachedCardPoolAsync(poolId, pool.version)).cardPool;
+                }
+                if (cardPool != null)
+                {
+                    var cardDefines = cardPool.cardDefineList.ToArray();
+                    var buffDefines = cardPool.buffDefineList.ToArray();
+                    cardDict.Add(poolId, cardDefines.ToDictionary(c => c.id));
+                    buffDict.Add(poolId, buffDefines.ToDictionary<BuffDefine, int>(c => c.id));
+                    // 加载自定义动作定义。
+                    foreach (var define in cardPool.actionDefineList)
+                    {
+                        game.addActionDefine(define.defineName, define);
+                    }
+                }
+            }
+        }
         private void checkDeckValid(CardEngine game, DefineReference[] deck)
         {
             if (deck == null)
@@ -681,6 +697,8 @@ namespace Game
 #endif
         }
         #region 属性字段
+        [TranslateMsg("开始游戏时，读取卡池失败时的报错")]
+        public const string GAME_CREATE_ERROR_LOAD_CARDS_FAILED = "开始游戏失败，无法读取游戏所需的卡池。";
         public MainManager main => getManager<MainManager>();
         #endregion
     }

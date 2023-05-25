@@ -199,7 +199,7 @@ namespace Tests
                 var result = await cardManager.loadCardPoolInfosAsync();
                 foreach (var pair in result)
                 {
-                    await cardManager.loadCardPool(pair.Key);
+                    await cardManager.loadCardPool(pair.Key, true);
                     cardDefines.Add(pair.Value.cardPoolId, cardManager.getCardDefines(pair.Value.ToReference()));
                     buffDefines.Add(pair.Value.cardPoolId, cardManager.getBuffDefines(pair.Value.ToReference()));
                 }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Controllers;
 using ExcelDataReader.Log;
 using MongoDB.Bson.Serialization;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
@@ -33,25 +34,32 @@ namespace Game
             for (int i = 0; i < fileList.Length; i++)
             {
                 string path = fileList[i];
-                Debug.Log("开始读取卡池信息" + path);
-                string[] lines;
-                if (path.StartsWith("sa:"))
+                try
                 {
-                    lines = await game.fileManager.readStreamingTextFile(path.Substring(3, path.Length - 3), lineCount: 1);
+                    Debug.Log("开始读取卡池信息" + path);
+                    string[] lines;
+                    if (path.StartsWith("sa:"))
+                    {
+                        lines = await game.fileManager.readStreamingTextFile(path.Substring(3, path.Length - 3), lineCount: 1);
+                    }
+                    else
+                    {
+                        lines = await game.fileManager.readTextFile(path, lineCount: 1);
+                    }
+                    if (lines == null || lines.Length < 1)
+                    {
+                        Debug.LogWarning("读取卡池信息" + path + "为空");
+                        continue;
+                    }
+                    CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
+                    _cardPoolInfoDict.Add(path, cardPool);
+                    onCardPoolInfoRead?.Invoke(path, cardPool);
+                    Debug.Log("读取卡池信息" + path + "完毕");
                 }
-                else
+                catch (Exception e)
                 {
-                    lines = await game.fileManager.readTextFile(path, lineCount: 1);
+                    Debug.LogError("读取卡池信息" + path + "失败：" + e);
                 }
-                if (lines == null || lines.Length < 1)
-                {
-                    Debug.LogWarning("读取卡池信息" + path + "为空");
-                    continue;
-                }
-                CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
-                _cardPoolInfoDict.Add(path, cardPool);
-                onCardPoolInfoRead?.Invoke(path, cardPool);
-                Debug.Log("读取卡池信息" + path + "完毕");
             }
 
 
@@ -322,166 +330,57 @@ namespace Game
         /// 从目标路径上加载卡池
         /// </summary>
         /// <param name="path">流文件路径或者绝对路径</param>
+        /// <param name="handleException">是否在方法内就捕获异常。</param>
+        /// <exception cref="FileLoadException">卡池文件为空。</exception>
+        /// <exception cref="FormatException">反序列化失败。</exception>
         /// <returns></returns>
-        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> loadCardPool(string path)
+        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> loadCardPool(string path, bool handleException = false)
         {
             //初始化JSON
             if (!JsonHelper.isInited)
             {
                 JsonHelper.init();
             }
-            string[] lines;
-            if (path.StartsWith("sa:"))
-            {
-                lines = await game.fileManager.readStreamingTextFile(path, 0, 0);
-            }
-            else
-            {
-                lines = await game.fileManager.readTextFile(path, 0, 0);
-            }
-            if (lines == null || lines.Length < 1)
-            {
-                throw new FileLoadException("卡池文件" + path + "为空");
-            }
-            CardPoolInfo cardPoolInfo;
-            CardPool cardPool;
             try
             {
-                (cardPoolInfo, cardPool) = parseCardPool(lines);
+                string[] lines;
+                if (path.StartsWith("sa:"))
+                {
+                    lines = await game.fileManager.readStreamingTextFile(path, 0, 0);
+                }
+                else
+                {
+                    lines = await game.fileManager.readTextFile(path, 0, 0);
+                }
+                if (lines == null || lines.Length < 1)
+                {
+                    throw new FileLoadException("卡池文件" + path + "为空");
+                }
+                CardPoolInfo cardPoolInfo;
+                CardPool cardPool;
+                try
+                {
+                    (cardPoolInfo, cardPool) = parseCardPool(lines);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
+                }
+
+                addCardPool(cardPool, cardPoolInfo, path);
+
+                //错误信息修复
+                await fixCardPool(cardPoolInfo, cardPool);
+                return (cardPoolInfo, cardPool);
             }
             catch (Exception e)
             {
-                throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
-            }
-
-            addCardPool(cardPool, cardPoolInfo, path);
-
-            //错误信息修复
-            bool hasUnsavedFix = false;
-            void fixData(Node node)
-            {
-                if (node is ActionNode action)
+                if (!handleException)
                 {
-                    fixActionNodeIncorrectData(action);
+                    throw;
                 }
-            }
-            Dictionary<string, ActionDefine> actionDefineDict = game.actionDefineDict;
-
-            // 遍历所有节点图并修复信息。
-            traverseActionGraphs(cardPool,
-                (c, e) => effectAction(e),
-                (b, e) => effectAction(e),
-                defineAction);
-
-
-            foreach (var skin in cardPool.cardSkinList)
-            {
-                if (string.IsNullOrEmpty(skin.language))
-                {
-                    //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
-                    skin.language = game.langManager.getDefaultLanguage();
-                }
-                if (!string.IsNullOrEmpty(skin.imagePath) && !isHashNamedImage(skin.imagePath))
-                {
-                    //图片地址必须是32位哈希.jpg
-                    Sprite sprite = await loadImage(skin.imagePath, cardPoolInfo.cardPoolId, false);
-                    // 不保存丢失的贴图。
-                    if (sprite != null)
-                    {
-                        skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                        hasUnsavedFix = true;
-                    }
-                }
-            }
-            foreach (var buffSkin in cardPool.buffSkinList)
-            {
-                if (string.IsNullOrEmpty(buffSkin.imagePath))
-                    continue;
-                if (!isHashNamedImage(buffSkin.imagePath))
-                {
-                    //图片地址必须是32位哈希.jpg
-                    Sprite sprite = await loadImage(buffSkin.imagePath, cardPoolInfo.cardPoolId, false);
-                    // 不保存丢失的贴图。
-                    if (sprite != null)
-                    {
-                        buffSkin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
-                        hasUnsavedFix = true;
-                    }
-                }
-            }
-            if (hasUnsavedFix)
-                await saveCardPool(cardPoolInfo);
-            return (cardPoolInfo, cardPool);
-
-
-
-            // 用于遍历卡牌/增益效果的方法。
-            void effectAction(GeneratedEffect effect)
-            {
-                if (effect is GeneratedActiveEffect active)
-                {
-                    fixActiveEntryIncorrectData(active.entryNode);
-                }
-                effect.traverseActionNode(fixData);
-            }
-            // 用于遍历自定义动作的方法。
-            void defineAction(GeneratedActionDefine define)
-            {
-                define.traverse(fixData);
-            }
-
-            void fixActionNodeIncorrectData(ActionNode actionNode)
-            {
-                if (!actionDefineDict.ContainsKey(actionNode.defineName) && !cardPool.actionDefineList.Exists(a => a.defineName == actionNode.defineName))
-                {
-                    //包含不存在的动作名称，可能是名称过期了
-                    string newDefineName = null;
-                    foreach (ActionDefine actionDefine in actionDefineDict.Values)
-                    {
-                        if (actionDefine.obsoleteNames != null && actionDefine.obsoleteNames.Contains(actionNode.defineName))
-                        {
-                            newDefineName = actionDefine.defineName;
-                            break;
-                        }
-                    }
-                    if (newDefineName != null)
-                    {
-                        Debug.LogWarning("将动作节点" + actionNode.id + "过期的动作名称" + actionNode.defineName + "替换为" + newDefineName);
-                        actionNode.defineName = newDefineName;
-                    }
-                    else
-                    {
-                        Debug.LogError("动作节点" + actionNode.id + "的名称未知：" + actionNode.defineName);
-                    }
-                }
-                foreach (var constPair in actionNode.consts)
-                {
-                    if (constPair.Value is CardReference cardRef)
-                    {
-                        //CardReference过期，使用DefineReference替代
-                        actionNode.setConst(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
-                    }
-                }
-                // 将旧版的“获取增益定义”的ID从int变为DefineReference。
-                if (actionNode.defineName == GetBuffDefineAction.defName)
-                {
-                    var constValue = actionNode.getConst(GetBuffDefineAction.constName);
-                    if (constValue is int buffId)
-                    {
-                        actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
-                    }
-                }
-            }
-            void fixActiveEntryIncorrectData(ActiveEntryNode activeEntry)
-            {
-                foreach (var targetChecker in activeEntry.targetCheckerList)
-                {
-                    if (string.IsNullOrEmpty(targetChecker.targetType))
-                    {
-                        //目标的类型不能为空，如果为空则默认为仆从
-                        targetChecker.targetType = DEFINE.TARGET_TYPE_SERVANT;
-                    }
-                }
+                Debug.LogError($"卡池{path}加载失败：{e}");
+                return (null, null);
             }
         }
 
@@ -620,30 +519,22 @@ namespace Game
             else
                 return false;
         }
-        public async Task<(CardDefine[] defines, CardSkinData[] skins)> getExternalCardDefinesAsync(string[] paths)
-        {
-            List<CardDefine> defineList = new List<CardDefine>();
-            List<CardSkinData> skinList = new List<CardSkinData>();
-            for (int i = 0; i < paths.Length; i++)
-            {
-                if (!tryGetCardPool(paths[i], out CardPool cardPool))
-                {
-                    cardPool = (await loadCardPool(paths[i])).cardPool;
-                }
-                defineList.AddRange(cardPool.cardDefineList);
-                skinList.AddRange(cardPool.cardSkinList);
-            }
-            return (defineList.ToArray(), skinList.ToArray());
-        }
 
         public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(long cardPoolId, int version)
         {
-            string resID = CardPoolReference.GetResourceID(cardPoolId, version);
-            if (game.cache.FileExists(game.fileManager, ResourceType.CardDefine, resID))
+            try
             {
-                string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
-                var cardPoolData = await loadCardPool(path);
-                return cardPoolData;
+                string resID = CardPoolReference.GetResourceID(cardPoolId, version);
+                if (game.cache.FileExists(game.fileManager, ResourceType.CardDefine, resID))
+                {
+                    string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
+                    var cardPoolData = await loadCardPool(path);
+                    return cardPoolData;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
             }
             return (null, null);
         }
@@ -1217,6 +1108,13 @@ namespace Game
         {
             return _creatingCardPoolId == cardPoolId;
         }
+
+        public void showCardPoolLoadErrorDialog()
+        {
+            var title = game.lang._(StringTable.ERROR);
+            var content = game.lang._(CARD_POOL_LOAD_ERROR_DESC);
+            game.ui.dialog.ShowConfirm(title, content);
+        }
         #endregion
         #region 私有方法
         private void onAwake_CardPool()
@@ -1401,6 +1299,137 @@ namespace Game
             addCardPool(cardPool, cardPoolInfo, path);
             return cardPool;
         }
+        private async Task fixCardPool(CardPoolInfo cardPoolInfo, CardPool cardPool)
+        {
+
+            bool hasUnsavedFix = false;
+            void fixData(Node node)
+            {
+                if (node is ActionNode action)
+                {
+                    fixActionNodeIncorrectData(action);
+                }
+            }
+            Dictionary<string, ActionDefine> actionDefineDict = game.actionDefineDict;
+
+            // 遍历所有节点图并修复信息。
+            traverseActionGraphs(cardPool,
+                (c, e) => effectAction(e),
+                (b, e) => effectAction(e),
+                defineAction);
+
+
+            foreach (var skin in cardPool.cardSkinList)
+            {
+                if (string.IsNullOrEmpty(skin.language))
+                {
+                    //皮肤不能没有对应语言信息，如果没有那么至少设置为默认语言
+                    skin.language = game.langManager.getDefaultLanguage();
+                }
+                if (!string.IsNullOrEmpty(skin.imagePath) && !isHashNamedImage(skin.imagePath))
+                {
+                    //图片地址必须是32位哈希.jpg
+                    Sprite sprite = await loadImage(skin.imagePath, cardPoolInfo.cardPoolId, false);
+                    // 不保存丢失的贴图。
+                    if (sprite != null)
+                    {
+                        skin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                        hasUnsavedFix = true;
+                    }
+                }
+            }
+            foreach (var buffSkin in cardPool.buffSkinList)
+            {
+                if (string.IsNullOrEmpty(buffSkin.imagePath))
+                    continue;
+                if (!isHashNamedImage(buffSkin.imagePath))
+                {
+                    //图片地址必须是32位哈希.jpg
+                    Sprite sprite = await loadImage(buffSkin.imagePath, cardPoolInfo.cardPoolId, false);
+                    // 不保存丢失的贴图。
+                    if (sprite != null)
+                    {
+                        buffSkin.imagePath = await saveImage(cardPoolInfo.cardPoolId, sprite.texture);
+                        hasUnsavedFix = true;
+                    }
+                }
+            }
+            if (hasUnsavedFix)
+                await saveCardPool(cardPoolInfo);
+
+
+
+            #region 内嵌方法
+            // 用于遍历卡牌/增益效果的方法。
+            void effectAction(GeneratedEffect effect)
+            {
+                if (effect is GeneratedActiveEffect active)
+                {
+                    fixActiveEntryIncorrectData(active.entryNode);
+                }
+                effect.traverseActionNode(fixData);
+            }
+            // 用于遍历自定义动作的方法。
+            void defineAction(GeneratedActionDefine define)
+            {
+                define.traverse(fixData);
+            }
+
+            void fixActionNodeIncorrectData(ActionNode actionNode)
+            {
+                if (!actionDefineDict.ContainsKey(actionNode.defineName) && !cardPool.actionDefineList.Exists(a => a.defineName == actionNode.defineName))
+                {
+                    //包含不存在的动作名称，可能是名称过期了
+                    string newDefineName = null;
+                    foreach (ActionDefine actionDefine in actionDefineDict.Values)
+                    {
+                        if (actionDefine.obsoleteNames != null && actionDefine.obsoleteNames.Contains(actionNode.defineName))
+                        {
+                            newDefineName = actionDefine.defineName;
+                            break;
+                        }
+                    }
+                    if (newDefineName != null)
+                    {
+                        Debug.LogWarning("将动作节点" + actionNode.id + "过期的动作名称" + actionNode.defineName + "替换为" + newDefineName);
+                        actionNode.defineName = newDefineName;
+                    }
+                    else
+                    {
+                        Debug.LogError("动作节点" + actionNode.id + "的名称未知：" + actionNode.defineName);
+                    }
+                }
+                foreach (var constPair in actionNode.consts)
+                {
+                    if (constPair.Value is CardReference cardRef)
+                    {
+                        //CardReference过期，使用DefineReference替代
+                        actionNode.setConst(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
+                    }
+                }
+                // 将旧版的“获取增益定义”的ID从int变为DefineReference。
+                if (actionNode.defineName == GetBuffDefineAction.defName)
+                {
+                    var constValue = actionNode.getConst(GetBuffDefineAction.constName);
+                    if (constValue is int buffId)
+                    {
+                        actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
+                    }
+                }
+            }
+            void fixActiveEntryIncorrectData(ActiveEntryNode activeEntry)
+            {
+                foreach (var targetChecker in activeEntry.targetCheckerList)
+                {
+                    if (string.IsNullOrEmpty(targetChecker.targetType))
+                    {
+                        //目标的类型不能为空，如果为空则默认为仆从
+                        targetChecker.targetType = DEFINE.TARGET_TYPE_SERVANT;
+                    }
+                }
+            }
+            #endregion
+        }
 
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
@@ -1480,6 +1509,8 @@ namespace Game
         }
         #endregion
         #region 属性字段
+        [TranslateMsg]
+        public const string CARD_POOL_LOAD_ERROR_DESC = "卡池加载失败，卡池文件可能已损坏。";
         public string cardPoolDirName => _cardPoolDirName;
         public string textureDirName => _textureDirName;
         public string editorCardPoolDirName => _editorCardPoolDirName;

@@ -714,7 +714,7 @@ namespace Controllers
                                 var path = game.card.getCardPoolPath(ownedRef);
                                 if (path != null)
                                 {
-                                    await game.card.loadCardPool(path);
+                                    await game.card.loadCardPool(path, true);
                                 }
                             }
                             cardDefine = game.card.getCardDefine(ownedRef, cardReference.defineId);

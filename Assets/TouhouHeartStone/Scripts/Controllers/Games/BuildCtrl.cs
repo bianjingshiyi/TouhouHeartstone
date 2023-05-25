@@ -630,6 +630,11 @@ namespace Controllers
         }
         private bool tryAddCardToDeck(CardDefine card, out string errorTip)
         {
+            if (card == null)
+            {
+                errorTip = string.Empty;
+                return false;
+            }
             //卡组数量上限
             if (_deck.getCardCount() >= game.deck.deckValidSize)
             {

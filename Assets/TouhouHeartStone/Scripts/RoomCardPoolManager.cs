@@ -79,7 +79,7 @@ namespace Game
                         CardPool localCardPool = null;
                         if (hasLocalPool && !game.card.tryGetCardPool(roomPool.GetReference(), out localCardPool) && !string.IsNullOrEmpty(cardPoolPath))
                         {
-                            localCardPool = (await game.card.loadCardPool(cardPoolPath)).cardPool;
+                            localCardPool = (await game.card.loadCardPool(cardPoolPath, true)).cardPool;
                         }
 
                         token.ThrowIfCancellationRequested();

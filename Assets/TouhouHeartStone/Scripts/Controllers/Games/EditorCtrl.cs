@@ -47,18 +47,27 @@ namespace Controllers
                 }
                 //更新牌库信息
                 Sprite image = await game.card.loadImage(_curCardPoolInfo.imageResPath, _curCardPoolInfo.cardPoolId);
-                //显示卡牌列表
-                if (reloadCardPool)
+                try
                 {
-                    //重新加载牌库中的所有卡牌和皮肤
-                    if (string.IsNullOrEmpty(_curCardPoolPath))
+                    //显示卡牌列表
+                    if (reloadCardPool)
                     {
-                        await readCardPoolByIdAsync(_curCardPoolInfo.ToReference());
+                        //重新加载牌库中的所有卡牌和皮肤
+                        if (string.IsNullOrEmpty(_curCardPoolPath))
+                        {
+                            await readCardPoolByIdAsync(_curCardPoolInfo.ToReference());
+                        }
+                        else
+                        {
+                            await readCardPoolByPathAsync(_curCardPoolPath);
+                        }
                     }
-                    else
-                    {
-                        await readCardPoolByPathAsync(_curCardPoolPath);
-                    }
+                }
+                catch (Exception e)
+                {
+                    game.card.showCardPoolLoadErrorDialog();
+                    Debug.LogError(e);
+                    return;
                 }
                 //更新UI
                 gameObject.SetActive(true);
@@ -413,7 +422,6 @@ namespace Controllers
         /// </summary>
         /// <param name="cardPoolRef">卡池引用。</param>
         /// <returns></returns>
-        /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
         private async Task readCardPoolByIdAsync(CardPoolReference cardPoolRef)
         {
             if (!game.card.tryGetCardPool(cardPoolRef, out _))
