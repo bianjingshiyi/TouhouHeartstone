@@ -518,6 +518,12 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public async Task updateDeath(CardEngine game)
         {
+            // 更新光环。
+            await updateAura(game);
+
+            // 死亡结算。
+
+            bool anyCleared = false;
             const int MAX_UPDATE_TIMES = 30;
             List<Card> deathList = new List<Card>();
             int updateTimes = 0;
@@ -542,12 +548,22 @@ namespace TouhouHeartstone
                     break;
                 }
                 await deathList.destroy(game);
+                anyCleared = true;
                 updateTimes++;
             }
             // 受不了了，什么寄吧卡能让死亡结算运行30多次，跳了
             while (updateTimes < MAX_UPDATE_TIMES);
 
-            // 更新光环。
+            // 如果有死亡的卡牌，再更新一次光环。
+            if (anyCleared)
+            {
+                await updateAura(game);
+            }
+        }
+        #endregion
+
+        private async Task updateAura(CardEngine game)
+        {
             var cards = game.players.SelectMany(p => p.getPiles().SelectMany(pile => pile));
             foreach (var card in cards)
             {
@@ -561,8 +577,6 @@ namespace TouhouHeartstone
                 }
             }
         }
-        #endregion
-
         #region Gameflow
 
         private async Task gameflow(CardEngine game, Action onInited = null)
