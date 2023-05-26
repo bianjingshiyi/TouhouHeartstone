@@ -999,7 +999,26 @@ namespace Controllers
             var localPools = await GetLocalCardPools();
 
             var newCardPools = localPools.Union(roomPools);
+            // 忽略无法加载的卡池。
+            List<CardPoolInfoPack> ignoredCardPools = new List<CardPoolInfoPack>();
+            foreach (var pool in newCardPools)
+            {
+                if (game.card.isBuiltinCardPool(pool.cardPoolId))
+                    continue;
+                if (!game.card.tryGetCardPool(pool.cardPoolId, out CardPool _))
+                {
+                    var poolRef = game.card.getLocalCardPoolReference(pool.cardPoolId);
+                    var (_, cardPool) = await game.card.loadCardPool(game.card.getCardPoolPath(poolRef), true);
+                    if (cardPool == null)
+                    {
+                        Debug.LogError($"无法在添加房间卡池时加载卡池，存在被忽略的卡池：{pool.cardPoolName}");
+                        ignoredCardPools.Add(pool);
+                    }
+                }
+            }
+            newCardPools = newCardPools.Except(ignoredCardPools);
 
+            // 计算添加的卡池和移除的卡池。
             IEnumerable<CardPoolInfoPack> addedPools, removedPools;
             if (_editingCardPools == null)
             {
@@ -1011,6 +1030,9 @@ namespace Controllers
                 addedPools = newCardPools.Except(_editingCardPools);
                 removedPools = _editingCardPools.Except(newCardPools);
             }
+
+
+
             _editingCardPools = newCardPools.ToArray();
 
             return (addedPools, removedPools);
@@ -1318,7 +1340,7 @@ namespace Controllers
                         var path = game.card.getCardPoolPath(cardPoolRef);
                         if (path is string)
                         {
-                            await game.card.loadCardPool(path);
+                            await game.card.loadCardPool(path, true);
                         }
                     }
                 }

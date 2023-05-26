@@ -207,6 +207,24 @@ namespace Game
         }
         private async Task<CardEngine> createGame(HearthstoneOption option, IEnumerable<IRoomPlayer> playerList)
         {
+
+            //加载外部卡牌
+            Dictionary<long, Dictionary<int, CardDefine>> cardDict = new Dictionary<long, Dictionary<int, CardDefine>>();
+            Dictionary<long, Dictionary<int, BuffDefine>> buffDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
+            List<ActionDefine> actionDefines = new List<ActionDefine>();
+            try
+            {
+                await LoadExternalCardsAndBuffs(option, cardDict, buffDict, actionDefines);
+            }
+            catch (Exception e)
+            {
+                var title = main.lang._(StringTable.ERROR);
+                var desc = main.lang._(GAME_CREATE_ERROR_LOAD_CARDS_FAILED);
+                main.ui.dialog.ShowConfirm(title, desc);
+                throw;
+            }
+
+
             CardEngine game = new CardEngine()
             {
                 answers = new GameObject(nameof(AnswerManager)).AddComponent<AnswerManager>(),
@@ -225,20 +243,11 @@ namespace Game
             }
 #endif
 
-            //加载外部卡牌
-            Dictionary<long, Dictionary<int, CardDefine>> cardDict = new Dictionary<long, Dictionary<int, CardDefine>>();
-            Dictionary<long, Dictionary<int, BuffDefine>> buffDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
-            try
+            foreach (var define in actionDefines)
             {
-                await LoadExternalCardsAndBuffs(option, cardDict, buffDict);
+                game.addActionDefine(define.defineName, define);
             }
-            catch (Exception e)
-            {
-                var title = main.lang._(StringTable.ERROR);
-                var desc = main.lang._(GAME_CREATE_ERROR_LOAD_CARDS_FAILED);
-                main.ui.dialog.ShowConfirm(title, desc);
-                throw;
-            }
+
             Rule rule = new HearthStoneRule(cardDict,buffDict);
             await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
                 rule,
@@ -307,7 +316,8 @@ namespace Game
         #endregion
         private async Task LoadExternalCardsAndBuffs(HearthstoneOption option,
             Dictionary<long, Dictionary<int, CardDefine>> cardDict,
-            Dictionary<long, Dictionary<int, BuffDefine>> buffDict)
+            Dictionary<long, Dictionary<int, BuffDefine>> buffDict,
+            List<ActionDefine> actionDefines)
         {
             var cardManager = getManager<CardManager>();
             // 尝试从本地获取卡组，否则读取缓存卡组。
@@ -345,7 +355,7 @@ namespace Game
                     // 加载自定义动作定义。
                     foreach (var define in cardPool.actionDefineList)
                     {
-                        game.addActionDefine(define.defineName, define);
+                        actionDefines.Add(define);
                     }
                 }
             }
