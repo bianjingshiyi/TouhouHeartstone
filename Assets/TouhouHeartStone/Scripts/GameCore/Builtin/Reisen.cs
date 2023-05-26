@@ -178,7 +178,7 @@ namespace TouhouHeartstone.Builtin
                     a.isCanceled = true; //取消攻击
                     Player you = c.getOwner();
                     Player oppo = a.card.getOwner();
-                    await oppo.getField().moveTo(g, a.card, you.getField()); //交换控制权
+                    await a.card.takeControl(g, you); //交换控制权
                 })
         };
 

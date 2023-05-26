@@ -1199,6 +1199,27 @@ namespace Game
                 return;
             game.Reveal(card);
         }
+        [TranslateMsg("编辑器/卡牌-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_TAKE_CONTRL = "获得控制权";
+        /// <summary>
+        /// 获得控制权
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_TAKE_CONTRL, StringTable.EDITOR_NODE_CATEGORY_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static async Task takeControl(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card card)
+        {
+            if (card == null)
+                return;
+            if (player == null)
+                return;
+            await card.takeControl(game, player, -1);// TODO：ActionNodeParam不吃默认值，先填-1，以后有时间了做对仆从位置有关的兼容
+        }
 
 
         [TranslateMsg("编辑器/卡牌-节点名称")]

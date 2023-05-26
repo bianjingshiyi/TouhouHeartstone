@@ -2194,6 +2194,31 @@ namespace TouhouHeartstone
                 }
             }
         }
+        /// <summary>
+        /// 获得一个仆从的控制权。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <param name="player"></param>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public static async Task takeControl(this Card card, CardEngine game, Player player, int position = -1)
+        {
+            if (card.pile?.name != PILE.FIELD) // 不在场上
+                return;
+            if (card.pile == player.getField())// 目标和源相同
+                return;
+            if (player.getField().isFull)//没位置了
+            {
+                await card.kill(game);
+                return;
+            }
+
+            if (position < 0)
+                position = player.getField().count;
+            await card.pile.moveTo(game, card, player.getField(), position);
+            await card.setReady(game, false);
+        }
 
         /// <summary>
         /// 场上回牌库

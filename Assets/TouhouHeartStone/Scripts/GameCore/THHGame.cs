@@ -712,6 +712,21 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
+
+            // 更新攻击次数，放在回合开始事件前面，主要为了防止回合开始时召唤出来的仆从可以立即攻击。
+            // 同时要更新所有角色的攻击次数，防止转移控制权的先攻仆从无法攻击。
+            foreach (Player p in game.getSortedPlayers())
+            {
+                //使随从可以攻击
+                foreach (var card in p.getField())
+                {
+                    await card.setReady(game, true);
+                    await card.setAttackTimes(game, 0);
+                }
+                //使自己可以攻击
+                await p.getMaster().setAttackTimes(game, 0);
+            }
+
             await game.triggers.doEvent(new TurnStartEventArg() { player = player }, async arg =>
             {
                 game.logger.logTrace(arg.player + "的回合开始");
@@ -722,15 +737,6 @@ namespace TouhouHeartstone
                 await arg.player.draw(game);
                 //重置技能
                 await player.getSkill().setUsed(game, false);
-                //使随从可以攻击
-                foreach (Card card in player.getField())
-                {
-                    await card.setReady(game, true);
-                    await card.setAttackTimes(game, 0);
-                }
-
-                //使自己可以攻击
-                await player.getMaster().setAttackTimes(game, 0);
             });
             await game.updateDeath();
             //倒计时75秒
