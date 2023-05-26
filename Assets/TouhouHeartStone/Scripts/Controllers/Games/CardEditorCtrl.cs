@@ -11,6 +11,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.UI;
 using MukioI18n;
+using TouhouCardEngine.Interfaces;
 
 namespace Controllers
 {
@@ -191,6 +192,10 @@ namespace Controllers
             _ui.onClickCloseButton += onClickCloseButton;
             _ui.onClickSkillRefButton += onClickSkillRefButton;
             _ui.onChangeTag += onChangeTag;
+
+            _ui.onClickCardPageButton += onClickCardPageButton;
+            _ui.onClickPropertyPageButton += onClickPropertyPageButton;
+            _ui.onClickNodesPageButton += onClickNodesPageButton;
 
             _cardPoolViewPanelCtrl.onClickCard += onClickCardPoolViewCard;
             _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
@@ -544,6 +549,22 @@ namespace Controllers
             });
             _ui.displayCardSelectPanel(true);
             _cardSelectTarget = CardSelectTarget.Skill;
+        }
+        private void onClickCardPageButton()
+        {
+            //打开卡牌界面
+            _ui.displayCardPage();
+            _ui.setType(Array.IndexOf(_types, _cardDefine.type), _cardDefine.type);
+        }
+        private void onClickPropertyPageButton()
+        {
+            //打开属性界面
+            _ui.displayPropertyPage();
+        }
+        private void onClickNodesPageButton()
+        {
+            //打开节点界面
+            _ui.displayNodesPage();
         }
         private void onClickCancelCardPoolSelectButton()
         {

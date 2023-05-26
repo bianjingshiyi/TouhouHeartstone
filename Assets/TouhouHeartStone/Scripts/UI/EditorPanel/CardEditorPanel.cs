@@ -407,9 +407,9 @@ namespace UI
 
 
             // Pages.
-            _cardPageButton.onClick.AddListener(() => displayPage(_cardPage, _cardPageIndicator));
-            _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage, _propertyPageIndicator));
-            _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage, _nodesPageIndicator));
+            _cardPageButton.onClick.AddListener(onClickCardPageButtonCallback);
+            _propertyPageButton.onClick.AddListener(onClickPropertyPageButtonCallback);
+            _nodesPageButton.onClick.AddListener(onClickNodesPageButtonCallback);
 
             // Custom Properties.
             _addCustomPropertyButton.onClick.AddListener(() => displayCustomPropertyDialog(true));
@@ -663,6 +663,18 @@ namespace UI
         {
             onClickCloseButton?.Invoke();
         }
+        private void onClickCardPageButtonCallback()
+        {
+            onClickCardPageButton?.Invoke();
+        }
+        private void onClickPropertyPageButtonCallback()
+        {
+            onClickPropertyPageButton?.Invoke();
+        }
+        private void onClickNodesPageButtonCallback()
+        {
+            onClickNodesPageButton?.Invoke();
+        }
         private void onTagInputFieldEndEdit(string text)
         {
             onChangeTag?.Invoke(text);
@@ -730,6 +742,18 @@ namespace UI
             onDeleteCustomProperty?.Invoke(name);
         }
         #endregion
+        public void displayCardPage()
+        {
+            displayPage(_cardPage, _cardPageIndicator);
+        }
+        public void displayPropertyPage()
+        {
+            displayPage(_propertyPage, _propertyPageIndicator);
+        }
+        public void displayNodesPage()
+        {
+            displayPage(_nodesPage, _nodesPageIndicator);
+        }
         #endregion
 
         private void displayPage(GameObject toDisplay, GameObject indicator)
@@ -833,6 +857,18 @@ namespace UI
         ///// 当点击关闭按钮
         ///// </summary>
         public event Action onClickCloseButton;
+        /// <summary>
+        /// 当点击卡牌页面按钮
+        /// </summary>
+        public event Action onClickCardPageButton;
+        /// <summary>
+        /// 当点击属性页面按钮
+        /// </summary>
+        public event Action onClickPropertyPageButton;
+        /// <summary>
+        /// 当点击节点页面按钮
+        /// </summary>
+        public event Action onClickNodesPageButton;
         /// <summary>
         /// 当点击选择技能按钮
         /// </summary>
