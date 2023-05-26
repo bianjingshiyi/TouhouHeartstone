@@ -20,13 +20,13 @@ namespace Controllers
         {
             if (actionDefine != null)
             {
-                return actionDefine.category;
+                return actionDefine.category ?? string.Empty;
             }
             if (eventDefine != null)
             {
                 return ActionNodeGraphCtrl.EDITOR_CATEGORY_EVENT_ENTRY_NODE;
             }
-            return null;
+            return string.Empty;
         }
         public Type[] getOutputTypes()
         {
@@ -34,11 +34,23 @@ namespace Controllers
             {
                 return actionDefine.outputDefines.Select(d => d.type).ToArray();
             }
-            if (eventDefine != null)
+            if (eventDefine != null && eventDefine.variableInfos != null)
             {
-                return eventDefine.variableInfos.Select(v => v.type).ToArray();
+                return eventDefine.variableInfos.Where(v => v != null).Select(v => v.type).ToArray();
             }
             return null;
+        }
+        public string getDefineEditorName()
+        {
+            if (actionDefine != null)
+            {
+                return actionDefine.defineName;
+            }
+            else if (eventDefine != null)
+            {
+                return eventDefine.editorName;
+            }
+            return string.Empty;
         }
     }
 }

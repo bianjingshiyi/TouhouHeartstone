@@ -9,7 +9,7 @@ namespace Game
     partial class EffectEditorLibrary
     {
         [TranslateMsg("编辑器-节点类型-卡牌定义")]
-        private const string EDITOR_NODE_CATEGORY_CARD_DEFINE = "卡牌定义";
+        public const string EDITOR_NODE_CATEGORY_CARD_DEFINE = "卡牌定义";
 
 
         /// 获取全部卡牌定义

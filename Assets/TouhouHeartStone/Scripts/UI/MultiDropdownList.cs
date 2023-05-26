@@ -22,7 +22,7 @@ namespace UI
         #region 事件回调
         private void onEndEditCallback(string text)
         {
-            if (!_dropdown.values.Contains(text))
+            if (!_dropdown.values.Contains(text) && !string.IsNullOrEmpty(text))
             {
                 _dropdown.values = _dropdown.values.Append(text).ToArray();
             }

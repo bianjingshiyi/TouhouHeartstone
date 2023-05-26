@@ -13,7 +13,7 @@ namespace Game
     public static partial class EffectEditorLibrary
     {
         [TranslateMsg("编辑器-节点分类名称")]
-        private const string EDIOTR_CATEGORY_NAME_ADVANCED = "高级";
+        public const string EDIOTR_CATEGORY_NAME_ADVANCED = "高级";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDIOTR_NODE_NAME_SET_TEMP_VARIABLE = "设置临时变量";
         [TranslateMsg("编辑器-节点名称")]

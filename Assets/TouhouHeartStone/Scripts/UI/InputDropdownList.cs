@@ -15,7 +15,10 @@ namespace UI
         #region 事件回调
         private void onEndEditCallback(string text)
         {
-            _dropdown.value = text;
+            if (!string.IsNullOrEmpty(text))
+            {
+                _dropdown.value = text;
+            }
         }
         #endregion
         #endregion
