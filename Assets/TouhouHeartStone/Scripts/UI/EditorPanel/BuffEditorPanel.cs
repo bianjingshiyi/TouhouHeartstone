@@ -145,8 +145,9 @@ namespace UI
             _effectList.updateList(effectNames, activeIndex);
         }
         #endregion
-        public void closeAllEdit()
+        public void reset()
         {
+            displayPage(_buffPage, _buffPageIndicator);
             _skinDropdown.Hide();
             _skinNameInputField.DeactivateInputField();
             _languageDropdown.Hide();

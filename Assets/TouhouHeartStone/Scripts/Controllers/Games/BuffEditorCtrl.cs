@@ -35,7 +35,7 @@ namespace Controllers
             _ui.setId(buffDefine.id);
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             updateModifiers();
-            _ui.closeAllEdit();
+            _ui.reset();
             await setCurSkinIndex(0);
 
             _effectEditorCtrl.hideActionGraph();

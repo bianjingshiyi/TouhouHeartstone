@@ -222,8 +222,9 @@ namespace UI
         {
             _skillIdGameObject.SetActive(true);
         }
-        public void closeAllEdit()
+        public void reset()
         {
+            displayPage(_cardPage, _cardPageIndicator);
             _skinDropdown.Hide();
             _languageDropdown.Hide();
             _characterDropdown.Hide();

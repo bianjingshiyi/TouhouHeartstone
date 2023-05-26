@@ -64,7 +64,7 @@ namespace Controllers
             else
                 _ui.setRace(0);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
-            _ui.closeAllEdit();
+            _ui.reset();
             if (cardDefine.isSpell())
                 _ui.switchToSpell();
             else if (cardDefine.isItem())

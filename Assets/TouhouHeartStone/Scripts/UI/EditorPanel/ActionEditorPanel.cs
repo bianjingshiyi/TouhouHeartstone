@@ -130,9 +130,9 @@ namespace UI
 
         #endregion
 
-        public void closeAllEdit()
+        public void reset()
         {
-            _nameInputField.DeactivateInputField(); ;
+            displayPage(_actionPage, _actionPageIndicator);
         }
         #endregion
 

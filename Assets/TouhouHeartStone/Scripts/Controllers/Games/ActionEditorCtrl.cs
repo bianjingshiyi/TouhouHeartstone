@@ -29,6 +29,7 @@ namespace Controllers
 
             _ui.setCategory(actionDefine.category);
 
+            _ui.reset();
             await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(
                         cardPoolId,
                         actionDefine,
