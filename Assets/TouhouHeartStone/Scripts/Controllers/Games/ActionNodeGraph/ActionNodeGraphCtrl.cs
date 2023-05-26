@@ -176,7 +176,9 @@ namespace Controllers
         }
         public bool CanNodeOpenDocument(Node node)
         {
-            if (!(node is ActionNode))
+            if (!(node is ActionNode actionNode)) // 不是动作节点
+                return false;
+            if (game.getActionDefine(actionNode.defineName, 0) == null) // 不是内置节点
                 return false;
             return true;
         }
@@ -705,7 +707,7 @@ namespace Controllers
             else if (actionDefine != null)
             {
                 ActionNodeValueInfo[] constsInfo = getActionNodeConstValueInfo(actionNode);
-                string nodeKey = CanNodeOpenDocument(actionNode) ? null : actionNode.defineName;
+                string nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineName : null;
                 actionNodeItem = _ui.createNode(
                     actionNode.posX,
                     actionNode.posY,
