@@ -192,6 +192,64 @@ namespace Controllers
         }
         #endregion
 
+        #region 节点创建
+        public async Task<ActionNodeItem> createActionNode(ActionDefine actionDefine, float x, float y)
+        {
+            var actionNode = graph.createActionNode(actionDefine, x, y);
+            _actionNodeList.Add(actionNode);
+            ActionNodeItem actionNodeItem = await createNodeUI4ActionNode(actionNode);
+            updateContentSize();
+            OnEdited();
+            return actionNodeItem;
+        }
+        public Task<ActionNodeItem> createActionNode(ActionDefine actionDefine, Vector2 pos)
+        {
+            return createActionNode(actionDefine, pos.x, pos.y);
+        }
+        public Task<ActionNodeItem> createActionNodeAtCurPos(ActionDefine actionDefine)
+        {
+            return createActionNode(actionDefine, _curPosX, _curPosY);
+        }
+        public ActionNodeItem createEventEntryNode(EventDefine eventDefine, float x, float y, bool showErrorTip = true)
+        {
+            // 尝试为非事件效果创建事件入口节点。
+            if (!(_effect is GeneratedEventEffect eventEffect))
+            {
+                if (showErrorTip)
+                    showCreateEventEntryForNonEventEffectError();
+                return null;
+            }
+            // 已经有事件入口节点。
+            if (eventEffect.entryNode != null)
+            {
+                if (showErrorTip)
+                    showEventEntryAlreadyExistsError();
+                return null;
+            }
+            var actionNode = graph.createEventEntryNode(eventDefine, x, y);
+            _actionNodeList.Add(actionNode);
+            ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
+            updateContentSize();
+            OnEdited();
+            return actionNodeItem;
+        }
+        public ActionNodeItem createEventEntryNode(EventDefine eventDefine, Vector2 pos)
+        {
+            return createEventEntryNode(eventDefine, pos.x, pos.y);
+        }
+        public async void createNode(NodeDefine define, Vector2 pos)
+        {
+            if (define.actionDefine != null)
+            {
+                await createActionNode(define.actionDefine, pos);
+            }
+            else if (define.eventDefine != null)
+            {
+                createEventEntryNode(define.eventDefine, pos);
+            }
+        }
+        #endregion
+
         #endregion
         #region 私有方法
         #region 生命周期
@@ -878,14 +936,6 @@ namespace Controllers
             updateNodePortModes(auraEntry, _connectingPort);
             return actionNodeItem;
         }
-        private async Task<ActionNodeItem> createActionNodeAtCurPos(ActionDefine actionDefine)
-        {
-            var actionNode = graph.createActionNode(actionDefine, _curPosX, _curPosY);
-            _actionNodeList.Add(actionNode);
-            ActionNodeItem actionNodeItem = await createNodeUI4ActionNode(actionNode);
-            updateContentSize();
-            return actionNodeItem;
-        }
         private void removeActionNode(Node node)
         {
             int actionNodeIndex = _actionNodeList.IndexOf(node);
@@ -1299,6 +1349,14 @@ namespace Controllers
         {
             showErrorTip(game.lang._(StringTable.EDITOR_ERROR_INVALID_TYPE_CONNECT));
         }
+        private void showCreateEventEntryForNonEventEffectError()
+        {
+            showErrorTip(game.lang._(EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT));
+        }
+        private void showEventEntryAlreadyExistsError()
+        {
+            showErrorTip(game.lang._(EDITOR_ERROR_ALREADY_HAS_EVENT_ENTRY));
+        }
         private bool validatePortConnection(IPort outputPort, IPort inputPort, bool showErrorTip = true)
         {
             if (outputPort.canConnectTo(inputPort))
@@ -1685,21 +1743,7 @@ namespace Controllers
                 closeMenu();
                 // 创建事件入口节点。
                 var events = _eventTypeInfoList;
-
-                // 尝试为非事件效果创建事件入口节点。
-                if (!(_effect is GeneratedEventEffect eventEffect))
-                {
-                    showErrorTip(game.lang._(EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT));
-                    return;
-                }
-                // 已经有事件入口节点。
-                if (eventEffect.entryNode != null)
-                {
-                    showErrorTip(game.lang._(EDITOR_ERROR_ALREADY_HAS_EVENT_ENTRY));
-                    return;
-                }
-                var entryNode = graph.createEventEntryNode(events[index - categories.Length], _curPosX, _curPosY);
-                createNodeUI4PassiveEntryNode(entryNode);
+                createEventEntryNode(events[index - categories.Length], _curPosX, _curPosY);
             }
             else if (!inCategory)
             {
