@@ -21,9 +21,6 @@ namespace Controllers
             gameObject.SetActive(true);
             _cardPoolId = cardPoolId;
             _actionDefine = actionDefine;
-            var typeNames = game.editor.getEditorVarTypeNames();
-            var constTypeNames = game.editor.getEditorConstTypeNames();
-            _ui.initPropertyItemTypes(typeNames, constTypeNames);
 
             _ui.setName(actionDefine.defineName);
 
@@ -63,7 +60,6 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<ActionEditorPanel>();
             }
-            _ui.onChangeName += onChangeName;
             _ui.onChangeCategory += onChangeCategory;
             _ui.onCreatePortDefine += onCreatePortDefine;
 
@@ -87,30 +83,6 @@ namespace Controllers
         private void onGraphEdited()
         {
             markActionUnsaved();
-        }
-        /// <summary>
-        /// 当用户更改动作名
-        /// </summary>
-        /// <param name="name"></param>
-        private void onChangeName(string value)
-        {
-            // 因为动作编辑器的名称输入框不能交互，所以不会被用到。但还是留着
-            if (value == _actionDefine.defineName)
-                return;
-            if (!_actionNodeGraphCtrl.isActionDefineNameExist(value))
-            {
-                _actionDefine.defineName = value;
-                _ui.setName(value);
-                markActionUnsaved();
-            }
-            else
-            {
-                //重名
-                game.ui.dialog.ShowConfirm(
-                    game.langManager.getString(StringTable.ERROR),
-                    game.langManager.getString(StringTable.EDITOR_ERROR_ACTION_DEFINE_NAME_ALREADY_EXIST));
-                _ui.setName(_actionDefine.defineName);
-            }
         }
         /// <summary>
         /// 当用户更改动作分类
@@ -350,13 +322,14 @@ namespace Controllers
                     type = type.GetElementType();
                 }
                 int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
+                var typeName = game.editor.getEditorVarTypeNames()[typeIndex];
                 return new ActionPortDefineViewData()
                 {
                     name = input.getDisplayName(),
                     isParams = isParams,
                     showParams = isParams,
                     isArray = isArray,
-                    typeIndex = typeIndex
+                    typeName = typeName
                 };
             }).ToArray();
 
@@ -375,12 +348,13 @@ namespace Controllers
                     type = type.GetElementType();
                 }
                 int typeIndex = game.editor.getEditorConstTypeNameIndex(type.Name);
+                var typeName = game.editor.getEditorConstTypeNames()[typeIndex];
                 return new ActionPortDefineViewData()
                 {
                     name = cst.getDisplayName(),
                     showParams = false,
                     isArray = isArray,
-                    typeIndex = typeIndex
+                    typeName = typeName
                 };
             }).ToArray();
 
@@ -399,12 +373,13 @@ namespace Controllers
                     type = type.GetElementType();
                 }
                 int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
+                var typeName = game.editor.getEditorVarTypeNames()[typeIndex];
                 return new ActionPortDefineViewData()
                 {
                     name = output.getDisplayName(),
                     showParams = false,
                     isArray = isArray,
-                    typeIndex = typeIndex
+                    typeName = typeName
                 };
             }).ToArray();
 

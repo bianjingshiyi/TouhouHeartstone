@@ -7,18 +7,13 @@ namespace UI
     public class EffectEditorValueDefineItem : MonoBehaviour
     {
         #region 公有方法
-        public void initTypeDropdown(string[] types)
+        public void setType(string typeName)
         {
-            _typeDropdown.ClearOptions();
-            _typeDropdown.AddOptions(new List<string>(types));
-        }
-        public void setType(int typeIndex)
-        {
-            _typeDropdown.SetValueWithoutNotify(typeIndex);
+            _typeNameText.text = typeName;
         }
         public void setName(string name)
         {
-            _nameInputField.SetTextWithoutNotify(name);
+            _nameText.text = name;
         }
         public void setIsArray(bool value)
         {
@@ -61,9 +56,9 @@ namespace UI
         #endregion
         #region 属性字段
         [SerializeField]
-        Dropdown _typeDropdown;
+        Text _typeNameText;
         [SerializeField]
-        InputField _nameInputField;
+        Text _nameText;
         [SerializeField]
         Toggle _isArrayToggle;
         [SerializeField]

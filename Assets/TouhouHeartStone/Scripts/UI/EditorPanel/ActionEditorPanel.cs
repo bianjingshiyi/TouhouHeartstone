@@ -12,7 +12,7 @@ namespace UI
         #region 基础
         public void setName(string name)
         {
-            _nameInputField.SetTextWithoutNotify(name);
+            _nameText.text = name;
         }
         public void setCategory(string category)
         {
@@ -37,18 +37,6 @@ namespace UI
         #endregion
 
         #region 属性
-
-        public void initPropertyItemTypes(string[] types, string[] constTypes)
-        {
-            var input = _inputItemTemplate.GetComponent<EffectEditorValueDefineItem>();
-            input.initTypeDropdown(types);
-
-            var constItem = _constItemTemplate.GetComponent<EffectEditorValueDefineItem>();
-            constItem.initTypeDropdown(constTypes);
-
-            var output = _outputItemTemplate.GetComponent<EffectEditorValueDefineItem>();
-            output.initTypeDropdown(types);
-        }
         #region 输入变量
         public void updateInputList(ActionPortDefineViewData[] viewDatas)
         {
@@ -56,7 +44,7 @@ namespace UI
             {
                 var input = rect.GetComponent<EffectEditorValueDefineItem>();
                 var viewData = viewDatas[i];
-                input.setType(viewData.typeIndex);
+                input.setType(viewData.typeName);
                 input.setName(viewData.name);
                 input.setIsArray(viewData.isArray);
                 input.setShowParams(viewData.showParams);
@@ -82,7 +70,7 @@ namespace UI
             {
                 var cst = rect.GetComponent<EffectEditorValueDefineItem>();
                 var viewData = viewDatas[i];
-                cst.setType(viewData.typeIndex);
+                cst.setType(viewData.typeName);
                 cst.setName(viewData.name);
                 cst.setIsArray(viewData.isArray);
                 cst.setShowParams(viewData.showParams);
@@ -109,7 +97,7 @@ namespace UI
             {
                 var output = rect.GetComponent<EffectEditorValueDefineItem>();
                 var viewData = viewDatas[i];
-                output.setType(viewData.typeIndex);
+                output.setType(viewData.typeName);
                 output.setName(viewData.name);
                 output.setIsArray(viewData.isArray);
                 output.setShowParams(viewData.showParams);
@@ -140,7 +128,6 @@ namespace UI
         #region 生命周期
         private void Awake()
         {
-            _nameInputField.onEndEdit.AddListener(onChangeNameCallback);
             _categoryInputField.onValueChanged.AddListener(onChangeCategoryCallback);
 
             _createPortDefineDialog.onConfirm += onCreatePortDefineCallback;
@@ -161,11 +148,6 @@ namespace UI
         #endregion
 
         #region 事件回调
-
-        void onChangeNameCallback(string name)
-        {
-            onChangeName?.Invoke(name);
-        }
         void onChangeCategoryCallback(string category)
         {
             onChangeCategory?.Invoke(category);
@@ -254,12 +236,6 @@ namespace UI
         #endregion
 
         #region 事件
-
-        /// <summary>
-        /// 当动作名称被更改。
-        /// 参数：更改后的名称。
-        /// </summary>
-        public event Action<string> onChangeName;
         /// <summary>
         /// 当动作分类被更改。
         /// 参数：更改后的分类索引。
@@ -332,7 +308,7 @@ namespace UI
 
         [Header("Basic")]
         [SerializeField]
-        InputField _nameInputField;
+        Text _nameText;
         [SerializeField]
         InputField _categoryInputField;
         [SerializeField]
@@ -395,7 +371,7 @@ namespace UI
 
     public struct ActionPortDefineViewData
     {
-        public int typeIndex;
+        public string typeName;
         public string name;
         public bool isArray;
         public bool showParams;
