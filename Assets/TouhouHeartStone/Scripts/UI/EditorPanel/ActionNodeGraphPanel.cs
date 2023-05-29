@@ -717,7 +717,6 @@ namespace UI
             var inputIndex = item.indexOfInput(input);
             Destroy(_dragLine.gameObject);
             _dragLine = null;
-            onEndConnection?.Invoke(item, inputIndex, false);
             //使用射线判断是否在其他的输入点上
             List<RaycastResult> raycastList = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData as PointerEventData, raycastList);
@@ -732,27 +731,30 @@ namespace UI
                 {
                     // 已连接，断开连接。
                     onUnconnectNodes?.Invoke(outputItem, outputIndex, item, inputIndex);
+                    onEndConnection?.Invoke(item, inputIndex, false);
                     return;
                 }
                 else
                 {
                     // 未连接，连接。
                     onConnectNodes?.Invoke(outputItem, outputIndex, item, inputIndex);
+                    onEndConnection?.Invoke(item, inputIndex, false);
                     return;
                 }
             }
             //不在任何点上：
-            //如果（该输入端点是动作端点）并且（有多个连接），跳过。
+            //如果（该输入端点是值端点）或者（只有一个连接），尝试断开连接。
             int connectCount = _connectionList.Count(c => c.inputNode == item && c.inputIndex == inputIndex);
-            if (input.isControl && connectCount > 1)
-                return;
-
-            //如果目前的连线已经与节点链接，则断开它们的连接。
-            int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == inputIndex);
-            if (index >= 0)
+            if (!input.isControl || connectCount == 1)
             {
-                onUnconnectNodes?.Invoke(_connectionList[index].outputNode, _connectionList[index].outputIndex, item, inputIndex);
+                //如果目前的连线已经与节点链接，则断开它们的连接。
+                int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == inputIndex);
+                if (index >= 0)
+                {
+                    onUnconnectNodes?.Invoke(_connectionList[index].outputNode, _connectionList[index].outputIndex, item, inputIndex);
+                }
             }
+            onEndConnection?.Invoke(item, inputIndex, false);
         }
         /// <summary>
         /// 点击输入接口，如果是原本的接口则取消选择，如果在另外一个接口上则触发事件
@@ -791,7 +793,7 @@ namespace UI
                 }
                 _currentSelectedKnob.outputKnob?.setSelected(false);
                 _currentSelectedKnob = default;
-                onEndConnection?.Invoke(item, inputIndex, false);
+                onEndConnection?.Invoke(output, outputIndex, true);
                 return;
             }
             else
@@ -868,7 +870,6 @@ namespace UI
             int outputIndex = item.indexOfOutput(output);
             Destroy(_dragLine.gameObject);
             _dragLine = null;
-            onEndConnection?.Invoke(item, outputIndex, true);
             //使用射线判断是否在其他的输入点上
             List<RaycastResult> raycastList = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData as PointerEventData, raycastList);
@@ -883,27 +884,31 @@ namespace UI
                 {
                     // 已连接，断开连接。
                     onUnconnectNodes?.Invoke(item, outputIndex, inputItem, inputIndex);
+                    onEndConnection?.Invoke(item, outputIndex, true);
                     return;
                 }
                 else
                 {
                     // 未连接，连接。
                     onConnectNodes?.Invoke(item, outputIndex, inputItem, inputIndex);
+                    onEndConnection?.Invoke(item, outputIndex, true);
                     return;
                 }
             }
             // 不在任何点上：
-            //如果（该输出端点是值端点）并且（有多个连接），跳过。
+            // 如果（该输出端点是控制端点）或者（只有一个连接），尝试断开连接。
             int connectedCount = _connectionList.Count(c => c.outputNode == item && c.outputIndex == outputIndex);
-            if (!output.isControl && connectedCount > 1)
-                return;
-
-            //如果目前的连线已经与节点链接，则断开它们的连接。
-            int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == outputIndex);
-            if (index >= 0)
+            if (output.isControl || connectedCount == 1)
             {
-                onUnconnectNodes?.Invoke(item, outputIndex, _connectionList[index].inputNode, _connectionList[index].inputIndex);
+                //如果目前的连线已经与节点链接，则断开它们的连接。
+                int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == outputIndex);
+                if (index >= 0)
+                {
+                    onUnconnectNodes?.Invoke(item, outputIndex, _connectionList[index].inputNode, _connectionList[index].inputIndex);
+                }
             }
+            onEndConnection?.Invoke(item, outputIndex, true);
+
         }
         /// <summary>
         /// 点击输出接口，如果是原本的接口则取消选择，如果在另外一个接口上则触发事件
@@ -920,7 +925,7 @@ namespace UI
                 // 取消选择。
                 output?.setSelected(false);
                 _currentSelectedKnob = default;
-                onEndConnection?.Invoke(item, outputIndex, output);
+                onEndConnection?.Invoke(item, outputIndex, true);
                 return;
             }
             else if (_currentSelectedKnob.inputNode != null && _currentSelectedKnob.inputIndex >= 0)
@@ -942,7 +947,7 @@ namespace UI
                 }
                 _currentSelectedKnob.inputKnob?.setSelected(false);
                 _currentSelectedKnob = default;
-                onEndConnection?.Invoke(item, outputIndex, output);
+                onEndConnection?.Invoke(input, inputIndex, false);
                 return;
             }
             else
@@ -954,7 +959,7 @@ namespace UI
                 _currentSelectedKnob.outputIndex = outputIndex;
                 _currentSelectedKnob.outputKnob = output;
                 _currentSelectedKnob.outputKnob?.setSelected(true);
-                onStartConnection?.Invoke(item, outputIndex, output);
+                onStartConnection?.Invoke(item, outputIndex, true);
             }
         }
         private void onPointerDownActionNodeItem(ActionNodeItem item, PointerEventData eventData)

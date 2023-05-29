@@ -6,6 +6,7 @@ using MukioI18n;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 using UIHelper = BJSYGameCore.UI.UIHelper;
 
 namespace UI
@@ -249,12 +250,14 @@ namespace UI
             {
                 // normal
                 _nameBackground.color = _normalTitleColor;
+                _selectedOutline.effectColor = _normalTitleColor;
                 _warningObj.gameObject.SetActive(false);
             }
             else
             {
                 // obsolete
                 _nameBackground.color = _warningTitleColor;
+                _selectedOutline.effectColor = _warningTitleColor;
                 _warningObj.gameObject.SetActive(true);
             }
         }
@@ -551,6 +554,8 @@ namespace UI
         Button _helpBtn;
         [SerializeField]
         GameObject _selectedIndicator;
+        [SerializeField]
+        NicerOutline _selectedOutline;
 
         [Header("输入")]
         [SerializeField]

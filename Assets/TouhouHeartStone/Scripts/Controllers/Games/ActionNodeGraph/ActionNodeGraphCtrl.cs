@@ -363,11 +363,13 @@ namespace Controllers
         {
             var node = getActionNode(actionNodeItem);
             var port = isOutput ? node.getOutputPortAt(index) : node.getInputPortAt(index);
-            updatePortHighlights(port);
+            _connectingPort = port;
+            updatePortModes(port);
         }
         private void onEndConnection(ActionNodeItem actionNodeItem, int index, bool isOutput)
         {
-            clearPortHighlights();
+            _connectingPort = null;
+            updatePortModes(null);
         }
         /// <summary>
         /// 当用户更改节点的常量值，设置对应的常量。
@@ -563,6 +565,7 @@ namespace Controllers
                 if (connection == null) continue;
                 connectPorts4UI(connection.source, connection.destination);
             }
+            updatePortModes(null);
         }
 
         private async Task<ActionNodeItem> createNodeUI4Node(Node node)
@@ -592,6 +595,7 @@ namespace Controllers
 
                 _actionNodeItemList.Add(actionNodeItem);
                 _actionNodeList.Add(node);
+                updateNodePortModes(node, _connectingPort);
                 return actionNodeItem;
             }
             else if (node is PassiveEntryNode passiveEntry)
@@ -608,6 +612,7 @@ namespace Controllers
                 var actionNodeItem = _ui.createNode(genEntry.posX, genEntry.posY, nodeName, inputViewData, constsInfo, outputViewData);
                 _actionNodeItemList.Add(actionNodeItem);
                 _actionNodeList.Add(node);
+                updateNodePortModes(node, _connectingPort);
                 return actionNodeItem;
             }
             else if (node is GeneratedActionReturnNode genReturn)
@@ -620,6 +625,7 @@ namespace Controllers
                 var actionNodeItem = _ui.createNode(genReturn.posX, genReturn.posY, nodeName, inputViewData, constsInfo, outputViewData);
                 _actionNodeItemList.Add(actionNodeItem);
                 _actionNodeList.Add(node);
+                updateNodePortModes(node, _connectingPort);
                 return actionNodeItem;
             }
             else if (node is AuraEntryNode auraEntry)
@@ -781,6 +787,7 @@ namespace Controllers
             {
                 _actionNodeList.Add(actionNode);
             }
+            updateNodePortModes(actionNode, _connectingPort);
             return actionNodeItem;
         }
         private ActionNodeItem createNodeUI4PassiveEntryNode(PassiveEntryNode passiveEntry)
@@ -821,7 +828,7 @@ namespace Controllers
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(passiveEntry);
-
+            updateNodePortModes(passiveEntry, _connectingPort);
             return actionNodeItem;
         }
         private ActionNodeItem createNodeUI4AuraEntryNode(AuraEntryNode auraEntry)
@@ -846,7 +853,7 @@ namespace Controllers
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(auraEntry);
-
+            updateNodePortModes(auraEntry, _connectingPort);
             return actionNodeItem;
         }
         private async Task<ActionNodeItem> createActionNodeAtCurPos(ActionDefine actionDefine)
@@ -1064,50 +1071,52 @@ namespace Controllers
             }
         }
 
-        private void updatePortHighlights(IPort port)
-        {
-            clearPortHighlights();
-            addPortHighlights(port);
-        }
-        private void clearPortHighlights()
-        {
-            foreach (var item in _actionNodeItemList)
-            {
-                foreach (var input in item.getInputs())
-                {
-                    input.setHighlighted(false);
-                }
-                foreach (var input in item.getOutputs())
-                {
-                    input.setHighlighted(false);
-                }
-            }
-        }
-        private void addPortHighlights(IPort port)
+        private void updatePortModes(IPort connecting)
         {
             foreach (var node in _actionNodeList)
             {
-                var needsInput = port.isOutput;
-                var ports = needsInput ? node.inputPorts : node.outputPorts;
-                var validPorts = ports.Where(p => p.canConnectTo(port));
-                if (validPorts.Count() <= 0)
-                    continue;
-                var item = getActionNodeItem(node);
-                var portIndexes = validPorts.Select(p => p.GetPortIndex());
-                foreach (var index in portIndexes)
-                {
-                    ActionNodeItemKnob portItem;
-                    if (needsInput) 
-                    {
-                        portItem = item.getInput(index);
-                    }
-                    else
-                    {
-                        portItem = item.getOutput(index);
-                    }
-                    portItem.setHighlighted(true);
-                }
+                updateNodePortModes(node, connecting);
             }
+        }
+        private void updateNodePortModes(Node node, IPort connecting)
+        {
+            foreach (var input in node.inputPorts)
+            {
+                updatePortMode(connecting, input);
+            }
+            foreach (var output in node.outputPorts)
+            {
+                updatePortMode(connecting, output);
+            }
+        }
+        private void updatePortMode(IPort connecting, IPort port)
+        {
+            var node = port.node;
+            var item = getActionNodeItem(node);
+            var index = port.GetPortIndex();
+            ActionNodeItemKnob portItem;
+            if (port.isOutput)
+            {
+                portItem = item.getOutput(index);
+            }
+            else
+            {
+                portItem = item.getInput(index);
+            }
+            NodePortMode mode;
+            if (port.connections.Count() > 0 || connecting == port)
+            {
+                mode = NodePortMode.Connected;
+            }
+            else if (connecting != null && connecting.canConnectTo(port))
+            {
+                mode = NodePortMode.Highlighted;
+            }
+            else
+            {
+                mode = NodePortMode.NotConnected;
+            }
+            portItem.setMode(mode);
         }
         #endregion
         #region 节点断开
@@ -1681,8 +1690,8 @@ namespace Controllers
         private void resetEditObjects()
         {
             _ui.clearSelection();
-            clearPortHighlights();
             _actionNodeList.Clear();
+            _connectingPort = null;
             _actionNodeItemList.Clear();
             _ui.clearGraph();
             _effect = null;
@@ -1806,6 +1815,10 @@ namespace Controllers
         ActionNodeGraphInfo _graphInfo;
         long _curCardPoolId = 0;
         GeneratedEffect _effect;
+        /// <summary>
+        /// 当前正在进行连接的端口。
+        /// </summary>
+        IPort _connectingPort = null;
         /// <summary>
         /// 当前正在编辑的动作节点
         /// </summary>

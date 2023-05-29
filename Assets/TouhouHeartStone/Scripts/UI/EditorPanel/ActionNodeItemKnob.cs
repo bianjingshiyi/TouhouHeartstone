@@ -16,6 +16,12 @@ namespace UI
             this.isControl = isControl;
         }
     }
+    public enum NodePortMode
+    {
+        Connected,
+        Highlighted,
+        NotConnected
+    }
     public abstract class ActionNodeItemKnob : MonoBehaviour
     {
         public void setName(string name)
@@ -26,11 +32,22 @@ namespace UI
         /// 设置节点高亮
         /// </summary>
         /// <param name="color"></param>
-        public void setHighlighted(bool highlight)
+        public void setMode(NodePortMode mode)
         {
-            if (_highlightObj)
+            _slotConnectedObj.SetActive(false);
+            _slotHighlightObj.SetActive(false);
+            _slotNotConnectedObj.SetActive(false);
+            switch (mode)
             {
-                _highlightObj.SetActive(highlight);
+                case NodePortMode.Connected:
+                    _slotConnectedObj.SetActive(true);
+                    break;
+                case NodePortMode.Highlighted:
+                    _slotHighlightObj.SetActive(true);
+                    break;
+                case NodePortMode.NotConnected:
+                    _slotNotConnectedObj.SetActive(true);
+                    break;
             }
         }
 
@@ -40,10 +57,9 @@ namespace UI
         /// <param name="color"></param>
         public void setColor(Color color)
         {
-            if (_slotImage != null)
-            {
-                _slotImage.color = color;
-            }
+            if (_slotImage) _slotImage.color = color;
+            if (_slotImageHighlighted) _slotImageHighlighted.color = color;
+            if (_slotImageNotConnected) _slotImageNotConnected.color = color;
         }
 
         // <summary>
@@ -75,6 +91,8 @@ namespace UI
             {
                 _selectedMaskTime = 0;
                 _slotMaskImage.color = Color.clear;
+                _slotMaskImageHighlighted.color = Color.clear;
+                _slotMaskImageNotConnected.color = Color.clear;
             }
         }
         protected void Awake()
@@ -107,7 +125,10 @@ namespace UI
             {
                 _selectedMaskTime = _selectedMaskTime + Time.deltaTime;
                 float lerp = (-Mathf.Cos(_selectedMaskTime * Mathf.PI * 4) + 1) / 2;
-                _slotMaskImage.color = Color.Lerp(color1, color2, lerp);
+                Color color = Color.Lerp(color1, color2, lerp);
+                _slotMaskImage.color = color;
+                _slotMaskImageHighlighted.color = color;
+                _slotMaskImageNotConnected.color = color;
             }
         }
         protected abstract void onBeginDragNodeCallback(BaseEventData eventData);
@@ -120,12 +141,30 @@ namespace UI
         RectTransform _nodeRect;
         [SerializeField]
         GameObject _interactableObj;
+
+        [Header("模式图像组")]
+        [SerializeField]
+        GameObject _slotConnectedObj;
+        [SerializeField]
+        GameObject _slotHighlightObj;
+        [SerializeField]
+        GameObject _slotNotConnectedObj;
+
+        [Header("图像")]
         [SerializeField]
         Image _slotImage;
         [SerializeField]
+        Image _slotImageHighlighted;
+        [SerializeField]
+        Image _slotImageNotConnected;
+
+        [Header("闪烁图像")]
+        [SerializeField]
         Image _slotMaskImage;
         [SerializeField]
-        GameObject _highlightObj;
+        Image _slotMaskImageHighlighted;
+        [SerializeField]
+        Image _slotMaskImageNotConnected;
         bool _selected;
         float _selectedMaskTime;
 
