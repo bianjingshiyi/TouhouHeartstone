@@ -1269,9 +1269,7 @@ namespace Controllers
         }
         private void showErrorTip(string msg)
         {
-            string name = game.lang._(StringTable.ERROR);
-            string content = msg;
-            game.ui.dialog.ShowConfirm(name, content);
+            _ui.showErrorTip(msg);
         }
         private void showOutputConnectError()
         {

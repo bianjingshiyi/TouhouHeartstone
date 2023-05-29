@@ -315,7 +315,7 @@ namespace UI
         }
         public void updateMenu(string[] options)
         {
-            UIHelper.updateList(_Content, _menuItemTemplate, _menuItemList, options.Length, (i, itemRect) =>
+            UIHelper.updateList(_menuContent, _menuItemTemplate, _menuItemList, options.Length, (i, itemRect) =>
             {
                 ActionNodeGraphMenuOption item = itemRect.GetComponent<ActionNodeGraphMenuOption>();
                 item.setTitle(options[i]);
@@ -386,6 +386,14 @@ namespace UI
         public Vector2 getViewCenterPosition()
         {
             return -new Vector2(_content.anchoredPosition.x / _content.localScale.y, _content.anchoredPosition.y / _content.localScale.y);
+        }
+
+        public void showErrorTip(string msg)
+        {
+            _hintMessageText.text = msg;
+            _hintMessageText.gameObject.SetActive(false);
+            _hintMessageText.gameObject.SetActive(true);
+            _hintMessageText.gameObject.GetComponent<SEPlayer>()?.Play();
         }
         
         #region 操作模式/节点选择
@@ -1172,7 +1180,7 @@ namespace UI
         {
             float childHeight;
             childHeight = _menuItemTemplate.rect.height;//查找子物体高度
-            float HeightSize = childHeight * (_Content.childCount - 1);//高度设置 = 子物体高度*子物体数量
+            float HeightSize = childHeight * (_menuContent.childCount - 1);//高度设置 = 子物体高度*子物体数量
 
             ScrollRect MenuScrollComponent = _menuScrollView.GetComponent<ScrollRect>();
             RectTransform MenuRectTransform = _menuScrollView.GetComponent<RectTransform>();
@@ -1350,12 +1358,6 @@ namespace UI
         [SerializeField]
         float _autoPosSpacingHeight = 300;
         [SerializeField]
-        private float zoomSpeed = 0.1f;
-        [SerializeField]
-        private float maxZoom = 10f;
-        [SerializeField]
-        float _menuMaxHeight;//设置右键菜单最高高度
-        [SerializeField]
         Button _returnButton;
         [SerializeField]
         Image _backgroundImage;
@@ -1364,19 +1366,39 @@ namespace UI
         [SerializeField]
         RectTransform _content;
         [SerializeField]
-        CreateActionDefineDialog _createActionDefineDialog;
-        [SerializeField]
         RectTransform _selectFrameTrans;
 
-        [Header("Nodes")]
+        [Header("缩放")]
+        [SerializeField]
+        private float zoomSpeed = 0.1f;
+        [SerializeField]
+        private float maxZoom = 10f;
+        [SerializeField]
+        float _maxScale = 1.7f;
+        [SerializeField]
+        float _minScale = 0.3f;
+
+        [Header("外部引用")]
+        [SerializeField]
+        CreateActionDefineDialog _createActionDefineDialog;
+        [SerializeField]
+        Text _hintMessageText;
+        [SerializeField]
+        GameObject _cardSelectPanel;
+        [SerializeField]
+        Button _cancelSelectButton;
+
+        [Header("节点")]
         [SerializeField]
         ActionNodeItem _actionNodeItemTemplate;
         [SerializeField]
         RectTransform _actionNodesRoot;
         [SerializeField]
         List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
+        [SerializeField]
+        NodeDocument _nodeDocument;
 
-        [Header("Connections")]
+        [Header("连接")]
         [SerializeField]
         ActionNodeGraphLine _ActionNodeGraphLineTemplate;
         [SerializeField]
@@ -1384,21 +1406,22 @@ namespace UI
         [SerializeField]
         List<ActionNodeConnectionData> _connectionList = new List<ActionNodeConnectionData>();
 
-        [Header("Menu")]
+        [Header("菜单")]
         [SerializeField]
         RectTransform _menuRoot;
         [SerializeField]
-        RectTransform _Content;
+        RectTransform _menuContent;
+        [SerializeField]
+        float _menuMaxHeight;//设置右键菜单最高高度
         [SerializeField]
         RectTransform _menuItemTemplate;
         [SerializeField]
         GameObject _menuScrollView;
         [SerializeField]
         List<RectTransform> _menuItemList = new List<RectTransform>();
-        [SerializeField]
-        GameObject _cardSelectPanel;
-        [SerializeField]
-        Button _cancelSelectButton;
+
+
+        [Header("杂项字段")]
         [SerializeField]
         ActionNodeItem _pointerOverActionNodeItem;
         [SerializeField]
@@ -1417,15 +1440,9 @@ namespace UI
         private bool _isDragging;
         private Touch _perviousTouch1;
         private Touch _perviousTouch2;
-        [SerializeField]
-        float _maxScale = 1.7f;
-        [SerializeField]
-        float _minScale = 0.3f;
         private bool _isTouchZooming;
         private ActionNodeSelectedKnob _currentSelectedKnob;
 
-        [SerializeField]
-        NodeDocument _nodeDocument;
         #endregion
     }
     public struct ActionNodeValueInfo
