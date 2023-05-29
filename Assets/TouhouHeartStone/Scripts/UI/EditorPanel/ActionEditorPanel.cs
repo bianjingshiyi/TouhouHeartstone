@@ -141,7 +141,6 @@ namespace UI
             _closeCardButton.onClick.AddListener(onClickCloseButtonCallback);
 
             _actionPageButton.onClick.AddListener(onClickBasicPageButtonCallback);
-            _propertiesPageButton.onClick.AddListener(onClickPropertiesPageButtonCallback);
             _nodesPageButton.onClick.AddListener(onClickNodesPageButtonCallback);
         }
 
@@ -155,10 +154,6 @@ namespace UI
         void onClickBasicPageButtonCallback()
         {
             displayPage(_actionPage, _actionPageIndicator);
-        }
-        void onClickPropertiesPageButtonCallback()
-        {
-            displayPage(_propertiesPage, _propertiesPageIndicator);
         }
         void onClickNodesPageButtonCallback()
         {
@@ -223,11 +218,9 @@ namespace UI
         private void displayPage(GameObject pageObj, GameObject indicator)
         {
             _actionPage.SetActive(false);
-            _propertiesPage.SetActive(false);
             _nodesPage.SetActive(false);
 
             _actionPageIndicator.SetActive(false);
-            _propertiesPageIndicator.SetActive(false);
             _nodesPageIndicator.SetActive(false);
 
             pageObj.SetActive(true);
@@ -351,19 +344,13 @@ namespace UI
         [SerializeField]
         Button _actionPageButton;
         [SerializeField]
-        Button _propertiesPageButton;
-        [SerializeField]
         Button _nodesPageButton;
         [SerializeField]
         GameObject _actionPage;
         [SerializeField]
-        GameObject _propertiesPage;
-        [SerializeField]
         GameObject _nodesPage;
         [SerializeField]
         GameObject _actionPageIndicator;
-        [SerializeField]
-        GameObject _propertiesPageIndicator;
         [SerializeField]
         GameObject _nodesPageIndicator;
         #endregion
