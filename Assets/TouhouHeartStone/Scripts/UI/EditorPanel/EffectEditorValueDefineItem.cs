@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 namespace UI
@@ -14,27 +13,6 @@ namespace UI
         public void setName(string name)
         {
             _nameText.text = name;
-        }
-        public void setIsArray(bool value)
-        {
-            if (_isArrayToggle != null)
-            {
-                _isArrayToggle.SetIsOnWithoutNotify(value);
-            }
-        }
-        public void setShowParams(bool value)
-        {
-            if (_isParamsObj != null)
-            {
-                _isParamsObj.SetActive(value);
-            }
-        }
-        public void setIsParams(bool value)
-        {
-            if (_isParamsToggle != null)
-            {
-                _isParamsToggle.SetIsOnWithoutNotify(value);
-            }
         }
         #endregion
         #region 私有方法
@@ -59,12 +37,6 @@ namespace UI
         Text _typeNameText;
         [SerializeField]
         Text _nameText;
-        [SerializeField]
-        Toggle _isArrayToggle;
-        [SerializeField]
-        GameObject _isParamsObj;
-        [SerializeField]
-        Toggle _isParamsToggle;
         [SerializeField]
         Button _deleteButton;
         #endregion

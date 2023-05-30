@@ -323,13 +323,13 @@ namespace Controllers
                 }
                 int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
                 var typeName = game.editor.getEditorVarTypeNames()[typeIndex];
+                var arrayStr = isArray ? game.lang._(ACTION_VARIABLE_IS_ARRAY) : string.Empty;
+                var paramsStr = isParams ? game.lang._(ACTION_VARIABLE_IS_PARAMS) : string.Empty;
+                var typeNameStr = game.lang._(ACTION_VARIABLE_TYPE_NAME_TEMPLATE, typeName, arrayStr, paramsStr);
                 return new ActionPortDefineViewData()
                 {
                     name = input.getDisplayName(),
-                    isParams = isParams,
-                    showParams = isParams,
-                    isArray = isArray,
-                    typeName = typeName
+                    typeName = typeNameStr
                 };
             }).ToArray();
 
@@ -349,12 +349,12 @@ namespace Controllers
                 }
                 int typeIndex = game.editor.getEditorConstTypeNameIndex(type.Name);
                 var typeName = game.editor.getEditorConstTypeNames()[typeIndex];
+                var arrayStr = isArray ? game.lang._(ACTION_VARIABLE_IS_ARRAY) : string.Empty;
+                var typeNameStr = game.lang._(ACTION_VARIABLE_TYPE_NAME_TEMPLATE, typeName, arrayStr, string.Empty);
                 return new ActionPortDefineViewData()
                 {
                     name = cst.getDisplayName(),
-                    showParams = false,
-                    isArray = isArray,
-                    typeName = typeName
+                    typeName = typeNameStr
                 };
             }).ToArray();
 
@@ -374,12 +374,12 @@ namespace Controllers
                 }
                 int typeIndex = game.editor.getEditorVarTypeNameIndex(type.Name);
                 var typeName = game.editor.getEditorVarTypeNames()[typeIndex];
+                var arrayStr = isArray ? game.lang._(ACTION_VARIABLE_IS_ARRAY) : string.Empty;
+                var typeNameStr = game.lang._(ACTION_VARIABLE_TYPE_NAME_TEMPLATE, typeName, arrayStr, string.Empty);
                 return new ActionPortDefineViewData()
                 {
                     name = output.getDisplayName(),
-                    showParams = false,
-                    isArray = isArray,
-                    typeName = typeName
+                    typeName = typeNameStr
                 };
             }).ToArray();
 
@@ -424,6 +424,12 @@ namespace Controllers
         public const string ACTION_ERROR_NEW_PORT_NAME_TAKEN = "该名称已被使用！";
         [TranslateMsg("动作编辑器/添加变量对话框/错误提示")]
         public const string ACTION_ERROR_NEW_PORT_NAME_EMPTY = "请输入名称！";
+        [TranslateMsg("动作编辑器/变量/数组变量的后缀")]
+        public const string ACTION_VARIABLE_IS_ARRAY = "[数组]";
+        [TranslateMsg("动作编辑器/变量/输入变量的可变长度后缀")]
+        public const string ACTION_VARIABLE_IS_PARAMS = "[可变长度]";
+        [TranslateMsg("动作编辑器/变量/变量的类型名称模板（{0}：类型名称；{1}：如果是数组，则为数组后缀，否则为空；{2}：如果可变长度，则为可变长度后缀，否则为空）")]
+        public const string ACTION_VARIABLE_TYPE_NAME_TEMPLATE = "{0}{1}{2}";
 
 
         [TranslateMsg("自定义动作的端口名称模板（{0}：端口类型（输入/常量/输出），{1}：序号）")]

@@ -46,9 +46,6 @@ namespace UI
                 var viewData = viewDatas[i];
                 input.setType(viewData.typeName);
                 input.setName(viewData.name);
-                input.setIsArray(viewData.isArray);
-                input.setShowParams(viewData.showParams);
-                input.setIsParams(viewData.isParams);
             },
             rect =>
             {
@@ -72,9 +69,6 @@ namespace UI
                 var viewData = viewDatas[i];
                 cst.setType(viewData.typeName);
                 cst.setName(viewData.name);
-                cst.setIsArray(viewData.isArray);
-                cst.setShowParams(viewData.showParams);
-                cst.setIsParams(viewData.isParams);
             },
             rect =>
             {
@@ -99,9 +93,6 @@ namespace UI
                 var viewData = viewDatas[i];
                 output.setType(viewData.typeName);
                 output.setName(viewData.name);
-                output.setIsArray(viewData.isArray);
-                output.setShowParams(viewData.showParams);
-                output.setIsParams(viewData.isParams);
             },
             rect =>
             {
@@ -360,8 +351,5 @@ namespace UI
     {
         public string typeName;
         public string name;
-        public bool isArray;
-        public bool showParams;
-        public bool isParams;
     }
 }
