@@ -3,6 +3,7 @@ using System.Linq;
 using Controllers;
 using Game;
 using MukioI18n;
+using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -19,6 +20,8 @@ namespace UI
             _searchFilter = null;
             _filteredDefines = null;
             setOperationMode(scene.editor.graphOperationMode);
+            updatePasteButton();
+            updateDeleteButton();
             updateNodeDefines();
             updateNodesList();
         }
@@ -48,12 +51,23 @@ namespace UI
                 if (d.actionDefine != null)
                 {
                     Sprite spr = null;
-                    return new NodeViewData(name, spr);
+                    bool editable = false;
+                    // 如果是自定义动作
+                    if (d.actionDefine is GeneratedActionDefine define)
+                    {
+                        var displaying = scene.editor.getCurrentDisplayInfo();
+                        // 如果当前正在编辑的自定义动作不是这个，则可以进行编辑。
+                        if (displaying == null || !(displaying.displayObj is GeneratedActionDefine displayingDefine && define.id == displayingDefine.id))
+                        {
+                            editable = true;
+                        }
+                    }
+                    return new NodeViewData(name, spr, editable);
                 }
                 if (d.eventDefine != null)
                 {
                     Sprite spr = null;
-                    return new NodeViewData(name, spr);
+                    return new NodeViewData(name, spr, false);
                 }
                 return default;
             }).ToArray();
@@ -67,6 +81,11 @@ namespace UI
             _multiSelectButton.onClick.AddListener(OnClickMultiSelectButton);
             _copyButton.onClick.AddListener(OnClickCopyButton);
             _pasteButton.onClick.AddListener(OnClickPasteButton);
+            _deleteButton.onClick.AddListener(OnClickDeleteButton);
+            _createActionDefineDialog.onConfirm += onCreateActionDefineCallback;
+
+            _actionGraphCtrl.OnNodeSelected += OnNodeSelected;
+            _actionGraphCtrl.OnNodeDeselected += OnNodeDeselected;
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
@@ -74,11 +93,20 @@ namespace UI
             _nodesPanel.onItemBeginDrag += OnNodeItemBeginDrag;
             _nodesPanel.onItemDrag += OnNodeItemDrag;
             _nodesPanel.onItemEndDrag += OnNodeItemEndDrag;
+            _nodesPanel.onItemEditClicked += OnNodeItemEditClicked;
             _nodesPanel.onCategoryFilterEndEdit += onCategoryFilterEndEdit;
             _nodesPanel.onOutputFilterValueChanged += onOutputFilterValueChanged;
             _nodesPanel.onSearchFilterEndEdit += onSearchFilterEndEdit;
+            _nodesPanel.onCreateActionClicked += onCreateActionClicked;
 
             updatePasteButton();
+        }
+        private void Update()
+        {
+            if (_deleteButtonDirty)
+            {
+                updateDeleteButton();
+            }
         }
         #endregion
         #region 事件回调
@@ -103,6 +131,41 @@ namespace UI
                 return;
             await _actionGraphCtrl.pasteClipboard(clipboard);
             updatePasteButton();
+        }
+        private void OnClickDeleteButton()
+        {
+            _actionGraphCtrl.deleteSelection();
+        }
+        private void OnNodeSelected(Node node)
+        {
+            _deleteButtonDirty = true;
+        }
+        private void OnNodeDeselected(Node node)
+        {
+            _deleteButtonDirty = true;
+        }
+        public async void onCreateActionDefineCallback(string name, string category)
+        {
+            //新建自定义动作
+            if (string.IsNullOrEmpty(name))
+            {
+                //空名
+                showCreateActionDefineDialogError(game.langManager.getString(EDITOR_ERROR_ACTION_DEFINE_NAME_EMPTY));
+                return;
+            }
+            else if (_actionGraphCtrl.isActionDefineNameExist(name))
+            {
+                //重名
+                showCreateActionDefineDialogError(game.langManager.getString(StringTable.EDITOR_ERROR_ACTION_DEFINE_NAME_ALREADY_EXIST));
+                return;
+            }
+
+            //新建自定义动作
+            GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(_cardPoolId, name);
+            generatedActionDefine.setCategory(category);
+            var clone = game.card.cloneActionDefine(_cardPoolId, generatedActionDefine);
+            displayCreateActionDefineDialog(false);
+            await scene.editor.openActionEditor(_cardPoolId, clone);
         }
         private bool OnNodeItemBeginDrag(int index, PointerEventData data)
         {
@@ -192,6 +255,18 @@ namespace UI
             //否则会导致ScrollView不能正确回弹
             return false;
         }
+        private void OnNodeItemEditClicked(int index)
+        {
+            if (index < 0 || index >= _filteredDefines.Length)
+                return;
+            var define = _filteredDefines[index].actionDefine as GeneratedActionDefine;
+            if (define != null)
+            {
+                GeneratedActionDefine generatedActionDefine = define;
+                var clone = game.card.cloneActionDefine(_cardPoolId, generatedActionDefine);
+                scene.editor.openActionEditor(_cardPoolId, clone);
+            }
+        }
         private void onCategoryFilterEndEdit(string value)
         {
             _categoryFilter = value;
@@ -206,6 +281,10 @@ namespace UI
         {
             _searchFilter = value;
             updateNodesList();
+        }
+        private void onCreateActionClicked()
+        {
+            displayCreateActionDefineDialog(true);
         }
         #endregion
         #region 节点拖拽
@@ -229,16 +308,39 @@ namespace UI
             _dragNodeItemObj.SetActive(true);
             var name = getNodeDefineName(_dragNode);
             Sprite icon = null;
-            _dragNodeItem.setNode(name, icon);
+            _dragNodeItem.setNode(name, icon, false);
         }
         private void hideDragNode()
         {
             _dragNodeItemObj.SetActive(false);
         }
         #endregion
+        #region 创建自定义动作
+        public void displayCreateActionDefineDialog(bool display)
+        {
+            if (display)
+            {
+                _createActionDefineDialog.display();
+            }
+            else
+            {
+                _createActionDefineDialog.hide();
+            }
+        }
+        public void showCreateActionDefineDialogError(string message)
+        {
+            _createActionDefineDialog.showErrorTip(message);
+        }
+        #endregion
         private void updatePasteButton()
         {
             _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard);
+        }
+        private void updateDeleteButton()
+        {
+            var selectedNodes = _actionGraphCtrl.getSelectedNodes();
+            _deleteButton.interactable = selectedNodes != null && selectedNodes.Length > 0 && selectedNodes.Any(n => _actionGraphCtrl.CanNodeBeDeleted(n));
+            _deleteButtonDirty = false;
         }
         private string getNodeDefineName(NodeDefine define)
         {
@@ -291,12 +393,15 @@ namespace UI
         #endregion
 
         private long _cardPoolId;
+        private bool _deleteButtonDirty;
         [SerializeField]
         ActionNodeGraphCtrl _actionGraphCtrl;
         [SerializeField]
         RectTransform _actionGraphViewport;
         [SerializeField]
         RectTransform _actionGraphContent;
+        [SerializeField]
+        CreateActionDefineDialog _createActionDefineDialog;
 
         [Header("按钮")]
         [SerializeField]
@@ -307,6 +412,8 @@ namespace UI
         Button _copyButton;
         [SerializeField]
         Button _pasteButton;
+        [SerializeField]
+        Button _deleteButton;
 
         [Header("高亮")]
         [SerializeField]
@@ -336,6 +443,8 @@ namespace UI
 
         [TranslateMsg("没有分类的动作的分类")]
         public const string ACTION_CATEGORY_NAME_NONE = "无";
+        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
+        public const string EDITOR_ERROR_ACTION_DEFINE_NAME_EMPTY = "请输入动作名称";
 
         public static readonly string[] categories = new string[]
         {

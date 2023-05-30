@@ -155,6 +155,20 @@ namespace Controllers
             updateContentSize();
             OnEdited();
         }
+        public void deleteSelection()
+        {
+            var selectedNodes = _ui.getSelectedNodes().Select(n => getActionNode(n)).Where(n => CanNodeBeDeleted(n));
+            if (selectedNodes.Count() <= 0)
+                return;
+            foreach (var node in selectedNodes.ToArray())
+            {
+                removeActionNode(node);
+            }
+        }
+        public Node[] getSelectedNodes()
+        {
+            return _ui.getSelectedNodes().Select(n => getActionNode(n)).ToArray();
+        }
 
         public bool CanNodeBeCloned(Node node)
         {
@@ -260,17 +274,9 @@ namespace Controllers
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
             loadEventTypes();
-            _ui.onLeftClickBackground += onLeftClickBackground;
-            _ui.onRightClickBackground += onRightClickBackground;
-            _ui.onLongPressBackground += onLongPressBackground;
 
-
-            _ui.onClickMenuItem += onClickMenuItem;
             _ui.onConnectNodes += onConnectNodes;
             _ui.onUnconnectNodes += onUnconnectNodes;
-            _ui.onLeftClickActionNode += onLeftClickActionNode;
-            _ui.onRightClickActionNode += onRightClickActionNode;
-            _ui.onLongPressActionNode += onLongPressActionNode;
             _ui.onMoveActionNode += onMoveActionNode;
             _ui.onStartConnection += onStartConnection;
             _ui.onEndConnection += onEndConnection;
@@ -278,6 +284,8 @@ namespace Controllers
             _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
             _ui.onClickActionNodeConstValueItemEditButton += onClickActionNodeConstValueItemEditButton;
             _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
+            _ui.onNodeSelected += onNodeSelected;
+            _ui.onNodeDeselected += onNodeDeselected;
             //触发
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
@@ -287,8 +295,6 @@ namespace Controllers
             //增益
             _ui.onItemBuffChanged += onItemBuffChangedCallback;
             _ui.onClickItemEditBuffButton += onItemEditBuffCallback;
-
-            _ui.onCreateActionDefine += onCreateActionDefine;
 
             // 效果属性
             _ui.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
@@ -327,51 +333,6 @@ namespace Controllers
             OnGraphEdited?.Invoke();
         }
         /// <summary>
-        /// 当用户长按背景，展开菜单。目前点菜单内容只有创建节点。
-        /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        private void onLongPressBackground(float posX, float posY)
-        {
-            openMenuForCategory(posX, posY);
-        }
-        /// <summary>
-        /// 当用户左击背景，隐藏菜单。
-        /// </summary>
-        /// <param name="posX">x坐标</param>
-        /// <param name="posY">y坐标</param>
-        private void onLeftClickBackground(float posX, float posY)
-        {
-            _curEditNode = null;
-            closeMenu();
-        }
-        /// <summary>
-        /// 当用户右击背景，打开菜单。
-        /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        private void onRightClickBackground(float posX, float posY)
-        {
-            openMenuForCategory(posX, posY);
-        }
-        /// <summary>
-        /// 当用户点击菜单项，视具体点击的项目决定干什么
-        /// </summary>
-        /// <param name="index"></param>
-        private async void onClickMenuItem(int index)
-        {
-            if (_curEditNode != null)
-            {
-                await clickMenuItemForNode(_curEditNode, index);
-            }
-            else
-            {
-                await clickMenuItemForBackground(index);
-            }
-            _curEditNode = null;
-            OnEdited();
-        }
-        /// <summary>
         /// 当用户连接节点，检查一下连接的合法性，如果合法那么连接，否则提示。
         /// </summary>
         /// <param name="outputActionNodeItem"></param>
@@ -406,31 +367,6 @@ namespace Controllers
             IPort inputPort = inputActionNode.getInputPortAt(inputIndex);
             disconnectPorts(outputPort, inputPort);
             OnEdited();
-        }
-        /// <summary>
-        /// 当左击动作节点
-        /// </summary>
-        /// <param name="actionNodeItem"></param>
-        private void onLeftClickActionNode(ActionNodeItem actionNodeItem)
-        {
-            _curEditNode = null;
-            closeMenu();
-        }
-        /// <summary>
-        /// 当右击动作节点
-        /// </summary>
-        /// <param name="actionNodeItem"></param>
-        private void onRightClickActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
-        {
-            openMenuForNodeItem(actionNodeItem, pointerPosition);
-        }
-        /// <summary>
-        /// 当用户长按节点，展开节点菜单。
-        /// </summary>
-        /// <param name="actionNodeItem"></param>
-        private void onLongPressActionNode(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
-        {
-            openMenuForNodeItem(actionNodeItem, pointerPosition);
         }
         private void onMoveActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
@@ -593,6 +529,14 @@ namespace Controllers
             _curCardSeekingEffectPropIndex = -1;
             //隐藏UI
             _ui.displayCardSelectPanel(false);
+        }
+        private void onNodeSelected(ActionNodeItem actionNodeItem)
+        {
+            OnNodeSelected?.Invoke(getActionNode(actionNodeItem));
+        }
+        private void onNodeDeselected(ActionNodeItem actionNodeItem)
+        {
+            OnNodeDeselected.Invoke(getActionNode(actionNodeItem));
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
@@ -949,6 +893,7 @@ namespace Controllers
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
             updateContentSize();
+            OnEdited();
         }
         private ActionNodeItem getActionNodeItem(Node actionNode)
         {
@@ -1595,211 +1540,6 @@ namespace Controllers
             return outputList.ToArray();
         }
         #endregion
-        #region 节点菜单
-        private string[] getMenuOptionsForCategory()
-        {
-            var options = new List<string>();
-            if (!string.IsNullOrEmpty(_curCategroy)) 
-            {
-                string backText = game.lang._(StringTable.EDITOR_ACTIONGRAPH_MENU_RETURN);
-                options.Add(game.lang._(EDITOR_CATEGORY_BACK_TEMPLATE, backText));
-            }
-            options.AddRange(getActionDefineCategories(_curCategroy).Select(g => game.lang._(EDITOR_CATEGORY_TEMPLATE, tryTranslateWithDict(g))));
-
-            IEnumerable<string> nodeOptions;
-            if (_curCategroy == game.lang._(EDITOR_CATEGORY_EVENT_ENTRY_NODE))
-            {
-                // 事件入口。
-                nodeOptions = _eventTypeInfoList.getEventTypeNamesForEditor(game.lang);
-            }
-            else
-            {
-                // 普通节点。
-                nodeOptions = getActionDefinesInCategory(_curCategroy).Select(g => tryTranslateWithDict(g.defineName));
-            }
-            options.AddRange(nodeOptions);
-            if (string.IsNullOrEmpty(_curCategroy))
-            {
-                options.Add(game.i18n._(StringTable.EDITOR_ACTIONGRAPH_MENU_CUSTOM_ACTION));
-            }
-            return options.ToArray();
-        }
-        private void updateMenuForCategory()
-        {
-            _ui.updateMenu(getMenuOptionsForCategory());
-        }
-        /// <summary>
-        /// 在对应位置打开菜单
-        /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        /// <param name="options">菜单选项</param>
-        private void openMenu(float posX, float posY, string[] options)
-        {
-            _curPosX = posX;
-            _curPosY = posY;
-            _ui.openMenu(posX, posY, options);
-        }
-        /// <summary>
-        /// 在对应位置打开菜单
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="options">菜单选项</param>
-        private void openMenu(Vector2 position, string[] options)
-        {
-            openMenu(position.x, position.y, options);
-        }
-        private void openMenuForCategory(float posX, float posY)
-        {
-            _curEditNode = null;
-            openMenu(posX, posY, getMenuOptionsForCategory());
-        }
-        private void openMenuForNodeItem(ActionNodeItem actionNodeItem, Vector2 pointerPosition)
-        {
-            var node = getActionNode(actionNodeItem);
-            Vector2 position = _ui.worldPositionToGraphPosition(pointerPosition);
-            List<string> optionList = new List<string>();
-            // 动作节点
-            var canDelete = CanNodeBeDeleted(node);
-            var canEdit = CanNodeBeEdited(node);
-            if (canDelete || canEdit)
-            {
-                _curEditNode = node;
-                if (canDelete)
-                {
-                    optionList.Add(game.langManager.getString(StringTable.DELETE));//删除
-                }
-                if (canEdit)
-                {
-                    optionList.Add(game.langManager.getString(StringTable.EDIT));//编辑
-                }
-                openMenu(position, optionList.ToArray());
-            }
-        }
-
-        #region 点击菜单
-        /// <summary>
-        /// 点击节点的菜单的项。
-        /// </summary>
-        /// <param name="node">要操作的节点。</param>
-        /// <param name="index">点击的项的索引。</param>
-        /// <returns></returns>
-        private async Task clickMenuItemForNode(Node node, int index)
-        {
-            //节点菜单
-            if (index == 0)//删除
-            {
-                var selectedNodes = _ui.getSelectedNodes();
-                var nodes = selectedNodes.Where(i => i).Select(i => getActionNode(i)).Where(n => CanNodeBeDeleted(n)).ToArray();
-                foreach (var actionNode in nodes)
-                {
-                    removeActionNode(actionNode);
-                }
-            }
-            else if (index == 1)//编辑
-            {
-                if (!(node is ActionNode actionNode))
-                    return;
-                GeneratedActionDefine generatedActionDefine = getActionDefine(actionNode.defineName) as GeneratedActionDefine;
-                var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
-                await scene.editor.openActionEditor(_curCardPoolId, clone);
-            }
-            closeMenu();
-        }
-        /// <summary>
-        /// 点击背景的菜单的项。
-        /// </summary>
-        /// <param name="index">点击的项的索引。</param>
-        /// <returns></returns>
-        private async Task clickMenuItemForBackground(int index)
-        {
-            var categories = getActionDefineCategories(_curCategroy).ToArray();
-            var nodes = getActionDefinesInCategory(_curCategroy).ToArray();
-
-            bool inCategory = !string.IsNullOrEmpty(_curCategroy);
-            int offsetIndex = 0;
-            if (inCategory)
-            {
-                offsetIndex++;
-            }
-            index -= offsetIndex;
-            //背景菜单
-            if (index == -1 && inCategory)
-            {
-                clickBackToLastCategoryMenu();
-            }
-            else if (index < categories.Length)
-            {
-                clickCategoryMenuItem(categories[index]);
-            }
-            else if (index < categories.Length + nodes.Length)
-            {
-                closeMenu();
-                //直接创建节点
-                await createActionNodeAtCurPos(nodes[index - categories.Length]);
-            }
-            else if (_curCategroy == EDITOR_CATEGORY_EVENT_ENTRY_NODE && index < categories.Length + nodes.Length + _eventTypeInfoList.Count)
-            {
-                closeMenu();
-                // 创建事件入口节点。
-                var events = _eventTypeInfoList;
-                createEventEntryNode(events[index - categories.Length], _curPosX, _curPosY);
-            }
-            else if (!inCategory)
-            {
-                clickNewCustomActionMenuItem();
-            }
-        }
-        /// <summary>
-        /// 点击返回上一层按钮。
-        /// </summary>
-        private void clickBackToLastCategoryMenu()
-        {
-            //返回上一层
-            var seperatorIndex = _curCategroy.LastIndexOf('/');
-            if (seperatorIndex > 0)
-            {
-                _curCategroy = _curCategroy.Substring(0, seperatorIndex);
-            }
-            else
-            {
-                _curCategroy = null;
-            }
-            updateMenuForCategory();
-        }
-        /// <summary>
-        /// 点击一个分类。
-        /// </summary>
-        /// <param name="category">点击的分类名称。</param>
-        private void clickCategoryMenuItem(string category)
-        {
-            //打开子菜单
-            if (string.IsNullOrEmpty(_curCategroy))
-            {
-                _curCategroy = category;
-            }
-            else
-            {
-                _curCategroy = $"{_curCategroy}/{category}";
-            }
-            updateMenuForCategory();
-        }
-        /// <summary>
-        /// 点击自定义动作按钮。
-        /// </summary>
-        private void clickNewCustomActionMenuItem()
-        {
-            closeMenu();
-            //新建自定义动作
-            _ui.displayCreateActionDefineDialog(true);
-        }
-        #endregion
-        private void closeMenu()
-        {
-            _curCategroy = null;
-            _ui.closeMenu();
-        }
-        #endregion
         /// <summary>
         /// 重置所有对于编辑物体的引用。
         /// </summary>
@@ -1878,6 +1618,8 @@ namespace Controllers
         #endregion
         #region 事件
         public event Action OnGraphEdited;
+        public event Action<Node> OnNodeSelected;
+        public event Action<Node> OnNodeDeselected;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]

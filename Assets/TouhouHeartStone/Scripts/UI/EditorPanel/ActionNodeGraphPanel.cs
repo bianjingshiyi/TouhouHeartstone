@@ -302,47 +302,6 @@ namespace UI
 
             _dragHiddenConnection = null;
         }
-        /// <summary>
-        /// 在指定坐标展开菜单，左上角对齐。
-        /// </summary>
-        /// <param name="posX"></param>
-        /// <param name="posY"></param>
-        /// <param name="options"></param>
-        public void openMenu(float posX, float posY, string[] options)
-        {
-            if (!_isDragging && !_isTouchZooming)
-            {
-                _menuRoot.gameObject.SetActive(true);
-                _menuRoot.anchoredPosition = new Vector2(posX, posY);
-                updateMenu(options);
-                updateMenuHeight();
-            }
-
-        }
-        public void updateMenu(string[] options)
-        {
-            UIHelper.updateList(_menuContent, _menuItemTemplate, _menuItemList, options.Length, (i, itemRect) =>
-            {
-                ActionNodeGraphMenuOption item = itemRect.GetComponent<ActionNodeGraphMenuOption>();
-                item.setTitle(options[i]);
-            }, itemRect =>
-            {
-                ActionNodeGraphMenuOption item = itemRect.GetComponent<ActionNodeGraphMenuOption>();
-                item.onClick += onClickMenuOption;
-            }, itemRect =>
-            {
-                ActionNodeGraphMenuOption item = itemRect.GetComponent<ActionNodeGraphMenuOption>();
-                item.onClick -= onClickMenuOption;
-            });
-        }
-
-        /// <summary>
-        /// 关闭菜单。
-        /// </summary>
-        public void closeMenu()
-        {
-            _menuRoot.gameObject.SetActive(false);
-        }
         public void setReturnButtonActive(bool value)
         {
             _returnButton.gameObject.SetActive(value);
@@ -432,6 +391,7 @@ namespace UI
                 if (!item)
                     continue;
                 item.deselect();
+                onNodeDeselected?.Invoke(item);
             }
             _selectedNodes.Clear();
         }
@@ -439,11 +399,13 @@ namespace UI
         {
             _selectedNodes.Add(item);
             item.select();
+            onNodeSelected?.Invoke(item);
         }
         public void deselectNode(ActionNodeItem item)
         {
             _selectedNodes.Remove(item);
             item.deselect();
+            onNodeDeselected?.Invoke(item);
         }
         public bool isNodeSelected(ActionNodeItem item)
         {
@@ -460,21 +422,6 @@ namespace UI
         }
         #endregion
 
-        public void displayCreateActionDefineDialog(bool display)
-        {
-            if (display)
-            {
-                _createActionDefineDialog.display();
-            }
-            else
-            {
-                _createActionDefineDialog.hide();
-            }
-        }
-        public void showCreateActionDefineDialogError(string message)
-        {
-            _createActionDefineDialog.showErrorTip(message);
-        }
 
         #region 效果属性
         public void setEffectPropertyTypes((ActionNodeValueType type, string name)[] types)
@@ -502,7 +449,6 @@ namespace UI
         #region 生命周期
         protected void Awake()
         {
-            _backgroundEventTrigger.onPointerDown += onPointerDownBackgroundImage;
             _backgroundEventTrigger.onPointerUp += onPointerUpBackgroundImage;
             if (_actionNodeItemTemplate.transform.parent == _actionNodesRoot)
             {
@@ -517,17 +463,11 @@ namespace UI
                 _ActionNodeGraphLineTemplate.gameObject.SetActive(false);
             }
 
-            if (_menuItemTemplate.transform.parent == _menuRoot)
-            {
-                _menuItemTemplate.gameObject.SetActive(false);
-            }
-            _menuRoot.gameObject.SetActive(false);
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
             _cancelSelectButton.onClick.AddListener(onClickCancelSelectButtonCallback);
 
             displayCardSelectPanel(false);
 
-            _createActionDefineDialog.onConfirm += onCreateActionDefineCallback;
             // 效果属性。
             _createEffectPropDialog.onConfirm += onConfirmCreateEffectPropertyCallback;
             #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
@@ -583,32 +523,13 @@ namespace UI
         }
         #endregion
         #region 事件回调
-        private void onPointerDownBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
-        {
-            _longPressTimer.start();
-        }
         private void onPointerUpBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
             Vector2 screenPosition = eventData.currentInputModule.input.mousePosition;
             Vector2 localPoistion = _content.InverseTransformPoint(screenPosition);
-            if (_longPressTimer.isExpired())
+            if (!_isDragging)
             {
-                onLongPressBackground?.Invoke(localPoistion.x, localPoistion.y);
-            }
-            else
-            {
-                if ((eventData as PointerEventData).button == PointerEventData.InputButton.Right)
-                {
-                    onRightClickBackground?.Invoke(localPoistion.x, localPoistion.y);
-                }
-                else
-                {
-                    if (!_isDragging)
-                    {
-                        clearSelection();
-                    }
-                    onLeftClickBackground?.Invoke(localPoistion.x, localPoistion.y);
-                }
+                clearSelection();
             }
         }
         private void onBackgroundScroll(BaseEventData eventData)
@@ -1028,35 +949,12 @@ namespace UI
         {
             if (_isTouchZooming) return;
             _pointerOverActionNodeItem = item;
-            _longPressTimer.start();
         }
         private void onPointerUpActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
             if (_pointerOverActionNodeItem == item)
             {
-                if (_longPressTimer.isExpired())
-                {
-                    clearAndSelectNode(item);
-                    onLongPressActionNode?.Invoke(_pointerOverActionNodeItem, eventData.position);
-                    _pointerOverActionNodeItem = null;
-                    _longPressTimer.reset();
-                }
-                else
-                {
-                    if (eventData.button == PointerEventData.InputButton.Right)
-                    {
-                        if (!isNodeSelected(item))
-                        {
-                            clearAndSelectNode(item);
-                        }
-                        onRightClickActionNode?.Invoke(item, eventData.position);
-                    }
-                    else
-                    {
-                        clearAndSelectNode(item);
-                        onLeftClickActionNode?.Invoke(item);
-                    }
-                }
+                clearAndSelectNode(item);
             }
         }
         private void onBeginDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
@@ -1065,7 +963,6 @@ namespace UI
             if (_pointerOverActionNodeItem == item)
             {
                 _pointerOverActionNodeItem = null;
-                _longPressTimer.reset();
             }
 
 
@@ -1137,10 +1034,6 @@ namespace UI
         {
             onTargetCheckerErrorTipValueChanged?.Invoke(item, targetCheckerIndex, value);
         }
-        private void onClickMenuOption(ActionNodeGraphMenuOption item)
-        {
-            onClickMenuItem?.Invoke(_menuItemList.IndexOf(item.transform as RectTransform));
-        }
         private void onClickReturnButtonCallback()
         {
             onClickReturnButton?.Invoke();
@@ -1159,10 +1052,6 @@ namespace UI
             _nodeDocument?.Show(key);
         }
         
-        private void onCreateActionDefineCallback(string name, string category)
-        {
-            onCreateActionDefine?.Invoke(name, category);
-        }
 
         #region 效果属性
         private void onClickAddEffectPropertyButtonCallback()
@@ -1273,29 +1162,6 @@ namespace UI
             desiredScale = Vector3.Min(_backgroundOriginScale * maxZoom, desiredScale);
             return desiredScale;
         }
-        private void updateMenuHeight()
-        {
-            float childHeight;
-            childHeight = _menuItemTemplate.rect.height;//查找子物体高度
-            float HeightSize = childHeight * (_menuContent.childCount - 1);//高度设置 = 子物体高度*子物体数量
-
-            ScrollRect MenuScrollComponent = _menuScrollView.GetComponent<ScrollRect>();
-            RectTransform MenuRectTransform = _menuScrollView.GetComponent<RectTransform>();
-            MenuScrollComponent.content.anchoredPosition = Vector2.zero;
-
-            if (HeightSize <= _menuMaxHeight)
-            {
-                //当总高度小于设置的最大高度时，关闭scrollRect，并将设置物体大小至size height
-                MenuRectTransform.sizeDelta = new Vector2(MenuRectTransform.rect.width, HeightSize);
-                //MenuScrollComponent.enabled = false;
-            }
-            else
-            {
-                //否则启用scrollRect自适应功能
-                MenuRectTransform.sizeDelta = new Vector2(MenuRectTransform.rect.width, _menuMaxHeight);
-                //MenuScrollComponent.enabled = true;
-            }
-        }
         #region 节点选择
         private void updateSelectFrame()
         {
@@ -1336,22 +1202,6 @@ namespace UI
         #endregion
         #region 事件
         /// <summary>
-        /// 当左击背景，参数为点击的x坐标与y坐标。
-        /// </summary>
-        public event Action<float, float> onLeftClickBackground;
-        /// <summary>
-        /// 当右击背景，参数为点击的x坐标与y坐标。
-        /// </summary>
-        public event Action<float, float> onRightClickBackground;
-        /// <summary>
-        /// 当长按背景，参数为长按点的x坐标与y坐标
-        /// </summary>
-        public event Action<float, float> onLongPressBackground;
-        /// <summary>
-        /// 当点击菜单项，参数为菜单项索引
-        /// </summary>
-        public event Action<int> onClickMenuItem;
-        /// <summary>
         /// 当连接节点，参数为输出节点和索引以及输入节点和索引
         /// </summary>
         public event Action<ActionNodeItem, int, ActionNodeItem, int> onConnectNodes;
@@ -1359,14 +1209,6 @@ namespace UI
         /// 当断开节点之间的链接，参数为输出节点和索引以及输入节点和索引
         /// </summary>
         public event Action<ActionNodeItem, int, ActionNodeItem, int> onUnconnectNodes;
-        /// <summary>
-        /// 当左节点，参数为点击的节点
-        /// </summary>
-        public event Action<ActionNodeItem> onLeftClickActionNode;
-        /// <summary>
-        /// 当右节点，参数为点击的节点和鼠标位置
-        /// </summary>
-        public event Action<ActionNodeItem, Vector2> onRightClickActionNode;
         /// <summary>
         /// 当移动节点，参数为拖拽的节点和图坐标位置
         /// </summary>
@@ -1381,10 +1223,6 @@ namespace UI
         /// 参数：节点UI，端口索引，是否是输出值
         /// </summary>
         public event Action<ActionNodeItem, int, bool> onEndConnection;
-        /// <summary>
-        /// 当长按节点，参数为长按的节点和长按的屏幕坐标
-        /// </summary>
-        public event Action<ActionNodeItem, Vector2> onLongPressActionNode;
         /// <summary>
         /// 当节点的常量值输入改变，参数为被改变的节点，常量值索引和改变的值
         /// </summary>
@@ -1426,10 +1264,13 @@ namespace UI
         /// </summary>
         public event Action onClickCancelSelectButton;
         /// <summary>
-        /// 当创建自定义动作。
-        /// 参数：动作名称、动作分类
+        /// 当选择节点
         /// </summary>
-        public event Action<string, string> onCreateActionDefine;
+        public event Action<ActionNodeItem> onNodeSelected;
+        /// <summary>
+        /// 当取消选择节点
+        /// </summary>
+        public event Action<ActionNodeItem> onNodeDeselected;
 
 
         #region 效果属性
@@ -1521,26 +1362,11 @@ namespace UI
         [SerializeField]
         List<ActionNodeConnectionData> _connectionList = new List<ActionNodeConnectionData>();
 
-        [Header("菜单")]
-        [SerializeField]
-        RectTransform _menuRoot;
-        [SerializeField]
-        RectTransform _menuContent;
-        [SerializeField]
-        float _menuMaxHeight;//设置右键菜单最高高度
-        [SerializeField]
-        RectTransform _menuItemTemplate;
-        [SerializeField]
-        GameObject _menuScrollView;
-        [SerializeField]
-        List<RectTransform> _menuItemList = new List<RectTransform>();
 
 
         [Header("杂项字段")]
         [SerializeField]
         ActionNodeItem _pointerOverActionNodeItem;
-        [SerializeField]
-        Timer _longPressTimer = new Timer() { duration = .5f };
         [SerializeField]
         ActionNodeItem _dragItem;
         [SerializeField]

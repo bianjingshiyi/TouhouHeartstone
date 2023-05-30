@@ -119,29 +119,6 @@ namespace Controllers
             updateActionDefineEntryNode();
         }
 
-        public async void onCreateActionDefine(string name, string category)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                //空名
-                _ui.showCreateActionDefineDialogError(game.langManager.getString(EDITOR_ERROR_ACTION_DEFINE_NAME_EMPTY));
-                return;
-            }
-            else if (isActionDefineNameExist(name))
-            {
-                //重名
-                _ui.showCreateActionDefineDialogError(game.langManager.getString(StringTable.EDITOR_ERROR_ACTION_DEFINE_NAME_ALREADY_EXIST));
-                return;
-            }
-
-            //新建自定义动作
-            GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(_curCardPoolId, name);
-            generatedActionDefine.setCategory(category);
-            var clone = game.card.cloneActionDefine(_curCardPoolId, generatedActionDefine);
-            _ui.displayCreateActionDefineDialog(false);
-            await scene.editor.openActionEditor(_curCardPoolId, clone);
-            OnEdited();
-        }
         #endregion
         #region 私有方法
         private async Task openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
@@ -302,8 +279,6 @@ namespace Controllers
         #endregion
         #endregion
         #region 属性字段
-        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
-        public const string EDITOR_ERROR_ACTION_DEFINE_NAME_EMPTY = "请输入动作名称";
         private GeneratedActionDefine _generatedActionDefine;
         #endregion
     }
