@@ -1510,10 +1510,17 @@ namespace Game
         }
         void onDeckPointerEnter(UI.Deck deck, PointerEventData pointer)
         {
-            var curDeck = (deck == ui.SelfDeck ? player : game.getOpponent(player)).getDeck();
-            string tip = curDeck.count > 0 ?
-                lang._(TAB_BOX_HAS, curDeck.count) :
-                lang._(TAB_YOUR_NO_HAVE_CARD);
+            bool self = deck == ui.SelfDeck;
+            var curDeck = (self ? player : game.getOpponent(player)).getDeck();
+            string tip;
+            if (curDeck.count > 0)
+            {
+                tip = lang._(TAB_BOX_HAS, curDeck.count);
+            }
+            else
+            {
+                tip = lang._(self ? TAB_YOUR_NO_HAVE_CARD : TAB_OPPONENT_OUT_OF_CARDS);
+            }
             ui.TipBox.display(tip, pointer.position + _tipBoxOffset);
         }
         void onDeckPointerExit(UI.Deck deck, PointerEventData pointer)
@@ -1801,6 +1808,8 @@ namespace Game
         private const string TAB_BOX_HAS = "牌库里有{0}张卡牌";
         [TranslateMsg]
         private const string TAB_YOUR_NO_HAVE_CARD = "你已经没有卡牌了";
+        [TranslateMsg]
+        private const string TAB_OPPONENT_OUT_OF_CARDS = "你的对手已经没有卡牌了";
         [TranslateMsg("游戏中的增益列表项的未知增益名称")]
         public const string CARD_BUFF_UNKNOWN_NAME = "未知增益";
         [TranslateMsg("游戏中的增益列表项的未知增益描述")]
