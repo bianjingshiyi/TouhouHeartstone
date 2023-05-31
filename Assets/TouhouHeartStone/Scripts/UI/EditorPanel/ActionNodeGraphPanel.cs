@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Timer = BJSYGameCore.Timer;
 using UIHelper = BJSYGameCore.UI.UIHelper;
+using FreespaceFinder;
 
 namespace UI
 {
@@ -444,6 +445,69 @@ namespace UI
             }
         }
         #endregion
+        public Vector2 findFreeNodeCreatePosition(ActionNodeItem item)
+        {
+            Vector2 contentScale = _content.localScale;
+            Vector2 reverseScale = new Vector2(1 / contentScale.x, 1 / contentScale.y);
+
+            var itemRectTrans = item.transform as RectTransform;
+            var itemRect = itemRectTrans.rect;
+            var itemPos = new Vector2(item.posX, item.posY);
+            itemRect.center = itemPos;
+
+            RectTransform rectTrans = _viewPort;
+            var rect = rectTrans.rect;
+            rect.size = Vector2.Scale(rect.size + itemRect.size, reverseScale);
+            rect.center = _content.localPosition;
+
+
+            Vector2 size = rect.size;
+            var region = new Region(size.x, size.y);
+            Vector2 offset = 0.5f * size;
+
+            // 将其他节点所占的位置裁切出去。
+            foreach (var nodeItem in _actionNodeItemList)
+            {
+                if (nodeItem == item)
+                    continue;
+                var nodeRectTrans = nodeItem.transform as RectTransform;
+                var nodeRect = nodeRectTrans.rect;
+                var nodePos = new Vector2(nodeItem.posX, nodeItem.posY);
+                nodeRect.center = nodePos;
+                // 只裁切在视图中的节点。
+                if (rect.Overlaps(nodeRect))
+                {
+                    nodeRect.center += offset;
+                    region.Cut(nodeRect);
+                }
+            }
+
+            // 寻找目标节点项的合适空位。
+
+            // 如果本来就有空位，直接返回位置。
+            var checkEmptyRect = itemRect;
+            checkEmptyRect.position += offset;
+            if (region.ContainsFreeRect(checkEmptyRect))
+            {
+                return itemPos;
+            }
+            // 是否有足够的空间容纳该节点。
+            if (region.canCutByNearest(itemRect.width, itemRect.height, itemRect.center + offset, out Rect resultRect))
+            {
+                // 转换成content的位置。
+                Rect contentRect = resultRect;
+                contentRect.position -= offset;
+
+                // 寻找空间中最近的位置。
+                var range = contentRect;
+                // 范围缩小节点的大小，以评估节点的中心点。
+                range.size -= itemRect.size;
+                range.center = contentRect.center;
+                itemPos = findNearestPosInRect(itemRect.center, range);
+            }
+            return itemPos;
+        }
+
         #endregion
         #region 私有方法
         #region 生命周期
@@ -1162,6 +1226,13 @@ namespace UI
             desiredScale = Vector3.Min(_backgroundOriginScale * maxZoom, desiredScale);
             return desiredScale;
         }
+        private Vector2 findNearestPosInRect(Vector2 target, Rect range)
+        {
+            // 大小完全超出范围
+            float x = Mathf.Clamp(target.x, range.min.x, range.max.x);
+            float y = Mathf.Clamp(target.y, range.min.y, range.max.y);
+            return new Vector2(x, y);
+        }
         #region 节点选择
         private void updateSelectFrame()
         {
@@ -1321,6 +1392,8 @@ namespace UI
         RectTransform _content;
         [SerializeField]
         RectTransform _selectFrameTrans;
+        [SerializeField]
+        RectTransform _viewPort;
         [SerializeField]
         CreateEffectPropertyDialog _createEffectPropDialog;
 

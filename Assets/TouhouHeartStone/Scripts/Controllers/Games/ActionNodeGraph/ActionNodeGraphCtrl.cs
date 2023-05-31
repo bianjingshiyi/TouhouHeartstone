@@ -251,16 +251,29 @@ namespace Controllers
         {
             return createEventEntryNode(eventDefine, pos.x, pos.y);
         }
-        public async void createNode(NodeDefine define, Vector2 pos)
+        public async Task<Node> createNode(NodeDefine define, Vector2 pos)
         {
+            ActionNodeItem item = null;
             if (define.actionDefine != null)
             {
-                await createActionNode(define.actionDefine, pos);
+                item = await createActionNode(define.actionDefine, pos);
             }
             else if (define.eventDefine != null)
             {
-                createEventEntryNode(define.eventDefine, pos);
+                item = createEventEntryNode(define.eventDefine, pos);
             }
+            if (item == null)
+                return null;
+            return getActionNode(item);
+        }
+        public void moveNodeToFreePosition(Node node)
+        {
+            var item = getActionNodeItem(node);
+            var pos = _ui.findFreeNodeCreatePosition(item);
+            node.posX = pos.x;
+            node.posY = pos.y;
+            _ui.moveActionNodeTo(item, pos);
+            OnEdited();
         }
         #endregion
 

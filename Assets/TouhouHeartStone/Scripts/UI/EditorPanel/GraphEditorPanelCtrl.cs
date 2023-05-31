@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Controllers;
 using Game;
 using MukioI18n;
@@ -167,21 +168,21 @@ namespace UI
             displayCreateActionDefineDialog(false);
             await scene.editor.openActionEditor(_cardPoolId, clone);
         }
-        private bool OnNodeItemBeginDrag(int index, PointerEventData data)
+        private Task<bool> OnNodeItemBeginDrag(int index, PointerEventData data)
         {
             //记录拖拽信息
             _dragNode = _filteredDefines[index];
             _dragStartPosition = data.position;
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
-            return false;
+            return Task.FromResult(false);
         }
-        private bool OnNodeItemDrag(int index, PointerEventData data)
+        private Task<bool> OnNodeItemDrag(int index, PointerEventData data)
         {
             if (_dragNode == null)
             {
                 //判断是否在拖拽节点，避免事件错误发生
-                return false;
+                return Task.FromResult(false);
             }
             if (!_isDraggingHorizontal && !_isDraggingVertical)
             {
@@ -204,24 +205,24 @@ namespace UI
                     {
                         //纵向拖拽
                         _isDraggingVertical = true;
-                        return false;
+                        return Task.FromResult(false);
                     }
                 }
-                return true;
+                return Task.FromResult(false);
             }
             else if (_isDraggingHorizontal)
             {
                 showDragNode();
                 moveDragNode(data.position);
-                return true;
+                return Task.FromResult(true);
             }
             else if (_isDraggingVertical)
             {
-                return false;
+                return Task.FromResult(false);
             }
-            return false;
+            return Task.FromResult(false);
         }
-        private bool OnNodeItemEndDrag(int index, PointerEventData data)
+        private async Task<bool> OnNodeItemEndDrag(int index, PointerEventData data)
         {
             if (_isDraggingVertical)
             {
@@ -242,7 +243,8 @@ namespace UI
             if (isPositionOverActionGraph(data.position))
             {
                 var pos = _actionGraphContent.InverseTransformPoint(data.position);
-                _actionGraphCtrl.createNode(_dragNode, pos);
+                var node = await _actionGraphCtrl.createNode(_dragNode, pos);
+                _actionGraphCtrl.moveNodeToFreePosition(node);
             }
             //重置状态字段
             _dragNode = null;

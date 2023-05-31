@@ -7795,6 +7795,7 @@ MonoBehaviour:
   _content: {fileID: 3503499947418099294}
   _selectFrameTrans: {fileID: 353306731670172196}
   _createEffectPropDialog: {fileID: 0}
+  _viewPort: {fileID: 3503499947881221634}
   zoomSpeed: 1
   maxZoom: 5
   _maxScale: 1.7

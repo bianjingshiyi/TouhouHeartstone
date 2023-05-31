@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using BJSYGameCore.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -55,25 +56,37 @@ namespace UI
             _searchFilter.onEndEdit.AddListener(onSearchFilterEndEditCallback);
             _createActionButton.onClick.AddListener(onCreateActionClickedCallback);
         }
-        private void onBeginDragCallback(NodesPanelItem item, PointerEventData data)
+        private async void onBeginDragCallback(NodesPanelItem item, PointerEventData data)
         {
-            var dragged = onItemBeginDrag?.Invoke(_nodes.IndexOf(item.transform as RectTransform), data) ?? false;
+            bool dragged = false;
+            if (onItemBeginDrag != null)
+            {
+                dragged = await onItemBeginDrag(_nodes.IndexOf(item.transform as RectTransform), data);
+            }
             if (!dragged)
             {
                 _nodeScrollRect.OnBeginDrag(data);
             }
         }
-        private void onDragCallback(NodesPanelItem item, PointerEventData data)
+        private async void onDragCallback(NodesPanelItem item, PointerEventData data)
         {
-            var dragged = onItemDrag?.Invoke(_nodes.IndexOf(item.transform as RectTransform), data) ?? false;
+            bool dragged = false;
+            if (onItemDrag != null)
+            {
+                dragged = await onItemDrag(_nodes.IndexOf(item.transform as RectTransform), data);
+            }
             if (!dragged)
             {
                 _nodeScrollRect.OnDrag(data);
             }
         }
-        private void onEndDragCallback(NodesPanelItem item, PointerEventData data)
+        private async void onEndDragCallback(NodesPanelItem item, PointerEventData data)
         {
-            var dragged = onItemEndDrag?.Invoke(_nodes.IndexOf(item.transform as RectTransform), data) ?? false;
+            bool dragged = false;
+            if (onItemDrag != null)
+            {
+                dragged = await onItemEndDrag(_nodes.IndexOf(item.transform as RectTransform), data);
+            }
             if (!dragged)
             {
                 _nodeScrollRect.OnEndDrag(data);
@@ -101,9 +114,9 @@ namespace UI
         }
 
 
-        public event Func<int, PointerEventData, bool> onItemBeginDrag;
-        public event Func<int, PointerEventData, bool> onItemDrag;
-        public event Func<int, PointerEventData, bool> onItemEndDrag;
+        public event Func<int, PointerEventData, Task<bool>> onItemBeginDrag;
+        public event Func<int, PointerEventData, Task<bool>> onItemDrag;
+        public event Func<int, PointerEventData, Task<bool>> onItemEndDrag;
         public event Action<int> onItemEditClicked;
 
         public event Action<string> onCategoryFilterEndEdit;
