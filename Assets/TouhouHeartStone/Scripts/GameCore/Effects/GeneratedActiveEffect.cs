@@ -93,15 +93,15 @@ namespace TouhouHeartstone
             }
             return Task.CompletedTask;
         }
-        public void setTags(params string[] tags)
+        public override void setTags(params string[] tags)
         {
             entryNode?.setTags(tags);
         }
-        public string[] getTags()
+        public override string[] getTags()
         {
             return entryNode?.tags?.ToArray() ?? Array.Empty<string>();
         }
-        public bool hasTag(string tag)
+        public override bool hasTag(string tag)
         {
             return entryNode?.tags?.Contains(tag) ?? false;
         }

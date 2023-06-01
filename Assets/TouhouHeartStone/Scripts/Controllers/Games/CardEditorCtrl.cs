@@ -201,7 +201,7 @@ namespace Controllers
             _cancelCardPoolSelectButton.onClick.AddListener(onClickCancelCardPoolSelectButton);
 
             // Card Properties.
-            var customPropTypes = _customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
+            var customPropTypes = CardEditorCtrl.customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
             _ui.setCustomPropertyTypes(customPropTypes);
             _ui.onConfirmCreateCustomProperty += onConfirmCreateCustomPropertyCallback;
             _ui.onDeleteCustomProperty += onDeleteCustomPropertyCallback;
@@ -685,7 +685,7 @@ namespace Controllers
             array.CopyTo(newArray, 0);
 
 
-            if (_customPropTypeDict.TryGetValue(elementType, out var key))
+            if (customPropTypeDict.TryGetValue(elementType, out var key))
             {
                 newArray.SetValue(getDefaultValue(key, false), newArray.Length - 1);
             }
@@ -985,7 +985,7 @@ namespace Controllers
             if (valueType == null)
                 return null;
 
-            if (!_customPropTypeDict.TryGetValue(valueType, out ActionNodeValueType type))
+            if (!customPropTypeDict.TryGetValue(valueType, out ActionNodeValueType type))
                 return null;
 
             var item = new CardPropertyItem(name, type, isArray)
@@ -1019,7 +1019,7 @@ namespace Controllers
                 isArray = true;
             }
             ActionNodeValueType valueType = ActionNodeValueType.boolean;
-            if (_customPropTypeDict.TryGetValue(type, out var t))
+            if (customPropTypeDict.TryGetValue(type, out var t))
             {
                 valueType = t;
             }
@@ -1037,7 +1037,7 @@ namespace Controllers
         
         private object getDefaultValue(ActionNodeValueType valueType, bool isArray)
         {
-            if (!_customPropDefaultValues.TryGetValue(valueType, out var func))
+            if (!customPropDefaultValues.TryGetValue(valueType, out var func))
                 return null;
             var value = func();
             if (!isArray)
@@ -1048,7 +1048,7 @@ namespace Controllers
 
             // 数组
             Type type = null;
-            foreach (var pair in _customPropTypeDict)
+            foreach (var pair in customPropTypeDict)
             {
                 if (pair.Value == valueType)
                 {
@@ -1166,7 +1166,7 @@ namespace Controllers
             { PILE.ITEM, StringTable.GAME_ITEM },
             { PILE.HEAD, StringTable.GAME_DELAY }
         };
-        private static readonly (ActionNodeValueType type, string name)[] _customPropTypes = 
+        public static readonly (ActionNodeValueType type, string name)[] customPropTypes = 
             new (ActionNodeValueType type, string name)[]
         {
             (ActionNodeValueType.integer, StringTable.EDITOR_TYPE_NAME_INT),
@@ -1176,7 +1176,7 @@ namespace Controllers
             (ActionNodeValueType.pileNameCollection, StringTable.EDITOR_TYPE_NAME_PILE),
             (ActionNodeValueType.keywords, StringTable.EDITOR_TYPE_NAME_KEYWORDS_TYPE),
         };
-        private static readonly Dictionary<Type, ActionNodeValueType> _customPropTypeDict = new Dictionary<Type, ActionNodeValueType>()
+        public static readonly Dictionary<Type, ActionNodeValueType> customPropTypeDict = new Dictionary<Type, ActionNodeValueType>()
         {
             { typeof(int), ActionNodeValueType.integer },
             { typeof(bool), ActionNodeValueType.boolean },
@@ -1185,7 +1185,7 @@ namespace Controllers
             { typeof(PileNameCollection), ActionNodeValueType.pileNameCollection },
             { typeof(KeywordCollection), ActionNodeValueType.keywords },
         };
-        private static readonly Dictionary<ActionNodeValueType, Func<object>> _customPropDefaultValues = new Dictionary<ActionNodeValueType, Func<object>>()
+        public static readonly Dictionary<ActionNodeValueType, Func<object>> customPropDefaultValues = new Dictionary<ActionNodeValueType, Func<object>>()
         {
             { ActionNodeValueType.integer, () => 0},
             { ActionNodeValueType.boolean, () => false },

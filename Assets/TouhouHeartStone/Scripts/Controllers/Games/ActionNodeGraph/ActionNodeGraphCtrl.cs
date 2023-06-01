@@ -224,10 +224,26 @@ namespace Controllers
 
             _ui.onCreateActionDefine += onCreateActionDefine;
 
+            // 效果属性
+            _ui.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
+            _ui.onConfirmCreateEffectProperty += onConfirmCreateEffectPropertyCallback;
+            _ui.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
+            _ui.onEffectPropertyItemValueChanged += onEffectPropertyItemValueChangedCallback;
+            _ui.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
+            _ui.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
+            _ui.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
+            _ui.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
+            _ui.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
+
             _cardPoolViewPanelCtrl.enableCount(false);
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
-            _ui.init(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
+            _ui.initPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
+            var keywords = CardEditorCtrl.getKeywords();
+            _ui.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
+
+            var customPropTypes = CardEditorCtrl.customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
+            _ui.setEffectPropertyTypes(customPropTypes);
         }
         #endregion
         #region 事件回调
@@ -478,41 +494,20 @@ namespace Controllers
         }
         private async void onClickCardSelectPanelCard(CardDefine cardDefine)
         {
-            if (_curEditNode == null)
+            if (!string.IsNullOrEmpty(_curCardSeekingEffectPropName))
             {
-                return;
-            }
-            var consts = _curEditNode.consts;
-            if (_curEditActionNodeConstItemIndex < 0)
-            {
-                consts[_curEditActionNodeConstName] = cardDefine.getDefineRef();
+                selectCardForEffectProperty(cardDefine);
             }
             else
             {
-                (consts[_curEditActionNodeConstName] as DefineReference[])[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
+                await selectCardForNodeConst(cardDefine);
             }
-            ActionNodeItem actionNodeItem = getActionNodeItem(_curEditNode);
-
-            var constIndex = consts.Keys.ToList().IndexOf(_curEditActionNodeConstName);
-            ValueInputField cardInputField = actionNodeItem.getConstInputField(constIndex);
-            CardSkinData cardSkin = null;
-            Sprite image = null;
-            if (cardDefine != null)
-            {
-                cardSkin = game.card.getDefaultSkin(cardDefine);
-                image = cardSkin.image ??
-                    await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
-            }
-            if (_curEditActionNodeConstItemIndex >= 0)
-            {
-                cardInputField = cardInputField.getItemAt(_curEditActionNodeConstItemIndex);
-            }
-            cardInputField.setCard(cardDefine, cardSkin, image);
-            OnEdited();
             //重置字段
             _curEditNode = null;
             _curEditActionNodeConstName = string.Empty;
             _curEditActionNodeConstItemIndex = -1;
+            _curCardSeekingEffectPropName = string.Empty;
+            _curCardSeekingEffectPropIndex = -1;
             //隐藏UI
             _ui.displayCardSelectPanel(false);
         }
@@ -522,6 +517,8 @@ namespace Controllers
             _curEditNode = null;
             _curEditActionNodeConstName = string.Empty;
             _curEditActionNodeConstItemIndex = -1;
+            _curCardSeekingEffectPropName = string.Empty;
+            _curCardSeekingEffectPropIndex = -1;
             //隐藏UI
             _ui.displayCardSelectPanel(false);
         }
@@ -548,6 +545,7 @@ namespace Controllers
             await ApplyGraph(effect.graph);
 
             updateContentSize();
+            updateEffectProperties();
         }
         #endregion
         #region 节点UI创建/删除/获取
@@ -824,9 +822,9 @@ namespace Controllers
                 inputViewData,
                 Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData);
-            actionNodeItem.initPileNames(CardEditorCtrl.piles.Values.ToArray(), CardEditorCtrl.piles.Keys.ToArray());
             actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
             actionNodeItem.setConsts(constViewData);
+            actionNodeItem.switchToEffectEntryNode();
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(passiveEntry);
@@ -850,8 +848,8 @@ namespace Controllers
                 inputViewData,
                 Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData);
-            actionNodeItem.initPileNames(CardEditorCtrl.piles.Values.ToArray(), CardEditorCtrl.piles.Keys.ToArray());
             actionNodeItem.setConsts(constViewData);
+            actionNodeItem.switchToEffectEntryNode();
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(auraEntry);
@@ -1351,6 +1349,62 @@ namespace Controllers
             if (actionDefine.obsoleteMsg == null) return null;
             if (actionDefine.obsoleteMsg == "") return "";
             return game.lang._(actionDefine.obsoleteMsg);
+        }
+        private void selectCardForEffectProperty(CardDefine cardDefine)
+        {
+            if (_curCardSeekingEffectPropIndex >= 0)
+            {
+                var array = _effect.getProp<DefineReference[]>(_curCardSeekingEffectPropName);
+                var defRef = cardDefine.getDefineRef();
+                if (array == null || _curCardSeekingEffectPropIndex >= array.Length)
+                {
+                    var newArray = new DefineReference[_curCardSeekingEffectPropIndex + 1];
+                    array.CopyTo(newArray, 0);
+                    array = newArray;
+                    _effect.setProp(_curCardSeekingEffectPropName, array);
+                }
+                array[_curCardSeekingEffectPropIndex] = defRef;
+            }
+            else
+            {
+                _effect.setProp(_curCardSeekingEffectPropName, cardDefine.getDefineRef());
+            }
+            updatePropertyItem(_curCardSeekingEffectPropName);
+            OnEdited();
+        }
+        private async Task selectCardForNodeConst(CardDefine cardDefine)
+        {
+            if (_curEditNode == null)
+            {
+                return;
+            }
+            var consts = _curEditNode.consts;
+            if (_curEditActionNodeConstItemIndex < 0)
+            {
+                consts[_curEditActionNodeConstName] = cardDefine.getDefineRef();
+            }
+            else
+            {
+                (consts[_curEditActionNodeConstName] as DefineReference[])[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
+            }
+            ActionNodeItem actionNodeItem = getActionNodeItem(_curEditNode);
+
+            var constIndex = consts.Keys.ToList().IndexOf(_curEditActionNodeConstName);
+            ValueInputField cardInputField = actionNodeItem.getConstInputField(constIndex);
+            CardSkinData cardSkin = null;
+            Sprite image = null;
+            if (cardDefine != null)
+            {
+                cardSkin = game.card.getDefaultSkin(cardDefine);
+                image = cardSkin.image ??
+                    await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+            }
+            if (_curEditActionNodeConstItemIndex >= 0)
+            {
+                cardInputField = cardInputField.getItemAt(_curEditActionNodeConstItemIndex);
+            }
+            cardInputField.setCard(cardDefine, cardSkin, image);
+            OnEdited();
         }
         #endregion
         /// <summary>

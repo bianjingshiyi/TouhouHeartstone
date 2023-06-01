@@ -270,7 +270,6 @@ namespace UI
         #endregion
         private void update()
         {
-            hideAllInputFields();
             _removeItemButton.gameObject.SetActive(_isListItem);
 
             if (_valueInfo.isArray)
@@ -288,17 +287,6 @@ namespace UI
                 updateList();
                 updateCard();
             }
-        }
-        private void hideAllInputFields()
-        {
-            _inputField.gameObject.SetActive(false);
-            _toggle.gameObject.SetActive(false);
-            _dropdown.gameObject.SetActive(false);
-            _inputDropdown.gameObject.SetActive(false);
-            _multiInputDropdown.gameObject.SetActive(false);
-            _button.gameObject.SetActive(false);
-            _listRoot.gameObject.SetActive(false);
-            _buildItem.gameObject.SetActive(false);
         }
         private void updateArray()
         {
@@ -359,6 +347,10 @@ namespace UI
                 else
                     _inputField.SetTextWithoutNotify(string.Empty);
             }
+            else
+            {
+                _inputField.gameObject.SetActive(false);
+            }
         }
         private void updateToggle()
         {
@@ -370,6 +362,10 @@ namespace UI
                     _toggle.SetIsOnWithoutNotify((bool)_valueInfo.value);
                 else
                     _toggle.SetIsOnWithoutNotify(false);
+            }
+            else
+            {
+                _toggle.gameObject.SetActive(false);
             }
         }
         private void updateDropdown()
@@ -390,10 +386,15 @@ namespace UI
                     index = 0;
                 _dropdown.SetValueWithoutNotify(index);
             }
+            else
+            {
+                _dropdown.gameObject.SetActive(false);
+            }
         }
         private void updateInputDropdown()
         {
             //自定义单选下拉菜单
+            _inputDropdown.gameObject.SetActive(false);
         }
         private void updateMultiInputDropdown()
         {
@@ -431,6 +432,10 @@ namespace UI
                 else
                     _multiInputDropdown.setValuesWithoutNotify(Array.Empty<string>());
             }
+            else
+            {
+                _multiInputDropdown.gameObject.SetActive(false);
+            }
         }
         private void updateButton()
         {
@@ -440,6 +445,10 @@ namespace UI
                 _valueInfo.type == ActionNodeValueType.trigger)
             {
                 _button.gameObject.SetActive(true);
+            }
+            else
+            {
+                _button.gameObject.SetActive(false);
             }
         }
         private void updateList()
@@ -507,6 +516,10 @@ namespace UI
                     item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
                 });
             }
+            else
+            {
+                _listRoot.gameObject.SetActive(false);
+            }
         }
         private void updateCard()
         {
@@ -514,6 +527,10 @@ namespace UI
             if (_valueInfo.type == ActionNodeValueType.cardReference)
             {
                 _buildItem.gameObject.SetActive(true);
+            }
+            else
+            {
+                _buildItem.gameObject.SetActive(false);
             }
         }
         #endregion

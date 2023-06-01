@@ -1,26 +1,13 @@
-﻿using System.Collections;
-using System.Linq;
-using UnityEngine.EventSystems;
-using UnityEngine.Events;
-using TouhouCardEngine;
-using TouhouHeartstone;
-using System.Reflection;
-using TouhouHeartstone.Builtin;
-using System;
-using System.IO.Compression;
-using System.IO;
-using MukioI18n;
-using NitoriNetwork.Common;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using System;
 using System.Collections.Generic;
-using BJSYGameCore.UI;
-using UnityEngine.UI;
-using BJSYGameCore;
+using System.Linq;
 using Controllers;
+using Game;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Timer = BJSYGameCore.Timer;
 using UIHelper = BJSYGameCore.UI.UIHelper;
-using Game;
 
 namespace UI
 {
@@ -50,6 +37,16 @@ namespace UI
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.onClickHelpButton += onActionNodeClickHelpButton;
+
+            actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
+            actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
+            actionNodeItem.onEffectPropertyItemValueChanged += onEffectPropertyItemValueChangedCallback;
+            actionNodeItem.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
+            actionNodeItem.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
+            actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
+            actionNodeItem.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
+            actionNodeItem.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
+
             actionNodeItem.switchToActionNode();
             actionNodeItem.setName(nodeName);
             actionNodeItem.setInputs(inputViewData);
@@ -99,6 +96,16 @@ namespace UI
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.onUpdateTransform += onActionNodeItemUpdateTransform;
+
+            actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
+            actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
+            actionNodeItem.onEffectPropertyItemValueChanged += onEffectPropertyItemValueChangedCallback;
+            actionNodeItem.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
+            actionNodeItem.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
+            actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
+            actionNodeItem.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
+            actionNodeItem.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
+
             return actionNodeItem;
         }
 
@@ -356,13 +363,17 @@ namespace UI
         {
             _cardSelectPanel.SetActive(value);
         }
-        public void init((string name, string value)[] piles)
+        public void initPiles((string name, string value)[] piles)
         {
-            init(piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray());
-        }        
-        public void init(string[] pileNames, string[] pileValues)
+            initPiles(piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray());
+        }
+        public void initPiles(string[] pileNames, string[] pileValues)
         {
             _actionNodeItemTemplate.initPileNames(pileNames, pileValues);
+        }
+        public void initKeywords(string[] keywordNames, string[] keywordValues)
+        {
+            _actionNodeItemTemplate.initKeywords(keywordNames, keywordValues);
         }
         public void resetView()
         {
@@ -455,6 +466,28 @@ namespace UI
         {
             _createActionDefineDialog.showErrorTip(message);
         }
+
+        #region 效果属性
+        public void setEffectPropertyTypes((ActionNodeValueType type, string name)[] types)
+        {
+            _createEffectPropDialog.setTypes(types);
+        }
+        public void showEffectPropertyDialogError(string message)
+        {
+            _createEffectPropDialog.showErrorTip(message);
+        }
+        public void displayEffectPropertyDialog(bool display)
+        {
+            if (display)
+            {
+                _createEffectPropDialog.display();
+            }
+            else
+            {
+                _createEffectPropDialog.hide();
+            }
+        }
+        #endregion
         #endregion
         #region 私有方法
         #region 生命周期
@@ -486,6 +519,8 @@ namespace UI
             displayCardSelectPanel(false);
 
             _createActionDefineDialog.onConfirm += onCreateActionDefineCallback;
+            // 效果属性。
+            _createEffectPropDialog.onConfirm += onConfirmCreateEffectPropertyCallback;
             #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
             _backgroundOriginScale = _content.localScale;//读取目前的缩放比例 
 
@@ -1105,11 +1140,50 @@ namespace UI
         {
             _nodeDocument?.Show(key);
         }
-
-        public void onCreateActionDefineCallback(string name, string category)
+        
+        private void onCreateActionDefineCallback(string name, string category)
         {
             onCreateActionDefine?.Invoke(name, category);
         }
+
+        #region 效果属性
+        private void onClickAddEffectPropertyButtonCallback()
+        {
+            onClickAddEffectPropertyButton?.Invoke();
+        }
+        private void onConfirmCreateEffectPropertyCallback(EffectPropertyItem item)
+        {
+            onConfirmCreateEffectProperty?.Invoke(item);
+        }
+        private void onClickEffectPropertyItemButtonCallback(string name, int index)
+        {
+            onClickEffectPropertyItemButton?.Invoke(name, index);
+        }
+        private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
+        {
+            onEffectPropertyItemValueChanged?.Invoke(name, index, value);
+        }
+        private void onClickEffectPropertyAddItemButtonCallback(string name)
+        {
+            onClickEffectPropertyAddItemButton?.Invoke(name);
+        }
+        private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
+        {
+            onClickEffectPropertyRemoveItemButton?.Invoke(name, index);
+        }
+        private void onClickEffectPropertyButtonCallback(string name)
+        {
+            onClickEffectPropertyButton?.Invoke(name);
+        }
+        private void onEffectPropertyValueChangedCallback(string name, object value)
+        {
+            onEffectPropertyValueChanged?.Invoke(name, value);
+        }
+        private void onDeleteEffectPropertyCallback(string name)
+        {
+            onDeleteEffectProperty?.Invoke(name);
+        }
+        #endregion
 
         #endregion
         /// <summary>
@@ -1333,6 +1407,22 @@ namespace UI
         /// 参数：动作名称、动作分类
         /// </summary>
         public event Action<string, string> onCreateActionDefine;
+
+
+        #region 效果属性
+        /// <summary>
+        /// 当确认创建自定义属性。
+        /// </summary>
+        public event Action onClickAddEffectPropertyButton;
+        public event Action<EffectPropertyItem> onConfirmCreateEffectProperty;
+        public event Action<string, int> onClickEffectPropertyItemButton;
+        public event Action<string, int, object> onEffectPropertyItemValueChanged;
+        public event Action<string> onClickEffectPropertyButton;
+        public event Action<string, object> onEffectPropertyValueChanged;
+        public event Action<string> onDeleteEffectProperty;
+        public event Action<string> onClickEffectPropertyAddItemButton;
+        public event Action<string, int> onClickEffectPropertyRemoveItemButton;
+        #endregion
         #endregion
         #region 属性字段
         /// <summary>
@@ -1367,6 +1457,8 @@ namespace UI
         RectTransform _content;
         [SerializeField]
         RectTransform _selectFrameTrans;
+        [SerializeField]
+        CreateEffectPropertyDialog _createEffectPropDialog;
 
         [Header("缩放")]
         [SerializeField]

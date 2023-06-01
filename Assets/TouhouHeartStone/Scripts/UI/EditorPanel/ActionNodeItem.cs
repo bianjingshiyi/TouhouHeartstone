@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Controllers;
+using Game;
 using MukioI18n;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,6 +19,7 @@ namespace UI
         {
             _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(true);
+            _effectPropertyFields.SetActive(true);
             _inputRoot.gameObject.SetActive(true);
             _valueRoot.gameObject.SetActive(false);
             _outputRoot.gameObject.SetActive(true);
@@ -27,6 +29,17 @@ namespace UI
         {
             _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(false);
+            _effectPropertyFields.SetActive(false);
+            _inputRoot.gameObject.SetActive(true);
+            _valueRoot.gameObject.SetActive(true);
+            _outputRoot.gameObject.SetActive(true);
+            SetDirty();
+        }
+        public void switchToEffectEntryNode()
+        {
+            _buffFieldsRoot.gameObject.SetActive(false);
+            _triggerFieldsRoot.gameObject.SetActive(false);
+            _effectPropertyFields.SetActive(true);
             _inputRoot.gameObject.SetActive(true);
             _valueRoot.gameObject.SetActive(true);
             _outputRoot.gameObject.SetActive(true);
@@ -118,6 +131,9 @@ namespace UI
         {
             ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
             item.initPileNames(pileNames, pileValues);
+
+            ActionNodeItemEffectPropertyItem propItem = _effectPropertyItemTemplate.GetComponent<ActionNodeItemEffectPropertyItem>();
+            propItem.setPiles(pileNames, pileValues);
         }
         /// <summary>
         /// 初始化效果标签
@@ -127,6 +143,11 @@ namespace UI
         {
             ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
             item.initEffectTagNames(effectTagNames, effectTagValues);
+        }
+        public void initKeywords(string[] keywordNames, string[] keywordValues)
+        {
+            ActionNodeItemEffectPropertyItem propItem = _effectPropertyItemTemplate.GetComponent<ActionNodeItemEffectPropertyItem>();
+            propItem.setKeywords(keywordNames, keywordValues);
         }
 
 
@@ -334,6 +355,59 @@ namespace UI
         {
             return _outputList.Select(r => r.GetComponent<ActionNodeItemOutput>()).ToArray();
         }
+        #region 自定义属性
+        public void updateEffectProperties(EffectPropertyItem[] properties, CardManager cardManager)
+        {
+            UIHelper.updateList(_effectPropertyRoot, _effectPropertyItemTemplate, _effectPropertyItems, properties.Length, async (i, itemRect) =>
+            {
+                ActionNodeItemEffectPropertyItem item = itemRect.GetComponent<ActionNodeItemEffectPropertyItem>();
+                await item.updateItem(properties[i], cardManager);
+            }, itemRect =>
+            {
+                ActionNodeItemEffectPropertyItem item = itemRect.GetComponent<ActionNodeItemEffectPropertyItem>();
+                item.onValueChanged += onEffectPropertyValueChangedCallback;
+                item.onClickButton += onClickEffectPropertyButtonCallback;
+                item.onClickDelete += onDeleteEffectPropertyCallback;
+
+                item.onClickAddItemButton += onClickEffectPropertyAddItemButtonCallback;
+                item.onItemValueChanged += onEffectPropertyItemValueChangedCallback;
+                item.onClickItemButton += onClickEffectPropertyItemButtonCallback;
+                item.onClickRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
+            }, itemRect =>
+            {
+                ActionNodeItemEffectPropertyItem item = itemRect.GetComponent<ActionNodeItemEffectPropertyItem>();
+                item.onValueChanged -= onEffectPropertyValueChangedCallback;
+                item.onClickButton -= onClickEffectPropertyButtonCallback;
+                item.onClickDelete -= onDeleteEffectPropertyCallback;
+
+                item.onClickAddItemButton -= onClickEffectPropertyAddItemButtonCallback;
+                item.onItemValueChanged -= onEffectPropertyItemValueChangedCallback;
+                item.onClickItemButton -= onClickEffectPropertyItemButtonCallback;
+                item.onClickRemoveItemButton -= onClickEffectPropertyRemoveItemButtonCallback;
+            }, rebuild: true);
+            SetDirty();
+        }
+        public async void updateEffectPropertyItem(string name, EffectPropertyItem item, CardManager cardManager)
+        {
+            ActionNodeItemEffectPropertyItem listItem = null;
+            foreach (var rect in _effectPropertyItems)
+            {
+                if (rect == null)
+                    continue;
+                var i = rect.GetComponent<ActionNodeItemEffectPropertyItem>();
+                if (i == null)
+                    continue;
+                if (i.propertyName == name)
+                {
+                    listItem = i;
+                    break;
+                }
+            }
+            if (listItem == null)
+                return;
+            await listItem.updateItem(item, cardManager);
+        }
+        #endregion
         /// <summary>
         /// 将该节点项设置为不洁净。会在本帧结束时调用onUpdateTransform回调。
         /// </summary>
@@ -377,9 +451,14 @@ namespace UI
             {
                 _targetCheckerTemplate.gameObject.SetActive(false);
             }
+            if (_effectPropertyItemTemplate.transform.parent == _effectPropertyRoot)
+            {
+                _effectPropertyItemTemplate.gameObject.SetActive(false);
+            }
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
             _warningObj.onClick.AddListener(onClickObsoleteBtn);
             _helpBtn.onClick.AddListener(onClickHelpBtn);
+            _addEffectPropertyItemButton.onClick.AddListener(onClickAddEffectPropertyButtonCallback);
             //增益
             onAwake_Buff();
         }
@@ -459,6 +538,41 @@ namespace UI
             onTargetCheckerErrorTipValueChanged?.Invoke(this, _targetCheckerList.IndexOf(item.transform as RectTransform), value);
         }
 
+        #region 自定义属性
+        private void onClickAddEffectPropertyButtonCallback()
+        {
+            onClickAddEffectPropertyButton?.Invoke();
+        }
+        private void onClickEffectPropertyItemButtonCallback(string name, int index)
+        {
+            onClickEffectPropertyItemButton?.Invoke(name, index);
+        }
+        private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
+        {
+            onEffectPropertyItemValueChanged?.Invoke(name, index, value);
+        }
+        private void onClickEffectPropertyAddItemButtonCallback(string name)
+        {
+            onClickEffectPropertyAddItemButton?.Invoke(name);
+        }
+        private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
+        {
+            onClickEffectPropertyRemoveItemButton?.Invoke(name, index);
+        }
+        private void onClickEffectPropertyButtonCallback(string name)
+        {
+            onClickEffectPropertyButton?.Invoke(name);
+        }
+        private void onEffectPropertyValueChangedCallback(string name, object value)
+        {
+            onEffectPropertyValueChanged?.Invoke(name, value);
+        }
+        private void onDeleteEffectPropertyCallback(string name)
+        {
+            onDeleteEffectProperty?.Invoke(name);
+        }
+        #endregion
+
         [TranslateMsg]
         const string TITLE_NODE_OBSOLETE = "过时的节点";
 
@@ -528,6 +642,20 @@ namespace UI
         public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         public event Action<ActionNodeItem> onUpdateTransform;
         public event Action<string> onClickHelpButton;
+
+        #region 效果属性
+        /// <summary>
+        /// 当确认创建自定义属性。
+        /// </summary>
+        public event Action onClickAddEffectPropertyButton;
+        public event Action<string, int> onClickEffectPropertyItemButton;
+        public event Action<string, int, object> onEffectPropertyItemValueChanged;
+        public event Action<string> onClickEffectPropertyButton;
+        public event Action<string, object> onEffectPropertyValueChanged;
+        public event Action<string> onDeleteEffectProperty;
+        public event Action<string> onClickEffectPropertyAddItemButton;
+        public event Action<string, int> onClickEffectPropertyRemoveItemButton;
+        #endregion
         #endregion
         #region 属性字段
         public float posX
@@ -600,6 +728,18 @@ namespace UI
         List<RectTransform> _targetCheckerList = new List<RectTransform>();
         [SerializeField]
         Button _addTargetCheckerButton;
+
+        [Header("效果属性")]
+        [SerializeField]
+        GameObject _effectPropertyFields;
+        [SerializeField]
+        RectTransform _effectPropertyRoot;
+        [SerializeField]
+        RectTransform _effectPropertyItemTemplate;
+        [SerializeField]
+        List<RectTransform> _effectPropertyItems = new List<RectTransform>();
+        [SerializeField]
+        Button _addEffectPropertyItemButton;
 
         [Header("颜色")]
         [SerializeField]
