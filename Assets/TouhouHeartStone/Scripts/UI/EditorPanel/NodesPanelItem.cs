@@ -15,12 +15,16 @@ namespace UI
         }
         private void Awake()
         {
-            _editButtonObj.SetActive(false);
             _editButton.onClick.AddListener(onEdit);
+            _doubleClickButton.onDoubleClick.AddListener(onDoubleClickedCallback);
         }
         private void onEdit()
         {
             onEditClicked?.Invoke(this);
+        }
+        private void onDoubleClickedCallback()
+        {
+            onDoubleClicked?.Invoke(this);
         }
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
@@ -42,12 +46,15 @@ namespace UI
         public event Action<NodesPanelItem, PointerEventData> onDrag;
         public event Action<NodesPanelItem, PointerEventData> onEndDrag;
         public event Action<NodesPanelItem> onEditClicked;
+        public event Action<NodesPanelItem> onDoubleClicked;
 
 
         [SerializeField]
         private Image _icon;
         [SerializeField]
         private Text _name;
+        [SerializeField]
+        private DoubleClickButtonExt _doubleClickButton;
         [SerializeField]
         private GameObject _editButtonObj;
         [SerializeField]

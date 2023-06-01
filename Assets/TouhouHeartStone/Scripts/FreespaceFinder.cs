@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ExcelLibrary.BinaryFileFormat;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace FreespaceFinder
@@ -35,7 +33,7 @@ namespace FreespaceFinder
         {
             foreach (Rect r in freeRects)
             {
-                if (ContainsSize(r, height, width))
+                if (ContainsSize(r, width, height))
                 {
                     rect = r;
                     return true;
@@ -57,9 +55,12 @@ namespace FreespaceFinder
             rect = default;
             foreach (Rect r in freeRects)
             {
-                if (ContainsSize(r, height, width))
+                if (ContainsSize(r, width, height))
                 {
-                    float dis = Vector2.SqrMagnitude(r.center - target);
+                    float nearestX = Mathf.Clamp(target.x, r.xMin, r.xMax);
+                    float nearestY = Mathf.Clamp(target.y, r.yMin, r.yMax);
+                    Vector2 nearest = new Vector2(nearestX, nearestY);
+                    float dis = Vector2.SqrMagnitude(nearest - target);
                     if (!found || dis < nearestDis)
                     {
                         nearestDis = dis;

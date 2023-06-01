@@ -38,6 +38,7 @@ namespace UI
                 item.onDrag += onDragCallback;
                 item.onEndDrag += onEndDragCallback;
                 item.onEditClicked += onEditClickedCallback;
+                item.onDoubleClicked += onItemDoubleClickedCallback;
             },
             rect =>
             {
@@ -46,6 +47,7 @@ namespace UI
                 item.onDrag -= onDragCallback;
                 item.onEndDrag -= onEndDragCallback;
                 item.onEditClicked -= onEditClickedCallback;
+                item.onDoubleClicked -= onItemDoubleClickedCallback;
             });
         }
 
@@ -96,6 +98,10 @@ namespace UI
         {
             onItemEditClicked?.Invoke(_nodes.IndexOf(item.transform as RectTransform));
         }
+        private void onItemDoubleClickedCallback(NodesPanelItem item)
+        {
+            onItemDoubleClicked?.Invoke(_nodes.IndexOf(item.transform as RectTransform));
+        }
         private void onCategoryFilterEndEditCallback(string value)
         {
             onCategoryFilterEndEdit?.Invoke(value);
@@ -118,6 +124,7 @@ namespace UI
         public event Func<int, PointerEventData, Task<bool>> onItemDrag;
         public event Func<int, PointerEventData, Task<bool>> onItemEndDrag;
         public event Action<int> onItemEditClicked;
+        public event Action<int> onItemDoubleClicked;
 
         public event Action<string> onCategoryFilterEndEdit;
         public event Action<bool[]> onOutputFilterValueChanged;

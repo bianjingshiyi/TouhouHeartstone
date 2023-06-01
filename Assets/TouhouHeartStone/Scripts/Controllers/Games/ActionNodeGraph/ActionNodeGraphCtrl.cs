@@ -82,6 +82,10 @@ namespace Controllers
             }
             return game.i18n._(input);
         }
+        public Vector2 getViewportCenter()
+        {
+            return _ui.getViewCenterPosition();
+        }
         #region 操作模式
         public void SetOperationMode(GraphOperationMode mode) 
         {

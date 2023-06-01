@@ -95,6 +95,7 @@ namespace UI
             _nodesPanel.onItemDrag += OnNodeItemDrag;
             _nodesPanel.onItemEndDrag += OnNodeItemEndDrag;
             _nodesPanel.onItemEditClicked += OnNodeItemEditClicked;
+            _nodesPanel.onItemDoubleClicked += OnNodeItemDoubleClicked;
             _nodesPanel.onCategoryFilterEndEdit += onCategoryFilterEndEdit;
             _nodesPanel.onOutputFilterValueChanged += onOutputFilterValueChanged;
             _nodesPanel.onSearchFilterEndEdit += onSearchFilterEndEdit;
@@ -244,7 +245,8 @@ namespace UI
             {
                 var pos = _actionGraphContent.InverseTransformPoint(data.position);
                 var node = await _actionGraphCtrl.createNode(_dragNode, pos);
-                _actionGraphCtrl.moveNodeToFreePosition(node);
+                if (node != null)
+                    _actionGraphCtrl.moveNodeToFreePosition(node);
             }
             //重置状态字段
             _dragNode = null;
@@ -268,6 +270,16 @@ namespace UI
                 var clone = game.card.cloneActionDefine(_cardPoolId, generatedActionDefine);
                 scene.editor.openActionEditor(_cardPoolId, clone);
             }
+        }
+        private async void OnNodeItemDoubleClicked(int index)
+        {
+            if (index < 0 || index >= _filteredDefines.Length)
+                return;
+            var define = _filteredDefines[index];
+            var pos = _actionGraphCtrl.getViewportCenter();
+            var node = await _actionGraphCtrl.createNode(define, pos);
+            if (node != null)
+                _actionGraphCtrl.moveNodeToFreePosition(node);
         }
         private void onCategoryFilterEndEdit(string value)
         {

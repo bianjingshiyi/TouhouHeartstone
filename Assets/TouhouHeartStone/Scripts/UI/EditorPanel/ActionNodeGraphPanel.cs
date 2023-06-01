@@ -6,9 +6,11 @@ using Game;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Timer = BJSYGameCore.Timer;
-using UIHelper = BJSYGameCore.UI.UIHelper;
 using FreespaceFinder;
+using Game;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace UI
 {
@@ -450,39 +452,34 @@ namespace UI
             Vector2 contentScale = _content.localScale;
             Vector2 reverseScale = new Vector2(1 / contentScale.x, 1 / contentScale.y);
 
-            var itemRectTrans = item.transform as RectTransform;
-            var itemRect = itemRectTrans.rect;
-            var itemPos = new Vector2(item.posX, item.posY);
-            itemRect.center = itemPos;
+            var itemRect = getNodeItemRect(item);
 
             RectTransform rectTrans = _viewPort;
             var rect = rectTrans.rect;
-            rect.size = Vector2.Scale(rect.size + itemRect.size, reverseScale);
-            rect.center = _content.localPosition;
+            rect.size = Vector2.Scale(rect.size + itemRect.size * 2, reverseScale);
+            rect.center = Vector2.Scale(-_content.localPosition, reverseScale);
 
 
             Vector2 size = rect.size;
             var region = new Region(size.x, size.y);
-            Vector2 offset = 0.5f * size;
+            Vector2 offset = 0.5f * size - rect.center;
 
             // 将其他节点所占的位置裁切出去。
             foreach (var nodeItem in _actionNodeItemList)
             {
                 if (nodeItem == item)
                     continue;
-                var nodeRectTrans = nodeItem.transform as RectTransform;
-                var nodeRect = nodeRectTrans.rect;
-                var nodePos = new Vector2(nodeItem.posX, nodeItem.posY);
-                nodeRect.center = nodePos;
+                var nodeRect = getNodeItemRect(nodeItem);
                 // 只裁切在视图中的节点。
                 if (rect.Overlaps(nodeRect))
                 {
-                    nodeRect.center += offset;
+                    nodeRect.position += offset;
                     region.Cut(nodeRect);
                 }
             }
 
             // 寻找目标节点项的合适空位。
+            var itemPos = new Vector2(item.posX, item.posY);
 
             // 如果本来就有空位，直接返回位置。
             var checkEmptyRect = itemRect;
@@ -508,6 +505,14 @@ namespace UI
             return itemPos;
         }
 
+        public static Rect getNodeItemRect(ActionNodeItem item)
+        {
+            var itemRectTrans = item.transform as RectTransform;
+            var itemRect = itemRectTrans.rect;
+            var itemPos = new Vector2(item.posX, item.posY);
+            itemRect.center = itemPos;
+            return itemRect;
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -816,7 +821,7 @@ namespace UI
                 onEndConnection?.Invoke(item, inputIndex, false);
                 return;
             }
-            else if(_currentSelectedKnob.outputNode != null && _currentSelectedKnob.outputIndex >= 0)
+            else if (_currentSelectedKnob.outputNode != null && _currentSelectedKnob.outputIndex >= 0)
             {
                 // 选择的输出点存在。
                 var output = _currentSelectedKnob.outputNode;
