@@ -89,6 +89,7 @@ namespace UI
         protected Stack<IEnumerator> _coroutineStack;
         protected IEnumerator _coroutine;
         protected float _time;
+        protected float _duration;
         protected bool _finished = true;
         public virtual void postEvent(TableManager table)
         {
@@ -133,6 +134,7 @@ namespace UI
         public sealed override bool update(TableManager table, float time)
         {
             _time = time;
+            _duration += _time;
             if (_coroutine == null)
             {
                 _coroutineStack = _coroutineStack ?? new Stack<IEnumerator>();
