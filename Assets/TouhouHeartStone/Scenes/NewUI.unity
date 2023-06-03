@@ -8698,10 +8698,14 @@ MonoBehaviour:
   _cardPrefab: {fileID: 1195777761491610246, guid: 92b5566bce81a774fb9bb22f1b342b2e,
     type: 3}
   _tipBoxOffset: {x: 20, y: 20}
+  _playCardSound: {fileID: 8300000, guid: 050743a5f576d70409c269585fb863cb, type: 3}
   _table: {fileID: 1004327311}
   _canControl: 1
   _usingPosition: 0
   _isSelectingTarget: 0
+  _editableAnims: []
+  _animationCache: []
+  _animationQueue: []
   simpleAnim:
     beforeAnim:
       m_PersistentCalls:
@@ -8714,20 +8718,18 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
-  _showCardTimer:
-    startTime: -1
-    updateTime: -1
-    duration: 0.25
+  _maxBuffDisplayCount: 15
+  _maxBuffNameLength: 10
+  _maxBuffDescLength: 32
   _projectileList: []
   _tipTimer:
     startTime: -1
     updateTime: -1
     duration: 3
-  _maxBuffDisplayCount: 15
-  _maxBuffNameLength: 10
-  _maxBuffDescLength: 32
-  _editableAnims: []
-  _animationQueue: []
+  _showCardTimer:
+    startTime: -1
+    updateTime: -1
+    duration: 0.25
 --- !u!4 &1728063060
 Transform:
   m_ObjectHideFlags: 0

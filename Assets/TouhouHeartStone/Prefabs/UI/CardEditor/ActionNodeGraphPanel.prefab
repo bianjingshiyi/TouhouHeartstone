@@ -989,8 +989,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 46
-  m_PreferredHeight: 46
+  m_PreferredWidth: 32
+  m_PreferredHeight: 32
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -1763,8 +1763,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 509, y: -30}
-  m_SizeDelta: {x: 46, y: 46}
+  m_AnchoredPosition: {x: 110, y: -30}
+  m_SizeDelta: {x: 32, y: 32}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!224 &2277951601501722305 stripped
 RectTransform:
@@ -4644,8 +4644,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 463, y: -30}
-  m_SizeDelta: {x: 46, y: 46}
+  m_AnchoredPosition: {x: 110, y: -30}
+  m_SizeDelta: {x: 32, y: 32}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!1001 &5054425955505842223
 PrefabInstance:
@@ -5506,8 +5506,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 46
-  m_PreferredHeight: 46
+  m_PreferredWidth: 32
+  m_PreferredHeight: 32
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -7066,7 +7066,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c26612d129b33534db613c9c19b5477b, type: 3}
-#modifies#
 --- !u!1 &914907736196792977
 GameObject:
   m_ObjectHideFlags: 0
@@ -8529,7 +8528,6 @@ MonoBehaviour:
   _dragLine: {fileID: 0}
   _backgroundOriginScale: {x: 0, y: 0, z: 0}
   _backgroundDragStartPosition: {x: 0, y: 0}
-#5916370020909694337
 --- !u!114 &7245186808135222160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8575,7 +8573,6 @@ MonoBehaviour:
   _buffFieldsRoot: {fileID: 787485949}
   _buffDropdown: {fileID: 6615563753275149663}
   _editBuffButton: {fileID: 3925324531963771980}
-#remote adds#
 --- !u!114 &400519624776872215 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2157389444735961918, guid: e392c785257f9364ebb3ca3a70fcb14a,
@@ -9752,7 +9749,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
-#local adds#
 --- !u!114 &4438807854196859504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9812,39 +9808,3 @@ MonoBehaviour:
   m_GradientStyle: 1
   m_ColorSpace: -1
   m_IgnoreAspectRatio: 1
-#remote deletes#
-#local deletes#
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476
-#2849834507049430476

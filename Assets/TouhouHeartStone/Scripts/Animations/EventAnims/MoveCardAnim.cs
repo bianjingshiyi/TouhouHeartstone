@@ -1,6 +1,5 @@
 ﻿
 using System.Collections;
-using System.Xml.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -80,7 +79,7 @@ namespace Game
                     yield return moveFromHead(table, arg);
                     break;
                 case PILE.WARP:
-                    yield return moveFromWarp(table, arg);
+                    yield return moveFromWarp(table);
                     break;
                 default:
                     yield return moveFromNull(table);
@@ -221,10 +220,10 @@ namespace Game
             }
             yield return moveToAnim(table, startPos, startHeight);
         }
-        private IEnumerator moveFromWarp(TableManager table, Arg arg)
+        private IEnumerator moveFromWarp(TableManager table)
         {
             string toName = _to?.name;
-            if (toName == PILE.GRAVE && arg.parent is HearthStoneRule.UseEventArg) // 阻止使用卡牌后播放置入墓地的动画
+            if (toName == PILE.GRAVE) // 不播放置入墓地的动画
             {
                 yield break;
             }
@@ -349,7 +348,7 @@ namespace Game
             var cardUI = table.createCard(card, startPos, startHeight, isFaceUp);
             //播放动画
             var anim = new CardTransAnim(cardUI, target, targetSize / cardUI.rectTransform.rect.height, table.fieldToDeckCurve);
-
+            cardUI.playSound(table.playCardSound);
             while (!anim.update(table, _time))//没放完动画就让它接着放
                 yield return null;
             //摧毁卡牌

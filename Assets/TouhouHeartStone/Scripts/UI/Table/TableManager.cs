@@ -365,6 +365,10 @@ namespace Game
         public UICard cardPrefab => _cardPrefab;
         [SerializeField]
         Vector2 _tipBoxOffset = new Vector2(20, 20);
+        [Header("Sounds")]
+        [SerializeField]
+        AudioClip _playCardSound;
+        public AudioClip playCardSound => _playCardSound;
         [Header("State")]
         [SerializeField]
         Table _table;
