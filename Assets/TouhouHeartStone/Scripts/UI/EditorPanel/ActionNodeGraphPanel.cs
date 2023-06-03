@@ -231,8 +231,7 @@ namespace UI
                 Debug.LogWarning("不存在" + node + ":" + ouputIndex + "与" + targetNode + ":" + inputIndex + "之间的连接");
                 return;
             }
-            Destroy(_connectionList[index].line.gameObject);
-            _connectionList.RemoveAt(index);
+            removeConnection(index);
         }
         /// <summary>
         /// 断开指定节点的所有输入连接
@@ -244,8 +243,7 @@ namespace UI
             {
                 if (_connectionList[i].inputNode == node)
                 {
-                    Destroy(_connectionList[i].line.gameObject);
-                    _connectionList.RemoveAt(i);
+                    removeConnection(i);
                     i--;
                 }
             }
@@ -276,8 +274,7 @@ namespace UI
             {
                 if (_connectionList[i].inputNode == node || _connectionList[i].outputNode == node)
                 {
-                    Destroy(_connectionList[i].line.gameObject);
-                    _connectionList.RemoveAt(i);
+                    removeConnection(i);
                     i--;
                     continue;
                 }
@@ -302,6 +299,8 @@ namespace UI
                 Destroy(_connectionList[i].line.gameObject);
             }
             _connectionList.Clear();
+
+            _dragHiddenConnection = null;
         }
         /// <summary>
         /// 在指定坐标展开菜单，左上角对齐。
@@ -709,23 +708,23 @@ namespace UI
 
             int inputIndex = item.indexOfInput(input);
             int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == inputIndex);
-            if (index < 0 || input.isControl)
+            if (index >= 0 && !input.isControl)
             {
-                GameObject from = input.getNode();
-                GameObject to = new GameObject();
-                to.name = "Slot";
-                GameObject tod = new GameObject();
-                tod.name = "Slot_d";
-                tod.transform.SetParent(to.transform);
-                to.transform.SetParent(_actionNodeLineRoot);
-                to.transform.position = eventData.currentInputModule.input.mousePosition;
-                _dragLine = createLine(from, to, input.GetColor());
+                _dragHiddenConnection = _connectionList[index].line.gameObject;
+                _dragHiddenConnection.SetActive(false);
+            }
 
-            }
-            else
-            {
-                _dragLine = _connectionList[index].line;
-            }
+            GameObject from = input.getNode();
+            GameObject to = new GameObject();
+            to.name = "Slot";
+            GameObject tod = new GameObject();
+            tod.name = "Slot_d";
+            tod.transform.SetParent(to.transform);
+            to.transform.SetParent(_actionNodeLineRoot);
+            to.transform.position = eventData.currentInputModule.input.mousePosition;
+            _dragLine = createLine(from, to, input.GetColor());
+
+
             onStartConnection?.Invoke(item, inputIndex, false);
         }
         /// <summary>
@@ -758,6 +757,11 @@ namespace UI
         private void onEndDragInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
             var inputIndex = item.indexOfInput(input);
+            if (_dragHiddenConnection)
+            {
+                _dragHiddenConnection.SetActive(true);
+                _dragHiddenConnection = null;
+            }
             Destroy(_dragLine.gameObject);
             _dragLine = null;
             //使用射线判断是否在其他的输入点上
@@ -863,22 +867,22 @@ namespace UI
             {
                 int outputIndex = item.indexOfOutput(output);
                 int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == outputIndex);
-                if (index < 0 || !output.isControl)
+                if (index >= 0 && output.isControl)
                 {
-                    GameObject from = output.getNode();
-                    GameObject to = new GameObject();
-                    to.name = "Slot";
-                    GameObject tod = new GameObject();
-                    tod.name = "Slot_d";
-                    tod.transform.SetParent(to.transform);
-                    to.transform.SetParent(_actionNodeLineRoot);
-                    to.transform.position = eventData.currentInputModule.input.mousePosition;
-                    _dragLine = createLine(from, to, output.GetColor());
+                    _dragHiddenConnection = _connectionList[index].line.gameObject;
+                    _dragHiddenConnection.SetActive(false);
                 }
-                else
-                {
-                    _dragLine = _connectionList[index].line;
-                }
+
+                GameObject from = output.getNode();
+                GameObject to = new GameObject();
+                to.name = "Slot";
+                GameObject tod = new GameObject();
+                tod.name = "Slot_d";
+                tod.transform.SetParent(to.transform);
+                to.transform.SetParent(_actionNodeLineRoot);
+                to.transform.position = eventData.currentInputModule.input.mousePosition;
+                _dragLine = createLine(from, to, output.GetColor());
+
                 onStartConnection?.Invoke(item, outputIndex, true);
             }
         }
@@ -911,6 +915,11 @@ namespace UI
         private void onEndDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
             int outputIndex = item.indexOfOutput(output);
+            if (_dragHiddenConnection)
+            {
+                _dragHiddenConnection.SetActive(true);
+                _dragHiddenConnection = null;
+            }
             Destroy(_dragLine.gameObject);
             _dragLine = null;
             //使用射线判断是否在其他的输入点上
@@ -1212,6 +1221,11 @@ namespace UI
             line.setPosition(from, to);
             line.SetColor(color);
             return line;
+        }
+        private void removeConnection(int index)
+        {
+            Destroy(_connectionList[index].line.gameObject);
+            _connectionList.RemoveAt(index);
         }
         /// <summary>
         /// 创建一个不确定类型的节点，必须在之后对其进行初始化。
@@ -1534,6 +1548,10 @@ namespace UI
         private Touch _perviousTouch2;
         private bool _isTouchZooming;
         private ActionNodeSelectedKnob _currentSelectedKnob;
+        /// <summary>
+        /// 因为拖拽而被隐藏的连接。
+        /// </summary>
+        private GameObject _dragHiddenConnection;
 
         #endregion
     }
