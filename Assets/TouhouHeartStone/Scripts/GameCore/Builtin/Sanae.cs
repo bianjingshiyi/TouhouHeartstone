@@ -906,10 +906,10 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            if (card.getOwner().getGrave().Any(c => c.define == game.getDefine<MoriyaSuwako>()))
+            if (card.getOwner().getGrave().Any(c => c.define == game.getDefine<MoriyaSuwako>()) && !card.getOwner().getHand().isFull)
             {
                 Card card1 = card.getOwner().getGrave().Where(c => c.define == game.getDefine<MoriyaSuwako>()).random(game);
-                await card.getOwner().getGrave().moveTo(game, card1, card.getOwner().getHand());
+                await card1.returnToHand(game, card.getOwner());
                 await card1.addBuff(game, new CodeBuff(ID, new AttackModifier(2), new LifeModifier(2)));
             }
         }
@@ -1043,7 +1043,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(async (game, card) =>
             {
                 Card c = card.getOwner().getGrave().Where(e => e.define.hasTag(TAG.GOD)).random(game);
-                await card.getOwner().getGrave().moveTo(game, c, card.getOwner().getHand());
+                await card.returnToHand(game, card.getOwner());
             })
         };
 

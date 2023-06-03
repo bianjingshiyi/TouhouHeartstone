@@ -510,18 +510,9 @@ namespace Game
             {
                 if (card == null)
                     continue;
-                int restCount = player.getHand().maxCount - player.getHand().count;
-                if (restCount > 0)
-                {
-                    game.logger.log("将" + string.Join("，", card) + "置入" + player + "的手牌");
-                    await card.resetCard(game);
-                    await card.pile.moveTo(game, card, player.getHand());
-                    MoveList.Add(card);
-                }
-                else
-                {
-                    game.logger.log(player + "的手牌已满，无法将" + string.Join(",", card) + "置入手牌");
-                }
+                await card.resetCard(game);
+                await card.returnToHand(game, player);
+                MoveList.Add(card);
             }
             return MoveList.ToArray();
         }

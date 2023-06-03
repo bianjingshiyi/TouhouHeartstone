@@ -1591,6 +1591,45 @@ namespace TouhouHeartstone
             }
         }
         #endregion
+
+        #region 返回手牌
+        /// <summary>
+        /// 将一张卡牌返回到指定玩家的手牌。
+        /// </summary>
+        /// <param name="card">卡牌。</param>
+        /// <param name="game"></param>
+        /// <param name="player">移动至手牌的玩家。</param>
+        /// <returns></returns>
+        public static async Task returnToHand(this Card card, CardEngine game, Player player)
+        {
+            if (card == null || player == null)
+                return;
+            var from = card.pile;
+            var to = player.getHand();
+            if (!to.isFull) // 手牌未满
+            {
+                await Pile.moveTo(game, card, from, to, to.count);
+                game.logger.log("将" + card + "置入" + player + "的手牌");
+            }
+            else // 手牌已满
+            {
+                if (from?.name == PILE.FIELD) // 仆从直接将其消灭
+                {
+                    await kill(card, game);
+                }
+                else //否则移入墓地。
+                {
+                    var grave = player.getGrave();
+                    if (from != grave)
+                    {
+                        await Pile.moveTo(game, card, from, grave, grave.count);
+                    }
+                }
+                game.logger.log(player + "的手牌已满，无法将" + card + "置入手牌");
+            }
+        }
+        #endregion
+
         #region 弃牌
 
         public static Task<DiscardEventArg> discard(this Card card, CardEngine game)
@@ -2178,19 +2217,9 @@ namespace TouhouHeartstone
         {
             foreach (IGrouping<Player, Card> g in cards.GroupBy(c => c.getOwner()))
             {
-                int restCount = g.Key.getHand().maxCount - g.Key.getHand().count;
-                if (restCount > 0)
+                foreach (var card in g)
                 {
-                    var toHand = g.Take(restCount);
-                    game.logger.log("将" + string.Join("，", toHand) + "置入" + g.Key + "的手牌");
-                    await cards.resetCard(game);
-                    await g.Key.getField().moveTo(game, toHand, g.Key.getHand());
-                }
-                if (restCount < g.Count())
-                {
-                    var toGrave = g.Skip(restCount);
-                    game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", toGrave) + "置入手牌");
-                    await toGrave.setDead(game, true);
+                    await card.returnToHand(game, g.Key);
                 }
             }
         }
@@ -2302,17 +2331,9 @@ namespace TouhouHeartstone
         {
             foreach (IGrouping<Player, Card> g in cards.GroupBy(c => c.getOwner()))
             {
-                int restCount = g.Key.getHand().maxCount - g.Key.getHand().count;
-                if (restCount > 0)
+                foreach (var card in g)
                 {
-                    var toHand = g.Take(restCount);
-                    game.logger.log("将" + string.Join("，", toHand) + "置入" + g.Key + "的手牌");
-                    await g.Key.getGrave().moveTo(game, toHand, g.Key.getHand());
-                }
-                if (restCount < g.Count())
-                {
-                    var toGrave = g.Skip(restCount);
-                    game.logger.log(g.Key + "的手牌已满，无法将" + string.Join(",", toGrave) + "置入手牌");
+                    await card.returnToHand(game, g.Key);
                 }
             }
         }
