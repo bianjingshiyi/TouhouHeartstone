@@ -12,6 +12,7 @@ namespace Game
     {
         public int id { get; private set; }
         public CardDefine define { get; private set; }
+        public Pile pile { get; private set; }
         private Player owner;
         private int cost;
         private int attack;

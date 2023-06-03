@@ -268,12 +268,7 @@ namespace Game
         {
             if (desc == null)
             {
-                item.hide();
-                if (item == ui.SelfItem)
-                    _selfItemDesc = null;
-                else if (item == ui.EnemyItem)
-                    _enemyItemDesc = null;
-                return;
+                removeItem(desc.id);
             }
             item.display();
             if (item == ui.SelfItem)
@@ -304,6 +299,20 @@ namespace Game
             var cards = getManager<CardManager>();
             var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
             item.Image.sprite = await cards.loadCardImage(poolRef, desc.define.id);
+        }
+        public bool removeItem(ICardData card) => removeItem(card.id);
+        public bool removeItem(int id)
+        {
+            if (tryGetItem(id, out Item item))
+            {
+                item.hide();
+                if (item == ui.SelfItem)
+                    _selfItemDesc = null;
+                else if (item == ui.EnemyItem)
+                    _enemyItemDesc = null;
+                return true;
+            }
+            return false;
         }
         #endregion 道具
 
@@ -427,15 +436,9 @@ namespace Game
                 var item = cardHandDic[id];
                 cardHandDic.Remove(id);
 
-                var card = getCardDescriptor(id);
-                if (card?.getOwner() == player)
-                {
-                    ui.SelfHandList.removeItem(item);
-                }
-                else
-                {
-                    ui.EnemyHandList.removeItem(item);
-                }
+                bool selfRemoved = ui.SelfHandList.removeItem(item);
+                bool enemyRemoved = ui.EnemyHandList.removeItem(item);
+                return selfRemoved || enemyRemoved;
             }
             return false;
         }
@@ -647,6 +650,33 @@ namespace Game
             ui.ServantPlaceHolder.Servant.hide();
             ui.ServantPlaceHolder.hide();
         }
+
+
+
+        /// <summary>
+        /// 移除一个仆从UI。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public bool removeServant(ICardData card) => removeServant(card.id);
+        /// <summary>
+        /// 移除一个仆从UI。
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool removeServant(int id)
+        {
+            if (cardServantDic.ContainsKey(id))
+            {
+                var item = cardServantDic[id];
+                cardServantDic.Remove(id);
+
+                bool selfRemoved = ui.SelfFieldList.removeItem(item);
+                bool enemyRemoved = ui.EnemyFieldList.removeItem(item);
+                return selfRemoved || enemyRemoved;
+            }
+            return false;
+        }
         #endregion
 
         #region 揭示
@@ -756,7 +786,16 @@ namespace Game
         public bool tryGetSecret(ICardData card, out Secret secret) => tryGetSecret(card?.id ?? 0, out secret);
         public bool tryGetSecret(int id, out Secret secret)
         {
-            return cardSecretDic.TryGetValue(id, out secret);
+            if (cardSecretDic.TryGetValue(id, out secret))
+            {
+                if (!secret)
+                {
+                    secret = null;
+                    return false;
+                }
+                return true;
+            }
+            return false;
         }
         public bool removeSecret(ICardData card) => removeSecret(card.id);
         public bool removeSecret(CardDescriptor desc)

@@ -16,6 +16,11 @@ namespace Game
         [SerializeField]
         float _stopDistance;
         Vector3 _startPosition;
+        public Vector3 startPosition
+        {
+            get => _startPosition;
+            set => _startPosition = value;
+        }
         protected void OnEnable()
         {
             _startPosition = transform.position;
@@ -42,6 +47,10 @@ namespace Game
         {
             _targetTransform = target;
             _stopDistance = stopDistance;
+        }
+        public void setPosition(Vector3 pos)
+        {
+            transform.position = pos;
         }
         public void resetPosition()
         {

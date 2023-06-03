@@ -53,7 +53,7 @@ namespace Game
             {
                 Item item = card.getOwner() == table.player ? table.ui.SelfItem : table.ui.EnemyItem;
                 item.onDestroy.invokeAfterAnim();
-                item.hide();
+                table.removeItem(card);
             }
         }
 

@@ -90,7 +90,14 @@ namespace Game
             eventCache.clear();
             _animationCache.Clear();
             _animationQueue.Clear();
+
+            cardServantDic.Clear();
+            cardSecretDic.Clear();
+            cardHandDic.Clear();
+
             _descriptors.Clear();
+            _enemyItemDesc = null;
+            _selfItemDesc = null;
             DestroyInvokeCard();
             this.player = player;
             if (game != null)
