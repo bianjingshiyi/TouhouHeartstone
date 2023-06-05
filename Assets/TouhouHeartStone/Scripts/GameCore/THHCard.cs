@@ -611,15 +611,15 @@ namespace TouhouHeartstone
                 record.setVar(EVENTVAR.VALUE, value);
             }
         }
-        public static bool canBeCharged(this Card card, IGame game)
+        public static bool canBeCharged(this ICardData card, IGame game)
         {
             return card.hasKeyword(game, KEYWORD.CAN_BE_CHARGED);
         }
-        public static bool isCharged(this Card card, IGame game)
+        public static bool isCharged(this ICardData card, IGame game)
         {
             return card.getChargedLevel(game) > 0;
         }
-        public static int getChargedLevel(this Card card, IGame game)
+        public static int getChargedLevel(this ICardData card, IGame game)
         {
             return card.getProp<int>(game, DEFINE.CHARGED_LEVEL);
         }

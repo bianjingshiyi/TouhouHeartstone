@@ -42,6 +42,8 @@ namespace Game
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] string varName)
         {
+            if (record == null)
+                return null;
             return record.getVar(varName);
         }
         [TranslateMsg("编辑器/事件记录_事件记录类型判断_节点名称")]
@@ -52,7 +54,7 @@ namespace Game
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord evt,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventArgReference argRef)
         {
-            if (argRef == null)
+            if (evt == null || argRef == null)
                 return false;
             if (game.triggers.getName(evt.eventArg) == argRef.eventName)
                 return true;
@@ -101,6 +103,46 @@ namespace Game
                 }
             }
             return results.ToArray();
+        }
+
+
+        [TranslateMsg("编辑器/事件记录_获取卡牌在某事件时的快照_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT = "获取卡牌在某事件时的快照";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT, EDITOR_TYPE_NAME_EVENT_RECORD)]
+        [return: ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)]
+        public static CardSnapshot getSnapshotOfCardAfterEvent(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record)
+        {
+            if (card == null || record == null)
+                return null;
+            var records = game.triggers.getEventRecords();
+            var recordIndex = Array.IndexOf(records, record);
+            var histories = card.getHistories();
+            int historyIndex = -1;
+            for (int i = 0; i < histories.Length; i++)
+            {
+                var history = histories[i];
+                var rec = game.triggers.getEventRecord(history.eventArg);
+                if (rec == null)
+                    continue;
+                var historyRecIndex = Array.IndexOf(records, rec);
+                if (historyRecIndex <= recordIndex) // 还没到，或者刚好是指定事件
+                {
+                    historyIndex = i;
+                }
+                if (historyRecIndex >= recordIndex) // 超过了指定事件
+                {
+                    break;
+                }
+            }
+            if (historyIndex < 0)
+            {
+                return game.snapshotCard(card);
+            }
+            var snapshot = game.snapshotCard(card);
+            card.revertToHistory(snapshot, historyIndex);
+            return snapshot;
         }
         #endregion
     }

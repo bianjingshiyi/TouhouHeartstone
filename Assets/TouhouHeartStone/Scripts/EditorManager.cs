@@ -150,6 +150,7 @@ namespace Game
             new EditorTypeInfo() { type = typeof(CardDefine), typeName = StringTable.EDITOR_TYPE_NAME_CARD_DEFINE, isVarType = true, color = new Color(.1f, .4f, .8f, 1) },
             new EditorTypeInfo() { type = typeof(DefineReference), typeName = StringTable.EDITOR_TYPE_NAME_CARD_REFERENCE, isConstType = true, color = new Color(.1f, .3f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(Card), typeName = StringTable.EDITOR_TYPE_NAME_CARD, isVarType = true, color = new Color(.2f, .6f, 1, 1) },
+            new EditorTypeInfo() { type = typeof(CardSnapshot), typeName = EffectEditorLibrary.EDITOR_VAR_TYPE_CARD_SNAPSHOT, isVarType = true, color = new Color(.5f, .6f, 7f, 1) },
             new EditorTypeInfo() { type = typeof(BuffDefine), typeName = StringTable.EDITOR_TYPE_NAME_BUFF_DEFINE, isVarType = true, color = new Color(.1f, .5f, .6f, 1) },
             new EditorTypeInfo() { type = typeof(Buff), typeName = StringTable.EDITOR_TYPE_NAME_BUFF, isVarType = true, color = new Color(.2f, .8f, 1, 1) },
             new EditorTypeInfo() { type = typeof(Effect), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT, isVarType = true, color = new Color(.2f, 1, 1, 1) },

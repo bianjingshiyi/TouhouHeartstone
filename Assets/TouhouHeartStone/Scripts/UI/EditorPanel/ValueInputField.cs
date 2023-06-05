@@ -123,7 +123,7 @@ namespace UI
             }
             else
             {
-                onValueChanged?.Invoke(this, _eventValues[index]);
+                onValueChanged?.Invoke(this, new EventArgReference(_eventValues[index]));
             }
         }
         private void onInputDropdownValueChangedCallback(string value)
