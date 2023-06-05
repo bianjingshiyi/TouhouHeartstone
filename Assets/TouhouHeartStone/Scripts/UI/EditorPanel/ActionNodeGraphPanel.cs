@@ -374,6 +374,10 @@ namespace UI
         {
             _actionNodeItemTemplate.initKeywords(keywordNames, keywordValues);
         }
+        public void initEffectTags(string[] effectTagNames, string[] effectTagValues)
+        {
+            _actionNodeItemTemplate.initEffectTags(effectTagNames, effectTagValues);
+        }
         public void resetView()
         {
             _currentSelectedKnob = default;
@@ -1683,9 +1687,9 @@ namespace UI
         /// </summary>
         keywords,
         /// <summary>
-        /// 卡牌引用（外观为长条）
+        /// 单个效果标签
         /// </summary>
-        cardReferenceItem
+        effectTag
     }
     public enum ActionNodeConnectionType
     {

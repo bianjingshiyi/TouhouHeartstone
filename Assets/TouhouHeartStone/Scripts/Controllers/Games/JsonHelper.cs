@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using Game;
+using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
@@ -19,6 +20,8 @@ namespace Controllers
                 BsonClassMap.RegisterClassMap<DefineReference>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(CardReference)))
                 BsonClassMap.RegisterClassMap<CardReference>();
+            if (!BsonClassMap.IsClassMapRegistered(typeof(EffectTag)))
+                BsonClassMap.RegisterClassMap<EffectTag>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(ObjectProxy)))
                 BsonClassMap.RegisterClassMap<ObjectProxy>();
             if (!BsonClassMap.IsClassMapRegistered(typeof(ActionValueRef)))

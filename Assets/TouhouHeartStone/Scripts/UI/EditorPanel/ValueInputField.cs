@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Game;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -115,7 +115,14 @@ namespace UI
         }
         private void onInputDropdownValueChangedCallback(string value)
         {
-            onValueChanged?.Invoke(this, value);
+            if (_valueInfo.type == ActionNodeValueType.effectTag)
+            {
+                onValueChanged?.Invoke(this, new EffectTag(value));
+            }
+            else
+            {
+                onValueChanged?.Invoke(this, value);
+            }
         }
         private void onMultiInputDropdownValueChangedCallback(string[] values)
         {
@@ -394,7 +401,31 @@ namespace UI
         private void updateInputDropdown()
         {
             //自定义单选下拉菜单
-            _inputDropdown.gameObject.SetActive(false);
+            if (_valueInfo.type == ActionNodeValueType.effectTag)
+            {
+                _inputDropdown.gameObject.SetActive(true);
+                _inputDropdown.setDropdownValues(_effectTagNames, _effectTagValues);
+                string value = null;
+                if (_valueInfo.value is string str)
+                {
+                    value = str;
+                }
+                else if (_valueInfo.value is int index)
+                {
+                    value = _effectTagValues[index];
+                }
+                else if (_valueInfo.value is EffectTag tag)
+                {
+                    value = tag.effectTag;
+                }
+                if (value == null)
+                    value = _effectTagValues[0];
+                _inputDropdown.setValueWithoutNotify(value);
+            }
+            else
+            {
+                _inputDropdown.gameObject.SetActive(false);
+            }
         }
         private void updateMultiInputDropdown()
         {

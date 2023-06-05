@@ -241,6 +241,9 @@ namespace Controllers
             _ui.initPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
             var keywords = CardEditorCtrl.getKeywords();
             _ui.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
+            var effectTagNames = _activeEffectTagNames.Union(_passiveEffectTagNames).ToArray();
+            var effectTagValues = _activeEffectTags.Union(_passiveEffectTags).ToArray();
+            _ui.initEffectTags(effectTagNames, effectTagValues);
 
             var customPropTypes = CardEditorCtrl.customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
             _ui.setEffectPropertyTypes(customPropTypes);
@@ -1457,6 +1460,8 @@ namespace Controllers
                     }
                     infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
                 }
+                else if (type == typeof(EffectTag))
+                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.effectTag, value);
                 else if (type == typeof(ActionValueRef))
                     infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.actionValueRef, value);
                 else if (type == typeof(DefineReference))
