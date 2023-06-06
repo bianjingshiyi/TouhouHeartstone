@@ -183,6 +183,7 @@ namespace UI
             _dragStartPosition = data.position;
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
+            _actionGraphCtrl.hidePreviewNode();
             return Task.FromResult(false);
         }
         private Task<bool> OnNodeItemDrag(int index, PointerEventData data)
@@ -205,8 +206,7 @@ namespace UI
                         {
                             //横向拖拽并且大于阈值，设置节点显示
                             _isDraggingHorizontal = true;
-                            showDragNode();
-                            moveDragNode(data.position);
+                            dragNode(data.position);
                         }
                     }
                     else
@@ -220,8 +220,7 @@ namespace UI
             }
             else if (_isDraggingHorizontal)
             {
-                showDragNode();
-                moveDragNode(data.position);
+                dragNode(data.position);
                 return Task.FromResult(true);
             }
             else if (_isDraggingVertical)
@@ -251,11 +250,14 @@ namespace UI
             if (isPositionOverActionGraph(data.position))
             {
                 var pos = _actionGraphContent.InverseTransformPoint(data.position);
+                pos = _actionGraphCtrl.getNodeSnapPreviewPosition(pos);
                 var node = await _actionGraphCtrl.createNode(_dragNode, pos);
+                _actionGraphCtrl.connectSnapConnections(node);
                 if (node != null)
                     _actionGraphCtrl.moveNodeToFreePosition(node);
                 _actionGraphCtrl.OnEdited();
             }
+            _actionGraphCtrl.hidePreviewNode();
             //重置状态字段
             _dragNode = null;
             _dragStartPosition = Vector2.zero;
@@ -421,7 +423,22 @@ namespace UI
             }
             return true;
         }
-
+        private void dragNode(Vector2 position)
+        {
+            if (isPositionOverActionGraph(position))
+            {
+                hideDragNode();
+                var pos = _actionGraphContent.InverseTransformPoint(position);
+                _actionGraphCtrl.dragNodeItemToGraph(_dragNode, pos);
+            }
+            else
+            {
+                showDragNode();
+                moveDragNode(position);
+                _actionGraphCtrl.hidePreviewNode();
+            }
+        }
+        
         private async void shortcutsUpdate()
         {
             if (!_actionGraphCtrl.isFocused())

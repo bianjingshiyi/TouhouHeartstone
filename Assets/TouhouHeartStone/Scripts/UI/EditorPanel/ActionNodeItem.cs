@@ -35,7 +35,7 @@ namespace UI
             _outputRoot.gameObject.SetActive(true);
             SetDirty();
         }
-        public void switchToEffectEntryNode()
+        public void switchToEventEntryNode()
         {
             _buffFieldsRoot.gameObject.SetActive(false);
             _triggerFieldsRoot.gameObject.SetActive(false);
@@ -426,7 +426,14 @@ namespace UI
         {
             _dirty = true;
         }
-
+        public Rect getNodeItemRect()
+        {
+            var itemRectTrans = transform as RectTransform;
+            var itemRect = itemRectTrans.rect;
+            var itemPos = new Vector2(posX, posY);
+            itemRect.center = itemPos;
+            return itemRect;
+        }
         #region 选择
         public void select()
         {

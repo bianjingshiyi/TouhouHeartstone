@@ -105,6 +105,7 @@ namespace UI
             actionNodeItem.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
             actionNodeItem.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
 
+            clearFreePlaceCheckRegion();
             return actionNodeItem;
         }
 
@@ -278,6 +279,7 @@ namespace UI
                     continue;
                 }
             }
+            clearFreePlaceCheckRegion();
         }
         /// <summary>
         /// 清空图上的所有节点和连线
@@ -300,6 +302,7 @@ namespace UI
             _connectionList.Clear();
 
             _dragHiddenConnection = null;
+            clearFreePlaceCheckRegion();
         }
         public void setReturnButtonActive(bool value)
         {
@@ -347,6 +350,7 @@ namespace UI
             _content.localPosition = Vector3.zero;
             _content.localScale = Vector3.one;
             _selectFrameTrans.gameObject.SetActive(false);
+            clearFreePlaceCheckRegion();
         }
         public void updateNodeLines(ActionNodeItem item)
         {
@@ -439,43 +443,30 @@ namespace UI
             }
         }
         #endregion
-        public Vector2 findFreeNodeCreatePosition(ActionNodeItem item)
+        public bool isNodePositionFree(Vector2 pos, Vector2 size)
         {
-            Vector2 contentScale = _content.localScale;
-            Vector2 reverseScale = new Vector2(1 / contentScale.x, 1 / contentScale.y);
-
-            var itemRect = getNodeItemRect(item);
-
-            RectTransform rectTrans = _viewPort;
-            var rect = rectTrans.rect;
-            rect.size = Vector2.Scale(rect.size + itemRect.size * 2, reverseScale);
-            rect.center = Vector2.Scale(-_content.localPosition, reverseScale);
-
-
-            Vector2 size = rect.size;
-            var region = new Region(size.x, size.y);
-            Vector2 offset = 0.5f * size - rect.center;
-
-            // 将其他节点所占的位置裁切出去。
-            foreach (var nodeItem in _actionNodeItemList)
-            {
-                if (nodeItem == item)
-                    continue;
-                var nodeRect = getNodeItemRect(nodeItem);
-                // 只裁切在视图中的节点。
-                if (rect.Overlaps(nodeRect))
-                {
-                    nodeRect.position += offset;
-                    region.Cut(nodeRect);
-                }
-            }
-
-            // 寻找目标节点项的合适空位。
-            var itemPos = new Vector2(item.posX, item.posY);
-
-            // 如果本来就有空位，直接返回位置。
+            return isNodePositionFree(new Rect(pos, size));
+        }
+        public bool isNodePositionFree(Rect itemRect)
+        {
+            var region = getGraphFreePlaceCheckRegion();
+            var offset = getGraphFreePlaceCheckRegionOffset();
             var checkEmptyRect = itemRect;
             checkEmptyRect.position += offset;
+            return region.ContainsFreeRect(checkEmptyRect);
+        }
+        public Vector2 findFreeNodeCreatePosition(ActionNodeItem item)
+        {
+            return findFreeNodeCreatePosition(item.getNodeItemRect());
+        }
+        public Vector2 findFreeNodeCreatePosition(Rect itemRect)
+        {
+            var itemPos = itemRect.center;
+            var region = getGraphFreePlaceCheckRegion();
+            var offset = getGraphFreePlaceCheckRegionOffset();
+            var checkEmptyRect = itemRect;
+            checkEmptyRect.position += offset;
+            // 如果本来就有空位，直接返回位置。
             if (region.ContainsFreeRect(checkEmptyRect))
             {
                 return itemPos;
@@ -496,14 +487,47 @@ namespace UI
             }
             return itemPos;
         }
-
-        public static Rect getNodeItemRect(ActionNodeItem item)
+        /// <summary>
+        /// 将空余位置检测域设置为不洁净，使其在下次检测空余位置时重新生成一个域。
+        /// </summary>
+        public void clearFreePlaceCheckRegion()
         {
-            var itemRectTrans = item.transform as RectTransform;
-            var itemRect = itemRectTrans.rect;
-            var itemPos = new Vector2(item.posX, item.posY);
-            itemRect.center = itemPos;
-            return itemRect;
+            _graphRegion = null;
+            _graphRegionSize = Vector2.zero;
+        }
+        /// <summary>
+        /// 更新用于检测空余位置的域对象。
+        /// </summary>
+        public void updateGraphFreePlaceCheckRegion(Vector2 rectExpansion, params ActionNodeItem[] exceptedNodes)
+        {
+            Vector2 contentScale = _content.localScale;
+            Vector2 reverseScale = new Vector2(1 / contentScale.x, 1 / contentScale.y);
+
+            RectTransform rectTrans = _viewPort;
+            var viewRect = rectTrans.rect;
+            viewRect.size = Vector2.Scale(viewRect.size + rectExpansion, reverseScale);
+            viewRect.center = Vector2.Scale(-_content.localPosition, reverseScale);
+
+
+            Vector2 size = viewRect.size;
+            _graphRegion = new Region(size.x, size.y);
+            _graphRegionSize = size;
+            Vector2 offset = 0.5f * size - viewRect.center;
+
+            // 将其他节点所占的位置裁切出去。
+            foreach (var nodeItem in _actionNodeItemList)
+            {
+                if (exceptedNodes.Contains(nodeItem))
+                    continue;
+                var nodeRect = nodeItem.getNodeItemRect();
+                // 只裁切在视图中的节点。
+                if (viewRect.Overlaps(nodeRect))
+                {
+                    nodeRect.position += offset;
+                    _graphRegion.Cut(nodeRect);
+                }
+            }
+
         }
         /// <summary>
         /// 将操作焦点设置为节点图。
@@ -625,6 +649,7 @@ namespace UI
             var desiredScale = _content.localScale + delta;//进行缩放
             desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
             _content.localScale = desiredScale;
+            clearFreePlaceCheckRegion();
             setFocused();
         }
 
@@ -676,6 +701,7 @@ namespace UI
                 }
 
                 _content.position += currCenter - prevCenter;
+                clearFreePlaceCheckRegion();
 
                 _perviousTouch1 = _currentTouch1;
                 _perviousTouch2 = _currentTouch2;
@@ -701,6 +727,7 @@ namespace UI
             if (!_isTouchZooming)
             {
                 _content.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
+                clearFreePlaceCheckRegion();
             }
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
@@ -1139,6 +1166,7 @@ namespace UI
         private void onActionNodeItemUpdateTransform(ActionNodeItem item)
         {
             updateNodeLines(item);
+            clearFreePlaceCheckRegion();
         }
 
         private void onActionNodeClickHelpButton(string key)
@@ -1258,6 +1286,7 @@ namespace UI
             actionNodeItem.onDrag += onDragActionNodeItem;
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
             actionNodeItem.onUpdateTransform += onActionNodeItemUpdateTransform;
+            clearFreePlaceCheckRegion();
             return actionNodeItem;
         }
         private Vector3 ClampDesiredScale(Vector3 desiredScale)//clamp函数
@@ -1282,6 +1311,28 @@ namespace UI
             dragSelection = _longPressTimer.isExpired();
 #endif
             return dragSelection;
+        }
+
+        private Region getGraphFreePlaceCheckRegion()
+        {
+            if (_graphRegion == null)
+            {
+                updateGraphFreePlaceCheckRegion(new Vector2(600, 400));
+            }
+            return _graphRegion;
+        }
+        private Vector2 getGraphFreePlaceCheckRegionOffset()
+        {
+            if (_graphRegion == null)
+            {
+                updateGraphFreePlaceCheckRegion(new Vector2(600, 400));
+            }
+            Vector2 contentScale = _content.localScale;
+            Vector2 reverseScale = new Vector2(1 / contentScale.x, 1 / contentScale.y);
+
+            Vector2 viewSize = _graphRegionSize;
+            Vector2 viewCenter = Vector2.Scale(-_content.localPosition, reverseScale);
+            return 0.5f * viewSize - viewCenter;
         }
         #region 节点选择
         private void updateSelectFrame()
@@ -1518,6 +1569,14 @@ namespace UI
         /// 因为拖拽而被隐藏的连接。
         /// </summary>
         private GameObject _dragHiddenConnection;
+        /// <summary>
+        /// 用于检测空闲节点区域的对象。
+        /// </summary>
+        private Region _graphRegion;
+        /// <summary>
+        /// 用于检测空闲节点区域的对象的大小。
+        /// </summary>
+        private Vector2 _graphRegionSize;
 
         #endregion
     }

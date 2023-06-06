@@ -221,6 +221,14 @@ namespace Controllers
                 return false;
             return true;
         }
+        public bool CanNodeDefineOpenDocument(NodeDefine node)
+        {
+            if (node.actionDefine == null) // 不是动作节点
+                return false;
+            if (game.getActionDefine(node.actionDefine.defineName, 0) == null) // 不是内置节点
+                return false;
+            return true;
+        }
         #endregion
 
         #region 节点创建
@@ -285,6 +293,7 @@ namespace Controllers
         public void moveNodeToFreePosition(Node node)
         {
             var item = getActionNodeItem(node);
+            _ui.updateGraphFreePlaceCheckRegion(item.getNodeItemRect().size * 2, item);
             var pos = _ui.findFreeNodeCreatePosition(item);
             moveNode(node.id,pos);
         }
@@ -860,7 +869,7 @@ namespace Controllers
                 Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData);
             actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
-            actionNodeItem.switchToEffectEntryNode();
+            actionNodeItem.switchToEventEntryNode();
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(passiveEntry);
@@ -880,7 +889,7 @@ namespace Controllers
                 inputViewData,
                 Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData);
-            actionNodeItem.switchToEffectEntryNode();
+            actionNodeItem.switchToEventEntryNode();
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(auraEntry);
@@ -1514,23 +1523,22 @@ namespace Controllers
             {
                 var constDefine = actionDefine.constDefines.ElementAt(i);
                 // 翻译名称
-                var name = tryTranslateWithDict(constDefine.getDisplayName());
-                Type type = constDefine.type;
-                object value = actionNode.getConst(constDefine.name);
-                infoArray[i] = getConstValueInfo(constDefine.name,name,  type, value);
+                infoArray[i] = getConstValueInfoFromDefine(constDefine, actionNode.getConst(constDefine.name));
             }
             return infoArray;
         }
-        private ActionNodeValueInfo getConstValueInfo(string name, string displayName, Type type, object value)
+        private ActionNodeValueInfo getConstValueInfoFromDefine(PortDefine constDefine, object value)
         {
+            var name = tryTranslateWithDict(constDefine.getDisplayName());
+            Type type = constDefine.type;
             if (type == typeof(int))
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.integer, value);
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.integer, value);
             else if (type == typeof(float))
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.real, value);
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.real, value);
             else if (type == typeof(bool))
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.boolean, value);
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.boolean, value);
             else if (type == typeof(string))
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.text, value);
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.text, value);
             else if (type.IsEnum)
             {
                 var optionalValues = Enum.GetValues(type).Cast<object>().ToArray();
@@ -1549,41 +1557,22 @@ namespace Controllers
                         optionalNames[j] = optName;
                     }
                 }
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
             }
             else if (type == typeof(EffectTag))
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.effectTag, value);
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.effectTag, value);
             else if (type == typeof(ActionValueRef))
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.actionValueRef, value);
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.actionValueRef, value);
             else if (type == typeof(DefineReference))
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.cardReference, value);
-            else if (type == typeof(EventArgReference))
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.eventReference, value);
-            // 可复制集合
-            else if (type == typeof(CardReferenceCollection))
-            {
-                if (value is CardReferenceCollection defRefs)
-                    value = defRefs.Clone();
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.cardReferenceCollection, value);
-            }
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardReference, value);
             else if (type == typeof(DefineReference[]))
-            {
-                if (value is DefineReference[] defRefs)
-                    value = defRefs.Clone();
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.cardReferenceCollection, value);
-            }
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardReferenceCollection, value);
             else if (type == typeof(PileNameCollection))
-            {
-                if (value is PileNameCollection piles)
-                    value = piles.Clone();
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.pileNameCollection, value);
-            }
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileNameCollection, value);
             else if (type == typeof(KeywordCollection))
-            {
-                if (value is KeywordCollection keywords)
-                    value = keywords.Clone();
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.keywords, value);
-            }
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.keywords, value);
+            else if (type == typeof(EventArgReference))
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventReference, value);
             else
                 throw new NotImplementedException("没有" + type + "对应的常数类型");
         }

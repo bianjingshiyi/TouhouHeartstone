@@ -72,13 +72,12 @@
 
             fixed4 frag(v2f i) : SV_Target
             {
-
                 fixed alpha = i.color.a;
                 fixed fadeValue = abs(i.texcoord.y - 0.5) * 2;
                 fixed alphaReduction = 0;
                 if (_Fade != 0)
                 {
-                    alphaReduction = 1 - (1 - fadeValue) / _Fade;
+                    alphaReduction = saturate(1 - (1 - fadeValue) / _Fade);
                 }
                 alpha = saturate(alpha - alphaReduction);
 
