@@ -281,6 +281,7 @@ namespace UI
                 _selectedOutline.effectColor = _warningTitleColor;
                 _warningObj.gameObject.SetActive(true);
             }
+            SetDirty();
         }
 
         /// <summary>
@@ -291,6 +292,7 @@ namespace UI
         {
             documentKey = key;
             _helpBtn.gameObject.SetActive(key != null);
+            SetDirty();
         }
 
         public void updateTargetCheckerList(string[] targetTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)

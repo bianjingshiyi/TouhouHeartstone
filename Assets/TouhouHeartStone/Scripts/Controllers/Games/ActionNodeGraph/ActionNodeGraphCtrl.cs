@@ -545,6 +545,7 @@ namespace Controllers
             resetEditObjects();
             _effect = effect;
 
+            _ui.clearGraph();
             await ApplyGraph(effect.graph);
 
             updateContentSize();

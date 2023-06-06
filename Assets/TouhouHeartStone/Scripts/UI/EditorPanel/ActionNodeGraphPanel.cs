@@ -201,7 +201,7 @@ namespace UI
                 Debug.LogWarning("不存在" + node + ":" + outputIndex + "与" + targetNode + ":" + inputIndex + "之间的连接");
                 return;
             }
-            ActionNodeGraphLine line = createLine(output.gameObject, input.gameObject, output.GetColor());
+            ActionNodeGraphLine line = createLine(output.gameObject, input.gameObject, output.GetColor(), input.GetColor());
 
             _connectionList.Add(new ActionNodeConnectionData()
             {
@@ -387,6 +387,7 @@ namespace UI
         }
         public void updateNodeLines(ActionNodeItem item)
         {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(item.transform as RectTransform);
             var connections = _connectionList.FindAll(c => c.outputNode == item || c.inputNode == item);
             foreach (var connection in connections)
             {
@@ -726,7 +727,7 @@ namespace UI
             tod.transform.SetParent(to.transform);
             to.transform.SetParent(_actionNodeLineRoot);
             to.transform.position = eventData.currentInputModule.input.mousePosition;
-            _dragLine = createLine(from, to, input.GetColor());
+            _dragLine = createLine(from, to, input.GetColor(), input.GetColor());
 
 
             onStartConnection?.Invoke(item, inputIndex, false);
@@ -885,7 +886,7 @@ namespace UI
                 tod.transform.SetParent(to.transform);
                 to.transform.SetParent(_actionNodeLineRoot);
                 to.transform.position = eventData.currentInputModule.input.mousePosition;
-                _dragLine = createLine(from, to, output.GetColor());
+                _dragLine = createLine(from, to, output.GetColor(), output.GetColor());
 
                 onStartConnection?.Invoke(item, outputIndex, true);
             }
@@ -1091,7 +1092,6 @@ namespace UI
                 clearAndSelectNode(item);
             }
             onMoveActionNode?.Invoke(item, graphPosition);
-            updateNodeLines(item);
         }
         private void onEndDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
@@ -1218,12 +1218,12 @@ namespace UI
         /// <param name="from">相对于连线根节点的局部坐标</param>
         /// <param name="to">相对于连线根节点的局部坐标</param>
         /// <returns></returns>
-        private ActionNodeGraphLine createLine(GameObject from, GameObject to, Color color)
+        private ActionNodeGraphLine createLine(GameObject from, GameObject to, Color color, Color targetColor)
         {
             ActionNodeGraphLine line = Instantiate(_ActionNodeGraphLineTemplate, _actionNodeLineRoot);
             line.gameObject.SetActive(true);
             line.setPosition(from, to);
-            line.SetColor(color);
+            line.SetColor(color, targetColor);
             return line;
         }
         private void removeConnection(int index)
