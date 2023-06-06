@@ -135,7 +135,7 @@ namespace TouhouHeartstone
                 if (!buffDict.ContainsKey(target) && ranges.Contains(target.pile) && await checkAuraCondition(game, card, buff, target))
                 {
                     // 添加增益，并记录增益。
-                    var flow = new Flow(game, card, buff, null);
+                    var flow = new Flow(game, card, buff, null, this);
                     BuffDefine buffDefine = await game.getValue<BuffDefine>(flow, getAuraBuffDefine);
                     Buff auraBuff = new GeneratedBuff(buffDefine);
                     await updateAuraBuff(game, card, buff, target, auraBuff);
@@ -156,7 +156,7 @@ namespace TouhouHeartstone
                 return false;
             try
             {
-                var flowEnv = new FlowEnv(game, card, buff, null);
+                var flowEnv = new FlowEnv(game, card, buff, null, this);
                 flowEnv.SetArgument(AuraEntryNode.targetCardName, targetCard);
                 var flow = new Flow(flowEnv);
                 return await game.getValue<bool>(flow, affectCondition);
@@ -175,7 +175,7 @@ namespace TouhouHeartstone
             {
                 try
                 {
-                    var flowEnv = new FlowEnv(game, card, buff, null);
+                    var flowEnv = new FlowEnv(game, card, buff, null, this);
                     flowEnv.SetArgument(AuraEntryNode.targetCardName, targetCard);
                     flowEnv.SetArgument(AuraEntryNode.targetBuffName, targetBuff);
                     var flow = new Flow(flowEnv);

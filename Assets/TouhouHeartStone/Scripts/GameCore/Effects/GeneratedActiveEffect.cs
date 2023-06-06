@@ -35,7 +35,7 @@ namespace TouhouHeartstone
                 if (condition == null || condition.getConnectedOutputPort() == null)
                     return true;
 
-                var flow = new Flow(game, card, buff, eventArg);
+                var flow = new Flow(game, card, buff, eventArg, this);
                 var task = game.getValue<bool>(flow, condition);
                 if (task.IsCompleted)
                 {
@@ -68,7 +68,8 @@ namespace TouhouHeartstone
                 foreach (var targetChecker in entryNode.targetCheckerList)
                 {
                     //检查目标条件
-                    if (!targetChecker.isValidTarget(game, card, buff, eventArg, out invalidMsg))
+                    FlowEnv env = new FlowEnv(game, card, buff, eventArg, this);
+                    if (!targetChecker.isValidTarget(env, out invalidMsg))
                     {
                         //有条件没有通过，不是合法目标
                         return false;
@@ -88,7 +89,7 @@ namespace TouhouHeartstone
             var entryNode = this.entryNode;
             if (entryNode != null)
             {
-                var flow = new Flow(game, card, buff, eventArg);
+                var flow = new Flow(game, card, buff, eventArg, this);
                 return game.runActions(flow, entryNode.getActionOutputPort());
             }
             return Task.CompletedTask;

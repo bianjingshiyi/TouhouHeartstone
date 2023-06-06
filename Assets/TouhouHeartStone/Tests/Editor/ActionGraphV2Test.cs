@@ -30,19 +30,19 @@ namespace Tests
             graph.connect(intNode2.getOutputPort<ValueOutput>("result"), compareNode.getInputPort<ValueInput>("B"));
 
             Flow flow;
-            flow = new Flow(game, null, null, null);
+            flow = new Flow(game, null, null, null, null);
             compareNode.setConst("operator", CompareOperator.equals);
             intNode1.setConst("value", 40);
             intNode2.setConst("value", 18);
             Assert.AreEqual(false, game.getValue<bool>(flow, compareNode.getOutputPort<ValueOutput>("result")).Result);
 
-            flow = new Flow(game, null, null, null);
+            flow = new Flow(game, null, null, null, null);
             compareNode.setConst("operator", CompareOperator.unequals);
             intNode1.setConst("value", 40);
             intNode2.setConst("value", 40);
             Assert.AreEqual(false, game.getValue<bool>(flow, compareNode.getOutputPort<ValueOutput>("result")).Result);
 
-            flow = new Flow(game, null, null, null);
+            flow = new Flow(game, null, null, null, null);
             compareNode.setConst("operator", CompareOperator.equals);
             intNode1.setConst("value", 40);
             intNode2.setConst("value", 40);
@@ -68,7 +68,7 @@ namespace Tests
             graph.connect(intNode1.getOutputPort<ValueOutput>("result"), intOpNode.getParamInputPort("arg", 0));
             graph.connect(intNode2.getOutputPort<ValueOutput>("result"), intOpNode.getParamInputPort("arg", 1));
 
-            var flow = new Flow(game, null, null, null);
+            var flow = new Flow(game, null, null, null, null);
             Assert.AreEqual(58, game.getValue<int>(flow, intOpNode.getOutputPort<ValueOutput>("result")).Result);
 
         }

@@ -32,7 +32,7 @@ namespace TouhouHeartstone
                 if (condition == null || condition.getConnectedOutputPort() == null)
                     return true;
 
-                var flow = new Flow(game, card, buff, eventArg);
+                var flow = new Flow(game, card, buff, eventArg, this);
                 var task = game.getValue<bool>(flow, condition);
                 if (task.IsCompleted)
                 {
@@ -49,7 +49,7 @@ namespace TouhouHeartstone
             var entryNode = this.entryNode;
             if (entryNode != null)
             {
-                var flow = new Flow(game, card, buff, eventArg);
+                var flow = new Flow(game, card, buff, eventArg, this);
                 return game.runActions(flow, entryNode.getActionOutputPort());
             }
             return Task.CompletedTask;

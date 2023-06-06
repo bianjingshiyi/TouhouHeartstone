@@ -1115,7 +1115,7 @@ namespace TouhouHeartstone
             GeneratedEffect generatedEffect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
             return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect);
         }
-        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect, TargetChecker targetChecker = null)
+        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect)
         {
             //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
@@ -1130,8 +1130,6 @@ namespace TouhouHeartstone
                 return false;
             HearthStoneRule.ActiveEventArg eventArg = new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target });
             if (generatedEffect is GeneratedActiveEffect genActive && !genActive.checkTarget(game, card, null, eventArg, out _))
-                return false;
-            if (targetChecker != null && !targetChecker.isValidTarget(game, card, null, eventArg, out _))
                 return false;
             return true;
         }

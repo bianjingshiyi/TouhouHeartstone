@@ -16,7 +16,11 @@ namespace Game
         [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_EFFECT = "效果";
         [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_EFFECT_COLLECTION = "效果集合";
+        [TranslateMsg("编辑器-参数名称")]
         public const string EDITOR_PARAM_NAME_EFFECT_TAG = "效果标签";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_THIS_EFFECT = "该效果";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_EFFECT_HAS_TAG = "效果具有标签";
         [TranslateMsg("编辑器-节点名称")]
@@ -27,6 +31,15 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_ALL_BUFF_EFFECTS = "获取增益的所有效果";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE_EFFECTS = "获取卡牌定义的所有效果";
+        /// <summary>
+        /// 该效果
+        /// </summary>
+        [ActionNodeMethod(EDITOR_NODE_NAME_THIS_EFFECT, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)]
+        public static IEffect thisEffect(IEffect effect)
+        {
+            return effect;
+        }
         /// <summary>
         /// 效果具有标签
         /// </summary>
@@ -61,6 +74,7 @@ namespace Game
         /// 获取卡牌的所有效果
         /// </summary>
         [ActionNodeMethod(EDITOR_NODE_NAME_GET_ALL_CARD_EFFECTS, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static IEffect[] getAllCardEffects(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
@@ -81,6 +95,7 @@ namespace Game
         /// 获取增益的所有效果
         /// </summary>
         [ActionNodeMethod(EDITOR_NODE_NAME_GET_ALL_BUFF_EFFECTS, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static IEffect[] getAllBuffEffects(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
         {
@@ -92,6 +107,7 @@ namespace Game
         /// 获取卡牌定义的所有效果
         /// </summary>
         [ActionNodeMethod(EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE_EFFECTS, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static IEffect[] getAllCardDefineEffects(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
