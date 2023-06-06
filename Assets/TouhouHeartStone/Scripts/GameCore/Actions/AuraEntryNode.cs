@@ -20,7 +20,7 @@ namespace TouhouCardEngine
         {
             foreach (var output in outputPorts.OfType<ValueOutput>())
             {
-                flow.setValue(output, flow.env.GetArgument<object>(output.name));
+                flow.setValue(output, flow.env.GetArgument(output.name));
             }
             return Task.FromResult(getOutputPort<ControlOutput>(actionPortName));
         }

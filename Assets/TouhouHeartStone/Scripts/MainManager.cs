@@ -182,6 +182,9 @@ namespace Game
             base.onAwake();
             //初始化序列化设置
             JsonHelper.init();
+            // 初始化节点图的类型转换。
+            GraphTypeHelper.init();
+
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             if (ui != null)
             {
@@ -354,6 +357,7 @@ namespace Game
                 }
             }
         }
+
 
         [TranslateMsg]
         private const string MMANAGE_GAME_FAIL_LOAD = "游戏资源加载失败！请重新启动游戏";
