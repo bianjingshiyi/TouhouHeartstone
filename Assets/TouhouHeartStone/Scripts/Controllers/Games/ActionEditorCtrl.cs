@@ -19,6 +19,7 @@ namespace Controllers
         public async Task display(long cardPoolId, GeneratedActionDefine actionDefine)
         {
             gameObject.SetActive(true);
+            _ui.reset();
             _cardPoolId = cardPoolId;
             _actionDefine = actionDefine;
 
@@ -26,7 +27,6 @@ namespace Controllers
 
             _ui.setCategory(actionDefine.category);
 
-            _ui.reset();
             await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(
                         cardPoolId,
                         actionDefine,

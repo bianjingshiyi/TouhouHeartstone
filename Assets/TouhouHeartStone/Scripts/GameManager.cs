@@ -666,7 +666,7 @@ namespace Game
                 if (describable.getCard(game, localPlayer) != null)
                 {
                     ui.LogScrollView.LogInfoHorizantal.InfoCard.display();
-                    CardDefine card = describable.getCard(game, localPlayer).define as CardDefine;
+                    CardDefine card = describable.getCard(game, localPlayer).define;
                     await ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setCardDefine(card, main.card);
                 }
                 else
@@ -674,15 +674,15 @@ namespace Game
                 ui.LogScrollView.LogInfoHorizantal.TargetGridList.clearItems();
                 if (describable.getTargets(game, localPlayer) != null && describable.getTargets(game, localPlayer).Length > 0)
                 {
+                    ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);
                     foreach (var target in describable.getTargets(game, localPlayer))
                     {
                         if (target == null)
                             continue;
                         var targetItem = ui.LogScrollView.LogInfoHorizantal.TargetGridList.addItem();
-                        CardDefine card = target.define as CardDefine;
+                        CardDefine card = target.define;
                         await targetItem.Card.setCardDefine(card, main.card);
                     }
-                    ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);
                 }
                 else
                 {

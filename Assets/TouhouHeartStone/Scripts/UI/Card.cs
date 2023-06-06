@@ -132,8 +132,8 @@ namespace UI
             }
             set
             {
-                switch (value)
-                {
+               switch (value)
+               {
                     case CATEGORY.MASTER:
                         asAnimator.SetBool(ANIM_PARAM_ISSERVANT, true);
                         asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);

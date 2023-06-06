@@ -22,6 +22,7 @@ namespace Controllers
         public async Task display(long cardPoolId, GeneratedBuffDefine buffDefine, BuffSkin[] skins)
         {
             gameObject.SetActive(true);
+            _ui.reset();
             _cardPoolId = cardPoolId;
             _buffDefine = buffDefine;
             _buffSkins.Clear();
@@ -35,7 +36,6 @@ namespace Controllers
             _ui.setId(buffDefine.id);
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             updateModifiers();
-            _ui.reset();
             await setCurSkinIndex(0);
 
             _effectEditorCtrl.hideActionGraph();

@@ -24,6 +24,7 @@ namespace Controllers
         public async Task display(long cardPoolId, CardDefine cardDefine, CardSkinData[] skins)
         {
             gameObject.SetActive(true);
+            _ui.reset();
             var selectableCharacters = getSelectableCharacters();
             _selectableCharacters = selectableCharacters;
             _cardPoolId = cardPoolId;
@@ -65,7 +66,6 @@ namespace Controllers
             else
                 _ui.setRace(0);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
-            _ui.reset();
             if (cardDefine.isSpell())
                 _ui.switchToSpell();
             else if (cardDefine.isItem())
