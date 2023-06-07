@@ -384,6 +384,7 @@ namespace UI
         }
         public void resetView()
         {
+            _hintMessageText.gameObject.SetActive(false);
             _currentSelectedKnob = default;
             _content.localPosition = Vector3.zero;
             _content.localScale = Vector3.one;
