@@ -931,11 +931,11 @@ namespace Game
             pos.x = isRight ? 250 : -250;
             ui.CardDisplayerObj.transform.localPosition = pos;
 
+            ui.LargeCard.display();
+            ui.showCardDisplayer(true);
             setCardDesc(ui.LargeCard, desc, true);
 
             var buffViewDatas = await getCardBuffViewDatas(desc.getBuffs());
-            ui.showCardDisplayer(true);
-            ui.LargeCard.display();
             ui.setCardDisplayerBuffs(buffViewDatas);
         }
         public void hideLargeCard()
