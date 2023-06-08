@@ -83,11 +83,7 @@ namespace Game
             clone.graph.DefineGeneratedActionDefine(clone);
 
             EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
-            var nodeDefiner = new THHNodeDefiner(name => {
-                if (name == clone.defineName)
-                    return clone;
-                return game.getActionDefine(name, cardPoolId);
-            }, eventFinder);
+            var nodeDefiner = new THHNodeDefiner(name => game.getActionDefine(name, cardPoolId), eventFinder);
             clone.graph.DefineNodes(nodeDefiner);
             // 连接所有节点。
             var graph = clone.graph;

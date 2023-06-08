@@ -591,6 +591,16 @@ namespace Controllers
         {
             foreach (var node in graph.nodes)
             {
+                // 先更新自定义动作节点，因为自定义节点的输出输入值可能会变动。
+                if (node is ActionNode action)
+                {
+                    var define = getActionDefine(action.defineName);
+                    if (define is GeneratedActionDefine gen)
+                    {
+                        action.define = gen;
+                        action.Define();
+                    }
+                }
                 await createNodeUI4Node(node);
             }
 
