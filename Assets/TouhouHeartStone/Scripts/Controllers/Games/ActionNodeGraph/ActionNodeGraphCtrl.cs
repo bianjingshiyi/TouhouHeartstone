@@ -961,6 +961,8 @@ namespace Controllers
             graph.connect(outputPort, inputPort);
             //更新ui
             _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.value);
+            updatePortMode(_connectingPort, outputPort);
+            updatePortMode(_connectingPort, inputPort);
             //更新变长参数。
             if (inputPort.node is ActionNode actionNode)
             {
@@ -1000,6 +1002,8 @@ namespace Controllers
             graph.connect(outputPort, inputPort);
             //更新ui
             _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.action);
+            updatePortMode(_connectingPort, outputPort);
+            updatePortMode(_connectingPort, inputPort);
         }
 
         private void connectPorts4UI(IPort outputPort, IPort inputPort)
@@ -1026,6 +1030,8 @@ namespace Controllers
             }
 
             _ui.connectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex(), type);
+            updatePortMode(_connectingPort, outputPort);
+            updatePortMode(_connectingPort, inputPort);
         }
         private void connectPorts(IPort outputPort, IPort inputPort)
         {
@@ -1102,6 +1108,8 @@ namespace Controllers
 
                 _ui.unconnectNode(outputNodeItem, oldOutputIndex, inputNodeItem, oldInputIndex);
                 _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, port is IValuePort ? ActionNodeConnectionType.value : ActionNodeConnectionType.action);
+                updatePortMode(_connectingPort, outputPort);
+                updatePortMode(_connectingPort, inputPort);
             }
         }
 
@@ -1126,6 +1134,10 @@ namespace Controllers
         private void updatePortMode(IPort connecting, IPort port)
         {
             var node = port.node;
+            if (!_actionNodeList.Contains(node))
+            {
+                return;
+            }
             var item = getActionNodeItem(node);
             var index = port.GetPortIndex();
             ActionNodeItemKnob portItem;
@@ -1137,6 +1149,9 @@ namespace Controllers
             {
                 portItem = item.getInput(index);
             }
+            if (!portItem)
+                return;
+
             NodePortMode mode;
             if (port.connections.Count() > 0 || connecting == port)
             {
@@ -1239,6 +1254,8 @@ namespace Controllers
             var inputNodeItem = getActionNodeItem(inputPort.node);
             _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
             graph.disconnect(outputPort, inputPort);
+            updatePortMode(_connectingPort, outputPort);
+            updatePortMode(_connectingPort, inputPort);
             //更新变长参数。
             if (inputPort.node is ActionNode actionNode)
             {
