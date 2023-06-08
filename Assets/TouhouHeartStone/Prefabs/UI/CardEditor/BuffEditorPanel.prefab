@@ -10518,7 +10518,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &8973023217461184612
 GameObject:
   m_ObjectHideFlags: 0
@@ -10836,7 +10836,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
-#modifies#
 --- !u!1001 &2704833482304960789
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12944,7 +12943,6 @@ MonoBehaviour:
   _keywordNames: []
   _keywordValues: []
   _isListItem: 0
-#remote adds#
 --- !u!114 &37519219358419014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13103,7 +13101,6 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
-#local adds#
 --- !u!224 &63869032202095226 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7828612899420356574, guid: 3ce2269361f968d4085b76fd07ce0433,
@@ -14694,5 +14691,3 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
-#remote deletes#
-#local deletes#
