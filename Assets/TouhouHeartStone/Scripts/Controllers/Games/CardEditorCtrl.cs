@@ -884,8 +884,18 @@ namespace Controllers
             var poolRef = game.card.getLocalCardPoolReference(defRef.cardPoolId);
             var cardDefine = game.card.getCardDefine(poolRef, defRef.defineId);
             var skin = game.card.getCardSkin(poolRef, defRef.defineId);
-            var spr = await game.card.loadImage(skin.imagePath, defRef.cardPoolId);
-            var name = skin.name;
+            Sprite spr;
+            string name;
+            if (skin != null)
+            {
+                spr = await game.card.loadImage(skin.imagePath, defRef.cardPoolId);
+                name = skin.name;
+            }
+            else
+            {
+                spr = game.card.getDefaultSprite();
+                name = game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+            }
             _ui.setSkillRef(cardDefine, spr, name);
         }
 
