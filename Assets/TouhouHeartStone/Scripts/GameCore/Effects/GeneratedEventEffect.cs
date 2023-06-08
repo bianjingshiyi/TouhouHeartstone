@@ -63,8 +63,8 @@ namespace TouhouHeartstone
         }
         #endregion
         #region 属性字段
-        public override PassiveEntryNode entryNode => eventEntry;
-        public virtual EventEntryNode eventEntry => graph?.nodes?.OfType<EventEntryNode>().FirstOrDefault();
+        public override Node entryNode => eventEntry;
+        public virtual EventEntryNode eventEntry => graph?.findEventEntryNode();
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
         public string[] piles => eventEntry?.getConst<PileNameCollection>(EventEntryNode.pileListName)?.ToArray() ?? Array.Empty<string>();

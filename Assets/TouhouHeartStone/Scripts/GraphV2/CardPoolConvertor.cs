@@ -348,7 +348,7 @@ namespace Game
                 graph.DefineNodes(definer);
 
                 // 创建光环数据节点。
-                var dataNode = aura.getEntryNode();
+                var dataNode = aura.auraEntry;
 
                 // 光环的生效区域。
                 var pileList = effect.pileList;

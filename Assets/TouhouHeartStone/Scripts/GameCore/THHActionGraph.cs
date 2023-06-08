@@ -75,6 +75,10 @@ namespace TouhouHeartstone
         {
             return graph.nodes.OfType<EventEntryNode>().FirstOrDefault(n => n.eventName == eventName);
         }
+        public static EventEntryNode findEventEntryNode(this ActionGraph graph)
+        {
+            return graph.nodes.OfType<EventEntryNode>().FirstOrDefault();
+        }
         public static AuraEntryNode findAuraEntryNode(this ActionGraph graph)
         {
             return graph.nodes.OfType<AuraEntryNode>().FirstOrDefault();

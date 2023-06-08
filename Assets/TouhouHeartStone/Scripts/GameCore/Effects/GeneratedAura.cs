@@ -83,10 +83,6 @@ namespace TouhouHeartstone
             // 检测范围内的所有卡牌。
             await checkAndAddBuffedCards(game, card, buff, buffDict, ranges, buffDict.Keys);
         }
-        public AuraEntryNode getEntryNode()
-        {
-            return graph?.findAuraEntryNode();
-        }
         public override SerializableEffect Serialize()
         {
             return new SerializableAuraEffect(this);
@@ -210,29 +206,31 @@ namespace TouhouHeartstone
         }
         #endregion
         #region 属性字段
+        public AuraEntryNode auraEntry => graph?.findAuraEntryNode();
         /// <summary>
         /// 光环的生效范围
         /// </summary>
-        public PileNameCollection pileList => getEntryNode()?.getPiles();
+        public PileNameCollection pileList => auraEntry?.getPiles();
         /// <summary>
         /// 光环的作用范围
         /// </summary>
-        public PileNameCollection rangeList => getEntryNode()?.getRanges();
+        public PileNameCollection rangeList => auraEntry?.getRanges();
         /// <summary>
         /// 光环所添加的增益Id
         /// </summary>
-        public ValueInput getAuraBuffDefine => getEntryNode()?.getInputPort<ValueInput>(AuraEntryNode.buffDefineName);
+        public ValueInput getAuraBuffDefine => auraEntry?.getInputPort<ValueInput>(AuraEntryNode.buffDefineName);
         /// <summary>
         /// 光环的作用条件
         /// </summary>
-        public ValueInput affectCondition => getEntryNode()?.getInputPort<ValueInput>(AuraEntryNode.conditionName);
+        public ValueInput affectCondition => auraEntry?.getInputPort<ValueInput>(AuraEntryNode.conditionName);
         /// <summary>
         /// 光环的更新动作
         /// </summary>
-        public ControlOutput updateAction => getEntryNode()?.getOutputPort<ControlOutput>(AuraEntryNode.actionPortName);
+        public ControlOutput updateAction => auraEntry?.getOutputPort<ControlOutput>(AuraEntryNode.actionPortName);
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
         public string[] piles => pileList?.ToArray() ?? Array.Empty<string>();
+        public override Node entryNode => auraEntry;
         #endregion
     }
     [Serializable]

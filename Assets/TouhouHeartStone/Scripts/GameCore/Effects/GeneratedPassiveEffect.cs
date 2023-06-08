@@ -25,10 +25,10 @@ namespace TouhouHeartstone
         }
         public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
-            var entryNode = this.entryNode;
-            if (entryNode != null)
+            var entry = passiveEntry;
+            if (entry != null)
             {
-                var condition = entryNode.getTriggerCondtionValuePort();
+                var condition = entry.getTriggerCondtionValuePort();
                 if (condition == null || condition.getConnectedOutputPort() == null)
                     return true;
 
@@ -46,25 +46,25 @@ namespace TouhouHeartstone
         }
         public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
-            var entryNode = this.entryNode;
-            if (entryNode != null)
+            var entry = passiveEntry;
+            if (entry != null)
             {
                 var flow = new Flow(game, card, buff, eventArg, this);
-                return game.runActions(flow, entryNode.getActionOutputPort());
+                return game.runActions(flow, entry.getActionOutputPort());
             }
             return Task.CompletedTask;
         }
         public override void setTags(params string[] tags)
         {
-            entryNode?.setTags(tags);
+            passiveEntry?.setTags(tags);
         }
         public override string[] getTags()
         {
-            return entryNode?.tags?.ToArray() ?? Array.Empty<string>();
+            return passiveEntry?.tags?.ToArray() ?? Array.Empty<string>();
         }
         public override bool hasTag(string tag)
         {
-            return entryNode?.tags?.Contains(tag) ?? false;
+            return passiveEntry?.tags?.Contains(tag) ?? false;
         }
         public override SerializableEffect Serialize()
         {
@@ -83,7 +83,8 @@ namespace TouhouHeartstone
         }
         #endregion
         #region 属性字段
-        public virtual PassiveEntryNode entryNode => graph?.nodes?.OfType<PassiveEntryNode>().FirstOrDefault();
+        public PassiveEntryNode passiveEntry => graph?.findPassiveEntryNode();
+        public virtual Node entryNode => passiveEntry;
         public override ControlOutput onEnableAction => entryNode?.getOutputPort<ControlOutput>(enableActionName);
         public override ControlOutput onDisableAction => entryNode?.getOutputPort<ControlOutput>(disableActionName);
         public const string enableActionName = "enableAction";
