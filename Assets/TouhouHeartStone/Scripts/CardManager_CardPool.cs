@@ -1459,12 +1459,25 @@ namespace Game
                 {
                     //包含不存在的动作名称，可能是名称过期了
                     string newDefineName = null;
+                    // 内置动作。
                     foreach (ActionDefine actionDefine in actionDefineDict.Values)
                     {
-                        if (actionDefine.obsoleteNames != null && actionDefine.obsoleteNames.Contains(actionNode.defineName))
+                        if ((actionDefine.obsoleteNames != null && actionDefine.obsoleteNames.Contains(actionNode.defineName)))
                         {
                             newDefineName = actionDefine.defineName;
                             break;
+                        }
+                    }
+                    // 卡池内的自定义动作。
+                    if (newDefineName == null)
+                    {
+                        foreach (GeneratedActionDefine actionDefine in cardPool.actionDefineList)
+                        {
+                            if (actionNode.defineName == actionDefine.editorName) // 等同于编辑器名
+                            {
+                                newDefineName = actionDefine.defineName;
+                                break;
+                            }
                         }
                     }
                     if (newDefineName != null)

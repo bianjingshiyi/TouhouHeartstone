@@ -12,7 +12,16 @@ namespace Game
 
     public static partial class EffectEditorLibrary
     {
-        [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION, null)]
+        #region 无分类
+        [TranslateMsg("动作图编辑器中动作节点名称之重复动作直到动作")]
+        private const string EDIOTR_NODE_NAME_DO_UNTIL_ACTION = "重复动作直到";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之最多重复次数参数")]
+        private const string EDIOTR_PARAM_NAME_MAX_REPEAT_TIME = "最多重复次数";
+        [TranslateMsg("动作图编辑器中动作节点参数名称之结束条件参数")]
+        private const string EDIOTR_PARAM_NAME_STOP_CONDITION = "结束条件";
+
+
+        [KeyBondMethod("BranchAction", null, StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION)]
         public static async Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)] bool isTrue,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput thenAction,
@@ -25,7 +34,9 @@ namespace Game
             await game.runActions(flow, port);
             flow.ExitScope();
         }
-        [ActionNodeMethod(StringTable.EDIOTR_NODE_NAME_FOR_ACTION, null)]
+
+
+        [KeyBondMethod("ForAction", null, StringTable.EDIOTR_NODE_NAME_FOR_ACTION)]
         public static async Task forAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
@@ -43,14 +54,8 @@ namespace Game
             }
         }
 
-        [TranslateMsg("动作图编辑器中动作节点名称之重复动作直到动作")]
-        private const string EDIOTR_NODE_NAME_DO_UNTIL_ACTION = "重复动作直到";
-        [TranslateMsg("动作图编辑器中动作节点参数名称之最多重复次数参数")]
-        private const string EDIOTR_PARAM_NAME_MAX_REPEAT_TIME = "最多重复次数";
-        [TranslateMsg("动作图编辑器中动作节点参数名称之结束条件参数")]
-        private const string EDIOTR_PARAM_NAME_STOP_CONDITION = "结束条件";
 
-        [ActionNodeMethod(EDIOTR_NODE_NAME_DO_UNTIL_ACTION, null)]
+        [KeyBondMethod("DoUntilAction", null, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
         public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] ControlInput condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
@@ -82,15 +87,86 @@ namespace Game
             }
             while (times < maxRepeatTime && !finished);
         }
-        //  把这个“玩家”逐步移到下面几个去
+        #endregion
+
+        #region 常量
+        [TranslateMsg("动作图编辑器中动作节点名称之X到Y之间的随机数")]
+        public const string EDITOR_NODE_NAME_GET_RANDOM_INT = "X到Y之间的随机整数";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_GET_INT_X = "整数X";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_GET_INT_Y = "整数Y";
+        /// <summary>
+        /// X到Y之间随机整数
+        /// </summary>
+        [KeyBondMethod("RandomInt", StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST, EDITOR_NODE_NAME_GET_RANDOM_INT)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int randomInt(CardEngine game,
+           [ActionNodeParam(EDITOR_PARAM_NAME_GET_INT_X, isConst: false)] int countX,
+           [ActionNodeParam(EDITOR_PARAM_NAME_GET_INT_Y, isConst: false)] int countY)
+        {
+            return game.randomInt(countX, countY);
+        }
+        #endregion
+
         #region 玩家
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_CURRENT_PLAYER = "获取当前回合的玩家";
+        [TranslateMsg("动作图编辑器中动作节点名称之增加固定数量护甲")]
+        public const string EDITOR_NODE_ADD_AMOUNT_OF_ARMOR = "增加固定数量护甲";
+        [TranslateMsg("动作图编辑器中动作节点名称之增加护甲")]
+        public const string EDITOR_NODE_ADD_ARMOR = "增加护甲";
+        [TranslateMsg("动作图编辑器中动作节点名称之失去护甲")]
+        public const string EDITOR_NODE_LOSE_ARMOR = "失去护甲";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取玩家延迟区")]
+        public const string EDITOR_NODE_NAME_GET_HEAD = "获取玩家延迟区";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取玩家技能")]
+        public const string EDITOR_NODE_NAME_GET_SKILL = "获取玩家技能";
+        [TranslateMsg("动作图编辑器中动作节点名称之复原技能")]
+        public const string EDITOR_NODE_RESET_SKILL = "复原技能";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取玩家道具")]
+        public const string EDITOR_NODE_NAME_GET_ITEM = "获取玩家道具";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_PLAYER_HAS_ITEM = "玩家是否装备道具";
+        [TranslateMsg("动作图编辑器中动作节点名称之摧毁道具")]
+        public const string EDITOR_NODE_DESTROY_ITEM = "摧毁道具";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取玩家暂存区")]
+        public const string EDITOR_NODE_NAME_GET_WARP = "获取玩家暂存区";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取当前灵力值")]
+        public const string EDITOR_NODE_NAME_GET_GEM = "获取当前灵力值";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取灵力上限")]
+        public const string EDITOR_NODE_NAME_GET_MAX_GEM = "获取灵力上限";
+        [TranslateMsg("动作图编辑器中动作节点名称之设置当前灵力值")]
+        public const string EDITOR_NODE_ADD_AMOUNT_OF_GEM = "设置当前灵力值";
+        [TranslateMsg("动作图编辑器中动作节点名称之增加当前灵力值")]
+        public const string EDITOR_NODE_ADD_GEM = "增加当前灵力值";
+        [TranslateMsg("动作图编辑器中动作节点名称之设置灵力上限")]
+        public const string EDITOR_NODE_SET_MAX_GEM = "设置灵力上限";
+        [TranslateMsg("动作图编辑器中动作节点名称之增加灵力上限")]
+        public const string EDITOR_NODE_ADD_MAX_GEM = "增加灵力上限";
+        [TranslateMsg("编辑器/卡牌-节点名称")]
+        public const string EDITOR_NODE_FAITHDUEL = "信仰对决";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_WIN = "是否胜利";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_FILTER = "筛选条件";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_FILTER_CARD = "筛选卡牌";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_SELF_CARD = "己方卡牌";
+        [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
+        public const string EDITOR_NODE_FAITHDUEL_OPPONENT_CARD = "对方卡牌";
+        [TranslateMsg("节点参数 TargetName")]
+        const string EDITOR_PARAM_TARGET_NAME = "目标名";
+
+
         /// <summary>
         /// 获取玩家属性
         /// </summary>
         /// <param name="player"></param>
         /// <param name="propName"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_PROP, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("GetPlayerProp", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PLAYER_PROP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getPlayerProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -104,7 +180,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="propName"></param>
         /// <param name="value"></param>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SET_PLAYER_PROP, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("SetPlayerProp", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SET_PLAYER_PROP)]
         public static void setPlayerProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
@@ -112,7 +188,7 @@ namespace Game
         {
             player?.setProp(propName, value);
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_OPPONENT, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("GetPlayerOpponent", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PLAYER_OPPONENT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_OPPONENT_PLAYER)]
         public static Player getPlayerOpponent(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
@@ -120,7 +196,7 @@ namespace Game
                 return null;
             return game.getOpponent(player);
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_MASTER, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "GetMaster")]
+        [KeyBondMethod("GetPlayerMaster", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_MASTER, "GetMaster")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card getMaster([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
@@ -128,9 +204,7 @@ namespace Game
         }
 
 
-        [TranslateMsg("编辑器-节点名称")]
-        private const string EDITOR_NODE_NAME_GET_CURRENT_PLAYER = "获取当前回合的玩家";
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_CURRENT_PLAYER, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("GetCurrentPlayer", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_CURRENT_PLAYER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
         public static Player getCurrentPlayer(CardEngine game)
         {
@@ -143,7 +217,7 @@ namespace Game
         /// <param name="card"></param>
         /// <param name="player"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("GetPlayerHands", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PLAYER_HAND_CARDS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getHandCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
@@ -155,7 +229,7 @@ namespace Game
         /// 获取玩家墓地中的卡牌
         /// </summary>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_GRAVE_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("GetPlayerGraveCards", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PLAYER_GRAVE_CARDS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getPlayerGraveCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
@@ -163,7 +237,7 @@ namespace Game
                 return Array.Empty<Card>();
             return player.getGrave();
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_PLAYER_DECK_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("GetPlayerDeckCards", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PLAYER_DECK_CARDS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getPlayerDeckCards([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
         {
@@ -171,7 +245,7 @@ namespace Game
                 return Array.Empty<Card>();
             return player.getDeck();
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("DrawTargetCard", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD)]
         public static Task drawTargetCard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card targetCard,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent,
@@ -186,7 +260,7 @@ namespace Game
             return targetCard.owner.draw(game, targetCard, out drawEvent, out burnEvent);
         }
         ///从一定数量卡牌中选一张
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("SelectOneFromCards", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Task<Card> selectOneFromManyCards(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
@@ -197,7 +271,7 @@ namespace Game
             return game.askSelect(card.owner, cards, count);
         }
         ///从一定数量卡牌定义中选一张
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_DEFINES, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("SelectOneFromCardDefines", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_DEFINES)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static Task<CardDefine> selectOneFromManyDefines(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine[] defines,
@@ -211,7 +285,7 @@ namespace Game
         /// <summary>
         /// 丢弃卡牌
         /// </summary>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_DISCARD, StringTable.EDITOR_NODE_CATEGORY_PLAYER)]
+        [KeyBondMethod("Discard", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_DISCARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
         public static Task<THHCard.DiscardEventArg[]> discard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HANDS)] Card[] hands)
@@ -220,32 +294,278 @@ namespace Game
                 return null;
             return hands.discard(game);
         }
-        #endregion
 
-        //  有关全局的操作，比如说获取发现池，获取卡牌
-        #region 全局
 
-        #endregion
+        /// <summary>
+        /// 增加固定数量的护甲
+        /// </summary>
+        [KeyBondMethod("AddArmor", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_AMOUNT_OF_ARMOR)]
+        public static async Task addArmorToTarget(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player != null)
+                await player.getMaster().gainArmor(game, count);
+        }
+        /// <summary>
+        /// 增加护甲
+        /// </summary>
+        [KeyBondMethod("AddAmountOfArmor", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_ARMOR)]
+        public static async Task addAmountOfArmorToTarget(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            if (player != null)
+                await player.getMaster().gainArmor(game, count);
+        }
+        /// <summary>
+        /// 失去护甲
+        /// </summary>
+        [KeyBondMethod("LoseArmor", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_LOSE_ARMOR)]
+        public static async Task loseArmor(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            if (player != null)
+                await player.getMaster().loseArmor(game, count);
+        }
+        /// <summary>
+        /// 获取延迟区
+        /// </summary>
+        [KeyBondMethod("GetPlayerHeadCards", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_HEAD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getHead(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player == null)
+                return Array.Empty<Card>();
+            return player.getHead();
+        }
+        /// <summary>
+        /// 获取技能
+        /// </summary>
+        [KeyBondMethod("GetPlayerSkill", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_SKILL)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getSkill(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player?.getSkill();
+        }
+        /// <summary>
+        /// 复原技能
+        /// </summary>
+        [KeyBondMethod("ResetSkill", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_RESET_SKILL)]
+        public static async Task resetSkill(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if ((player != null) && player.getSkill().isUsed(game))
+            {
+                await player.getSkill().setUsed(game, false);
+            }
+        }
+        /// <summary>
+        /// 获取道具
+        /// </summary>
+        [KeyBondMethod("GetPlayerItem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_ITEM)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card getItem(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player?.getItem();
+        }
 
-        //  有关日志的一些操作，比如说获取出牌记录，获取事件发生次数 
-        #region 日志
+        /// <summary>
+        /// 玩家是否装备道具
+        /// </summary>
+        [KeyBondMethod("DoesPlayerHaveItem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_PLAYER_HAS_ITEM)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool playerHasItem(
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            return player?.getItem() != null;
+        }
 
+        /// <summary>
+        /// 摧毁道具
+        /// </summary>
+        [KeyBondMethod("DestroyItem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_DESTROY_ITEM)]
+        public static async Task destroyItem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player != null)
+                await player.destroyItem(game);
+        }
+        /// <summary>
+        /// 获取暂存区
+        /// </summary>
+        [KeyBondMethod("GetPlayerWarpCards", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_WARP)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
+        public static Card[] getWarp(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player == null)
+                return Array.Empty<Card>();
+            return player.getWarp();
+        }
+        /// <summary>
+        /// 获取当前灵力值
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [KeyBondMethod("GetPlayerGem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_GEM)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getGem(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player == null)
+                return 0;
+            return player.getGem();
+        }
+        /// <summary>
+        /// 获取灵力上限
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        [KeyBondMethod("GetPlayerMaxGem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_MAX_GEM)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getMaxGem(CardEngine game,
+           [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player == null)
+                return 0;
+            return player.getMaxGem();
+        }
+        /// <summary>
+        /// 设置当前灵力值
+        /// </summary>
+        [KeyBondMethod("SetPlayerGem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_AMOUNT_OF_GEM)]
+        public static async Task setGem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            if (player != null)
+                await player.setGem(game, count);
+        }
+        /// <summary>
+        /// 增加当前灵力值
+        /// </summary>
+        [KeyBondMethod("AddPlayerGem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_GEM)]
+        public static async Task addGem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            if (player != null)
+                await player.setGem(game, player.getGem() + count);
+        }
+        /// <summary>
+        /// 设置灵力上限
+        /// </summary>
+        [KeyBondMethod("SetPlayerMaxGem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_SET_MAX_GEM)]
+        public static async Task setMaxGem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            if (player != null)
+                await player.setMaxGem(game, count);
+        }
+        /// <summary>
+        /// 增加灵力上限
+        /// </summary>
+        [KeyBondMethod("AddPlayerMaxGem", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_MAX_GEM)]
+        public static async Task addMaxGem(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            if (player != null)
+                await player.setMaxGem(game, player.getMaxGem() + count);
+        }
+
+
+        /// <summary>
+        /// 信仰对决
+        /// </summary>
+        [KeyBondMethod("FaithDuel", StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_FAITHDUEL)]
+        [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
+        public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] ControlInput filter,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard)
+        {
+            if (player == null)
+                return false;
+
+            bool filterFunc(Card c)
+            {
+                bool valid = true;
+                if (filter != null)
+                {
+                    var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+                    var resultPort = filter?.node.getOutputPorts<ValueOutput>().FirstOrDefault();
+                    flow.EnterScope();
+                    flow.setValue(elementPort, c);
+                    valid = game.getValue<bool>(flow, resultPort).Result;
+                    flow.ExitScope();
+                }
+                return valid;
+            }
+            var arg = player.revealDuel(game, filterFunc).Result;
+            flow.setValue(node.getOutputPort<ValueOutput>(nameof(selfCard)), arg.youCard);
+            flow.setValue(node.getOutputPort<ValueOutput>(nameof(opponentCard)), arg.oppoCard);
+            return arg.result;
+        }
+
+        /// <summary>
+        /// 获取牌堆
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="pileName"></param>
+        /// <returns></returns>
+        [KeyBondMethod("GetPile", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PILE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]
+        public static Pile getPile(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player, 
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] string pileName)
+        {
+            return player.getPile(pileName);
+        }
+
+
+        [KeyBondMethod("GetTarget", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_TARGET)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)]
+        [Obsolete]
+        public static Card getTarget(HearthStoneRule.ActiveEventArg eventArg, 
+            [ActionNodeParam(EDITOR_PARAM_TARGET_NAME, true)] string targetName)
+        {
+            if (targetName == "Target")
+                return (Card)eventArg.targets[0];
+            throw new NotImplementedException();
+        }
         #endregion
 
         //  有关牌堆的操作，比如说洗牌，获取特定牌等等
         #region 牌堆
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_CHECK_CARD_PILE = "卡牌所在牌堆判断";
+        [TranslateMsg("编辑器-参数名称 PileName")]
+        private const string EDITOR_PARAM_PILE_NAME = "牌堆名";
+        [TranslateMsg("编辑器-参数名称 IsChanged")]
+        private const string EDITOR_PARAM_NAME_IS_CHANGED = "是否已改变";
         /// <summary>
         /// 获取牌堆中的卡牌
         /// </summary>
         /// <param name="pile"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_PILE, StringTable.EDITOR_NODE_CATEGORY_PILE)]
+        [KeyBondMethod("GetCardsInPile", StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getCardsInPile([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] Pile pile)
         {
             return pile;
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
+        [KeyBondMethod("FilterCardsInDeck", StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
         public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, IBuff buff, IEventArg eventArg, Flow flow, ActionNode node,
@@ -271,7 +591,7 @@ namespace Game
             }
             return cardList.ToArray();
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION, StringTable.EDITOR_NODE_CATEGORY_PILE)]
+        [KeyBondMethod("FilterCards", StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
         public static async Task<Card[]> getCardsWithCondition(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
@@ -303,7 +623,7 @@ namespace Game
             }
             return cardList.ToArray();
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_CARDS_COUNT, StringTable.EDITOR_NODE_CATEGORY_PILE)]
+        [KeyBondMethod("GetCardsCount", StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_GET_CARDS_COUNT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)]
         [Obsolete]
         public static int getCardsCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -313,14 +633,12 @@ namespace Game
             return cards.Length;
         }
 
-        [TranslateMsg("编辑器-节点名称")]
-        private const string EDITOR_NODE_NAME_CHECK_CARD_PILE = "卡牌所在牌堆判断";
         /// <summary>
         /// 卡牌所在牌堆判断
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CHECK_CARD_PILE, StringTable.EDITOR_NODE_CATEGORY_PILE)]
+        [KeyBondMethod("CheckCardPile", StringTable.EDITOR_NODE_CATEGORY_PILE, EDITOR_NODE_NAME_CHECK_CARD_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool checkCardPile(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
@@ -328,22 +646,30 @@ namespace Game
         {
             return card?.pile?.name == pileName;
         }
+
+
+        [KeyBondMethod("IsPlayerPileChanged", StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_IS_CHANGED)]
+        public static bool isPlayerPileChanged(Pile.MoveCardEventArg moveCardEvent, 
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player, 
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] string pileName)
+        {
+            return (moveCardEvent.from.owner == player && moveCardEvent.from.name == pileName) ||
+                (moveCardEvent.to.owner == player && moveCardEvent.to.name == pileName);
+        }
         #endregion
         //  与增益相关
         #region 增益
-        //[ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_BUFF_DEFINE, StringTable.EDITOR_NODE_CATEGORY_BUFF, "GetBuffDefine")]
-        //[return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]
-        //public static BuffDefine getBuffDefine(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ID, isConst: true)] DefineReference defRef)
-        //{
-        //    return game.getBuffDefine(defRef.cardPoolId, defRef.defineId);
-        //}
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_THIS_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "ThisBuff")]
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_BUFF_PROP = "获取增益属性";
+
+        [KeyBondMethod("ThisBuff", StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_THIS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
         public static Buff thisBuff(Buff buff)
         {
             return buff;
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_ADD_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "AddBuff")]
+        [KeyBondMethod("AddBuff", StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_ADD_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
         public static async Task<Buff[]> addBuff(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
@@ -363,7 +689,7 @@ namespace Game
             }
             return buffList.ToArray();
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_REMOVE_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF, "RemoveBuff")]
+        [KeyBondMethod("RemoveBuff", StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_REMOVE_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_IS_BUFF_REMOVED)]
         public static Task<bool> removeBuff(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
@@ -374,7 +700,7 @@ namespace Game
 
             return card.removeBuff(game, buff);
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HAS_BUFF, StringTable.EDITOR_NODE_CATEGORY_BUFF)]
+        [KeyBondMethod("HasBuff", StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_HAS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool hasBuff(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
@@ -384,7 +710,7 @@ namespace Game
                 return false;
             return card.hasBuff(buffDefine);
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_SET_BUFF_PROP, StringTable.EDITOR_NODE_CATEGORY_BUFF)]
+        [KeyBondMethod("SetBuffProp", StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_SET_BUFF_PROP)]
         public static async Task setBuffProp(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff[] buffs,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
@@ -402,8 +728,6 @@ namespace Game
         }
 
 
-        [TranslateMsg("编辑器-节点名称")]
-        private const string EDITOR_NODE_NAME_GET_BUFF_PROP = "获取增益属性";
         /// <summary>
         /// 获取增益属性
         /// </summary>
@@ -411,7 +735,7 @@ namespace Game
         /// <param name="buff"></param>
         /// <param name="propName"></param>
         /// <returns></returns>
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_BUFF_PROP, StringTable.EDITOR_NODE_CATEGORY_BUFF)]
+        [KeyBondMethod("GetBuffProp", StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_GET_BUFF_PROP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getBuffProp(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
@@ -424,6 +748,24 @@ namespace Game
         #endregion
         //  玩家的行动，比如抽一张牌，获得一张牌
         #region 行动
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_DECK = "卡牌洗入牌库";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HAND = "卡牌移回手牌";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD = "卡牌置入战场";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD = "卡牌置入延迟区";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE = "卡牌置入墓地";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_WARP = "卡牌移动到暂存区";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_EQUIP_EVENT = "装备事件";
+
+
         /// <summary>
         /// 简单抽牌
         /// 抽牌行动的简单实现，抽一张牌
@@ -433,7 +775,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="drawEvent"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__NAME, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [KeyBondMethod("SimpleDraw", StringTable.EDITOR_CATEGORY__ACTION__NAME, StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT)]
         public static Card simpleDrawCard(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player)
@@ -446,9 +788,7 @@ namespace Game
         /// <summary>
         /// 卡牌置入战场
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入战场")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD = "卡牌置入战场";
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [KeyBondMethod("MoveToField", StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToField(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -492,9 +832,7 @@ namespace Game
         /// <summary>
         /// 卡牌移回手牌
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌移回手牌")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HAND = "卡牌移回手牌";
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_HAND, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [KeyBondMethod("MoveToHand", StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HAND)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHand(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -519,9 +857,7 @@ namespace Game
         /// <summary>
         /// 卡牌从洗入牌库
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌洗入牌库")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_DECK = "卡牌洗入牌库";
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_DECK, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [KeyBondMethod("MoveToDeck", StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_DECK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToDeck(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -549,9 +885,7 @@ namespace Game
         /// <summary>
         /// 卡牌从置入墓地
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入墓地")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE = "卡牌置入墓地";
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [KeyBondMethod("MoveToGrave", StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToGrave(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -577,9 +911,7 @@ namespace Game
         /// <summary>
         /// 卡牌置入延迟区
         /// </summary>
-        [TranslateMsg("动作图编辑器中动作节点名称之卡牌置入延迟区")]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD = "卡牌置入延迟区";
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [KeyBondMethod("MoveToHead", StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHead(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -618,11 +950,7 @@ namespace Game
         /// <summary>
         /// 卡牌装备到道具栏(有显示问题）
         /// </summary>
-        [TranslateMsg]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM = "卡牌装备到道具栏";
-        [TranslateMsg("动作图编辑器中参数名称之装备事件")]
-        public const string EDITOR_PARAM_NAME_EQUIP_EVENT = "装备事件";
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [KeyBondMethod("MoveToItem", StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EQUIP_EVENT)]
         public static async Task<HearthStoneRule.EquipItemEventArg> moveToItem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -637,9 +965,7 @@ namespace Game
         /// <summary>
         /// 卡牌移动到暂存区(有显示问题）
         /// </summary>
-        [TranslateMsg]
-        public const string EDITOR_NODE_NAME_CARD_MOVE_TO_WARP = "卡牌移动到暂存区";
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_MOVE_TO_WARP, StringTable.EDITOR_CATEGORY__ACTION__NAME)]
+        [KeyBondMethod("MoveToWarp", StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_WARP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToWARP(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -664,7 +990,38 @@ namespace Game
         }
         #endregion
         #region 集合运算
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_CREATE_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_CONTAINS = "包含";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_ORDER_BY = "排序";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_GET_ELEMENT_BY_INDEX = "获取第X个元素";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_GET_RANDOM_ELEMENT = "获取集合中的随机元素";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_REVERSE_COLLECTION = "反转集合";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_NAME_DISTINCT_COLLECTION = "集合去重";
+        [TranslateMsg("编辑器_动作节点_遍历")]
+        public const string EDITOR_NODE_NAME_FOREACH = "遍历";
+
+        [TranslateMsg("编辑器_参数名称_降序")]
+        public const string EDITOR_PARAM_NAME_DESCENDING = "降序";
+        [TranslateMsg("编辑器_参数名称_排序依据")]
+        public const string EDITOR_PARAM_NAME_ORDER_KEY = "排序依据";
+        [TranslateMsg("编辑器-包含节点-参数名称")]
+        public const string EDITOR_PARAM_NAME_CONTAINS_ELEMENT = "是否包含元素";
+        [TranslateMsg("动作图编辑器中参数节点名称之匹配的集合")]
+        public const string EDITOR_PARAM_NAME_ARRAY_MATCHED = "匹配的集合";
+        [TranslateMsg("动作图编辑器中参数节点名称之集合")]
+        public const string EDITOR_PARAM_NAME_ARRAY_MISMATCHED = "不匹配的集合";
+        [TranslateMsg("编辑器_参数名称_元素位置")]
+        public const string EDITOR_PARAM_NAME_INDEX = "元素位置";
+        [TranslateMsg("编辑器-集合相减-参数名称")]
+        public const string EDITOR_PARAM_NAME_EXCEPTED_COLLECTION = "减去的集合";
+
+
+        [KeyBondMethod("CreateArray", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_CREATE_ARRAY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
         public static Array createArray([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isParams: true)] object[] elements)
         {
@@ -672,7 +1029,7 @@ namespace Game
                 return Array.Empty<object>();
             return elements;
         }
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_ADD_ELEMENT_TO_ARRAY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("AddElementToArray", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_ADD_ELEMENT_TO_ARRAY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)]
         public static Array addElementToArray(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
@@ -692,11 +1049,7 @@ namespace Game
         /// <summary>
         /// 筛选
         /// </summary>
-        [TranslateMsg("动作图编辑器中参数节点名称之匹配的集合")]
-        public const string EDITOR_PARAM_NAME_ARRAY_MATCHED = "匹配的集合";
-        [TranslateMsg("动作图编辑器中参数节点名称之集合")]
-        public const string EDITOR_PARAM_NAME_ARRAY_MISMATCHED = "不匹配的集合";
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_WHERE, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("Where", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_WHERE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
         public static async Task<object[]> where(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
@@ -743,7 +1096,7 @@ namespace Game
         /// </summary>
         /// <param name="collection"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_GET_COUNT, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("GetCount", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_GET_COUNT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)]
         public static int getCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection)
         {
@@ -752,19 +1105,14 @@ namespace Game
             return collection.Length;
         }
 
-
-        [TranslateMsg("编辑器-节点名称")]
-        public const string EDITOR_NODE_NAME_CONTAINS = "包含";
-        [TranslateMsg("编辑器-包含节点-参数名称")]
-        public const string EDITOR_PARAM_NAME_CONTAINS_ELEMENT = "是否包含元素";
         /// <summary>
         /// 包含
         /// </summary>
         /// <param name="collection"></param>
         /// <returns></returns>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CONTAINS, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("Contains", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_CONTAINS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_CONTAINS_ELEMENT)]
-        public static bool getCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection,
+        public static bool contains([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)] object element)
         {
             if (collection == null)
@@ -772,21 +1120,15 @@ namespace Game
             return collection.Contains(element);
         }
 
-        [TranslateMsg("编辑器_动作节点_排序")]
-        public const string EDITOR_NODE_NAME_ORDER_BY = "排序";
-        [TranslateMsg("编辑器_参数名称_降序")]
-        public const string EDITOR_NODE_NAME_DESCENDING = "降序";
-        [TranslateMsg("编辑器_参数名称_排序依据")]
-        public const string EDITOR_NODE_NAME_ORDER_KEY = "排序依据";
         /// <summary>
         /// 根据排序依据排序。
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_ORDER_BY, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("OrderBy", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_ORDER_BY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
-            [ActionNodeParam(EDITOR_NODE_NAME_DESCENDING, isConst: true)] bool descending,
+            [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING, isConst: true)] bool descending,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
-            [ActionNodeParam(EDITOR_NODE_NAME_ORDER_KEY)] ControlInput condition,
+            [ActionNodeParam(EDITOR_PARAM_NAME_ORDER_KEY)] ControlInput condition,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
         {
             if (array == null)
@@ -819,14 +1161,10 @@ namespace Game
             }
         }
 
-        [TranslateMsg("编辑器_动作节点_获取第X个元素")]
-        public const string EDITOR_NODE_NAME_GET_ELEMENT_BY_INDEX = "获取第X个元素";
-        [TranslateMsg("编辑器_参数名称_元素位置")]
-        public const string EDITOR_PARAM_NAME_INDEX = "元素位置";
         /// <summary>
         /// 获取第X个元素。
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ELEMENT_BY_INDEX, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("GetElementByIndex", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_GET_ELEMENT_BY_INDEX)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)]
         public static object getElementByIndex(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
@@ -836,12 +1174,10 @@ namespace Game
                 return array[index];
             return null;
         }
-        [TranslateMsg("编辑器_动作节点_遍历")]
-        public const string EDITOR_NODE_NAME_FOREACH = "遍历";
         /// <summary>
         /// 遍历集合
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_FOREACH, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("ForeachAction", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_FOREACH)]
         public static async Task foreachAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION)] ControlInput action,
@@ -860,8 +1196,7 @@ namespace Game
                 flow.ExitScope();
             }
         }
-        public const string EDITOR_NODE_NAME_GET_RANDOM_ELEMENT = "获取集合中的随机元素";
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_RANDOM_ELEMENT, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("GetRandomElement", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_GET_RANDOM_ELEMENT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT)]
         public static object getRandomElement(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] collection)
@@ -872,12 +1207,10 @@ namespace Game
                 return collection[0];
             return collection[game.randomInt(0, collection.Length - 1)];
         }
-        [TranslateMsg("编辑器-节点名称")]
-        public const string EDITOR_NODE_NAME_REVERSE_COLLECTION = "反转集合";
         /// <summary>
         /// 反转集合
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_REVERSE_COLLECTION, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("ReverseCollection", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_REVERSE_COLLECTION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static object[] reverseCollection(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array)
@@ -886,12 +1219,10 @@ namespace Game
                 return null;
             return array.Reverse().ToArray();
         }
-        [TranslateMsg("编辑器-节点名称")]
-        public const string EDITOR_NODE_NAME_DISTINCT_COLLECTION = "集合去重";
         /// <summary>
         /// 集合去重
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_DISTINCT_COLLECTION, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION)]
+        [KeyBondMethod("Distinct", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_DISTINCT_COLLECTION)]
         [return :ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array distinct(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array)
@@ -901,15 +1232,13 @@ namespace Game
 
             return array.Distinct().ToArray();
         }
-        [TranslateMsg("编辑器-集合相减-参数名称")]
-        public const string EDITOR_PARAM_NAME_EXCEPTED_COLLECTION = "减去的集合";
         /// <summary>
         /// 集合相减
         /// </summary>
         /// <param name="collection"></param>
         /// <param name="elements"></param>
         /// <returns></returns>
-        [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_EXCEPT, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "Except")]
+        [KeyBondMethod("Except", StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_EXCEPT, "Except")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array except(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)] object[] array, 
@@ -923,5 +1252,18 @@ namespace Game
         }
         #endregion
 
+    }
+
+
+
+    /// <summary>
+    /// 用于将过时的MethodActionDefine转换为以内置名为主键的动作定义。
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    public class KeyBondMethodAttribute : ActionNodeMethodAttribute
+    {
+        public KeyBondMethodAttribute(string defineName, string category, string editorName, params string[] obsoleteNames) : base(defineName, category, editorName, obsoleteNames.Append(editorName).ToArray())
+        {
+        }
     }
 }

@@ -34,7 +34,7 @@ namespace Game
         /// <summary>
         /// 该效果
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_THIS_EFFECT, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [KeyBondMethod("ThisEffect", EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_THIS_EFFECT)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)]
         public static IEffect thisEffect(IEffect effect)
         {
@@ -43,7 +43,7 @@ namespace Game
         /// <summary>
         /// 效果具有标签
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_EFFECT_HAS_TAG, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [KeyBondMethod("EffectHasTag", EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_EFFECT_HAS_TAG)]
         public static bool effectHasTag(
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_TAG, isConst: true)] EffectTag tag)
@@ -59,7 +59,7 @@ namespace Game
         /// <summary>
         /// 获取效果属性
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_EFFECT_PROPERTY, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [KeyBondMethod("GetEffectProp", EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_EFFECT_PROPERTY)]
         public static object getEffectProp(
             [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName)
@@ -73,7 +73,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌的所有效果
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ALL_CARD_EFFECTS, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [KeyBondMethod("GetAllCardEffects", EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_CARD_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static IEffect[] getAllCardEffects(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -94,7 +94,7 @@ namespace Game
         /// <summary>
         /// 获取增益的所有效果
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ALL_BUFF_EFFECTS, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [KeyBondMethod("GetAllBuffEffects", EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_BUFF_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static IEffect[] getAllBuffEffects(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
@@ -106,7 +106,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌定义的所有效果
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE_EFFECTS, EDITOR_CATEGORY_NAME_EFFECTS)]
+        [KeyBondMethod("GetAllCardDefineEffects", EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE_EFFECTS)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EFFECT_COLLECTION)]
         public static IEffect[] getAllCardDefineEffects(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)

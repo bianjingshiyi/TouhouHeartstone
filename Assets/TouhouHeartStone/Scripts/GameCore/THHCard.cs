@@ -1496,12 +1496,7 @@ namespace TouhouHeartstone
             return new DefineReference(cardDefine.cardPoolId, cardDefine.getProp<int>(DEFINE.CARD_PROP_SKILL_ID));
         }
         #region 动作定义
-        [ActionNodeMethod("Damage", "Card")]
-        [return: ActionNodeParam("DamageEvent")]
-        public static Task<DamageEventArg> damage(
-            [ActionNodeParam("Card")] this Card card, CardEngine game,
-            [ActionNodeParam("DamageSource")] Card source,
-            [ActionNodeParam("Amount")] int value)
+        public static Task<DamageEventArg> damage(this Card card, CardEngine game, Card source, int value)
         {
             if (card == null || value <= 0)
                 return Task.FromResult<DamageEventArg>(null);

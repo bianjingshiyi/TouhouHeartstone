@@ -1206,14 +1206,6 @@ namespace TouhouHeartstone
                     string.Join(", ", targets.Select(t => t is Card c ? c.getFormatString() : t.ToString()))
                 };
             }
-            [ActionNodeMethod("GetTarget", "Player")]
-            [return: ActionNodeParam("Target")]
-            public static Card getTarget(ActiveEventArg eventArg, [ActionNodeParam("TargetName", true)] string targetName)
-            {
-                if (targetName == "Target")
-                    return (Card)eventArg.targets[0];
-                throw new NotImplementedException();
-            }
             public Player player;
             public Card card;
             public object[] targets;

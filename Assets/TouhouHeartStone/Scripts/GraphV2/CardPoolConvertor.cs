@@ -54,7 +54,7 @@ namespace Game
         {
             if (string.IsNullOrEmpty(name))
                 return null;
-            return defineFinder?.Invoke(name) ?? convertedActionDefines.FirstOrDefault(d => d.defineName == name || (d.obsoleteNames != null && d.obsoleteNames.Contains(name)));
+            return defineFinder?.Invoke(name) ?? convertedActionDefines.FirstOrDefault(d => d.defineName == name || d.editorName == name || (d.obsoleteNames != null && d.obsoleteNames.Contains(name)));
         }
         #region 转换定义
         /// <summary>

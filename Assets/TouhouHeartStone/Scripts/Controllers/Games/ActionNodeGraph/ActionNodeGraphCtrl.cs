@@ -1395,14 +1395,15 @@ namespace Controllers
         }
         private string getActionNodeName(ActionNode actionNode)
         {
-            if (_nameTextDict.TryGetValue(actionNode.defineName, out string text))
+            var define = getActionDefine(actionNode.defineName);
+            if (define == null)
             {
-                return game.lang._(text);
+                Debug.LogWarning("没有找到动作" + actionNode.defineName + "对应的名称");
+                return tryTranslateWithDict(actionNode.defineName);
             }
             else
             {
-                Debug.LogWarning("没有找到动作" + actionNode.defineName + "对应的名称");
-                return game.lang._(actionNode.defineName);
+                return tryTranslateWithDict(define.editorName);
             }
         }
 
@@ -1894,16 +1895,6 @@ namespace Controllers
         const string EDITOR_PARAM_RESULT = "结果";
         [TranslateMsg("节点参数 PropertyName")]
         const string EDITOR_PARAM_PROPERTY_NAME = "属性名";
-        [TranslateMsg("节点参数 RemoveModifierEvent")]
-        const string EDITOR_PARAM_REMOVE_MODIFIER_EVENT = "移除修改器事件";
-        [TranslateMsg("节点参数 isSet")]
-        const string EDITOR_PARAM_IS_SET = "设置";
-        [TranslateMsg("节点参数 VariableName")]
-        const string EDITOR_PARAM_VARIABLE_NAME = "变量名";
-        [TranslateMsg("节点参数 PileName")]
-        const string EDITOR_PARAM_PILE_NAME = "牌堆名";
-        [TranslateMsg("节点参数 IsChanged")]
-        const string EDITOR_PARAM_IS_CHANGED = "是否已改变";
         [TranslateMsg("节点参数 DamageEvent")]
         const string EDITOR_PARAM_DAMAGE_EVENT = "伤害事件";
         [TranslateMsg("节点参数 DamageSource")]
@@ -1912,8 +1903,6 @@ namespace Controllers
         const string EDITOR_PARAM_DAMAGE_AMOUNT = "伤害量";
         [TranslateMsg("节点参数 Target")]
         const string EDITOR_PARAM_TARGET = "目标";
-        [TranslateMsg("节点参数 TargetName")]
-        const string EDITOR_PARAM_TARGET_NAME = "目标名";
         [TranslateMsg("节点参数 TargetBuff")]
         const string EDITOR_PARAM_TARGET_BUFF = "目标增益";
 
@@ -1981,20 +1970,13 @@ namespace Controllers
             { "StringConst", StringTable.EDIOTR_NODE_NAME_STRING_CONST },
             { "BooleanConst", StringTable.EDIOTR_NODE_NAME_BOOLEAN_CONST },
             { "ThisCard", StringTable.EDITOR_NODE_NAME_THIS_CARD },
-            { "GetPile", StringTable.EDITOR_NODE_NAME_GET_PILE },
             { "GetSpellDamage", StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE },
-            { "GetTarget", StringTable.EDITOR_NODE_NAME_GET_TARGET },
-            { "IsPlayerPileChanged", StringTable.EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED },
             { "GetOwner", StringTable.EDITOR_NODE_NAME_GET_OWNER },
-            { "AddIntModifier", StringTable.EDITOR_NODE_NAME_ADD_INT_MODIFIER },
-            { "RemoveModifier", StringTable.EDITOR_NODE_NAME_REMOVE_MODIFIER },
             { "GetProperty", StringTable.EDITOR_NODE_NAME_GET_PROPERTY },
             { "SetProperty", StringTable.EDITOR_NODE_NAME_SET_PROPERTY },
             { "GetUniquePropertyName", StringTable.EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME },
             { "Damage", StringTable.EDITOR_NODE_NAME_DAMAGE },
             { "SetIntPropModifierValue", StringTable.EDITOR_NODE_NAME_SET_INT_PROP_MODIFIER_VALUE },
-            { "GetVariable", StringTable.EDITOR_NODE_NAME_GET_VARIABLE },
-            { "SetVariable", StringTable.EDITOR_NODE_NAME_SET_VARIABLE },
             { "GetCount", StringTable.EDITOR_NODE_NAME_GET_COUNT },
             { "GeneratedEffectData", EDITOR_NODE_NAME_GENERATED_EFFECT_DATA },
             { "EventEffectData", EDITOR_NODE_NAME_EVENT_EFFECT_DATA },
@@ -2006,16 +1988,11 @@ namespace Controllers
             { "result", EDITOR_PARAM_RESULT },
             { "PropertyName", EDITOR_PARAM_PROPERTY_NAME },
             { "RemoveModifierEvent", EDITOR_PARAM_PROPERTY_NAME },
-            { "VariableName", EDITOR_PARAM_VARIABLE_NAME },
-            { "isSet", EDITOR_PARAM_IS_SET },
             { "Collection", StringTable.EDITOR_PARAM_NAME_COLLECTION },
-            { "PileName", EDITOR_PARAM_PILE_NAME },
-            { "IsChanged", EDITOR_PARAM_IS_CHANGED },
             { "DamageEvent", EDITOR_PARAM_DAMAGE_EVENT },
             { "DamageSource", EDITOR_PARAM_DAMAGE_SOURCE },
             { "Amount", EDITOR_PARAM_DAMAGE_AMOUNT },
             { "Target", EDITOR_PARAM_TARGET },
-            { "TargetName", EDITOR_PARAM_TARGET_NAME },
             { "EnableAction", StringTable.EDITOR_EFFECT_PROP_NAME_ON_ENABLE_ACTION },
             { "DisableAction", StringTable.EDITOR_EFFECT_PROP_NAME_ON_DISABLE_ACTION },
             { "Buff", StringTable.EDITOR_PARAM_NAME_BUFF },

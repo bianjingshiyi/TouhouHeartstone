@@ -66,7 +66,7 @@ namespace Game
 
             var doc = comments[id];
             string str = "";
-            str += lang._(TitleTemplate, lang._(doc.defineName)); // 标题
+            str += lang._(TitleTemplate, lang._(doc.editorName ?? doc.defineName)); // 标题
             if (!string.IsNullOrEmpty(doc.category))
                 str += lang._(CategoryTemplate, lang._(doc.category)); // 分类
             if (doc.obsoleteMsg != null)
@@ -162,6 +162,12 @@ namespace Game
         /// </summary>
         [XmlArray]
         public string[] obsoleteNames;
+
+        /// <summary>
+        /// 编辑器名称
+        /// </summary>
+        public string editorName;
+
         /// <summary>
         /// 节点过期提示。不为null则说明过期
         /// </summary>
@@ -235,6 +241,7 @@ namespace Game
         public void Update(ActionDefine act)
         {
             defineName = act.defineName;
+            editorName = act.editorName;
             obsoleteNames = act.obsoleteNames;
             obsoleteMsg = act.obsoleteMsg;
 

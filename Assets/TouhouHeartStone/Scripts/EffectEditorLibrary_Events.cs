@@ -18,19 +18,36 @@ namespace Game
         [TranslateMsg("编辑器/参数名称")]
         public const string EDITOR_PARAM_NAME_VARIABLE_NAME = "变量名";
 
-        #region 事件
+        [TranslateMsg("编辑器/事件_集合名称")]
+        public const string EDITOR_NODE_EVENT = "事件";
         [TranslateMsg("编辑器/事件_当前事件_节点名称")]
         public const string EDITOR_NODE_EVENT_THIS_EVENT = "当前事件";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_THIS_EVENT, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT)]
+        [TranslateMsg("编辑器/事件_阻止事件_节点名称")]
+        public const string EDITOR_NODE_EVENT_STOP_EVENT = "阻止事件";
+        [TranslateMsg("编辑器/事件_更改攻击目标_节点名称")]
+        public const string EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET = "更改攻击目标";
+        [TranslateMsg("编辑器/事件_更改使用目标_节点名称")]
+        public const string EDITOR_NODE_EVENT_CHANGE_USE_TARGET = "更改使用目标";
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET = "伤害/更改受伤卡牌";
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE = "伤害/更改伤害源";
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE = "伤害/更改伤害值";
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE = "治疗/更改治疗值";
+
+
+        #region 事件
+
+        [KeyBondMethod("ThisEvent", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_THIS_EVENT)]
+        [return: ActionNodeParam(EDITOR_NODE_EVENT)]
         public static EventArg thisEvent(EventArg eventArg)
         {
             return eventArg;
         }
 
-        [TranslateMsg("编辑器/事件_获取变量_节点名称")]
-        public const string EDITOR_NODE_EVENT_GET_VARIABLE = "获取变量";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_GET_VARIABLE, StringTable.EDITOR_NODE_CATEGORY_EVENT, "GetVariable")]
+        [KeyBondMethod("GetEventVariable", EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_GET_VARIABLE, "GetVariable")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getVariable(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
@@ -38,9 +55,8 @@ namespace Game
         {
             return eventArg.getVar(varName);
         }
-        [TranslateMsg("编辑器/事件_设置变量_节点名称")]
-        public const string EDITOR_NODE_EVENT_SET_VARIABLE = "设置变量";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_SET_VARIABLE, StringTable.EDITOR_NODE_CATEGORY_EVENT, "SetVariable")]
+
+        [KeyBondMethod("SetEventVariable", EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
         public static void setVariable(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] string varName,
@@ -49,9 +65,7 @@ namespace Game
             eventArg.setVar(varName, value);
         }
 
-        [TranslateMsg("编辑器/事件_阻止事件_节点名称")]
-        public const string EDITOR_NODE_EVENT_STOP_EVENT = "阻止事件";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_STOP_EVENT, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
+        [KeyBondMethod("StopEvent", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_STOP_EVENT)]
         public static void stopEvent(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
         {
@@ -60,10 +74,7 @@ namespace Game
             eventArg.isCanceled = true;
         }
 
-
-        [TranslateMsg("编辑器/事件_更改攻击目标_节点名称")]
-        public const string EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET = "更改攻击目标";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
+        [KeyBondMethod("ChangeAttackTarget", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET)]
         public static void changeAttackTarget(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card target)
@@ -73,9 +84,7 @@ namespace Game
                 attackArg.target = target;
             }
         }
-        [TranslateMsg("编辑器/事件_更改使用目标_节点名称")]
-        public const string EDITOR_NODE_EVENT_CHANGE_USE_TARGET = "更改使用目标";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_CHANGE_USE_TARGET, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
+        [KeyBondMethod("ChangeUseTarget", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_USE_TARGET)]
         public static void changeUseTargets(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
@@ -84,9 +93,7 @@ namespace Game
                 eventArg.setVar(EVENTVAR.TARGETS, target);
         }
 
-        [TranslateMsg("编辑器/事件-节点名称")]
-        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET = "伤害/更改受伤卡牌";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
+        [KeyBondMethod("DamageEvent.ChangeTarget", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET)]
         public static void damageEvent_changeTarget(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card target)
@@ -96,9 +103,7 @@ namespace Game
                 damageArg.target = target;
             }
         }
-        [TranslateMsg("编辑器/事件-节点名称")]
-        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE = "伤害/更改伤害源";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
+        [KeyBondMethod("DamageEvent.ChangeSource", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE)]
         public static void damageEvent_changeSource(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card source)
@@ -108,9 +113,7 @@ namespace Game
                 damageArg.source = source;
             }
         }
-        [TranslateMsg("编辑器/事件-节点名称")]
-        public const string EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE = "伤害/更改伤害值";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
+        [KeyBondMethod("DamageEvent.ChangeValue", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE)]
         public static void damageEvent_changeValue(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
@@ -121,9 +124,7 @@ namespace Game
             }
         }
 
-        [TranslateMsg("编辑器/事件-节点名称")]
-        public const string EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE = "治疗/更改治疗值";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
+        [KeyBondMethod("HealEvent.ChangeValue", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE)]
         public static void healEvent_changeValue(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)

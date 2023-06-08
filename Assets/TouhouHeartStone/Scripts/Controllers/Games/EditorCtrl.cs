@@ -554,7 +554,7 @@ namespace Controllers
                 else if (actionId != 0)
                 {
                     var actionDefine = game.card.getActionDefine(cardPoolRef.cardPoolId, actionId);
-                    string actionName = actionDefine?.defineName ?? EDITOR_UNKNOWN_ACTION_NAME;
+                    string actionName = actionDefine?.editorName ?? EDITOR_UNKNOWN_ACTION_NAME;
                     descs.Add(actionName);
                 }
             }

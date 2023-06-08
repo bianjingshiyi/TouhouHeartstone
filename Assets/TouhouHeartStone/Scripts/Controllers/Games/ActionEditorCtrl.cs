@@ -22,7 +22,7 @@ namespace Controllers
             _cardPoolId = cardPoolId;
             _actionDefine = actionDefine;
 
-            _ui.setName(actionDefine.defineName);
+            _ui.setName(actionDefine.editorName);
 
             _ui.setCategory(actionDefine.category);
 

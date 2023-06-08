@@ -23,16 +23,27 @@ namespace Game
 
         [TranslateMsg("编辑器/事件记录_获取当前回合数_节点名称")]
         public const string EDITOR_NODE_EVENT_GET_TURN_COUNT = "获取当前回合数";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_GET_TURN_COUNT, EDITOR_TYPE_NAME_EVENT_RECORD)]
+        [TranslateMsg("编辑器/事件记录_获取变量_节点名称")]
+        public const string EDITOR_NODE_EVENT_RECORD_GET_VARIABLE = "获取事件记录变量";
+        [TranslateMsg("编辑器/事件记录_事件记录类型判断_节点名称")]
+        public const string EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE = "事件记录类型判断";
+        [TranslateMsg("编辑器/事件记录_获取本局游戏事件记录_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_GAME = "获取本局游戏事件记录";
+        [TranslateMsg("编辑器/事件记录_获取本回合事件记录_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_TURN = "获取本回合事件记录";
+        [TranslateMsg("编辑器/事件记录_获取前X-Y回合内的事件记录_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE = "获取前X-Y回合内的事件记录";
+        [TranslateMsg("编辑器/事件记录_获取卡牌在某事件时的快照_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT = "获取卡牌在某事件时的快照";
+
+        [KeyBondMethod("GetTurnCount", EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_TURN_COUNT)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
         public static int getTurnCount(CardEngine game)
         {
             return game.getTurnCount();
         }
 
-        [TranslateMsg("编辑器/事件记录_获取变量_节点名称")]
-        public const string EDITOR_NODE_EVENT_RECORD_GET_VARIABLE = "获取事件记录变量";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_RECORD_GET_VARIABLE, EDITOR_TYPE_NAME_EVENT_RECORD)]
+        [KeyBondMethod("GetEventRecordVariable", EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_RECORD_GET_VARIABLE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getRecordVariable(CardEngine game,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record,
@@ -49,9 +60,7 @@ namespace Game
             }
             return value;
         }
-        [TranslateMsg("编辑器/事件记录_事件记录类型判断_节点名称")]
-        public const string EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE = "事件记录类型判断";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE, EDITOR_TYPE_NAME_EVENT_RECORD)]
+        [KeyBondMethod("CheckEventRecordType", EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEventRecordType(CardEngine game,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord evt,
@@ -63,28 +72,22 @@ namespace Game
                 return true;
             return false;
         }
-        [TranslateMsg("编辑器/事件记录_获取本局游戏事件记录_节点名称")]
-        public const string EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_GAME = "获取本局游戏事件记录";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_GAME, EDITOR_TYPE_NAME_EVENT_RECORD)]
+        [KeyBondMethod("GetEventRecordsThisGame", EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_GAME)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsThisGame(CardEngine game)
         {
             return game.triggers.getEventRecords().ToArray();
         }
 
-
-        [TranslateMsg("编辑器/事件记录_获取本回合事件记录_节点名称")]
-        public const string EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_TURN = "获取本回合事件记录";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_TURN, EDITOR_TYPE_NAME_EVENT_RECORD)]
+        [KeyBondMethod("GetEventRecordsThisTurn", EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_THIS_TURN)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsThisTurn(CardEngine game)
         {
             return getEventRecordsInTurnsBefore(game, 0, 0);
         }
 
-        [TranslateMsg("编辑器/事件记录_获取前X-Y回合内的事件记录_节点名称")]
-        public const string EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE = "获取前X-Y回合内的事件记录";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE, EDITOR_TYPE_NAME_EVENT_RECORD)]
+
+        [KeyBondMethod("GetEventRecordsInTurnsBefore", EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsInTurnsBefore(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE)] int farther,
@@ -109,9 +112,7 @@ namespace Game
         }
 
 
-        [TranslateMsg("编辑器/事件记录_获取卡牌在某事件时的快照_节点名称")]
-        public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT = "获取卡牌在某事件时的快照";
-        [ActionNodeMethod(EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT, EDITOR_TYPE_NAME_EVENT_RECORD)]
+        [KeyBondMethod("GetCardSnapshotOfEvent", EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT)]
         [return: ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)]
         public static CardSnapshot getSnapshotOfCardAfterEvent(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,

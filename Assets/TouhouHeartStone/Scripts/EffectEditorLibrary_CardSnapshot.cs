@@ -45,7 +45,7 @@ namespace Game
         /// </summary>
         /// <param name="card">卡牌快照</param>
         /// <returns>bool,对应卡牌</returns>
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_CARD, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardOfCardSnapshot", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card getCardOfCardSnapshot(
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
@@ -59,7 +59,7 @@ namespace Game
         /// </summary>
         /// <param name="card">卡牌快照</param>
         /// <returns>卡牌定义</returns>
-        [ActionNodeMethod(EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_CARD_DEFINE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardDefineOfCardSnapshot", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_GET_CARD_SNAPSHOT_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefineOfCardSnapshot(
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
@@ -74,7 +74,7 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ActionNodeMethod(EDITOR_NAME_NODE_IS_CARD_SNAPSHOT_TYPE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("CheckCardSnapshotType", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NAME_NODE_IS_CARD_SNAPSHOT_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsTypeOfCardSnapshot(
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card,
@@ -102,7 +102,7 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_KEYWORDS, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("CardSnapshotHasKeywords", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_KEYWORDS)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool CardSnapshotHasKeywords(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card,
@@ -115,7 +115,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌快照属性
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_PROPERTY, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardSnapshotProp", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_PROPERTY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getCardSnapshotProp(
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card,
@@ -126,7 +126,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌快照花费
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_COST, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardSnapshotCost", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_COST)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCardSnapshotCost(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
@@ -138,9 +138,9 @@ namespace Game
         /// <summary>
         /// 获取卡牌快照攻击力
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_ATTACK, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardSnapshotAttack", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_ATTACK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static int getAttack(CardEngine game,
+        public static int getCardSnapshotAttack(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
         {
             if (card == null)
@@ -150,9 +150,9 @@ namespace Game
         /// <summary>
         /// 获取卡牌快照最大生命值
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_MAX_LIFE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardSnapshotMaxLife", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_MAX_LIFE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static int getMaxLife(CardEngine game,
+        public static int getCardSnapshotMaxLife(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
         {
             if (card == null)
@@ -162,9 +162,9 @@ namespace Game
         /// <summary>
         /// 获取卡牌快照当前生命值
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_CURRENT_LIFE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardSnapshotLife", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_CURRENT_LIFE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static int getLife(CardEngine game,
+        public static int getCardSnapshotLife(CardEngine game,
            [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
         {
             if (card == null)
@@ -172,18 +172,18 @@ namespace Game
             return card.getCurrentLife(game);
         }
 
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_OWNER, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardSnapshotOwner", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_OWNER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
-        public static Player getOwner([ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
+        public static Player getCardSnapshotOwner([ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
         {
             return card?.owner;
         }
         /// <summary>
         /// 获取卡牌快照护甲
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_ARMOR, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardSnapshotArmor", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_GET_ARMOR)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static int getArmor(CardEngine game,
+        public static int getCardSnapshotArmor(CardEngine game,
            [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
         {
             if (card == null)
@@ -194,7 +194,7 @@ namespace Game
         /// <summary>
         /// 是否已蓄力
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_CARD_SNAPSHOT_IS_CHARGED, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("IsCardSnapshotCharged", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_CARD_SNAPSHOT_IS_CHARGED)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_IS_CHARGED)]
         public static bool isCardSnapshotCharged(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
@@ -207,7 +207,7 @@ namespace Game
         /// <summary>
         /// 获取蓄力层数
         /// </summary>
-        [ActionNodeMethod(EDITOR_NODE_CARD_SNAPSHOT_GET_CHARGED_LEVEL, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("GetCardSnapshotChargedLevel", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_CARD_SNAPSHOT_GET_CHARGED_LEVEL)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_CHARGED_LEVEL)]
         public static int getCardSnapshotChargedLevel(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
@@ -221,7 +221,7 @@ namespace Game
         /// </summary>
         /// <param name="card">卡牌快照</param>
         /// <returns>卡牌定义</returns>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_BATTLECRY, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("DoesCardSnapshotHaveBattlecry", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_BATTLECRY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool cardSnapshotHasBattlecry(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
@@ -235,7 +235,7 @@ namespace Game
         /// </summary>
         /// <param name="card">卡牌快照</param>
         /// <returns>卡牌定义</returns>
-        [ActionNodeMethod(EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_DEATHRATTLE, EDITOR_NODE_CATEGORY_CARD_SNAPSHOT)]
+        [KeyBondMethod("DoesCardSnapshotHaveDeathrattle", EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_DEATHRATTLE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool cardSnapshotHasDeathrattle(CardEngine game,
             [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot card)
