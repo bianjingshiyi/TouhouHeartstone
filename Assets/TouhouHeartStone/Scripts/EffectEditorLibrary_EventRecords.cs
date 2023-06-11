@@ -14,10 +14,6 @@ namespace Game
         public const string EDITOR_TYPE_NAME_EVENT_RECORD = "事件记录";
         [TranslateMsg("编辑器/事件记录_参数名称")]
         public const string EDITOR_TYPE_NAME_EVENT_TYPE = "事件类型";
-        [TranslateMsg("编辑器/事件记录_X回合开始_参数名称")]
-        public const string EDITOR_PARAM_NAME_TURN_COUNT_START = "X回合开始";
-        [TranslateMsg("编辑器/事件记录_Y回合结束_参数名称")]
-        public const string EDITOR_PARAM_NAME_TURN_COUNT_END = "Y回合结束";
         [TranslateMsg("编辑器/事件记录_前X回合开始_参数名称")]
         public const string EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE = "前X回合开始";
         [TranslateMsg("编辑器/事件记录_前Y回合结束_参数名称")]
@@ -91,8 +87,8 @@ namespace Game
         [ActionNodeMethod(EDITOR_NODE_EVENT_GET_EVENT_RECORDS_IN_TURNS_BEFORE, EDITOR_TYPE_NAME_EVENT_RECORD)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT_RECORDS)]
         public static EventRecord[] getEventRecordsInTurnsBefore(CardEngine game,
-            [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE)] int start,
-            [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_END_BEFORE)] int end)
+            [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_START_BEFORE)] int farther,
+            [ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT_END_BEFORE)] int nearer)
         {
             var records = game.triggers.getEventRecords();
             var results = new List<EventRecord>();
@@ -100,9 +96,9 @@ namespace Game
             for (int i = records.Length - 1; i >= 0; i--)
             {
                 var record = records[i];
-                if (turnBeforeCount >= start)
+                if (turnBeforeCount >= nearer)
                     results.Insert(0, record);
-                if (turnBeforeCount > end)
+                if (turnBeforeCount > farther)
                     break;
                 if (record.eventArg is HearthStoneRule.TurnStartEventArg)
                 {

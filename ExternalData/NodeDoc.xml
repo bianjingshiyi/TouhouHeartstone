@@ -5569,11 +5569,11 @@
         <name>前X回合开始</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[距离本回合的最小距离。
+        <summary><![CDATA[距离本回合的最大距离。
           <ul>
-            <li>X=0：从现在开始。</li>
-            <li>X=1：从你对手的上个回合结束时开始。</li>
-            <li>X=2：从你的上个回合结束时开始。</li>
+            <li>Y=0：从本回合开始时开始。</li>
+            <li>Y=1：从你对手的上个回合开始时开始。</li>
+            <li>Y=2：从你的上个回合开始时开始。</li>
             <li>...</li>
           </ul>]]></summary>
       </ActionParameterComment>
@@ -5582,11 +5582,11 @@
         <name>前Y回合结束</name>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[距离本回合的最大距离。
+        <summary><![CDATA[距离本回合的最小距离。
           <ul>
-            <li>Y=0：到本回合开始时结束。</li>
-            <li>Y=1：到你对手的上个回合开始时结束。</li>
-            <li>Y=2：到你的上个回合开始时结束。</li>
+            <li>X=0：到现在结束。</li>
+            <li>X=1：到你对手的上个回合结束时结束。</li>
+            <li>X=2：到你的上个回合结束时结束。</li>
             <li>...</li>
           </ul>]]></summary>
       </ActionParameterComment>
@@ -5601,7 +5601,7 @@
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[获取<b>前</b>X-Y回合内所有发生过的事件。<br>X必须小于或等于Y。]]></summary>
+    <summary><![CDATA[获取<b>前</b>X-Y回合内所有发生过的事件。<br>X必须大于或等于Y。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
