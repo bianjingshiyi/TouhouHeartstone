@@ -11,7 +11,6 @@ using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.UI;
 using MukioI18n;
-using TouhouCardEngine.Interfaces;
 
 namespace Controllers
 {
@@ -916,10 +915,12 @@ namespace Controllers
         public void MarkCardUnsaved()
         {
             hasUnsavedChanges = true;
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
         }
         public void ClearCardUnsaved()
         {
             hasUnsavedChanges = false;
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
         }
 
         public static (string name, string value)[] getKeywords()
@@ -1115,6 +1116,8 @@ namespace Controllers
         GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
 
+        [TranslateMsg("卡牌编辑器/标题")]
+        public const string CARD_EDITOR_TITLE = "卡牌编辑器";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的警告")]
         public const string CARD_WARNING_UNSAVED_CHANGES = "是否将更改保存到该卡牌中？";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的按钮名称")]

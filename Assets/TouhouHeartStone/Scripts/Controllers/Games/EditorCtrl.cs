@@ -23,7 +23,6 @@ namespace Controllers
             //切换模式
             if (switchToView)
             {
-                hasUnsavedChanges = false;
                 //牌库浏览模式
                 if (reloadCardPoolInfos)
                 {
@@ -31,6 +30,7 @@ namespace Controllers
                     await getCardPoolsInfoAsync();
                 }
                 gameObject.SetActive(true);
+                hasUnsavedChanges = false;
                 _ui.setDeckListActive(true);
                 _ui.setEditDeckPanelActive(false);
                 await _cardPoolViewPanelCtrl.hide();
@@ -148,6 +148,10 @@ namespace Controllers
             if (_stack.Count == 0)
                 return null;
             return _stack.Peek();
+        }
+        public string getTitleText(bool unsaved, string title)
+        {
+            return game.lang._(EDITOR_TITLE_TEMPLATE, title, unsaved ? game.lang._(EDITOR_UNSAVED_MARK) : string.Empty);
         }
         #endregion
         #region 私有方法
@@ -650,12 +654,22 @@ namespace Controllers
         public const string EDITOR_OPTION_DONT_SAVE = "不保存";
         [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
         public const string EDITOR_OPTION_CANCEL = "取消";
+        [TranslateMsg("编辑器/标题模板，{0}为编辑器名称，{1}为未保存标识（星号）")]
+        public const string EDITOR_TITLE_TEMPLATE = "· {0}{1} ·";
+        [TranslateMsg("编辑器/未保存标识（星号）")]
+        public const string EDITOR_UNSAVED_MARK = "*";
+        [TranslateMsg("卡池编辑器/标题")]
+        public const string EDITOR_TITLE = "卡牌编辑器";
 
 
         public bool hasUnsavedChanges
         {
             get { return _hasUnsavedChanges; }
-            set { _hasUnsavedChanges = value; }
+            set 
+            {
+                _hasUnsavedChanges = value;
+                _ui.setTitleText(getTitleText(value, game.lang._(EDITOR_TITLE)));
+            }
         }
         public string nodeClipboard { get; set; }
         public GraphOperationMode graphOperationMode { get; set; }

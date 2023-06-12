@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
-using BJSYGameCore;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
-using UnityEngine;
 using UI;
-using System.Linq;
+using UnityEngine;
 
 namespace Controllers
 {
@@ -46,10 +45,12 @@ namespace Controllers
         public void markActionUnsaved()
         {
             hasUnsavedChanges = true;
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(ACTION_EDITOR_TITLE)));
         }
         public void clearActionUnsaved()
         {
             hasUnsavedChanges = false;
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(ACTION_EDITOR_TITLE)));
         }
         #endregion
         #region 私有方法
@@ -414,6 +415,8 @@ namespace Controllers
         GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
 
+        [TranslateMsg("动作编辑器/标题")]
+        public const string ACTION_EDITOR_TITLE = "动作编辑器";
         [TranslateMsg("动作编辑器/添加变量对话框/标题")]
         public const string ACTION_NEW_INPUT_DIALOG_TITLE = "添加输入变量";
         [TranslateMsg("动作编辑器/添加变量对话框/标题")]

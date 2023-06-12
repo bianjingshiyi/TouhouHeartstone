@@ -10,6 +10,10 @@ namespace UI
 {
     class EditorPanel : CardViewPanel
     {
+        public void setTitleText(string text)
+        {
+            _editorTitle.text = text;
+        }
         #region 私有方法
         #region 生命周期
         protected override void Awake()
@@ -41,6 +45,8 @@ namespace UI
         public event Action onClickImportCardPoolButton;
         #endregion
         #region 属性字段
+        [SerializeField]
+        Text _editorTitle;
         [SerializeField]
         Button _newCardButton;
         [SerializeField]

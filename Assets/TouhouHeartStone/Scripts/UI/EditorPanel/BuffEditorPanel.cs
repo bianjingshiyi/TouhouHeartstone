@@ -11,6 +11,10 @@ namespace UI
     public class BuffEditorPanel : MonoBehaviour
     {
         #region 公有方法
+        public void setTitleText(string title)
+        {
+            _editorTitle.text = title;
+        }
         /// <summary>
         /// 设置增益的图片。
         /// </summary>
@@ -405,6 +409,8 @@ namespace UI
         #endregion
 
         #region 属性字段
+        [SerializeField]
+        Text _editorTitle;
         [SerializeField]
         Text _idText;
         [SerializeField]

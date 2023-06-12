@@ -9,6 +9,10 @@ namespace UI
     public class ActionEditorPanel : MonoBehaviour
     {
         #region 公有方法
+        public void setTitleText(string title)
+        {
+            _editorTitle.text = title;
+        }
         #region 基础
         public void setName(string name)
         {
@@ -282,6 +286,8 @@ namespace UI
 
         #region 属性字段
 
+        [SerializeField]
+        Text _editorTitle;
         [Header("Generic")]
         [SerializeField]
         Button _deleteCardButton;

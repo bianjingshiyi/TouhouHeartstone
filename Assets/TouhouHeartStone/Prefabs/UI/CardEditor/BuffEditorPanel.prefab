@@ -1,5 +1,17 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &3034024880872989033 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4960079356740457542, guid: f0f75289f42c2634ea872f3f76135178,
+    type: 3}
+  m_PrefabInstance: {fileID: 7984521949753832751}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &186867833846136868 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2818862999857936689, guid: 06ad3d60619562b46ab4f6f5164aaa31,
@@ -3927,6 +3939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c35f6019c9b6e2d47939b4548b5b1e77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _editorTitle: {fileID: 3034024880872989033}
   _idText: {fileID: 7489744417525806828}
   _editBuffImageButton: {fileID: 5495673235077670168}
   _buffImage: {fileID: 1711451660989035970}

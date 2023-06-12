@@ -628,10 +628,12 @@ namespace Controllers
         public void markBuffUnsaved()
         {
             hasUnsavedChanges = true;
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
         }
         public void clearBuffUnsaved()
         {
             hasUnsavedChanges = false;
+            _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
         }
 
         BuffEditorPanel _ui;
@@ -644,6 +646,8 @@ namespace Controllers
         [SerializeField]
         GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
+        [TranslateMsg("增益编辑器/标题")]
+        public const string BUFF_EDITOR_TITLE = "增益编辑器";
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的警告")]
         public const string BUFF_WARNING_UNSAVED_CHANGES = "是否将更改保存到该增益中？";
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]

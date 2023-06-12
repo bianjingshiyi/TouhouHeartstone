@@ -15,6 +15,10 @@ namespace UI
 {
     public class CardEditorPanel : MonoBehaviour
     {
+        public void setTitleText(string title)
+        {
+            _editorTitle.text = title;
+        }
         public void setId(int id)
         {
             _idText.text = id.ToString();
@@ -890,6 +894,9 @@ namespace UI
 
         #endregion
         public Card card => _card;
+        [SerializeField]
+        Text _editorTitle;
+        [Header("编辑内容")]
         [SerializeField]
         Card _card;
         [SerializeField]
