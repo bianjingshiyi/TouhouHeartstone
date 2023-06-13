@@ -324,14 +324,22 @@ namespace Controllers
         }
         #endregion
 
-        private async void onClickDeleteCardButton()
+        private void onClickDeleteCardButton()
         {
-            scene.editor.hasUnsavedChanges = true;
-            //删除当前卡牌
-            game.card.removeBuffDefine(_cardPoolId, _buffDefine);
-            //返回上个界面
-            await scene.editor.closeEditorPanel();
-            clearBuffUnsaved();
+            //询问玩家
+            game.ui.dialog.ShowQuestion(
+               game.langManager.getString(StringTable.WARNING),
+               game.langManager.getString(EDITOR_WARNING_DELETE_BUFF),
+               async () =>
+               {
+                   //删除当前增益
+                   game.card.removeBuffDefine(_cardPoolId, _buffDefine.id);
+                   game.card.removeAllBuffSkins(_cardPoolId, _buffDefine.id);
+                   //返回上个界面
+                   await scene.editor.closeEditorPanel();
+                   scene.editor.hasUnsavedChanges = true;
+                   clearBuffUnsaved();
+               });
         }
         private void onClickSaveButton()
         {
@@ -646,6 +654,8 @@ namespace Controllers
         [SerializeField]
         GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
+        [TranslateMsg("尝试删除增益的警告")]
+        public const string EDITOR_WARNING_DELETE_BUFF = "确认要删除这个增益吗？";
         [TranslateMsg("增益编辑器/标题")]
         public const string BUFF_EDITOR_TITLE = "增益编辑器";
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的警告")]

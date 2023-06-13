@@ -486,12 +486,19 @@ namespace Controllers
 
         private async void onClickDeleteCardButton()
         {
-            scene.editor.hasUnsavedChanges = true;
-            //删除当前卡牌
-            game.card.removeCard(_cardDefine);
-            //返回上个界面
-            await scene.editor.closeEditorPanel();
-            ClearCardUnsaved();
+            //询问玩家
+            game.ui.dialog.ShowQuestion(
+               game.langManager.getString(StringTable.WARNING),
+               game.langManager.getString(EDITOR_WARNING_DELETE_CARD),
+               async () =>
+               {
+                   //删除当前卡牌
+                   game.card.removeCard(_cardDefine);
+                   //返回上个界面
+                   await scene.editor.closeEditorPanel();
+                   scene.editor.hasUnsavedChanges = true;
+                   ClearCardUnsaved();
+               });
         }
         private void onClickSaveButton()
         {
@@ -1116,6 +1123,8 @@ namespace Controllers
         GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
 
+        [TranslateMsg("尝试删除卡牌的警告")]
+        public const string EDITOR_WARNING_DELETE_CARD = "确认要删除这张卡牌吗？";
         [TranslateMsg("卡牌编辑器/标题")]
         public const string CARD_EDITOR_TITLE = "卡牌编辑器";
         [TranslateMsg("尝试退出一张卡牌的编辑页面，但没有保存情况下的警告")]

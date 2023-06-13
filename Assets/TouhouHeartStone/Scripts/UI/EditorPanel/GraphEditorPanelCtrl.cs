@@ -247,6 +247,7 @@ namespace UI
                 var node = await _actionGraphCtrl.createNode(_dragNode, pos);
                 if (node != null)
                     _actionGraphCtrl.moveNodeToFreePosition(node);
+                _actionGraphCtrl.OnEdited();
             }
             //重置状态字段
             _dragNode = null;
@@ -280,6 +281,7 @@ namespace UI
             var node = await _actionGraphCtrl.createNode(define, pos);
             if (node != null)
                 _actionGraphCtrl.moveNodeToFreePosition(node);
+            _actionGraphCtrl.OnEdited();
         }
         private void onCategoryFilterEndEdit(string value)
         {

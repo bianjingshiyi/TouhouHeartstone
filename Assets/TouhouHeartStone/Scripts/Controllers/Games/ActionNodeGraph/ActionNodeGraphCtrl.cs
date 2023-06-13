@@ -86,6 +86,13 @@ namespace Controllers
         {
             return _ui.getViewCenterPosition();
         }
+        /// <summary>
+        /// 进行效果修改后将编辑器的未保存状态设置为true。
+        /// </summary>
+        public void OnEdited()
+        {
+            OnGraphEdited?.Invoke();
+        }
         #region 操作模式
         public void SetOperationMode(GraphOperationMode mode) 
         {
@@ -161,6 +168,8 @@ namespace Controllers
         }
         public void deleteSelection()
         {
+            _curEditNode = null;
+            OnEdited();
             var selectedNodes = _ui.getSelectedNodes().Select(n => getActionNode(n)).Where(n => CanNodeBeDeleted(n));
             if (selectedNodes.Count() <= 0)
                 return;
@@ -223,10 +232,6 @@ namespace Controllers
         public Task<ActionNodeItem> createActionNode(ActionDefine actionDefine, Vector2 pos)
         {
             return createActionNode(actionDefine, pos.x, pos.y);
-        }
-        public Task<ActionNodeItem> createActionNodeAtCurPos(ActionDefine actionDefine)
-        {
-            return createActionNode(actionDefine, _curPosX, _curPosY);
         }
         public ActionNodeItem createEventEntryNode(EventDefine eventDefine, float x, float y, bool showErrorTip = true)
         {
@@ -342,13 +347,6 @@ namespace Controllers
         }
         #endregion
         #region 事件回调
-        /// <summary>
-        /// 进行效果修改后将编辑器的未保存状态设置为true。
-        /// </summary>
-        private void OnEdited()
-        {
-            OnGraphEdited?.Invoke();
-        }
         /// <summary>
         /// 当用户连接节点，检查一下连接的合法性，如果合法那么连接，否则提示。
         /// </summary>
@@ -698,19 +696,23 @@ namespace Controllers
                 GeneratedBuffDefine generatedBuffDefine = null;
                 BuffSkin buffSkin = null;
                 string constName = GetBuffDefineAction.constName;
-                if (actionNode.consts == null || actionNode.consts.Count < 1)
+                if (actionNode.consts == null || actionNode.consts.Count < 1 || !tryGetBuffDefine(actionNode.getConst(constName), out GeneratedBuffDefine buffDefine))
                 {
-                    //节点没有增益，那么就为它新建一个
-                    generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
-                    game.card.addBuffDefine(_curCardPoolId, generatedBuffDefine);
+                    // 节点没有增益引用，或者找不到对应的增益
+                    var localRef = game.card.getLocalCardPoolReference(_curCardPoolId);
+                    var poolBuffs = game.card.getBuffDefines(localRef);
+                    if (poolBuffs.Count <= 0) //卡池内没有任何增益
+                    {
+                        // 新建一个。
+                        generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
+                        game.card.addBuffDefine(_curCardPoolId, generatedBuffDefine);
+                    }
+                    else
+                    {
+                        // 设置为卡池内的第一个增益。
+                        generatedBuffDefine = poolBuffs.Values.OfType<GeneratedBuffDefine>().FirstOrDefault(b => b != null);
+                    }
                     actionNode.setConst(constName, new DefineReference(generatedBuffDefine.cardPoolId, generatedBuffDefine.id));
-                }
-                else if (!tryGetBuffDefine(actionNode.getConst(constName), out GeneratedBuffDefine buffDefine))
-                {
-                    //读到了增益id，但是查无此增益，那么重新创建一个
-                    generatedBuffDefine = game.card.createBuffDefine(_curCardPoolId);
-                    game.card.addBuffDefine(_curCardPoolId, generatedBuffDefine);
-                    actionNode.setConst(constName, new DefineReference(_curCardPoolId, generatedBuffDefine.id));
                 }
                 else
                 {
