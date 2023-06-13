@@ -29,7 +29,7 @@ namespace UI
             this.m_as_ScrollRect = this.GetComponent<ScrollRect>();
             this._ViewportMask = this.transform.Find("Viewport").GetComponent<Mask>();
             this._LogList = this.transform.Find("Viewport").Find("LogList").GetComponent<LogList>();
-            this._LogInfoHorizantal = this.transform.Find("LogInfoHorizantal").GetComponent<LogInfoHorizantal>();
+            // this._LogInfoHorizantal = this.transform.Find("LogInfoHorizantal").GetComponent<LogInfoHorizantal>();
         }
         [SerializeField()]
         private Image m_as_Image;
