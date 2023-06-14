@@ -358,7 +358,15 @@ namespace UI
         }
         private string getNodeDefineName(NodeDefine define)
         {
-            return _actionGraphCtrl.tryTranslateWithDict(define.getDefineEditorName());
+            if (define.actionDefine != null)
+            {
+                return _actionGraphCtrl.tryTranslateWithDict(define.actionDefine.defineName);
+            }
+            if (define.eventDefine != null)
+            {
+                return EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, define.eventDefine.eventName);
+            }
+            return game.lang._(StringTable.EDITOR_NODE_NAME_UNKNOW);
         }
         private bool filterNodeDefine(NodeDefine define)
         {

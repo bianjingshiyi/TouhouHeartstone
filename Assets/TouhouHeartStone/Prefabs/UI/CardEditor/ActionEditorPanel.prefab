@@ -3667,7 +3667,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5179292407243925757}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4825,6 +4825,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: NodesPanelItem
       objectReference: {fileID: 0}
+    - target: {fileID: 3833083503221281696, guid: a01f7dc1d877cc640a30dc90351a0dbf,
+        type: 3}
+      propertyPath: _doubleClickButton
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4095101936571162197, guid: a01f7dc1d877cc640a30dc90351a0dbf,
         type: 3}
       propertyPath: m_Pivot.x
@@ -4933,6 +4938,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 6325075264929741034, guid: a01f7dc1d877cc640a30dc90351a0dbf, type: 3}
     - {fileID: 4934607926241080078, guid: a01f7dc1d877cc640a30dc90351a0dbf, type: 3}
+    - {fileID: 4040255110038551518, guid: a01f7dc1d877cc640a30dc90351a0dbf, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a01f7dc1d877cc640a30dc90351a0dbf, type: 3}
 --- !u!1 &6696584891932483792
 GameObject:
@@ -7523,7 +7529,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5108324463523940502}
   m_PrefabAsset: {fileID: 0}
-#modifies#
 --- !u!1001 &599502973650541377
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9513,7 +9518,7 @@ RectTransform:
   m_Children:
   - {fileID: 4138685409478913985}
   m_Father: {fileID: 5179292407243925757}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9564,8 +9569,8 @@ RectTransform:
   - {fileID: 5094507839106169725}
   - {fileID: 2631202378430389537}
   - {fileID: 3330317924490725498}
-  - {fileID: 5238841779166858826}
   - {fileID: 75355288870502445}
+  - {fileID: 5238841779166858826}
   - {fileID: 4481616943174024351}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -10243,7 +10248,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06ad3d60619562b46ab4f6f5164aaa31, type: 3}
-#remote adds#
 --- !u!224 &75355288870502445 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7090779725773788599, guid: 1e7442dab0cb4864cafcd9cf9d401b8b,
@@ -11834,7 +11838,6 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
-#local adds#
 --- !u!114 &5660876601505888404 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2818862999857936689, guid: 06ad3d60619562b46ab4f6f5164aaa31,
@@ -11847,5 +11850,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d71868137da671419900fc13e945255, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-#remote deletes#
-#local deletes#

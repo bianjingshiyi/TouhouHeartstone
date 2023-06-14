@@ -45,7 +45,7 @@ RectTransform:
   m_Children:
   - {fileID: 2768044077173476947}
   m_Father: {fileID: 4308788495184661442}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -100,6 +100,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: NodesPanelItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 3833083503221281696, guid: a01f7dc1d877cc640a30dc90351a0dbf,
+        type: 3}
+      propertyPath: _doubleClickButton
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4095101936571162197, guid: a01f7dc1d877cc640a30dc90351a0dbf,
         type: 3}
@@ -209,6 +214,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 6325075264929741034, guid: a01f7dc1d877cc640a30dc90351a0dbf, type: 3}
     - {fileID: 4934607926241080078, guid: a01f7dc1d877cc640a30dc90351a0dbf, type: 3}
+    - {fileID: 4040255110038551518, guid: a01f7dc1d877cc640a30dc90351a0dbf, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a01f7dc1d877cc640a30dc90351a0dbf, type: 3}
 --- !u!224 &5674198571113642633 stripped
 RectTransform:
@@ -11966,8 +11972,8 @@ RectTransform:
   - {fileID: 4222191365145942082}
   - {fileID: 5835081692074148901}
   - {fileID: 1462163571047188957}
-  - {fileID: 4429962387807266142}
   - {fileID: 2287488396939591622}
+  - {fileID: 4429962387807266142}
   - {fileID: 3632203222453439174}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -11992,7 +11998,7 @@ PrefabInstance:
     - target: {fileID: 5115633721720190353, guid: 3843d5e57320d844ca383ff45e5fb9b2,
         type: 3}
       propertyPath: m_Value
-      value: 0.53846157
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5115633721720190354, guid: 3843d5e57320d844ca383ff45e5fb9b2,
         type: 3}
@@ -12143,7 +12149,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 60}
+  m_AnchoredPosition: {x: 0, y: -0.000061035156}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!1001 &7984521949753832751
@@ -13464,6 +13470,8 @@ MonoBehaviour:
   _effectTagValues: []
   _keywordNames: []
   _keywordValues: []
+  _eventNames: []
+  _eventValues: []
   _isListItem: 0
 --- !u!114 &37519219358419014
 MonoBehaviour:
@@ -13600,7 +13608,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4308788495184661442}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

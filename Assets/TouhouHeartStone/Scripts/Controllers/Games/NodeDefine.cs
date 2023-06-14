@@ -40,17 +40,5 @@ namespace Controllers
             }
             return null;
         }
-        public string getDefineEditorName()
-        {
-            if (actionDefine != null)
-            {
-                return actionDefine.defineName;
-            }
-            else if (eventDefine != null)
-            {
-                return eventDefine.editorName;
-            }
-            return string.Empty;
-        }
     }
 }

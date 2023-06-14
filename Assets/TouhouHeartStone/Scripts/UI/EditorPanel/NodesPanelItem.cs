@@ -16,7 +16,8 @@ namespace UI
         private void Awake()
         {
             _editButton.onClick.AddListener(onEdit);
-            _doubleClickButton.onDoubleClick.AddListener(onDoubleClickedCallback);
+            if (_doubleClickButton)
+                _doubleClickButton.onDoubleClick.AddListener(onDoubleClickedCallback);
         }
         private void onEdit()
         {
