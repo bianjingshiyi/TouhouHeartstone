@@ -51,6 +51,10 @@ namespace TouhouHeartstone
             }
             await base.onDisable(game, card, buff);
         }
+        public override void setPiles(params string[] tags)
+        {
+            eventEntry?.setPiles(tags);
+        }
         public override SerializableEffect Serialize()
         {
             return new SerializableEventEffect(this);
@@ -67,7 +71,7 @@ namespace TouhouHeartstone
         public virtual EventEntryNode eventEntry => graph?.findEventEntryNode();
         public override ControlOutput onEnableAction => null;
         public override ControlOutput onDisableAction => null;
-        public string[] piles => eventEntry?.getConst<PileNameCollection>(EventEntryNode.pileListName)?.ToArray() ?? Array.Empty<string>();
+        public override string[] piles => eventEntry?.piles?.ToArray() ?? Array.Empty<string>();
         #endregion
     }
 

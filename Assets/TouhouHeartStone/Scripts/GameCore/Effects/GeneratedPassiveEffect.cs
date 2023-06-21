@@ -7,7 +7,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class GeneratedPassiveEffect : GeneratedEffect, IPassiveEffect
+    public class GeneratedPassiveEffect : GeneratedEffect, IPassiveEffect, IPileRangedEffect
     {
         #region 公有方法
         #region 构造方法
@@ -66,6 +66,10 @@ namespace TouhouHeartstone
         {
             return passiveEntry?.tags?.Contains(tag) ?? false;
         }
+        public virtual void setPiles(params string[] tags)
+        {
+            passiveEntry?.setPiles(tags);
+        }
         public override SerializableEffect Serialize()
         {
             return new SerializablePassiveEffect(this);
@@ -87,6 +91,7 @@ namespace TouhouHeartstone
         public virtual Node entryNode => passiveEntry;
         public override ControlOutput onEnableAction => entryNode?.getOutputPort<ControlOutput>(enableActionName);
         public override ControlOutput onDisableAction => entryNode?.getOutputPort<ControlOutput>(disableActionName);
+        public virtual string[] piles => passiveEntry?.piles?.ToArray() ?? Array.Empty<string>();
         public const string enableActionName = "enableAction";
         public const string disableActionName = "disableAction";
         public static readonly PortDefine enableActionPortDefine = PortDefine.Control(enableActionName, "EnableAction");

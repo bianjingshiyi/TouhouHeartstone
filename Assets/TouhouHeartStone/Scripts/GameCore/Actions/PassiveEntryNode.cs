@@ -22,10 +22,9 @@ namespace TouhouCardEngine
         }
         public override Task<ControlOutput> run(Flow flow)
         {
-            foreach (var output in outputPorts.OfType<ValueOutput>())
-            {
-                flow.setValue(output, flow.env.eventArg.getVar(output.name));
-            }
+            var card = flow.env.card;
+            flow.setValue(getOutputPort<ValueOutput>(cardPortName), card);
+            flow.setValue(getOutputPort<ValueOutput>(playerPortName), card?.getOwner());
             return Task.FromResult(getOutputPort<ControlOutput>(actionPortName));
         }
         public ValueInput getTriggerCondtionValuePort()
@@ -43,6 +42,17 @@ namespace TouhouCardEngine
             {
                 tags = new EffectTagCollection();
                 constList.Add(tagsConstName, tags);
+            }
+            tags.Clear();
+            tags.AddRange(value);
+        }
+        public void setPiles(params string[] value)
+        {
+            var tags = getConst<PileNameCollection>(pileListName);
+            if (tags == null)
+            {
+                tags = new PileNameCollection();
+                constList.Add(pileListName, tags);
             }
             tags.Clear();
             tags.AddRange(value);
@@ -114,12 +124,14 @@ namespace TouhouCardEngine
 
         #endregion
         public IEnumerable<string> tags => getConst<EffectTagCollection>(tagsConstName);
+        public PileNameCollection piles => getConst<PileNameCollection>(pileListName);
 
         public const string conditionPortName = "condition";
         public const string actionPortName = "action";
         public const string playerPortName = "玩家";
         public const string cardPortName = "卡牌";
         public const string tagsConstName = "tags";
+        public const string pileListName = "pileList";
         protected static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, "触发条件");
         protected static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         protected static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, "Player");
@@ -134,6 +146,7 @@ namespace TouhouCardEngine
             posX = eventEntryNode.posX;
             posY = eventEntryNode.posY;
             tags = eventEntryNode.tags?.ToArray() ?? Array.Empty<string>();
+            piles = eventEntryNode.piles?.ToArray() ?? Array.Empty<string>();
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {
@@ -144,6 +157,7 @@ namespace TouhouCardEngine
                 posY = posY
             };
             entry.setTags(tags);
+            entry.setPiles(piles);
             entry.graph = graph;
             return entry;
         }
@@ -153,5 +167,6 @@ namespace TouhouCardEngine
         public float posX;
         public float posY;
         public string[] tags;
+        public string[] piles;
     }
 }

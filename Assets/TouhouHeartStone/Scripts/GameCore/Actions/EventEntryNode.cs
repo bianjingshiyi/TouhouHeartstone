@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TouhouCardEngine
 {
@@ -10,6 +11,14 @@ namespace TouhouCardEngine
         public EventEntryNode(string eventName) : base()
         {
             this.eventName = eventName;
+        }
+        public override Task<ControlOutput> run(Flow flow)
+        {
+            foreach (var output in outputPorts.OfType<ValueOutput>())
+            {
+                flow.setValue(output, flow.env.eventArg.getVar(output.name));
+            }
+            return Task.FromResult(getOutputPort<ControlOutput>(actionPortName));
         }
         public override ISerializableNode ToSerializableNode()
         {
@@ -31,23 +40,10 @@ namespace TouhouCardEngine
             yield return actionPortDefine;
             yield break;
         }
-        public void setPiles(params string[] value)
-        {
-            var tags = getConst<PileNameCollection>(pileListName);
-            if (tags == null)
-            {
-                tags = new PileNameCollection();
-                constList.Add(pileListName, tags);
-            }
-            tags.Clear();
-            tags.AddRange(value);
-        }
 
         #endregion
         public EventDefine define { get; set; }
         public string eventName;
-        public PileNameCollection piles => getConst<PileNameCollection>(pileListName);
-        public const string pileListName = "pileList";
     }
     [Serializable]
     public class SerializableEventEntryNode : ISerializableNode

@@ -854,20 +854,16 @@ namespace Controllers
                 var typeIndex = _eventTypeInfoList.getEventTypeIndex(eventEntry.eventName);
                 var editorNames = _eventTypeInfoList.getEventTypeNamesForEditor(game.lang);
                 nodeName = editorNames[typeIndex];
-                constViewData = new ActionNodeValueInfo[]
-                {
-                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags),
-                    new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, eventEntry.piles)
-                };
             }
             else
             {
                 nodeName = EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE;
-                constViewData = new ActionNodeValueInfo[]
-                {
-                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags)
-                };
             }
+            constViewData = new ActionNodeValueInfo[]
+            {
+                new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags),
+                new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, passiveEntry.piles)
+            };
             nodeName = game.lang._(nodeName);
 
             var actionNodeItem = _ui.createNode(passiveEntry.posX, passiveEntry.posY,
@@ -1920,11 +1916,12 @@ namespace Controllers
                 ActiveEntryNode.tagsConstName 
             } },
             { typeof(PassiveEntryNode), new string[] { 
-                PassiveEntryNode.tagsConstName
+                PassiveEntryNode.tagsConstName,
+                PassiveEntryNode.pileListName
             } },
             { typeof(EventEntryNode), new string[] { 
                 PassiveEntryNode.tagsConstName,
-                EventEntryNode.pileListName
+                PassiveEntryNode.pileListName
             } },
             { typeof(AuraEntryNode), new string[] {
                 AuraEntryNode.pileListName,

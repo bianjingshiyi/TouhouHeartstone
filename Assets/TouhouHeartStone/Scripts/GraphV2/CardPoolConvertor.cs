@@ -608,13 +608,7 @@ namespace Game
                 CreateFreeNodesToGraph(param);
             }
 
-            if (passive is GeneratedEventEffect eventEffect)
-            {
-                if (eventEffect.eventEntry != null)
-                {
-                    eventEffect.eventEntry.setConst(EventEntryNode.pileListName, effect.pileList);
-                }
-            }
+            passive.setPiles(effect.pileList.ToArray());
             if (effect.tagList.Contains(KEYWORD.DEATHRATTLE))
             {
                 // 遗言
