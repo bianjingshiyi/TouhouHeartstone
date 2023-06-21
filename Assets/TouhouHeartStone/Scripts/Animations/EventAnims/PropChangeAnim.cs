@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -130,7 +131,7 @@ namespace Game
                 {
                     propNum.WhiteText.invokeBeforeAnim();
                 }
-                table.setCard(hand.Card, _card, _card.getOwner() == table.player);
+                table.setCard(hand.Card, _card, table.ui.SelfHandList.Contains(hand));
             }
 
             AnimAnim anim = null;

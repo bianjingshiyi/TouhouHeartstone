@@ -360,7 +360,6 @@ namespace Game
                     item.rectTransform.SetSiblingIndex(position + 1);
                 }
                 item.isDragable = false;
-                item.Card.setBoolFalse("isFaceUp");
                 setCardDesc(item.Card, desc, false);
             }
             item.gameObject.name = desc.ToString();
