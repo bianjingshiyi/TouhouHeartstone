@@ -440,6 +440,18 @@ namespace Game
         {
             try
             {
+                // 生效失效动作。
+                if (effect.onEnableRootActionNodeId != 0 || effect.onDisableRootActionNodeId != 0)
+                {
+                    var e = ConvertCommonToPassiveEnableDisableAction(effect, card, buff, effectIndex);
+                    // 添加属性
+                    foreach (var pair in effect.propDict)
+                    {
+                        e.propDict.Add(pair.Key, pair.Value);
+                    }
+                    list.Add(e);
+                }
+                // 触发器列表。
                 for (int i = 0; i < effect.triggerList.Count; i++)
                 {
                     var trigger = effect.triggerList[i];
@@ -481,40 +493,6 @@ namespace Game
             active.Init();
             graph.DefineNodes(definer);
 
-            // 生效事件。
-            if (effect.onEnableRootActionNodeId != 0)
-            {
-                // 获取通用效果的生效事件节点图信息。
-                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onEnableAction");
-
-                // 将对生效事件的控制引用转换为根节点。
-                var param = new ActionNodeGraphParams(new Vector2(-1000, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
-                var actionNode = ConvertActionNodeChain(param, effect.onEnableRootActionNodeId);
-
-                // 连接光环生效事件节点的控制输出和根节点的控制输入。
-                graph.connect(active.onEnableAction, actionNode.getEnterPort());
-
-                // 添加离散节点。
-                CreateFreeNodesToGraph(param);
-            }
-
-            // 失效事件。
-            if (effect.onDisableRootActionNodeId != 0)
-            {
-                // 获取通用效果的失效事件节点图信息。
-                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onDisableAction");
-
-                // 将对失效事件的控制引用转换为根节点。
-                var param = new ActionNodeGraphParams(new Vector2(-1000, -500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
-                var actionNode = ConvertActionNodeChain(param, effect.onDisableRootActionNodeId);
-
-                // 连接光环失效事件节点的控制输出和根节点的控制输入。
-                graph.connect(active.onDisableAction, actionNode.getEnterPort());
-
-                // 添加离散节点。
-                CreateFreeNodesToGraph(param);
-            }
-
             // 触发器。
             if (trigger != null)
             {
@@ -540,13 +518,17 @@ namespace Game
             int cardId = card?.id ?? 0;
             int buffId = buff?.id ?? 0;
 
-            var trigger = effect.triggerList[triggerIndex];
+            SerializableTrigger trigger = null;
+            if (triggerIndex>= 0)
+            {
+                trigger = effect.triggerList[triggerIndex];
+            }
 
             var graph = new ActionGraph();
 
             // 创建效果。
             GeneratedPassiveEffect passive;
-            if (effect.tagList.Contains(KEYWORD.DEATHRATTLE) || trigger.eventName == "ActiveEvent")
+            if (effect.tagList.Contains(KEYWORD.DEATHRATTLE) || trigger?.eventName == "ActiveEvent")
             {
                 // 遗言/发动事件
                 passive = new GeneratedPassiveEffect(graph);
@@ -603,6 +585,63 @@ namespace Game
                 // 将触发器的序列化文档转换为根节点。
                 var param = new ActionNodeGraphParams(graph: graph, graphInfo: graphInfo, eventName: trigger.eventName, actionNodeList: trigger.actionList);
                 ConvertTriggerToPassiveEntryNode(trigger, param);
+
+                // 添加离散节点。
+                CreateFreeNodesToGraph(param);
+            }
+
+            passive.setPiles(effect.pileList.ToArray());
+            if (effect.tagList.Contains(KEYWORD.DEATHRATTLE))
+            {
+                // 遗言
+                passive.setTags(EFFECTTAG.PASSIVE_LASTWORD);
+            }
+            return passive;
+        }
+
+
+        private GeneratedPassiveEffect ConvertCommonToPassiveEnableDisableAction(SerializableGeneratedEffect effect, SerializableCardDefine card, SerializableBuffDefine buff, int effectIndex)
+        {
+            int cardId = card?.id ?? 0;
+            int buffId = buff?.id ?? 0;
+
+            var graph = new ActionGraph();
+
+            // 创建效果。
+            GeneratedPassiveEffect passive = new GeneratedPassiveEffect(graph);
+            passive.Init();
+            graph.DefineNodes(definer);
+            passive.name = effect.name;
+
+            // 失效事件。
+            if (effect.onEnableRootActionNodeId != 0)
+            {
+                // 获取通用效果的生效事件节点图信息。
+                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onEnableAction");
+
+                // 将对生效事件的控制引用转换为根节点。
+                var param = new ActionNodeGraphParams(new Vector2(1000, 500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onEnableActionList);
+                var actionNode = ConvertActionNodeChain(param, effect.onEnableRootActionNodeId);
+
+                // 连接光环生效事件节点的控制输出和根节点的控制输入。
+                graph.connect(passive.onEnableAction, actionNode.getEnterPort());
+
+                // 添加离散节点。
+                CreateFreeNodesToGraph(param);
+            }
+
+            // 失效事件。
+            if (effect.onDisableRootActionNodeId != 0)
+            {
+                // 获取通用效果的失效事件节点图信息。
+                var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "onDisableAction");
+
+                // 将对失效事件的控制引用转换为根节点。
+                var param = new ActionNodeGraphParams(new Vector2(1000, -500), graph: graph, graphInfo: graphInfo, actionNodeList: effect.onDisalbeActionList);
+                var actionNode = ConvertActionNodeChain(param, effect.onDisableRootActionNodeId);
+
+                // 连接光环失效事件节点的控制输出和根节点的控制输入。
+                graph.connect(passive.onDisableAction, actionNode.getEnterPort());
 
                 // 添加离散节点。
                 CreateFreeNodesToGraph(param);
