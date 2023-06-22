@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using BJSYGameCore;
+using UnityEngine.EventSystems;
+
 namespace UI
 {
-    partial class LogListItem
+    partial class LogListItem : IPointerEnterHandler, IPointerExitHandler
     {
 
 
@@ -142,26 +144,15 @@ namespace UI
 
         public ActionEvent<LogListItem> onPointerEnter { get; } = new ActionEvent<LogListItem>();
         public ActionEvent<LogListItem> onPointerExit { get; } = new ActionEvent<LogListItem>();
-        protected void Update()
-        {
-            if (ui.getManager<InputManager>().isPointerOver(rectTransform))
-            {
-                if (!_isHovered)
-                {
-                    _isHovered = true;
-                    onPointerEnter.invoke(this);
-                }
-            }
-            else
-            {
-                if (_isHovered)
-                {
-                    _isHovered = false;
-                    onPointerExit.invoke(this);
-                }
-            }
-        }
 
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        {
+            onPointerEnter.invoke(this);
+        }
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        {
+            onPointerExit.invoke(this);
+        }
         public void SetLevel(int lvl)
         {
             var min = content.offsetMin;
