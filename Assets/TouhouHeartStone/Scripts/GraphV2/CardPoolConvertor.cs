@@ -211,7 +211,7 @@ namespace Game
             {
                 ConvertGeneratedDeathRattle(list, effect, card, buff, effectIndex);
             }
-            else if (typeName == "GeneratedAura")
+            else if (typeName == "GeneratedAura" || typeName == "GeneratedHalo")
             {
                 ConvertGeneratedAura(list, effect, card, buff, effectIndex);
             }
@@ -360,14 +360,26 @@ namespace Game
                     dataNode.setConst(AuraEntryNode.rangeListName, rangeList);
                 }
 
+                SerializableActionNodeGraphInfo buffDefineGraphInfo = null;
+                SerializableActionValueRef buffDefineRef = null;
                 // 光环的增益定义。
-                if (effect.propDict.TryGetValue("getAuraBuffDefine", out object buffDefineObj) && buffDefineObj is SerializableActionValueRef buffDefineRef)
+                if (effect.propDict.TryGetValue("getAuraBuffDefine", out object auraBuffDefineObj) && auraBuffDefineObj is SerializableActionValueRef auraBuffRef)
                 {
+                    buffDefineRef = auraBuffRef;
                     // 获取光环增益定义的节点图信息。
-                    var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "getAuraBuffDefine");
-
+                    buffDefineGraphInfo = getGraphInfo(cardId, buffId, effectIndex, "getAuraBuffDefine");
+                }
+                else if (effect.propDict.TryGetValue("getHaloBuffDefine", out object haloBuffDefineObj) && haloBuffDefineObj is SerializableActionValueRef haloBuffRef)
+                {
+                    // GeneratedHalo兼容。
+                    buffDefineRef = haloBuffRef;
+                    // 获取光环增益定义的节点图信息。
+                    buffDefineGraphInfo = getGraphInfo(cardId, buffId, effectIndex, "getHaloBuffDefine");
+                }
+                if (buffDefineRef != null)
+                {
                     // 将对增益定义的节点引用转换为根节点。
-                    var param = new ActionNodeGraphParams(new Vector2(-300, 200), graph: graph, graphInfo: graphInfo, actionNodeList: buffDefineRef.actionNodeList);
+                    var param = new ActionNodeGraphParams(new Vector2(-300, 200), graph: graph, graphInfo: buffDefineGraphInfo, actionNodeList: buffDefineRef.actionNodeList);
                     var rootNode = ConvertActionValueRef(buffDefineRef, param);
 
                     // 连接光环数据节点的“buffDefine”输入和根节点。
@@ -378,22 +390,40 @@ namespace Game
                 }
 
                 // 光环的施加条件。
-                if (effect.propDict.TryGetValue("affectCondition", out object conditionObj) && conditionObj is SerializableFunctionNode condFunc)
+                if (effect.propDict.TryGetValue("affectCondition", out object conditionObj))
                 {
                     // 获取光环作用条件的节点图信息。
                     var graphInfo = getGraphInfo(cardId, buffId, effectIndex, "affectCondition");
 
-                    // 转换作用条件的节点图。
-                    var param = new ActionNodeGraphParams(new Vector2(-1200, -300), graph: graph, graphInfo: graphInfo, actionNodeList: condFunc.actionNodeList);
-                    if (condFunc.returns.Length > 0)
+                    // 旧版GeneratedAura，使用FunctionNode。
+                    if (conditionObj is SerializableFunctionNode condFunc)
                     {
-                        var rootNode = ConvertActionValueRef(condFunc.returns[0].valueRef, param);
+
+                        // 转换作用条件的节点图。
+                        var param = new ActionNodeGraphParams(new Vector2(-1200, -300), graph: graph, graphInfo: graphInfo, actionNodeList: condFunc.actionNodeList);
+                        if (condFunc.returns.Length > 0)
+                        {
+                            var rootNode = ConvertActionValueRef(condFunc.returns[0].valueRef, param);
+
+                            // 连接光环数据节点的“affectCondition”输入和根节点。
+                            ConnectValueRef(aura.affectCondition, rootNode, param);
+                        }
+                        // 添加离散节点。
+                        CreateFreeNodesToGraph(param);
+                    }
+                    // 旧版GeneratedHalo，使用SerializableActionValueRef。
+                    else if (conditionObj is SerializableActionValueRef condValueRef)
+                    {
+                        // 转换作用条件的节点图。
+                        var param = new ActionNodeGraphParams(new Vector2(-1200, -300), graph: graph, graphInfo: graphInfo, actionNodeList: condValueRef.actionNodeList);
+                        var rootNode = ConvertActionValueRef(condValueRef, param);
 
                         // 连接光环数据节点的“affectCondition”输入和根节点。
                         ConnectValueRef(aura.affectCondition, rootNode, param);
+
+                        // 添加离散节点。
+                        CreateFreeNodesToGraph(param);
                     }
-                    // 添加离散节点。
-                    CreateFreeNodesToGraph(param);
                 }
 
                 // 光环的更新动作。
@@ -418,6 +448,11 @@ namespace Game
                 // 添加属性
                 foreach (var pair in effect.propDict)
                 {
+                    if (pair.Key == AuraEntryNode.rangeListName ||
+                        pair.Key == "getAuraBuffDefine" ||
+                        pair.Key == "affectCondition" ||
+                        pair.Key == "updateAction")
+                        continue;
                     aura.propDict.Add(pair.Key, pair.Value);
                 }
                 list.Add(aura);
