@@ -555,6 +555,8 @@ namespace Game
             game.triggers.onEventBefore += t1 => gameTriggerEventCache.cache(onEventBefore, t1);
             game.triggers.onEventAfter += t1 => gameTriggerEventCache.cache(onEventAfter, t1);
             ui.logPanel.shrink();
+
+            logItems.Clear();
             ui.LogScrollView.LogList.updateLogListCount(0);
         }
         ActionEventCache gameTriggerEventCache { get; } = new ActionEventCache();
