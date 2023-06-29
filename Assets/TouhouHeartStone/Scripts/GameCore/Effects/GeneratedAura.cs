@@ -53,7 +53,13 @@ namespace TouhouHeartstone
         }
         public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
-            return updateAura(game, card, buff, eventArg);
+            var triggerArg = new EffectTriggerEventArg(card as Card, buff as Buff, this);
+            return game.triggers.doEvent(triggerArg, func);
+
+            Task func(EffectTriggerEventArg arg)
+            {
+                return updateAura(game, card, buff, eventArg);
+            }
         }
         public async Task updateAura(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {

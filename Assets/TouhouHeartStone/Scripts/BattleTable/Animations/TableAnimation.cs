@@ -45,7 +45,7 @@ namespace Game.BattleTable
         {
             return _finished;
         }
-        protected void finish()
+        public void finish()
         {
             _finished = true;
         }

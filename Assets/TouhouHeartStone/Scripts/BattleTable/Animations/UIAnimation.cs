@@ -1,6 +1,7 @@
 ﻿using System;
 using TouhouCardEngine.Interfaces;
 using UnityEngine;
+using Game.Animations;
 
 namespace Game.BattleTable
 {

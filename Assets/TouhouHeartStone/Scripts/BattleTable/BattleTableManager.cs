@@ -2,6 +2,7 @@
 using System.Linq;
 using BJSYGameCore;
 using Boo.Lang;
+using Game.Animations;
 using Game.BattleTable.UI;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -397,7 +398,7 @@ namespace Game.BattleTable
         {
             if (!obj.playersId.Contains(player.id))
                 return;
-            UIAnimation anim;
+            TableAnimation anim;
             switch (obj)
             {
                 default:
@@ -427,9 +428,11 @@ namespace Game.BattleTable
         /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
-            UIAnimation anim = getEventAnim(arg);
+            checkCardSkinEffectAnimations(arg);
+            TableAnimation anim = getEventAnim(arg);
             if (anim != null)
                 addAnim(anim);
+
             _allControlDirty = true;
         }
         /// <summary>
@@ -448,6 +451,7 @@ namespace Game.BattleTable
             }
         }
         #endregion
+
         private void reset()
         {
             ui.InitReplaceDialog.setActive(false);
@@ -507,6 +511,7 @@ namespace Game.BattleTable
         public Player player { get; private set; }
         public CardManager cardManager => _main.card;
         public LangManager lang => _main.lang;
+        public GameManager gameManager => _main.game;
         public SEManager sounds => _main.getManager<SEManager>();
         public THHResourceManager resources => _main.getManager<THHResourceManager>();
         private ActionEventCache eventCache = new ActionEventCache();

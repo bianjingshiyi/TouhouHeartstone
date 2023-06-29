@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BJSYGameCore;
 using BJSYGameCore.UI;
 using Controllers;
+using Game.Animations;
 using Game.BattleTable;
 using Game.BattleTable.UI;
 using MongoDB.Bson;
@@ -355,7 +356,8 @@ namespace Game
             Dictionary<long, Dictionary<int, BuffDefine>> buffDict,
             Dictionary<long, Dictionary<int, ActionDefine>> actionDefines)
         {
-            var cardManager = getManager<CardManager>();
+            var cardManager = cards;
+            animDict.Clear();
             // 尝试从本地获取卡组，否则读取缓存卡组。
             foreach (var pool in option.cardPools)
             {
@@ -364,7 +366,8 @@ namespace Game
 
                 if (cards.isBuiltinCardPool(poolId))
                 {
-                    cardDict.Add(poolId, cards.GetCardDefines().ToDictionary(c => c.id));
+                    cardDict.Add(poolId, cardManager.GetCardDefines().ToDictionary(c => c.id));
+                    animDict.Add(poolId, cardManager.getBuiltinAnimationDefines().ToDictionary(a => a.id));
                     continue;
                 }
                 CardPool cardPool = null;
@@ -386,6 +389,7 @@ namespace Game
                     cardDict.Add(poolId, cardDefines.ToDictionary(c => c.id));
                     buffDict.Add(poolId, buffDefines.ToDictionary<BuffDefine, int>(c => c.id));
                     actionDefines.Add(poolId, cardPool.actionDefineList.ToDictionary<ActionDefine, int>(c => c.defineId));
+                    animDict.Add(poolId, cardPool.animationDefineList.ToDictionary<AnimationDefine, int>(a => a.id));
                 }
             }
         }

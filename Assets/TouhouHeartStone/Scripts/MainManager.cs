@@ -244,6 +244,7 @@ namespace Game
                 logger,
                 false
             );
+            card.loadBuiltinAnimations();
             //加载外部卡片数据
             await card.loadCardPoolInfosAsync();
             //foreach (var pair in cardPoolInfos)

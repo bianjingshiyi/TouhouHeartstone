@@ -1,5 +1,8 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using TouhouCardEngine;
 using UnityEngine;
 
 namespace UI
@@ -28,7 +31,40 @@ namespace UI
             _soundPath_onUse = other._soundPath_onUse;
             _projectilePath = other._projectilePath;
             _language = other.language;
+            foreach (var animRef in other._effectNodeAnimationRefs)
+            {
+                _effectNodeAnimationRefs.Add(animRef);
+            }
         }
+        public void setEffectNodeAnimationRef(int effectIndex, int nodeId, DefineReference animationRef)
+        {
+            if (animationRef == null)
+            {
+                _effectNodeAnimationRefs.RemoveAll(r => r.effectIndex == effectIndex && r.nodeId == nodeId);
+                return;
+            }
+            var existed = getAnimRef(effectIndex, nodeId);
+            if (existed != null)
+            {
+                existed.animRef = animationRef;
+                return;
+            }
+            _effectNodeAnimationRefs.Add(new EffectNodeAnimationRef(effectIndex, nodeId, animationRef));
+        }
+        public DefineReference getEffectNodeAnimationRef(int effectIndex, int nodeId)
+        {
+            var existed = getAnimRef(effectIndex, nodeId);
+            if (existed != null)
+            {
+                return existed.animRef;
+            }
+            return null;
+        }
+        private EffectNodeAnimationRef getAnimRef(int effectIndex, int nodeId)
+        {
+            return _effectNodeAnimationRefs.FirstOrDefault(r => r.effectIndex == effectIndex && r.nodeId == nodeId);
+        }
+
         [BsonElement]
         [SerializeField]
         int _id;
@@ -163,6 +199,8 @@ namespace UI
             get { return _language; }
             set { _language = value; }
         }
+        [BsonElement]
+        List<EffectNodeAnimationRef> _effectNodeAnimationRefs = new List<EffectNodeAnimationRef>();
         public override string ToString()
         {
             string name = this.name;

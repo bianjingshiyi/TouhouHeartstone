@@ -46,13 +46,19 @@ namespace TouhouHeartstone
         }
         public override Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
-            var entry = passiveEntry;
-            if (entry != null)
+            var triggerArg = new EffectTriggerEventArg(card as Card, buff as Buff, this);
+            return game.triggers.doEvent(triggerArg, func);
+
+            Task func(EffectTriggerEventArg arg)
             {
-                var flow = new Flow(game, card, buff, eventArg, this);
-                return game.runActions(flow, entry.getActionOutputPort());
+                var entry = passiveEntry;
+                if (entry != null)
+                {
+                    var flow = new Flow(game, card, buff, eventArg, this);
+                    return game.runActions(flow, entry.getActionOutputPort());
+                }
+                return Task.CompletedTask;
             }
-            return Task.CompletedTask;
         }
         public override void setTags(params string[] tags)
         {

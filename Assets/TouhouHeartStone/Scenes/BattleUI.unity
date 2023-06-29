@@ -1348,6 +1348,7 @@ Transform:
   - {fileID: 4654612805970577923}
   - {fileID: 1520265005}
   - {fileID: 14748893}
+  - {fileID: 1005560207}
   m_Father: {fileID: 702626782}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -1842,6 +1843,7 @@ MonoBehaviour:
   _centerDisplayTransform: {fileID: 508968763}
   _rightDisplayTransform: {fileID: 1471951940}
   _displayerCardsParent: {fileID: 14748893}
+  _effectsParent: {fileID: 1005560207}
   _fatigue: {fileID: 1520265007}
   _discover: {fileID: 635482350501438396}
   _attackArrow: {fileID: 1980511463}
@@ -2359,6 +2361,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb39503610ad573409b34589c72ba359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1005560206
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1005560207}
+  m_Layer: 0
+  m_Name: Effects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1005560207
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1005560206}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 450401108}
+  m_RootOrder: 23
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1049957672
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5498,8 +5530,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _animationCache: []
-  _animationQueue: []
   _usingPosition: -1
   _tipBoxOffset: {x: 20, y: -40, z: -20}
   _servantAttackThreshold: 70

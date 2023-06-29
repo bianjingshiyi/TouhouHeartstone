@@ -4,6 +4,7 @@ using System.Reflection;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
+using Game.Animations;
 using UnityEngine;
 namespace Game.BattleTable
 {
@@ -70,21 +71,21 @@ namespace Game.BattleTable
         /// </summary>
         /// <param name="eventArg"></param>
         /// <returns></returns>
-        public UIAnimation getEventAnim(IEventArg eventArg)
+        public TableAnimation getEventAnim(IEventArg eventArg)
         {
             Type type = eventArg.GetType();
             if (animConstructorDic.ContainsKey(type))
             {
-                UIAnimation anim = null;
+                TableAnimation anim = null;
                 if (animConstructorDic[type].GetParameters().Length == 0)
-                    anim = animConstructorDic[type].Invoke(new object[0]) as UIAnimation;
+                    anim = animConstructorDic[type].Invoke(new object[0]) as TableAnimation;
                 else if (animConstructorDic[type].GetParameters().Length == 1)
-                    anim = animConstructorDic[type].Invoke(new object[] { eventArg }) as UIAnimation;
+                    anim = animConstructorDic[type].Invoke(new object[] { eventArg }) as TableAnimation;
                 if (anim is EventAnimation tAnim)
                 {
                     tAnim.eventArg = eventArg;
-                    tAnim.init(this);
                 }
+                anim.init(this);
                 return anim;
             }
             else
@@ -106,13 +107,110 @@ namespace Game.BattleTable
             else
                 return null;
         }
+        private void checkCardSkinEffectAnimations(IEventArg arg)
+        {
+            if (arg is EffectTriggerEventArg)
+                return;
+            var effectTriggerArg = getEffectEventTriggerArg(arg);
+            if (effectTriggerArg == null)
+                return;
+            var skinAnimRef = getEventSkinAnimRef(arg, effectTriggerArg);
+            if (skinAnimRef == null)
+                return;
+            var targetCard = getEventSkinAnimTarget(arg);
+            var animationDef = gameManager.getAnimationDefine(skinAnimRef);
+            if (animationDef != null)
+            {
+                addAnim(new GameTableAnim(animationDef, effectTriggerArg.card, targetCard));
+            }
+        }
+        public EffectTriggerEventArg getEffectEventTriggerArg(IEventArg arg)
+        {
+            var seekArg = arg;
+            while (seekArg != null)
+            {
+                if (seekArg is EffectTriggerEventArg effectArg)
+                {
+                    return effectArg;
+                }
+                seekArg = seekArg.parent;
+            }
+            return null;
+        }
+        public DefineReference getEventSkinAnimRef(IEventArg arg, EffectTriggerEventArg effectArg)
+        {
+            var card = effectArg.card;
+            var buff = effectArg.buff;
+            DefineReference animRef = null;
+            if (buff is GeneratedBuff genBuff)
+            {
+                var define = game.getBuffDefine(genBuff.defineRef);
+                var skin = cardManager.getBuffSkin(define);
+                if (define is GeneratedBuffDefine genBuffDef && effectArg.effect is GeneratedEffect genEffect)
+                {
+                    var effectIndex = genBuffDef.effectList.IndexOf(genEffect);
+                    var node = genEffect.graph.findNodeById(arg.flowNodeId);
+                    if (node != null && isCorrectEventForNode(arg, node))
+                    {
+                        animRef = skin.getEffectNodeAnimationRef(effectIndex, arg.flowNodeId);
+                    }
+                }
+            }
+            else if (card != null)
+            {
+                var define = card.define;
+                var skin = cardManager.getCardSkin(define);
+                if (effectArg.effect is GeneratedEffect genEffect)
+                {
+                    var effectIndex = Array.IndexOf(define.getGeneratedEffects(), genEffect);
+                    var node = genEffect.graph.findNodeById(arg.flowNodeId);
+                    if (node != null && isCorrectEventForNode(arg, node))
+                    {
+                        animRef = skin.getEffectNodeAnimationRef(effectIndex, arg.flowNodeId);
+                    }
+                }
+            }
+            return animRef;
+        }
+        public Card getEventSkinAnimTarget(IEventArg arg)
+        {
+            // TODO: 需要进行修改，以方便进行扩展。
+            switch (arg)
+            {
+                case THHCard.DamageEventArg damageArg:
+                    return damageArg.target;
+                case THHCard.HealEventArg healArg:
+                    return healArg.card;
+            }
+            return null;
+        }
+        private bool isCorrectEventForNode(IEventArg arg, Node node)
+        {
+            // TODO: 需要进行修改，以方便进行扩展。
+            if (node is ActionNode action)
+            {
+                var defineRef = action.defineRef;
+                if (defineRef.cardPoolId == 0) // 内置动作定义。
+                {
+                    var defineId = defineRef.defineId;
+                    if (defineId == BuiltinActionDefineID.Damage ||
+                        defineId == BuiltinActionDefineID.DealDamageOrSpellDamage ||
+                        defineId == BuiltinActionDefineID.DealDamageSplitAmong ||
+                        defineId == BuiltinActionDefineID.DealDamageToRandomTargets)
+                    {
+                        return arg is THHCard.DamageEventArg;
+                    }
+                }
+            }
+            return false;
+        }
         #endregion
         [SerializeField]
-        List<UIAnimation> _animationCache = new List<UIAnimation>();
+        List<TableAnimation> _animationCache = new List<TableAnimation>();
         [SerializeField]
-        List<UIAnimation> _animationQueue = new List<UIAnimation>();
-        List<UIAnimation> insertingAnims = new List<UIAnimation>();
-        public void addAnim(UIAnimation anim)
+        List<TableAnimation> _animationQueue = new List<TableAnimation>();
+        List<TableAnimation> insertingAnims = new List<TableAnimation>();
+        public void addAnim(TableAnimation anim)
         {
             _animationCache.Add(anim);
         }
@@ -149,7 +247,7 @@ namespace Game.BattleTable
                 insertingAnims.Clear();
             }
         }
-        public UIAnimation[] getAnimQueue()
+        public TableAnimation[] getAnimQueue()
         {
             return _animationQueue.ToArray();
         }
@@ -159,10 +257,7 @@ namespace Game.BattleTable
             {
                 for (int i = 0; i < _animationQueue.Count; i++)
                 {
-                    UIAnimation anim = _animationQueue[i];
-#if UNITY_EDITOR
-                    anim.updateDebugContent();
-#endif
+                    TableAnimation anim = _animationQueue[i];
                     bool isBlocked = false;
                     if (i == 0)
                     {
@@ -172,7 +267,7 @@ namespace Game.BattleTable
                     {
                         for (int j = 0; j < i; j++)
                         {
-                            UIAnimation prevAnim = _animationQueue[j];
+                            TableAnimation prevAnim = _animationQueue[j];
                             if (prevAnim.blockAnim(anim))
                             {
                                 isBlocked = true;
@@ -185,7 +280,7 @@ namespace Game.BattleTable
                         break; // 一个动画被阻挡之后，之后的都肯定会被阻挡。
                     try
                     {
-                        if (anim is TableAnimation tAnim ? tAnim.update(this, Time.deltaTime) : true)
+                        if (anim.update(this, Time.deltaTime))
                         {
                             _animationQueue.RemoveAt(i);
                             i--;

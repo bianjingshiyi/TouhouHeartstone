@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Animations;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -765,6 +766,32 @@ namespace Game.BattleTable
         }
         #endregion
 
+        #region 特效
+        public TableEffect createEffect(DefineReference defRef, Transform srcTransform, Transform destTransform = null)
+        {
+            var define = gameManager.getAnimationDefine(defRef);
+            return createEffect(define, srcTransform, destTransform);
+        }
+        public TableEffect createEffect(AnimationDefine animDef, Transform srcTransform, Transform destTransform = null)
+        {
+            if (animDef == null)
+                return null;
+            var effect = animDef.createEffect(this, table.EffectsParent);
+            if (effect)
+                effect.init(this, animDef, srcTransform, destTransform);
+            return effect;
+        }
+        public bool removeEffect(TableEffect effect)
+        {
+            if (effect && effect.gameObject)
+            {
+                Destroy(effect.gameObject);
+                return true;
+            }
+            return false;
+        }
+        #endregion
+
         #region 初始换牌
         public Card getInitCard(MulliganCardItem init)
         {
@@ -807,6 +834,34 @@ namespace Game.BattleTable
             dialog.setWaiting(false);
         }
         #endregion
+        public Transform getCardTransform(Card card)
+        {
+            if (tryGetServant(card, out Servant servant))
+            {
+                return servant.transform;
+            }
+            else if (tryGetMaster(card, out Master master))
+            {
+                return master.transform;
+            }
+            else if (tryGetItem(card, out Item item))
+            {
+                return item.transform;
+            }
+            else if (tryGetHand(card, out HandItem hand))
+            {
+                return hand.transform;
+            }
+            else if (tryGetSecret(card, out Secret secret))
+            {
+                return secret.transform;
+            }
+            else if (tryGetSkill(card, out Skill skill))
+            {
+                return skill.transform;
+            }
+            return null;
+        }
         public UICard createCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createCard(updateCardDescriptor(card), position, height, isFaceUp);
         public UICard createCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
         {

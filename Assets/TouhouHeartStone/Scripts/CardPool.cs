@@ -7,6 +7,7 @@ using TouhouHeartstone;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Game.Animations;
 
 namespace Game
 {
@@ -17,6 +18,7 @@ namespace Game
         public List<GeneratedBuffDefine> buffDefineList = new List<GeneratedBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
         public List<GeneratedActionDefine> actionDefineList = new List<GeneratedActionDefine>();
+        public List<GeneratedAnimationDefine> animationDefineList = new List<GeneratedAnimationDefine>();
     }
     [Serializable]
     public class SerializableCardPool
@@ -35,6 +37,7 @@ namespace Game
                 actionDefineList = cardPool.actionDefineList.ConvertAll(a => new SerializableActionDefine(a));
             else
                 actionDefineList = new List<SerializableActionDefine>();
+            animationDefineList = cardPool.animationDefineList.ConvertAll(a => new SerializableAnimationDefine(a));
         }
         #endregion
         public CardPool toCardPool(long cardPoolId, CardManager cardManager, TypeFinder typeFinder)
@@ -45,12 +48,14 @@ namespace Game
 
             var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(_nodeDefiner));
             var buffDefines = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine(_nodeDefiner));
+            var animationDefines = animationDefineList?.ConvertAll(b => b.toAnimDefine()) ?? new List<GeneratedAnimationDefine>();
 
             return new CardPool()
             {
                 cardDefineList = cardDefines,
                 buffDefineList = buffDefines,
                 actionDefineList = new List<GeneratedActionDefine>(_genActionDefines),
+                animationDefineList = animationDefines,
                 cardSkinList = cardSkinList,
                 buffSkinList = buffSkinList,
             };
@@ -120,6 +125,7 @@ namespace Game
         public List<SerializableBuffDefine> buffDefineList = new List<SerializableBuffDefine>();
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
         public List<SerializableActionDefine> actionDefineList;
+        public List<SerializableAnimationDefine> animationDefineList;
         [Obsolete]
         public List<SerializableActionNodeGraphInfo> actionNodeGraphInfoList = new List<SerializableActionNodeGraphInfo>();
         #endregion
