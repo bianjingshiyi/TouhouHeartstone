@@ -26,6 +26,7 @@ GameObject:
   - component: {fileID: 2677409117333521872}
   - component: {fileID: 4729018519811004943}
   - component: {fileID: 8366042311637888301}
+  - component: {fileID: 8138456990907717764}
   m_Layer: 5
   m_Name: HandListItem
   m_TagString: Untagged
@@ -217,8 +218,8 @@ MonoBehaviour:
     beforeAnim:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 8366042311637888301}
-          m_MethodName: playSound
+        - m_Target: {fileID: 8138456990907717764}
+          m_MethodName: PlaySE
           m_Mode: 2
           m_Arguments:
             m_ObjectArgument: {fileID: 8300000, guid: 050743a5f576d70409c269585fb863cb,
@@ -332,6 +333,19 @@ MonoBehaviour:
         m_Calls: []
   _Card: {fileID: 5132313515586537321}
   _CardAnimator: {fileID: 0}
+--- !u!114 &8138456990907717764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2634264027146421539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 333d5f6445ad52e4a93ab54731790882, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  se_name: 
 --- !u!1 &8568682228347548355
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,6 +593,18 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6407656825731357085, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 58c5552297fbadd43bdcd4fe57c3063b,
+        type: 2}
+    - target: {fileID: 6407656825731357085, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 1519292458744236911, guid: 58c5552297fbadd43bdcd4fe57c3063b,
+        type: 2}
     - target: {fileID: 6724395705441483877, guid: 92b5566bce81a774fb9bb22f1b342b2e,
         type: 3}
       propertyPath: m_Color.a
@@ -618,6 +644,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8906130865586367155, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8906130865586367155, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8906130865586367155, guid: 92b5566bce81a774fb9bb22f1b342b2e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 92b5566bce81a774fb9bb22f1b342b2e, type: 3}

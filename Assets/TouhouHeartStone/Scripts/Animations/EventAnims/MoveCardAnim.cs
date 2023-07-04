@@ -348,7 +348,7 @@ namespace Game
             var cardUI = table.createCard(card, startPos, startHeight, isFaceUp);
             //播放动画
             var anim = new CardTransAnim(cardUI, target, targetSize / cardUI.rectTransform.rect.height, table.fieldToDeckCurve);
-            cardUI.playSound(table.playCardSound);
+            table.getManager<SEManager>().playSE(table.playCardSound);
             while (!anim.update(table, _time))//没放完动画就让它接着放
                 yield return null;
             //摧毁卡牌

@@ -15,5 +15,9 @@ namespace Game
         {
             this.findInstance<SEManager>()?.PlaySE(name);
         }
+        public void PlaySE(AudioClip clip)
+        {
+            this.findInstance<SEManager>()?.playSE(clip);
+        }
     }
 }
