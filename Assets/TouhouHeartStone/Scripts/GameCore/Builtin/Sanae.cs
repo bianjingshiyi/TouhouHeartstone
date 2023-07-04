@@ -1043,7 +1043,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect(async (game, card) =>
             {
                 Card c = card.getOwner().getGrave().Where(e => e.define.hasTag(TAG.GOD)).random(game);
-                await card.returnToHand(game, card.getOwner());
+                await c.returnToHand(game, card.getOwner());
             })
         };
 
