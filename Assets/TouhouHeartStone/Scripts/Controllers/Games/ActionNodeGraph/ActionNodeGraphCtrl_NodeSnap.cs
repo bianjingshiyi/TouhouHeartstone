@@ -292,7 +292,7 @@ namespace Controllers
             {
                 var target = targets.FirstOrDefault(o =>
                 {
-                    return o.connections.Count() <= 0 && PortDefine.CanTypeConvert(i.type, o.define.type);
+                    return o.connections.Count() <= 0 && PortDefine.CanTypeConvert(i.type, o.define.type) && i.GetPortType() == o.GetPortType();
                 });
                 if (i != null && target != null)
                 {
