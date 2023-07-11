@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Controllers;
-using Game;
-using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using BJSYGameCore;
 using FreespaceFinder;
 using Game;
 using UnityEngine;
@@ -377,12 +373,8 @@ namespace UI
             _hintMessageText.gameObject.SetActive(true);
             _hintMessageText.gameObject.GetComponent<SEPlayer>()?.Play();
         }
-        
+
         #region 操作模式/节点选择
-        public void setOperationMode(GraphOperationMode mode)
-        {
-            _operationMode = mode;
-        }
         public IEnumerable<ActionNodeItem> getSelectedNodes()
         {
             return _selectedNodes;
@@ -518,6 +510,7 @@ namespace UI
         #region 生命周期
         protected void Awake()
         {
+            _backgroundEventTrigger.onPointerDown += onPointerDownBackgroundImage;
             _backgroundEventTrigger.onPointerUp += onPointerUpBackgroundImage;
             if (_actionNodeItemTemplate.transform.parent == _actionNodesRoot)
             {
@@ -592,13 +585,22 @@ namespace UI
         }
         #endregion
         #region 事件回调
+        private void onPointerDownBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
+        {
+            _longPressTimer.start();
+        }
         private void onPointerUpBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
-            Vector2 screenPosition = eventData.currentInputModule.input.mousePosition;
-            Vector2 localPoistion = _content.InverseTransformPoint(screenPosition);
-            if (!_isDragging)
+            if (_longPressTimer.isExpired())
             {
-                clearSelection();
+                _longPressTimer.reset();
+            }
+            else
+            {
+                if (!_isDragging)
+                {
+                    clearSelection();
+                }
             }
         }
         private void onBackgroundScroll(BaseEventData eventData)
@@ -672,11 +674,12 @@ namespace UI
         public void onBackgroundDrag(BaseEventData eventData)
         {
             _isDragging = true;
-            if (_operationMode == GraphOperationMode.MultiSelect)
+            if (shouldDragSelectionFrame(eventData))
             {
                 updateSelectFrame();
                 return;
             }
+            _longPressTimer.reset();
             if (!_isTouchZooming)
             {
                 _content.position = (Vector2)Input.mousePosition - _backgroundDragStartPosition;
@@ -684,11 +687,12 @@ namespace UI
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
         {
-            if (_operationMode == GraphOperationMode.MultiSelect)
+            if (shouldDragSelectionFrame(eventData))
             {
                 _selectFrameDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
                 return;
             }
+            _longPressTimer.reset();
             _backgroundDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
         }
         public void OnBackgroundEndDrag(BaseEventData eventData)
@@ -1034,26 +1038,11 @@ namespace UI
                 _pointerOverActionNodeItem = null;
             }
 
-
-            if (_operationMode == GraphOperationMode.MultiSelect && !isNodeSelected(item))
-            {
-                _isDragging = true;
-                _selectFrameDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
-                return;
-            }
-
             _dragItem = item;
             _dragItemPositionOffset = (item.transform as RectTransform).anchoredPosition - (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position);
         }
         private void onDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
-            if (_operationMode == GraphOperationMode.MultiSelect && _isDragging)
-            {
-                updateSelectFrame();
-                return;
-            }
-
-
             if (item != _dragItem)
                 return;
 
@@ -1120,7 +1109,7 @@ namespace UI
         {
             _nodeDocument?.Show(key);
         }
-        
+
 
         #region 效果属性
         private void onClickAddEffectPropertyButtonCallback()
@@ -1237,6 +1226,16 @@ namespace UI
             float x = Mathf.Clamp(target.x, range.min.x, range.max.x);
             float y = Mathf.Clamp(target.y, range.min.y, range.max.y);
             return new Vector2(x, y);
+        }
+        private bool shouldDragSelectionFrame(BaseEventData eventData)
+        {
+            bool dragSelection = false;
+#if UNITY_STANDALONE
+            dragSelection = eventData is PointerEventData pointerData && pointerData.button == PointerEventData.InputButton.Left;
+#elif UNITY_ANDROID
+            dragSelection = _longPressTimer.isExpired();
+#endif
+            return dragSelection;
         }
         #region 节点选择
         private void updateSelectFrame()
@@ -1376,7 +1375,6 @@ namespace UI
         public bool IsDragging => _isDragging;
 
         #region 多选/操作模式
-        GraphOperationMode _operationMode;
         HashSet<ActionNodeItem> _selectedNodes = new HashSet<ActionNodeItem>();
         [SerializeField]
         private Vector2 _selectFrameDragStartPosition;
@@ -1457,6 +1455,7 @@ namespace UI
         [SerializeField]
         private Vector2 _backgroundDragStartPosition;
         private bool _isDragging;
+        private Timer _longPressTimer = new Timer() { duration = .5f };
         private Touch _perviousTouch1;
         private Touch _perviousTouch2;
         private bool _isTouchZooming;

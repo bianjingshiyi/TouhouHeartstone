@@ -672,7 +672,6 @@ namespace Controllers
             }
         }
         public string nodeClipboard { get; set; }
-        public GraphOperationMode graphOperationMode { get; set; }
         public string CurCardPoolPath
         {
             get { return _curCardPoolPath; }

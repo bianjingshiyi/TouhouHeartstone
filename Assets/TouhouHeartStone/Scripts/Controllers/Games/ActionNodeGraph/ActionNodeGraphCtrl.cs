@@ -93,12 +93,6 @@ namespace Controllers
         {
             OnGraphEdited?.Invoke();
         }
-        #region 操作模式
-        public void SetOperationMode(GraphOperationMode mode) 
-        {
-            _ui.setOperationMode(mode);
-        }
-        #endregion
 
         #region 节点选择
         public string copySelection()
@@ -1970,10 +1964,5 @@ namespace Controllers
             public ActionNodeGraphInfo graphInfo;
         }
         #endregion
-    }
-    public enum GraphOperationMode
-    {
-        Select,
-        MultiSelect
     }
 }

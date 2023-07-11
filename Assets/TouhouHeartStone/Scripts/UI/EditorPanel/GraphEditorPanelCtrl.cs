@@ -20,18 +20,10 @@ namespace UI
             _outputFilter = null;
             _searchFilter = null;
             _filteredDefines = null;
-            setOperationMode(scene.editor.graphOperationMode);
             updatePasteButton();
             updateDeleteButton();
             updateNodeDefines();
             updateNodesList();
-        }
-        public void setOperationMode(GraphOperationMode mode)
-        {
-            scene.editor.graphOperationMode = mode;
-            _actionGraphCtrl.SetOperationMode(mode);
-            _singleSelectObj.SetActive(mode == GraphOperationMode.Select);
-            _multiSelectObj.SetActive(mode == GraphOperationMode.MultiSelect);
         }
         public void updateNodeDefines()
         {
@@ -114,11 +106,9 @@ namespace UI
         #region 事件回调
         private void OnClickSingleSelectButton()
         {
-            setOperationMode(GraphOperationMode.Select);
         }
         private void OnClickMultiSelectButton()
         {
-            setOperationMode(GraphOperationMode.MultiSelect);
         }
         private void OnClickCopyButton()
         {
