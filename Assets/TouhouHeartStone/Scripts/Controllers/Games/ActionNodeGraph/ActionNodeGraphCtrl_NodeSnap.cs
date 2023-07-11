@@ -156,34 +156,6 @@ namespace Controllers
                         input = targetNode.getInputPortAt(connection.targetIndex);
                     }
                     connectPorts(output, input);
-
-                    // 如果是值连接，对齐吸附后的节点位置。
-                    if (!_currentNodeSnapResult.isControl())
-                    {
-                        var targetSnapNode = _currentNodeSnapResult.target.node;
-                        var children = targetSnapNode.children;
-                        if (children.Length > 0)
-                        {
-                            var nodeItem = targetSnapNode.item;
-                            var alignNode = getActionNode(nodeItem);
-                            float maxY = nodeItem.posY, minY = nodeItem.posY;
-                            foreach (var childNode in children)
-                            {
-                                var itemRect = childNode.item.getNodeItemRect();
-                                maxY = Mathf.Max(itemRect.yMax, maxY);
-                                minY = Mathf.Min(itemRect.yMin, minY);
-                            }
-                            // 包括新加入的这个节点
-                            var curItemRect = curNodeItem.getNodeItemRect();
-                            maxY = Mathf.Max(curItemRect.yMax, maxY);
-                            minY = Mathf.Min(curItemRect.yMin, minY);
-
-                            float centerY = (maxY + minY) / 2;
-
-                            alignNode.posY = centerY;
-                            _ui.moveActionNodeTo(item, new Vector2(nodeItem.posX, centerY));
-                        }
-                    }
                 }
             }
         }
@@ -360,7 +332,7 @@ namespace Controllers
                     var pos = getNodeSnapResultPosition(r, previewRect);
                     return _ui.isNodePositionFree(pos - previewRect.size * 0.5f, previewRect.size);
                 });
-                var ordered = final.OrderBy(r => r.isControl() ? 1 : 0);
+                var ordered = final.OrderBy(r => r.isControl() ? 0 : 1);
                 ordered = ordered.ThenBy(r => r.needTypeConversion() ? 1 : 0);
                 ordered = ordered.ThenBy(r => (getNodeSnapResultPosition(r, previewRect) - targetPosition).sqrMagnitude);
                 return ordered.FirstOrDefault();
