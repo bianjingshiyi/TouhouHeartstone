@@ -461,6 +461,10 @@ namespace UI
         }
         public Vector2 findFreeNodeCreatePosition(Rect itemRect)
         {
+            return findFreeNodeCreatePosition(itemRect, itemRect.center);
+        }
+        public Vector2 findFreeNodeCreatePosition(Rect itemRect, Vector2 distancePivot)
+        {
             var itemPos = itemRect.center;
             var region = getGraphFreePlaceCheckRegion();
             var offset = getGraphFreePlaceCheckRegionOffset();
@@ -472,7 +476,7 @@ namespace UI
                 return itemPos;
             }
             // 是否有足够的空间容纳该节点。
-            if (region.canCutByNearest(itemRect.width, itemRect.height, itemRect.center + offset, out Rect resultRect))
+            if (region.canCutByNearest(itemRect.width, itemRect.height, itemRect.center + offset, distancePivot + offset, out Rect resultRect))
             {
                 // 转换成content的位置。
                 Rect contentRect = resultRect;

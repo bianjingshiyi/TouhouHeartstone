@@ -47,8 +47,21 @@ namespace FreespaceFinder
         /// </summary>
         /// <param name="width">Width of the area</param>
         /// <param name="height">Height of the area</param>
+        /// <param name="target">Original target position</param>
         /// <param name="rect">Nearest Rect completely containing the cut</param>
         public bool canCutByNearest(float width, float height, Vector2 target, out Rect rect)
+        {
+            return canCutByNearest(width, height, target, target, out rect);
+        }
+        /// <summary>
+        /// Returns the nearest Rect (or null) that can contain the whole cut
+        /// </summary>
+        /// <param name="width">Width of the area</param>
+        /// <param name="height">Height of the area</param>
+        /// <param name="target">Original target position</param>
+        /// <param name="distancePivot">The pivot point for distance check</param>
+        /// <param name="rect">Nearest Rect completely containing the cut</param>
+        public bool canCutByNearest(float width, float height, Vector2 target, Vector2 distancePivot, out Rect rect)
         {
             bool found = false;
             float nearestDis = 0;
@@ -60,7 +73,7 @@ namespace FreespaceFinder
                     float nearestX = Mathf.Clamp(target.x, r.xMin, r.xMax);
                     float nearestY = Mathf.Clamp(target.y, r.yMin, r.yMax);
                     Vector2 nearest = new Vector2(nearestX, nearestY);
-                    float dis = Vector2.SqrMagnitude(nearest - target);
+                    float dis = Vector2.SqrMagnitude(nearest - distancePivot);
                     if (!found || dis < nearestDis)
                     {
                         nearestDis = dis;

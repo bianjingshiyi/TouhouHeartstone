@@ -99,24 +99,24 @@ namespace Controllers
             Rect previewRect = new Rect(position - previewSize * 0.5f, previewSize);
 
             // 寻找合适的节点。
-            var (leftTargets, rightTargets) = findNodeSnapTargets(previewRect, nodeDefine);
+            var targets = findNodeSnapTargets(previewRect, nodeDefine);
 
             // 有左侧连接节点。
-            var pair = getNodeSnapResult(position, previewRect, leftTargets, rightTargets);
+            var result = getNodeSnapResult(position, previewRect, targets);
 
             showPreviewNode(nodeDefine);
             Vector2 previewPos = position;
-            if (pair != null)
+            if (result != null)
             {
-                previewPos = getNodeSnapResultPosition(pair, previewRect);
-                setNodeSnapConnections(pair);
-                _currentNodeSnapResult = pair;
+                previewPos = result.position;
+                setNodeSnapConnections(result);
+                _currentNodeSnapTarget = result;
             }
             else
             {
                 _nodeSnapped = false;
                 _ui.disconnectPreviewPorts();
-                _currentNodeSnapResult = null;
+                _currentNodeSnapTarget = null;
             }
             _ui.setPreviewNodePosition(previewPos);
         }
@@ -135,14 +135,13 @@ namespace Controllers
         }
         public void connectSnapConnections(Node node)
         {
-            if (_nodeSnapped && _currentNodeSnapResult != null)
+            if (_nodeSnapped && _currentNodeSnapTarget != null)
             {
-                var result = _currentNodeSnapResult;
+                var result = _currentNodeSnapTarget;
                 if (result.target != null)
                 {
                     var connection = result.getConnection();
-                    var item = result.target.node.item;
-                    var curNodeItem = getActionNodeItem(node);
+                    var item = result.target.item;
                     var targetNode = getActionNode(item);
                     IPort output, input;
                     if (connection.toOutput)
@@ -161,13 +160,13 @@ namespace Controllers
         }
         #endregion
         #region 私有方法
-        private void setNodeSnapConnections(NodeSnapResult result)
+        private void setNodeSnapConnections(NodeSnapTarget result)
         {
             _ui.disconnectPreviewPorts();
             if (result.target != null)
             {
                 var connection = result.getConnection();
-                var targetItem = result.target.node.item;
+                var targetItem = result.target.item;
                 var targetIndex = connection.targetIndex;
                 _ui.connectPreviewPorts(targetItem, targetIndex, connection.sourceIndex, connection.toOutput);
             }
@@ -178,7 +177,7 @@ namespace Controllers
         /// <param name="previewRect"></param>
         /// <param name="nodeDefine"></param>
         /// <returns></returns>
-        private (List<NodeSnapTarget> leftTargets, List<NodeSnapTarget> rightTargets) findNodeSnapTargets(Rect previewRect, NodeDefine nodeDefine)
+        private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, NodeDefine nodeDefine)
         {
             // 获取此节点的输入和输出。
             PortDefine[] inputDefines = null;
@@ -194,8 +193,7 @@ namespace Controllers
                 outputDefines = nodeDefine.eventDefine.variableInfos.Select(v => PortDefine.Value(v.type, v.name)).ToArray();
             }
 
-            List<NodeSnapTarget> leftTargets = new List<NodeSnapTarget>(); // 位于左侧，并且符合连接条件的节点。
-            List<NodeSnapTarget> rightTargets = new List<NodeSnapTarget>(); // 位于右侧，并且符合连接条件的节点。
+            List<NodeSnapTarget> targets = new List<NodeSnapTarget>(); // 符合连接条件的节点。
             Dictionary<ActionNodeItem, NodeSnapNode> nodeItemDict = new Dictionary<ActionNodeItem, NodeSnapNode>(); // 所有被包括进的节点，以及其对应的子树组。
             foreach (var nodeItem in _actionNodeItemList)
             {
@@ -215,13 +213,18 @@ namespace Controllers
 
                     // 有有效连接。
                     var node = getActionNode(nodeItem);
-                    var validConnnections = getSnapValidConnections(node.outputPorts, inputDefines, true);
+                    var validConnections = getSnapValidConnections(node.outputPorts, inputDefines, true);
 
-                    if (validConnnections.Length > 0)
+                    if (validConnections.Length > 0)
                     {
                         float distance = (new Vector2(nodeItem.posX, nodeItem.posY) - previewRect.center).sqrMagnitude;
                         var snapNode = getSnapNodeByItem(nodeItem);
-                        leftTargets.Add(new NodeSnapTarget(snapNode, validConnnections, distance));
+                        foreach (var connection in validConnections)
+                        {
+                            var target = new NodeSnapTarget(snapNode, connection, false);
+                            target.position = getNodeSnapResultPosition(target, previewRect);
+                            targets.Add(target);
+                        }
                     }
                 }
                 // 这个节点在目标节点右边
@@ -239,20 +242,22 @@ namespace Controllers
 
                     // 有有效连接。
                     var node = getActionNode(nodeItem);
-                    var validConnnections = getSnapValidConnections(node.inputPorts, outputDefines, false);
+                    var validConnections = getSnapValidConnections(node.inputPorts, outputDefines, false);
 
-                    if (validConnnections.Length > 0)
+                    if (validConnections.Length > 0)
                     {
                         float distance = (new Vector2(nodeItem.posX, nodeItem.posY) - previewRect.center).sqrMagnitude;
                         var snapNode = getSnapNodeByItem(nodeItem);
-                        rightTargets.Add(new NodeSnapTarget(snapNode, validConnnections, distance));
+                        foreach (var connection in validConnections)
+                        {
+                            var target = new NodeSnapTarget(snapNode, connection, true);
+                            target.position = getNodeSnapResultPosition(target, previewRect);
+                            targets.Add(target);
+                        }
                     }
                 }
             }
-            // 按照距离目标位置的距离排序。
-            leftTargets.OrderBy(n => n.distance);
-            rightTargets.OrderBy(n => n.distance);
-            return (leftTargets, rightTargets);
+            return targets;
 
 
             NodeSnapNode getSnapNodeByItem(ActionNodeItem item)
@@ -306,35 +311,25 @@ namespace Controllers
         /// 根据左侧和右侧的节点寻找节点吸附的位置。
         /// </summary>
         /// <param name="previewRect"></param>
-        /// <param name="leftTargets"></param>
+        /// <param name="targets"></param>
         /// <param name="rightTargets"></param>
         /// <param name="previewPos"></param>
         /// <returns></returns>
-        private NodeSnapResult getNodeSnapResult(Vector2 targetPosition, Rect previewRect, List<NodeSnapTarget> leftTargets, List<NodeSnapTarget> rightTargets)
+        private NodeSnapTarget getNodeSnapResult(Vector2 targetPosition, Rect previewRect, List<NodeSnapTarget> targets)
         {
-            List<NodeSnapResult> results = new List<NodeSnapResult>();
-            if (leftTargets.Count > 0)//只有左侧有。
+            if (targets.Count > 0)
             {
-                results.AddRange(leftTargets.SelectMany(t => t.connections.Select((c, i) => new NodeSnapResult(t, i, false))));
-            }
-            if (rightTargets.Count > 0) // 只有右侧连接节点。
-            {
-                results.AddRange(rightTargets.SelectMany(t => t.connections.Select((c, i) => new NodeSnapResult(t, i, true))));
-            }
-            if (results.Count > 0)
-            {
-                var final = results.Where(r =>
+                var final = targets.Where(r =>
                 {
                     if (r.isControl() && r.connectToRight) // 控制红线要连接，必须要向左连接。
                     {
                         return false;
                     }
-                    var pos = getNodeSnapResultPosition(r, previewRect);
-                    return _ui.isNodePositionFree(pos - previewRect.size * 0.5f, previewRect.size);
+                    return _ui.isNodePositionFree(r.position - previewRect.size * 0.5f, previewRect.size);
                 });
                 var ordered = final.OrderBy(r => r.isControl() ? 0 : 1);
                 ordered = ordered.ThenBy(r => r.needTypeConversion() ? 1 : 0);
-                ordered = ordered.ThenBy(r => (getNodeSnapResultPosition(r, previewRect) - targetPosition).sqrMagnitude);
+                ordered = ordered.ThenBy(r => (r.position - targetPosition).sqrMagnitude);
                 return ordered.FirstOrDefault();
             }
             return null;
@@ -346,41 +341,13 @@ namespace Controllers
         /// <param name="leftNode"></param>
         /// <param name="rightNode"></param>
         /// <returns></returns>
-        public Vector2 getNodeSnapResultPosition(NodeSnapResult result, Rect previewRect)
+        public Vector2 getNodeSnapResultPosition(NodeSnapTarget result, Rect previewRect)
         {
             Vector2 pos = previewRect.position;
             float snapDistance = _nodeSnapConfirmHoriDistance;
-            var node = result.target?.node?.item;
+            var node = result.target?.item;
 
             var rect = node.getNodeItemRect();
-
-            if (!result.isControl() && result.connectToRight) // 特殊：向右连接值
-            {
-                pos.x = rect.xMin - snapDistance - previewRect.width * 0.5f;
-                pos.y = rect.center.y;
-                var children = result.target.node.children;
-                if (children.Length > 0)
-                {
-                    // 获取所有目标节点直接子树的节点，然后将位置设置为子树节点的上方或下方。
-                    float maxY = pos.y, minY = pos.y;
-                    foreach (var childNode in children)
-                    {
-                        var itemRect = childNode.item.getNodeItemRect();
-                        maxY = Mathf.Max(itemRect.yMax, maxY);
-                        minY = Mathf.Min(itemRect.yMin, minY);
-                    }
-                    float centerY = (maxY + minY) / 2;
-                    if (previewRect.center.y > centerY)
-                    {
-                        pos.y = maxY + 50 + previewRect.width / 2;
-                    }
-                    else
-                    {
-                        pos.y = minY - 50 - previewRect.width / 2;
-                    }
-                }
-                return pos;
-            }
 
             if (result.connectToRight) // 目标节点在预览节点右侧
             {
@@ -401,7 +368,21 @@ namespace Controllers
                 // 居中对齐
                 pos.y = rect.center.y;
             }
-            return pos;
+            var checkRect = previewRect;
+            checkRect.center = pos;
+
+            float yMin = previewRect.yMin;
+            float yMax = previewRect.yMax;
+            foreach (var child in result.target.children)
+            {
+                var childRect = child.item.getNodeItemRect();
+                yMin = Mathf.Min(yMin, childRect.yMin);
+                yMax = Mathf.Max(yMax, childRect.yMax);
+            }
+            var checkPivot = previewRect.center;
+            checkPivot.x = pos.x;
+            checkPivot.y = Mathf.Clamp(checkPivot.y, yMin, yMax);
+            return _ui.findFreeNodeCreatePosition(checkRect, previewRect.center);
         }
         #endregion
         #region 属性字段
@@ -415,37 +396,37 @@ namespace Controllers
         /// 节点吸附的最远水平判断距离。
         /// </summary>
         [SerializeField]
-        private float _maxNodeSnapHoriDistance = 500;
+        private float _maxNodeSnapHoriDistance = 300;
         /// <summary>
         /// 节点吸附的最远垂直判断距离。
         /// </summary>
         [SerializeField]
-        private float _maxNodeSnapVertDistance = 500;
+        private float _maxNodeSnapVertDistance = 300;
         /// <summary>
         /// 节点吸附时的水平间隔。
         /// </summary>
         [SerializeField]
         private float _nodeSnapConfirmHoriDistance = 100;
         bool _nodeSnapped;
-        NodeSnapResult _currentNodeSnapResult;
+        NodeSnapTarget _currentNodeSnapTarget;
         #endregion
     }
-    class NodeSnapResult
+    class NodeSnapTarget
     {
-        public NodeSnapTarget target;
-        public int connectionIndex;
+        public NodeSnapNode target;
+        public NodeSnapConnection connection;
         public bool connectToRight;
-        public NodeSnapResult(NodeSnapTarget target, int connectionIndex, bool isRight)
+        public Vector2 position;
+        public NodeSnapTarget(NodeSnapNode target, NodeSnapConnection connection, bool connectToRight)
         {
             this.target = target;
-            this.connectionIndex = connectionIndex;
-            this.connectToRight = isRight;
+            this.connection = connection;
+            this.connectToRight = connectToRight;
         }
-
 
         public NodeSnapConnection getConnection()
         {
-            return target.connections[connectionIndex];
+            return connection;
         }
         public bool isControl()
         {
@@ -455,18 +436,6 @@ namespace Controllers
         public bool needTypeConversion()
         {
             return getConnection().needConversion;
-        }
-    }
-    class NodeSnapTarget
-    {
-        public NodeSnapNode node;
-        public NodeSnapConnection[] connections;
-        public float distance;
-        public NodeSnapTarget(NodeSnapNode item, NodeSnapConnection[] connections, float distance)
-        {
-            this.node = item;
-            this.connections = connections;
-            this.distance = distance;
         }
     }
     class NodeSnapNode
