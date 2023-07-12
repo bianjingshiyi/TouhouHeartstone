@@ -1466,8 +1466,8 @@ namespace TouhouHeartstone
             public override void Record(IGame game, EventRecord record)
             {
                 record.setVar(EVENTVAR.PLAYER, player);
-                record.setCardStates(EVENTVAR.FROM_PILE, from);
-                record.setCardState(EVENTVAR.CHOSEN_CARD, card);
+                record.setVar(EVENTVAR.FROM_PILE, from);
+                record.setCardState(EVENTVAR.CARD, card);
             }
             public Player player
             {
