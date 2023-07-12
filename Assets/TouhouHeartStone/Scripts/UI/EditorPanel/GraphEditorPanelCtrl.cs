@@ -101,6 +101,10 @@ namespace UI
             {
                 updateDeleteButton();
             }
+
+#if UNITY_STANDALONE
+            shortcutsUpdate();
+#endif
         }
         #endregion
         #region 事件回调
@@ -403,6 +407,57 @@ namespace UI
                 }
             }
             return true;
+        }
+
+        private async void shortcutsUpdate()
+        {
+            if (!_actionGraphCtrl.isFocused())
+                return;
+            // PC快捷键
+            if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
+            {
+                if (Input.GetKeyDown(KeyCode.C))
+                {
+                    // Ctrl + C：复制
+                    var clipboard = _actionGraphCtrl.copySelection();
+                    scene.editor.nodeClipboard = clipboard;
+                    updatePasteButton();
+                }
+                if (Input.GetKeyDown(KeyCode.V))
+                {
+                    // Ctrl + V：粘贴
+                    var clipboard = scene.editor.nodeClipboard;
+                    if (!string.IsNullOrEmpty(clipboard))
+                    {
+                        await _actionGraphCtrl.pasteClipboard(clipboard);
+                        updatePasteButton();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.D))
+                {
+                    // Ctrl + D：复制并粘贴
+                    var clipboard = _actionGraphCtrl.copySelection();
+                    scene.editor.nodeClipboard = clipboard;
+                    if (!string.IsNullOrEmpty(clipboard))
+                    {
+                        await _actionGraphCtrl.pasteClipboard(clipboard);
+                    }
+                    updatePasteButton();
+                }
+                if (Input.GetKeyDown(KeyCode.X))
+                {
+                    // Ctrl + X：复制并删除
+                    var clipboard = _actionGraphCtrl.copySelection();
+                    scene.editor.nodeClipboard = clipboard;
+                    updatePasteButton();
+                    _actionGraphCtrl.deleteSelection();
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.Delete))
+            {
+                // Delete：删除
+                _actionGraphCtrl.deleteSelection();
+            }
         }
         #endregion
 

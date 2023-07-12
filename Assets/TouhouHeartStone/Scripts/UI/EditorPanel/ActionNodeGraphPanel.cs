@@ -505,6 +505,20 @@ namespace UI
             itemRect.center = itemPos;
             return itemRect;
         }
+        /// <summary>
+        /// 将操作焦点设置为节点图。
+        /// </summary>
+        public void setFocused()
+        {
+            EventSystem.current.SetSelectedGameObject(gameObject);
+        }
+        /// <summary>
+        /// 操作焦点是否为节点图。
+        /// </summary>
+        public bool isFocused()
+        {
+            return EventSystem.current.currentSelectedGameObject == gameObject;
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -588,6 +602,7 @@ namespace UI
         private void onPointerDownBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
             _longPressTimer.start();
+            setFocused();
         }
         private void onPointerUpBackgroundImage(EventTriggerWithoutUseEvent eventTrigger, BaseEventData eventData)
         {
@@ -602,6 +617,7 @@ namespace UI
                     clearSelection();
                 }
             }
+            setFocused();
         }
         private void onBackgroundScroll(BaseEventData eventData)
         {
@@ -609,6 +625,7 @@ namespace UI
             var desiredScale = _content.localScale + delta;//进行缩放
             desiredScale = ClampDesiredScale(desiredScale);//对缩放目标进行一个数据的clamp以保证成倍缩放
             _content.localScale = desiredScale;
+            setFocused();
         }
 
         private void OnFingertouch(BaseEventData eventData)
@@ -673,6 +690,7 @@ namespace UI
         }
         public void onBackgroundDrag(BaseEventData eventData)
         {
+            setFocused();
             _isDragging = true;
             if (shouldDragSelectionFrame(eventData))
             {
@@ -687,6 +705,7 @@ namespace UI
         }
         public void onBackgroundBeginDrag(BaseEventData eventData)
         {
+            setFocused();
             if (shouldDragSelectionFrame(eventData))
             {
                 _selectFrameDragStartPosition = (Vector2)Input.mousePosition - (Vector2)_content.position;
@@ -710,6 +729,7 @@ namespace UI
         {
             if (_isTouchZooming) return;
 
+            setFocused();
             int inputIndex = item.indexOfInput(input);
             int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == inputIndex);
             if (index >= 0 && !input.isControl)
@@ -741,6 +761,7 @@ namespace UI
         {
             if (_isTouchZooming) return;
 
+            setFocused();
             GameObject from = input.getNode();
             GameObject to = new GameObject();
             to.name = "Slot";
@@ -815,6 +836,7 @@ namespace UI
         /// <param name="eventData"></param>
         private void onClickInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
+            setFocused();
             int inputIndex = item.indexOfInput(input);
             if (_currentSelectedKnob.inputNode == item && _currentSelectedKnob.inputIndex == inputIndex)
             {
@@ -869,6 +891,7 @@ namespace UI
         {
             if (!_isTouchZooming)
             {
+                setFocused();
                 int outputIndex = item.indexOfOutput(output);
                 int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == outputIndex);
                 if (index >= 0 && output.isControl)
@@ -900,6 +923,7 @@ namespace UI
         {
             if (_isTouchZooming) return;
 
+            setFocused();
             GameObject from = output.getNode();
             GameObject to = new GameObject();
             to.name = "Slot";
@@ -974,6 +998,7 @@ namespace UI
         /// <param name="eventData"></param>
         private void onClickOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
+            setFocused();
             int outputIndex = item.indexOfOutput(output);
             if (_currentSelectedKnob.outputNode == item && _currentSelectedKnob.outputIndex == outputIndex)
             {
@@ -1021,18 +1046,22 @@ namespace UI
         private void onPointerDownActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
             if (_isTouchZooming) return;
+            setFocused();
             _pointerOverActionNodeItem = item;
         }
         private void onPointerUpActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
             if (_pointerOverActionNodeItem == item)
             {
+                setFocused();
                 clearAndSelectNode(item);
             }
         }
         private void onBeginDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
             if (_isTouchZooming) return;
+
+            setFocused();
             if (_pointerOverActionNodeItem == item)
             {
                 _pointerOverActionNodeItem = null;
@@ -1046,6 +1075,7 @@ namespace UI
             if (item != _dragItem)
                 return;
 
+            setFocused();
             Vector2 graphPosition = (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position) + _dragItemPositionOffset;
             if (!isNodeSelected(item))
             {
@@ -1062,34 +1092,37 @@ namespace UI
         }
         private void onActionNodeItemConstValueChanged(ActionNodeItem item, int constValueIndex, object value)
         {
+            setFocused();
             onActionNodeValueChange?.Invoke(item, constValueIndex, value);
         }
         private void onClickActionNodeItemConstValueButton(ActionNodeItem item, int constValueIndex)
         {
+            setFocused();
             onClickActionNodeConstValueEditButton?.Invoke(item, constValueIndex);
         }
         private void onClickActionNodeItemConstValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex)
         {
+            setFocused();
             onClickActionNodeConstValueItemEditButton?.Invoke(item, constValueIndex, itemIndex);
-        }
-        private void onTriggerNodeEventIndexChanged(ActionNodeItem item, int eventIndex)
-        {
-            onTriggerEventTypeChanged?.Invoke(item, eventIndex);
         }
         private void onClickTriggerNodeAddTargetCheckerButton(ActionNodeItem item)
         {
+            setFocused();
             onClickAddTargetCheckerButton?.Invoke(item);
         }
         private void onTargetCheckerTypeValueChangedCallback(ActionNodeItem item, int targetCheckerIndex, int value)
         {
+            setFocused();
             onTargetCheckerTypeValueChanged?.Invoke(item, targetCheckerIndex, value);
         }
         private void onClickTriggerNodeRemoveTargetCheckerButton(ActionNodeItem item, int targetCheckerIndex)
         {
+            setFocused();
             onClickRemoveTargetCheckerButton?.Invoke(item, targetCheckerIndex);
         }
         private void onTargetCheckerErrorTipValueChangedCallback(ActionNodeItem item, int targetCheckerIndex, string value)
         {
+            setFocused();
             onTargetCheckerErrorTipValueChanged?.Invoke(item, targetCheckerIndex, value);
         }
         private void onClickReturnButtonCallback()
@@ -1098,6 +1131,7 @@ namespace UI
         }
         private void onClickCancelSelectButtonCallback()
         {
+            setFocused();
             onClickCancelSelectButton?.Invoke();
         }
         private void onActionNodeItemUpdateTransform(ActionNodeItem item)
@@ -1107,6 +1141,7 @@ namespace UI
 
         private void onActionNodeClickHelpButton(string key)
         {
+            setFocused();
             _nodeDocument?.Show(key);
         }
 
@@ -1114,38 +1149,47 @@ namespace UI
         #region 效果属性
         private void onClickAddEffectPropertyButtonCallback()
         {
+            setFocused();
             onClickAddEffectPropertyButton?.Invoke();
         }
         private void onConfirmCreateEffectPropertyCallback(EffectPropertyItem item)
         {
+            setFocused();
             onConfirmCreateEffectProperty?.Invoke(item);
         }
         private void onClickEffectPropertyItemButtonCallback(string name, int index)
         {
+            setFocused();
             onClickEffectPropertyItemButton?.Invoke(name, index);
         }
         private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
         {
+            setFocused();
             onEffectPropertyItemValueChanged?.Invoke(name, index, value);
         }
         private void onClickEffectPropertyAddItemButtonCallback(string name)
         {
+            setFocused();
             onClickEffectPropertyAddItemButton?.Invoke(name);
         }
         private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
         {
+            setFocused();
             onClickEffectPropertyRemoveItemButton?.Invoke(name, index);
         }
         private void onClickEffectPropertyButtonCallback(string name)
         {
+            setFocused();
             onClickEffectPropertyButton?.Invoke(name);
         }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
+            setFocused();
             onEffectPropertyValueChanged?.Invoke(name, value);
         }
         private void onDeleteEffectPropertyCallback(string name)
         {
+            setFocused();
             onDeleteEffectProperty?.Invoke(name);
         }
         #endregion

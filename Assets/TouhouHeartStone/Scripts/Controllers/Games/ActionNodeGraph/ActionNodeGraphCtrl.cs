@@ -94,6 +94,11 @@ namespace Controllers
             OnGraphEdited?.Invoke();
         }
 
+        public bool isFocused()
+        {
+            return _ui.isFocused();
+        }
+
         #region 节点选择
         public string copySelection()
         {
