@@ -2377,22 +2377,22 @@ namespace TouhouHeartstone
         public static async Task updateBuff(this Card card, CardEngine game, Buff buff)
         {
             buff.updateModifierProps(game);
-            //var propModis = buff.getPropertyModifiers(game);
-            //if (propModis != null)
-            //{
-            //    foreach (var modifier in propModis)
-            //    {
-            //        card.removeModifier(game, modifier);
-            //        card.addModifier(game, modifier);
-            //    }
-            //}
+
             var effects = buff.getEffects(game);
             if (effects != null)
             {
                 foreach (var effect in effects)
                 {
                     await effect.onDisable(game, card, buff);
-                    await effect.onEnable(game, card, buff);
+                    if (effect is IPileRangedEffect pileEffect)
+                    {
+                        if (pileEffect.piles.Contains(card.pile?.name))
+                            await effect.onEnable(game, card, null);
+                    }
+                    else
+                    {
+                        await effect.onEnable(game, card, null);
+                    }
                 }
             }
         }
