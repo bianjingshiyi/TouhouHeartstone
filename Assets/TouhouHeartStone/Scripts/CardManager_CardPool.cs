@@ -1091,7 +1091,14 @@ namespace Game
             {
                 foreach (var valueConst in node.consts)
                 {
-                    if (valueConst.Value is DefineReference defRef)
+                    if (valueConst.Value is IEnumerable<DefineReference> defRefList)
+                    {
+                        foreach (var defRef in defRefList)
+                        {
+                            addCardPoolOfDefRef(defRef);
+                        }
+                    }
+                    else if (valueConst.Value is DefineReference defRef)
                     {
                         addCardPoolOfDefRef(defRef);
                     }
