@@ -803,6 +803,15 @@ namespace Controllers
                                 if (cardRefArray[j] is DefineReference cardReference)
                                 {
                                     var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
+                                    // 如果卡池没有被加载，加载卡池。
+                                    if (!game.card.tryGetCardPool(localRef, out _))
+                                    {
+                                        var path = game.card.getCardPoolPath(localRef);
+                                        if (path != null)
+                                        {
+                                            await game.card.loadCardPool(path, true);
+                                        }
+                                    }
                                     cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
                                 }
                                 CardSkinData cardSkin = null;

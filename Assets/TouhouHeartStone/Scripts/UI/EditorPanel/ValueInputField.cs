@@ -317,7 +317,7 @@ namespace UI
                 if (elementType == null)
                     return;
                 _listRoot.gameObject.SetActive(true);
-                UIHelper.updateList(_listContentRoot, _listTemplate, _list, array.Length, (i, itemRect) =>
+                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, array.Length, (i, itemRect) =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.setValueInfo(null, new ActionNodeValueInfo()
@@ -526,7 +526,7 @@ namespace UI
                 _listRoot.gameObject.SetActive(true);
                 if (_valueInfo.value is TriggerCollection triggerCollection)
                 {
-                    UIHelper.updateList(_listContentRoot, _listTemplate, _list, triggerCollection.Count, (i, itemRect) =>
+                    UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, triggerCollection.Count, (i, itemRect) =>
                     {
                         ValueInputField item = itemRect.GetComponent<ValueInputField>();
                         item.setValueInfo(null, new ActionNodeValueInfo()
@@ -561,7 +561,7 @@ namespace UI
                 {
                     cardReferenceCollection = null;
                 }
-                UIHelper.updateList(_listContentRoot, _listTemplate, _list, cardReferenceCollection != null ? cardReferenceCollection.Length : 0, (i, itemRect) =>
+                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, cardReferenceCollection != null ? cardReferenceCollection.Length : 0, (i, itemRect) =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.setValueInfo(null, new ActionNodeValueInfo()
@@ -600,6 +600,18 @@ namespace UI
                 _buildItem.gameObject.SetActive(false);
             }
         }
+
+        private RectTransform GetListTemplate()
+        {
+            // 列表项模板直接引用自身，会在创建列表项时连同自身的所有列表项一同复制，造成性能开销指数上升。
+            // 这里创建一个自身的复制，用它来当模板。
+            if (!_listTemplateClone)
+            {
+                _listTemplateClone = Instantiate(_listTemplate, transform);
+                _listTemplateClone.gameObject.SetActive(false);
+            }
+            return _listTemplateClone;
+        }
         #endregion
         #region 事件
         public event Action<ValueInputField, object> onValueChanged;
@@ -635,6 +647,7 @@ namespace UI
         RectTransform _listContentRoot;
         [SerializeField]
         RectTransform _listTemplate;
+        RectTransform _listTemplateClone;
         [SerializeField]
         List<RectTransform> _list = new List<RectTransform>();
         [SerializeField]
