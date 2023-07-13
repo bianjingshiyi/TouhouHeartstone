@@ -22,6 +22,7 @@ namespace UI
             _filteredDefines = null;
             updatePasteButton();
             updateDeleteButton();
+            updateUndoRedoButton();
             updateNodeDefines();
             updateNodesList();
         }
@@ -70,8 +71,8 @@ namespace UI
         #region 生命周期
         void Awake()
         {
-            _singleSelectButton.onClick.AddListener(OnClickSingleSelectButton);
-            _multiSelectButton.onClick.AddListener(OnClickMultiSelectButton);
+            _undoButton.onClick.AddListener(OnClickUndoButton);
+            _redoButton.onClick.AddListener(OnClickRedoButton);
             _copyButton.onClick.AddListener(OnClickCopyButton);
             _pasteButton.onClick.AddListener(OnClickPasteButton);
             _deleteButton.onClick.AddListener(OnClickDeleteButton);
@@ -79,6 +80,7 @@ namespace UI
 
             _actionGraphCtrl.OnNodeSelected += OnNodeSelected;
             _actionGraphCtrl.OnNodeDeselected += OnNodeDeselected;
+            _actionGraphCtrl.OnGraphEdited += OnGraphEdited;
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
@@ -92,8 +94,6 @@ namespace UI
             _nodesPanel.onOutputFilterValueChanged += onOutputFilterValueChanged;
             _nodesPanel.onSearchFilterEndEdit += onSearchFilterEndEdit;
             _nodesPanel.onCreateActionClicked += onCreateActionClicked;
-
-            updatePasteButton();
         }
         private void Update()
         {
@@ -108,11 +108,15 @@ namespace UI
         }
         #endregion
         #region 事件回调
-        private void OnClickSingleSelectButton()
+        private void OnClickUndoButton()
         {
+            _actionGraphCtrl.undo();
+            updateUndoRedoButton();
         }
-        private void OnClickMultiSelectButton()
+        private void OnClickRedoButton()
         {
+            _actionGraphCtrl.redo();
+            updateUndoRedoButton();
         }
         private void OnClickCopyButton()
         {
@@ -139,6 +143,10 @@ namespace UI
         private void OnNodeDeselected(Node node)
         {
             _deleteButtonDirty = true;
+        }
+        private void OnGraphEdited()
+        {
+            updateUndoRedoButton();
         }
         public async void onCreateActionDefineCallback(string name, string category)
         {
@@ -342,6 +350,11 @@ namespace UI
             _createActionDefineDialog.showErrorTip(message);
         }
         #endregion
+        private void updateUndoRedoButton()
+        {
+            _undoButton.interactable = _actionGraphCtrl.canUndo();
+            _redoButton.interactable = _actionGraphCtrl.canRedo();
+        }
         private void updatePasteButton()
         {
             _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard);
@@ -452,6 +465,22 @@ namespace UI
                     updatePasteButton();
                     _actionGraphCtrl.deleteSelection();
                 }
+                if (Input.GetKeyDown(KeyCode.Z))
+                {
+                    // Ctrl + Z：撤销
+                    if (_actionGraphCtrl.canUndo())
+                    {
+                        _actionGraphCtrl.undo();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.Y))
+                {
+                    // Ctrl + Y：重做
+                    if (_actionGraphCtrl.canRedo())
+                    {
+                        _actionGraphCtrl.redo();
+                    }
+                }
             }
             if (Input.GetKeyDown(KeyCode.Delete))
             {
@@ -474,9 +503,9 @@ namespace UI
 
         [Header("按钮")]
         [SerializeField]
-        Button _singleSelectButton;
+        Button _undoButton;
         [SerializeField]
-        Button _multiSelectButton;
+        Button _redoButton;
         [SerializeField]
         Button _copyButton;
         [SerializeField]

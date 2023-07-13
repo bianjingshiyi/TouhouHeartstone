@@ -63,6 +63,10 @@ namespace TouhouHeartstone
             graph.updateSize();
             return node;
         }
+        public static Node findNodeById(this ActionGraph graph, int id)
+        {
+            return graph.nodes.FirstOrDefault(n => n.id == id);
+        }
         public static ActiveEntryNode findActiveEntryNode(this ActionGraph graph)
         {
             return graph.nodes.OfType<ActiveEntryNode>().FirstOrDefault();

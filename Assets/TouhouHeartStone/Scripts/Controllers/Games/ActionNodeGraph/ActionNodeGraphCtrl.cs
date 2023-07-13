@@ -22,6 +22,7 @@ namespace Controllers
         /// </summary>
         public void quitGraph()
         {
+            _recordList.clear();
         }
         public Task display(UIDisplayInfo uiDisplayInfo)
         {
@@ -99,6 +100,8 @@ namespace Controllers
             return _ui.isFocused();
         }
 
+
+
         #region 节点选择
         public string copySelection()
         {
@@ -167,15 +170,17 @@ namespace Controllers
         }
         public void deleteSelection()
         {
-            _curEditNode = null;
-            OnEdited();
             var selectedNodes = _ui.getSelectedNodes().Select(n => getActionNode(n)).Where(n => CanNodeBeDeleted(n));
             if (selectedNodes.Count() <= 0)
                 return;
             foreach (var node in selectedNodes.ToArray())
             {
                 removeActionNode(node);
+                _recordList.addOperation(new DeleteNodeOperation(this, node));
             }
+            _recordList.addBreakpoint();
+            _curEditNode = null;
+            OnEdited();
         }
         public Node[] getSelectedNodes()
         {
@@ -225,6 +230,8 @@ namespace Controllers
             _actionNodeList.Add(actionNode);
             ActionNodeItem actionNodeItem = await createNodeUI4ActionNode(actionNode);
             updateContentSize();
+            _recordList.addOperation(new CreateNodeOperation(this, actionNode));
+            _recordList.addBreakpoint();
             OnEdited();
             return actionNodeItem;
         }
@@ -252,6 +259,8 @@ namespace Controllers
             _actionNodeList.Add(actionNode);
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
             updateContentSize();
+            _recordList.addOperation(new CreateNodeOperation(this, actionNode));
+            _recordList.addBreakpoint();
             OnEdited();
             return actionNodeItem;
         }
@@ -278,6 +287,14 @@ namespace Controllers
         {
             var item = getActionNodeItem(node);
             var pos = _ui.findFreeNodeCreatePosition(item);
+            moveNode(node.id,pos);
+        }
+        public void moveNode(int nodeID, Vector2 pos)
+        {
+            var node = graph.nodes.FirstOrDefault(n => n.id == nodeID);
+            if (node == null)
+                return;
+            var item = getActionNodeItem(node);
             node.posX = pos.x;
             node.posY = pos.y;
             _ui.moveActionNodeTo(item, pos);
@@ -364,6 +381,7 @@ namespace Controllers
             {
                 connectPorts(outputPort, inputPort);
             }
+            _recordList.addBreakpoint();
             OnEdited();
         }
         /// <summary>
@@ -380,6 +398,7 @@ namespace Controllers
             IPort outputPort = outputActionNode.getOutputPortAt(outputIndex);
             IPort inputPort = inputActionNode.getInputPortAt(inputIndex);
             disconnectPorts(outputPort, inputPort);
+            _recordList.addBreakpoint();
             OnEdited();
         }
         private void onMoveActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
@@ -395,7 +414,6 @@ namespace Controllers
                 node.posY += movedY;
                 _ui.moveActionNodeTo(item, new Vector2(item.posX + movedX, item.posY + movedY));
             }
-
             updateContentSize();
             OnEdited();
         }
@@ -1033,7 +1051,7 @@ namespace Controllers
             updatePortMode(_connectingPort, outputPort);
             updatePortMode(_connectingPort, inputPort);
         }
-        private void connectPorts(IPort outputPort, IPort inputPort)
+        private void connectPorts(IPort outputPort, IPort inputPort, bool addOperation = true)
         {
             if (outputPort is ControlOutput co && inputPort is ControlInput ci)
             {
@@ -1042,6 +1060,10 @@ namespace Controllers
             else if (outputPort is ValueOutput vo && inputPort is ValueInput vi)
             {
                 connectValuePorts(vo, vi);
+            }
+            if (addOperation)
+            {
+                _recordList.addOperation(new ConnectionOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name));
             }
         }
         /// <summary>
@@ -1247,7 +1269,7 @@ namespace Controllers
                 disconnectPorts(src, dest);
             }
         }
-        private void disconnectPorts(IPort outputPort, IPort inputPort)
+        private void disconnectPorts(IPort outputPort, IPort inputPort, bool addOperation = true)
         {
             //更新ui
             var outputNodeItem = getActionNodeItem(outputPort.node);
@@ -1264,6 +1286,10 @@ namespace Controllers
                 {
                     inputNodeItem.setInputs(getNodeInputViewData(actionNode));
                 }
+            }
+            if (addOperation)
+            {
+                _recordList.addOperation(new DisconnectionOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name));
             }
         }
         /// 断开：动作节点----所有节点

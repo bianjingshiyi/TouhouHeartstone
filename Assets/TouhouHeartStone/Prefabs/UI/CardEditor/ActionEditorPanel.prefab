@@ -9555,8 +9555,8 @@ MonoBehaviour:
   _actionGraphViewport: {fileID: 3414108355213180335}
   _actionGraphContent: {fileID: 3414108355819957747}
   _createActionDefineDialog: {fileID: 6027159958407772209}
-  _singleSelectButton: {fileID: 7387354436795846565}
-  _multiSelectButton: {fileID: 6829351353541577362}
+  _undoButton: {fileID: 7387354436795846565}
+  _redoButton: {fileID: 6829351353541577362}
   _copyButton: {fileID: 3402894201368378109}
   _pasteButton: {fileID: 6472857724855514587}
   _deleteButton: {fileID: 5660876601505888404}
