@@ -2012,6 +2012,7 @@ namespace TouhouHeartstone
             List<Player> remainPlayerList = new List<Player>(game.players);
 
             // 禁用卡牌不在墓地中触发的效果。
+            // 用于解决“在一个友方仆从死亡后”，拥有诸如此类效果的仆从，如果和其他仆从同时死亡，这个也会触发的问题。
             foreach (Card card in cards)
             {
                 // 卡牌定义自带的效果。
@@ -2370,28 +2371,6 @@ namespace TouhouHeartstone
             foreach (var card in cards)
             {
                 await card.removeBuff(game, card.getBuffs(b => b.id == buffId));
-            }
-        }
-        public static async Task updateBuff(this Card card, CardEngine game, Buff buff)
-        {
-            buff.updateModifierProps(game);
-
-            var effects = buff.getEffects(game);
-            if (effects != null)
-            {
-                foreach (var effect in effects)
-                {
-                    await effect.onDisable(game, card, buff);
-                    if (effect is IPileRangedEffect pileEffect)
-                    {
-                        if (pileEffect.piles.Contains(card.pile?.name))
-                            await effect.onEnable(game, card, null);
-                    }
-                    else
-                    {
-                        await effect.onEnable(game, card, null);
-                    }
-                }
             }
         }
         /// <summary>
