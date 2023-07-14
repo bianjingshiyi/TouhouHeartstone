@@ -442,7 +442,7 @@ namespace Controllers
             {
                 var actionDefine = getActionDefine(action.defineName);
                 var name = actionDefine.constDefines.ElementAt(constIndex).name;
-                action.setConst(name, value);
+                setNodeConst(node, name, value);
                 OnEdited();
             }
             else
@@ -450,7 +450,7 @@ namespace Controllers
                 string name = getNodeConstNameByIndex(node, constIndex);
                 if (!string.IsNullOrEmpty(name))
                 {
-                    node.setConst(name, value);
+                    setNodeConst(node, name, value);
                     OnEdited();
                 }
                 else
@@ -502,17 +502,17 @@ namespace Controllers
             var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
             if (constDefine == null)
                 return;
-            if (constDefine.type == typeof(DefineReference[]))
+            if (constDefine.type == typeof(CardReferenceCollection))
             {
                 _ui.displayCardSelectPanel(true);
-                if (actionNode.getConst(constDefine.name) is DefineReference[] value)
+                if (actionNode.getConst(constDefine.name) is CardReferenceCollection defRefCol)
                 {
-                    if (value[itemIndex] == null)
+                    if (defRefCol[itemIndex] == null)
                     {
-                        value[itemIndex] = new DefineReference();
+                        defRefCol[itemIndex] = new DefineReference();
                     }
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(value[itemIndex].defineId, new long[] { value[itemIndex].cardPoolId }, cardFilter: c =>
+                    await _cardPoolViewPanelCtrl.display(defRefCol[itemIndex].defineId, new long[] { defRefCol[itemIndex].cardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -639,10 +639,6 @@ namespace Controllers
                 var targetTypes = getTranslatedTargetCheckerTypes();
                 var checkers = getActiveEntryTargetCheckerViewData(activeEntry);
                 var inputViewData = getActiveEntryInputViewData(activeEntry);
-                var constViewData = new ActionNodeValueInfo[]
-                {
-                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, activeEntry.tags)
-                };
                 var outputViewData = getNodeOutputViewData(activeEntry);
 
                 var actionNodeItem = _ui.createActiveEntryNode(activeEntry.posX, activeEntry.posY, nodeName,
@@ -650,10 +646,10 @@ namespace Controllers
                     targetTypes, checkers,
                     outputViewData);
                 actionNodeItem.initEffectTags(_activeEffectTagNames, _activeEffectTags);
-                actionNodeItem.setConsts(constViewData);
 
                 _actionNodeItemList.Add(actionNodeItem);
                 _actionNodeList.Add(node);
+                updateNodeItemConsts(node);
                 updateNodePortModes(node, _connectingPort);
                 return actionNodeItem;
             }
@@ -804,12 +800,12 @@ namespace Controllers
                     }
                     else if (constInfo.type == ActionNodeValueType.cardReferenceCollection)
                     {
-                        if (actionNode.getConst(name) is DefineReference[] cardRefArray)
+                        if (actionNode.getConst(name) is CardReferenceCollection cardRefCol)
                         {
-                            for (int j = 0; j < cardRefArray.Length; j++)
+                            for (int j = 0; j < cardRefCol.Count; j++)
                             {
                                 CardDefine cardDefine = null;
-                                if (cardRefArray[j] is DefineReference cardReference)
+                                if (cardRefCol[j] is DefineReference cardReference)
                                 {
                                     var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
                                     await game.card.getOrLoadCardPool(localRef, true);
@@ -869,11 +865,6 @@ namespace Controllers
             {
                 nodeName = EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE;
             }
-            constViewData = new ActionNodeValueInfo[]
-            {
-                new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, passiveEntry.tags),
-                new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, passiveEntry.piles)
-            };
             nodeName = game.lang._(nodeName);
 
             var actionNodeItem = _ui.createNode(passiveEntry.posX, passiveEntry.posY,
@@ -882,11 +873,11 @@ namespace Controllers
                 Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData);
             actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
-            actionNodeItem.setConsts(constViewData);
             actionNodeItem.switchToEffectEntryNode();
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(passiveEntry);
+            updateNodeItemConsts(passiveEntry);
             updateNodePortModes(passiveEntry, _connectingPort);
             return actionNodeItem;
         }
@@ -895,11 +886,6 @@ namespace Controllers
             string nodeName = EDITOR_NODE_NAME_AURA_ENTRY_NODE;
             nodeName = game.lang._(nodeName);
             var inputViewData = getNodeInputViewData(auraEntry);
-            var constViewData = new ActionNodeValueInfo[]
-            {
-                new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, auraEntry.getPiles()),
-                new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST, ActionNodeValueType.pileNameCollection, auraEntry.getRanges())
-            };
             var outputViewData = getNodeOutputViewData(auraEntry);
 
             var actionNodeItem = _ui.createNode(auraEntry.posX, auraEntry.posY,
@@ -907,11 +893,11 @@ namespace Controllers
                 inputViewData,
                 Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
                 outputViewData);
-            actionNodeItem.setConsts(constViewData);
             actionNodeItem.switchToEffectEntryNode();
 
             _actionNodeItemList.Add(actionNodeItem);
             _actionNodeList.Add(auraEntry);
+            updateNodeItemConsts(auraEntry);
             updateNodePortModes(auraEntry, _connectingPort);
             return actionNodeItem;
         }
@@ -1063,7 +1049,8 @@ namespace Controllers
             }
             if (addOperation)
             {
-                _recordList.addOperation(new ConnectionOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name));
+                int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+                _recordList.addOperation(new ConnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, paramIndex));
             }
         }
         /// <summary>
@@ -1289,7 +1276,8 @@ namespace Controllers
             }
             if (addOperation)
             {
-                _recordList.addOperation(new DisconnectionOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name));
+                int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+                _recordList.addOperation(new DisconnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, paramIndex));
             }
         }
         /// 断开：动作节点----所有节点
@@ -1462,7 +1450,8 @@ namespace Controllers
             }
             else
             {
-                (consts[_curEditActionNodeConstName] as DefineReference[])[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
+                var collection = consts[_curEditActionNodeConstName] as CardReferenceCollection;
+                collection[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
             }
             ActionNodeItem actionNodeItem = getActionNodeItem(_curEditNode);
 
@@ -1494,6 +1483,65 @@ namespace Controllers
             item.setInputs(getNodeInputViewData(node));
             item.setOutputs(getNodeOutputViewData(node));
         }
+        private ActionNodeValueInfo[] getNodeConstValueInfos(Node node)
+        {
+            if (node is ActiveEntryNode activeEntry)
+            {
+                object tags = activeEntry.tags;
+                if (tags is ICloneable clonable)
+                {
+                    tags = clonable.Clone();
+                }
+                return new ActionNodeValueInfo[]
+                {
+                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, tags)
+                };
+            }
+            else if (node is AuraEntryNode auraEntry)
+            {
+                object piles = auraEntry.getPiles();
+                object ranges = auraEntry.getRanges();
+                if (piles is ICloneable pilesCloneable)
+                {
+                    piles = pilesCloneable.Clone();
+                }
+                if (ranges is ICloneable rangesCloneable)
+                {
+                    ranges = rangesCloneable.Clone();
+                }
+                return new ActionNodeValueInfo[]
+                {
+                    new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, piles),
+                    new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST, ActionNodeValueType.pileNameCollection, ranges)
+                };
+            }
+            else if (node is PassiveEntryNode passiveEntry)
+            {
+                object tags = passiveEntry.tags;
+                object piles = passiveEntry.piles;
+                if (tags is ICloneable tagsCloneable)
+                {
+                    tags = tagsCloneable.Clone();
+                }
+                if (piles is ICloneable pilesCloneable)
+                {
+                    piles = pilesCloneable.Clone();
+                }
+                return new ActionNodeValueInfo[]
+                {
+                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, tags),
+                    new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, piles)
+                };
+            }
+            else if (node is ActionNode actionNode)
+            {
+                return getActionNodeConstValueInfo(actionNode);
+            }
+            else
+            {
+                return Array.Empty<ActionNodeValueInfo>();
+            }
+        }
         private ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
             var actionDefine = getActionDefine(actionNode.defineName);
@@ -1506,52 +1554,66 @@ namespace Controllers
                 var name = tryTranslateWithDict(constDefine.getDisplayName());
                 Type type = constDefine.type;
                 object value = actionNode.getConst(constDefine.name);
-                if (type == typeof(int))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.integer, value);
-                else if (type == typeof(float))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.real, value);
-                else if (type == typeof(bool))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.boolean, value);
-                else if (type == typeof(string))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.text, value);
-                else if (type.IsEnum)
-                {
-                    var optionalValues = Enum.GetValues(type).Cast<object>().ToArray();
-                    var optionalNames = new string[optionalValues.Length];
-                    for (int j = 0; j < optionalNames.Length; j++)
-                    {
-                        var optName = Enum.GetName(type, optionalValues[j]);
-                        var indexName = type.FullName + "." + optName;
-                        if (_nameTextDict.TryGetValue(indexName, out string nameText))
-                        {
-                            optionalNames[j] = game.i18n._(nameText);
-                        }
-                        else
-                        {
-                            // todo: Get attribute and translate
-                            optionalNames[j] = optName;
-                        }
-                    }
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
-                }
-                else if (type == typeof(EffectTag))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.effectTag, value);
-                else if (type == typeof(ActionValueRef))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.actionValueRef, value);
-                else if (type == typeof(DefineReference))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardReference, value);
-                else if (type == typeof(DefineReference[]))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardReferenceCollection, value);
-                else if (type == typeof(PileNameCollection))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileNameCollection, value);
-                else if (type == typeof(KeywordCollection))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.keywords, value);
-                else if (type == typeof(EventArgReference))
-                    infoArray[i] = new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventReference, value);
-                else
-                    throw new NotImplementedException("没有" + type + "对应的常数类型");
+                infoArray[i] = getConstValueInfo(constDefine.name,name,  type, value);
             }
             return infoArray;
+        }
+        private ActionNodeValueInfo getConstValueInfo(string name, string displayName, Type type, object value)
+        {
+            if (type == typeof(int))
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.integer, value);
+            else if (type == typeof(float))
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.real, value);
+            else if (type == typeof(bool))
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.boolean, value);
+            else if (type == typeof(string))
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.text, value);
+            else if (type.IsEnum)
+            {
+                var optionalValues = Enum.GetValues(type).Cast<object>().ToArray();
+                var optionalNames = new string[optionalValues.Length];
+                for (int j = 0; j < optionalNames.Length; j++)
+                {
+                    var optName = Enum.GetName(type, optionalValues[j]);
+                    var indexName = type.FullName + "." + optName;
+                    if (_nameTextDict.TryGetValue(indexName, out string nameText))
+                    {
+                        optionalNames[j] = game.i18n._(nameText);
+                    }
+                    else
+                    {
+                        // todo: Get attribute and translate
+                        optionalNames[j] = optName;
+                    }
+                }
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.enumValue, value, optionalNames, optionalValues);
+            }
+            else if (type == typeof(EffectTag))
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.effectTag, value);
+            else if (type == typeof(ActionValueRef))
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.actionValueRef, value);
+            else if (type == typeof(DefineReference))
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.cardReference, value);
+            else if (type == typeof(EventArgReference))
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.eventReference, value);
+            // 可复制集合
+            else if (type == typeof(CardReferenceCollection))
+            {
+                var col = (value as CardReferenceCollection).Clone();
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.cardReferenceCollection, col);
+            }
+            else if (type == typeof(PileNameCollection))
+            {
+                var col = (value as PileNameCollection).Clone();
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.pileNameCollection, col);
+            }
+            else if (type == typeof(KeywordCollection))
+            {
+                var col = (value as KeywordCollection).Clone();
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.keywords, col);
+            }
+            else
+                throw new NotImplementedException("没有" + type + "对应的常数类型");
         }
         private string[] getNodeInputNames(Node node)
         {
@@ -1674,6 +1736,39 @@ namespace Controllers
                 }
             }
             return null;
+        }
+        private void updateNodeItemConsts(Node node)
+        {
+            var item = getActionNodeItem(node);
+            if (node is ActionNode actionNode && actionNode.defineName == GetBuffDefineAction.defName)
+            {
+                if (tryGetBuffDefine(actionNode.getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
+                {
+                    updateBuffActionNode(item, buffDefine);
+                    return;
+                }
+            }
+
+            ActionNodeValueInfo[] constViewData = getNodeConstValueInfos(node);
+            if (constViewData == null)
+                return;
+            item.setConsts(constViewData);
+        }
+
+        private void setNodeConst(Node node, string name, object value)
+        {
+            var beforeValue = node.getConst(name);
+            if (value is ICloneable clonable)
+            {
+                value = clonable.Clone();
+            }
+            if (beforeValue is ICloneable beforeClonable)
+            {
+                beforeValue = beforeClonable.Clone();
+            }
+            node.setConst(name, value);
+            _recordList.addOperation(new ChangeNodeConstOperation(this, node, name, beforeValue, value));
+            _recordList.addBreakpoint();
         }
         #endregion
         #region 事件

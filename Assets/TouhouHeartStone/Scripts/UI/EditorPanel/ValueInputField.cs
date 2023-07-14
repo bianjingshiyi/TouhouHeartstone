@@ -243,17 +243,12 @@ namespace UI
         {
             if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
-                DefineReference[] newValue;
-                if (_valueInfo.value is DefineReference[] cardRefCollection)
+                if (!(_valueInfo.value is CardReferenceCollection cardRefCollection))
                 {
-                    newValue = new DefineReference[cardRefCollection.Length + 1];
-                    Array.Copy(cardRefCollection, 0, newValue, 0, cardRefCollection.Length);
+                    cardRefCollection = new CardReferenceCollection();
+                    _valueInfo.value = cardRefCollection;
                 }
-                else
-                {
-                    newValue = new DefineReference[1];
-                }
-                _valueInfo.value = newValue;
+                cardRefCollection.Add(null);
                 onValueChanged?.Invoke(this, _valueInfo.value);
                 update();
             }
@@ -269,12 +264,10 @@ namespace UI
             int index = _list.IndexOf(item.transform as RectTransform);
             if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
-                if (_valueInfo.value is DefineReference[] cardRefCol)
+                if (_valueInfo.value is CardReferenceCollection cardRefCol)
                 {
-                    List<DefineReference> cardRefList = new List<DefineReference>(cardRefCol);
-                    cardRefList.RemoveAt(index);
-                    _valueInfo.value = cardRefList.ToArray();
-                    onValueChanged?.Invoke(this, _valueInfo.value);
+                    cardRefCol.RemoveAt(index);
+                    onValueChanged?.Invoke(this, cardRefCol);
                     update();
                 }
             }
@@ -565,11 +558,11 @@ namespace UI
             else if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
                 _listRoot.gameObject.SetActive(true);
-                if (!(_valueInfo.value is DefineReference[] cardReferenceCollection))
+                if (!(_valueInfo.value is CardReferenceCollection cardReferenceCollection))
                 {
                     cardReferenceCollection = null;
                 }
-                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, cardReferenceCollection != null ? cardReferenceCollection.Length : 0, (i, itemRect) =>
+                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, cardReferenceCollection != null ? cardReferenceCollection.Count : 0, (i, itemRect) =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.setValueInfo(null, new ActionNodeValueInfo()

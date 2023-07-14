@@ -67,6 +67,11 @@ namespace UI
             }).ToArray();
             _nodesPanel.updateList(viewDatas);
         }
+        public void updateUndoRedoButton()
+        {
+            _undoButton.interactable = _actionGraphCtrl.canUndo();
+            _redoButton.interactable = _actionGraphCtrl.canRedo();
+        }
         #region 私有方法
         #region 生命周期
         void Awake()
@@ -350,11 +355,6 @@ namespace UI
             _createActionDefineDialog.showErrorTip(message);
         }
         #endregion
-        private void updateUndoRedoButton()
-        {
-            _undoButton.interactable = _actionGraphCtrl.canUndo();
-            _redoButton.interactable = _actionGraphCtrl.canRedo();
-        }
         private void updatePasteButton()
         {
             _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard);

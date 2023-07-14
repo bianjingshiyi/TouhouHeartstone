@@ -14,29 +14,15 @@ namespace Controllers
     {
         #region 私有方法
         #region 事件回调
-        private async void onItemBuffChangedCallback(ActionNodeItem item, int index)
+        private void onItemBuffChangedCallback(ActionNodeItem item, int index)
         {
-            var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
-            if (cardPoolRef == null)
-            {
-                return;
-            }
-
-            if (index == 0)
-            {
-                GeneratedBuffDefine newBuffDefine = game.card.createBuffDefine(_curCardPoolId);
-                game.card.addBuffDefine(_curCardPoolId, newBuffDefine);
-                await updateBuffActionNode(item, newBuffDefine);
-                OnEdited();
-                return;
-            }
-            index--;
-
-            GeneratedBuffDefine buffDefine = game.card.getBuffDefines(cardPoolRef)
-                .OrderBy(p => p.Value.cardPoolId)
-                .ThenBy(p => p.Value.id)
-                .ElementAt(index).Value as GeneratedBuffDefine;
-            await updateBuffActionNode(item, buffDefine);
+            GeneratedBuffDefine buffDefine = getOrCreateBuffDefineByIndex(index);
+            var node = getActionNode(item);
+            string name = GetBuffDefineAction.constName;
+            var beforeValue = node.getConst(name);
+            updateBuffActionNode(item, buffDefine);
+            _recordList.addOperation(new ChangeNodeConstOperation(this, node, name, beforeValue, node.getConst(GetBuffDefineAction.constName)));
+            _recordList.addBreakpoint();
             OnEdited();
         }
         private async void onItemEditBuffCallback(ActionNodeItem item)
@@ -49,6 +35,28 @@ namespace Controllers
             }
         }
         #endregion
+        private GeneratedBuffDefine getOrCreateBuffDefineByIndex(int index)
+        {
+            if (index == 0)
+            {
+                var buffDefine = game.card.createBuffDefine(_curCardPoolId);
+                game.card.addBuffDefine(_curCardPoolId, buffDefine);
+                return buffDefine;
+            }
+            else
+            {
+                var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
+                if (cardPoolRef == null)
+                {
+                    return null;
+                }
+                index--;
+                return game.card.getBuffDefines(cardPoolRef)
+                    .OrderBy(p => p.Value.cardPoolId)
+                    .ThenBy(p => p.Value.id)
+                    .ElementAt(index).Value as GeneratedBuffDefine;
+            }
+        }
         private bool tryGetBuffDefine(object value, out GeneratedBuffDefine buffDefine)
         {
             long cardPoolId;
@@ -85,16 +93,16 @@ namespace Controllers
             buffDefine = null;
             return false;
         }
-        private Task updateBuffActionNode(ActionNodeItem item, GeneratedBuffDefine buffDefine)
+        private void updateBuffActionNode(ActionNodeItem item, GeneratedBuffDefine buffDefine)
         {
             var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
             if (cardPoolRef == null)
             {
-                return Task.CompletedTask;
+                return;
             }
             var action = getActionNode(item) as ActionNode;
             if (action == null)
-                return Task.CompletedTask;
+                return;
             action.setConst(GetBuffDefineAction.constName, new DefineReference(buffDefine.cardPoolId, buffDefine.id));
             BuffDefine[] buffDefines = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)
@@ -113,7 +121,6 @@ namespace Controllers
                 buffIndex = Array.IndexOf(buffDefines, buffDefine) + 1
             };
             _ui.updateBuffActionNode(item, viewData);
-            return Task.CompletedTask;
         }
         #endregion
         #region 属性字段

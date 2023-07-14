@@ -62,8 +62,12 @@ namespace TouhouCardEngine
         }
         public void AddTargetChecker(TargetChecker checker)
         {
+            InsertTargetChecker(targetCheckerList.Count, checker);
+        }
+        public void InsertTargetChecker(int index, TargetChecker checker)
+        {
             checker.node = this;
-            targetCheckerList.Add(checker);
+            targetCheckerList.Insert(index, checker);
             DefinitionConditions();
         }
         public void RemoveTargetChecker(int index)

@@ -219,7 +219,8 @@ namespace Controllers
 
             _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
             updateEffectList(_buffDefine.effectList.ToArray());
-            
+            _graphEditorPanelCtrl.updateUndoRedoButton();
+
             _ui.setEffectScrollValue(1);
         }
         /// <summary>
@@ -233,6 +234,7 @@ namespace Controllers
             {
                 _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
                 updateEffectList(effects.ToArray());
+                _graphEditorPanelCtrl.updateUndoRedoButton();
             }
             else
             {

@@ -4,6 +4,8 @@ using TouhouCardEngine;
 using System.Linq;
 using TouhouHeartstone;
 using TouhouCardEngine.Interfaces;
+using System.Collections;
+using System;
 
 namespace Controllers
 {
@@ -96,14 +98,15 @@ namespace Controllers
             private int _nodeID;
             private ISerializableNode _seriNode;
         }
-        class ConnectionOperation : GraphOperation
+        class ConnectOperation : GraphOperation
         {
-            public ConnectionOperation(ActionNodeGraphCtrl graphCtrl, Node srcNode, string srcName, Node destNode, string destName) : base(graphCtrl)
+            public ConnectOperation(ActionNodeGraphCtrl graphCtrl, Node srcNode, string srcName, Node destNode, string destName, int destParamIndex) : base(graphCtrl)
             {
                 _srcNodeId = srcNode.id;
                 _srcName = srcName;
                 _destNodeId = destNode.id;
                 _destName = destName;
+                _destParamIndex = destParamIndex;
             }
 
             public override void undo()
@@ -111,7 +114,9 @@ namespace Controllers
                 Node outputActionNode = _graphCtrl.graph.findNodeById(_srcNodeId);
                 Node inputActionNode = _graphCtrl.graph.findNodeById(_destNodeId);
                 IPort outputPort = outputActionNode.getOutputPort(_srcName);
-                IPort inputPort = inputActionNode.getInputPort(_destName);
+                IPort inputPort = _destParamIndex < 0 ?
+                    inputActionNode.getInputPort(_destName) :
+                    inputActionNode.getParamInputPort(_destName, _destParamIndex);
                 _graphCtrl.disconnectPorts(outputPort, inputPort, false);
             }
             public override void redo()
@@ -119,22 +124,26 @@ namespace Controllers
                 Node outputActionNode = _graphCtrl.graph.findNodeById(_srcNodeId);
                 Node inputActionNode = _graphCtrl.graph.findNodeById(_destNodeId);
                 IPort outputPort = outputActionNode.getOutputPort(_srcName);
-                IPort inputPort = inputActionNode.getInputPort(_destName);
+                IPort inputPort = _destParamIndex < 0 ?
+                    inputActionNode.getInputPort(_destName) :
+                    inputActionNode.getParamInputPort(_destName, _destParamIndex);
                 _graphCtrl.connectPorts(outputPort, inputPort, false);
             }
             private int _srcNodeId;
             private string _srcName;
             private int _destNodeId;
             private string _destName;
+            private int _destParamIndex;
         }
-        class DisconnectionOperation : GraphOperation
+        class DisconnectOperation : GraphOperation
         {
-            public DisconnectionOperation(ActionNodeGraphCtrl graphCtrl, Node srcNode, string srcName, Node destNode, string destName) : base(graphCtrl)
+            public DisconnectOperation(ActionNodeGraphCtrl graphCtrl, Node srcNode, string srcName, Node destNode, string destName, int destParamIndex) : base(graphCtrl)
             {
                 _srcNodeId = srcNode.id;
                 _srcName = srcName;
                 _destNodeId = destNode.id;
                 _destName = destName;
+                _destParamIndex = destParamIndex;
             }
 
             public override void undo()
@@ -142,7 +151,9 @@ namespace Controllers
                 Node outputActionNode = _graphCtrl.graph.findNodeById(_srcNodeId);
                 Node inputActionNode = _graphCtrl.graph.findNodeById(_destNodeId);
                 IPort outputPort = outputActionNode.getOutputPort(_srcName);
-                IPort inputPort = inputActionNode.getInputPort(_destName);
+                IPort inputPort = _destParamIndex < 0 ?
+                    inputActionNode.getInputPort(_destName) :
+                    inputActionNode.getParamInputPort(_destName, _destParamIndex);
                 _graphCtrl.connectPorts(outputPort, inputPort, false);
             }
             public override void redo()
@@ -150,13 +161,60 @@ namespace Controllers
                 Node outputActionNode = _graphCtrl.graph.findNodeById(_srcNodeId);
                 Node inputActionNode = _graphCtrl.graph.findNodeById(_destNodeId);
                 IPort outputPort = outputActionNode.getOutputPort(_srcName);
-                IPort inputPort = inputActionNode.getInputPort(_destName);
+                IPort inputPort = _destParamIndex < 0 ?
+                    inputActionNode.getInputPort(_destName) :
+                    inputActionNode.getParamInputPort(_destName, _destParamIndex);
                 _graphCtrl.disconnectPorts(outputPort, inputPort, false);
             }
             private int _srcNodeId;
             private string _srcName;
             private int _destNodeId;
             private string _destName;
+            private int _destParamIndex;
+        }
+        class ChangeNodeConstOperation : GraphOperation
+        {
+            public ChangeNodeConstOperation(ActionNodeGraphCtrl graphCtrl, Node node, string constName, object beforeValue, object afterValue) : base(graphCtrl)
+            {
+                _nodeId = node.id;
+                _constName = constName;
+                _beforeValue = recordValue(beforeValue);
+                _afterValue = recordValue(afterValue);
+            }
+            private object recordValue(object originValue)
+            {
+                var value = originValue;
+                if (originValue is ICloneable cloneable)
+                {
+                    return cloneable.Clone();
+                }
+                return value;
+            }
+            private void setValue(object value)
+            {
+                Node node = _graphCtrl.graph.findNodeById(_nodeId);
+                if (value is ICloneable cloneable)
+                {
+                    node.setConst(_constName, cloneable.Clone());
+                }
+                else
+                {
+                    node.setConst(_constName, value);
+                }
+                _graphCtrl.updateNodeItemConsts(node);
+            }
+            public override void undo()
+            {
+                setValue(_beforeValue);
+            }
+            public override void redo()
+            {
+                setValue(_afterValue);
+            }
+            private int _nodeId;
+            private string _constName;
+            private object _beforeValue;
+            private object _afterValue;
         }
         class MoveNodeOperation : GraphOperation
         {

@@ -426,6 +426,7 @@ namespace Controllers
             _cardDefine.setEffects(effectArray);
 
             _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
+            _graphEditorPanelCtrl.updateUndoRedoButton();
             updateEffectList(effectArray);
             
             _ui.setEffectScrollValue(1);
@@ -442,6 +443,7 @@ namespace Controllers
             {
                 _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
                 updateEffectList(effects.ToArray());
+                _graphEditorPanelCtrl.updateUndoRedoButton();
             }
             else
             {
