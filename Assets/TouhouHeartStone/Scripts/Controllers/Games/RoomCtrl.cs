@@ -380,6 +380,10 @@ namespace Controllers
             async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
             {
                 var cardPoolRef = cardManager.getCardPoolReferenceInSet(cardRef.cardPoolId, _currentRoomData.getCardPools());
+                if (cardManager.isLocalCardPool(cardPoolRef))
+                {
+                    await cardManager.getOrLoadCardPool(cardPoolRef, true);
+                }
                 var card = cardManager.getCardDefine(cardPoolRef, cardRef.defineId);
                 var skin = cardManager.getCardSkin(cardPoolRef, cardRef.defineId);
                 Sprite image = null;
