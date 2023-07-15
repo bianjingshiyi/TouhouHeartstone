@@ -8,6 +8,7 @@ namespace Game
         public static void init()
         {
             Flow.addConversion(new CardDefineConversion());
+            Flow.addConversion(new CollectionConversion());
         }
     }
 
@@ -26,7 +27,30 @@ namespace Game
                     return game.getDefine(defRef);
                 }
             }
-            return false;
+            return null;
+        }
+    }
+    public class CollectionConversion : ParamConversion
+    {
+        public override bool canConvert(Type from, Type to)
+        {
+            return typeof(Array).IsAssignableFrom(to) &&
+                (typeof(PileNameCollection).IsAssignableFrom(from) ||
+                typeof(KeywordCollection).IsAssignableFrom(from));
+        }
+        public override object convert(Flow flow, object input, Type to)
+        {
+            if (typeof(Array).IsAssignableFrom(to))
+            {
+                switch (input)
+                {
+                    case PileNameCollection pileNames:
+                        return pileNames.ToArray();
+                    case KeywordCollection keywords:
+                        return keywords.ToArray();
+                }
+            }
+            return null;
         }
     }
 }
