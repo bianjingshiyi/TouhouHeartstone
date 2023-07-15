@@ -312,6 +312,14 @@ namespace UI
         {
             if (_valueInfo.value is Array array)
             {
+                _inputField.gameObject.SetActive(false);
+                _toggle.gameObject.SetActive(false);
+                _dropdown.gameObject.SetActive(false);
+                _inputDropdown.gameObject.SetActive(false);
+                _multiInputDropdown.gameObject.SetActive(false);
+                _button.gameObject.SetActive(false);
+                _buildItem.gameObject.SetActive(false);
+
                 var valueType = array.GetType();
                 var elementType = valueType.GetElementType();
                 if (elementType == null)
