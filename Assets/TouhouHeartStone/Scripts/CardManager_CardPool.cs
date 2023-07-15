@@ -1074,36 +1074,32 @@ namespace Game
             traverseActionNodes(cardPool, addCardPoolByNode);
             foreach (var card in cardPool.cardDefineList)
             {
-                // 获取卡牌属性中所有引用其他卡牌的属性。
+                // 获取卡牌属性中所有引用其他卡池的属性。
                 var propNames = card.getPropNames();
                 foreach (string propName in propNames)
                 {
-                    var prop = card.getProp<DefineReference>(propName);
-                    if (prop != null)
-                    {
-                        addCardPoolOfDefRef(prop);
-                    }
+                    var prop = card.getProp<object>(propName);
+                    addCardPoolOfObject(prop);
+                }
+                // 获取卡牌效果中所有引用其他卡池的属性。
+                var genEffects = card.getGeneratedEffects();
+                foreach (var effect in genEffects)
+                {
+                    addCardPoolByEffect(effect);
+                }
+            }
+            foreach (var buffDef in cardPool.buffDefineList)
+            {
+                // 获取增益效果中所有引用其他卡池的属性。
+                foreach (var effect in buffDef.effectList)
+                {
+                    addCardPoolByEffect(effect);
                 }
             }
             return poolList.ToArray();
 
-            void addCardPoolByNode(Node node)
-            {
-                foreach (var valueConst in node.consts)
-                {
-                    if (valueConst.Value is IEnumerable<DefineReference> defRefList)
-                    {
-                        foreach (var defRef in defRefList)
-                        {
-                            addCardPoolOfDefRef(defRef);
-                        }
-                    }
-                    else if (valueConst.Value is DefineReference defRef)
-                    {
-                        addCardPoolOfDefRef(defRef);
-                    }
-                }
-            }
+            // 使用的内嵌方法。
+
             void addCardPoolOfDefRef(DefineReference defRef)
             {
                 if (defRef.cardPoolId != cardPoolRef.CardPoolID)
@@ -1114,6 +1110,35 @@ namespace Game
                         CardPoolReference depRef = new CardPoolReference(defRef.cardPoolId, depPoolInfo.editTime);
                         poolList.Add(depRef);
                     }
+                }
+            }
+            void addCardPoolOfObject(object obj)
+            {
+                if (obj is DefineReference defRef)
+                {
+                    addCardPoolOfDefRef(defRef);
+                }
+                else if (obj is IEnumerable<DefineReference> defRefCol)
+                {
+                    foreach (var dRef in defRefCol)
+                    {
+                        addCardPoolOfDefRef(dRef);
+                    }
+                }
+            }
+            void addCardPoolByNode(Node node)
+            {
+                foreach (var valueConst in node.consts)
+                {
+                    addCardPoolOfObject(valueConst.Value);
+                }
+            }
+            void addCardPoolByEffect(GeneratedEffect effect)
+            {
+                foreach (var propName in effect.getPropNames())
+                {
+                    var prop = effect.getProp<object>(propName);
+                    addCardPoolOfObject(prop);
                 }
             }
         }
