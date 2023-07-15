@@ -12,6 +12,7 @@ using MukioI18n;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using TouhouHeartStone;
@@ -475,6 +476,7 @@ namespace Game
             foreach (var pool in option.cardPools)
             {
                 long poolId = pool.cardPoolId;
+                var poolRef = pool.ToReference();
 
                 if (cards.isBuiltinCardPool(poolId))
                 {
@@ -482,7 +484,7 @@ namespace Game
                     continue;
                 }
                 CardPool cardPool = null;
-                var poolInfo = cards.getCardPoolInfo(poolId);
+                var poolInfo = cards.getCardPoolInfo(poolRef);
                 // 尝试获取本地卡池的卡牌定义（要求版本正确）。
                 if (poolInfo != null && poolInfo.editTime == pool.version)
                 {
