@@ -420,26 +420,18 @@ namespace Controllers
         /// <param name="cardPoolId">卡池文件相对路径</param>
         /// <returns></returns>
         /// <exception cref="IOException">当读取文件失败的时候抛出这个异常</exception>
-        private async Task readCardPoolByPathAsync(string cardPoolPath)
+        private Task readCardPoolByPathAsync(string cardPoolPath)
         {
-            if (!game.card.tryGetCardPool(cardPoolPath, out _))
-            {
-                await game.card.loadCardPool(cardPoolPath);
-            }
+            return game.card.getOrLoadCardPool(cardPoolPath);
         }
         /// <summary>
         /// 读取指定id的卡池文件中的所有卡牌
         /// </summary>
         /// <param name="cardPoolRef">卡池引用。</param>
         /// <returns></returns>
-        private async Task readCardPoolByIdAsync(CardPoolReference cardPoolRef)
+        private Task readCardPoolByIdAsync(CardPoolReference cardPoolRef)
         {
-            if (!game.card.tryGetCardPool(cardPoolRef, out _))
-            {
-                CardPoolInfo cardPoolInfo = game.card.getCardPoolInfo(cardPoolRef);
-                string cardPoolPath = game.card.getCardPoolPath(cardPoolInfo);
-                await game.card.loadCardPool(cardPoolPath);
-            }
+            return game.card.getOrLoadCardPool(cardPoolRef);
         }
         /// <summary>
         /// 尝试返回上层UI。

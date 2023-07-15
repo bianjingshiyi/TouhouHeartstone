@@ -391,6 +391,46 @@ namespace Game
         }
 
         /// <summary>
+        /// 根据卡池路径获取卡池。如果卡池没有被加载，加载卡池。
+        /// </summary>
+        /// <param name="path">卡池路径。</param>
+        /// <param name="handleException">是否在方法内就捕获异常。</param>
+        /// <returns></returns>
+        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> getOrLoadCardPool(string path, bool handleException = false)
+        {
+            if (tryGetCardPool(path, out var cardPool) && _cardPoolInfoDict.TryGetValue(path, out CardPoolInfo cardPoolInfo))
+            {
+                return (cardPoolInfo, cardPool);
+            }
+
+            if (path is string)
+            {
+                return await loadCardPool(path, handleException);
+            }
+            return (null, null);
+        }
+        /// <summary>
+        /// 根据卡池引用获取卡池。如果卡池没有被加载，加载卡池。
+        /// </summary>
+        /// <param name="path">卡池引用。</param>
+        /// <param name="handleException">是否在方法内就捕获异常。</param>
+        /// <returns></returns>
+        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> getOrLoadCardPool(ICardPoolReference poolRef, bool handleException = false)
+        {
+            if (tryGetCardPool(poolRef, out var cardPool))
+            {
+                return (getCardPoolInfo(poolRef), cardPool);
+            }
+
+            var path = getCardPoolPath(poolRef);
+            if (path is string)
+            {
+                return await loadCardPool(path, handleException);
+            }
+            return (null, null);
+        }
+
+        /// <summary>
         /// 在一个卡池引用的集合中，根据卡池的ID获取指定的卡池引用。
         /// 多用于根据卡池ID获取某个房间内允许的卡池。
         /// </summary>

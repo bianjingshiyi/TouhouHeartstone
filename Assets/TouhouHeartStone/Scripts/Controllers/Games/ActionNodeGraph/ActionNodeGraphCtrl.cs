@@ -770,16 +770,8 @@ namespace Controllers
                         if (actionNode.getConst(name) is DefineReference cardReference)
                         {
                             long cardPoolId = cardReference.cardPoolId;
-                            var ownedRef = game.card.getLocalCardPoolReference(cardPoolId);
-                            // 如果卡池没有被加载，加载卡池。
-                            if (!game.card.tryGetCardPool(ownedRef, out _))
-                            {
-                                var path = game.card.getCardPoolPath(ownedRef);
-                                if (path != null)
-                                {
-                                    await game.card.loadCardPool(path, true);
-                                }
-                            }
+                            var ownedRef = game.card.getLocalCardPoolReference(cardPoolId, true);
+                            await game.card.getOrLoadCardPool(ownedRef);
                             cardDefine = game.card.getCardDefine(ownedRef, cardReference.defineId);
                         }
                         CardSkinData cardSkin = null;
@@ -802,15 +794,7 @@ namespace Controllers
                                 if (cardRefArray[j] is DefineReference cardReference)
                                 {
                                     var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
-                                    // 如果卡池没有被加载，加载卡池。
-                                    if (!game.card.tryGetCardPool(localRef, out _))
-                                    {
-                                        var path = game.card.getCardPoolPath(localRef);
-                                        if (path != null)
-                                        {
-                                            await game.card.loadCardPool(path, true);
-                                        }
-                                    }
+                                    await game.card.getOrLoadCardPool(localRef, true);
                                     cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
                                 }
                                 CardSkinData cardSkin = null;

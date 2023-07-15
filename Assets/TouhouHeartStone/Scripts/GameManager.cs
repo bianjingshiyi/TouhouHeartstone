@@ -497,11 +497,7 @@ namespace Game
                 // 尝试获取本地卡池的卡牌定义（要求版本正确）。
                 if (poolInfo != null && poolInfo.editTime == pool.version)
                 {
-                    if (!cards.tryGetCardPool(pool.GetReference(), out cardPool))
-                    {
-                        if (cards.getCardPoolPath(pool.GetReference()) is string path)
-                            cardPool = (await cards.loadCardPool(path)).cardPool;
-                    }
+                    cardPool = (await cards.getOrLoadCardPool(pool.GetReference())).cardPool;
                 }
                 // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
                 if (cardPool == null)

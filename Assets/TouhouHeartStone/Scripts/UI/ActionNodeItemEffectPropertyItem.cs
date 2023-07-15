@@ -57,6 +57,7 @@ namespace UI
         private static async Task setCard(ValueInputField inputField, DefineReference defRef, CardManager cardManager)
         {
             var poolRef = cardManager.getLocalCardPoolReference(defRef.cardPoolId);
+            await cardManager.getOrLoadCardPool(poolRef);
             var cardDefine = cardManager.getCardDefine(poolRef, defRef.defineId);
             var skin = cardManager.getCardSkin(cardDefine);
             Sprite image = null;

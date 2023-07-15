@@ -1005,15 +1005,12 @@ namespace Controllers
             {
                 if (game.card.isBuiltinCardPool(pool.cardPoolId))
                     continue;
-                if (!game.card.tryGetCardPool(pool.cardPoolId, out CardPool _))
+                var poolRef = game.card.getLocalCardPoolReference(pool.cardPoolId);
+                var (_, cardPool) = await game.card.getOrLoadCardPool(poolRef, true);
+                if (cardPool == null)
                 {
-                    var poolRef = game.card.getLocalCardPoolReference(pool.cardPoolId);
-                    var (_, cardPool) = await game.card.loadCardPool(game.card.getCardPoolPath(poolRef), true);
-                    if (cardPool == null)
-                    {
-                        Debug.LogError($"无法在添加房间卡池时加载卡池，存在被忽略的卡池：{pool.cardPoolName}");
-                        ignoredCardPools.Add(pool);
-                    }
+                    Debug.LogError($"无法在添加房间卡池时加载卡池，存在被忽略的卡池：{pool.cardPoolName}");
+                    ignoredCardPools.Add(pool);
                 }
             }
             newCardPools = newCardPools.Except(ignoredCardPools);
@@ -1335,14 +1332,7 @@ namespace Controllers
                 foreach (CardPoolInfoPack cardPoolPack in cardPoolList)
                 {
                     var cardPoolRef = cardPoolPack.GetReference();
-                    if (!game.card.tryGetCardPool(cardPoolRef, out _))
-                    {
-                        var path = game.card.getCardPoolPath(cardPoolRef);
-                        if (path is string)
-                        {
-                            await game.card.loadCardPool(path, true);
-                        }
-                    }
+                    await game.card.getOrLoadCardPool(cardPoolRef, true);
                 }
                 var masterPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
                 viewData[i].image = await game.card.loadCardImage(masterPoolRef, deck.masterCardRef.defineId);
