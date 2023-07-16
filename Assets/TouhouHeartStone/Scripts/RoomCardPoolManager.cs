@@ -17,171 +17,295 @@ namespace Game
     public class RoomCardPoolManager
     {
         #region 公共方法
+        public async Task StartPlan(CardPoolInfoPack[] pools)
+        {
+            var runner = new PlanRunner(game, pools);
+            runner.onUploadCompleted += onUploadCompletedCallback;
+            runner.onDownloadCompleted += onDownloadCompletedCallback;
+            runner.onLoadStateChanged += onLoadStateChangedCallback;
+            runner.onOutOfRetry += onOutOfRetryCallback;
+            runner.onProgressChanged += onProgressChangedCallback;
+            runner.onFinished += onFinishedCallback;
+            _runners.Add(runner);
+
+            await updateRunners();
+        }
+        public void Cancel()
+        {
+            _curRunner?.Cancel();
+        }
+        public void Reset()
+        {
+            foreach (var runner in _runners)
+            {
+                runner.Cancel();
+                if (!runner.running)
+                {
+                    runner.Dispose();
+                }
+            }
+            _runners.Clear();
+        }
+        #endregion
+        #region 构造器
+        public RoomCardPoolManager(MainManager main)
+        {
+            game = main;
+        }
+        #endregion
+        #region 私有方法
+        #region 事件回调
+        private void onUploadCompletedCallback(CardPoolPlan plan)
+        {
+            onUploadCompleted?.Invoke(plan);
+        }
+        private void onDownloadCompletedCallback(CardPoolPlan plan)
+        {
+            onDownloadCompleted?.Invoke(plan);
+        }
+        private void onLoadStateChangedCallback(PlayerLoadState state)
+        {
+            onLoadStateChanged?.Invoke(state);
+        }
+        private void onProgressChangedCallback(float progress)
+        {
+            onProgressChanged?.Invoke(progress);
+        }
+        private void onOutOfRetryCallback(Exception exception)
+        {
+            onOutOfRetry?.Invoke(exception);
+        }
+        private async void onFinishedCallback(PlanRunner runner)
+        {
+            await updateRunners();
+        }
+        #endregion
+        private async Task updateRunners()
+        {
+            foreach (var runner in _runners.Where(r => r.finished))
+            {
+                runner.Dispose();
+            }
+            _runners.RemoveAll(r => r == null || r.finished);
+            if (_curRunner != null)
+            {
+                if (!_curRunner.running)
+                {
+                    await _curRunner.Start();
+                }
+            }
+        }
+        #endregion
+        #region 事件
+        public event Action<float> onProgressChanged;
+        public event Action<PlayerLoadState> onLoadStateChanged;
+        public event Action<CardPoolPlan> onUploadCompleted;
+        public event Action<CardPoolPlan> onDownloadCompleted;
+        public event Action<Exception> onOutOfRetry;
+        #endregion
+        #region 属性字段
+        private MainManager game;
+        private PlanRunner _curRunner => _runners.FirstOrDefault();
+        private List<PlanRunner> _runners = new List<PlanRunner>();
+        public bool running => _curRunner?.running ?? false;
+        public PlayerLoadState state => _curRunner?.state ?? PlayerLoadState.None;
+        #endregion
+    }
+    public class PlanRunner : IDisposable
+    {
+        #region 公有方法
+        #region 构造器
+        public PlanRunner(MainManager game, CardPoolInfoPack[] targets)
+        {
+            this.game = game;
+            logger = new ULogger("RoomPoolPlanRunner");
+            _targetPools = targets;
+        }
+        #endregion
+        /// <summary>
+        /// 开始所有计划。
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="TaskNotCompleteException">重试次数过多，传输卡池失败。</exception>
+        public async Task Start()
+        {
+            running = true;
+            _cts = new CancellationTokenSource();
+
+            try
+            {
+                var token = _cts.Token;
+
+                await EvaluatePlans(_targetPools);
+
+                ResetRetries();
+                // 上传。
+                await UploadAllPlans();
+
+                token.ThrowIfCancellationRequested();
+
+                // 下载。
+                ResetRetries();
+                await DownloadAllPlans();
+
+                foreach (var cardPool in _targetPools.Where(p => game.card.getCardPoolInfo(p) == null))
+                {
+                    await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                logger.logWarn("卡池传输已取消。");
+            }
+            catch (TaskNotCompleteException e)
+            {
+                logger.logError(e.ToString());
+                onOutOfRetry?.Invoke(e);
+            }
+            finally
+            {
+                Clear();
+                finished = true;
+                onFinished?.Invoke(this);
+            };
+        }
         /// <summary>
         /// 检查是否应进行卡池的更新。
         /// 如果应该更新卡池，会自动运行卡池计划。
         /// </summary>
         /// <param name="cardPools">房间允许的，或者要加入的卡池列表。</param>
         /// <returns></returns>
-        public async Task CheckUpdate(CardPoolInfoPack[] cardPools)
+        public async Task EvaluatePlans(CardPoolInfoPack[] cardPools)
         {
-            // 空闲状态下才可检查更新。
-            while (state != PlayerLoadState.None)
-                await Task.Delay(retryCooldown);
-
-            _cts = new CancellationTokenSource();
             var token = _cts.Token;
-
-            try
+            ChangeLoadState(PlayerLoadState.Checking);
+            List<CardPoolInfoPack> uploadPools = new List<CardPoolInfoPack>();
+            List<CardPoolInfoPack> downloadPools = new List<CardPoolInfoPack>();
+            foreach (CardPoolInfoPack roomPool in cardPools)
             {
-                ChangeLoadState(PlayerLoadState.Checking);
-                List<CardPoolInfoPack> uploadPools = new List<CardPoolInfoPack>();
-                List<CardPoolInfoPack> downloadPools = new List<CardPoolInfoPack>();
-                bool startPlan = false;
-                foreach (CardPoolInfoPack roomPool in cardPools)
+                try
                 {
-                    try
+                    token.ThrowIfCancellationRequested();
+                    var poolRef = roomPool.GetReference();
+                    if (game.card.isBuiltinCardPool(roomPool.cardPoolId) || game.card.isStandardCardPool(roomPool.cardPoolId))
                     {
-                        token.ThrowIfCancellationRequested();
-                        var poolRef = roomPool.GetReference();
-                        if (game.card.isBuiltinCardPool(roomPool.cardPoolId) || game.card.isStandardCardPool(roomPool.cardPoolId))
-                        {
-                            continue;
-                        }
-                        string id = roomPool.GetResourceID();
-                        // 已经在计划中的卡池，或者已经检查为上传完毕的卡池直接跳过。
-                        if (IsCardPoolInPlan(roomPool.cardPoolId, roomPool.version) || uploadedPools.Contains(id))
-                        {
-                            continue;
-                        }
-                        bool lanHost = game.network.logic.isLanHost;
-                        var localPoolInfo = game.card.getCardPoolInfo(poolRef);
+                        continue;
+                    }
+                    string id = roomPool.GetResourceID();
+                    // 已经在计划中的卡池，或者已经检查为上传完毕的卡池直接跳过。
+                    if (IsCardPoolInPlan(roomPool.cardPoolId, roomPool.version) || uploadedPools.Contains(id))
+                    {
+                        continue;
+                    }
+                    bool lanHost = game.network.logic.isLanHost;
+                    var localPoolInfo = game.card.getCardPoolInfo(poolRef);
 
-                        // 这个卡池是否是玩家本地可用的。
-                        bool hasUsablePool = false;
-                        string cardPoolPath = game.card.getCardPoolPath(poolRef);
-                        if (localPoolInfo != null && localPoolInfo.editTime == roomPool.version)
+                    // 这个卡池是否是玩家本地可用的。
+                    bool hasUsablePool = false;
+                    string cardPoolPath = game.card.getCardPoolPath(poolRef);
+                    if (localPoolInfo != null && localPoolInfo.editTime == roomPool.version)
+                    {
+                        if (!string.IsNullOrEmpty(cardPoolPath))
                         {
-                            if (!string.IsNullOrEmpty(cardPoolPath))
+                            hasUsablePool = game.card.isLocalCardPool(poolRef) && game.fileManager.isFileExist(cardPoolPath);
+                        }
+                    }
+
+                    // 这个卡池是否存在于玩家本地或者缓存中。
+                    bool hasLocalPool = game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) || (localPoolInfo != null && localPoolInfo.editTime == roomPool.version);
+
+                    // 远端是否有该卡池。
+                    // 局域网房主的远端就是本地。
+                    bool hasRemotePool = lanHost ? hasLocalPool : await game.network.roomClient.ResourceExistsAsync(ResourceType.CardDefine, id);
+
+                    // 如果没有读取卡池，尝试读取卡池对象。
+                    CardPool localCardPool = null;
+                    if (hasLocalPool && !game.card.tryGetCardPool(roomPool.GetReference(), out localCardPool) && !string.IsNullOrEmpty(cardPoolPath))
+                    {
+                        localCardPool = (await game.card.loadCardPool(cardPoolPath, true)).cardPool;
+                    }
+
+                    token.ThrowIfCancellationRequested();
+                    // 上传卡池。
+                    List<ResourcePlan> uploadResources = new List<ResourcePlan>();
+                    // 本地存在该房间指定的卡池，且不是缓存。
+                    if (hasUsablePool && !lanHost)
+                    {
+                        if (!hasRemotePool)
+                        {
+                            // 远端没有该卡池信息，上传该卡池文件。
+                            uploadPools.Add(roomPool);
+                        }
+                        // 检测卡图上传。
+                        else if (localCardPool != null)
+                        {
+                            var resList = new List<Tuple<ResourceType, string>>();
+                            var picturePaths = GetCardPoolPictures(poolRef);
+                            // 遍历卡池内的所有图片。
+                            foreach (var path in picturePaths)
                             {
-                                hasUsablePool = game.card.isLocalCardPool(poolRef) && game.fileManager.isFileExist(cardPoolPath);
+                                string picId = Path.GetFileNameWithoutExtension(path);
+                                if (string.IsNullOrEmpty(picId))
+                                    continue;
+
+                                resList.Add(new Tuple<ResourceType, string>(ResourceType.Picture, picId));
                             }
-                        }
 
-                        // 这个卡池是否存在于玩家本地或者缓存中。
-                        bool hasLocalPool = game.cache.FileExists(game.fileManager, ResourceType.CardDefine, id) || (localPoolInfo != null && localPoolInfo.editTime == roomPool.version);
+                            token.ThrowIfCancellationRequested();
 
-                        // 远端是否有该卡池。
-                        // 局域网房主的远端就是本地。
-                        bool hasRemotePool = lanHost ? hasLocalPool : await game.network.roomClient.ResourceExistsAsync(ResourceType.CardDefine, id);
-
-                        // 如果没有读取卡池，尝试读取卡池对象。
-                        CardPool localCardPool = null;
-                        if (hasLocalPool && !string.IsNullOrEmpty(cardPoolPath))
-                        {
-                            if (!game.card.tryGetCardPool(roomPool.GetReference(), out localCardPool))
+                            // 如果有远端不存在的图片，上传该卡图
+                            bool[] resExists = await game.network.roomClient.ResourceBatchExistsAsync(resList.ToArray());
+                            if (resExists.Contains(false))
                             {
-                                localCardPool = (await game.card.loadCardPool(cardPoolPath, true)).cardPool;
-                            }
-                        }
-
-                        token.ThrowIfCancellationRequested();
-                        // 上传卡池。
-                        List<ResourcePlan> uploadResources = new List<ResourcePlan>();
-                        // 本地存在该房间指定的卡池，且不是缓存。
-                        if (hasUsablePool && !lanHost)
-                        {
-                            if (!hasRemotePool)
-                            {
-                                // 远端没有该卡池信息，上传该卡池文件。
                                 uploadPools.Add(roomPool);
-                                startPlan = true;
-                                break;
                             }
-                            // 检测卡图上传。
-                            else if (localCardPool != null)
-                            {
-                                var resList = new List<Tuple<ResourceType, string>>();
-                                var picturePaths = GetCardPoolPictures(poolRef);
-                                // 遍历卡池内的所有图片。
-                                foreach (var path in picturePaths)
-                                {
-                                    string picId = Path.GetFileNameWithoutExtension(path);
-                                    if (string.IsNullOrEmpty(picId))
-                                        continue;
-
-                                    resList.Add(new Tuple<ResourceType, string>(ResourceType.Picture, picId));
-                                }
-
-                                token.ThrowIfCancellationRequested();
-
-                                // 如果有远端不存在的图片，上传该卡图
-                                bool[] resExists = await game.network.roomClient.ResourceBatchExistsAsync(resList.ToArray());
-                                if (resExists.Contains(false))
-                                {
-                                    uploadPools.Add(roomPool);
-                                    startPlan = true;
-                                }
-                            }
+                        }
+                        else
+                        {
                             // 该卡池无需上传，已就绪。
                             uploadedPools.Add(id);
                         }
+                    }
 
-                        token.ThrowIfCancellationRequested();
-                        // 下载卡池。
-                        List<ResourcePlan> downloadResources = new List<ResourcePlan>();
-                        // 如果本地不存在该卡池，加入到下载列表中。
-                        if (!hasLocalPool)
+                    token.ThrowIfCancellationRequested();
+                    // 下载卡池。
+                    List<ResourcePlan> downloadResources = new List<ResourcePlan>();
+                    // 如果本地不存在该卡池，加入到下载列表中。
+                    if (!hasLocalPool)
+                    {
+                        downloadPools.Add(roomPool);
+                    }
+                    // 如果本地存在该卡池，检测卡图下载。
+                    else if (localCardPool != null)
+                    {
+                        // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，下载该卡图。
+                        var picturePaths = GetCardPoolPictures(poolRef);
+                        foreach (var path in picturePaths)
                         {
-                            downloadPools.Add(roomPool);
-                            startPlan = true;
-                        }
-                        // 如果本地存在该卡池，检测卡图下载。
-                        else if (localCardPool != null)
-                        {
-                            // 遍历卡池内的所有卡牌皮肤，如果有不存在的卡图，下载该卡图。
-                            var picturePaths = GetCardPoolPictures(poolRef);
-                            foreach (var path in picturePaths)
+                            token.ThrowIfCancellationRequested();
+                            string picId = Path.GetFileNameWithoutExtension(path);
+                            if (!string.IsNullOrEmpty(picId) &&
+                            !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
+                                !game.card.isExternalImageExists(path))
                             {
-                                token.ThrowIfCancellationRequested();
-                                string picId = Path.GetFileNameWithoutExtension(path);
-                                if (!string.IsNullOrEmpty(picId) &&
-                                    !game.cache.FileExists(game.fileManager, ResourceType.Picture, picId) &&
-                                    !game.card.isExternalImageExists(path))
-                                {
-                                    downloadPools.Add(roomPool);
-                                    startPlan = true;
-                                    break;
-                                }
+                                downloadPools.Add(roomPool);
+                                break;
                             }
                         }
                     }
-                    catch (OperationCanceledException e)
-                    {
-                        // 取消事件丢给下面处理。
-                        throw e;
-                    }
-                    catch (Exception e)
-                    {
-                        logger.logError($"检查房间卡池时出现异常：{e}");
-                    }
                 }
-                AddUploadPools(uploadPools.ToArray());
-                AddDownloadPools(downloadPools.ToArray());
-                // 开始执行计划。
-                if (startPlan)
+                catch (OperationCanceledException e)
                 {
-                    _cts = null;
-                    await StartPlans();
+                    // 取消事件丢给下面处理。
+                    throw e;
                 }
-                ChangeLoadState(PlayerLoadState.None);
-                LoadRoomCardPoolsFromCache(cardPools);
+                catch (Exception e)
+                {
+                    logger.logError($"检查房间卡池时出现异常：{e}");
+                }
             }
-            catch (OperationCanceledException)
-            {
-                logger.logError($"取消检查卡池。");
-                _cts = null;
-            }
+            AddUploadPools(uploadPools.ToArray());
+            AddDownloadPools(downloadPools.ToArray());
 
         }
         /// <summary>
@@ -241,7 +365,7 @@ namespace Game
         /// <summary>
         /// 重置所有数据，包括所有传输计划。
         /// </summary>
-        public void Reset()
+        public void Dispose()
         {
             Clear();
             uploadPlans.Clear();
@@ -255,74 +379,45 @@ namespace Game
         {
             ChangeLoadState(PlayerLoadState.None);
             ChangeProgress(0);
-            _cts = null;
             running = false;
-        }
-        /// <summary>
-        /// 开始所有计划。
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="TaskNotCompleteException">重试次数过多，传输卡池失败。</exception>
-        public async Task StartPlans()
-        {
-            if (running)
-                return;
-
-            running = true;
-            _cts = new CancellationTokenSource();
-
-            try
-            {
-                var token = _cts.Token;
-                ResetRetries();
-                // 上传。
-                await UploadAllPlans();
-
-                token.ThrowIfCancellationRequested();
-
-                // 下载。
-                ResetRetries();
-                await DownloadAllPlans();
-            }
-            catch (OperationCanceledException)
-            {
-                logger.logWarn("卡池传输已取消。");
-            }
-            catch (TaskNotCompleteException e)
-            {
-                logger.logError(e.ToString());
-                onOutOfRetry?.Invoke(e);
-            }
-            finally
-            {
-                Clear();
-            };
         }
         public bool IsCardPoolInPlan(long cardPoolId, int version)
         {
             return uploadPlans.Any(p => p.poolPack.cardPoolId == cardPoolId && p.poolPack.version == version) ||
                 downloadPlans.Any(p => p.poolPack.cardPoolId == cardPoolId && p.poolPack.version == version);
         }
-        public async void LoadRoomCardPoolsFromCache(CardPoolInfoPack[] pools)
-        {
-            foreach (var cardPool in pools)
-            {
-                CardPoolInfo info = game.card.getCardPoolInfo(cardPool);
-                if (info == null)
-                {
-                    await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
-                }
-            }
-        }
-        #endregion
-        #region 构造器
-        public RoomCardPoolManager(MainManager main)
-        {
-            game = main;
-            logger = new ULogger("RoomCardPool");
-        }
         #endregion
         #region 私有方法
+
+        /// <summary>
+        /// 获取卡池内的所有图片路径。
+        /// </summary>
+        /// <param name="cardPoolRef">卡池引用。</param>
+        /// <returns>图片路径数组。</returns>
+        private string[] GetCardPoolPictures(CardPoolReference cardPoolRef)
+        {
+            List<string> paths = new List<string>();
+            if (game.card.tryGetCardPool(cardPoolRef, out var cardPool))
+            {
+                foreach (var skin in cardPool.cardSkinList)
+                {
+                    if (string.IsNullOrEmpty(skin.imagePath))
+                    {
+                        continue;
+                    }
+                    paths.Add(skin.imagePath);
+                }
+                foreach (var skin in cardPool.buffSkinList)
+                {
+                    if (string.IsNullOrEmpty(skin.imagePath))
+                    {
+                        continue;
+                    }
+                    paths.Add(skin.imagePath);
+                }
+            }
+            return paths.ToArray();
+        }
         /// <summary>
         /// 上传所有卡池计划。
         /// </summary>
@@ -514,50 +609,7 @@ namespace Game
                 _retryMaxTime = Math.Min(16000, _retryMaxTime * 2);
             }
         }
-        /// <summary>
-        /// 获取卡池内的所有图片路径。
-        /// </summary>
-        /// <param name="cardPoolRef">卡池引用。</param>
-        /// <returns>图片路径数组。</returns>
-        private string[] GetCardPoolPictures(CardPoolReference cardPoolRef)
-        {
-            List<string> paths = new List<string>();
-            if (game.card.tryGetCardPool(cardPoolRef, out var cardPool))
-            {
-                foreach (var skin in cardPool.cardSkinList)
-                {
-                    if (string.IsNullOrEmpty(skin.imagePath))
-                    {
-                        continue;
-                    }
-                    paths.Add(skin.imagePath);
-                }
-                foreach (var skin in cardPool.buffSkinList)
-                {
-                    if (string.IsNullOrEmpty(skin.imagePath))
-                    {
-                        continue;
-                    }
-                    paths.Add(skin.imagePath);
-                }
-            }
-            return paths.ToArray();
-        }
-        /// <summary>
-        /// 获取卡池内的所有图片，并转换为图片资源计划。
-        /// </summary>
-        /// <param name="cardPoolId">卡池引用。</param>
-        /// <returns>图片资源计划数组。</returns>
-        private PictureFilePlan[] GetCardPoolPicturePlans(CardPoolReference cardPoolRef)
-        {
-            var paths = GetCardPoolPictures(cardPoolRef);
-            return paths.Select(p =>
-            {
-                var plan = new PictureFilePlan(p);
-                plan.size = GetPlanFileSize(plan);
-                return plan;
-            }).ToArray();
-        }
+
         /// <summary>
         /// 改变正在进行的传输状态。
         /// </summary>
@@ -579,6 +631,21 @@ namespace Game
             value = Math.Min(1, value);
             _progress = value;
             onProgressChanged?.Invoke(value);
+        }
+        /// <summary>
+        /// 获取卡池内的所有图片，并转换为图片资源计划。
+        /// </summary>
+        /// <param name="cardPoolId">卡池引用。</param>
+        /// <returns>图片资源计划数组。</returns>
+        private PictureFilePlan[] GetCardPoolPicturePlans(CardPoolReference cardPoolRef)
+        {
+            var paths = GetCardPoolPictures(cardPoolRef);
+            return paths.Select(p =>
+            {
+                var plan = new PictureFilePlan(p);
+                plan.size = GetPlanFileSize(plan);
+                return plan;
+            }).ToArray();
         }
         /// <summary>
         /// 获取资源计划的文件大小。
@@ -762,13 +829,15 @@ namespace Game
         public event Action<CardPoolPlan> onUploadCompleted;
         public event Action<CardPoolPlan> onDownloadCompleted;
         public event Action<Exception> onOutOfRetry;
+        public event Action<PlanRunner> onFinished;
         #endregion
         #region 字段属性
-
         private const int MAX_RETRY_COUNT = 16;
         private MainManager game;
         private ILogger logger;
         public bool running { get; private set; }
+        public bool finished { get; private set; }
+        private CardPoolInfoPack[] _targetPools;
         /// <summary>
         /// 重试传输的冷却时间（毫秒）。
         /// </summary>
@@ -817,7 +886,6 @@ namespace Game
         public PlayerLoadState state { get; private set; }
         #endregion
     }
-
     /// <summary>
     /// 卡池计划类，负责整个卡池的上传/下载，包括卡池文件、卡图和buff图片。
     /// </summary>

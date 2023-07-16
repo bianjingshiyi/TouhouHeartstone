@@ -87,6 +87,15 @@ namespace Controllers
         public void SetRoomData(RoomData room)
         {
              _ui.UpdateRoomData(room, _currentMode, GetSelfID());
+            // 局域网中，如果本地玩家是房主，玩家状态更新后，读取缓存中的卡池。
+            // 局域网的房主不会下载卡池，也就不会在下载完毕后读取缓存中的卡池，需要手动更新。
+            if (game.network.logic.isLanHost)
+            {
+                if (room.playerDataList.All(p => p.getLoadState() == PlayerLoadState.None))
+                {
+                    UpdateCardPoolsByFromCache(room.getCardPools());
+                }
+            }
         }
         public void SetMode(RoomMode mode)
         {
@@ -380,10 +389,7 @@ namespace Controllers
             async Task<(string name, Sprite image)> getCardData(DefineReference cardRef)
             {
                 var cardPoolRef = cardManager.getCardPoolReferenceInSet(cardRef.cardPoolId, _currentRoomData.getCardPools());
-                if (cardManager.isLocalCardPool(cardPoolRef))
-                {
-                    await cardManager.getOrLoadCardPool(cardPoolRef, true);
-                }
+                await cardManager.getOrLoadCardPool(cardPoolRef, true);
                 var card = cardManager.getCardDefine(cardPoolRef, cardRef.defineId);
                 var skin = cardManager.getCardSkin(cardPoolRef, cardRef.defineId);
                 Sprite image = null;
@@ -750,9 +756,6 @@ namespace Controllers
                 localPlayer.setReady(false);
                 onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
             }
-            // 玩家状态更新后，读取缓存中的卡池。
-            // 用于局域网联机，比如客场玩家向房主上传完卡池后，不需要下载卡池的场合。
-            cardPoolManager.LoadRoomCardPoolsFromCache(_currentRoomData.getCardPools());
             updateStartAndReadyButton();
             updatePlayerListUI();
         }
@@ -1361,7 +1364,14 @@ namespace Controllers
         {
             if (_isLocalGame)
                 return;
-            await cardPoolManager.CheckUpdate(pools);
+            await cardPoolManager.StartPlan(pools);
+        }
+        private async void UpdateCardPoolsByFromCache(CardPoolInfoPack[] pools)
+        {
+            foreach (var cardPool in pools.Where(p => game.card.getCardPoolInfo(p) == null))
+            {
+                await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
+            }
         }
         #endregion
         #region 事件
