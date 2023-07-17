@@ -22,9 +22,7 @@ namespace Controllers
             var actionNode = getActionNode(item);
             if (actionNode is ActiveEntryNode activeEntry)
             {
-                activeEntry.AddTargetChecker(new TargetChecker(string.Empty, string.Empty));
-                updateActiveEntryNode(item, activeEntry);
-                OnEdited();
+                addTargetChecker(activeEntry);
             }
         }
         /// <summary>
@@ -36,38 +34,7 @@ namespace Controllers
             var actionNode = getActionNode(item);
             if (actionNode is ActiveEntryNode activeEntry)
             {
-                // 重新连接端口。
-                List<(ValueOutput, int)> delayedConnections = new List<(ValueOutput, int)>();
-
-                var targetPorts = activeEntry.getTargetConditionPorts();
-                for (int i = index; i < targetPorts.Length; i++)
-                {
-                    var input = targetPorts[i];
-                    if (input == null)
-                        continue;
-                    var connectedOutput = input.getConnectedOutputPort();
-                    if (connectedOutput == null)
-                        continue;
-
-                    disconnectPorts(connectedOutput, input);
-
-                    if (i > index)
-                    {
-                        delayedConnections.Add((connectedOutput, i - 1));
-                    }
-                }
-                activeEntry.RemoveTargetChecker(index);
-                updateActiveEntryNode(item,activeEntry);
-
-                targetPorts = activeEntry.getTargetConditionPorts();
-                foreach (var (output, inputindex) in delayedConnections)
-                {
-                    var newInput = targetPorts[inputindex];
-                    if (newInput == null)
-                        continue;
-                    connectPorts(output, newInput);
-                }
-                OnEdited();
+                removeTargetChecker(activeEntry, index);
             }
         }
         private void onTargetCheckerTypeValueChanged(ActionNodeItem item, int index, int value)
@@ -75,8 +42,7 @@ namespace Controllers
             var actionNode = getActionNode(item);
             if (actionNode is ActiveEntryNode activeEntry)
             {
-                activeEntry.targetCheckerList[index].targetType = _targetCheckerTypes[value];
-                OnEdited();
+                changeTargetCheckerType(activeEntry, index, value);
             }
         }
         private void onTargetCheckerErrorTipValueChanged(ActionNodeItem item, int index, string value)
@@ -84,12 +50,99 @@ namespace Controllers
             var actionNode = getActionNode(item);
             if (actionNode is ActiveEntryNode activeEntry)
             {
-                activeEntry.targetCheckerList[index].errorTip = value;
-                OnEdited();
+                changeTargetCheckerErrorTip(activeEntry, index, value);
             }
         }
         #endregion
         #endregion
+        private void addTargetChecker(ActiveEntryNode entry, bool addOperation = true)
+        {
+            entry.AddTargetChecker(new TargetChecker(_targetCheckerTypes.FirstOrDefault() ?? string.Empty, string.Empty));
+            updateActiveEntryNode(getActionNodeItem(entry), entry);
+
+            if (addOperation)
+            {
+                _recordList.addOperation(new AddTargetCheckerOperation(this, entry));
+                _recordList.addBreakpoint();
+            }
+            OnEdited();
+        }
+        private void removeTargetChecker(ActiveEntryNode entry, int index, bool addOperation = true)
+        {
+
+            // 重新连接端口。
+            List<(ValueOutput, int)> delayedConnections = new List<(ValueOutput, int)>();
+
+            var targetPorts = entry.getTargetConditionPorts();
+            for (int i = index; i < targetPorts.Length; i++)
+            {
+                var input = targetPorts[i];
+                if (input == null)
+                    continue;
+                var connectedOutput = input.getConnectedOutputPort();
+                if (connectedOutput == null)
+                    continue;
+
+                disconnectPorts(connectedOutput, input, addOperation);
+
+                if (i > index)
+                {
+                    delayedConnections.Add((connectedOutput, i - 1));
+                }
+            }
+            var removedTargetChecker = entry.targetCheckerList[index];
+            entry.RemoveTargetChecker(index);
+            updateActiveEntryNode(getActionNodeItem(entry), entry);
+            if (addOperation)
+            {
+                _recordList.addOperation(new RemoveTargetCheckerOperation(this, entry, index, removedTargetChecker));
+            }
+
+            targetPorts = entry.getTargetConditionPorts();
+            foreach (var (output, inputindex) in delayedConnections)
+            {
+                var newInput = targetPorts[inputindex];
+                if (newInput == null)
+                    continue;
+                connectPorts(output, newInput, addOperation);
+            }
+            if (addOperation)
+            {
+                _recordList.addBreakpoint();
+            }
+
+            OnEdited();
+        }
+        private void changeTargetCheckerType(ActiveEntryNode entry, int index, int value, bool addOperation = true)
+        {
+            var targetChecker = entry.targetCheckerList[index];
+            var beforeValue = targetChecker.targetType;
+
+            targetChecker.targetType = _targetCheckerTypes[value];
+            updateActiveEntryNode(getActionNodeItem(entry), entry);
+
+            if (addOperation)
+            {
+                _recordList.addOperation(new ChangeTargetCheckerTypeOperation(this, entry, index, beforeValue, targetChecker.targetType));
+                _recordList.addBreakpoint();
+            }
+            OnEdited();
+        }
+        private void changeTargetCheckerErrorTip(ActiveEntryNode entry, int index, string value, bool addOperation = true)
+        {
+            var targetChecker = entry.targetCheckerList[index];
+            var beforeValue = targetChecker.errorTip;
+
+            targetChecker.errorTip = value;
+            updateActiveEntryNode(getActionNodeItem(entry), entry);
+
+            if (addOperation)
+            {
+                _recordList.addOperation(new ChangeTargetCheckerErrorTipOperation(this, entry, index, beforeValue, targetChecker.errorTip));
+                _recordList.addBreakpoint();
+            }
+            OnEdited();
+        }
         private void updateActiveEntryNode(ActionNodeItem item, ActiveEntryNode activeEntry)
         {
             item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getActiveEntryTargetCheckerViewData(activeEntry));
@@ -128,6 +181,135 @@ namespace Controllers
                 viewDatas[i] = viewData;
             }
             return viewDatas;
+        }
+        #endregion
+        #region 内嵌类
+        class AddTargetCheckerOperation : GraphOperation
+        {
+            public AddTargetCheckerOperation(ActionNodeGraphCtrl graphCtrl, ActiveEntryNode node) : base(graphCtrl)
+            {
+                _nodeId = node.id;
+            }
+            public override void undo()
+            {
+                var node = _graphCtrl.getActionNode(_nodeId);
+                if (node is ActiveEntryNode activeEntry)
+                {
+                    _graphCtrl.removeTargetChecker(activeEntry, activeEntry.targetCheckerList.Count - 1, false);
+                }
+            }
+            public override void redo()
+            {
+                var node = _graphCtrl.getActionNode(_nodeId);
+                if (node is ActiveEntryNode activeEntry)
+                {
+                    _graphCtrl.addTargetChecker(activeEntry, false);
+                }
+            }
+            private int _nodeId;
+        }
+        class RemoveTargetCheckerOperation : GraphOperation
+        {
+            public RemoveTargetCheckerOperation(ActionNodeGraphCtrl graphCtrl, ActiveEntryNode node, int index, TargetChecker targetChecker) : base(graphCtrl)
+            {
+                _nodeId = node.id;
+                _removeIndex = index;
+                _removedTargetChecker = new SerializableTargetChecker(targetChecker);
+            }
+            public override void undo()
+            {
+                var node = _graphCtrl.getActionNode(_nodeId);
+                if (node is ActiveEntryNode activeEntry)
+                {
+                    var checker = _removedTargetChecker.toTargetChecker();
+                    activeEntry.InsertTargetChecker(_removeIndex, checker);
+                    var item = _graphCtrl.getActionNodeItem(node);
+                    _graphCtrl.updateActiveEntryNode(item, activeEntry);
+                }
+            }
+            public override void redo()
+            {
+                var node = _graphCtrl.getActionNode(_nodeId);
+                if (node is ActiveEntryNode activeEntry)
+                {
+                    _graphCtrl.removeTargetChecker(activeEntry, _removeIndex, false);
+                }
+            }
+            private int _nodeId;
+            private int _removeIndex;
+            private SerializableTargetChecker _removedTargetChecker;
+        }
+        class ChangeTargetCheckerTypeOperation : GraphOperation
+        {
+            public ChangeTargetCheckerTypeOperation(ActionNodeGraphCtrl graphCtrl, ActiveEntryNode node, int index, string beforeValue, string afterValue) : base(graphCtrl)
+            {
+                _nodeId = node.id;
+                _index = index;
+                _beforeValue = beforeValue;
+                _afterValue = afterValue;
+            }
+            public override void undo()
+            {
+                var node = _graphCtrl.getActionNode(_nodeId);
+                if (node is ActiveEntryNode activeEntry)
+                {
+                    var checker = activeEntry.targetCheckerList[_index];
+                    checker.targetType = _beforeValue;
+                    var item = _graphCtrl.getActionNodeItem(node);
+                    _graphCtrl.updateActiveEntryNode(item, activeEntry);
+                }
+            }
+            public override void redo()
+            {
+                var node = _graphCtrl.getActionNode(_nodeId);
+                if (node is ActiveEntryNode activeEntry)
+                {
+                    var checker = activeEntry.targetCheckerList[_index];
+                    checker.targetType = _afterValue;
+                    var item = _graphCtrl.getActionNodeItem(node);
+                    _graphCtrl.updateActiveEntryNode(item, activeEntry);
+                }
+            }
+            private int _nodeId;
+            private int _index;
+            private string _beforeValue;
+            private string _afterValue;
+        }
+        class ChangeTargetCheckerErrorTipOperation : GraphOperation
+        {
+            public ChangeTargetCheckerErrorTipOperation(ActionNodeGraphCtrl graphCtrl, ActiveEntryNode node, int index, string beforeValue, string afterValue) : base(graphCtrl)
+            {
+                _nodeId = node.id;
+                _index = index;
+                _beforeValue = beforeValue;
+                _afterValue = afterValue;
+            }
+            public override void undo()
+            {
+                var node = _graphCtrl.getActionNode(_nodeId);
+                if (node is ActiveEntryNode activeEntry)
+                {
+                    var checker = activeEntry.targetCheckerList[_index];
+                    checker.errorTip = _beforeValue;
+                    var item = _graphCtrl.getActionNodeItem(node);
+                    _graphCtrl.updateActiveEntryNode(item, activeEntry);
+                }
+            }
+            public override void redo()
+            {
+                var node = _graphCtrl.getActionNode(_nodeId);
+                if (node is ActiveEntryNode activeEntry)
+                {
+                    var checker = activeEntry.targetCheckerList[_index];
+                    checker.errorTip = _afterValue;
+                    var item = _graphCtrl.getActionNodeItem(node);
+                    _graphCtrl.updateActiveEntryNode(item, activeEntry);
+                }
+            }
+            private int _nodeId;
+            private int _index;
+            private string _beforeValue;
+            private string _afterValue;
         }
         #endregion
     }
