@@ -29,11 +29,10 @@ namespace Controllers
                 return;
             }
 
-            if (item.value == null)
-            {
-                item.value = getDefaultValue(item.type, item.isArray);
-            }
-            _effect.setProp(item.propertyName, item.value);
+            createEffectProperty(item.propertyName, item.type, item.value, item.isArray);
+
+            addOperationRecord(new AddEffectPropertyOperation(this, item));
+            addRecordBreakpoint();
 
             OnEdited();
             updateEffectProperties();
@@ -44,7 +43,12 @@ namespace Controllers
             var prop = _effect.getProp(name);
             if (prop is Array array)
             {
+                var beforeValue = array.Clone();
                 array.SetValue(value, index);
+
+                addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, array.Clone()));
+                addRecordBreakpoint();
+
                 OnEdited();
                 updatePropertyItem(name);
             }
@@ -76,6 +80,7 @@ namespace Controllers
             var array = _effect.getProp<Array>(name);
             if (array == null)
                 return;
+            var beforeValue = array.Clone();
             var arrayType = array.GetType();
             var elementType = arrayType.GetElementType();
             if (elementType == null)
@@ -89,6 +94,10 @@ namespace Controllers
                 newArray.SetValue(getDefaultValue(key, false), newArray.Length - 1);
             }
             _effect.setProp(name, newArray);
+
+            addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, newArray.Clone()));
+            addRecordBreakpoint();
+
             OnEdited();
             updatePropertyItem(name);
         }
@@ -98,6 +107,7 @@ namespace Controllers
             var array = _effect.getProp<Array>(name);
             if (array == null)
                 return;
+            var beforeValue = array.Clone();
             var arrayType = array.GetType();
             var elementType = arrayType.GetElementType();
             if (elementType == null)
@@ -112,20 +122,32 @@ namespace Controllers
                 newIndex++;
             }
             _effect.setProp(name, newArray);
+
+            addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, newArray.Clone()));
+            addRecordBreakpoint();
+
             OnEdited();
             updatePropertyItem(name);
         }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
-            var prop = _effect.getProp(name);
-            if (prop is Array array)
+            var beforeValue = _effect.getProp(name);
+            if (beforeValue is ICloneable beforeCloneable)
             {
-                array.SetValue(value, 0);
+                beforeValue = beforeCloneable.Clone();
             }
-            else
+            if (value is ICloneable cloneable)
             {
-                _effect.setProp(name, value);
+                value = cloneable.Clone();
             }
+            _effect.setProp(name, value);
+
+            if (beforeValue != value)
+            {
+                addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, value));
+                addRecordBreakpoint();
+            }
+
             OnEdited();
             updatePropertyItem(name);
         }
@@ -153,7 +175,12 @@ namespace Controllers
 
         private void onDeleteEffectPropertyCallback(string name)
         {
+            var value = GetEffectPropertyItem(name);
             _effect.removeProp(name);
+
+            addOperationRecord(new RemoveEffectPropertyOperation(this, value));
+            addRecordBreakpoint();
+
             OnEdited();
             updateEffectProperties();
         }
@@ -223,6 +250,10 @@ namespace Controllers
             if (value == null)
                 return null;
 
+            if (value is ICloneable cloneable)
+            {
+                value = cloneable.Clone();
+            }
             var valueType = value.GetType();
             bool isArray = valueType.IsArray;
             if (isArray)
@@ -279,6 +310,128 @@ namespace Controllers
             if (_effect.hasProp(name) && _effect.getProp(name) != null)
                 return true;
             return false;
+        }
+        private void createEffectProperty(string name, ActionNodeValueType type, object value, bool isArray)
+        {
+            if (value == null)
+            {
+                value = getDefaultValue(type, isArray);
+            }
+            _effect.setProp(name, value);
+        }
+        private void selectCardForEffectProperty(CardDefine cardDefine)
+        {
+            object beforeValue;
+            object value;
+            if (_curCardSeekingEffectPropIndex >= 0)
+            {
+                var array = _effect.getProp<DefineReference[]>(_curCardSeekingEffectPropName);
+                var defRef = cardDefine.getDefineRef();
+                if (array == null || _curCardSeekingEffectPropIndex >= array.Length)
+                {
+                    var newArray = new DefineReference[_curCardSeekingEffectPropIndex + 1];
+                    array.CopyTo(newArray, 0);
+                    array = newArray;
+                    _effect.setProp(_curCardSeekingEffectPropName, array);
+                }
+                beforeValue = array.Clone();
+                array[_curCardSeekingEffectPropIndex] = defRef;
+                value = array.Clone();
+            }
+            else
+            {
+                beforeValue = _effect.getProp(_curCardSeekingEffectPropName);
+                var defRef = cardDefine.getDefineRef();
+                _effect.setProp(_curCardSeekingEffectPropName, defRef);
+                value = defRef;
+            }
+            if (beforeValue != value)
+            {
+                addOperationRecord(new ChangeEffectPropertyValueOperation(this, _curCardSeekingEffectPropName, beforeValue, value));
+                addRecordBreakpoint();
+            }
+            updatePropertyItem(_curCardSeekingEffectPropName);
+            OnEdited();
+        }
+        #endregion
+
+        #region 内嵌类
+        class AddEffectPropertyOperation : GraphOperation
+        {
+            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, EffectPropertyItem propItem) : base(graphCtrl)
+            {
+                _propertyName = propItem.propertyName;
+                _type = propItem.type;
+                _value = propItem.value;
+                _isArray = propItem.isArray;
+            }
+            public override void undo()
+            {
+                _graphCtrl._effect.removeProp(_propertyName);
+                _graphCtrl.updateEffectProperties();
+            }
+            public override void redo()
+            {
+                _graphCtrl.createEffectProperty(_propertyName, _type, _value, _isArray);
+                _graphCtrl.updateEffectProperties();
+            }
+            private string _propertyName;
+            private ActionNodeValueType _type;
+            private object _value;
+            private bool _isArray;
+        }
+        class RemoveEffectPropertyOperation : GraphOperation
+        {
+            public RemoveEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, EffectPropertyItem propItem) : base(graphCtrl)
+            {
+                _propertyName = propItem.propertyName;
+                _type = propItem.type;
+                _value = propItem.value;
+                _isArray = propItem.isArray;
+            }
+            public override void undo()
+            {
+                _graphCtrl.createEffectProperty(_propertyName, _type, _value, _isArray);
+                _graphCtrl.updateEffectProperties();
+            }
+            public override void redo()
+            {
+                _graphCtrl._effect.removeProp(_propertyName);
+                _graphCtrl.updateEffectProperties();
+            }
+            private string _propertyName;
+            private ActionNodeValueType _type;
+            private object _value;
+            private bool _isArray;
+        }
+        class ChangeEffectPropertyValueOperation : GraphOperation
+        {
+            public ChangeEffectPropertyValueOperation(ActionNodeGraphCtrl graphCtrl, string name, object beforeValue, object afterValue) : base(graphCtrl)
+            {
+                _name = name;
+                _beforeValue = beforeValue;
+                _afterValue = afterValue;
+            }
+            private void setValue(object value)
+            {
+                if (value is ICloneable cloneable)
+                {
+                    value = cloneable.Clone();
+                }
+                _graphCtrl._effect.setProp(_name, value);
+                _graphCtrl.updatePropertyItem(_name);
+            }
+            public override void undo()
+            {
+                setValue(_beforeValue);
+            }
+            public override void redo()
+            {
+                setValue(_afterValue);
+            }
+            private string _name;
+            private object _beforeValue;
+            private object _afterValue;
         }
         #endregion
 

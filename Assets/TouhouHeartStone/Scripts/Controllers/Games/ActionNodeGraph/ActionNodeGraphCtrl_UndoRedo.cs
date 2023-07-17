@@ -1,11 +1,10 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
 using Game.UndoRedo;
 using TouhouCardEngine;
-using System.Linq;
-using TouhouHeartstone;
 using TouhouCardEngine.Interfaces;
-using System.Collections;
-using System;
+using TouhouHeartstone;
+using UnityEngine;
 
 namespace Controllers
 {
@@ -27,6 +26,16 @@ namespace Controllers
         public bool canRedo()
         {
             return _recordList.canRedo();
+        }
+        #endregion
+        #region 私有方法
+        public void addOperationRecord(OperationRecord record)
+        {
+            _recordList.addOperation(record);
+        }
+        public void addRecordBreakpoint()
+        {
+            _recordList.addBreakpoint();
         }
         #endregion
         #region 嵌套类

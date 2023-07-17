@@ -36,7 +36,8 @@ namespace Game
         {
             return typeof(Array).IsAssignableFrom(to) &&
                 (typeof(PileNameCollection).IsAssignableFrom(from) ||
-                typeof(KeywordCollection).IsAssignableFrom(from));
+                typeof(KeywordCollection).IsAssignableFrom(from) ||
+                typeof(CardReferenceCollection).IsAssignableFrom(from));
         }
         public override object convert(Flow flow, object input, Type to)
         {
@@ -48,6 +49,8 @@ namespace Game
                         return pileNames.ToArray();
                     case KeywordCollection keywords:
                         return keywords.ToArray();
+                    case CardReferenceCollection cardReferences:
+                        return cardReferences.ToArray();
                 }
             }
             return null;

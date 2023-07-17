@@ -502,7 +502,7 @@ namespace Controllers
             var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
             if (constDefine == null)
                 return;
-            if (constDefine.type == typeof(CardReferenceCollection))
+            if (constDefine.type == typeof(CardReferenceCollection) || constDefine.type == typeof(DefineReference[]))
             {
                 _ui.displayCardSelectPanel(true);
                 if (actionNode.getConst(constDefine.name) is CardReferenceCollection defRefCol)
@@ -513,6 +513,19 @@ namespace Controllers
                     }
                     //打开卡牌选择界面
                     await _cardPoolViewPanelCtrl.display(defRefCol[itemIndex].defineId, new long[] { defRefCol[itemIndex].cardPoolId }, cardFilter: c =>
+                    {
+                        //所有卡都可以选
+                        return true;
+                    });
+                }
+                else if (actionNode.getConst(constDefine.name) is DefineReference[] defRefs)
+                {
+                    if (defRefs[itemIndex] == null)
+                    {
+                        defRefs[itemIndex] = new DefineReference();
+                    }
+                    //打开卡牌选择界面
+                    await _cardPoolViewPanelCtrl.display(defRefs[itemIndex].defineId, new long[] { defRefs[itemIndex].cardPoolId }, cardFilter: c =>
                     {
                         //所有卡都可以选
                         return true;
@@ -778,50 +791,9 @@ namespace Controllers
                 {
                     var constInfo = constsInfo[i];
                     var name = constInfo.name;
-                    if (constInfo.type == ActionNodeValueType.cardReference)
+                    if (constInfo.type == ActionNodeValueType.cardReference || constInfo.type == ActionNodeValueType.cardReferenceCollection)
                     {
-                        CardDefine cardDefine = null;
-                        if (actionNode.getConst(name) is DefineReference cardReference)
-                        {
-                            long cardPoolId = cardReference.cardPoolId;
-                            var ownedRef = game.card.getLocalCardPoolReference(cardPoolId, true);
-                            await game.card.getOrLoadCardPool(ownedRef);
-                            cardDefine = game.card.getCardDefine(ownedRef, cardReference.defineId);
-                        }
-                        CardSkinData cardSkin = null;
-                        Sprite sprite = null;
-                        if (cardDefine != null)
-                        {
-                            cardSkin = game.card.getDefaultSkin(cardDefine);
-                            sprite = cardSkin.image ??
-                                await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
-                        }
-                        actionNodeItem.getConstInputField(i).setCard(cardDefine, cardSkin, sprite);
-                    }
-                    else if (constInfo.type == ActionNodeValueType.cardReferenceCollection)
-                    {
-                        if (actionNode.getConst(name) is CardReferenceCollection cardRefCol)
-                        {
-                            for (int j = 0; j < cardRefCol.Count; j++)
-                            {
-                                CardDefine cardDefine = null;
-                                if (cardRefCol[j] is DefineReference cardReference)
-                                {
-                                    var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
-                                    await game.card.getOrLoadCardPool(localRef, true);
-                                    cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
-                                }
-                                CardSkinData cardSkin = null;
-                                Sprite sprite = null;
-                                if (cardDefine != null)
-                                {
-                                    cardSkin = game.card.getDefaultSkin(cardDefine);
-                                    sprite = cardSkin.image ??
-                                        await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0);
-                                }
-                                actionNodeItem.getConstInputField(i).getItemAt(j).setCard(cardDefine, cardSkin, sprite);
-                            }
-                        }
+                        await updateCardDefineConst(actionNodeItem, actionNode, i, actionNode.getConst(name));
                     }
                     else if (constInfo.type == ActionNodeValueType.eventReference)
                     {
@@ -1415,61 +1387,37 @@ namespace Controllers
             if (actionDefine.obsoleteMsg == "") return "";
             return game.lang._(actionDefine.obsoleteMsg);
         }
-        private void selectCardForEffectProperty(CardDefine cardDefine)
-        {
-            if (_curCardSeekingEffectPropIndex >= 0)
-            {
-                var array = _effect.getProp<DefineReference[]>(_curCardSeekingEffectPropName);
-                var defRef = cardDefine.getDefineRef();
-                if (array == null || _curCardSeekingEffectPropIndex >= array.Length)
-                {
-                    var newArray = new DefineReference[_curCardSeekingEffectPropIndex + 1];
-                    array.CopyTo(newArray, 0);
-                    array = newArray;
-                    _effect.setProp(_curCardSeekingEffectPropName, array);
-                }
-                array[_curCardSeekingEffectPropIndex] = defRef;
-            }
-            else
-            {
-                _effect.setProp(_curCardSeekingEffectPropName, cardDefine.getDefineRef());
-            }
-            updatePropertyItem(_curCardSeekingEffectPropName);
-            OnEdited();
-        }
         private async Task selectCardForNodeConst(CardDefine cardDefine)
         {
             if (_curEditNode == null)
             {
                 return;
             }
-            var consts = _curEditNode.consts;
+            object beforeValue, afterValue;
             if (_curEditActionNodeConstItemIndex < 0)
             {
-                consts[_curEditActionNodeConstName] = cardDefine.getDefineRef();
+                beforeValue = _curEditNode.getConst(_curEditActionNodeConstName);
+                var defRef = cardDefine.getDefineRef();
+                _curEditNode.setConst(_curEditActionNodeConstName, cardDefine.getDefineRef());
+                afterValue = defRef;
             }
             else
             {
-                var collection = consts[_curEditActionNodeConstName] as CardReferenceCollection;
+                var collection = _curEditNode.getConst(_curEditActionNodeConstName) as CardReferenceCollection;
+                beforeValue = collection.Clone();
                 collection[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
+                afterValue = collection.Clone();
             }
             ActionNodeItem actionNodeItem = getActionNodeItem(_curEditNode);
 
-            var constIndex = consts.Keys.ToList().IndexOf(_curEditActionNodeConstName);
-            ValueInputField cardInputField = actionNodeItem.getConstInputField(constIndex);
-            CardSkinData cardSkin = null;
-            Sprite image = null;
-            if (cardDefine != null)
-            {
-                cardSkin = game.card.getDefaultSkin(cardDefine);
-                image = cardSkin.image ??
-                    await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
-            }
-            if (_curEditActionNodeConstItemIndex >= 0)
-            {
-                cardInputField = cardInputField.getItemAt(_curEditActionNodeConstItemIndex);
-            }
-            cardInputField.setCard(cardDefine, cardSkin, image);
+
+            addOperationRecord(new ChangeNodeConstOperation(this, _curEditNode, _curEditActionNodeConstName, beforeValue, afterValue));
+            addRecordBreakpoint();
+
+            // 更新UI.
+            updateNodeItemConsts(_curEditNode);
+
+
             OnEdited();
         }
         #endregion
@@ -1599,18 +1547,27 @@ namespace Controllers
             // 可复制集合
             else if (type == typeof(CardReferenceCollection))
             {
-                var col = (value as CardReferenceCollection).Clone();
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.cardReferenceCollection, col);
+                if (value is CardReferenceCollection defRefs)
+                    value = defRefs.Clone();
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.cardReferenceCollection, value);
+            }
+            else if (type == typeof(DefineReference[]))
+            {
+                if (value is DefineReference[] defRefs)
+                    value = defRefs.Clone();
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.cardReferenceCollection, value);
             }
             else if (type == typeof(PileNameCollection))
             {
-                var col = (value as PileNameCollection).Clone();
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.pileNameCollection, col);
+                if (value is PileNameCollection piles)
+                    value = piles.Clone();
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.pileNameCollection, value);
             }
             else if (type == typeof(KeywordCollection))
             {
-                var col = (value as KeywordCollection).Clone();
-                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.keywords, col);
+                if (value is KeywordCollection keywords)
+                    value = keywords.Clone();
+                return new ActionNodeValueInfo(displayName, name, ActionNodeValueType.keywords, value);
             }
             else
                 throw new NotImplementedException("没有" + type + "对应的常数类型");
@@ -1737,7 +1694,7 @@ namespace Controllers
             }
             return null;
         }
-        private void updateNodeItemConsts(Node node)
+        private async void updateNodeItemConsts(Node node)
         {
             var item = getActionNodeItem(node);
             if (node is ActionNode actionNode && actionNode.defineName == GetBuffDefineAction.defName)
@@ -1753,6 +1710,61 @@ namespace Controllers
             if (constViewData == null)
                 return;
             item.setConsts(constViewData);
+
+            // 更新卡牌引用。
+            foreach (var constPair in node.consts)
+            {
+                await updateCardDefineConst(item, node, constPair.Key, constPair.Value);
+            }
+        }
+        private Task updateCardDefineConst(ActionNodeItem item, Node node, string name, object value)
+        {
+            var consts = node.consts.Keys.ToList();
+            var constIndex = consts.IndexOf(name);
+            return updateCardDefineConst(item, node, constIndex, value);
+        }
+        private async Task updateCardDefineConst(ActionNodeItem item, Node node, int constIndex, object value)
+        {
+            ValueInputField cardInputField = item.getConstInputField(constIndex);
+            if (value is DefineReference cardReference)
+            {
+                await updateCardDefineInputField(node, cardInputField, cardReference);
+            }
+            else if (value is IList<DefineReference> cardReferenceList)
+            {
+                for (int i = 0; i < cardReferenceList.Count; i++)
+                {
+                    var childInputField = cardInputField.getItemAt(i);
+                    var defRef = cardReferenceList[i];
+                    await updateCardDefineInputField(node, childInputField, defRef);
+                }
+            }
+            else if (value == null)
+            {
+                await updateCardDefineInputField(node, cardInputField, null);
+            }
+        }
+        private async Task updateCardDefineInputField(Node node, ValueInputField cardInputField, DefineReference cardReference)
+        {
+            if (!cardInputField)
+                return;
+            CardDefine cardDefine = null;
+            if (cardReference != null)
+            {
+                var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
+                // 如果卡池没有被加载，加载卡池。
+                await game.card.getOrLoadCardPool(localRef, true);
+                cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
+            }
+            CardSkinData cardSkin = null;
+            Sprite image = null;
+            if (cardDefine != null)
+            {
+                cardSkin = game.card.getDefaultSkin(cardDefine);
+                image = cardSkin.image ??
+                    await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+            }
+            cardInputField.setCard(cardDefine, cardSkin, image);
         }
 
         private void setNodeConst(Node node, string name, object value)
