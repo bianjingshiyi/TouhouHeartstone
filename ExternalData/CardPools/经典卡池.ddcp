@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 123, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 124, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -22531,208 +22531,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 87,
-      "type" : "Servant",
-      "propDict" : {
-        "cost" : 3,
-        "attack" : 2,
-        "life" : 4,
-        "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 65
-        },
-        "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Beast"]
-        },
-        "寻觅" : false
-      },
-      "effects" : [{
-          "_t" : "SerializableActiveEffect",
-          "name" : "主动效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActiveEntryNode",
-                "tags" : [],
-                "_id" : 1,
-                "posX" : -386.829833984375,
-                "posY" : 15.617355346679688,
-                "targetCheckerList" : []
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineName" : "寻觅",
-                "posX" : 277.02996826171875,
-                "posY" : 52.191360473632813,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineName" : "这张卡牌",
-                "posX" : -151.84658813476563,
-                "posY" : -285.38372802734375,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "玩家",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "卡牌",
-                "destNodeId" : 2
-              }]
-          }
-        }, {
-          "_t" : "SerializablePassiveEffect",
-          "name" : "被动效果2",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializablePassiveEntryNode",
-                "_id" : 1,
-                "posX" : -269.0989990234375,
-                "posY" : -6.0066680908203125,
-                "tags" : ["lastword"],
-                "piles" : []
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineName" : "排序",
-                "posX" : 416.38479614257813,
-                "posY" : 11.345977783203125,
-                "constDict" : {
-                  "descending" : false
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineName" : "获取玩家牌库中的卡牌",
-                "posX" : -178.27593994140625,
-                "posY" : -368.15069580078125,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineName" : "获取花费",
-                "posX" : 880.10009765625,
-                "posY" : 77.419364929199219,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineName" : "获取第X个元素",
-                "posX" : 888.5093994140625,
-                "posY" : -313.01446533203125,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineName" : "IntegerConst",
-                "posX" : 409.17678833007813,
-                "posY" : -344.24917602539063,
-                "constDict" : {
-                  "value" : 0
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "defineName" : "抽目标卡牌",
-                "posX" : 1329.3660888671875,
-                "posY" : -308.15194702148438,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "player",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "array",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "condition",
-                "sourceNodeId" : 2,
-                "destName" : "enter",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 2,
-                "destName" : "card",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 2,
-                "destName" : "array",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 6,
-                "destName" : "index",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 5,
-                "destName" : "enter",
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "targetCard",
-                "destNodeId" : 7
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
       "_id" : 76,
       "type" : "Spell",
       "propDict" : {
@@ -22995,429 +22793,6 @@
                 "sourceNodeId" : 3,
                 "destName" : "enter",
                 "destNodeId" : 11
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
-      "_id" : 69,
-      "type" : "Servant",
-      "propDict" : {
-        "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 65
-        },
-        "cost" : 1,
-        "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["cantattack"]
-        },
-        "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Machine"]
-        },
-        "attack" : 1,
-        "life" : 3,
-        "skillRef" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 69
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableEventEffect",
-          "name" : "事件效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineName" : "获取本回合事件记录",
-                "posX" : -921.08697509765625,
-                "posY" : 442.83966064453125,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineName" : "筛选",
-                "posX" : -476.79574584960938,
-                "posY" : 378.3599853515625,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineName" : "筛选",
-                "posX" : -474.71640014648438,
-                "posY" : -9.6767044067382813,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineName" : "卡牌快照类型判断",
-                "posX" : 733.71807861328125,
-                "posY" : -182.53616333007813,
-                "constDict" : {
-                  "select" : 1
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "defineName" : "获取事件记录变量",
-                "posX" : 101.51559448242188,
-                "posY" : 130.16130065917969,
-                "constDict" : {
-                  "varName" : "玩家"
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 8,
-                "defineName" : "获取事件记录变量",
-                "posX" : 93.8555908203125,
-                "posY" : -185.24748229980469,
-                "constDict" : {
-                  "varName" : "卡牌"
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 9,
-                "defineName" : "LogicOperation",
-                "posX" : 1411.5712890625,
-                "posY" : -5.3392562866210938,
-                "constDict" : {
-                  "operator" : 1
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 10,
-                "defineName" : "Compare",
-                "posX" : 730.65911865234375,
-                "posY" : 99.10809326171875,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 11,
-                "defineName" : "获取元素数量",
-                "posX" : -1315.0010986328125,
-                "posY" : -822.8775634765625,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 12,
-                "defineName" : "Compare",
-                "posX" : 720.20025634765625,
-                "posY" : -452.04946899414063,
-                "constDict" : {
-                  "operator" : 3
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 13,
-                "defineName" : "IntegerConst",
-                "posX" : -474.28277587890625,
-                "posY" : -1036.8857421875,
-                "constDict" : {
-                  "value" : 1
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 14,
-                "defineName" : "创建衍生卡并置入手牌",
-                "posX" : 977.54656982421875,
-                "posY" : -824.725830078125,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 15,
-                "defineName" : "获取卡牌定义",
-                "posX" : 347.70932006835938,
-                "posY" : -1097.427978515625,
-                "constDict" : {
-                  "cardRef" : {
-                    "_t" : "DefineReference",
-                    "cardPoolId" : NumberLong(1),
-                    "defineId" : 70
-                  }
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 19,
-                "defineName" : "获取卡牌定义",
-                "posX" : -1391.8868408203125,
-                "posY" : -127.27227020263672,
-                "constDict" : {
-                  "cardRef" : {
-                    "_t" : "DefineReference",
-                    "cardPoolId" : NumberLong(1),
-                    "defineId" : 69
-                  }
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 21,
-                "defineName" : "事件记录类型判断",
-                "posX" : 172.03550720214844,
-                "posY" : 514.0379638671875,
-                "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "eventName" : "EnterFieldEvent"
-                  }
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 16,
-                "defineName" : "筛选",
-                "posX" : -2501.976806640625,
-                "posY" : -369.521728515625,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 22,
-                "defineName" : "Compare",
-                "posX" : -503.35577392578125,
-                "posY" : -447.60848999023438,
-                "constDict" : {
-                  "operator" : 1
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 23,
-                "defineName" : "获取卡牌快照卡牌定义",
-                "posX" : -1122.9393310546875,
-                "posY" : -431.1995849609375,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 24,
-                "defineName" : "获取事件记录变量",
-                "posX" : -1639.78515625,
-                "posY" : -440.95028686523438,
-                "constDict" : {
-                  "varName" : "卡牌"
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : -19.217758178710938,
-                "posY" : -822.425048828125,
-                "eventName" : "BeforeTurnEndEvent",
-                "tags" : [],
-                "piles" : ["Field"]
-              }],
-            "connections" : [{
-                "sourceName" : "exit",
-                "sourceNodeId" : 3,
-                "destName" : "enter",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "array",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "array",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "condition",
-                "sourceNodeId" : 5,
-                "destName" : "enter",
-                "destNodeId" : 9
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 10,
-                "destName" : "value",
-                "destParamIndex" : 1,
-                "destNodeId" : 9
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "value",
-                "destParamIndex" : 2,
-                "destNodeId" : 9
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 5,
-                "destName" : "record",
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 5,
-                "destName" : "record",
-                "destNodeId" : 8
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 7,
-                "destName" : "A",
-                "destNodeId" : 10
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 8,
-                "destName" : "card",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 11,
-                "destName" : "A",
-                "destNodeId" : 12
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 13,
-                "destName" : "B",
-                "destNodeId" : 12
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 15,
-                "destName" : "cardDefine",
-                "destNodeId" : 14
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 4,
-                "destName" : "evt",
-                "destNodeId" : 21
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "array",
-                "destNodeId" : 16
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 19,
-                "destName" : "B",
-                "destNodeId" : 22
-              }, {
-                "sourceName" : "condition",
-                "sourceNodeId" : 16,
-                "destName" : "enter",
-                "destNodeId" : 22
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 24,
-                "destName" : "card",
-                "destNodeId" : 23
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 23,
-                "destName" : "A",
-                "destNodeId" : 22
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 16,
-                "destName" : "collection",
-                "destNodeId" : 11
-              }, {
-                "sourceName" : "condition",
-                "sourceNodeId" : 4,
-                "destName" : "enter",
-                "destNodeId" : 21
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 24,
-                "destName" : "enter",
-                "destNodeId" : 23
-              }, {
-                "sourceName" : "element",
-                "sourceNodeId" : 16,
-                "destName" : "record",
-                "destNodeId" : 24
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 12,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "player",
-                "destNodeId" : 14
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 14
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "B",
-                "destNodeId" : 10
               }]
           }
         }],
@@ -23909,6 +23284,679 @@
                 "destName" : "value",
                 "destParamIndex" : 2,
                 "destNodeId" : 6
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : 87,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 3,
+        "attack" : 2,
+        "life" : 4,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 65
+        },
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Beast"]
+        },
+        "寻觅" : true
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "tags" : [],
+                "_id" : 1,
+                "posX" : -386.829833984375,
+                "posY" : 15.617355346679688,
+                "targetCheckerList" : []
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineName" : "寻觅",
+                "posX" : 277.02996826171875,
+                "posY" : 52.191360473632813,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineName" : "这张卡牌",
+                "posX" : -151.84658813476563,
+                "posY" : -285.38372802734375,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "玩家",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "卡牌",
+                "destNodeId" : 2
+              }]
+          }
+        }, {
+          "_t" : "SerializablePassiveEffect",
+          "name" : "被动效果2",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializablePassiveEntryNode",
+                "_id" : 1,
+                "posX" : -269.0989990234375,
+                "posY" : -6.0066680908203125,
+                "tags" : ["lastword"],
+                "piles" : []
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineName" : "排序",
+                "posX" : 416.38479614257813,
+                "posY" : 11.345977783203125,
+                "constDict" : {
+                  "descending" : false
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineName" : "获取玩家牌库中的卡牌",
+                "posX" : -178.27593994140625,
+                "posY" : -368.15069580078125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineName" : "获取花费",
+                "posX" : 880.10009765625,
+                "posY" : 77.419364929199219,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineName" : "获取第X个元素",
+                "posX" : 888.5093994140625,
+                "posY" : -313.01446533203125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineName" : "IntegerConst",
+                "posX" : 409.17678833007813,
+                "posY" : -344.24917602539063,
+                "constDict" : {
+                  "value" : 0
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "defineName" : "抽目标卡牌",
+                "posX" : 1329.3660888671875,
+                "posY" : -308.15194702148438,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "array",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "condition",
+                "sourceNodeId" : 2,
+                "destName" : "enter",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 2,
+                "destName" : "card",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 2,
+                "destName" : "array",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 6,
+                "destName" : "index",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 5,
+                "destName" : "enter",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "targetCard",
+                "destNodeId" : 7
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : 69,
+      "type" : "Servant",
+      "propDict" : {
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 65
+        },
+        "cost" : 1,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["cantattack"]
+        },
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Machine"]
+        },
+        "attack" : 1,
+        "life" : 3,
+        "skillRef" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 69
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableEventEffect",
+          "name" : "事件效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineName" : "获取本回合事件记录",
+                "posX" : -921.08697509765625,
+                "posY" : 442.83966064453125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineName" : "筛选",
+                "posX" : -476.79574584960938,
+                "posY" : 378.3599853515625,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineName" : "筛选",
+                "posX" : -474.71640014648438,
+                "posY" : -9.6767044067382813,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineName" : "卡牌快照类型判断",
+                "posX" : 733.71807861328125,
+                "posY" : -182.53616333007813,
+                "constDict" : {
+                  "select" : 1
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "defineName" : "获取事件记录变量",
+                "posX" : 101.51559448242188,
+                "posY" : 130.16130065917969,
+                "constDict" : {
+                  "varName" : "玩家"
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 8,
+                "defineName" : "获取事件记录变量",
+                "posX" : 93.8555908203125,
+                "posY" : -185.24748229980469,
+                "constDict" : {
+                  "varName" : "卡牌"
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 9,
+                "defineName" : "LogicOperation",
+                "posX" : 1411.5712890625,
+                "posY" : -5.3392562866210938,
+                "constDict" : {
+                  "operator" : 1
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 10,
+                "defineName" : "Compare",
+                "posX" : 730.65911865234375,
+                "posY" : 99.10809326171875,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 11,
+                "defineName" : "获取元素数量",
+                "posX" : -1315.0010986328125,
+                "posY" : -822.8775634765625,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 12,
+                "defineName" : "Compare",
+                "posX" : 720.20025634765625,
+                "posY" : -452.04946899414063,
+                "constDict" : {
+                  "operator" : 3
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 13,
+                "defineName" : "IntegerConst",
+                "posX" : -474.28277587890625,
+                "posY" : -1036.8857421875,
+                "constDict" : {
+                  "value" : 1
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 14,
+                "defineName" : "创建衍生卡并置入手牌",
+                "posX" : 977.54656982421875,
+                "posY" : -824.725830078125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 15,
+                "defineName" : "获取卡牌定义",
+                "posX" : 347.70932006835938,
+                "posY" : -1097.427978515625,
+                "constDict" : {
+                  "cardRef" : {
+                    "_t" : "DefineReference",
+                    "cardPoolId" : NumberLong(1),
+                    "defineId" : 70
+                  }
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 19,
+                "defineName" : "获取卡牌定义",
+                "posX" : -1391.8868408203125,
+                "posY" : -127.27227020263672,
+                "constDict" : {
+                  "cardRef" : {
+                    "_t" : "DefineReference",
+                    "cardPoolId" : NumberLong(1),
+                    "defineId" : 69
+                  }
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 21,
+                "defineName" : "事件记录类型判断",
+                "posX" : 172.03550720214844,
+                "posY" : 514.0379638671875,
+                "constDict" : {
+                  "argRef" : {
+                    "_t" : "EventArgReference",
+                    "eventName" : "EnterFieldEvent"
+                  }
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 16,
+                "defineName" : "筛选",
+                "posX" : -2501.976806640625,
+                "posY" : -369.521728515625,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 22,
+                "defineName" : "Compare",
+                "posX" : -503.35577392578125,
+                "posY" : -447.60848999023438,
+                "constDict" : {
+                  "operator" : 1
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 23,
+                "defineName" : "获取卡牌快照卡牌定义",
+                "posX" : -1122.9393310546875,
+                "posY" : -431.1995849609375,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 24,
+                "defineName" : "获取事件记录变量",
+                "posX" : -1639.78515625,
+                "posY" : -440.95028686523438,
+                "constDict" : {
+                  "varName" : "卡牌"
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableEventEntryNode",
+                "_id" : 1,
+                "posX" : -19.217758178710938,
+                "posY" : -822.425048828125,
+                "eventName" : "BeforeTurnEndEvent",
+                "tags" : [],
+                "piles" : ["Field"]
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineName" : "Compare",
+                "posX" : -1181.50732421875,
+                "posY" : 896.32940673828125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 17,
+                "defineName" : "获取卡牌拥有者",
+                "posX" : -1698.081787109375,
+                "posY" : 938.376220703125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 18,
+                "defineName" : "这张卡牌",
+                "posX" : -2136.568603515625,
+                "posY" : 950.3895263671875,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "exit",
+                "sourceNodeId" : 3,
+                "destName" : "enter",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "array",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "array",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "condition",
+                "sourceNodeId" : 5,
+                "destName" : "enter",
+                "destNodeId" : 9
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 10,
+                "destName" : "value",
+                "destParamIndex" : 1,
+                "destNodeId" : 9
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "value",
+                "destParamIndex" : 2,
+                "destNodeId" : 9
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 5,
+                "destName" : "record",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 5,
+                "destName" : "record",
+                "destNodeId" : 8
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 7,
+                "destName" : "A",
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 8,
+                "destName" : "card",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 11,
+                "destName" : "A",
+                "destNodeId" : 12
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 13,
+                "destName" : "B",
+                "destNodeId" : 12
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 15,
+                "destName" : "cardDefine",
+                "destNodeId" : 14
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 4,
+                "destName" : "evt",
+                "destNodeId" : 21
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "array",
+                "destNodeId" : 16
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 19,
+                "destName" : "B",
+                "destNodeId" : 22
+              }, {
+                "sourceName" : "condition",
+                "sourceNodeId" : 16,
+                "destName" : "enter",
+                "destNodeId" : 22
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 24,
+                "destName" : "card",
+                "destNodeId" : 23
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 23,
+                "destName" : "A",
+                "destNodeId" : 22
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 16,
+                "destName" : "collection",
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "condition",
+                "sourceNodeId" : 4,
+                "destName" : "enter",
+                "destNodeId" : 21
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 24,
+                "destName" : "enter",
+                "destNodeId" : 23
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 16,
+                "destName" : "record",
+                "destNodeId" : 24
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 12,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 14
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 14
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "B",
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 17,
+                "destName" : "A",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "B",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 18,
+                "destName" : "card",
+                "destNodeId" : 17
               }]
           }
         }],
@@ -24803,127 +24851,151 @@
     }, {
       "_id" : 65,
       "_name" : "娜兹玲*",
-      "_imagePath" : "b9bca3b199f0d5e3f72bbfa9731cccaf1c6e54704e4d25388240e8fd6b33459b.jpg"
+      "_imagePath" : "b9bca3b199f0d5e3f72bbfa9731cccaf1c6e54704e4d25388240e8fd6b33459b.jpg",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 66,
       "_name" : "老鼠*",
-      "_imagePath" : "851198f6f9202e3e18fe9e12792e4419b0041733e88a14461e3a9cbf14c617a3.jpg"
+      "_imagePath" : "851198f6f9202e3e18fe9e12792e4419b0041733e88a14461e3a9cbf14c617a3.jpg",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 67,
       "_name" : "鼠鼠兄弟*",
       "_imagePath" : "be45e07d053c17bfa6ee8daa4ab7be5c641610cb5653b0bd9604999185d6ee78.jpg",
-      "_desc" : "<b>宣言：</b>召唤一只1/1的老鼠。"
+      "_desc" : "<b>宣言：</b>召唤一只1/1的老鼠。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 64,
       "_name" : "老鼠召唤*",
       "_subname" : "",
       "_imagePath" : "af95d8a91c7de3d2e814f54971f22bddb3f4694f1df45ea36a54a0f4d13329b9.jpg",
-      "_desc" : "召唤一只1/1的老鼠。"
+      "_desc" : "召唤一只1/1的老鼠。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 71,
       "_name" : "奶酪派对*",
       "_imagePath" : "1a1beebb15a46b1ad338a01c16b7907d5ed5b7c3000668fced605070fd98f9b4.jpg",
-      "_desc" : "使所有友方仆从获得+1/+1，将两张<u>奶酪</u>置入你的手牌。"
+      "_desc" : "使所有友方仆从获得+1/+1，将两张<u>奶酪</u>置入你的手牌。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 70,
       "_name" : "奶酪*",
       "_imagePath" : "1584a93c08fb3922c61864d81bb1d235ae5b5ed6aa29e3c2417fa2d5c73556a2.jpg",
-      "_desc" : "使一个友方仆从获得+1/+1。"
+      "_desc" : "使一个友方仆从获得+1/+1。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 72,
       "_name" : "便携鼠窝*",
       "_imagePath" : "251aa5f585e141c2047bd0995dfa7b8866218f7b132e352c6f89e01523032b4d.jpg",
-      "_desc" : "<b>宣言：</b>召唤一只1/1的老鼠。在你对该仆从使用一张法术后，重复\r\n此<b>宣言</b>。"
+      "_desc" : "<b>宣言：</b>召唤一只1/1的老鼠。在你对该仆从使用一张法术后，重复\r\n此<b>宣言</b>。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 73,
       "_name" : "淘金热*",
       "_imagePath" : "12c4ee6cda8bd45053fd3e7fe45d206181fa9a5127fd0898d2e972296bdb2761.jpg",
-      "_desc" : "抽一张牌，如果抽到的牌是仆从牌，还会将一张<u>幸运铜钱</u>置入\r\n你的手牌。"
+      "_desc" : "抽一张牌，如果抽到的牌是仆从牌，还会将一张<u>幸运铜钱</u>置入\r\n你的手牌。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 74,
       "_name" : "食物的诱惑*",
       "_imagePath" : "4c5001d04c4e250bd0ba82825f67f36faaca8a3ce9ac4d0c1669633611b01693.jpg",
-      "_desc" : "使一个仆从获得\r\n+2攻击力、<b>速攻</b>和\r\n<b>“遗言：</b>将一张奶酪\r\n置入你的手牌”。"
+      "_desc" : "使一个仆从获得\r\n+2攻击力、<b>速攻</b>和\r\n<b>“遗言：</b>将一张奶酪\r\n置入你的手牌”。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 75,
       "_name" : "棒符【忙碌探知棒】*",
       "_imagePath" : "02380eb48b431d3c8f8f4398f54efb2751fcb3704296e61027a5d07322103161.jpg",
-      "_desc" : "使一个仆从获得+2/+3\r\n和“<b>遗言:</b>召唤一只\r\n1/1的<u>老鼠</u>”。"
+      "_desc" : "使一个仆从获得+2/+3\r\n和“<b>遗言:</b>召唤一只\r\n1/1的<u>老鼠</u>”。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 80,
       "_name" : "灵摆防御*",
       "_subname" : "",
       "_imagePath" : "1b31e115edda5b3c3c4a42f609f97053cf6517ecfdd046f458ddae6d8e0274d9.jpg",
-      "_desc" : "使你的所有仆从获得<b>护盾、守卫。</b>"
+      "_desc" : "使你的所有仆从获得<b>护盾、守卫。</b>",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 82,
       "_name" : "宝塔*",
       "_subname" : "",
       "_imagePath" : "1e8957491479dfbb114988f914628a5d6bd9bc77e55af8ae0a1700258d09b61d.jpg",
-      "_desc" : "<b>唯一</b>\r\n抽到此牌后，对所有敌人造成2点伤害并使随机一个友方仆从获得+3/+3。"
+      "_desc" : "<b>唯一</b>\r\n抽到此牌后，对所有敌人造成2点伤害并使随机一个友方仆从获得+3/+3。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 81,
       "_name" : "寅丸星*",
       "_imagePath" : "6859f19cb99ae753580fb69bb1626611d4466636b5939dfa29e6e3d9d92a2388.jpg",
-      "_desc" : "<b>唯一\r\n宣言：</b>将一张<u>宝塔</u>洗入你的牌库。"
+      "_desc" : "<b>唯一\r\n宣言：</b>将一张<u>宝塔</u>洗入你的牌库。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 78,
       "_name" : "全体出击！*",
       "_subname" : "",
       "_imagePath" : "dab6ff3e3d69907c7edcde2f0056d6db5a17c266a3f9ae8e8503d792932cc47e.jpg",
-      "_desc" : "选择一个仆从，召唤4只1/1的老鼠\r\n攻击它。"
+      "_desc" : "选择一个仆从，召唤4只1/1的老鼠\r\n攻击它。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 86,
       "_name" : "鼠潮*",
       "_imagePath" : "7be290169518f4fd0076877e46eba979112bc5745a2fe6c8739271fb752e5813.jpg",
-      "_desc" : "<b>寻觅，</b>召唤两只1/1的<u>老鼠</u>，将两只1/1的<u>老鼠</u>置入你的手牌。"
+      "_desc" : "<b>寻觅，</b>召唤两只1/1的<u>老鼠</u>，将两只1/1的<u>老鼠</u>置入你的手牌。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 85,
       "_name" : "灵摆探测*",
       "_subname" : "",
       "_imagePath" : "59fb15832bc0196ce220ac543ca1a2a4ed50ed8b97c962fbd110c61081515440.jpg",
-      "_desc" : "<b>寻觅，</b>对一个仆从造成2点伤害，如果消灭了目标，将一张<u>奶酪</u>置入你的手牌。"
+      "_desc" : "<b>寻觅，</b>对一个仆从造成2点伤害，如果消灭了目标，将一张<u>奶酪</u>置入你的手牌。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 79,
       "_name" : "寂野寻踪*",
       "_imagePath" : "62114ad5f091ed0f3ef616e94cbc24749e558101e12275fdc22ba1362d8f966f.jpg",
-      "_desc" : "抽两张牌，使其中灵力值消耗更低的变为<u>幸运铜钱</u>。"
+      "_desc" : "抽两张牌，使其中灵力值消耗更低的变为<u>幸运铜钱</u>。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 77,
       "_name" : "贪食老鼠*",
       "_imagePath" : "9dec3a47af2f71f4a4b7c149b28413d5c343caf60de8b05e0aea570142439172.jpg",
-      "_desc" : "<b>宣言：</b>吃掉你手牌中一张灵力值消耗小于(2)点的法术牌并获得+2/+1。"
+      "_desc" : "<b>宣言：</b>吃掉你手牌中一张灵力值消耗小于(2)点的法术牌并获得+2/+1。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 68,
       "_name" : "巨鼠*",
       "_imagePath" : "63da45e6ac6172191c305b7eb4472dde5a7558ad643d92edd5d382b619c7096e.jpg",
-      "_desc" : "<b>速攻，遗言：</b>召唤四只1/1的老鼠。"
-    }, {
-      "_id" : 87,
-      "_name" : "搜寻鼠*",
-      "_imagePath" : "947dc3c7f3b49d0c0b9c0dfb2a33848bce743bf19ec7b755c2415fdee4fef340.jpg",
-      "_desc" : "<b>寻觅，</b><b>遗言：</b>抽一张灵力值消耗最低的牌。"
+      "_desc" : "<b>速攻，遗言：</b>召唤四只1/1的老鼠。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 76,
       "_name" : "宝藏*",
       "_imagePath" : "a5cf052aed23f1a232e9e035f74813b8907305ef6cffe1f7cbba5d1d86ef2cbe.jpg",
-      "_desc" : "将一枚<u>幸运铜钱</u>置入你的手牌。然后检视三张灵力值消耗为(1)点的仆从牌，选择一张置入战场。"
-    }, {
-      "_id" : 69,
-      "_name" : "鼠斯拉线圈*",
-      "_imagePath" : "77074cf30cca01857e78e440515f17fb62877c8d831a7265383eff81299591f1.jpg",
-      "_desc" : "<b>无法攻击</b>，在你的回合结束后，如果你在本回合中召唤过其他仆从，将一张<u>奶酪</u>置入你的手牌。"
+      "_desc" : "将一枚<u>幸运铜钱</u>置入你的手牌。然后检视三张灵力值消耗为(1)点的仆从牌，选择一张置入战场。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 83,
       "_name" : "洞穴寻宝*",
       "_imagePath" : "66a510d6cfeb591238a22bca2e4ebceb109ddd4b2aba5c2d2c4a911b344d3cee.jpg",
-      "_desc" : "<b>寻觅，</b>检视三张仆从牌，选择一张置入你的手牌，使其变为4/4，且灵力值消耗变为（4）点。"
+      "_desc" : "<b>寻觅，</b>检视三张仆从牌，选择一张置入你的手牌，使其变为4/4，且灵力值消耗变为（4）点。",
+      "_language" : "zh-Hans"
     }, {
       "_id" : 84,
       "_name" : "探测棒*",
       "_subname" : "",
       "_imagePath" : "a5dc78865b4972b554071ff92f0f7411b69efb9ddd9f2741301792f68506a3d1.jpg",
-      "_desc" : "<b>寻觅</b>\r\n在你抽到具有<b>寻觅</b>的卡牌后，获得+1攻击力。"
+      "_desc" : "<b>寻觅</b>\r\n在你抽到具有<b>寻觅</b>的卡牌后，获得+1攻击力。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 87,
+      "_name" : "搜寻鼠*",
+      "_imagePath" : "947dc3c7f3b49d0c0b9c0dfb2a33848bce743bf19ec7b755c2415fdee4fef340.jpg",
+      "_desc" : "<b>寻觅，</b><b>遗言：</b>抽一张灵力值消耗最低的牌。",
+      "_language" : "zh-Hans"
+    }, {
+      "_id" : 69,
+      "_name" : "鼠斯拉线圈*",
+      "_imagePath" : "77074cf30cca01857e78e440515f17fb62877c8d831a7265383eff81299591f1.jpg",
+      "_desc" : "<b>无法攻击</b>，在你的回合结束后，如果你在本回合中召唤过其他仆从，将一张<u>奶酪</u>置入你的手牌。",
+      "_language" : "zh-Hans"
     }],
   "buffDefineList" : [{
       "_id" : 1,
