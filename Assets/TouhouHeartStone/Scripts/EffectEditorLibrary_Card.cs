@@ -922,7 +922,7 @@ namespace Game
                 if (filter != null)
                 {
                     var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
-                    var resultPort = filter?.node.getOutputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
+                    var resultPort = filter?.node.getOutputPorts<ValueOutput>().FirstOrDefault();
                     flow.EnterScope();
                     flow.setValue(elementPort, c);
                     valid = game.getValue<bool>(flow, resultPort).Result;

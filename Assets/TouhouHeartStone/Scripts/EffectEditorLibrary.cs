@@ -65,7 +65,7 @@ namespace Game
             bool finished = false;
 
             var repeatTimePort = node.getOutputPort<ValueOutput>(nameof(repeatTime));
-            var resultPort = condition?.node.getOutputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
+            var resultPort = condition?.node.getOutputPorts<ValueOutput>().FirstOrDefault();
             do
             {
                 times++;
@@ -253,7 +253,7 @@ namespace Game
         {
             Pile deck = card.owner.getDeck();
             List<Card> cardList = new List<Card>();
-            var resultPort = condition?.node.getOutputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
+            var resultPort = condition?.node.getOutputPorts<ValueOutput>().FirstOrDefault();
             for (int i = 0; i < deck.count; i++)
             {
 
@@ -283,7 +283,7 @@ namespace Game
                 return Array.Empty<Card>();
 
             List<Card> cardList = new List<Card>();
-            var resultPort = condition?.node.getOutputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
+            var resultPort = condition?.node.getOutputPorts<ValueOutput>().FirstOrDefault();
             var filteringPort = node.getOutputPort<ValueOutput>(nameof(filteringCard));
             for (int i = 0; i < cards.Length; i++)
             {
@@ -710,7 +710,7 @@ namespace Game
             List<object> negList = new List<object>();
 
             var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
-            var resultPort = condition?.node.getOutputPorts<ValueOutput>().FirstOrDefault(o => o.define.type == typeof(bool));
+            var resultPort = condition?.node.getOutputPorts<ValueOutput>().FirstOrDefault();
 
             for (int i = 0; i < array.Length; i++)
             {
