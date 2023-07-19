@@ -266,6 +266,8 @@ namespace Controllers
                 {
                     return node;
                 }
+                node = new NodeSnapNode(item);
+                nodeItemDict.Add(item, node);
 
                 var children = new List<NodeSnapNode>();
                 var itemNode = getActionNode(item);
@@ -286,8 +288,7 @@ namespace Controllers
                         children.Add(getSnapNodeByItem(outputItem));
                     }
                 }
-                node = new NodeSnapNode(item, children.ToArray());
-                nodeItemDict.Add(item, node);
+                node.children = children.ToArray();
                 return node;
             }
         }
@@ -443,7 +444,7 @@ namespace Controllers
         public ActionNodeItem item;
         public NodeSnapNode[] children;
 
-        public NodeSnapNode(ActionNodeItem item) : this(item, new NodeSnapNode[0])
+        public NodeSnapNode(ActionNodeItem item) : this(item, null)
         {
 
         }
