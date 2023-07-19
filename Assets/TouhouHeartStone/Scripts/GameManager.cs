@@ -216,23 +216,12 @@ namespace Game
                     item.BorderImage.sprite = armor.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.HealEventArg heal:
-                    if (heal.infoDic.Count > 0)
-                    {
-                        var firstHeal = heal.infoDic.First();
-                        var card = firstHeal.Key;
-                        var healInfo = firstHeal.Value;
-                        item.IconImage.sprite = item.healIcon;
-                        item.Text.text = "+" + healInfo.healedValue;
-                        item.Image.sprite = getManager<TableManager>().getSkin(card).image;
-                        item.BorderImage.sprite = card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                    }
-                    else
-                    {
-                        item.IconImage.sprite = item.healIcon;
-                        item.Text.text = "+0";
-                        item.Image.sprite = null;
-                        item.BorderImage.sprite = null;
-                    }
+                    var card = heal.card;
+                    var healedValue = heal.healedValue;
+                    item.IconImage.sprite = item.healIcon;
+                    item.Text.text = "+" + healedValue;
+                    item.Image.sprite = getManager<TableManager>().getSkin(card).image;
+                    item.BorderImage.sprite = card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.SilenceEventArg silence:
                     item.IconImage.sprite = item.silenceIcon;

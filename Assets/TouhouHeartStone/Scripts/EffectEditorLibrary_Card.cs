@@ -489,22 +489,22 @@ namespace Game
         /// </summary>
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HEAL_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
-        public static Task<THHCard.HealEventArg> healTargets(CardEngine game, Card card,
+        public static Task<THHCard.HealEventArg[]> healTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
         {
             if (targets == null)
-                return default;
+                return Task.FromResult(Array.Empty<THHCard.HealEventArg>());
             return targets.heal(game, card, value);
         }
         [ActionNodeMethod(StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS, StringTable.EDITOR_NODE_CATEGORY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
-        public static Task<THHCard.HealEventArg> healSpecificAmountToTargets(CardEngine game, Card card,
+        public static Task<THHCard.HealEventArg[]> healSpecificAmountToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE, isConst: true)] int value)
         {
             if (targets == null)
-                return default;
+                return Task.FromResult(Array.Empty<THHCard.HealEventArg>());
             return targets.heal(game, card, value);
         }
 

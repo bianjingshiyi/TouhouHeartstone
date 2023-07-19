@@ -120,6 +120,19 @@ namespace Game
                 damageArg.damageValue = value;
             }
         }
+
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE = "治疗/更改治疗值";
+        [ActionNodeMethod(EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE, StringTable.EDITOR_NODE_CATEGORY_EVENT)]
+        public static void healEvent_changeValue(
+            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
+        {
+            if (eventArg is THHCard.HealEventArg healArg)
+            {
+                healArg.value = value;
+            }
+        }
         #endregion
     }
 }

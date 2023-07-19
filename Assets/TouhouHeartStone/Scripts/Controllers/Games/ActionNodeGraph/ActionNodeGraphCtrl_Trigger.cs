@@ -142,7 +142,6 @@ namespace Controllers
         #endregion
         static string[] _hiddenEvents =
         {
-            "HealEvent",
             "SecretTriggerEvent",
             "MissionCompleteEvent",
             "ComeOnStageEvent",
@@ -171,7 +170,7 @@ namespace Controllers
             { "SilenceEvent", StringTable.EDITOR_EVENT_NAME_SILENCE },
             { "AttackEvent", StringTable.EDITOR_EVENT_NAME_ATTACK },
             { "DamageEvent", StringTable.EDITOR_EVENT_NAME_DAMAGE },
-            //{ "HealEvent", StringTable.EDITOR_EVENT_NAME_HEAL },
+            { "HealEvent", StringTable.EDITOR_EVENT_NAME_HEAL },
             { "DeathEvent", StringTable.EDITOR_EVENT_NAME_DEATH },
             //{ "SecreTriggerEvent", StringTable.EDITOR_EVENT_NAME_SECRETRIGGER },
             //{ "MissionCompleteEvent", StringTable.EDITOR_EVENT_NAME_MISSIONCOMPLETE },

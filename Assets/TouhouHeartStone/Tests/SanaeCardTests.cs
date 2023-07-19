@@ -36,9 +36,8 @@ namespace Tests
 
             THHCard.HealEventArg heal =
                 game.triggers.getRecordedEvents().LastOrDefault(e => e is THHCard.HealEventArg) as THHCard.HealEventArg;
-            Assert.AreEqual(1, heal.cards.Length);
             Assert.AreEqual(2, heal.value);
-            Assert.AreEqual(1, heal.infoDic[game.getSortedPlayers()[1].getMaster()].healedValue);
+            Assert.AreEqual(1, heal.healedValue);
         }
 
         //拼点测试

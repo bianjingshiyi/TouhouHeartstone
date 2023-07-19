@@ -13,47 +13,25 @@ namespace Game
         {
             if (record == null || record.isCanceled)
                 yield break;
-            var cards = arg.cards;
+            var card = arg.card;
             var source = arg.source;
             var value = arg.value;
-            var infoDic = arg.infoDic;
+            var healedValue = arg.healedValue;
 
 
             var animList = new List<AnimAnim>();
-            foreach (var card in cards)
+            if (table.tryGetServant(card, out ServantItem servant))
             {
-                if (table.tryGetServant(card, out ServantItem servant))
-                {
-                    servant.healText.text = "+" + infoDic[card].healedValue.ToString();
-                    servant.onHeal.invokeBeforeAnim();
-                    animList.Add(new AnimAnim(servant.servantAnimator, servant.onHeal.animName));
-                }
-                else if (table.tryGetMaster(card, out Master master))
-                {
-                    master.HealText.text = "+" + infoDic[card].healedValue.ToString();
-                    master.onHeal.invokeBeforeAnim();
-                    animList.Add(new AnimAnim(master.animator, master.onHeal.animName));
-                }
+                servant.healText.text = "+" + healedValue.ToString();
+                servant.onHeal.invokeBeforeAnim();
+                animList.Add(new AnimAnim(servant.servantAnimator, servant.onHeal.animName));
             }
-            #region 控制透明度
-            //foreach (var card in cards)
-            //{
-            //    if (table.tryGetServant(card, out ServantItem servant))
-            //    {
-            //        servant.healImage.setAlpha(_timer.progress);
-            //        servant.healText.setAlpha(_timer.progress);
-            //    }
-            //}
-
-            //foreach (var card in cards)
-            //{
-            //    if (table.tryGetServant(card, out ServantItem servant))
-            //    {
-            //        servant.healImage.hide();
-            //    }
-            //}
-            ///
-            #endregion
+            else if (table.tryGetMaster(card, out Master master))
+            {
+                master.HealText.text = "+" + healedValue.ToString();
+                master.onHeal.invokeBeforeAnim();
+                animList.Add(new AnimAnim(master.animator, master.onHeal.animName));
+            }
             while (true)
             {
                 bool isAllAnimDone = true;
@@ -66,16 +44,13 @@ namespace Game
                     break;
                 yield return null;
             }
-            foreach (var card in infoDic.Keys)
+            if (table.tryGetServant(card, out var servant2))
             {
-                if (table.tryGetServant(card, out var servant))
-                {
-                    servant.onHeal.invokeAfterAnim();
-                }
-                else if (table.tryGetMaster(card, out Master master))
-                {
-                    master.onHeal.invokeAfterAnim();
-                }
+                servant2.onHeal.invokeAfterAnim();
+            }
+            else if (table.tryGetMaster(card, out Master master))
+            {
+                master.onHeal.invokeAfterAnim();
             }
         }
 

@@ -1870,126 +1870,124 @@ namespace TouhouHeartstone
                 return false;
             }
         }
-        public static Task<HealEventArg> heal(this IEnumerable<Card> cards, CardEngine game, Card sourse, int value)
+        public static async Task<HealEventArg[]> heal(this IEnumerable<Card> cards, CardEngine game, Card sourse, int value)
         {
-            cards = cards.Where(c => c.getCurrentLife(game) < c.getLife(game));
-            if (cards.Count() < 1)
-                return Task.FromResult<HealEventArg>(default);
-            return game.triggers.doEvent(new HealEventArg() { cards = cards.ToArray(), source = sourse, value = value }, async arg =>
-             {
-                 cards = arg.cards;
-                 sourse = arg.source;
-                 value = arg.value;
-                 foreach (Card card in cards)
-                 {
-                     if (card == null)
-                         continue;
-
-
-                     if (card.getCurrentLife(game) + value < card.getLife(game))
-                     {
-                         await card.setCurrentLife(game, card.getCurrentLife(game) + value);
-                         arg.infoDic.Add(card, new HealEventArg.Info()
-                         {
-                             healedValue = value
-                         });
-                         game.logger.log(card + "恢复" + value + "点生命值，生命值=>" + card.getCurrentLife(game));
-                     }
-                     else
-                     {
-                         int healedValue = card.getLife(game) - card.getCurrentLife(game);
-                         await card.setCurrentLife(game, card.getLife(game));
-                         arg.infoDic.Add(card, new HealEventArg.Info()
-                         {
-                             healedValue = healedValue
-                         });
-                         game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife(game));
-                     }
-                 }
-             });
+            List<HealEventArg> eventArgs = new List<HealEventArg>();
+            foreach (var card in cards)
+            {
+                var arg = await heal(card, game, sourse, value);
+                if (arg == null)
+                {
+                    continue;
+                }
+                eventArgs.Add(arg);
+            }
+            return eventArgs.ToArray();
         }
         public static Task<HealEventArg> heal(this Card card, CardEngine game, Card sourse, int value)
         {
-            return heal(new Card[] { card }, game, sourse, value);
+            if (card == null)
+                return null;
+            if (value <= 0)
+                return null;
+            return game.triggers.doEvent(new HealEventArg() { card = card, source = sourse, value = value }, async arg =>
+            {
+                card = arg.card;
+                sourse = arg.source;
+                value = arg.value;
+                if (card == null)
+                    return;
+                int healedValue = Math.Min(value, card.getLife(game) - card.getCurrentLife(game));
+                if (healedValue > 0)
+                {
+                    await card.setCurrentLife(game, card.getCurrentLife(game) + healedValue);
+                    arg.healedValue = healedValue;
+                    game.logger.log(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife(game));
+                }
+                else
+                {
+                    arg.healedValue = 0;
+                    game.logger.log(card + "没有恢复生命值，生命值=>" + card.getCurrentLife(game));
+                }
+            });
 
         }
         public class HealEventArg : EventArg, IDescribableEventArg
         {
-            public Card[] cards;
-            public Card source;
-            public int value;
-            public Dictionary<Card, Info> infoDic = new Dictionary<Card, Info>();
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                return infoDic.Count > 1 ? null : infoDic.First().Key;
+                return card;
             }
 
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return infoDic.Count > 1 ? infoDic.Keys.ToArray() : null;
+                return null;
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
-                return string.Join("，", infoDic.Select(p => "治疗" + p.Key.getFormatString() + p.Value.healedValue + "点生命值"));
+                return string.Format(TEMPLATE, card.getFormatString(), healedValue);
             }
             public override void Record(IGame game, EventRecord record)
             {
-                record.setCardStates(EVENTVAR.CARD, cards);
+                record.setCardState(EVENTVAR.CARD, card);
                 record.setCardState(VAR_HEAL_SOURCE, source);
                 record.setVar(EVENTVAR.VALUE, value);
-
-                var cardStates = record.getVar<CardState[]>(EVENTVAR.CARD);
-                record.setVar(VAR_INFO_DIC, infoDic.ToDictionary(pair => pair.Key.id, pair => pair.Value));
+                record.setVar(VAR_HEALED_VALUE, healedValue);
+            }
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
+                    new EventVariableInfo(){name = VAR_HEAL_SOURCE,type=typeof(Card)},
+                    new EventVariableInfo(){name = EVENTVAR.VALUE,type=typeof(int)},
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)},
+                    new EventVariableInfo(){name = VAR_HEAL_SOURCE,type=typeof(Card)},
+                    new EventVariableInfo(){name = EVENTVAR.VALUE,type=typeof(int)},
+                    new EventVariableInfo(){name = VAR_HEALED_VALUE,type=typeof(int)},
+                };
             }
             [MukioI18n.TranslateMsg("{0}是卡，{1}是治疗量")]
             const string TEMPLATE = "治疗 {0} {1} 点生命值";
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
-                if (infoDic.Count() == 1)
-                {
-                    return TEMPLATE;
-                }
-                // todo: 列表的实现
-                return (this as IDescribableEventArg).toString(game, viewer);
+                return TEMPLATE;
             }
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                if (infoDic.Count() == 1)
-                {
-                    var kv = infoDic.First();
-                    return new object[] { kv.Key.getFormatString(), kv.Value.healedValue };
-                }
-                else
-                    return new object[] { };
+                return new object[] { card.getFormatString(), healedValue };
             }
-
-            public class Info
+            public Card source
             {
-                public int healedValue;
+                get => getVar<Card>(VAR_HEAL_SOURCE);
+                set => setVar(VAR_HEAL_SOURCE, value);
             }
-            public const string VAR_HEAL_SOURCE = "治疗来源";
-            public const string VAR_INFO_DIC = "信息字典";
+            public Card card
+            {
+                get => getVar<Card>(EVENTVAR.CARD);
+                set => setVar(EVENTVAR.CARD, value);
+            }
+            public int value
+            {
+                get => getVar<int>(EVENTVAR.VALUE);
+                set => setVar(EVENTVAR.VALUE, value);
+            }
+            public int healedValue
+            {
+                get => getVar<int>(VAR_HEALED_VALUE);
+                set => setVar(VAR_HEALED_VALUE, value);
+            }
 
-            //public override EventVariableInfo[] getBeforeEventVarInfos()
-            //{
-            //    return new EventVariableInfo[]
-            //    {
-            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
-            //        new EventVariableInfo(){name = "BaseValue",type=typeof(int)}
-            //    };
-            //}
-            //public override EventVariableInfo[] getAfterEventVarInfos()
-            //{
-            //    return new EventVariableInfo[]
-            //    {
-            //        new EventVariableInfo(){name = "Card",type=typeof(Card)},
-            //        new EventVariableInfo(){name = "BaseValue",type=typeof(int)},
-            //        new EventVariableInfo(){name = "HealedValue",type=typeof(int)},
-            //        new EventVariableInfo(){name = "CurrentLife",type=typeof(int)}
-            //    };
-            //}
+            public const string VAR_HEAL_SOURCE = "治疗来源";
+            public const string VAR_HEALED_VALUE = "实际治疗值";
         }
         /// <summary>
         /// 将单个卡牌移除并将其置入墓地，然后触发它的遗言。
