@@ -41,7 +41,8 @@ namespace TouhouCardEngine
                 constList.Add(pileListName, piles);
             }
             piles.Clear();
-            piles.AddRange(value);
+            if (value != null)
+                piles.AddRange(value);
         }
         public PileNameCollection getPiles()
         {
@@ -62,7 +63,8 @@ namespace TouhouCardEngine
                 constList.Add(rangeListName, piles);
             }
             piles.Clear();
-            piles.AddRange(value);
+            if (value != null)
+                piles.AddRange(value);
         }
         public PileNameCollection getRanges()
         {

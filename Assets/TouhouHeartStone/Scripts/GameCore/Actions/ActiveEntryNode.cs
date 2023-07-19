@@ -57,7 +57,8 @@ namespace TouhouCardEngine
                 constList.Add(tagsConstName, tags);
             }
             tags.Clear();
-            tags.AddRange(value);
+            if (value != null)
+                tags.AddRange(value);
         }
         public void AddTargetChecker(TargetChecker checker)
         {

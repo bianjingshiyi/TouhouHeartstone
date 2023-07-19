@@ -44,7 +44,8 @@ namespace TouhouCardEngine
                 constList.Add(tagsConstName, tags);
             }
             tags.Clear();
-            tags.AddRange(value);
+            if (value != null)
+                tags.AddRange(value);
         }
         public void setPiles(params string[] value)
         {
@@ -55,7 +56,8 @@ namespace TouhouCardEngine
                 constList.Add(pileListName, tags);
             }
             tags.Clear();
-            tags.AddRange(value);
+            if (value != null)
+                tags.AddRange(value);
         }
 
 
