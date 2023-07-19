@@ -1069,6 +1069,7 @@ namespace UI
 
             _dragItem = item;
             _dragItemPositionOffset = (item.transform as RectTransform).anchoredPosition - (Vector2)_actionNodesRoot.InverseTransformPoint(eventData.position);
+            onBeginDragActionNode?.Invoke(item);
         }
         private void onDragActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
@@ -1089,6 +1090,7 @@ namespace UI
             _selectFrameTrans.gameObject.SetActive(false);
             _dragItem = null;
             _dragItemPositionOffset = Vector3.zero;
+            onEndDragActionNode?.Invoke(item);
         }
         private void onActionNodeItemConstValueChanged(ActionNodeItem item, int constValueIndex, object value)
         {
@@ -1329,9 +1331,17 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, int, ActionNodeItem, int> onUnconnectNodes;
         /// <summary>
+        /// 当开始拖拽移动节点，参数为拖拽的节点
+        /// </summary>
+        public event Action<ActionNodeItem> onBeginDragActionNode;
+        /// <summary>
         /// 当移动节点，参数为拖拽的节点和图坐标位置
         /// </summary>
         public event Action<ActionNodeItem, Vector2> onMoveActionNode;
+        /// <summary>
+        /// 当结束拖拽移动节点，参数为拖拽的节点
+        /// </summary>
+        public event Action<ActionNodeItem> onEndDragActionNode;
         /// <summary>
         /// 当开始拖拽端口连线
         /// 参数：节点UI，端口索引，是否是输出值

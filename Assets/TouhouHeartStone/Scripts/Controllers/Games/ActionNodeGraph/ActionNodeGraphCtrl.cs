@@ -256,7 +256,6 @@ namespace Controllers
                 return null;
             }
             var actionNode = graph.createEventEntryNode(eventDefine, x, y);
-            _actionNodeList.Add(actionNode);
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
             updateContentSize();
             _recordList.addOperation(new CreateNodeOperation(this, actionNode));
@@ -316,6 +315,7 @@ namespace Controllers
             _ui.onConnectNodes += onConnectNodes;
             _ui.onUnconnectNodes += onUnconnectNodes;
             _ui.onMoveActionNode += onMoveActionNode;
+            _ui.onEndDragActionNode += onEndMoveActionNode;
             _ui.onStartConnection += onStartConnection;
             _ui.onEndConnection += onEndConnection;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
@@ -410,11 +410,26 @@ namespace Controllers
             foreach (ActionNodeItem item in _ui.getSelectedNodes())
             {
                 Node node = getActionNode(item);
+                if (!_movingNodeDict.ContainsKey(item))
+                {
+                    _movingNodeDict.Add(item, new Vector2(node.posX, node.posY));
+                }
                 node.posX += movedX;
                 node.posY += movedY;
                 _ui.moveActionNodeTo(item, new Vector2(item.posX + movedX, item.posY + movedY));
             }
             updateContentSize();
+            OnEdited();
+        }
+        private void onEndMoveActionNode(ActionNodeItem actionNodeItem)
+        {
+            foreach (var pair in _movingNodeDict)
+            {
+                var node = getActionNode(pair.Key);
+                addOperationRecord(new MoveNodeOperation(this, node.id, pair.Value, new Vector2(node.posX, node.posY)));
+            }
+            addRecordBreakpoint();
+            _movingNodeDict.Clear();
             OnEdited();
         }
         private void onStartConnection(ActionNodeItem actionNodeItem, int index, bool isOutput)
@@ -1826,6 +1841,7 @@ namespace Controllers
         float _curPosY;
         readonly List<Node> _actionNodeList = new List<Node>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
+        private Dictionary<ActionNodeItem, Vector2> _movingNodeDict = new Dictionary<ActionNodeItem, Vector2>();
         ActionGraph graph
         {
             get
