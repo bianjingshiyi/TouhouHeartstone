@@ -471,6 +471,7 @@ namespace UI
                     if (_actionGraphCtrl.canUndo())
                     {
                         _actionGraphCtrl.undo();
+                        updateUndoRedoButton();
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.Y))
@@ -479,6 +480,7 @@ namespace UI
                     if (_actionGraphCtrl.canRedo())
                     {
                         _actionGraphCtrl.redo();
+                        updateUndoRedoButton();
                     }
                 }
             }
