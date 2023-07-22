@@ -1,7 +1,6 @@
 #!groovy
 
 @Library('lotlab-lib')
-import org.lotlab.pipeline.QQBot
 import org.lotlab.pipeline.Wecom
 import org.lotlab.pipeline.Webhook
 import org.lotlab.pipeline.Docker
@@ -15,42 +14,64 @@ pipeline {
         node { label 'unity' }
     }
     options {
-        timeout(time: 3, unit: 'HOURS')
+        timeout(time: 2, unit: 'HOURS')
         buildDiscarder logRotator(artifactDaysToKeepStr: '15', artifactNumToKeepStr: '15', daysToKeepStr: '90', numToKeepStr: '30')
     }
     stages {
+		stage('env-check') {
+			steps {
+                script {
+                    // Default
+                    env.IS_PR = 'true'
+                    env.BUILD_RELEASE = 'false'
+                    env.UPLOAD_FOLDER = 'snapshots'
+
+                    if (env.BRANCH_NAME.startsWith('PR')) {
+                        env.IS_PR = 'true'
+                    }
+                    if (env.BRANCH_NAME.startsWith('release')) {
+                        env.BUILD_RELEASE = 'true'
+                    }
+                    if (env.BRANCH_NAME == 'snapshot') {
+                        env.BUILD_RELEASE = 'true'
+                        env.UPLOAD_FOLDER = 'nightly'
+                    }
+                    if (env.BUILD_RELEASE == 'false') {
+                        try {
+                            timeout(time:30, unit:'SECONDS') {
+                                env.BUILD_RELEASE = input(
+                                    message: '要打Release包吗？',
+                                    parameters: [
+                                        [$class: 'TextParameterDefinition',
+                                        defaultValue: 'true',
+                                        description: '包配置', name: 'true/false']
+                                ])
+                            }
+                        } catch (err) { // timeout reached or input Aborted
+                            def user = err.getCauses()[0].getUser()
+                            if ('SYSTEM' == user.toString()) { // SYSTEM means timeout
+                                echo ('Input timeout expired, will build debug package.')
+                                env.BUILD_RELEASE = 'false'
+                            } else {
+                                echo "Input aborted by: [${user}]"
+                                error("Pipeline aborted by: [${user}]")
+                            }
+                        }
+                    }
+                }
+			}
+		}
         stage('checkout') {
             steps {
                 script {
-                    // 询问打包平台
-                    try {
-                        timeout(time:30, unit:'SECONDS') {
-                            env.DEPLOY_TO = input(
-                                message: '打哪个包？',
-                                parameters: [
-                                    [$class: 'TextParameterDefinition',
-                                    defaultValue: 'release',
-                                    description: '包配置', name: 'Debug 还是 Release']
-                            ])
-                        }
-                    } catch (err) { // timeout reached or input Aborted
-                        def user = err.getCauses()[0].getUser()
-                        if ('SYSTEM' == user.toString()) { // SYSTEM means timeout
-                            echo ('Input timeout expired, will build debug package.')
-                            env.DEPLOY_TO = 'debug'
-                        } else {
-                            echo "Input aborted by: [${user}]"
-                            error("Pipeline aborted by: [${user}]")
-                        }
-                    }
                     // 清理原有的工作空间
                     cleanWs deleteDirs: true, patterns: [[pattern: 'Library/**', type: 'INCLUDE'], [pattern: 'Temp/**', type: 'INCLUDE']]
+                    // 清理过期构建
+                    sh label: 'Clean Build Folder', script: 'rm -rf Build/*'
 
                     // 检出
                     def scmVars = checkout scm
-                    env.GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_COMMIT
-                    env.GIT_COMMIT = scmVars.GIT_COMMIT
-                    echo "${GIT_COMMIT} to ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}"
+                    echo "${scmVars.GIT_COMMIT} to ${scmVars.GIT_PREVIOUS_COMMIT}"
 
                     // 更新翻译
                     sh label: 'Pulling Latest Translation', script: '''cd ExternalData/i18n
@@ -63,8 +84,31 @@ pipeline {
                     def gitTag = sh label: '', returnStdout: true, script: 'git describe --always'
                     env.BUILD_GIT_TAG = gitTag.trim()
 
-                    // 清理过期构建
-                    sh label: 'Clean Build Folder', script: 'rm -rf Build/*'
+                    // 生成文本 Git 日志
+                    def logVar = [
+                        [name: 'buildver', value: BUILD_DISPLAY_NAME],
+                        [name: 'buildnum', value: BUILD_NUMBER],
+                        [name: 'branch', value: env.BRANCH_NAME],
+                        [name: 'projectUrl', value: env.BUILD_URL]
+                    ]
+
+                    try {
+                        String textTemplate = readFile('ci/changelog.success.txt')
+                        try {
+                            env.GIT_CHANGELOG = gitChangelog(
+                                extendedVariables: logVar, 
+                                from: [type: 'COMMIT', value: scmVars.GIT_PREVIOUS_COMMIT], 
+                                returnType: 'STRING', template: textTemplate, 
+                                to: [type: 'COMMIT', value: scmVars.GIT_COMMIT]
+                            )
+                        } catch (Exception e) {
+                            echo e.toString()
+                            env.GIT_CHANGELOG = new groovy.text.SimpleTemplateEngine().createTemplate(textTemplate).make(logVar).toString()
+                        }
+                    } catch (Exception e) {
+                        echo e.toString()
+                        env.GIT_CHANGELOG = ""
+                    }
                 }
             }
         }
@@ -79,7 +123,7 @@ pipeline {
         }
         stage('Build Windows Release') {
             when {
-                environment name: 'DEPLOY_TO', value: 'release'
+                environment name: 'BUILD_RELEASE', value: 'true'
             }
             steps {
                 script {
@@ -98,7 +142,7 @@ pipeline {
         }
         stage('Build Android Release') {
             when {
-                environment name: 'DEPLOY_TO', value: 'release'
+                environment name: 'BUILD_RELEASE', value: 'true'
             }
             steps {
                 script {
@@ -109,7 +153,7 @@ pipeline {
         }
         stage('Build Linux') {
             when {
-                environment name: 'DEPLOY_TO', value: 'release'
+                environment name: 'BUILD_RELEASE', value: 'true'
             }
             steps {
                 script {
@@ -118,7 +162,7 @@ pipeline {
                 }
             }
         }
-        stage('Compress and Save') {
+        stage('Compress') {
             steps {
                 sh label: 'Compress package', script: '''#!/bin/bash
                     RELEASE_FOLDER=_artifact
@@ -147,19 +191,7 @@ pipeline {
                     // archiveArtifacts artifacts: 'Build/_artifact/*', followSymlinks: false
             }
         }
-        stage('Upload To Tencent COS') {
-            when {
-                environment name: 'DEPLOY_TO', value: 'release'
-            }
-            steps {
-                script {
-                    // Upload test package to TencentCloud
-                    TencentCOS cos = new TencentCOS(this, 'sample', 'cos_igsk', 'igensoukyo-1251923006', 'ap-nanjing')
-                    cos.upload("${env.WORKSPACE}/Build/_artifact", '*android_release*', 'thg/nightly/')
-                }
-            }
-        }
-        stage('Upload To NetDisk') {
+        stage('Upload') {
             steps {
                 script {
                     BackblazeB2 b2 = new BackblazeB2(this, 'sample', 'backblaze-b2')
@@ -168,8 +200,8 @@ pipeline {
                     env.DOWNLOAD_LINK = ''
                     for (int i = 0; i < files.size(); i++) {
                         def filename = files[i].name
-                        b2.upload("${env.WORKSPACE}/Build/_artifact", filename, 'igsk-ci', 'snapshots/' + filename)
-                        def url = 'https://cdn.igsk.fun/#/snapshots/' + URLEncoder.encode(filename)
+                        b2.upload("${env.WORKSPACE}/Build/_artifact", filename, 'igsk-ci', "${env.UPLOAD_FOLDER}/${filename}")
+                        def url = "https://cdn.igsk.fun/#/${env.UPLOAD_FOLDER}/${URLEncoder.encode(filename)}"
                         env.DOWNLOAD_LINK += "${filename}: ${url} \n" 
                     }
                     echo "${env.DOWNLOAD_LINK}"
@@ -181,15 +213,11 @@ pipeline {
     post {
         success {
             script {
-                if (env.BRANCH_NAME == 'main') {
-                    def downloadURL = "https://igsk.cdn.bigkeer.cn/thg/nightly/醉梦传说_Rev_${BUILD_NUMBER}_android_debug.apk"
-                    sshPublisher(publishers: [sshPublisherDesc(configName: 'IGensoukyo Test Server', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd /home/jim/test-serv/account && ./new_update.sh ${BUILD_GIT_TAG} \"${downloadURL}\"", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: 'account', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
-                }
-                if (!env.BRANCH_NAME.startsWith('PR')) {
+                if (env.IS_PR == 'false') {
                     withCredentials([usernamePassword(credentialsId: 'WeworkMailToken', passwordVariable: 'token', usernameVariable: 'addr')]) {
                         def m = new Mail(env.addr, env.token)
                         try {
-                            m.SendMail(['ci-result@igsk.fun'], "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "项目地址： ${BUILD_URL} \n\n下载链接: \n${DOWNLOAD_LINK}")
+                            m.SendMail('ci-result@igsk.fun', "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "项目地址： ${BUILD_URL} \n\n下载链接: \n${DOWNLOAD_LINK}")
                         } catch (Exception e) {
                             echo e.toString()
                         }
@@ -199,11 +227,11 @@ pipeline {
         }
         failure {
             script {
-                if (!env.BRANCH_NAME.startsWith('PR')) {
+                if (env.IS_PR == 'false') {
                     withCredentials([usernamePassword(credentialsId: 'WeworkMailToken', passwordVariable: 'token', usernameVariable: 'addr')]) {
                         def m = new Mail(env.addr, env.token)
                         try {
-                            m.SendMail(['ci-result@igsk.fun'], "醉梦传说构建失败通知 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包")
+                            m.SendMail('ci-result@igsk.fun', "醉梦传说构建失败通知 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包")
                         } catch (Exception e) {
                             echo e.toString()
                         }
@@ -213,27 +241,17 @@ pipeline {
         }
         always {
             script {
-                def now = new Date()
-                def buildtime = now.format('yyyy-MM-dd HH:mm', TimeZone.getTimeZone('Asia/Shanghai'))
-                def logVar = [
-                    [name: 'url', value: env.DOWNLOAD_LINK?.trim()],
-                    [name: 'buildver', value: BUILD_DISPLAY_NAME],
-                    [name: 'buildnum', value: BUILD_NUMBER],
-                    [name: 'lastbuildnum', value: (BUILD_NUMBER.toInteger() - 1).toString()],
-                    [name: 'nextbuildnum', value: (BUILD_NUMBER.toInteger() + 1).toString()],
-                    [name: 'datetime', value: buildtime ],
-                    [name: 'result', value: currentBuild.result],
-                    [name: 'branch', value: env.BRANCH_NAME],
-                    [name: 'projectUrl', value: env.BUILD_URL]
-                ]
+                String textLog = env.GIT_CHANGELOG
+                if (textLog.length() > 1000) textLog = textLog.substring(0, 1000)
 
+                def wecomContents = []
+                def downloadMaps = [:]
                 def description = '成品:<br>\n<ul>\n'
+                
                 def lines = []
                 if (env.DOWNLOAD_LINK != null) {
                     lines = env.DOWNLOAD_LINK.split('\n')
                 }
-                def wecomContents = []
-                def downloadMaps = [:]
                 for (int i = 0; i < lines.size(); i++) {
                     def cols = lines[i].split(': ')
                     if (cols.size() == 2) {
@@ -246,29 +264,8 @@ pipeline {
                 }
                 description += '</ul>'
                 currentBuild.description = description
-
-                def linkList = []
-                String textLog = ''
-                if (env.BRANCH_NAME.startsWith('PR')) {
-                    linkList += Wecom.jumpItem('合并请求', env.CHANGE_URL)
-                } else {
-                    try {
-                        if (env.GIT_COMMIT) {
-                            String textTemplate = readFile('ci/changelog.success.txt')
-                            try {
-                                textLog = gitChangelog extendedVariables: logVar, from: [type: 'COMMIT', value: env.GIT_PREVIOUS_SUCCESSFUL_COMMIT], returnType: 'STRING', template: textTemplate, to: [type: 'COMMIT', value: env.GIT_COMMIT]
-                            } catch (Exception e) {
-                                textLog = new groovy.text.SimpleTemplateEngine().createTemplate(textTemplate).make(logVar).toString()
-                            }
-                        } else {
-                            textLog = 'Git 检出失败'
-                        }
-                    } catch (Exception e) {
-                        textLog = ""
-                    }
-
-                    if (textLog.length() > 1000) textLog = textLog.substring(0, 1000)
-                }
+                    
+                // 企业微信Webhook
                 withCredentials([usernamePassword(credentialsId: 'jenkins_webhook', passwordVariable: 'token', usernameVariable: 'addr')]) {
                     def webhook = new Webhook(this, env.addr, env.token)
                     try {
@@ -276,6 +273,11 @@ pipeline {
                     } catch (Exception e) {
                         echo e.toString();
                     }
+                }
+                // 企业微信机器人
+                def linkList = []
+                if (env.IS_PR == 'true') {
+                    linkList += Wecom.jumpItem('合并请求', env.CHANGE_URL)
                 }
                 withCredentials([string(credentialsId: 'igsk_wecom_bot', variable: 'WECOM_TOKEN')]) {
                     def bot = new Wecom(this, env.WECOM_TOKEN)
