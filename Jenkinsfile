@@ -109,6 +109,9 @@ pipeline {
                         echo e.toString()
                         env.GIT_CHANGELOG = ""
                     }
+
+                    if (env.GIT_CHANGELOG.length() > 10000)
+                        env.GIT_CHANGELOG = env.GIT_CHANGELOG.substring(0, 10000)
                 }
             }
         }
@@ -217,7 +220,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'WeworkMailToken', passwordVariable: 'token', usernameVariable: 'addr')]) {
                         def m = new Mail(env.addr, env.token)
                         try {
-                            m.SendMail('ci-result@igsk.fun', "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "项目地址： ${BUILD_URL} \n\n下载链接: \n${DOWNLOAD_LINK}")
+                            m.SendMail('ci-result@igsk.fun', "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "项目地址： ${BUILD_URL} \n\n下载链接: \n${DOWNLOAD_LINK}\n\n提交日志: \n${GIT_CHANGELOG}")
                         } catch (Exception e) {
                             echo e.toString()
                         }
@@ -231,7 +234,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'WeworkMailToken', passwordVariable: 'token', usernameVariable: 'addr')]) {
                         def m = new Mail(env.addr, env.token)
                         try {
-                            m.SendMail('ci-result@igsk.fun', "醉梦传说构建失败通知 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包")
+                            m.SendMail('ci-result@igsk.fun', "醉梦传说构建失败通知 - $BRANCH_NAME - $BUILD_DISPLAY_NAME", "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包\n\n提交日志: \n${GIT_CHANGELOG}")
                         } catch (Exception e) {
                             echo e.toString()
                         }
