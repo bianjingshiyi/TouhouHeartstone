@@ -22,7 +22,7 @@ pipeline {
 			steps {
                 script {
                     // Default
-                    env.IS_PR = 'true'
+                    env.IS_PR = 'false'
                     env.BUILD_RELEASE = 'false'
                     env.UPLOAD_FOLDER = 'snapshots'
 
