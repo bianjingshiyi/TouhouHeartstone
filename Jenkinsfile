@@ -218,7 +218,7 @@ pipeline {
             script {
                 if (env.IS_PR == 'false') {
                     withCredentials([usernamePassword(credentialsId: 'WeworkMailToken', passwordVariable: 'token', usernameVariable: 'addr')]) {
-                        def m = new Mail(env.addr, env.token)
+                        def m = new Mail(this, env.addr, env.token)
                         try {
                             m.SendMail('ci-result@igsk.fun', "醉梦传说自动构建结果 - $BRANCH_NAME - $BUILD_DISPLAY_NAME".toString(), "项目地址： ${BUILD_URL} \n\n下载链接: \n${DOWNLOAD_LINK}\n\n提交日志: \n${GIT_CHANGELOG}".toString())
                         } catch (Exception e) {
@@ -232,7 +232,7 @@ pipeline {
             script {
                 if (env.IS_PR == 'false') {
                     withCredentials([usernamePassword(credentialsId: 'WeworkMailToken', passwordVariable: 'token', usernameVariable: 'addr')]) {
-                        def m = new Mail(env.addr, env.token)
+                        def m = new Mail(this, env.addr, env.token)
                         try {
                             m.SendMail('ci-result@igsk.fun', "醉梦传说构建失败通知 - $BRANCH_NAME - $BUILD_DISPLAY_NAME".toString(), "打包失败了，请访问 ${BUILD_URL} 查阅相关的日志文件，修正错误后尝试重新打包\n\n提交日志: \n${GIT_CHANGELOG}".toString())
                         } catch (Exception e) {
