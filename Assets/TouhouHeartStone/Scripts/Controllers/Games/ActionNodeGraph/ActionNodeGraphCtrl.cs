@@ -416,7 +416,8 @@ namespace Controllers
             Vector2 rootPosition = _ui.getNodesRootPosition();
             float movedX = graphPosition.x - rootPosition.x - actionNodeItem.posX;
             float movedY = graphPosition.y - rootPosition.y - actionNodeItem.posY;
-            foreach (ActionNodeItem item in _ui.getSelectedNodes())
+            var selectedNodes = _ui.getSelectedNodes();
+            foreach (ActionNodeItem item in selectedNodes)
             {
                 Node node = getActionNode(item);
                 if (!_movingNodeDict.ContainsKey(item))
@@ -428,6 +429,10 @@ namespace Controllers
                 _ui.moveActionNodeTo(item, new Vector2(item.posX + movedX, item.posY + movedY));
             }
             updateContentSize();
+            if (selectedNodes.Count() == 1)
+            {
+                moveExistingNodeItem(selectedNodes.FirstOrDefault());
+            }
             OnEdited();
         }
         private void onEndMoveActionNode(ActionNodeItem actionNodeItem)
@@ -437,6 +442,17 @@ namespace Controllers
                 var node = getActionNode(pair.Key);
                 addOperationRecord(new MoveNodeOperation(this, node.id, pair.Value, new Vector2(node.posX, node.posY)));
             }
+            if (_movingNodeDict.Count == 1)
+            {
+                var nodeItem = _movingNodeDict.FirstOrDefault().Key;
+                var node = getActionNode(nodeItem);
+                var pos = new Vector2(node.posX, node.posY);
+                pos = getNodeSnapPreviewPosition(pos);
+                moveNode(node.id, pos);
+                connectSnapConnections(node);
+                moveNodeToFreePosition(node);
+            }
+            hidePreviewNode();
             addRecordBreakpoint();
             _movingNodeDict.Clear();
             OnEdited();
@@ -849,7 +865,6 @@ namespace Controllers
         {
             string nodeName;
             var inputViewData = getNodeInputViewData(passiveEntry);
-            ActionNodeValueInfo[] constViewData;
             var outputViewData = getNodeOutputViewData(passiveEntry);
             if (passiveEntry is EventEntryNode eventEntry)
             {

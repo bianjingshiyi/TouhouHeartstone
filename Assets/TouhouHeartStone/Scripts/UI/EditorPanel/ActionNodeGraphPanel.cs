@@ -108,19 +108,6 @@ namespace UI
             clearFreePlaceCheckRegion();
             return actionNodeItem;
         }
-
-        /// <summary>
-        /// 在指定位置上创建一个主动效果入口节点。
-        /// </summary>
-        public ActionNodeItem createPassiveEntryNode(float posX, float posY, string nodeName,
-            PortItemInfo[] inputViewData,
-            PortItemInfo[] outputViewData)
-        {
-            ActionNodeItem actionNodeItem = createNode(posX, posY, nodeName);
-            actionNodeItem.setInputs(inputViewData);
-            actionNodeItem.setOutputs(outputViewData);
-            return actionNodeItem;
-        }
         /// <summary>
         /// 在指定位置上创建一个具有指定名称的节点。
         /// </summary>
@@ -498,6 +485,10 @@ namespace UI
         {
             _graphRegion = null;
             _graphRegionSize = Vector2.zero;
+        }
+        public void updateGraphFreePlaceCheckRegion(params ActionNodeItem[] exceptedNodes)
+        {
+            updateGraphFreePlaceCheckRegion(new Vector2(600, 400), exceptedNodes);
         }
         /// <summary>
         /// 更新用于检测空余位置的域对象。

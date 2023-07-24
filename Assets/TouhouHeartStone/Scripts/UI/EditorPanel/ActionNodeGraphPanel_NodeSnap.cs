@@ -39,6 +39,18 @@ namespace UI
             actionNodeItem.setOutputs(outputViewData);
             actionNodeItem.switchToEventEntryNode();
         }
+        public void setPreviewActiveEntryNode(string nodeName,
+            PortItemInfo[] inputViewData,
+            PortItemInfo[] outputViewData,
+            string[] targetCheckerTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
+        {
+            ActionNodeItem actionNodeItem = _simulationNode;
+            actionNodeItem.setName(nodeName);
+            actionNodeItem.switchToActiveEntryNode();
+            actionNodeItem.setActiveEntry(targetCheckerTypes, targetCheckers);
+            actionNodeItem.setInputs(inputViewData);
+            actionNodeItem.setOutputs(outputViewData);
+        }
         public void hidePreviewNode()
         {
             _simulationNodeCanvasGroup.alpha = 0;

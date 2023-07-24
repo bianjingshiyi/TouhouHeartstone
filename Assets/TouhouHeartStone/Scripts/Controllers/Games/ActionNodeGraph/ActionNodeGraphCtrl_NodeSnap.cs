@@ -88,6 +88,61 @@ namespace Controllers
             _ui.hidePreviewNode();
             _ui.disconnectPreviewPorts();
         }
+        public void showPreviewNodeByNode(Node node)
+        {
+            if (!_nodeSnapped)
+            {
+                _nodeSnapped = true;
+                if (node is ActiveEntryNode)
+                {
+                    string nodeName = game.lang._(EDITOR_NODE_NAME_ACTIVE_ENTRY_NODE);
+                    _ui.setPreviewNode(tryTranslateWithDict(nodeName),
+                        getNodeInputViewData(node),
+                        getNodeConstValueInfos(node),
+                        getNodeOutputViewData(node),
+                        null,
+                        null);
+                }
+                else if (node is EventEntryNode eventEntry)
+                {
+                    var define = eventEntry.define;
+                    _ui.setPreviewEventNode(tryTranslateWithDict(EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, define.eventName)),
+                        getNodeInputViewData(node),
+                        getNodeOutputViewData(node));
+                }
+                else if (node is PassiveEntryNode)
+                {
+                    string nodeName = game.lang._(EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE);
+                    _ui.setPreviewNode(tryTranslateWithDict(nodeName),
+                        getNodeInputViewData(node),
+                        getNodeConstValueInfos(node),
+                        getNodeOutputViewData(node),
+                        null,
+                        null);
+                }
+                else if (node is AuraEntryNode)
+                {
+                    string nodeName = game.lang._(EDITOR_NODE_NAME_AURA_ENTRY_NODE);
+                    _ui.setPreviewNode(tryTranslateWithDict(nodeName),
+                        getNodeInputViewData(node),
+                        getNodeConstValueInfos(node),
+                        getNodeOutputViewData(node),
+                        null,
+                        null);
+                }
+                else if (node is ActionNode actionNode)
+                {
+                    var define = actionNode.define;
+                    string docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineName : null;
+                    _ui.setPreviewNode(tryTranslateWithDict(define.defineName),
+                        getNodeInputViewData(node),
+                        getNodeConstValueInfos(node),
+                        getNodeOutputViewData(node),
+                        define.obsoleteMsg,
+                        docKey);
+                }
+            }
+        }
         /// <summary>
         /// 将要创建的节点拖拽到节点图上显示预览，检测节点吸附。
         /// </summary>
@@ -171,12 +226,35 @@ namespace Controllers
                 _ui.connectPreviewPorts(targetItem, targetIndex, connection.sourceIndex, connection.toOutput);
             }
         }
-        /// <summary>
-        /// 根据要创建的节点类型获取所有可以吸附的节点。
-        /// </summary>
-        /// <param name="previewRect"></param>
-        /// <param name="nodeDefine"></param>
-        /// <returns></returns>
+
+        private void moveExistingNodeItem(ActionNodeItem item)
+        {
+            Vector2 previewSize = _ui.getPreviewNodeSize();
+            Vector2 position = new Vector2(item.posX, item.posY);
+            Rect previewRect = new Rect(position - previewSize * 0.5f, previewSize);
+
+            var node = getActionNode(item);
+            // 寻找合适的节点。
+            var targets = findNodeSnapTargets(node);
+
+            // 有左侧连接节点。
+            var result = getNodeSnapResult(position, previewRect, targets);
+
+            if (result != null)
+            {
+                Vector2 previewPos = result.position;
+                showPreviewNodeByNode(node);
+                setNodeSnapConnections(result);
+                _currentNodeSnapTarget = result;
+                _ui.setPreviewNodePosition(previewPos);
+            }
+            else
+            {
+                _nodeSnapped = false;
+                _ui.disconnectPreviewPorts();
+                _currentNodeSnapTarget = null;
+            }
+        }
         private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, NodeDefine nodeDefine)
         {
             // 获取此节点的输入和输出。
@@ -192,11 +270,34 @@ namespace Controllers
                 inputDefines = new PortDefine[] { PassiveEntryNode.triggerConditionPortDefine };
                 outputDefines = nodeDefine.eventDefine.variableInfos.Select(v => PortDefine.Value(v.type, v.name)).ToArray();
             }
-
+            return findNodeSnapTargets(previewRect, inputDefines, outputDefines);
+        }
+        private List<NodeSnapTarget> findNodeSnapTargets(Node node)
+        {
+            var item = getActionNodeItem(node);
+            var nodeRect = item.getNodeItemRect();
+            return findNodeSnapTargets(nodeRect, node.inputPorts.Select(p => p.define).ToArray(), node.outputPorts.Select(p => p.define).ToArray(), item);
+        }
+        /// <summary>
+        /// 根据要创建的节点类型获取所有可以吸附的节点。
+        /// </summary>
+        /// <param name="previewRect"></param>
+        /// <param name="inputDefines"></param>
+        /// <param name="outputDefines"></param>
+        /// <param name="excludingItem"></param>
+        /// <returns></returns>
+        private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, PortDefine[] inputDefines, PortDefine[] outputDefines, ActionNodeItem excludingItem = null)
+        {
             List<NodeSnapTarget> targets = new List<NodeSnapTarget>(); // 符合连接条件的节点。
             Dictionary<ActionNodeItem, NodeSnapNode> nodeItemDict = new Dictionary<ActionNodeItem, NodeSnapNode>(); // 所有被包括进的节点，以及其对应的子树组。
+
+            _ui.updateGraphFreePlaceCheckRegion(excludingItem); ;
             foreach (var nodeItem in _actionNodeItemList)
             {
+                if (nodeItem == excludingItem)
+                {
+                    continue;
+                }
                 var rect = nodeItem.getNodeItemRect();
                 // 这个节点在目标节点左边
                 if (rect.xMax <= previewRect.xMin - _minNodeSnapHoriDistance)
