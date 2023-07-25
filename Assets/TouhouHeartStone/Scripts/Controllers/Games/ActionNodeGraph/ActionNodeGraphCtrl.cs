@@ -1357,7 +1357,7 @@ namespace Controllers
             {
                 if (showErrorTip)
                 {
-                    if (!ValueOutput.CanTypeConvert(outputPort.define?.type, inputPort.define?.type))
+                    if (!PortDefine.CanTypeConvert(outputPort.define?.type, inputPort.define?.type))
                     {
                         //类型必须可以转化
                         showTypeConnectError();
