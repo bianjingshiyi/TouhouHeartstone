@@ -253,6 +253,7 @@ namespace Controllers
                 _nodeSnapped = false;
                 _ui.disconnectPreviewPorts();
                 _currentNodeSnapTarget = null;
+                hidePreviewNode();
             }
         }
         private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, NodeDefine nodeDefine)
@@ -276,7 +277,11 @@ namespace Controllers
         {
             var item = getActionNodeItem(node);
             var nodeRect = item.getNodeItemRect();
-            return findNodeSnapTargets(nodeRect, node.inputPorts.Select(p => p.define).ToArray(), node.outputPorts.Select(p => p.define).ToArray(), item);
+            var inputDefines = node.inputPorts.Select(p => p.define).ToArray();
+            var outputDefines = node.outputPorts.Select(p => p.define).ToArray();
+            var connectedInputs = node.inputPorts.Select(p => p.connections.Any()).ToArray();
+            var connectedOutputs = node.outputPorts.Select(p => p.connections.Any()).ToArray();
+            return findNodeSnapTargets(nodeRect, inputDefines, outputDefines, connectedInputs, connectedOutputs, item);
         }
         /// <summary>
         /// 根据要创建的节点类型获取所有可以吸附的节点。
@@ -286,7 +291,7 @@ namespace Controllers
         /// <param name="outputDefines"></param>
         /// <param name="excludingItem"></param>
         /// <returns></returns>
-        private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, PortDefine[] inputDefines, PortDefine[] outputDefines, ActionNodeItem excludingItem = null)
+        private List<NodeSnapTarget> findNodeSnapTargets(Rect previewRect, PortDefine[] inputDefines, PortDefine[] outputDefines, bool[] connectedInputPorts = null, bool[] connectedOutputPorts = null, ActionNodeItem excludingItem = null)
         {
             List<NodeSnapTarget> targets = new List<NodeSnapTarget>(); // 符合连接条件的节点。
             Dictionary<ActionNodeItem, NodeSnapNode> nodeItemDict = new Dictionary<ActionNodeItem, NodeSnapNode>(); // 所有被包括进的节点，以及其对应的子树组。
@@ -314,7 +319,7 @@ namespace Controllers
 
                     // 有有效连接。
                     var node = getActionNode(nodeItem);
-                    var validConnections = getSnapValidConnections(node.outputPorts, inputDefines, true);
+                    var validConnections = getSnapValidConnections(node.outputPorts, inputDefines, true, connectedInputPorts);
 
                     if (validConnections.Length > 0)
                     {
@@ -343,7 +348,7 @@ namespace Controllers
 
                     // 有有效连接。
                     var node = getActionNode(nodeItem);
-                    var validConnections = getSnapValidConnections(node.inputPorts, outputDefines, false);
+                    var validConnections = getSnapValidConnections(node.inputPorts, outputDefines, false, connectedOutputPorts);
 
                     if (validConnections.Length > 0)
                     {
@@ -393,10 +398,15 @@ namespace Controllers
                 return node;
             }
         }
-        private NodeSnapConnection[] getSnapValidConnections(IEnumerable<IPort> targets, PortDefine[] portDefines, bool toOutput)
+        private NodeSnapConnection[] getSnapValidConnections(IEnumerable<IPort> targets, PortDefine[] portDefines, bool toOutput, bool[] excludedPorts = null)
         {
             return portDefines.Select((i, index) =>
             {
+                if (excludedPorts != null && excludedPorts[index])
+                {
+                    return new NodeSnapConnection(-1, -1, toOutput, false, false);
+                }
+
                 var target = targets.FirstOrDefault(o =>
                 {
                     return o.connections.Count() <= 0 && PortDefine.CanTypeConvert(i.type, o.define.type) && i.GetPortType() == o.GetPortType();
