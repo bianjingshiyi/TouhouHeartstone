@@ -136,7 +136,7 @@ namespace TouhouCardEngine
         public const string pileListName = "pileList";
         public const string triggerConditionPortName = "触发条件";
         public static PortDefine triggerConditionPortDefine = PortDefine.Value(typeof(bool), conditionPortName, triggerConditionPortName);
-        protected static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
+        public static PortDefine actionPortDefine = PortDefine.Control(actionPortName, string.Empty);
         protected static PortDefine playerPortDefine = PortDefine.Value(typeof(Player), playerPortName, "Player");
         protected static PortDefine cardPortDefine = PortDefine.Value(typeof(Card), cardPortName, "Card");
     }

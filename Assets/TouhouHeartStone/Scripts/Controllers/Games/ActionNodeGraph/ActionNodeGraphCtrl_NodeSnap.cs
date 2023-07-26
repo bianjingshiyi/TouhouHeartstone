@@ -269,7 +269,7 @@ namespace Controllers
             else if (nodeDefine.eventDefine != null)
             {
                 inputDefines = new PortDefine[] { PassiveEntryNode.triggerConditionPortDefine };
-                outputDefines = nodeDefine.eventDefine.variableInfos.Select(v => PortDefine.Value(v.type, v.name)).ToArray();
+                outputDefines = nodeDefine.eventDefine.variableInfos.Select(v => PortDefine.Value(v.type, v.name)).Prepend(PassiveEntryNode.actionPortDefine).ToArray();
             }
             return findNodeSnapTargets(previewRect, inputDefines, outputDefines);
         }
