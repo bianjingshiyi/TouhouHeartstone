@@ -144,76 +144,76 @@ namespace Game
                 //case THHPlayer.SetGemEventArg setGem:
                 //    item.IconImage.sprite = item.gemIcon;
                 //    item.Text.text = "=>" + setGem.value;
-                //    item.Image.sprite = getManager<TableManager>().getSkin(game.getDefine<LuckyCoin>()).image;
+                //    item.Image.sprite = tableManager.getSkin(game.getDefine<LuckyCoin>()).image;
                 //    item.BorderImage.color = setGem.player == localPlayer ? item.selfColor : item.oppoColor;
                 //    break;
                 //case THHPlayer.SetMaxGemEventArg setMaxGem:
                 //    item.IconImage.sprite = item.gemIcon;
                 //    item.Text.text = "=>" + setMaxGem.value;
-                //    item.Image.sprite = getManager<TableManager>().getSkin(game.getDefine<LuckyCoin>()).image;
+                //    item.Image.sprite = tableManager.getSkin(game.getDefine<LuckyCoin>()).image;
                 //    item.BorderImage.color = setMaxGem.player == localPlayer ? item.selfColor : item.oppoColor;
                 //    break;
                 case HearthStoneRule.DrawEventArg draw:
                     item.IconImage.sprite = item.drawIcon;
                     item.Text.text = lang._(GAME_MANAGER_DRAW);
-                    item.Image.sprite = getManager<TableManager>().getSkin(draw.player == localPlayer ? draw.card : draw.player.getMaster()).image;
+                    item.Image.sprite = tableManager.getSkin(draw.player == localPlayer ? draw.card : draw.player.getMaster()).image;
                     item.BorderImage.sprite = draw.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case HearthStoneRule.BurnEventArg burn:
 
                     item.IconImage.sprite = item.burnIcon;
                     item.Text.text = lang._(GAME_MANAGER_BURN);
-                    item.Image.sprite = getManager<TableManager>().getSkin(burn.card).image;
+                    item.Image.sprite = tableManager.getSkin(burn.card).image;
                     item.BorderImage.sprite = burn.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case HearthStoneRule.FatigueEventArg fatigue:
                     item.IconImage.sprite = item.fatigueIcon;
                     item.Text.text = lang._(GAME_MANAGER_FATIGUE);
-                    item.Image.sprite = getManager<TableManager>().getSkin(fatigue.player.getMaster()).image;
+                    item.Image.sprite = tableManager.getSkin(fatigue.player.getMaster()).image;
                     item.BorderImage.sprite = fatigue.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.DiscardEventArg discard:
                     item.IconImage.sprite = item.discardIcon;
                     item.Text.text = lang._(GAME_MANAGER_DISCARD);
-                    item.Image.sprite = getManager<TableManager>().getSkin(discard.card).image;
+                    item.Image.sprite = tableManager.getSkin(discard.card).image;
                     item.BorderImage.sprite = discard.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case HearthStoneRule.UseEventArg use:
                     item.IconImage.sprite = item.useIcon;
                     item.Text.text = lang._(GAME_MANAGER_USE);
                     item.Image.sprite = use.card.isTrap(game) ?
-                        getManager<TableManager>().getSkin(use.card.getOwner().getMaster()).image :
-                        getManager<TableManager>().getSkin(use.card).image;
+                        tableManager.getSkin(use.card.getOwner().getMaster()).image :
+                        tableManager.getSkin(use.card).image;
                     item.BorderImage.sprite = use.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case HearthStoneRule.CreateTokenEventArg token:
                     item.IconImage.sprite = item.rebornIcon;
                     item.Text.text = lang._(GAME_MANAGER_TOKEN);
-                    item.Image.sprite = getManager<TableManager>().getSkin(token.card).image;
+                    item.Image.sprite = tableManager.getSkin(token.card).image;
                     item.BorderImage.sprite = token.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case HearthStoneRule.RebornEventArg reborn:
                     item.IconImage.sprite = item.rebornIcon;
                     item.Text.text = lang._(GAME_MANAGER_REBORN);
-                    item.Image.sprite = getManager<TableManager>().getSkin(reborn.card).image;
+                    item.Image.sprite = tableManager.getSkin(reborn.card).image;
                     item.BorderImage.sprite = reborn.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.AttackEventArg attack:
                     item.IconImage.sprite = item.attackIcon;
                     item.Text.text = lang._(GAME_MANAGER_ATTACK);
-                    item.Image.sprite = getManager<TableManager>().getSkin(attack.card).image;
+                    item.Image.sprite = tableManager.getSkin(attack.card).image;
                     item.BorderImage.sprite = attack.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.DamageEventArg damage:
                     item.IconImage.sprite = item.damageIcon;
                     item.Text.text = "-" + damage.damagedValue;
-                    item.Image.sprite = getManager<TableManager>().getSkin(damage.target).image;
+                    item.Image.sprite = tableManager.getSkin(damage.target).image;
                     item.BorderImage.sprite = damage.target.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.SetArmorEventArg armor:
                     item.IconImage.sprite = item.armorIcon;
                     item.Text.text = "=>" + armor.value;
-                    item.Image.sprite = getManager<TableManager>().getSkin(armor.card).image;
+                    item.Image.sprite = tableManager.getSkin(armor.card).image;
                     item.BorderImage.sprite = armor.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.HealEventArg heal:
@@ -221,25 +221,25 @@ namespace Game
                     var healedValue = heal.healedValue;
                     item.IconImage.sprite = item.healIcon;
                     item.Text.text = "+" + healedValue;
-                    item.Image.sprite = getManager<TableManager>().getSkin(card).image;
+                    item.Image.sprite = tableManager.getSkin(card).image;
                     item.BorderImage.sprite = card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.SilenceEventArg silence:
                     item.IconImage.sprite = item.silenceIcon;
                     item.Text.text = lang._(GAME_MANAGER_SILENCE);
-                    item.Image.sprite = getManager<TableManager>().getSkin(silence.cards[0]).image;
+                    item.Image.sprite = tableManager.getSkin(silence.cards[0]).image;
                     item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.SecretTriggerEventArg secret:
                     item.IconImage.sprite = item.secretIcon;
                     item.Text.text = lang._(GAME_MANAGER_SECRET);
-                    item.Image.sprite = getManager<TableManager>().getSkin(secret.card).image;
+                    item.Image.sprite = tableManager.getSkin(secret.card).image;
                     item.BorderImage.sprite = secret.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHCard.DeathEventArg death:
                     item.IconImage.sprite = item.deathIcon;
                     item.Text.text = lang._(GAME_MANAGER_DEATH);
-                    item.Image.sprite = getManager<TableManager>().getSkin(death.card).image;
+                    item.Image.sprite = tableManager.getSkin(death.card).image;
                     item.BorderImage.sprite = death.player == localPlayer ? item.selfsprite : item.opposprite;
                     break;
                 case THHPlayer.DiscoverEventArg discover:
@@ -446,7 +446,7 @@ namespace Game
         {
             if (_mainUI != null)
             {
-                getManager<TableManager>().setGame(null, null);
+                tableManager.setGame(null, null);
                 _mainUI.display(_mainUI.MainMenu);
             }
         }
@@ -536,7 +536,7 @@ namespace Game
             _mainUI.Game.GameResultDialog.hide();
             //本地玩家用UI
             _mainUI.display(_mainUI.Game);
-            getManager<TableManager>().setGame(game, localPlayer);
+            tableManager.setGame(game, localPlayer);
             _mainUI.Game.Table.setGame(game, localPlayer);
 
             game.triggers.onEventBefore += t1 => gameTriggerEventCache.cache(onEventBefore, t1);
@@ -724,6 +724,7 @@ namespace Game
         [TranslateMsg("开始游戏时，读取卡池失败时的报错")]
         public const string GAME_CREATE_ERROR_LOAD_CARDS_FAILED = "开始游戏失败，无法读取游戏所需的卡池。";
         public MainManager main => getManager<MainManager>();
+        private TableManager tableManager => getManager<TableManager>();
         private List<LogItem> logItems = new List<LogItem>();
         #endregion
     }

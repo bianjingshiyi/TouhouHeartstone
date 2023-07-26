@@ -29,7 +29,7 @@ namespace Game
         }
         void onReplayGameUpdate()
         {
-            TableManager table = getManager<TableManager>();
+            TableManager table = tableManager;
             if (table.getAnimQueue().Length < 1 &&//没有其他动画在播放
                 game.answers.getAllRequests().FirstOrDefault() is IRequest request &&//有询问
                 !_replayPlayer.isReplayEnd//没放完

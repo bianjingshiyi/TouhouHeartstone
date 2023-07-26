@@ -573,6 +573,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4333116610670431242}
+  - component: {fileID: 7873686389691102804}
   m_Layer: 0
   m_Name: Grave
   m_TagString: Untagged
@@ -600,3 +601,15 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7873686389691102804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8384793111909657806}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2d6f5e25ae483e4397f7214eeedc47b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

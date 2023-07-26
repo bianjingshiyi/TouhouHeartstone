@@ -1,0 +1,114 @@
+﻿using System;
+using UI;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace Game.BattleTable
+{
+    public class BattleTable : MonoBehaviour
+    {
+        public void update(float deltaTime)
+        {
+            _selfField.updateField(deltaTime);
+            _enemyField.updateField(deltaTime);
+        }
+
+        public event Action<BattleTable, PointerEventData> onClickNoWhere;
+
+        #region 属性字段
+        public GameObject ServantTemplate => _servantTemplate;
+        public GameObject SecretTemplate => _secretTemplate;
+        public GameObject CardTemplate => _cardTemplate;
+        public Master SelfMaster => _selfMaster;
+        public Master EnemyMaster => _enemyMaster;
+        public Gem SelfGem => _selfGem;
+        public Gem EnemyGem => _enemyGem;
+        public Deck SelfDeck => _selfDeck;
+        public Deck EnemyDeck => _enemyDeck;
+        public Deck SelfGrave => _selfGrave;
+        public Deck EnemyGrave => _enemyGrave;
+        public HandList SelfHandList => _selfHandList;
+        public HandList EnemyHandList => _enemyHandList;
+        public Field SelfField => _selfField;
+        public Field EnemyField => _enemyField;
+        public Skill SelfSkill => _selfSkill;
+        public Skill EnemySkill => _enemySkill;
+        public Item SelfItem => _selfItem;
+        public Item EnemyItem => _enemyItem;
+        public TurnEndButton TurnEndButton => _turnEndButton;
+        public GameObject CardDisplayerObj => _cardDisplayerObj;
+        public CardDisplayer CardDisplayer => _cardDisplayer;
+        public Transform InvokeDisplayParent => _invokeDisplayParent;
+
+        public DiscoverDialog Discover => _discover;
+        public PilePanel PilePanel => _pilePanel;
+        public MulliganDialog InitReplaceDialog => _mulliganDialog;
+        public AttackArrow AttackArrowImage => _attackArrow;
+
+        public TipBox TipBox => _tipBox;
+        public Text TipText => _tipText;
+
+        [SerializeField]
+        private GameObject _servantTemplate;
+        [SerializeField]
+        private GameObject _secretTemplate;
+        [SerializeField]
+        private GameObject _cardTemplate;
+        [SerializeField]
+        private Master _selfMaster;
+        [SerializeField]
+        private Master _enemyMaster;
+        [SerializeField]
+        private Gem _selfGem;
+        [SerializeField]
+        private Gem _enemyGem;
+        [SerializeField]
+        private Deck _selfDeck;
+        [SerializeField]
+        private Deck _enemyDeck;
+        [SerializeField]
+        private Deck _selfGrave;
+        [SerializeField]
+        private Deck _enemyGrave;
+        [SerializeField]
+        private HandList _selfHandList;
+        [SerializeField]
+        private HandList _enemyHandList;
+        [SerializeField]
+        private Field _selfField;
+        [SerializeField]
+        private Field _enemyField;
+        [SerializeField]
+        private Skill _selfSkill;
+        [SerializeField]
+        private Skill _enemySkill;
+        [SerializeField]
+        private Item _selfItem;
+        [SerializeField]
+        private Item _enemyItem;
+        [SerializeField]
+        private TurnEndButton _turnEndButton;
+        [SerializeField]
+        private GameObject _cardDisplayerObj;
+        [SerializeField]
+        private CardDisplayer _cardDisplayer;
+        [SerializeField]
+        private Transform _invokeDisplayParent;
+
+        [SerializeField]
+        private DiscoverDialog _discover;
+        [SerializeField]
+        private PilePanel _pilePanel;
+        [SerializeField]
+        private MulliganDialog _mulliganDialog;
+        [SerializeField]
+        private AttackArrow _attackArrow;
+
+        [SerializeField]
+        private TipBox _tipBox;
+        [SerializeField]
+        private Text _tipText;
+        #endregion
+    }
+}

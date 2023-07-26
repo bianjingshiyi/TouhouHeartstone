@@ -611,6 +611,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7069284290141798493}
+  - component: {fileID: 3178869040055091554}
   m_Layer: 0
   m_Name: Skill
   m_TagString: Untagged
@@ -636,6 +637,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 180, z: 0}
+--- !u!114 &3178869040055091554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7069284290141798494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 757a626d20129db4f9b20bf4d987febd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _highlightObj: {fileID: 8565391987680971337}
+  _openRoot: {fileID: 201463673800460413}
+  _closedRoot: {fileID: 1337195729950480831}
+  _costText: {fileID: 8083721918218573232}
+  _imageRenderer: {fileID: 7069284289310633033}
 --- !u!1 &8565391987680971337
 GameObject:
   m_ObjectHideFlags: 0
