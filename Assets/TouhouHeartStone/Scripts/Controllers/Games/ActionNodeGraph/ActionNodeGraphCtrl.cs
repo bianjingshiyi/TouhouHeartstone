@@ -265,6 +265,7 @@ namespace Controllers
             }
             var actionNode = graph.createEventEntryNode(eventDefine, x, y);
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
+            updateEffectProperties();
             updateContentSize();
             _recordList.addOperation(new CreateNodeOperation(this, actionNode));
             _recordList.addBreakpoint();

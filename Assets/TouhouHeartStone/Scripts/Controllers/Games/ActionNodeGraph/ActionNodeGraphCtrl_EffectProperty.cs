@@ -219,7 +219,10 @@ namespace Controllers
         {
             var items = GetEffectPropItems();
             var item = getEffectEntryNodeItem();
-            item.updateEffectProperties(items, game.card);
+            if (item != null)
+            {
+                item.updateEffectProperties(items, game.card);
+            }
         }
         /// <summary>
         /// 更新一项属性。
@@ -229,7 +232,10 @@ namespace Controllers
         {
             var item = GetEffectPropertyItem(name);
             var nodeItem = getEffectEntryNodeItem();
-            nodeItem.updateEffectPropertyItem(name, item, game.card);
+            if (item != null)
+            {
+                nodeItem.updateEffectPropertyItem(name, item, game.card);
+            }
         }
         private EffectPropertyItem[] GetEffectPropItems()
         {
