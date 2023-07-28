@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 149, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 152, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -24569,190 +24569,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : 91,
-      "type" : "Servant",
-      "propDict" : {
-        "cost" : 4,
-        "attack" : 4,
-        "life" : 4,
-        "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["cantattack"]
-        },
-        "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Beast"]
-        },
-        "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(0),
-          "defineId" : 3145728
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableEventEffect",
-          "name" : "事件效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : -156.57403564453125,
-                "posY" : -144.96112060546875,
-                "eventName" : "AfterTurnEndEvent",
-                "tags" : [],
-                "piles" : ["Field"]
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineName" : "Compare",
-                "posX" : -31.713027954101563,
-                "posY" : 288.85427856445313,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineName" : "获取卡牌拥有者",
-                "posX" : -566.72698974609375,
-                "posY" : 326.22915649414063,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineName" : "这张卡牌",
-                "posX" : -928.82952880859375,
-                "posY" : 325.9288330078125,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineName" : "获取本回合事件记录",
-                "posX" : -905.96246337890625,
-                "posY" : 724.27154541015625,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 11,
-                "defineName" : "LogicOperation",
-                "posX" : 527.67376708984375,
-                "posY" : 569.43804931640625,
-                "constDict" : {
-                  "operator" : 1
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 12,
-                "defineName" : "事件记录类型判断",
-                "posX" : -251.0753173828125,
-                "posY" : 744.1158447265625,
-                "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "eventName" : "HealEvent"
-                  }
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "defineName" : "对固定数量的随机目标造成伤害或法伤",
-                "posX" : 895.239013671875,
-                "posY" : -89.563446044921875,
-                "constDict" : {
-                  "count2" : 1,
-                  "damage2" : 4
-                },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineName" : "获取敌方随从",
-                "posX" : 354.63839721679688,
-                "posY" : -203.15914916992188,
-                "constDict" : { },
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "B",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "card",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "A",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 2,
-                "destName" : "value",
-                "destParamIndex" : 1,
-                "destNodeId" : 11
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "evt",
-                "destNodeId" : 12
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 12,
-                "destName" : "value",
-                "destParamIndex" : 2,
-                "destNodeId" : 11
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 11,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "targets",
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 7
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
       "_id" : 92,
       "type" : "Servant",
       "propDict" : {
@@ -24837,6 +24653,263 @@
                 "sourceNodeId" : 4,
                 "destName" : "buffDefine",
                 "destNodeId" : 3
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : 91,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 4,
+        "attack" : 4,
+        "life" : 4,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["cantattack"]
+        },
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Beast"]
+        },
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 3145728
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableEventEffect",
+          "name" : "事件效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineName" : "Compare",
+                "posX" : -31.713027954101563,
+                "posY" : 288.85427856445313,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineName" : "获取卡牌拥有者",
+                "posX" : -566.72698974609375,
+                "posY" : 326.22915649414063,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineName" : "这张卡牌",
+                "posX" : -928.82952880859375,
+                "posY" : 325.9288330078125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineName" : "获取本回合事件记录",
+                "posX" : -1399.4376220703125,
+                "posY" : 799.2276611328125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 11,
+                "defineName" : "LogicOperation",
+                "posX" : 854.18310546875,
+                "posY" : 455.45782470703125,
+                "constDict" : {
+                  "operator" : 1
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 12,
+                "defineName" : "事件记录类型判断",
+                "posX" : -242.50210571289063,
+                "posY" : 808.5506591796875,
+                "constDict" : {
+                  "argRef" : {
+                    "_t" : "EventArgReference",
+                    "eventName" : "HealEvent"
+                  }
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "defineName" : "对固定数量的随机目标造成伤害或法伤",
+                "posX" : 691.0120849609375,
+                "posY" : -75.833885192871094,
+                "constDict" : {
+                  "count2" : 1,
+                  "damage2" : 4
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineName" : "获取敌方随从",
+                "posX" : -132.7603759765625,
+                "posY" : -187.71340942382813,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableEventEntryNode",
+                "_id" : 1,
+                "posX" : -653.2412109375,
+                "posY" : -162.73887634277344,
+                "eventName" : "BeforeTurnEndEvent",
+                "tags" : [],
+                "piles" : ["Field"]
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 8,
+                "defineName" : "筛选",
+                "posX" : -965.03814697265625,
+                "posY" : 739.1705322265625,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 9,
+                "defineName" : "获取元素数量",
+                "posX" : -189.47845458984375,
+                "posY" : 580.99462890625,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 10,
+                "defineName" : "Compare",
+                "posX" : 298.02081298828125,
+                "posY" : 636.43402099609375,
+                "constDict" : {
+                  "operator" : 3
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 13,
+                "defineName" : "IntegerConst",
+                "posX" : 395.41708374023438,
+                "posY" : 927.543701171875,
+                "constDict" : {
+                  "value" : 1
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "card",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "A",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 2,
+                "destName" : "value",
+                "destParamIndex" : 1,
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "targets",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 11,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 8,
+                "destName" : "evt",
+                "destNodeId" : 12
+              }, {
+                "sourceName" : "condition",
+                "sourceNodeId" : 8,
+                "destName" : "enter",
+                "destNodeId" : 12
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "array",
+                "destNodeId" : 8
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 9,
+                "destName" : "A",
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 10,
+                "destName" : "value",
+                "destParamIndex" : 2,
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 8,
+                "destName" : "collection",
+                "destNodeId" : 9
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 13,
+                "destName" : "B",
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "B",
+                "destNodeId" : 2
               }]
           }
         }],
@@ -25889,16 +25962,18 @@
       "_desc" : "<b>无法攻击</b>，在你的回合结束后，如果你在本回合中召唤过其他仆从，将一张<u>奶酪</u>置入你的手牌。",
       "_language" : "zh-Hans"
     }, {
+      "_id" : 92,
+      "_name" : "飞蛇*",
+      "_imagePath" : "785b5cb7e9bb37d2d6d07962812aa461ef62f2abeb3eab130f37ce2ae2a47cde.jpg",
+      "_desc" : "每当一个角色受到治疗后，获得+1攻击力。",
+      "_language" : "zh-Hans"
+    }, {
       "_id" : 91,
       "_name" : "被操纵的巨蛙*",
       "_subname" : "",
       "_imagePath" : "7cfd2db45c6ad48614d64924a6f5ed9cc7a27b27eef3d1d25573ab65d204c8b1.jpg",
-      "_desc" : "<b>无法攻击</b>。每当你的回合结束后，如果有角色在本回合中受到过治疗，则随机对一个敌方仆从造成4点伤害。"
-    }, {
-      "_id" : 92,
-      "_name" : "飞蛇*",
-      "_imagePath" : "785b5cb7e9bb37d2d6d07962812aa461ef62f2abeb3eab130f37ce2ae2a47cde.jpg",
-      "_desc" : "每当一个角色受到治疗后，获得+1攻击力。"
+      "_desc" : "<b>无法攻击</b>。每当你的回合结束时，如果有角色在本回合中受到过治疗，则随机对一个敌方仆从造成4点伤害。",
+      "_language" : "zh-Hans"
     }],
   "buffDefineList" : [{
       "_id" : 2,
