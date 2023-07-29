@@ -9,6 +9,8 @@ using UnityEditor;
 
 using TouhouCardEngine;
 using TouhouHeartstone;
+using UnityEngine.UI;
+
 namespace TouhouHeartstone
 {
     //class CardDefineEditorWindow : EditorWindow

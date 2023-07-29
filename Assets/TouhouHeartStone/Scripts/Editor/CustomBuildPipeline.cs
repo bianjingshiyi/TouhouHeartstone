@@ -2,7 +2,7 @@
 using BJSYGameCore;
 using System;
 using UnityEngine;
-using UnityEditor;
+
 namespace TouhouHeartstone
 {
     [BuilderStep(2)]
