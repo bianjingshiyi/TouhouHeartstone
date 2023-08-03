@@ -63,6 +63,8 @@ namespace Game
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {
+            if (!record.isCompleted)
+                return false;
             if (_attackAnim == null && nextAnim is DamageAnimation)
                 return false;
             return base.blockAnim(nextAnim);

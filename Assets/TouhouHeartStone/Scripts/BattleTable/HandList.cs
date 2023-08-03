@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
+using UnityEngine.XR;
 
 namespace Game.BattleTable
 {
@@ -44,6 +46,10 @@ namespace Game.BattleTable
         public HandItem addHand()
         {
             return insertHand(_hands.Count);
+        }
+        public bool contains(HandItem item)
+        {
+            return _hands.Contains(item);
         }
         public bool removeHand(HandItem hand)
         {

@@ -1,10 +1,11 @@
 ﻿using System;
+using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Game.BattleTable
 {
-    public class HandItem : MonoBehaviour
+    public class HandItem : TableUnit
     {
         public void setHovered(bool hovered)
         {
@@ -67,8 +68,7 @@ namespace Game.BattleTable
         public event Action<HandItem, PointerEventData> onPointerExit;
         #endregion
 
-        [SerializeField]
-        private Animator _animator;
+        #region 属性字段
         [SerializeField]
         private bool _isDraggable = true;
         [SerializeField]
@@ -80,5 +80,11 @@ namespace Game.BattleTable
             get { return _isDraggable; }
             set { _isDraggable = value; }
         }
+
+        public SimpleAnim onSetDefine;
+        public SimpleAnim onDraw;
+        public SimpleAnim onEnemyUse;
+        public SimpleAnim onSelfUse;
+        #endregion
     }
 }

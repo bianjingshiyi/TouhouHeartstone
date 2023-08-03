@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
@@ -21,6 +22,10 @@ namespace Game.BattleTable
         {
             insertServant(_servantList.Count, servant);
         }
+        public Servant addServant()
+        {
+            return insertServant(_servantList.Count);
+        }
         public void insertServant(int position, Servant servant)
         {
             servant.onClick += onServantClickCallback;
@@ -32,6 +37,13 @@ namespace Game.BattleTable
             servant.transform.SetParent(_servantRoot, false);
             _servantList.Insert(position, servant);
         }
+        public Servant insertServant(int position)
+        {
+            Servant servant = Instantiate(_servantTemplate).GetComponent<Servant>();
+            servant.gameObject.SetActive(true);
+            insertServant(position, servant);
+            return servant;
+        }
         public bool removeServant(Servant servant)
         {
             if (_servantList.Remove(servant))
@@ -42,6 +54,7 @@ namespace Game.BattleTable
                 servant.onEndDrag -= onServantEndDragCallback;
                 servant.onPointerEnter -= onServantPointerEnterCallback;
                 servant.onPointerExit -= onServantPointerExitCallback;
+                servant.destroy();
                 return true;
             }
             return false;
@@ -56,6 +69,7 @@ namespace Game.BattleTable
                 servant.onEndDrag -= onServantEndDragCallback;
                 servant.onPointerEnter -= onServantPointerEnterCallback;
                 servant.onPointerExit -= onServantPointerExitCallback;
+                servant.destroy();
             }
             _servantList.Clear();
         }
@@ -151,5 +165,7 @@ namespace Game.BattleTable
         private int _emptySlotIndex = -1;
         [SerializeField]
         private float _servantWidth = 1.7f;
+        [SerializeField]
+        private GameObject _servantTemplate;
     }
 }

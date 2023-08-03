@@ -1,0 +1,308 @@
+﻿using System.Collections;
+using BJSYGameCore;
+using TouhouCardEngine;
+using TouhouHeartstone;
+using UnityEngine;
+using CardSkinData = UI.CardSkinData;
+using SimpleAnim = UI.SimpleAnim;
+using ActorNotFoundException = UI.ActorNotFoundException;
+
+namespace Game.BattleTable
+{
+    using Arg = HearthStoneRule.UseEventArg;
+    class UseAnimation : EventAnimation<Arg>
+    {
+        CardSnapshot _card;
+        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
+        {
+            while (!record.isCompleted)
+            {
+                yield return null;
+            }
+            yield return updateCard(table, record, arg);
+        }
+        private IEnumerator updateCard(BattleTableManager table, EventRecord record, Arg arg)
+        {
+            _card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
+            if (_card.isServant())
+            {
+                yield return updateServant(table, record, arg);
+            }
+            else if (_card.isSpell())
+            {
+                yield return updateSpell(table, record, arg);
+            }
+            else if (_card.isSkill())
+            {
+                yield return updateSkill(table, record, arg);
+            }
+            else if (_card.isItem())
+            {
+                yield return updateItem(table, record, arg);
+            }
+        }
+        #region Servant
+        private IEnumerator updateServant(BattleTableManager table, EventRecord record, Arg arg)
+        {
+            var player = arg.player;
+            var isCanceled = record.isCanceled;
+            var position = arg.position;
+            if (player == table.player)
+            {
+                // 自己使用
+                var selfField = table.table.SelfField;
+                if (!isCanceled)
+                {
+                    // 成功使用。
+                    HandItem item = table.getHand(_card);
+                    var moveAnim = new HandToFieldAnim(table, item, selfField, position);
+                    while (!moveAnim.update(table, _time))
+                        yield return null;
+                    // 不需要移除手牌，将使用随从的移除手牌转移至TryEnterFieldAnim。
+
+                    // 播放目标被指向的动画。
+                    var transform = table.transform;
+                    if (table.tryGetServant(_card.id, out Servant servant))
+                    {
+                        transform = servant.transform;
+                    }
+                    yield return tryTargetedAnim(table, transform, record, arg);
+                    selfField.setEmptyServantSlot(-1);
+                }
+                else
+                {
+                    // 被取消。
+                    HandItem item = table.getHand(_card);
+                    selfField.setEmptyServantSlot(-1);
+                    item.card.setVisible(true);
+                    table.setCard(item.card, _card, true);
+                    var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
+
+                    while (!moveAnim.update(table, _time))
+                        yield return null;
+                }
+            }
+            else
+            {
+                table.tryGetHand(_card, out var hand);
+
+                yield return playEnemyUseCardAnim(table, hand, record);
+
+                if (isCanceled)
+                {
+                    cancelEnemyUseCard(table, record);
+                }
+            }
+        }
+        #endregion
+
+        #region Spell
+        private IEnumerator updateSpell(BattleTableManager table, EventRecord record, Arg arg)
+        {
+
+            var player = arg.player;
+            var isCanceled = record.isCanceled;
+            if (player == table.player)
+            {
+                if (!isCanceled)
+                {
+                    if (table.tryGetHand(_card.id, out var hand))
+                    {
+                        AnimAnim useAnim = null;
+                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _time))
+                            yield return null;
+                        table.removeHand(_card);
+                    }
+                    table.sounds.playSE(table.getSkin(_card).sound_onUse);
+                    yield return tryTargetedAnim(table, table.table.SelfMaster.transform, record, arg);
+                }
+                else
+                {
+                    HandItem item = table.getHand(_card);
+                    item.card.setVisible(true);
+                    table.setCard(item.card, _card, true);
+                    var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
+                    while (!moveAnim.update(table, _time))
+                        yield return null;
+                }
+            }
+            else
+            {
+                table.tryGetHand(_card, out var hand);
+
+                yield return playEnemyUseCardAnim(table, hand, record);
+
+                if (!isCanceled)
+                {
+                    // 播放音效。
+                    CardSkinData skin = table.getSkin(_card);
+                    yield return loadAndPlaySound(table, skin?.soundPath_onUse);
+                    yield return tryTargetedAnim(table, table.table.EnemyMaster.transform, record, arg);
+                }
+                else
+                {
+                    cancelEnemyUseCard(table, record);
+                }
+            }
+        }
+        #endregion
+
+        #region Skill
+        private IEnumerator updateSkill(BattleTableManager table, EventRecord record, Arg arg)
+        {
+
+            var player = arg.player;
+            var isCanceled = record.isCanceled;
+            if (isCanceled)
+                yield break;
+
+            Skill sourceActor = player == table.player ? table.table.SelfSkill : table.table.EnemySkill;
+
+            table.setSkill(sourceActor, _card);
+
+            CardSkinData skin = table.getSkin(_card);
+            yield return loadAndPlaySound(table, skin?.soundPath_onUse);
+
+            yield return tryTargetedAnim(table, sourceActor.transform, record, arg);
+        }
+        #endregion
+
+        #region Item
+        private IEnumerator updateItem(BattleTableManager table, EventRecord record, Arg arg)
+        {
+
+            var player = arg.player;
+            var isCanceled = record.isCanceled;
+            if (player == table.player)
+            {
+                if (!isCanceled)
+                {
+                    if (table.tryGetHand(_card, out var hand))
+                    {
+                        AnimAnim useAnim = null;
+                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _time))
+                            yield return null;
+                        table.removeHand(_card);
+                    }
+                    yield return tryTargetedAnim(table, table.table.SelfItem.transform, record, arg);
+                }
+                else
+                {
+                    HandItem item = table.getHand(_card);
+                    item.card.setVisible(true);
+                    table.setCard(item.card, _card, true);
+                    var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
+                    while (!moveAnim.update(table, _time))
+                        yield return null;
+                }
+            }
+            else
+            {
+                table.tryGetHand(_card, out var hand);
+
+                yield return playEnemyUseCardAnim(table, hand, record);
+
+                if (!isCanceled)
+                {
+                    yield return tryTargetedAnim(table, table.table.EnemyItem.transform, record, arg);
+                }
+                else
+                {
+                    cancelEnemyUseCard(table, record);
+                }
+            }
+        }
+        #endregion
+
+        IEnumerator playEnemyUseCardAnim(BattleTableManager table, HandItem hand, EventRecord record)
+        {
+
+            // 播放使用动画。
+            if (hand)
+            {
+                table.setCard(hand.card, _card, !_card.hasKeyword(table.game, KEYWORD.SECRET));
+                hand.positionLerp.setTarget(table.table.SpellDisplayTransform);
+                AnimAnim useAnim = null;
+                while (!SimpleAnimHelper.update(table, ref useAnim, hand.onEnemyUse, hand.animator, _time))
+                    yield return null;
+                table.removeHand(_card);
+            }
+        }
+        void cancelEnemyUseCard(BattleTableManager table, EventRecord record)
+        {
+            table.createHand(_card, _card.position);
+        }
+        IEnumerator loadAndPlaySound(BattleTableManager table, string path)
+        {
+            if (!string.IsNullOrEmpty(path))
+            {
+                AudioClip sound;
+                var loadSoundTask = table.resources.loadAudio(path);
+                while (!loadSoundTask.IsCompleted)
+                    yield return null;
+
+                sound = loadSoundTask.Result;
+                table.sounds.playSE(sound);
+            }
+        }
+        IEnumerator tryTargetedAnim(BattleTableManager table, Transform source, EventRecord record, Arg arg)
+        {
+            var targets = arg.targets;
+            if (targets != null && targets.Length > 0 && targets[0] is var targetCard)
+            {
+                if (table.getSkin(_card) is var skin && !string.IsNullOrEmpty(skin.projectilePath))
+                {
+                    var loadProjectileTask = table.resources.loadObject<Projectile>(skin.projectilePath);
+
+                    while (!loadProjectileTask.IsCompleted)
+                        yield return null;
+
+                    Transform target;
+                    if (table.tryGetMaster(targetCard, out var targetMaster))
+                        target = targetMaster.transform;
+                    else if (table.tryGetServant(targetCard, out var targetServant))
+                        target = targetServant.transform;
+                    else
+                        throw new ActorNotFoundException(targetCard);
+
+                    var targetedAnim = new ProjectileAnimation(
+                        table.createProjectile(loadProjectileTask.Result, source, target),
+                        target);
+
+                    while (!targetedAnim.update(table, _time))
+                        yield return null;
+                }
+                else
+                {
+                    SimpleAnim simpleAnim = null;
+                    Animator animator = null;
+                    if (table.tryGetMaster(targetCard, out var targetMaster))
+                    {
+                        simpleAnim = targetMaster.onTargeted;
+                        animator = targetMaster.animator;
+                    }
+                    else if (table.tryGetServant(targetCard, out var targetServant))
+                    {
+                        simpleAnim = targetServant.onTargeted;
+                        animator = targetServant.animator;
+                    }
+                    else
+                        throw new ActorNotFoundException(targetCard);
+
+                    AnimAnim targetedAnim = null;
+                    while (!SimpleAnimHelper.update(table, ref targetedAnim, simpleAnim, animator, _time, next => false))
+                        yield return null;
+                }
+            }
+        }
+
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            if (!record.isCompleted)
+            {
+                return false;
+            }
+            return base.blockAnim(nextAnim);
+        }
+    }
+}

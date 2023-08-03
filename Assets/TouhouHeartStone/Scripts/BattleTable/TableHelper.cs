@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Game.BattleTable;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -8,7 +7,7 @@ using UnityEngine;
 using Card = TouhouCardEngine.Card;
 using UICard = Game.BattleTable.TableCard;
 
-namespace Game
+namespace Game.BattleTable
 {
     static class TableHelper
     {

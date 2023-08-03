@@ -199,6 +199,7 @@ GameObject:
   - component: {fileID: 325280024577650167}
   - component: {fileID: 5115202923170604485}
   - component: {fileID: 3427978957847881093}
+  - component: {fileID: 6403909588855745240}
   m_Layer: 0
   m_Name: Item
   m_TagString: Untagged
@@ -214,7 +215,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 325280024577650164}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
-  m_LocalPosition: {x: 1.9, y: 0, z: 4.2}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3985865037327686630}
@@ -236,10 +237,60 @@ MonoBehaviour:
   m_GameObject: {fileID: 325280024577650164}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: feaff0f90f796614dab764fa8221a13b, type: 3}
+  m_Script: {fileID: 11500000, guid: af2d34b68f391f24cbf590b79d1857c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _positionLerp: {fileID: 6403909588855745240}
   _animator: {fileID: 3427978957847881093}
+  _height: 0.9
+  onEquip:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onLifeDown:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onSetDefine:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onDestroy:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
   _attackTextObj: {fileID: 3985865038021057599}
   _attackText: {fileID: 812689508163186652}
   _lifeText: {fileID: 3340596773095624446}
@@ -263,6 +314,21 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6403909588855745240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 325280024577650164}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbb61fbcee92afb408b334d3c9c269a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _time: 0
+  _targetTransform: {fileID: 0}
+  _stopDistance: 0
 --- !u!1 &3985865037174651050
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,10 @@
 ﻿using System;
+using Newtonsoft.Json.Linq;
 using TouhouHeartstone;
+using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.XR;
 
 namespace Game.BattleTable
 {
@@ -11,16 +14,40 @@ namespace Game.BattleTable
         {
             gameObject.SetActive(visible);
         }
-        public void setFaceup(bool faceup)
+        public void animateFaceup(bool faceup)
         {
             cardBack.SetActive(!faceup);
             cardFront.SetActive(faceup);
+        }
+        public void setFaceup(bool faceup)
+        {
+            animator.SetBool("isFaceUp", faceup);
         }
         public void setType(string type)
         {
             servantCardFace.setVisible(type == DEFINE.SERVANT || type == DEFINE.MASTER);
             spellCardFace.setVisible(type == DEFINE.SPELL || type == DEFINE.SKILL);
             itemCardFace.setVisible(type == DEFINE.ITEM);
+        }
+        public PropertyNumber getCostPropNum(string cardType)
+        {
+            switch (cardType)
+            {
+                case DEFINE.SERVANT:
+                case DEFINE.MASTER:
+                    return servantCardFace.costPropNumber;
+                case DEFINE.SPELL:
+                case DEFINE.SKILL:
+                    return spellCardFace.costPropNumber;
+                case DEFINE.ITEM:
+                    return itemCardFace.costPropNumber;
+            }
+            return null;
+        }
+        public void setPreheat(bool preheat)
+        {
+            _preheatEffectFaceObj.SetActive(preheat);
+            _preheatEffectBackObj.SetActive(preheat);
         }
         public void setTag(string name)
         {
@@ -124,6 +151,24 @@ namespace Game.BattleTable
         #endregion
 
         #region 属性字段
+        public SimpleAnim onShowAnim;
+        public Animator animator => animator;
+        public float width => _width;
+        public float height => _height;
+        public string flipToFaceAnimName;
+        public string notifyAnimName;
+        public string flipToBackAnimName;
+
+        [SerializeField]
+        private float _width;
+        [SerializeField]
+        private float _height;
+        [SerializeField]
+        private GameObject _preheatEffectFaceObj;
+        [SerializeField]
+        private GameObject _preheatEffectBackObj;
+        [SerializeField]
+        private Animator _animator;
         [SerializeField]
         private GameObject cardBack;
         [SerializeField]

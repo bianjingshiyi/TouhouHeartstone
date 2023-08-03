@@ -45,6 +45,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb39503610ad573409b34589c72ba359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onShowAnim:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  flipToFaceAnimName: 
+  notifyAnimName: 
+  flipToBackAnimName: 
+  _width: 2
+  _height: 3
+  _preheatEffectFaceObj: {fileID: 0}
+  _preheatEffectBackObj: {fileID: 0}
+  _animator: {fileID: 0}
   cardBack: {fileID: 5049264429835903509}
   cardFront: {fileID: 8740564578896898451}
   servantCardFace: {fileID: 7250754515021316393}

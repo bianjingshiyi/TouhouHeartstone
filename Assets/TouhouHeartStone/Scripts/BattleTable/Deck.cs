@@ -1,4 +1,5 @@
 ﻿using System;
+using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,6 +7,10 @@ namespace Game.BattleTable
 {
     public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
+        public float getCardHeight()
+        {
+            return _cardHeight;
+        }
         #region 事件回调
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
@@ -26,5 +31,9 @@ namespace Game.BattleTable
         public event Action<Deck, PointerEventData> onPointerEnter;
         public event Action<Deck, PointerEventData> onPointerExit;
         #endregion
+
+        public SimpleAnim onFatigue;
+        [SerializeField]
+        private float _cardHeight = 480;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using TMPro;
+using UI;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -11,6 +12,11 @@ namespace Game.BattleTable
             _animator.SetBool("GreenText", color == PropertyNumberColor.Green);
             _animator.SetBool("RedText", color == PropertyNumberColor.Red);
         }
+
+        public Animator animator => _animator;
+        public SimpleAnim textWhiteAnim;
+        public SimpleAnim textGreenAnim;
+        public SimpleAnim textRedAnim;
         [SerializeField]
         private Animator _animator;
         [SerializeField]

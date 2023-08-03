@@ -125,11 +125,6 @@ namespace Game
         [SerializeField]
         List<EditableAnim> _editableAnims = new List<EditableAnim>();
         #endregion
-        [SerializeField]
-        List<UIAnimation> _animationCache = new List<UIAnimation>();
-        [SerializeField]
-        List<UIAnimation> _animationQueue = new List<UIAnimation>();
-        List<UIAnimation> insertingAnims = new List<UIAnimation>();
         public void addAnim(UIAnimation anim)
         {
             _animationCache.Add(anim);
@@ -228,6 +223,11 @@ namespace Game
         public Player currentAnimPlayer { get; set; }
         HandToFieldAnim _handToFieldAnim = null;
         public SimpleAnim simpleAnim = null;
+        [SerializeField]
+        List<UIAnimation> _animationCache = new List<UIAnimation>();
+        [SerializeField]
+        List<UIAnimation> _animationQueue = new List<UIAnimation>();
+        List<UIAnimation> insertingAnims = new List<UIAnimation>();
         #endregion
     }
 }

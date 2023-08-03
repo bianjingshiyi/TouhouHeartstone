@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using BJSYGameCore.UI;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -11,7 +10,6 @@ using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using Card = TouhouCardEngine.Card;
 using UICard = Game.BattleTable.TableCard;
 
@@ -400,16 +398,15 @@ namespace Game.BattleTable
         public Servant createServant(CardDescriptor desc, int position)
         {
             bool isSelf = desc.getOwner() == player;
-            Servant servant = Instantiate(table.ServantTemplate).GetComponent<Servant>();
-            servant.gameObject.SetActive(true);
             var field = isSelf ? table.SelfField : table.EnemyField;
+            Servant servant;
             if (position < 0)
             {
-                field.addServant(servant);
+                servant = field.addServant();
             }
             else
             {
-                field.insertServant(position, servant);
+                servant = field.insertServant(position);
             }
             UberDebug.LogChannel(servant, "UI", "为" + desc + "创建" + servant);
             servant.gameObject.name = desc.ToString();
@@ -704,22 +701,22 @@ namespace Game.BattleTable
         public void showInitReplaceDialog(InitReplaceRequest request)
         {
             var dialog = table.InitReplaceDialog;
-            if (!dialog.isShowing)
-            {
-                dialog.setActive(true);
+            if (dialog.isShowing)
+                return;
 
-                var initPile = player.getInit();
-                dialog.clearChoices();
-                foreach (var card in initPile)
-                {
-                    var snapshot = newSnapshot(card);
-                    var item = dialog.addChoice();
-                    item.setMarkVisible(false);
-                    setCard(item.card, snapshot, true);
-                    setInitCard(item, card.id);
-                }
-                dialog.setWaiting(false);
+            dialog.setActive(true);
+
+            var initPile = player.getInit();
+            dialog.clearChoices();
+            foreach (var card in initPile)
+            {
+                var snapshot = newSnapshot(card);
+                var item = dialog.addChoice();
+                item.setMarkVisible(false);
+                setCard(item.card, snapshot, true);
+                setInitCard(item, card.id);
             }
+            dialog.setWaiting(false);
         }
         #endregion
         public UICard createCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createCard(updateCardDescriptor(card), position, height, isFaceUp);
@@ -1026,8 +1023,7 @@ namespace Game.BattleTable
                     {
                         _usingPosition = index;
                         //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                        // TODO：需要在后续取消注释
-                        //_handToFieldAnim = new HandToFieldAnim(this, hand, table.SelfField, index);
+                        _servantPreviewAnim = new HandToFieldAnim(this, hand, table.SelfField, index);
                         isSelectingTarget = true;
                         highlightTargets(targets);
                         table.SelfHandList.zoomOut();
@@ -1545,8 +1541,7 @@ namespace Game.BattleTable
                 usingHand.card.transform.localScale = Vector3.one;
                 usingHand.card.transform.localPosition = Vector2.zero;
             }
-            // TODO：需要在后续取消注释
-            //_handToFieldAnim = null;
+            _servantPreviewAnim = null;
             usingCard = null;
             if (resetPlaceHolder)
             {
@@ -1717,7 +1712,6 @@ namespace Game.BattleTable
         /// 是否进入目标选择模式
         /// </summary>
         public bool isSelectingTarget { get; set; }
-        public float skillDragThreshold => _skillDragThreshold;
         public float servantAttackThreshold => _servantAttackThreshold;
         public float masterAttackThreshold => _masterAttackThreshold;
         private CardChooseMode _cardChooseMode;
@@ -1729,20 +1723,17 @@ namespace Game.BattleTable
         private Dictionary<int, MulliganCardItem> initDic = new Dictionary<int, MulliganCardItem>();
         private CardDescriptor _selfItemDesc;
         private CardDescriptor _enemyItemDesc;
-        private Player currentAnimPlayer;
         private static Dictionary<string, string> _translateTagDic;
         [SerializeField]
         int _usingPosition = -1;
         [SerializeField]
         Vector2 _tipBoxOffset = new Vector2(20, 20);
         [SerializeField]
-        float _skillDragThreshold = 0.75f;
+        float _servantAttackThreshold = 70;
         [SerializeField]
-        float _servantAttackThreshold = 0.7f;
+        float _masterAttackThreshold = 70;
         [SerializeField]
-        float _masterAttackThreshold = 0.7f;
-        [SerializeField]
-        float _cardHeight = 0.4f;
+        float _cardHeight = 480;
         [SerializeField]
         int _maxBuffDisplayCount = 15;
         [SerializeField]

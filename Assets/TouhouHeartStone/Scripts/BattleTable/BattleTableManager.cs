@@ -49,7 +49,24 @@ namespace Game.BattleTable
                 setSkill(table.EnemySkill, newSnapshot(oppo.getSkill()));
             }
         }
-
+        public void showTurnTipImage(bool friendly)
+        {
+            var turnTipImage = table.TurnTipImage;
+            turnTipImage.setFriendly(friendly);
+            turnTipImage.play();
+        }
+        public void hideTurnTipImage()
+        {
+            table.TurnTipImage.setActive(false);
+        }
+        public void showGameResult(bool result)
+        {
+            table.GameResultDialog.ShowGameResult(result);
+        }
+        public void setOpponentWaiting(bool waiting)
+        {
+            table.OpponentWaitingObj.SetActive(waiting);
+        }
         #region 皮肤
         public CardSkinData getSkin(ICardData card)
         {
@@ -154,10 +171,8 @@ namespace Game.BattleTable
             table.Discover.onHideButtonClicked += onDiscoverHideButtonClick;
             table.Discover.onItemClicked += onCardChooseCallback;
 
-            // TODO：需要在后续取消注释
-            //loadAnim(GetType().Assembly);
+            loadAnim(GetType().Assembly);
         }
-        // Update is called once per frame
         void Update()
         {
             table.update(Time.deltaTime);
@@ -195,40 +210,40 @@ namespace Game.BattleTable
                 return;
 
             // patch: 我不知道怎么改AutoCompo所以先Patch一个
-            var clock = table.TurnEndButton.GetComponent<TurnEndClock>();
+            var clock = table.TurnEndButton;
 
-            if (game.getTurnTimer() != null)
+            float longAngle = 0;
+            float turn = game.getTurnCount();
+            var timer = game.getTurnTimer();
+            if (timer != null)
             {
-                clock?.SetCountdown(game.getTurnTimer().remainedTime);
+                longAngle = timer.remainedTime / timer.time * 360;
             }
-            else
-            {
-                clock?.SetCountdown(0);
-            }
-
-            clock?.SetTurnState(canControl);
+            clock?.setLongHandAngle(longAngle);
+            clock?.setShortHandAngle(-turn * 3.6f);
 
             //随从牌使用预览
-            // TODO：需要在后续取消注释
-            //if (_handToFieldAnim != null)
-            //{
-            //    if (_handToFieldAnim.update(this, Time.time))
-            //    {
-            //        _handToFieldAnim = null;
-            //        var hand = getHand(usingCard.id);
-            //        hand.card.setVisible(false);
-            //        //显示占位随从
-            //        table.ServantPlaceHolder.Servant.display();
-            //        try
-            //        {
-            //            setServant(table.ServantPlaceHolder.Servant, usingCard.define);
-            //        }
-            //        catch (NullReferenceException e)
-            //        {
-            //            Debug.LogError(e);
-            //        }
-            //    }
-            //}
+            if (_servantPreviewAnim != null)
+            {
+                if (_servantPreviewAnim.update(this, Time.time))
+                {
+                    _servantPreviewAnim = null;
+                    var hand = getHand(usingCard.id);
+                    hand.card.setVisible(false);
+                    //显示占位随从
+                    try
+                    {
+                        if (tryGetServant(usingCard.id, out var servant))
+                        {
+                            setServant(servant, usingCard.define);
+                        }
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        Debug.LogError(e);
+                    }
+                }
+            }
             //游戏事件处理
             eventCache.poll();
             if (_allControlDirty)
@@ -247,9 +262,8 @@ namespace Game.BattleTable
                 _controlDirtyCards.Clear();
             }
             //动画
-            // TODO：需要在后续取消注释
-            //queueAnims();
-            //updateAnim();
+            queueAnims();
+            updateAnim();
         }
         #endregion
         #region 事件回调
@@ -345,20 +359,19 @@ namespace Game.BattleTable
         /// <param name="obj"></param>
         private void onRequest(IRequest obj)
         {
-            // TODO：需要在后续取消注释
-            //if (!obj.playersId.Contains(player.id))
-            //    return;
-            //UIAnimation anim;
-            //switch (obj)
-            //{
-            //    default:
-            //        anim = getRequestAnim(obj);
-            //        break;
-            //}
-            //if (anim != null)
-            //    addAnim(anim);
-            //else if (!(obj is FreeActRequest))
-            //    UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
+            if (!obj.playersId.Contains(player.id))
+                return;
+            UIAnimation anim;
+            switch (obj)
+            {
+                default:
+                    anim = getRequestAnim(obj);
+                    break;
+            }
+            if (anim != null)
+                addAnim(anim);
+            else if (!(obj is FreeActRequest))
+                UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
         }
         void onResponse(IResponse response)
         {
@@ -377,10 +390,9 @@ namespace Game.BattleTable
         /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
-            // TODO：需要在后续取消注释
-            //UIAnimation anim = getEventAnim(arg);
-            //if (anim != null)
-            //    addAnim(anim);
+           UIAnimation anim = getEventAnim(arg);
+            if (anim != null)
+                addAnim(anim);
             _allControlDirty = true;
         }
         /// <summary>
@@ -389,20 +401,18 @@ namespace Game.BattleTable
         /// <param name="arg"></param>
         private void onEventAfter(IEventArg arg)
         {
-            // TODO：需要在后续取消注释
-            //foreach (var anim in _animationCache.OfType<EventAnimation>().Where(a => a.eventArg == arg))
-            //{
-            //    anim.postEvent(this);
-            //}
-            //foreach (var anim in _animationQueue.OfType<EventAnimation>().Where(a => a.eventArg == arg))
-            //{
-            //    anim.postEvent(this);
-            //}
+            foreach (var anim in _animationCache.OfType<EventAnimation>().Where(a => a.eventArg == arg))
+            {
+                anim.postEvent(this);
+            }
+            foreach (var anim in _animationQueue.OfType<EventAnimation>().Where(a => a.eventArg == arg))
+            {
+                anim.postEvent(this);
+            }
         }
         #endregion
         private void reset()
         {
-            table.ServantTemplate.SetActive(false);
             table.InitReplaceDialog.setActive(false);
             table.InitReplaceDialog.clearChoices();
             _mulliganedCards.Clear();
@@ -426,17 +436,17 @@ namespace Game.BattleTable
             table.EnemyHandList.clear();
 
             // UI
-            //table.LargeCard.hide();
-            //table.TipText.hide();
-            //table.AttackArrowImage.hide();
+            table.CardDisplayer.setVisible(false);
+            table.TipText.gameObject.SetActive(false);
+            table.AttackArrowImage.setActive(false);
             //table.Fatigue.hide();
             table.Discover.setActive(false);
-            //table.PilePanel.hide();
-            //table.TipBox.hide();
+            table.PilePanel.setActive(false);
+            table.TipBox.hide();
 
-            //eventCache.clear();
-            //_animationCache.Clear();
-            //_animationQueue.Clear();
+            eventCache.clear();
+            _animationCache.Clear();
+            _animationQueue.Clear();
             _descriptors.Clear();
             foreach (var pair in cardServantDic)
             {
@@ -456,11 +466,31 @@ namespace Game.BattleTable
         public CardEngine game { get; private set; }
         public Player player { get; private set; }
         public CardManager cardManager => _main.card;
-        private MainManager _main;
-        private LangManager lang => null;
+        public LangManager lang => _main.lang;
+        public SEManager sounds => null;
+        public THHResourceManager resources => null;
         private ActionEventCache eventCache = new ActionEventCache();
         private List<Card> _mulliganedCards = new List<Card>();
+        private MainManager _main;
         [SerializeField]
         private BattleTable _table;
+
+
+        [Header("Config")]
+        [SerializeField]
+        private float _skillDragThreshold = 75;
+        public float skillDragThreshold => _skillDragThreshold;
+        [SerializeField]
+        AnimationCurve _moveToFieldCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        public AnimationCurve handToFieldCurve => _moveToFieldCurve;
+        [SerializeField]
+        AnimationCurve _fieldMoveCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        public AnimationCurve fieldMoveCurve => _fieldMoveCurve;
+        [SerializeField]
+        AnimationCurve _cardShowCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.2f, 1));
+        public AnimationCurve cardShowCurve => _cardShowCurve;
+        [SerializeField]
+        AnimationCurve _fieldToDeckCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(0.6f, 1));
+        public AnimationCurve fieldToDeckCurve => _fieldToDeckCurve;
     }
 }

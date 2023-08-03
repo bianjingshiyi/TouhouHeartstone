@@ -17,7 +17,6 @@ namespace Game.BattleTable
         public event Action<BattleTable, PointerEventData> onClickNoWhere;
 
         #region 属性字段
-        public GameObject ServantTemplate => _servantTemplate;
         public GameObject SecretTemplate => _secretTemplate;
         public GameObject CardTemplate => _cardTemplate;
         public Master SelfMaster => _selfMaster;
@@ -40,17 +39,24 @@ namespace Game.BattleTable
         public GameObject CardDisplayerObj => _cardDisplayerObj;
         public CardDisplayer CardDisplayer => _cardDisplayer;
         public Transform InvokeDisplayParent => _invokeDisplayParent;
+        public Transform SpellDisplayTransform => _spellDisplayTransform;
+        public Transform LeftDisplayTransform => _leftDisplayTransform;
+        public Transform CenterDisplayTransform => _centerDisplayTransform;
+        public Transform RightDisplayTransform => _rightDisplayTransform;
+        public Fatigue Fatigue => _fatigue;
 
         public DiscoverDialog Discover => _discover;
         public PilePanel PilePanel => _pilePanel;
         public MulliganDialog InitReplaceDialog => _mulliganDialog;
         public AttackArrow AttackArrowImage => _attackArrow;
+        public TurnTipImage TurnTipImage => _turnTipImage;
+        public GameResultDialog GameResultDialog => _gameResultDialog;
+        public GameObject OpponentWaitingObj => _opponentWaitingObj;
 
         public TipBox TipBox => _tipBox;
         public Text TipText => _tipText;
+        public AudioClip playCardSound => _playCardSound;
 
-        [SerializeField]
-        private GameObject _servantTemplate;
         [SerializeField]
         private GameObject _secretTemplate;
         [SerializeField]
@@ -95,6 +101,16 @@ namespace Game.BattleTable
         private CardDisplayer _cardDisplayer;
         [SerializeField]
         private Transform _invokeDisplayParent;
+        [SerializeField]
+        private Transform _spellDisplayTransform;
+        [SerializeField]
+        private Transform _leftDisplayTransform;
+        [SerializeField]
+        private Transform _centerDisplayTransform;
+        [SerializeField]
+        private Transform _rightDisplayTransform;
+        [SerializeField]
+        private Fatigue _fatigue;
 
         [SerializeField]
         private DiscoverDialog _discover;
@@ -104,11 +120,21 @@ namespace Game.BattleTable
         private MulliganDialog _mulliganDialog;
         [SerializeField]
         private AttackArrow _attackArrow;
+        [SerializeField]
+        private TurnTipImage _turnTipImage;
+        [SerializeField]
+        private GameResultDialog _gameResultDialog;
+        [SerializeField]
+        private GameObject _opponentWaitingObj;
 
         [SerializeField]
         private TipBox _tipBox;
         [SerializeField]
         private Text _tipText;
+
+
+        [SerializeField]
+        private AudioClip _playCardSound;
         #endregion
     }
 }
