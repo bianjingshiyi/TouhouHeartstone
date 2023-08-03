@@ -18,8 +18,10 @@ namespace Game.BattleTable
         /// </summary>
         /// <param name="game"></param>
         /// <param name="player"></param>
-        public void setGame(CardEngine game, Player player)
+        public void setGame(MainManager main, CardEngine game, Player player)
         {
+            _main = main;
+
             reset();
 
             initMaster(table.SelfMaster);
@@ -450,11 +452,11 @@ namespace Game.BattleTable
             DestroyInvokeCard();
         }
         #endregion
-
         public BattleTable table => _table;
         public CardEngine game { get; private set; }
         public Player player { get; private set; }
-        private CardManager cardManager => null;
+        public CardManager cardManager => _main.card;
+        private MainManager _main;
         private LangManager lang => null;
         private ActionEventCache eventCache = new ActionEventCache();
         private List<Card> _mulliganedCards = new List<Card>();
