@@ -22,6 +22,7 @@ namespace Game.BattleTable
         public PilePanelItem addCard()
         {
             var choice = Instantiate(_itemTemplate, _itemRoot).GetComponent<PilePanelItem>();
+            choice.gameObject.SetActive(true);
             _cards.Add(choice);
             return choice;
         }
@@ -38,6 +39,7 @@ namespace Game.BattleTable
         private void Awake()
         {
             _closeButton.onClick.AddListener(onCloseButtonClickCallback);
+            _itemTemplate.SetActive(false);
         }
         #endregion
         private void onCloseButtonClickCallback()

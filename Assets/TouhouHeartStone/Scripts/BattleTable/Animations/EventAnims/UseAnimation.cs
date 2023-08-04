@@ -221,6 +221,7 @@ namespace Game.BattleTable
             if (hand)
             {
                 table.setCard(hand.card, _card, !_card.hasKeyword(table.game, KEYWORD.SECRET));
+                hand.positionLerp.setStart();
                 hand.positionLerp.setTarget(table.table.SpellDisplayTransform);
                 AnimAnim useAnim = null;
                 while (!SimpleAnimHelper.update(table, ref useAnim, hand.onEnemyUse, hand.animator, _time))

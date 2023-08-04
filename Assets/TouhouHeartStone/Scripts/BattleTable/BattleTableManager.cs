@@ -2,6 +2,7 @@
 using System.Linq;
 using BJSYGameCore;
 using Boo.Lang;
+using Game.BattleTable.UI;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
@@ -51,21 +52,21 @@ namespace Game.BattleTable
         }
         public void showTurnTipImage(bool friendly)
         {
-            var turnTipImage = table.TurnTipImage;
+            var turnTipImage = ui.TurnTipImage;
             turnTipImage.setFriendly(friendly);
             turnTipImage.play();
         }
         public void hideTurnTipImage()
         {
-            table.TurnTipImage.setActive(false);
+            ui.TurnTipImage.setActive(false);
         }
         public void showGameResult(bool result)
         {
-            table.GameResultDialog.ShowGameResult(result);
+            ui.GameResultDialog.ShowGameResult(result);
         }
         public void setOpponentWaiting(bool waiting)
         {
-            table.OpponentWaitingObj.SetActive(waiting);
+            ui.OpponentWaitingObj.SetActive(waiting);
         }
         #region 皮肤
         public CardSkinData getSkin(ICardData card)
@@ -165,11 +166,11 @@ namespace Game.BattleTable
             table.SelfHandList.onHandItemPointerEnter += onHandItemPointerEnterCallback;
             table.SelfHandList.onHandItemPointerExit += onHandItemPointerExitCallback;
 
-            table.InitReplaceDialog.onItemClicked += onMulliganItemClickCallback;
-            table.InitReplaceDialog.onAccept += onMulliganAcceptCallback;
-
             table.Discover.onHideButtonClicked += onDiscoverHideButtonClick;
             table.Discover.onItemClicked += onCardChooseCallback;
+
+            ui.InitReplaceDialog.onItemClicked += onMulliganItemClickCallback;
+            ui.InitReplaceDialog.onAccept += onMulliganAcceptCallback;
 
             loadAnim(GetType().Assembly);
         }
@@ -197,11 +198,11 @@ namespace Game.BattleTable
             if (_tipTimer.isExpired())
             {
                 _tipTimer.reset();
-                table.TipText.gameObject.SetActive(false);
+                ui.TipText.gameObject.SetActive(false);
             }
             else if (_tipTimer.isStarted)
             {
-                table.TipText.color = new Color(1, 1, 1, 1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
+                ui.TipText.color = new Color(1, 1, 1, 1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
             }
 
 
@@ -290,18 +291,18 @@ namespace Game.BattleTable
             bool mulliganed = _mulliganedCards.Contains(card);
             if (mulliganed)
             {
-                _mulliganedCards.Add(card);
+                _mulliganedCards.Remove(card);
             }
             else
             {
-                _mulliganedCards.Remove(card);
+                _mulliganedCards.Add(card);
             }
-            table.InitReplaceDialog.getItem(index).setMarkVisible(!mulliganed);
+            ui.InitReplaceDialog.getItem(index).setMarkVisible(_mulliganedCards.Contains(card));
         }
         private void onMulliganAcceptCallback()
         {
             player.cmdInitReplace(game, _mulliganedCards.ToArray());
-            table.InitReplaceDialog.setWaiting(true);
+            ui.InitReplaceDialog.setWaiting(true);
         }
         #endregion
         #region 选牌
@@ -413,10 +414,9 @@ namespace Game.BattleTable
         #endregion
         private void reset()
         {
-            table.InitReplaceDialog.setActive(false);
-            table.InitReplaceDialog.clearChoices();
-            _mulliganedCards.Clear();
-            //table.TurnTipImage.hide();
+            ui.InitReplaceDialog.setActive(false);
+            ui.InitReplaceDialog.clearChoices();
+            ui.TurnTipImage.setActive(false);
 
             table.SelfMaster.setArmor(0);
             table.EnemyMaster.setArmor(0);
@@ -435,16 +435,19 @@ namespace Game.BattleTable
             table.SelfHandList.clear();
             table.EnemyHandList.clear();
 
-            // UI
             table.CardDisplayer.setVisible(false);
-            table.TipText.gameObject.SetActive(false);
             table.AttackArrowImage.setActive(false);
-            //table.Fatigue.hide();
+            table.Fatigue.setActive(false);
             table.Discover.setActive(false);
-            table.PilePanel.setActive(false);
-            table.TipBox.hide();
+
+            // UI
+            ui.TipText.gameObject.SetActive(false);
+            ui.PilePanel.setActive(false);
+            ui.TipBox.hide();
+            ui.GameResultDialog.hide();
 
             eventCache.clear();
+            _mulliganedCards.Clear();
             _animationCache.Clear();
             _animationQueue.Clear();
             _descriptors.Clear();
@@ -462,6 +465,7 @@ namespace Game.BattleTable
             DestroyInvokeCard();
         }
         #endregion
+        public TableUI ui => _ui;
         public BattleTable table => _table;
         public CardEngine game { get; private set; }
         public Player player { get; private set; }
@@ -472,6 +476,8 @@ namespace Game.BattleTable
         private ActionEventCache eventCache = new ActionEventCache();
         private List<Card> _mulliganedCards = new List<Card>();
         private MainManager _main;
+        [SerializeField]
+        private TableUI _ui;
         [SerializeField]
         private BattleTable _table;
 

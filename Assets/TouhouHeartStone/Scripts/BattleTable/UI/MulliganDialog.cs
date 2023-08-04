@@ -32,6 +32,7 @@ namespace Game.BattleTable
         public MulliganCardItem addChoice()
         {
             var choice = Instantiate(_itemTemplate, _itemRoot).GetComponent<MulliganCardItem>();
+            choice.gameObject.SetActive(true);
             _choices.Add(choice);
             choice.onClick += onItemClickCallback;
             return choice;
@@ -50,6 +51,7 @@ namespace Game.BattleTable
         private void Awake()
         {
             _acceptButton.onClick.AddListener(onAcceptButtonClickCallback);
+            _itemTemplate.SetActive(false);
         }
         #endregion
         private void onItemClickCallback(MulliganCardItem card, PointerEventData pointer)

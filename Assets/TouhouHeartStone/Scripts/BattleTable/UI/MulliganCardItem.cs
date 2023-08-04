@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace Game.BattleTable
 {
-    public class MulliganCardItem : MonoBehaviour
+    public class MulliganCardItem : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
         public void setMarkVisible(bool visible)
         {
@@ -14,44 +14,19 @@ namespace Game.BattleTable
         {
             Destroy(gameObject);
         }
-        #region 生命周期
-        private void Awake()
-        {
-            card.onClick += OnPointerClickCallback;
-            card.onBeginDrag += OnBeginDragCallback;
-            card.onDrag += OnDragCallback;
-            card.onEndDrag += OnEndDragCallback;
-            card.onPointerEnter += OnPointerEnterCallback;
-            card.onPointerExit += OnPointerExitCallback;
-        }
-        #endregion
 
         #region 事件回调
-        private void OnPointerClickCallback(TableCard card, PointerEventData eventData)
+        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
         {
             onClick?.Invoke(this, eventData);
         }
 
-        private void OnBeginDragCallback(TableCard card, PointerEventData eventData)
-        {
-            onBeginDrag?.Invoke(this, eventData);
-        }
-
-        private void OnDragCallback(TableCard card, PointerEventData eventData)
-        {
-            onDrag?.Invoke(this, eventData);
-        }
-
-        private void OnEndDragCallback(TableCard card, PointerEventData eventData)
-        {
-            onEndDrag?.Invoke(this, eventData);
-        }
-        private void OnPointerEnterCallback(TableCard card, PointerEventData eventData)
+        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
             onPointerEnter?.Invoke(this, eventData);
         }
 
-        private void OnPointerExitCallback(TableCard card, PointerEventData eventData)
+        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
             onPointerExit?.Invoke(this, eventData);
         }
@@ -59,9 +34,6 @@ namespace Game.BattleTable
 
         #region 事件
         public event Action<MulliganCardItem, PointerEventData> onClick;
-        public event Action<MulliganCardItem, PointerEventData> onBeginDrag;
-        public event Action<MulliganCardItem, PointerEventData> onDrag;
-        public event Action<MulliganCardItem, PointerEventData> onEndDrag;
         public event Action<MulliganCardItem, PointerEventData> onPointerEnter;
         public event Action<MulliganCardItem, PointerEventData> onPointerExit;
         #endregion

@@ -700,7 +700,7 @@ namespace Game.BattleTable
         }
         public void showInitReplaceDialog(InitReplaceRequest request)
         {
-            var dialog = table.InitReplaceDialog;
+            var dialog = ui.InitReplaceDialog;
             if (dialog.isShowing)
                 return;
 
@@ -770,8 +770,8 @@ namespace Game.BattleTable
         /// <param name="tip">翻译的**源文本**</param>
         public void showTip(string tip)
         {
-            table.TipText.gameObject.SetActive(true);
-            table.TipText.text = lang._(tip);
+            ui.TipText.gameObject.SetActive(true);
+            ui.TipText.text = lang._(tip);
             _tipTimer.start();
         }
         public async void displayLargeCard(bool isRight, CardDescriptor desc)
@@ -1102,17 +1102,17 @@ namespace Game.BattleTable
             if (!table.SelfHandList.isZoomIn &&
                 player.getHand().count > 0)
             {
-                table.TipBox.display(lang._(TAB_CARD_NUMBER, getCard(hand).getOwner().getHand().count), pointer.position + _tipBoxOffset);
+                ui.TipBox.display(lang._(TAB_CARD_NUMBER, getCard(hand).getOwner().getHand().count), pointer.position + _tipBoxOffset);
             }
         }
         void onHandPointerMove(HandItem handList, Vector2 pointer)
         {
-            table.TipBox.updatePos(pointer);
+            ui.TipBox.updatePos(pointer);
         }
         private void onHandItemPointerExitCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
             hand.setHovered(false);
-            table.TipBox.hide();
+            ui.TipBox.hide();
         }
         #endregion
 
@@ -1292,17 +1292,17 @@ namespace Game.BattleTable
         }
         private void onSkillPointerExitCallback(Skill skill, PointerEventData pointer)
         {
-            table.TipBox.hide();
+            ui.TipBox.hide();
         }
 
         private void onSkillPointerEnterCallback(Skill skill, PointerEventData pointer)
         {
             string desc = getSkin(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill()).desc;
-            table.TipBox.display(desc, pointer.position + _tipBoxOffset);
+            ui.TipBox.display(desc, pointer.position + _tipBoxOffset);
         }
         private void onSkillPointerMove(Skill arg1, Vector2 pointer)
         {
-            table.TipBox.updatePos(pointer);
+            ui.TipBox.updatePos(pointer);
         }
         #endregion
 
@@ -1407,12 +1407,12 @@ namespace Game.BattleTable
 
         private void onDeckClickCallback(Deck deck, PointerEventData pointer)
         {
-            table.PilePanel.setActive(true);
-            table.PilePanel.setTitleText(lang._(TAB_YOUR_BOX));
-            table.PilePanel.clearCards();
+            ui.PilePanel.setActive(true);
+            ui.PilePanel.setTitleText(lang._(TAB_YOUR_BOX));
+            ui.PilePanel.clearCards();
             foreach (var card in player.getDeck().OrderBy(c => c.define.getCost()))
             {
-                var item = table.PilePanel.addCard();
+                var item = ui.PilePanel.addCard();
                 setCard(item.card, newSnapshot(card), true);
             }
         }
@@ -1429,15 +1429,15 @@ namespace Game.BattleTable
             {
                 tip = lang._(self ? TAB_YOUR_NO_HAVE_CARD : TAB_OPPONENT_OUT_OF_CARDS);
             }
-            table.TipBox.display(tip, pointer.position + _tipBoxOffset);
+            ui.TipBox.display(tip, pointer.position + _tipBoxOffset);
         }
         private void onDeckPointerExitCallback(Deck deck, PointerEventData pointer)
         {
-            table.TipBox.hide();
+            ui.TipBox.hide();
         }
-        private void onDeckPointerMove(UI.Deck arg1, Vector2 arg2)
+        private void onDeckPointerMove(Deck arg1, Vector2 arg2)
         {
-            table.TipBox.updatePos(arg2);
+            ui.TipBox.updatePos(arg2);
         }
         #endregion
 
@@ -1446,12 +1446,12 @@ namespace Game.BattleTable
 
         private void onGraveClickCallback(Deck deck, PointerEventData pointer)
         {
-            table.PilePanel.setActive(true);
-            table.PilePanel.setTitleText(lang._(TAB_YOUR_GRAVEYARD));
-            table.PilePanel.clearCards();
+            ui.PilePanel.setActive(true);
+            ui.PilePanel.setTitleText(lang._(TAB_YOUR_GRAVEYARD));
+            ui.PilePanel.clearCards();
             foreach (var card in player.getGrave())
             {
-                var item = table.PilePanel.addCard();
+                var item = ui.PilePanel.addCard();
                 setCard(item.card, newSnapshot(card), true);
             }
         }
@@ -1461,11 +1461,11 @@ namespace Game.BattleTable
             string tip = curGrave.count > 0 ?
                 lang._(TAB_GRAVEYARD_HAS, curGrave.count) :
                 lang._(TAB_GRAVEYARD_NULL);
-            table.TipBox.display(tip, pointer.position + _tipBoxOffset);
+            ui.TipBox.display(tip, pointer.position + _tipBoxOffset);
         }
         private void onGravePointerExitCallback(Deck deck, PointerEventData pointer)
         {
-            table.TipBox.hide();
+            ui.TipBox.hide();
         }
         #endregion
 

@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using BJSYGameCore;
-using UI;
 using TouhouHeartstone;
 using System;
 using System.Collections.Generic;
@@ -211,7 +209,6 @@ namespace Game.BattleTable
         /// </summary>
         public Player currentAnimPlayer { get; set; }
         HandToFieldAnim _servantPreviewAnim = null;
-        public SimpleAnim simpleAnim = null;
         #endregion
     }
 }

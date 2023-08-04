@@ -44,17 +44,9 @@ namespace Game.BattleTable
         public Transform CenterDisplayTransform => _centerDisplayTransform;
         public Transform RightDisplayTransform => _rightDisplayTransform;
         public Fatigue Fatigue => _fatigue;
-
         public DiscoverDialog Discover => _discover;
-        public PilePanel PilePanel => _pilePanel;
-        public MulliganDialog InitReplaceDialog => _mulliganDialog;
         public AttackArrow AttackArrowImage => _attackArrow;
-        public TurnTipImage TurnTipImage => _turnTipImage;
-        public GameResultDialog GameResultDialog => _gameResultDialog;
-        public GameObject OpponentWaitingObj => _opponentWaitingObj;
 
-        public TipBox TipBox => _tipBox;
-        public Text TipText => _tipText;
         public AudioClip playCardSound => _playCardSound;
 
         [SerializeField]
@@ -111,27 +103,10 @@ namespace Game.BattleTable
         private Transform _rightDisplayTransform;
         [SerializeField]
         private Fatigue _fatigue;
-
         [SerializeField]
         private DiscoverDialog _discover;
         [SerializeField]
-        private PilePanel _pilePanel;
-        [SerializeField]
-        private MulliganDialog _mulliganDialog;
-        [SerializeField]
         private AttackArrow _attackArrow;
-        [SerializeField]
-        private TurnTipImage _turnTipImage;
-        [SerializeField]
-        private GameResultDialog _gameResultDialog;
-        [SerializeField]
-        private GameObject _opponentWaitingObj;
-
-        [SerializeField]
-        private TipBox _tipBox;
-        [SerializeField]
-        private Text _tipText;
-
 
         [SerializeField]
         private AudioClip _playCardSound;

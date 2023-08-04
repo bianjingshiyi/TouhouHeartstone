@@ -25,7 +25,6 @@ namespace UI
         }
         public void autoBind()
         {
-            this._Game = this.transform.Find("Game").GetComponent<Game>();
             this._MainMenu = this.transform.Find("MainMenu").GetComponent<MainMenu>();
             this._AboutPage = this.transform.Find("AboutPage").GetComponent<AboutPage>();
             this._NetworkingPage = this.transform.Find("LobbyPanel").GetComponent<NetworkingPage>();
@@ -33,19 +32,6 @@ namespace UI
             this._SettingPage = this.transform.Find("SettingPage").GetComponent<SettingPage>();
             this._Loading = this.transform.Find("Loading").GetComponent<Loading>();
             this._Dialog = this.transform.Find("Dialog").GetComponent<Dialog>();
-        }
-        [SerializeField()]
-        private Game _Game;
-        public Game Game
-        {
-            get
-            {
-                if ((this._Game == null))
-                {
-                    this._Game = this.transform.Find("Game").GetComponent<Game>();
-                }
-                return this._Game;
-            }
         }
         [SerializeField()]
         private MainMenu _MainMenu;
@@ -141,7 +127,6 @@ namespace UI
         public override UIObject[] getPages()
         {
             return new UIObject[] {
-                    this.Game,
                     this.MainMenu,
                     this.AboutPage,
                     this.NetworkingPage,

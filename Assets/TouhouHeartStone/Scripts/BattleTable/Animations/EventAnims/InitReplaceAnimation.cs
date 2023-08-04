@@ -9,7 +9,7 @@ namespace Game.BattleTable
     {
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
-            table.table.InitReplaceDialog.setActive(false);
+            table.ui.InitReplaceDialog.setActive(false);
             yield break;
         }
     }

@@ -5,6 +5,7 @@ using Game.Replays;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using Game.BattleTable;
 
 namespace Game
 {
@@ -29,7 +30,7 @@ namespace Game
         }
         void onReplayGameUpdate()
         {
-            TableManager table = tableManager;
+            BattleTableManager table = battleTableManager;
             if (table.getAnimQueue().Length < 1 &&//没有其他动画在播放
                 game.answers.getAllRequests().FirstOrDefault() is IRequest request &&//有询问
                 !_replayPlayer.isReplayEnd//没放完

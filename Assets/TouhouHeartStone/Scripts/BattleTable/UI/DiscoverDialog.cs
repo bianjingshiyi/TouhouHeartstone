@@ -24,6 +24,7 @@ namespace Game.BattleTable
         public DiscoverItem addChoice()
         {
             var choice = Instantiate(_choiceTemplate, _choiceRoot).GetComponent<DiscoverItem>();
+            choice.gameObject.SetActive(false);
             _choices.Add(choice);
             choice.onClick += onItemClickCallback;
             return choice;
@@ -42,6 +43,7 @@ namespace Game.BattleTable
         private void Awake()
         {
             _hideButton.onClick.AddListener(onHideButtonClickCallback);
+            _choiceTemplate.SetActive(false);
         }
         #endregion
         private void onItemClickCallback(DiscoverItem card, PointerEventData pointer)

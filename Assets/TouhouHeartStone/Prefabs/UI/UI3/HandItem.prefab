@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6553402267502667292}
   - component: {fileID: 4573064840326099427}
   - component: {fileID: 8514158404629387690}
+  - component: {fileID: 8219681633789305804}
   m_Layer: 0
   m_Name: HandItem
   m_TagString: Untagged
@@ -45,9 +46,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d19dd5d274aebd468279558c4699b1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _positionLerp: {fileID: 8219681633789305804}
   _animator: {fileID: 8514158404629387690}
+  _height: 0
   _isDraggable: 1
   _card: {fileID: 2681186464698304563}
+  onSetDefine:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onDraw:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onEnemyUse:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
+  onSelfUse:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: 
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!95 &8514158404629387690
 Animator:
   serializedVersion: 3
@@ -67,6 +118,22 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8219681633789305804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9131677159056905311}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbb61fbcee92afb408b334d3c9c269a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _time: 0
+  _targetTransform: {fileID: 0}
+  _stopDistance: 0
+  _startPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &2284271156589612261
 PrefabInstance:
   m_ObjectHideFlags: 0

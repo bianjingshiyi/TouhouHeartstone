@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using BJSYGameCore.UI;
 using Controllers;
+using Game.BattleTable;
+using Game.BattleTable.UI;
 using MongoDB.Bson;
 using MukioI18n;
 using NitoriNetwork.Common;
@@ -18,8 +19,7 @@ using TouhouHeartstone.Builtin;
 using TouhouHeartStone;
 using UI;
 using UnityEngine;
-using UnityEngine.UI;
-using Card = TouhouCardEngine.Card;
+using UnityEngine.SceneManagement;
 using Deck = TouhouHeartstone.Deck;
 
 namespace Game
@@ -32,12 +32,6 @@ namespace Game
         HearthstoneOption _option = new HearthstoneOption();
         [SerializeField]
         Main _mainUI;
-        [SerializeField]
-        UI.Game _ui;
-        public UI.Game ui
-        {
-            get { return _ui; }
-        }
         public CardEngine game { get; private set; } = null;
         public Player localPlayer { get; private set; } = null;
         Task gameTask { get; set; } = null;
@@ -48,17 +42,10 @@ namespace Game
             base.onAwake();
             TaskExceptionHandler.register();
             _mainUI = this.findInstance<Main>();
-            if (_mainUI != null)
+            if (_mainUI)
             {
                 _mainUI.game = this;
-                _mainUI.Game.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
-                _mainUI.Game.GameResultDialog.onSaveReplayButtonClick += quitGame; // 保存并退出
-                _ui = _mainUI.Game;
             }
-            ui.GameResultDialog.onSaveReplayButtonClick += onSaveReplayButtonClick;
-            ui.LogScrollView.LogList.onEnableLogListItem += onEnableLogListItem;
-            ui.LogScrollView.LogList.onDisableLogListItem += onDisableLogListItem;
-            ui.LogScrollView.LogList.onUpdateLogListItem += onUpdateLogListItem;
         }
         [SerializeField]
         bool _useDefaultDeck = false;
@@ -116,158 +103,22 @@ namespace Game
                     onReplayGameUpdate();
                 }
                 //在Update中抛出游戏中发生的事件，避免线程冲突并隔离异常的发生。
-                gameTriggerEventCache.poll();
+                tableUI?.LogCtrl?.pollEvents();
             }
         }
-
-        #region 事件回调
-        private void onEnableLogListItem(int index, RectTransform rect)
-        {
-            var item = rect.GetComponent<LogListItem>();
-            item.onPointerEnter.add(onLogListItemEnter);
-            item.onPointerExit.add(onLogListItemExit);
-        }
-        private void onDisableLogListItem(int index, RectTransform rect)
-        {
-            var item = rect.GetComponent<LogListItem>();
-            item.onPointerEnter.remove(onLogListItemEnter);
-            item.onPointerExit.remove(onLogListItemExit);
-        }
-        private void onUpdateLogListItem(int index, RectTransform rect)
-        {
-            var item = rect.GetComponent<LogListItem>();
-            var logItem = logItems[index];
-            var obj = logItem.arg;
-            item.SetLevel(logItem.level);
-            switch (obj)
-            {
-                //case THHPlayer.SetGemEventArg setGem:
-                //    item.IconImage.sprite = item.gemIcon;
-                //    item.Text.text = "=>" + setGem.value;
-                //    item.Image.sprite = tableManager.getSkin(game.getDefine<LuckyCoin>()).image;
-                //    item.BorderImage.color = setGem.player == localPlayer ? item.selfColor : item.oppoColor;
-                //    break;
-                //case THHPlayer.SetMaxGemEventArg setMaxGem:
-                //    item.IconImage.sprite = item.gemIcon;
-                //    item.Text.text = "=>" + setMaxGem.value;
-                //    item.Image.sprite = tableManager.getSkin(game.getDefine<LuckyCoin>()).image;
-                //    item.BorderImage.color = setMaxGem.player == localPlayer ? item.selfColor : item.oppoColor;
-                //    break;
-                case HearthStoneRule.DrawEventArg draw:
-                    item.IconImage.sprite = item.drawIcon;
-                    item.Text.text = lang._(GAME_MANAGER_DRAW);
-                    item.Image.sprite = tableManager.getSkin(draw.player == localPlayer ? draw.card : draw.player.getMaster()).image;
-                    item.BorderImage.sprite = draw.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case HearthStoneRule.BurnEventArg burn:
-
-                    item.IconImage.sprite = item.burnIcon;
-                    item.Text.text = lang._(GAME_MANAGER_BURN);
-                    item.Image.sprite = tableManager.getSkin(burn.card).image;
-                    item.BorderImage.sprite = burn.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case HearthStoneRule.FatigueEventArg fatigue:
-                    item.IconImage.sprite = item.fatigueIcon;
-                    item.Text.text = lang._(GAME_MANAGER_FATIGUE);
-                    item.Image.sprite = tableManager.getSkin(fatigue.player.getMaster()).image;
-                    item.BorderImage.sprite = fatigue.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case THHCard.DiscardEventArg discard:
-                    item.IconImage.sprite = item.discardIcon;
-                    item.Text.text = lang._(GAME_MANAGER_DISCARD);
-                    item.Image.sprite = tableManager.getSkin(discard.card).image;
-                    item.BorderImage.sprite = discard.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case HearthStoneRule.UseEventArg use:
-                    item.IconImage.sprite = item.useIcon;
-                    item.Text.text = lang._(GAME_MANAGER_USE);
-                    item.Image.sprite = use.card.isTrap(game) ?
-                        tableManager.getSkin(use.card.getOwner().getMaster()).image :
-                        tableManager.getSkin(use.card).image;
-                    item.BorderImage.sprite = use.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case HearthStoneRule.CreateTokenEventArg token:
-                    item.IconImage.sprite = item.rebornIcon;
-                    item.Text.text = lang._(GAME_MANAGER_TOKEN);
-                    item.Image.sprite = tableManager.getSkin(token.card).image;
-                    item.BorderImage.sprite = token.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case HearthStoneRule.RebornEventArg reborn:
-                    item.IconImage.sprite = item.rebornIcon;
-                    item.Text.text = lang._(GAME_MANAGER_REBORN);
-                    item.Image.sprite = tableManager.getSkin(reborn.card).image;
-                    item.BorderImage.sprite = reborn.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case THHCard.AttackEventArg attack:
-                    item.IconImage.sprite = item.attackIcon;
-                    item.Text.text = lang._(GAME_MANAGER_ATTACK);
-                    item.Image.sprite = tableManager.getSkin(attack.card).image;
-                    item.BorderImage.sprite = attack.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case THHCard.DamageEventArg damage:
-                    item.IconImage.sprite = item.damageIcon;
-                    item.Text.text = "-" + damage.damagedValue;
-                    item.Image.sprite = tableManager.getSkin(damage.target).image;
-                    item.BorderImage.sprite = damage.target.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case THHCard.SetArmorEventArg armor:
-                    item.IconImage.sprite = item.armorIcon;
-                    item.Text.text = "=>" + armor.value;
-                    item.Image.sprite = tableManager.getSkin(armor.card).image;
-                    item.BorderImage.sprite = armor.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case THHCard.HealEventArg heal:
-                    var card = heal.card;
-                    var healedValue = heal.healedValue;
-                    item.IconImage.sprite = item.healIcon;
-                    item.Text.text = "+" + healedValue;
-                    item.Image.sprite = tableManager.getSkin(card).image;
-                    item.BorderImage.sprite = card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case THHCard.SilenceEventArg silence:
-                    item.IconImage.sprite = item.silenceIcon;
-                    item.Text.text = lang._(GAME_MANAGER_SILENCE);
-                    item.Image.sprite = tableManager.getSkin(silence.cards[0]).image;
-                    item.BorderImage.color = silence.cards[0].getOwner() == localPlayer ? item.selfColor : item.oppoColor;
-                    break;
-                case THHCard.SecretTriggerEventArg secret:
-                    item.IconImage.sprite = item.secretIcon;
-                    item.Text.text = lang._(GAME_MANAGER_SECRET);
-                    item.Image.sprite = tableManager.getSkin(secret.card).image;
-                    item.BorderImage.sprite = secret.card.getOwner() == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case THHCard.DeathEventArg death:
-                    item.IconImage.sprite = item.deathIcon;
-                    item.Text.text = lang._(GAME_MANAGER_DEATH);
-                    item.Image.sprite = tableManager.getSkin(death.card).image;
-                    item.BorderImage.sprite = death.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                case THHPlayer.DiscoverEventArg discover:
-                    item.Text.text = lang._(GAME_MANAGER_DISCOVER);
-                    break;
-                case THHPlayer.RevealDuelEventArg revealDuel:
-                    item.Text.text = lang._(GAME_MANAGER_REVEAL_DUEL);
-                    item.BorderImage.sprite = revealDuel.player == localPlayer ? item.selfsprite : item.opposprite;
-                    break;
-                default:
-                    break;
-            }
-        }
-        #endregion
         #region 外部接口
         public async Task startLocalGame(RoomData room)
         {
             //创建游戏
             CardEngine game = await createGame(room);
             mode = GameMode.local;
-            ui.showSurrenderButton(false);
             //初始化本地玩家，AI，UI
             foreach (var player in game.players)
             {
                 if (player.id == room.playerDataList[0].id) // 暂时的
                 {
                     localPlayer = player;
-                    displayGameUI(game, localPlayer);
+                    await displayGameUI(game, localPlayer);
                 }
                 else
                 {
@@ -278,6 +129,14 @@ namespace Game
 #endif
                 }
             }
+
+            if (tableUI != null)
+            {
+                tableUI.showSurrenderButton(false);
+                tableUI.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
+                tableUI.GameResultDialog.onSaveReplayButtonClick += quitGame; // 保存并退出
+            }
+            //tableUI.GameResultDialog.onSaveReplayButtonClick += onSaveReplayButtonClick;
             //开始游戏
             await runGame(game);
         }
@@ -309,7 +168,6 @@ namespace Game
             //创建游戏
             CardEngine game = await createGame(room);
             mode = GameMode.remote;
-            ui.showSurrenderButton(true);
             //将游戏与网络连接
             game.answers.client = client;
             //初始化本地玩家与UI
@@ -319,9 +177,10 @@ namespace Game
                 {
                     localPlayer = player;
                     if (!headless)
-                        displayGameUI(game, localPlayer);
+                        await displayGameUI(game, localPlayer);
                 }
             }
+            tableUI?.showSurrenderButton(true);
             await runGame(game);
         }
         public async Task startReplayGame(Replay rep)
@@ -330,7 +189,7 @@ namespace Game
             mode = GameMode.replay;
             new ReplayPlayer(rep, game);
             localPlayer = game.players.First();
-            displayGameUI(game, localPlayer);
+            await displayGameUI(game, localPlayer);
             await runGame(game);
         }
 
@@ -395,7 +254,7 @@ namespace Game
                 }
             }
 
-            Rule rule = new HearthStoneRule(cardDict,buffDict);
+            Rule rule = new HearthStoneRule(cardDict, buffDict);
             await game.init(new Assembly[] { typeof(CardEngine).Assembly, typeof(HearthStoneRule).Assembly, typeof(EffectEditorLibrary).Assembly },
                 rule,
                 option,
@@ -444,11 +303,13 @@ namespace Game
         /// </summary>
         public void closeGameUI()
         {
-            if (_mainUI != null)
+            var op = SceneManager.UnloadSceneAsync("BattleUI");
+            op.completed += (o) =>
             {
-                tableManager.setGame(null, null);
                 _mainUI.display(_mainUI.MainMenu);
-            }
+                _battleTableManager = null;
+                _tableUI = null;
+            };
         }
 
         /// <summary>
@@ -461,15 +322,22 @@ namespace Game
         }
         public event Action onGameEnd;
         #endregion
-        private void addLogItem(IEventArg arg)
+        #region 事件回调
+        private void onQuitCallback()
         {
-            var item = new LogItem()
+            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () =>
             {
-                arg = arg
-            };
-            logItems.Add(item);
-            ui.LogScrollView.LogList.updateLogListCount(logItems.Count);
+                quitGame();
+            });
         }
+        private void onSurrenderCallback()
+        {
+            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, SURRENDER_QUESTION, () => {
+                Main main = GetComponentInParent<Main>();
+                main.game.surrender();
+            });
+        }
+        #endregion
         private async Task LoadExternalCardsAndBuffs(HearthstoneOption option,
             Dictionary<long, Dictionary<int, CardDefine>> cardDict,
             Dictionary<long, Dictionary<int, BuffDefine>> buffDict,
@@ -531,126 +399,31 @@ namespace Game
         /// 显示游戏UI，并指定本地玩家
         /// </summary>
         /// <param name="localPlayer"></param>
-        private void displayGameUI(CardEngine game, Player localPlayer)
+        private async Task displayGameUI(CardEngine game, Player localPlayer)
         {
-            _mainUI.Game.GameResultDialog.hide();
             //本地玩家用UI
-            _mainUI.display(_mainUI.Game);
-            tableManager.setGame(game, localPlayer);
-            _mainUI.Game.Table.setGame(game, localPlayer);
+            var tcs = new TaskCompletionSource<AsyncOperation>();
+            var operation = SceneManager.LoadSceneAsync("BattleUI", LoadSceneMode.Additive);
+            operation.completed += op => { tcs.SetResult(op); };
 
-            game.triggers.onEventBefore += t1 => gameTriggerEventCache.cache(onEventBefore, t1);
-            game.triggers.onEventAfter += t1 => gameTriggerEventCache.cache(onEventAfter, t1);
-            ui.logPanel.shrink();
+            await tcs.Task;
 
-            logItems.Clear();
-            ui.LogScrollView.LogList.updateLogListCount(0);
-        }
-        ActionEventCache gameTriggerEventCache { get; } = new ActionEventCache();
-        void onEventBefore(IEventArg obj)
-        {
-            switch (obj)
+            var scene = SceneManager.GetSceneByName("BattleUI");
+            _battleTableManager = scene.findInstance<BattleTableManager>();
+            _tableUI = scene.findInstance<TableUI>();
+            _mainUI.hide();
+            if (battleTableManager)
             {
-                case HearthStoneRule.UseEventArg _:
-                //case THHPlayer.SetGemEventArg _:
-                //case THHPlayer.SetMaxGemEventArg _:
-                case HearthStoneRule.BurnEventArg _:
-                case HearthStoneRule.FatigueEventArg _:
-                case THHCard.DiscardEventArg _:
-                case HearthStoneRule.CreateTokenEventArg _:
-                case HearthStoneRule.RebornEventArg _:
-                case THHCard.AttackEventArg _:
-                case THHCard.DamageEventArg _:
-                case THHCard.SetArmorEventArg _:
-                case THHCard.HealEventArg _:
-                case THHCard.SilenceEventArg _:
-                case THHCard.DeathEventArg _:
-                case THHPlayer.DiscoverEventArg _:
-                case THHPlayer.RevealDuelEventArg _:
-                case THHCard.SecretTriggerEventArg _:
-                    addLogItem(obj);
-                    break;
-                case HearthStoneRule.DrawEventArg _:
-                    if (obj is IDescribableEventArg describable)
-                    {
-                        // string info = describable.toString(game, localPlayer);
-                        string info = lang._(
-                            describable.localizeTemplateString(game, localPlayer),
-                            describable.localizeStringArgs(game, localPlayer)
-                        );
-                        if (info != null)
-                        {
-                            addLogItem(obj);
-                        }
-                    }
-                    break;
-                default:
-                    break;
+                battleTableManager.setGame(main, game, localPlayer);
+            }
+
+            if (tableUI)
+            {
+                tableUI.onQuit += onQuitCallback;
+                tableUI.onSurrender += onSurrenderCallback;
+                tableUI.LogCtrl.setGame(game, main, battleTableManager, localPlayer);
             }
         }
-        void onEventAfter(IEventArg obj)
-        {
-            var item = logItems.FirstOrDefault(i => i.arg == obj);
-            if (item == null)
-                return;
-            foreach (var parentItem in logItems)
-            {
-                int depth = 0;
-                if (isChildOf(parentItem.arg, item.arg, ref depth))
-                {
-                    item.level = depth;
-                    break;
-                }
-            }
-            bool isChildOf(IEventArg parent, IEventArg child, ref int depth)
-            {
-                if (depth > 100)
-                    throw new StackOverflowException();
-                if (child == null)
-                    return false;
-                if (parent == null)
-                    return false;
-                if (child.parent == null)
-                    return false;
-                if (child.parent == parent)
-                {
-                    depth++;
-                    return true;
-                }
-                else
-                {
-                    depth++;
-                    return isChildOf(parent, child.parent, ref depth);
-                }
-            }
-            ui.LogScrollView.asScrollRect.verticalNormalizedPosition = 0;
-        }
-        [TranslateMsg]
-        private const string GAME_MANAGER_DEATH = "死亡";
-        [TranslateMsg]
-        private const string GAME_MANAGER_SECRET = "陷阱";
-        [TranslateMsg]
-        private const string GAME_MANAGER_SILENCE = "封印";
-        [TranslateMsg]
-        private const string GAME_MANAGER_ATTACK = "攻击";
-        [TranslateMsg]
-        private const string GAME_MANAGER_REBORN = "复活";
-        [TranslateMsg]
-        private const string GAME_MANAGER_TOKEN = "召唤";
-        [TranslateMsg]
-        private const string GAME_MANAGER_USE = "使用";
-        [TranslateMsg]
-        private const string GAME_MANAGER_DISCARD = "弃牌";
-        [TranslateMsg]
-        private const string GAME_MANAGER_FATIGUE = "疲劳";
-        [TranslateMsg]
-        private const string GAME_MANAGER_BURN = "爆牌";
-        [TranslateMsg]
-        private const string GAME_MANAGER_DRAW = "抽牌";
-        [TranslateMsg]
-        private const string GAME_MANAGER_DISCOVER = "发现";
-        [TranslateMsg]
-        private const string GAME_MANAGER_REVEAL_DUEL = "信仰对决";
         private async void onSaveReplayButtonClick()
         {
             await getManager<MainManager>().fileManager.savePersistentFile(
@@ -658,62 +431,6 @@ namespace Game
                 _replaySystem.replay.players.Select(p => p.getDeck().masterCardRef).ToArray().ToJson() + "\r\n" +
                 _replaySystem.replay.ToJson());
         }
-        #region Events
-        private async void onLogListItemEnter(LogListItem item)
-        {
-            int itemIndex = ui.LogScrollView.LogList.getLogItemIndex(item.rectTransform);
-            var logItem = logItems[itemIndex];
-            var arg = logItem.arg;
-            if (arg is IDescribableEventArg describable)
-            {
-                ui.LogScrollView.LogInfoHorizantal.display();
-                string info = lang._(describable.localizeTemplateString(game, localPlayer), describable.localizeStringArgs(game, localPlayer));
-                info = Regex.Replace(info, @"{card:(?<poolId>-?\d+),(?<id>-?\d+)}",
-                    m =>
-                    {
-                        if (int.TryParse(m.Groups["id"].Value, out var id) && long.TryParse(m.Groups["poolId"].Value, out var poolId))
-                        {
-                            var cardPoolRef = cards.getCardPoolReferenceInSet(poolId, game?.getOption()?.cardPools);
-                            return getManager<CardManager>().getDefaultSkin(cardPoolRef, id).name;
-                        }
-                        return "未知卡牌";
-                    });
-                ui.LogScrollView.LogInfoHorizantal.Text.text = info;
-                if (describable.getCard(game, localPlayer) != null)
-                {
-                    ui.LogScrollView.LogInfoHorizantal.InfoCard.display();
-                    CardDefine card = describable.getCard(game, localPlayer).define;
-                    await ui.LogScrollView.LogInfoHorizantal.InfoCard.Card.setCardDefine(card, main.card);
-                }
-                else
-                    ui.LogScrollView.LogInfoHorizantal.InfoCard.hide();
-                ui.LogScrollView.LogInfoHorizantal.TargetGridList.clearItems();
-                if (describable.getTargets(game, localPlayer) != null && describable.getTargets(game, localPlayer).Length > 0)
-                {
-                    ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);
-                    foreach (var target in describable.getTargets(game, localPlayer))
-                    {
-                        if (target == null)
-                            continue;
-                        var targetItem = ui.LogScrollView.LogInfoHorizantal.TargetGridList.addItem();
-                        CardDefine card = target.define;
-                        await targetItem.Card.setCardDefine(card, main.card);
-                    }
-                }
-                else
-                {
-                    ui.LogScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(false);
-                }
-                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.TargetGridList.rectTransform);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.LogInfoVerticalVerticalLayoutGroup.GetComponent<RectTransform>());
-                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.LogScrollView.LogInfoHorizantal.rectTransform);
-            }
-        }
-        void onLogListItemExit(LogListItem item)
-        {
-            ui.LogScrollView.LogInfoHorizantal.hide();
-        }
-        #endregion
         protected void OnGUI()
         {
 #if UNITY_EDITOR
@@ -721,11 +438,30 @@ namespace Game
 #endif
         }
         #region 属性字段
+        [TranslateMsg]
+        const string QUIT_GAME_QUESTION = "是否要结束本场游戏？";
+        [TranslateMsg("尝试认输时的提醒")]
+        const string SURRENDER_QUESTION = "确定要向对手认输吗？";
         [TranslateMsg("开始游戏时，读取卡池失败时的报错")]
         public const string GAME_CREATE_ERROR_LOAD_CARDS_FAILED = "开始游戏失败，无法读取游戏所需的卡池。";
         public MainManager main => getManager<MainManager>();
-        private TableManager tableManager => getManager<TableManager>();
-        private List<LogItem> logItems = new List<LogItem>();
+        private BattleTableManager _battleTableManager;
+        private BattleTableManager battleTableManager 
+        { 
+            get
+            {
+                return _battleTableManager;
+            }
+        }
+        private TableUI _tableUI;
+        private TableUI tableUI
+        {
+            get
+            {
+                return _tableUI;
+            }
+        }
+
         #endregion
     }
     public class LogItem

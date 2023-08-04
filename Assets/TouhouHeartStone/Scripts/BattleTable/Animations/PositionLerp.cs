@@ -4,6 +4,14 @@ namespace Game.BattleTable
     [ExecuteInEditMode]
     public class PositionLerp : MonoBehaviour
     {
+        public void setStart()
+        {
+            setStart(transform.position);
+        }
+        public void setStart(Vector3 position)
+        {
+            _startPosition = position;
+        }
         public void setTarget(Transform target, float stopDistance = 0)
         {
             _targetTransform = target;
@@ -23,7 +31,11 @@ namespace Game.BattleTable
         }
         protected void OnEnable()
         {
-            _startPosition = transform.position;
+            if (Application.isEditor) 
+            {
+                return;
+            }
+            setStart();
         }
         protected void Update()
         {
@@ -43,6 +55,7 @@ namespace Game.BattleTable
         Transform _targetTransform;
         [SerializeField]
         float _stopDistance;
+        [SerializeField]
         Vector3 _startPosition;
         public Vector3 startPosition
         {

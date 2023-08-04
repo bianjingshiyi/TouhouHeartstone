@@ -101,9 +101,11 @@ namespace Game.BattleTable
             servantCardFace.lifePropNumber.setTextColor(color);
             itemCardFace.lifePropNumber.setTextColor(color);
         }
-        public void setImageSprite(Sprite image)
+        public void setImageSprite(Sprite sprite)
         {
-            // TODO:_imageRenderer.SetTexture(image);
+            servantCardFace.setImage(sprite?.texture);
+            spellCardFace.setImage(sprite?.texture);
+            itemCardFace.setImage(sprite?.texture);
         }
         public void destroy()
         {
@@ -152,7 +154,7 @@ namespace Game.BattleTable
 
         #region 属性字段
         public SimpleAnim onShowAnim;
-        public Animator animator => animator;
+        public Animator animator => _animator;
         public float width => _width;
         public float height => _height;
         public string flipToFaceAnimName;

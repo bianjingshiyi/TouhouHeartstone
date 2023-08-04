@@ -46,7 +46,10 @@ namespace Game.BattleTable
                 attackedSimpleAnim = targetServant.onAttacked;
             }
             if (attackObj && attackedObj)
+            {
+                attackObj.positionLerp.setStart();
                 attackObj.positionLerp.setTarget(attackedObj.transform, 0.2f);
+            }
 
 
             if (attackObj && attackSimpleAnim != null)

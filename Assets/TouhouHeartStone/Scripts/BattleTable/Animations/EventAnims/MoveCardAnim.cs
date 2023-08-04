@@ -7,6 +7,7 @@ using Object = UnityEngine.Object;
 using UDeck = Game.BattleTable.Deck;
 namespace Game.BattleTable
 {
+    using static UnityEditor.PlayerSettings;
     using Arg = Pile.MoveCardEventArg;
     class MoveCardAnim : EventAnimation<Arg>
     {
@@ -322,14 +323,18 @@ namespace Game.BattleTable
             if (!table.tryGetHand(_card, out _))
             {
                 var hand = table.createHand(_card);
-                var positionLerp = hand.GetComponentInChildren<PositionLerp>();
+                var positionLerp = hand.positionLerp;
 
                 if (startPos.HasValue)
                 {
                     var pos = startPos.Value;
                     hand.transform.position = pos;
-                    positionLerp.startPosition = pos;
+                    positionLerp.setStart(pos);
                     positionLerp.setPosition(pos);
+                }
+                else
+                {
+                    positionLerp.setStart();
                 }
                 positionLerp.setTarget(hand.transform);
                 AnimAnim anim = null;
