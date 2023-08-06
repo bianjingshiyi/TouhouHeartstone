@@ -49,7 +49,7 @@ namespace Game.BattleTable
             if (simpleAnim != null && animator)
             {
                 AnimAnim anim = null;
-                while (!SimpleAnimHelper.update(table, ref anim, simpleAnim, animator, _time))
+                while (!SimpleAnimHelper.update(table, ref anim, simpleAnim, animator, _deltaTime))
                     yield return null;
             }
         }

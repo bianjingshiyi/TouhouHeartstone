@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
-using UnityEngine.XR;
 
 namespace Game.BattleTable
 {
@@ -20,14 +20,18 @@ namespace Game.BattleTable
         public void zoomIn()
         {
             _isZoomIn = true;
+            _animator.SetBool("IsExpanded", true);
+            _blocker.gameObject.SetActive(true);
         }
         public void zoomOut()
         {
             _isZoomIn = false;
+            _animator.SetBool("IsExpanded", false);
+            _blocker.gameObject.SetActive(false);
         }
         public void updateHand(float deltaTime)
         {
-
+            alignHands(deltaTime);
         }
         public HandItem insertHand(int position)
         {
@@ -41,6 +45,10 @@ namespace Game.BattleTable
             hand.onPointerExit += onHandItemPointerExitCallback;
             _hands.Insert(position, hand);
             hand.transform.SetParent(_handRoot, false);
+
+            Vector3 targetPosition = getHandTargetPosition(position, _hands.Count);
+            hand.transform.localPosition = targetPosition;
+
             return hand;
         }
         public HandItem addHand()
@@ -84,11 +92,17 @@ namespace Game.BattleTable
         #region 生命周期
         private void Awake()
         {
+            _rectTransform = transform as RectTransform;
+            _blocker.onClick += onBlockerClickCallback;
             _handTemplate.SetActive(false);
         }
         #endregion
 
         #region 事件回调
+        private void onBlockerClickCallback()
+        {
+            onBlockerClick?.Invoke(this);
+        }
         private void onHandItemClickCallback(HandItem servant, PointerEventData pointer)
         {
             onHandItemClick?.Invoke(servant, this, pointer);
@@ -115,10 +129,38 @@ namespace Game.BattleTable
         }
         #endregion
 
+        private void alignHands(float deltaTime)
+        {
+            int count = _hands.Count;
+            for (int i = 0; i < _hands.Count; i++)
+            {
+                var hand = _hands[i];
+                if (hand != ignoreAlignHand)
+                {
+                    var targetPosition = getHandTargetPosition(i, count);
+                    var distance = (targetPosition - hand.transform.localPosition).magnitude;
+                    hand.transform.SetSiblingIndex(i);
+                    hand.transform.localPosition = Vector3.MoveTowards(hand.transform.localPosition, targetPosition, distance * deltaTime * _alignSpeed);
+                }
+            }
+        }
+
+        private Vector3 getHandTargetPosition(int position, int count)
+        {
+            float rectWidth = _rectTransform?.rect.width ?? 10;
+            float pivotX = _rectTransform?.pivot.x ?? 0.5f;
+            float singleWidth = Mathf.Min(rectWidth / count, _maxHandWidth);
+            var width = count * singleWidth;
+            float startX = width * pivotX - singleWidth * 0.5f;
+            float x = startX - singleWidth * position;
+            return  new Vector3(x, position * _cardThickness, 0);
+        }
+
         #endregion
 
 
         #region 事件
+        public Action<HandList> onBlockerClick;
         public Action<HandItem, HandList, PointerEventData> onHandItemClick;
         public Action<HandItem, HandList, PointerEventData> onHandItemBeginDrag;
         public Action<HandItem, HandList, PointerEventData> onHandItemDrag;
@@ -128,6 +170,13 @@ namespace Game.BattleTable
         #endregion
 
         public bool isZoomIn => _isZoomIn;
+        public HandItem ignoreAlignHand { get; set; }
+        [SerializeField]
+        private RectTransform _rectTransform;
+        [SerializeField]
+        private Animator _animator;
+        [SerializeField]
+        private MeshButton _blocker;
         [SerializeField]
         private GameObject _handTemplate;
         [SerializeField]
@@ -136,5 +185,11 @@ namespace Game.BattleTable
         private List<HandItem> _hands;
         [SerializeField]
         private bool _isZoomIn;
+        [SerializeField]
+        private float _maxHandWidth = 4;
+        [SerializeField]
+        private float _cardThickness = 0.1f;
+        [SerializeField]
+        private float _alignSpeed = 20;
     }
 }

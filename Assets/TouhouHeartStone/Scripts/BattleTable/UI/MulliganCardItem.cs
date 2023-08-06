@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace Game.BattleTable
 {
-    public class MulliganCardItem : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+    public class MulliganCardItem : MonoBehaviour
     {
         public void setMarkVisible(bool visible)
         {
@@ -14,19 +14,24 @@ namespace Game.BattleTable
         {
             Destroy(gameObject);
         }
-
+        private void Awake()
+        {
+            _card.onClick += onPointerClickCallback;
+            _card.onPointerEnter += onPointerEnterCallback;
+            _card.onPointerExit += onPointerExitCallback;
+        }
         #region 事件回调
-        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+        void onPointerClickCallback(TableCard card, PointerEventData eventData)
         {
             onClick?.Invoke(this, eventData);
         }
 
-        void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
+        void onPointerEnterCallback(TableCard card, PointerEventData eventData)
         {
             onPointerEnter?.Invoke(this, eventData);
         }
 
-        void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
+        void onPointerExitCallback(TableCard card, PointerEventData eventData)
         {
             onPointerExit?.Invoke(this, eventData);
         }

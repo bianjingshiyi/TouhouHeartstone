@@ -135,7 +135,7 @@ namespace Game.BattleTable
             }
 
             AnimAnim anim = null;
-            while (!SimpleAnimHelper.update(table, ref anim, simpleAnim, animator, _time))
+            while (!SimpleAnimHelper.update(table, ref anim, simpleAnim, animator, _deltaTime))
             {
                 yield return null;
             }

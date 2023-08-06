@@ -1,10 +1,8 @@
 ﻿using System;
-using Newtonsoft.Json.Linq;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.XR;
 
 namespace Game.BattleTable
 {
@@ -16,12 +14,15 @@ namespace Game.BattleTable
         }
         public void animateFaceup(bool faceup)
         {
-            cardBack.SetActive(!faceup);
-            cardFront.SetActive(faceup);
+            setFaceup(faceup, false);
         }
-        public void setFaceup(bool faceup)
+        public void setFaceup(bool faceup, bool immediate = true)
         {
             animator.SetBool("isFaceUp", faceup);
+            if (immediate)
+            {
+                animator.Play(faceup ? _faceFrontStateName : _faceBackStateName);
+            }
         }
         public void setType(string type)
         {
@@ -103,9 +104,9 @@ namespace Game.BattleTable
         }
         public void setImageSprite(Sprite sprite)
         {
-            servantCardFace.setImage(sprite?.texture);
-            spellCardFace.setImage(sprite?.texture);
-            itemCardFace.setImage(sprite?.texture);
+            servantCardFace.setImage(sprite);
+            spellCardFace.setImage(sprite);
+            itemCardFace.setImage(sprite);
         }
         public void destroy()
         {
@@ -153,13 +154,19 @@ namespace Game.BattleTable
         #endregion
 
         #region 属性字段
-        public SimpleAnim onShowAnim;
         public Animator animator => _animator;
+        public PositionLerp positionLerp => _positionLerp;
         public float width => _width;
         public float height => _height;
-        public string flipToFaceAnimName;
-        public string notifyAnimName;
-        public string flipToBackAnimName;
+        public SimpleAnim onSummon;
+        public SimpleAnim onShowAnim;
+        public SimpleAnim onFlipToFace;
+        public SimpleAnim onFlipToBack;
+        public SimpleAnim onNotify;
+        [SerializeField]
+        private string _faceFrontStateName;
+        [SerializeField]
+        private string _faceBackStateName;
 
         [SerializeField]
         private float _width;
@@ -171,6 +178,8 @@ namespace Game.BattleTable
         private GameObject _preheatEffectBackObj;
         [SerializeField]
         private Animator _animator;
+        [SerializeField]
+        private PositionLerp _positionLerp;
         [SerializeField]
         private GameObject cardBack;
         [SerializeField]

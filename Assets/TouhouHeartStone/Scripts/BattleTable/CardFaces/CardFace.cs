@@ -9,12 +9,9 @@ namespace Game.BattleTable
         {
             gameObject.SetActive(visible);
         }
-        public void setImage(Texture texture)
+        public void setImage(Sprite sprite)
         {
-            var propertyBlock = new MaterialPropertyBlock();
-            _image.GetPropertyBlock(propertyBlock);
-            propertyBlock.SetTexture("_Texture0", texture);
-            _image.SetPropertyBlock(propertyBlock);
+            _image.setTableImageSprite(sprite, propertyBlock);
         }
         #region 属性字段
         public PropertyNumber costPropNumber => _costNumber;
@@ -28,6 +25,18 @@ namespace Game.BattleTable
         private TextMeshPro _descText;
         [SerializeField]
         private MeshRenderer _image;
+        private MaterialPropertyBlock propertyBlock
+        {
+            get
+            {
+                if (_propertyBlock == null)
+                {
+                    _propertyBlock = new MaterialPropertyBlock();
+                }
+                return _propertyBlock;
+            }
+        }
+        private MaterialPropertyBlock _propertyBlock;
         #endregion
     }
 }

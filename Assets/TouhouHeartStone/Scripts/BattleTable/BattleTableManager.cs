@@ -8,6 +8,7 @@ using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable
@@ -158,13 +159,15 @@ namespace Game.BattleTable
             table.EnemyGrave.onPointerEnter += onGravePointerEnterCallback;
             table.EnemyGrave.onPointerExit += onGravePointerExitCallback;
 
-
+            table.SelfHandList.onBlockerClick += onHandListBlockerClickCallback;
             table.SelfHandList.onHandItemClick += onHandItemClickCallback;
             table.SelfHandList.onHandItemBeginDrag += onHandItemBeginDragCallback;
             table.SelfHandList.onHandItemDrag += onHandItemDragCallback;
             table.SelfHandList.onHandItemEndDrag += onHandItemEndDragCallback;
             table.SelfHandList.onHandItemPointerEnter += onHandItemPointerEnterCallback;
             table.SelfHandList.onHandItemPointerExit += onHandItemPointerExitCallback;
+            table.EnemyHandList.onHandItemPointerEnter += onHandItemPointerEnterCallback;
+            table.EnemyHandList.onHandItemPointerExit += onHandItemPointerExitCallback;
 
             table.Discover.onHideButtonClicked += onDiscoverHideButtonClick;
             table.Discover.onItemClicked += onCardChooseCallback;
@@ -210,7 +213,6 @@ namespace Game.BattleTable
             if (game == null)
                 return;
 
-            // patch: 我不知道怎么改AutoCompo所以先Patch一个
             var clock = table.TurnEndButton;
 
             float longAngle = 0;
@@ -222,6 +224,10 @@ namespace Game.BattleTable
             }
             clock?.setLongHandAngle(longAngle);
             clock?.setShortHandAngle(-turn * 3.6f);
+
+            // 更新提示框位置
+            Vector2 pointerPosition = EventSystem.current.currentInputModule.input.mousePosition;
+            ui.TipBox.updatePos((Vector3)pointerPosition + _tipBoxOffset);
 
             //随从牌使用预览
             if (_servantPreviewAnim != null)
@@ -268,21 +274,6 @@ namespace Game.BattleTable
         }
         #endregion
         #region 事件回调
-        #region 仆从
-        private void onTurnEndClickCallback(TurnEndButton turnEndButton)
-        {
-            resetUse(true, true);
-            player.cmdTurnEnd(game);
-        }
-        private void onTurnEndPointerEnterCallback(TurnEndButton turnEndButton)
-        {
-
-        }
-        private void onTurnEndPointerExitCallback(TurnEndButton turnEndButton)
-        {
-
-        }
-        #endregion
         #region 换牌
         private void onMulliganItemClickCallback(int index)
         {
@@ -410,6 +401,7 @@ namespace Game.BattleTable
             {
                 anim.postEvent(this);
             }
+            table.TurnEndButton.setInteractable(game.getCurrentPlayer() == player);
         }
         #endregion
         private void reset()
@@ -471,8 +463,8 @@ namespace Game.BattleTable
         public Player player { get; private set; }
         public CardManager cardManager => _main.card;
         public LangManager lang => _main.lang;
-        public SEManager sounds => null;
-        public THHResourceManager resources => null;
+        public SEManager sounds => _main.getManager<SEManager>();
+        public THHResourceManager resources => _main.getManager<THHResourceManager>();
         private ActionEventCache eventCache = new ActionEventCache();
         private List<Card> _mulliganedCards = new List<Card>();
         private MainManager _main;

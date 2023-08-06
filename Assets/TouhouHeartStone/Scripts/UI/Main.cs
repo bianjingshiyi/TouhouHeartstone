@@ -1,23 +1,32 @@
 ﻿using UnityEngine;
 using Game;
+using UnityEngine.UI;
+
 namespace UI
 {
     partial class Main
     {
-        [SerializeField]
-        GameManager _game;
-        public GameManager game
+        public void setBackgroundVisible(bool visible)
         {
-            get { return _game; }
-            set { _game = value; }
+            BackgroundImage.gameObject.SetActive(visible);
         }
         partial void onAwake()
         {
             display(Loading);
         }
 
+        public DebugPage DebugPage => _debug;
+        public Image BackgroundImage => _backgroundImage;
+        public GameManager game
+        {
+            get { return _game; }
+            set { _game = value; }
+        }
+        [SerializeField]
+        GameManager _game;
         [SerializeField]
         DebugPage _debug;
-        public DebugPage DebugPage => _debug;
+        [SerializeField]
+        Image _backgroundImage;
     }
 }

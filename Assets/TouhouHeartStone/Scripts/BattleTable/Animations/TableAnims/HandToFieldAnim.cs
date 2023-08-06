@@ -1,48 +1,55 @@
-﻿using BJSYGameCore;
+﻿using System;
+using System.Collections;
+using UI;
 using UnityEngine;
-using System.Linq;
-using System;
+
 namespace Game.BattleTable
 {
     [Serializable]
     class HandToFieldAnim : TableAnimation
     {
         [SerializeField]
-        HandItem _item;
-        [SerializeField]
-        Servant _servant;
-        [SerializeField]
         Vector3 _startPosition;
         [SerializeField]
-        Timer _timer;
-        public HandToFieldAnim(BattleTableManager table, HandItem item, Field field, int index)
+        int _position;
+        [SerializeField]
+        private Transform _target;
+        CardDescriptor _servantDesc;
+        public HandToFieldAnim(Vector3 startPosition, CardDescriptor servantDesc, int index)
         {
-            _item = item;
-            var animator = _item.GetComponent<Animator>();
-            if (animator != null)
-                animator.enabled = false;
-            _startPosition = item.card.transform.position;
-            _servant = field.insertServant(index);
-            table.game.logger.log("Animation", item + "移动到" + index);
-
-            _timer = new Timer() { duration = table.handToFieldCurve.keys.Last().time };
-            _timer.start();
+            _startPosition = startPosition;
+            _position = index;
+            _servantDesc = servantDesc;
 
         }
-        public override bool update(BattleTableManager table, float time)
+        public override IEnumerator update(BattleTableManager table)
         {
-            if (!_timer.isExpired())
+            var card = table.createCard(_servantDesc, _startPosition);
+            var field = _servantDesc.getOwner() == table.player ? table.table.SelfField : table.table.EnemyField;
+            // 手牌移动到目标位置。
+            var placeHolder = field.addPlaceHolder(_position);
+            AnimAnim anim = null;
+            card.positionLerp.setStart(_startPosition);
+            card.positionLerp.setTarget(placeHolder);
+
+            while (!SimpleAnimHelper.update(table, ref anim, card.onSummon, card.animator, _deltaTime))
             {
-                Vector3 newPos = Vector3.Lerp(_startPosition, _servant.transform.position, table.handToFieldCurve.Evaluate(_timer.time));
-                _item.card.transform.position = newPos;
-                table.game.logger.log("Animation", _item + "移动到" + newPos);
-                return false;
+                yield return null;
             }
-            var animator = _item.GetComponent<Animator>();
-            if (animator != null)
-                animator.enabled = true;
-            table.game.logger.log("Animation", _item + "移动动画结束");
-            return true;
+
+            // 移除手牌。
+            card.destroy();
+
+            // 召唤仆从。
+            field.removePlaceHolder(placeHolder);
+            var servant = table.createServant(_servantDesc, _position);
+            while (!SimpleAnimHelper.update(table, ref anim, servant.onSummon, servant.animator, _deltaTime))
+            {
+                servant.animator.Update(0);
+                yield return null;
+            }
+            table.game.logger.log("Animation", table.getCard(servant) + "移动动画结束");
+            yield break;
         }
     }
 }

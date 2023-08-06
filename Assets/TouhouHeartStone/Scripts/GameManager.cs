@@ -306,6 +306,7 @@ namespace Game
             var op = SceneManager.UnloadSceneAsync("BattleUI");
             op.completed += (o) =>
             {
+                _mainUI.setBackgroundVisible(true);
                 _mainUI.display(_mainUI.MainMenu);
                 _battleTableManager = null;
                 _tableUI = null;
@@ -411,7 +412,8 @@ namespace Game
             var scene = SceneManager.GetSceneByName("BattleUI");
             _battleTableManager = scene.findInstance<BattleTableManager>();
             _tableUI = scene.findInstance<TableUI>();
-            _mainUI.hide();
+            _mainUI.setBackgroundVisible(false);
+            _mainUI.hidePages();
             if (battleTableManager)
             {
                 battleTableManager.setGame(main, game, localPlayer);
@@ -422,6 +424,7 @@ namespace Game
                 tableUI.onQuit += onQuitCallback;
                 tableUI.onSurrender += onSurrenderCallback;
                 tableUI.LogCtrl.setGame(game, main, battleTableManager, localPlayer);
+                tableUI.LogCtrl.reset();
             }
         }
         private async void onSaveReplayButtonClick()

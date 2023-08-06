@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Windows.Forms;
+using TMPro;
 using UI;
 using UnityEngine;
 
@@ -8,9 +9,16 @@ namespace Game.BattleTable
     {
         public void setTextColor(PropertyNumberColor color)
         {
-            _animator.SetBool("WhiteText", color == PropertyNumberColor.White);
-            _animator.SetBool("GreenText", color == PropertyNumberColor.Green);
-            _animator.SetBool("RedText", color == PropertyNumberColor.Red);
+            setTextGreen(color == PropertyNumberColor.Green);
+            setTextRed(color == PropertyNumberColor.Red);
+        }
+        public void setTextGreen(bool green)
+        {
+            _animator.SetBool("isGreen", green);
+        }
+        public void setTextRed(bool red)
+        {
+            _animator.SetBool("isRed", red);
         }
 
         public Animator animator => _animator;

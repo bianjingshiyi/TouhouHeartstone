@@ -47,6 +47,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa827fa0852702641a67a4553a39bf78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onFatigue:
+    beforeAnim:
+      m_PersistentCalls:
+        m_Calls: []
+    setColor:
+      enable: 0
+      target: {fileID: 0}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    animName: Fatigue
+    afterAnim:
+      m_PersistentCalls:
+        m_Calls: []
   _animator: {fileID: 1989976485787735655}
   _desc: {fileID: 1989976487275754258}
 --- !u!95 &1989976485787735655
@@ -83,6 +95,7 @@ MonoBehaviour:
   _time: 0
   _targetTransform: {fileID: 0}
   _stopDistance: 0
+  _startPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &1989976486895709881
 GameObject:
   m_ObjectHideFlags: 0

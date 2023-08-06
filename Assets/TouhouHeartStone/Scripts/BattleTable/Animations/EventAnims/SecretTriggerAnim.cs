@@ -17,7 +17,7 @@ namespace Game.BattleTable
                 secret.dummyTarget.position = table.table.CenterDisplayTransform.position;
 
                 AnimAnim anim = null;
-                while (!SimpleAnimHelper.update(table, ref anim, secret.onTrigger, secret.animator, _time))
+                while (!SimpleAnimHelper.update(table, ref anim, secret.onTrigger, secret.animator, _deltaTime))
                 {
                     table.setCard(secret.card, card, true);
                     yield return null;

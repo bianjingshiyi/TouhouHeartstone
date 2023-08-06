@@ -3,6 +3,7 @@ using System.Collections;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 using UDeck = Game.BattleTable.Deck;
 namespace Game.BattleTable
@@ -153,7 +154,7 @@ namespace Game.BattleTable
                         if (table.tryGetServant(_card, out var servant))
                             anim = new FieldMoveAnim(table, servant, toSelf ? table.table.SelfField : table.table.EnemyField, _position);
 
-                        while (anim != null && !anim.update(table, _time))
+                        while (anim != null && !anim.update(table, _deltaTime))
                             yield return null;
                     }
                     break;
@@ -209,7 +210,7 @@ namespace Game.BattleTable
             {
                 startPos = secret.transform.position;
                 AnimAnim anim = null;
-                while (SimpleAnimHelper.update(table, ref anim, secret.onExit, secret.animator, _time))
+                while (SimpleAnimHelper.update(table, ref anim, secret.onExit, secret.animator, _deltaTime))
                     yield return null;
                 table.removeSecret(_card);
             }
@@ -262,7 +263,7 @@ namespace Game.BattleTable
                     yield return moveToHead(table);
                     break;
                 case PILE.FIELD: // 任意牌堆-->战场
-                    yield return moveToField(table);
+                    yield return moveToField(table, startPos);
                     break;
                 case PILE.ITEM: // 任意牌堆-->道具
                     yield return moveToItem(table);
@@ -277,14 +278,27 @@ namespace Game.BattleTable
                     break;
             }
         }
-        private IEnumerator moveToField(BattleTableManager table)
+        private IEnumerator moveToField(BattleTableManager table, Vector3 startPos)
         {
-            if (!table.tryGetServant(_card, out var servant))
-                servant = table.createServant(_card, _position);
-            AnimAnim anim = null;
-            while (!SimpleAnimHelper.update(table, ref anim, servant.onSummon, servant.animator, _time))
+            string fromName = _from?.name;
+            int position = _position;
+            bool toSelf = _to?.owner == table.player;
+            if (fromName == PILE.HAND)
             {
-                yield return null;
+                var desc = table.updateCardDescriptor(_card);
+                var moveAnim = new HandToFieldAnim(startPos, desc, position);
+                while (!moveAnim.update(table, _deltaTime))
+                    yield return null;
+            }
+            else
+            {
+                if (!table.tryGetServant(_card, out var servant))
+                    servant = table.createServant(_card, _position);
+                AnimAnim anim = null;
+                while (!SimpleAnimHelper.update(table, ref anim, servant.onSummon, servant.animator, _deltaTime))
+                {
+                    yield return null;
+                }
             }
         }
         private IEnumerator moveToItem(BattleTableManager table)
@@ -292,7 +306,7 @@ namespace Game.BattleTable
             var item = _to.owner == table.player ? table.table.SelfItem : table.table.EnemyItem;
             table.setItem(item, _card);
             AnimAnim anim = null;
-            while (!SimpleAnimHelper.update(table, ref anim, item.onEquip, item.animator, _time))
+            while (!SimpleAnimHelper.update(table, ref anim, item.onEquip, item.animator, _deltaTime))
             {
                 yield return null;
             }
@@ -315,7 +329,7 @@ namespace Game.BattleTable
                 secret.setMission(true);
             }
             AnimAnim anim = null;
-            while (!SimpleAnimHelper.update(table, ref anim, secret.onEnter, secret.animator, _time))
+            while (!SimpleAnimHelper.update(table, ref anim, secret.onEnter, secret.animator, _deltaTime))
                 yield return null;
         }
         private IEnumerator moveToHand(BattleTableManager table, Vector3? startPos)
@@ -338,7 +352,7 @@ namespace Game.BattleTable
                 }
                 positionLerp.setTarget(hand.transform);
                 AnimAnim anim = null;
-                while (!SimpleAnimHelper.update(table, ref anim, hand.onDraw, hand.animator, _time))
+                while (!SimpleAnimHelper.update(table, ref anim, hand.onDraw, hand.animator, _deltaTime))
                 {
                     yield return null;
                 }
@@ -350,9 +364,9 @@ namespace Game.BattleTable
             //创建卡牌
             var cardUI = table.createCard(card, startPos, startHeight, isFaceUp);
             //播放动画
-            var anim = new CardTransAnim(cardUI, target, targetSize / cardUI.height, table.fieldToDeckCurve);
+            var anim = new CardTransAnim(cardUI, target, targetSize / (cardUI.height * cardUI.transform.lossyScale.y), table.fieldToDeckCurve);
             table.sounds.playSE(table.table.playCardSound);
-            while (!anim.update(table, _time))//没放完动画就让它接着放
+            while (!anim.update(table, _deltaTime))//没放完动画就让它接着放
                 yield return null;
             //摧毁卡牌
             Object.Destroy(cardUI.gameObject);

@@ -37,12 +37,12 @@ namespace Game.BattleTable
             if (isShow)
             {
                 chooseCard = table.createInvokeCard(choose, table.table.LeftDisplayTransform.position, -1, true);
-                chooseCard.animateFaceup(true);
+                chooseCard.setFaceup(true);
             }
             if (chooseCard)
             {
                 AnimAnim anim = null;
-                while (!SimpleAnimHelper.update(table, ref anim, chooseCard.onShowAnim, chooseCard.animator, _time))
+                while (!SimpleAnimHelper.update(table, ref anim, chooseCard.onShowAnim, chooseCard.animator, _deltaTime))
                     yield return null;
                 Object.Destroy(chooseCard.gameObject);
             }

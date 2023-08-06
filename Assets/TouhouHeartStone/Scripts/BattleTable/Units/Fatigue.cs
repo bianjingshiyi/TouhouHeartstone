@@ -1,5 +1,6 @@
 ﻿using MukioI18n;
 using TMPro;
+using UI;
 using UnityEngine;
 
 namespace Game.BattleTable
@@ -15,6 +16,7 @@ namespace Game.BattleTable
             gameObject.SetActive(active);
         }
 
+        public SimpleAnim onFatigue;
         public Animator animator => _animator;
         [TranslateMsg("疲劳描述（{0}为疲劳伤害）")]
         private const string GAME_FATIGUE_DESC = "没有牌了，你受到了{0}点伤害！";

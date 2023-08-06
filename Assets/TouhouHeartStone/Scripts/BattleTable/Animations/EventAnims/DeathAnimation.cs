@@ -37,7 +37,7 @@ namespace Game.BattleTable
                 item.onDestroy.invokeBeforeAnim();
                 anim = new AnimAnim(item.animator, item.onDestroy.animName);
             }
-            while (anim != null && !anim.update(table, _time))
+            while (anim != null && !anim.update(table, _deltaTime))
                 yield return null;
             if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
             {

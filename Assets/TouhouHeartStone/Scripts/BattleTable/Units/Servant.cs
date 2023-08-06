@@ -9,9 +9,10 @@ namespace Game.BattleTable
     public class Servant : TableUnit, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
     {
         #region 公有方法
-        public void setHighlight(bool highlight)
+        public void setHighlight(bool highlight, bool yellow = false)
         {
-            _highlight.SetActive(highlight);
+            _animator.SetBool("HightLight_G", highlight && !yellow);
+            _animator.SetBool("HightLight_Y", highlight && yellow);
         }
         public void setAttack(int value)
         {
@@ -36,7 +37,7 @@ namespace Game.BattleTable
         }
         public void setSealed(bool enabled)
         {
-            _animator.SetBool("isSilence", enabled);
+            _animator.SetBool("isSeal", enabled);
         }
         public void setShield(bool enabled)
         {
@@ -54,6 +55,18 @@ namespace Game.BattleTable
         {
             _animator.SetBool("isLethal", enabled);
         }
+        public void triggerDamaged()
+        {
+            _animator.SetTrigger("Damaged");
+        }
+        public void triggerHealed()
+        {
+            _animator.SetTrigger("Healed");
+        }
+        public void setDead(bool dead)
+        {
+            _animator.SetBool("isDead", dead);
+        }
         public void showDamageText(int damage)
         {
             _damageText.text = "-" + damage;
@@ -66,6 +79,7 @@ namespace Game.BattleTable
         }
         public void setImageSprite(Sprite sprite)
         {
+            _servantImage.setTableImageSprite(sprite, propertyBlock);
         }
         public void destroy()
         {
@@ -127,8 +141,6 @@ namespace Game.BattleTable
         public SimpleAnim onSilenceFalse;
         public SimpleAnim onDeath;
         [SerializeField]
-        private GameObject _highlight;
-        [SerializeField]
         private PropertyNumber _attackText;
         [SerializeField]
         private PropertyNumber _lifeText;
@@ -150,6 +162,20 @@ namespace Game.BattleTable
         private TextMeshPro _damageText;
         [SerializeField]
         private TextMeshPro _healText;
+        [SerializeField]
+        private MeshRenderer _servantImage;
+        private MaterialPropertyBlock propertyBlock
+        {
+            get
+            {
+                if (_propertyBlock == null)
+                {
+                    _propertyBlock = new MaterialPropertyBlock();
+                }
+                return _propertyBlock;
+            }
+        }
+        private MaterialPropertyBlock _propertyBlock;
         #endregion
     }
 }

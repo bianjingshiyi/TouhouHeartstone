@@ -41,11 +41,11 @@ namespace Game.BattleTable
             if (isShow)
             {
                 discoveredUI = table.createInvokeCard(discovered, table.table.LeftDisplayTransform.position, -1, true);
-                discoveredUI.animateFaceup(true);
+                discoveredUI.setFaceup(true);
             }
             if (discoveredUI != null)
             {
-                while (!SimpleAnimHelper.update(table, ref _anim, discoveredUI.onShowAnim, discoveredUI.animator, _time))
+                while (!SimpleAnimHelper.update(table, ref _anim, discoveredUI.onShowAnim, discoveredUI.animator, _deltaTime))
                     yield return null;
                 Object.Destroy(discoveredUI.gameObject);
             }

@@ -29,6 +29,7 @@ namespace Controllers
         public void reset()
         {
             logItems.Clear();
+            _logPanel.shrink();
             _logScrollView.LogList.updateLogListCount(0);
         }
         public void pollEvents()
@@ -249,7 +250,8 @@ namespace Controllers
             var arg = logItem.arg;
             if (arg is IDescribableEventArg describable)
             {
-                _logScrollView.LogInfoHorizantal.display();
+                var logInfoHori = _logScrollView.LogInfoHorizantal;
+                logInfoHori.display();
                 string info = lang._(describable.localizeTemplateString(_game, _localPlayer), describable.localizeStringArgs(_game, _localPlayer));
                 info = Regex.Replace(info, @"{card:(?<poolId>-?\d+),(?<id>-?\d+)}",
                     m =>
@@ -261,35 +263,35 @@ namespace Controllers
                         }
                         return "未知卡牌";
                     });
-                _logScrollView.LogInfoHorizantal.Text.text = info;
+                logInfoHori.Text.text = info;
                 if (describable.getCard(_game, _localPlayer) != null)
                 {
-                    _logScrollView.LogInfoHorizantal.InfoCard.display();
+                    logInfoHori.InfoCard.display();
                     CardDefine card = describable.getCard(_game, _localPlayer).define;
-                    await _logScrollView.LogInfoHorizantal.InfoCard.Card.setCardDefine(card, _main.card);
+                    await logInfoHori.InfoCard.Card.setCardDefine(card, _main.card);
                 }
                 else
-                    _logScrollView.LogInfoHorizantal.InfoCard.hide();
-                _logScrollView.LogInfoHorizantal.TargetGridList.clearItems();
+                    logInfoHori.InfoCard.hide();
+                logInfoHori.TargetGridList.clearItems();
                 if (describable.getTargets(_game, _localPlayer) != null && describable.getTargets(_game, _localPlayer).Length > 0)
                 {
-                    _logScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(true);
+                    logInfoHori.TargetGridList.gameObject.SetActive(true);
                     foreach (var target in describable.getTargets(_game, _localPlayer))
                     {
                         if (target == null)
                             continue;
-                        var targetItem = _logScrollView.LogInfoHorizantal.TargetGridList.addItem();
+                        var targetItem = logInfoHori.TargetGridList.addItem();
                         CardDefine card = target.define;
                         await targetItem.Card.setCardDefine(card, _main.card);
                     }
                 }
                 else
                 {
-                    _logScrollView.LogInfoHorizantal.TargetGridList.gameObject.SetActive(false);
+                    logInfoHori.TargetGridList.gameObject.SetActive(false);
                 }
-                LayoutRebuilder.ForceRebuildLayoutImmediate(_logScrollView.LogInfoHorizantal.TargetGridList.rectTransform);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(_logScrollView.LogInfoHorizantal.LogInfoVerticalVerticalLayoutGroup.GetComponent<RectTransform>());
-                LayoutRebuilder.ForceRebuildLayoutImmediate(_logScrollView.LogInfoHorizantal.rectTransform);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(logInfoHori.TargetGridList.rectTransform);
+                LayoutRebuilder.ForceRebuildLayoutImmediate(logInfoHori.LogInfoVerticalVerticalLayoutGroup.GetComponent<RectTransform>());
+                LayoutRebuilder.ForceRebuildLayoutImmediate(logInfoHori.rectTransform);
             }
         }
         void onLogListItemExit(LogListItem item)
@@ -338,6 +340,8 @@ namespace Controllers
         private const string GAME_MANAGER_DISCOVER = "发现";
         [TranslateMsg]
         private const string GAME_MANAGER_REVEAL_DUEL = "信仰对决";
+        [SerializeField]
+        private LogPanel _logPanel;
         [SerializeField]
         private LogScrollView _logScrollView;
         private MainManager _main;

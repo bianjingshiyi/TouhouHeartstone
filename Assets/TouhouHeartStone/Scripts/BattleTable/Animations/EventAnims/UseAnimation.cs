@@ -54,11 +54,6 @@ namespace Game.BattleTable
                 if (!isCanceled)
                 {
                     // 成功使用。
-                    HandItem item = table.getHand(_card);
-                    var moveAnim = new HandToFieldAnim(table, item, selfField, position);
-                    while (!moveAnim.update(table, _time))
-                        yield return null;
-                    // 不需要移除手牌，将使用随从的移除手牌转移至TryEnterFieldAnim。
 
                     // 播放目标被指向的动画。
                     var transform = table.transform;
@@ -67,31 +62,30 @@ namespace Game.BattleTable
                         transform = servant.transform;
                     }
                     yield return tryTargetedAnim(table, transform, record, arg);
-                    selfField.setEmptyServantSlot(-1);
                 }
                 else
                 {
                     // 被取消。
                     HandItem item = table.getHand(_card);
-                    selfField.setEmptyServantSlot(-1);
+                    selfField.setPreviewPosition(-1);
                     item.card.setVisible(true);
                     table.setCard(item.card, _card, true);
                     var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
 
-                    while (!moveAnim.update(table, _time))
+                    while (!moveAnim.update(table, _deltaTime))
                         yield return null;
                 }
             }
             else
             {
-                table.tryGetHand(_card, out var hand);
+                //table.tryGetHand(_card, out var hand);
 
-                yield return playEnemyUseCardAnim(table, hand, record);
+                //yield return playEnemyUseCardAnim(table, hand, record);
 
-                if (isCanceled)
-                {
-                    cancelEnemyUseCard(table, record);
-                }
+                //if (isCanceled)
+                //{
+                //    cancelEnemyUseCard(table, record);
+                //}
             }
         }
         #endregion
@@ -109,7 +103,7 @@ namespace Game.BattleTable
                     if (table.tryGetHand(_card.id, out var hand))
                     {
                         AnimAnim useAnim = null;
-                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _time))
+                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _deltaTime))
                             yield return null;
                         table.removeHand(_card);
                     }
@@ -122,7 +116,7 @@ namespace Game.BattleTable
                     item.card.setVisible(true);
                     table.setCard(item.card, _card, true);
                     var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
-                    while (!moveAnim.update(table, _time))
+                    while (!moveAnim.update(table, _deltaTime))
                         yield return null;
                 }
             }
@@ -180,7 +174,7 @@ namespace Game.BattleTable
                     if (table.tryGetHand(_card, out var hand))
                     {
                         AnimAnim useAnim = null;
-                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _time))
+                        while (!SimpleAnimHelper.update(table, ref useAnim, hand.onSelfUse, hand.animator, _deltaTime))
                             yield return null;
                         table.removeHand(_card);
                     }
@@ -192,7 +186,7 @@ namespace Game.BattleTable
                     item.card.setVisible(true);
                     table.setCard(item.card, _card, true);
                     var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
-                    while (!moveAnim.update(table, _time))
+                    while (!moveAnim.update(table, _deltaTime))
                         yield return null;
                 }
             }
@@ -224,7 +218,7 @@ namespace Game.BattleTable
                 hand.positionLerp.setStart();
                 hand.positionLerp.setTarget(table.table.SpellDisplayTransform);
                 AnimAnim useAnim = null;
-                while (!SimpleAnimHelper.update(table, ref useAnim, hand.onEnemyUse, hand.animator, _time))
+                while (!SimpleAnimHelper.update(table, ref useAnim, hand.onEnemyUse, hand.animator, _deltaTime))
                     yield return null;
                 table.removeHand(_card);
             }
@@ -270,7 +264,7 @@ namespace Game.BattleTable
                         table.createProjectile(loadProjectileTask.Result, source, target),
                         target);
 
-                    while (!targetedAnim.update(table, _time))
+                    while (!targetedAnim.update(table, _deltaTime))
                         yield return null;
                 }
                 else
@@ -291,7 +285,7 @@ namespace Game.BattleTable
                         throw new ActorNotFoundException(targetCard);
 
                     AnimAnim targetedAnim = null;
-                    while (!SimpleAnimHelper.update(table, ref targetedAnim, simpleAnim, animator, _time, next => false))
+                    while (!SimpleAnimHelper.update(table, ref targetedAnim, simpleAnim, animator, _deltaTime, next => false))
                         yield return null;
                 }
             }

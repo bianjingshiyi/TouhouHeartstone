@@ -4,7 +4,7 @@ namespace UI
 {
     partial class TipBox
     {
-        public void display(string msg, Vector2 position)
+        public void display(string msg, Vector3 position)
         {
             Text.text = msg;
             rectTransform.position = position;
@@ -12,7 +12,7 @@ namespace UI
             LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
         }
 
-        public void updatePos(Vector2 pos)
+        public void updatePos(Vector3 pos)
         {
             rectTransform.position = pos;
         }

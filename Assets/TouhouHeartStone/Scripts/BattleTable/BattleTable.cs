@@ -12,6 +12,8 @@ namespace Game.BattleTable
         {
             _selfField.updateField(deltaTime);
             _enemyField.updateField(deltaTime);
+            _selfHandList.updateHand(deltaTime);
+            _enemyHandList.updateHand(deltaTime);
         }
 
         public event Action<BattleTable, PointerEventData> onClickNoWhere;
@@ -43,6 +45,7 @@ namespace Game.BattleTable
         public Transform LeftDisplayTransform => _leftDisplayTransform;
         public Transform CenterDisplayTransform => _centerDisplayTransform;
         public Transform RightDisplayTransform => _rightDisplayTransform;
+        public Transform DisplayerCardsParent => _displayerCardsParent;
         public Fatigue Fatigue => _fatigue;
         public DiscoverDialog Discover => _discover;
         public AttackArrow AttackArrowImage => _attackArrow;
@@ -101,6 +104,8 @@ namespace Game.BattleTable
         private Transform _centerDisplayTransform;
         [SerializeField]
         private Transform _rightDisplayTransform;
+        [SerializeField]
+        private Transform _displayerCardsParent;
         [SerializeField]
         private Fatigue _fatigue;
         [SerializeField]

@@ -4,12 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using UnityEngine;
 
 namespace Game.BattleTable
 {
     [Serializable]
     public abstract class TableAnimation : UIAnimation
     {
+        protected float _deltaTime;
+        protected float _duration;
+        private Stack<IEnumerator> _coroutineStack;
+        private IEnumerator _coroutine;
+        private bool _finished = true;
         /// <summary>
         /// 该动画是否会强制播放之前的动画，以及自身。
         /// 一般用于检视卡牌这种需要等待玩家操作的事件。
@@ -18,73 +24,26 @@ namespace Game.BattleTable
         public virtual void init(BattleTableManager table)
         {
         }
-        public abstract bool update(BattleTableManager table, float time);
-    }
-    public abstract class EventAnimation : TableAnimation
-    {
-        public IEventArg eventArg { get; set; }
-        public EventRecord record { get; set; }
-        protected Stack<IEnumerator> _coroutineStack;
-        protected IEnumerator _coroutine;
-        protected float _time;
-        protected float _duration;
-        protected bool _finished = true;
-        public virtual void postEvent(BattleTableManager table)
+        public virtual bool update(BattleTableManager table, float time)
         {
-        }
-        public virtual EventAnimation clone()
-        {
-            return MemberwiseClone() as EventAnimation;
-        }
-        protected CardSnapshot snapshotCard(BattleTableManager table, Card card)
-        {
-            return table.game.snapshotCard(card);
-        }
-        protected CardSnapshot[] snapshotCardArray(BattleTableManager table, IEnumerable<Card> cards)
-        {
-            return cards.Select(c => table.game.snapshotCard(c)).ToArray();
-        }
-        protected void finish()
-        {
-            _finished = true;
-        }
-    }
-    [Serializable]
-    public abstract class EventAnimation<T> : EventAnimation where T : IEventArg
-    {
-        public T tEventArg => eventArg is T t ? t : default;
-        public sealed override void init(BattleTableManager table)
-        {
-            base.init(table);
-            init(table, tEventArg);
-        }
-        public sealed override void postEvent(BattleTableManager table)
-        {
-            base.postEvent(table);
-            postEvent(table, tEventArg);
-        }
-        public virtual void init(BattleTableManager table, T eventArg)
-        {
-        }
-        public virtual void postEvent(BattleTableManager table, T eventArg)
-        {
-        }
-        public sealed override bool update(BattleTableManager table, float time)
-        {
-            _time = time;
-            _duration += _time;
+            _deltaTime = time;
+            _duration += _deltaTime;
             if (_coroutine == null)
             {
                 _coroutineStack = _coroutineStack ?? new Stack<IEnumerator>();
                 _finished = false;
-                _coroutine = update(table, record, tEventArg);
+                _coroutine = update(table);
             }
             updateCoroutine();
             return _finished;
         }
-        public virtual IEnumerator update(BattleTableManager table, EventRecord record, T arg)
+        public virtual IEnumerator update(BattleTableManager table)
         {
             yield break;
+        }
+        protected void finish()
+        {
+            _finished = true;
         }
         private void updateCoroutine()
         {
@@ -109,6 +68,55 @@ namespace Game.BattleTable
             {
                 finish();
             }
+        }
+    }
+    public abstract class EventAnimation : TableAnimation
+    {
+        public IEventArg eventArg { get; set; }
+        public EventRecord record { get; set; }
+        public virtual void postEvent(BattleTableManager table)
+        {
+        }
+        public virtual EventAnimation clone()
+        {
+            return MemberwiseClone() as EventAnimation;
+        }
+        protected CardSnapshot snapshotCard(BattleTableManager table, Card card)
+        {
+            return table.game.snapshotCard(card);
+        }
+        protected CardSnapshot[] snapshotCardArray(BattleTableManager table, IEnumerable<Card> cards)
+        {
+            return cards.Select(c => table.game.snapshotCard(c)).ToArray();
+        }
+    }
+    [Serializable]
+    public abstract class EventAnimation<T> : EventAnimation where T : IEventArg
+    {
+        public T tEventArg => eventArg is T t ? t : default;
+        public sealed override void init(BattleTableManager table)
+        {
+            base.init(table);
+            init(table, tEventArg);
+        }
+        public sealed override void postEvent(BattleTableManager table)
+        {
+            base.postEvent(table);
+            postEvent(table, tEventArg);
+        }
+        public virtual void init(BattleTableManager table, T eventArg)
+        {
+        }
+        public virtual void postEvent(BattleTableManager table, T eventArg)
+        {
+        }
+        public sealed override IEnumerator update(BattleTableManager table)
+        {
+            return update(table, record, tEventArg);
+        }
+        public virtual IEnumerator update(BattleTableManager table, EventRecord record, T arg)
+        {
+            yield break;
         }
     }
 }

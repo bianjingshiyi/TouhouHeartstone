@@ -20,8 +20,12 @@ namespace Game.BattleTable
         #region 属性字段
         public string text
         {
-            get => _text.text;
-            set => _text.text = value;
+            get => _text?.text ?? string.Empty;
+            set 
+            {
+                if (_text) 
+                    _text.text = value;
+            }
         }
         [SerializeField]
         private TextMeshPro _text;

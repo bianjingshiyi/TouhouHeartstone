@@ -291,7 +291,8 @@ namespace Game.BattleTable
             item.isDraggable = selfHand;
             setCardDesc(item.card, desc, selfHand);
 
-            item.gameObject.name = desc.ToString();
+            var skin = cardManager.getCardSkin(desc.define);
+            item.gameObject.name = skin?.name ?? $"Card<{desc.id}>";
             cardHandDic.Add(desc.id, item);
             return item;
         }
@@ -409,7 +410,8 @@ namespace Game.BattleTable
                 servant = field.insertServant(position);
             }
             UberDebug.LogChannel(servant, "UI", "为" + desc + "创建" + servant);
-            servant.gameObject.name = desc.ToString();
+            var skin = cardManager.getCardSkin(desc.define);
+            servant.gameObject.name = skin?.name ?? $"Card<{desc.id}>";
             setServant(servant, desc);
             cardServantDic.Add(desc.id, servant);
             setCardControlDirty(desc.id);
@@ -722,7 +724,8 @@ namespace Game.BattleTable
         public UICard createCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createCard(updateCardDescriptor(card), position, height, isFaceUp);
         public UICard createCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
         {
-            var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.transform).GetComponent<UICard>();
+            var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.DisplayerCardsParent).GetComponent<UICard>();
+            card.transform.localEulerAngles = Vector3.zero;
             setCardDesc(card, desc, isFaceUp);
             if (height >= 0)
                 card.transform.localScale = Vector3.one * height / _cardHeight;
@@ -730,7 +733,8 @@ namespace Game.BattleTable
         }
         public UICard createCard(CardDefine define, Vector3 position, float height = -1, bool isFaceUp = true)
         {
-            var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.transform).GetComponent<UICard>();
+            var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.DisplayerCardsParent).GetComponent<UICard>();
+            card.transform.localEulerAngles = Vector3.zero;
             setCardDefine(card, define, isFaceUp);
             if (height >= 0)
                 card.transform.localScale = Vector3.one * height / _cardHeight;
@@ -802,11 +806,11 @@ namespace Game.BattleTable
             {
                 if (tryGetMaster(target, out var master))
                 {
-                    master.setHighlight(true);
+                    master.setHighlight(true, true);
                 }
                 else if (tryGetServant(target, out var servant))
                 {
-                    servant.setHighlight(true);
+                    servant.setHighlight(true, true);
                 }
             }
         }
@@ -815,16 +819,7 @@ namespace Game.BattleTable
         /// </summary>
         private void removeHighlights()
         {
-            table.SelfMaster.setHighlight(false);
-            table.EnemyMaster.setHighlight(false);
-            foreach (var servant in table.SelfField)
-            {
-                servant.setHighlight(false);
-            }
-            foreach (var servant in table.EnemyField)
-            {
-                servant.setHighlight(false);
-            }
+            updateAllControlable();
         }
 
         /// <summary>
@@ -886,10 +881,19 @@ namespace Game.BattleTable
         #region 私有方法
 
         #region 事件回调
-        void onTurnEndButtonClick()
+        private void onTurnEndClickCallback(TurnEndButton turnEndButton)
         {
+            sounds.PlaySE("Button");
             resetUse(true, true);
             player.cmdTurnEnd(game);
+        }
+        private void onTurnEndPointerEnterCallback(TurnEndButton turnEndButton)
+        {
+            turnEndButton.setHighlighted(true);
+        }
+        private void onTurnEndPointerExitCallback(TurnEndButton turnEndButton)
+        {
+            turnEndButton.setHighlighted(false);
         }
         void onClickNoWhere(BattleTable table, PointerEventData pointer)
         {
@@ -907,18 +911,37 @@ namespace Game.BattleTable
         {
             _showCardTimer.start();
             _hoveredItem = item;
-            _pointer = pointer;
         }
         #endregion 道具
 
         #region 手牌
+        private void onHandListBlockerClickCallback(HandList list)
+        {
+            if (list != table.SelfHandList) return;
+
+            if (list.isZoomIn)
+                list.zoomOut();
+        }
         private void onHandItemClickCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
+            if (list != table.SelfHandList) 
+                return;
 
+            Card card = getCard(hand);
+            if (usingCard == card)
+                return;
+
+            if (list.isZoomIn)
+                list.zoomOut();
+            else
+                list.zoomIn();
         }
         private void onHandItemBeginDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
+            if (!hand.isDraggable)
+                return;
 
+            list.ignoreAlignHand = hand;
         }
         private void onHandItemDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
@@ -938,15 +961,16 @@ namespace Game.BattleTable
             }
             usingCard = card;
             //拖拽卡片
-            hand.card.transform.position = pointer.position;
+            var pos = hand.transform.position;
+            pos.x = pointer.position.x;
+            pos.y = pointer.position.y;
+            hand.transform.position = pos;
             var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(pointer.position);
             if (table.SelfHandList.containsPosition(inverseTransPosition))
             {
-                //如果移动回手牌区域，恢复正常大小
-                hand.card.transform.localScale = Vector3.one;
                 //移除随从占位
                 if (usingCard.isServant())
-                    table.SelfField.setEmptyServantSlot(-1);
+                    table.SelfField.setPreviewPosition(-1);
             }
             else
             {
@@ -960,11 +984,10 @@ namespace Game.BattleTable
                 else
                 {
                     //手牌在战场上大小和随从牌一致
-                    hand.card.transform.localScale = Vector3.one * .4f / table.SelfHandList.transform.localScale.y;
                     if (usingCard.define.isServant())
                     {
                         //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
-                        table.SelfField.setEmptyServantSlot(calcIndexInField(pointer.position));
+                        table.SelfField.setPreviewPosition(calcIndexInField(pointer.position));
                     }
                     else if (usingCard.define.isSpell())
                     {
@@ -1005,6 +1028,7 @@ namespace Game.BattleTable
             {
                 //如果松开，取消使用
                 resetUse(true, true);
+                list.ignoreAlignHand = null;
             }
             else
             {
@@ -1013,17 +1037,18 @@ namespace Game.BattleTable
                     //卡牌不可用
                     showTip(info);
                     resetUse(true, true);
+                    list.ignoreAlignHand = null;
                 }
                 else if (usingCard.isServant())
                 {
                     //松开鼠标，确认使用随从牌
                     int index = calcIndexInField(pointer.position);
-                    table.SelfField.setEmptyServantSlot(index);
+                    table.SelfField.setPreviewPosition(-1);
                     if (usingCard.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
                     {
                         _usingPosition = index;
                         //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                        _servantPreviewAnim = new HandToFieldAnim(this, hand, table.SelfField, index);
+                        _servantPreviewAnim = new HandToFieldAnim(pointer.position, getCardDescriptor(usingCard), index);
                         isSelectingTarget = true;
                         highlightTargets(targets);
                         table.SelfHandList.zoomOut();
@@ -1054,6 +1079,7 @@ namespace Game.BattleTable
                                 showTip(info);
                                 resetUse(true, true);
                                 hand.card.setVisible(true);
+                                list.ignoreAlignHand = null;
                             }
                         }
                         else
@@ -1061,6 +1087,7 @@ namespace Game.BattleTable
                             cancelAttack();
                             resetUse(true, true);
                             hand.card.setVisible(true);
+                            list.ignoreAlignHand = null;
                         }
                     }
                     else
@@ -1102,12 +1129,8 @@ namespace Game.BattleTable
             if (!table.SelfHandList.isZoomIn &&
                 player.getHand().count > 0)
             {
-                ui.TipBox.display(lang._(TAB_CARD_NUMBER, getCard(hand).getOwner().getHand().count), pointer.position + _tipBoxOffset);
+                ui.TipBox.display(lang._(TAB_CARD_NUMBER, getCard(hand).getOwner().getHand().count), (Vector3)pointer.position + _tipBoxOffset);
             }
-        }
-        void onHandPointerMove(HandItem handList, Vector2 pointer)
-        {
-            ui.TipBox.updatePos(pointer);
         }
         private void onHandItemPointerExitCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
@@ -1298,11 +1321,7 @@ namespace Game.BattleTable
         private void onSkillPointerEnterCallback(Skill skill, PointerEventData pointer)
         {
             string desc = getSkin(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill()).desc;
-            ui.TipBox.display(desc, pointer.position + _tipBoxOffset);
-        }
-        private void onSkillPointerMove(Skill arg1, Vector2 pointer)
-        {
-            ui.TipBox.updatePos(pointer);
+            ui.TipBox.display(desc, (Vector3)pointer.position + _tipBoxOffset);
         }
         #endregion
 
@@ -1338,7 +1357,6 @@ namespace Game.BattleTable
         {
             _showCardTimer.start();
             _servant = servant;
-            _pointer = pointer;
             //displayLargeCard(pointer.position.x < Screen.width / 2, getCard(servant));
         }
         private void onServantPointerExitCallback(Servant servant, Field field, PointerEventData pointer)
@@ -1429,15 +1447,11 @@ namespace Game.BattleTable
             {
                 tip = lang._(self ? TAB_YOUR_NO_HAVE_CARD : TAB_OPPONENT_OUT_OF_CARDS);
             }
-            ui.TipBox.display(tip, pointer.position + _tipBoxOffset);
+            ui.TipBox.display(tip, (Vector3)pointer.position + _tipBoxOffset);
         }
         private void onDeckPointerExitCallback(Deck deck, PointerEventData pointer)
         {
             ui.TipBox.hide();
-        }
-        private void onDeckPointerMove(Deck arg1, Vector2 arg2)
-        {
-            ui.TipBox.updatePos(arg2);
         }
         #endregion
 
@@ -1461,7 +1475,7 @@ namespace Game.BattleTable
             string tip = curGrave.count > 0 ?
                 lang._(TAB_GRAVEYARD_HAS, curGrave.count) :
                 lang._(TAB_GRAVEYARD_NULL);
-            ui.TipBox.display(tip, pointer.position + _tipBoxOffset);
+            ui.TipBox.display(tip, (Vector3)pointer.position + _tipBoxOffset);
         }
         private void onGravePointerExitCallback(Deck deck, PointerEventData pointer)
         {
@@ -1540,12 +1554,18 @@ namespace Game.BattleTable
                 setCardDesc(usingHand.card, desc, true);
                 usingHand.card.transform.localScale = Vector3.one;
                 usingHand.card.transform.localPosition = Vector2.zero;
+
+                var handList = desc.getOwner() == player ? table.SelfHandList : table.EnemyHandList;
+                if (handList.ignoreAlignHand == usingHand)
+                {
+                    handList.ignoreAlignHand = null;
+                }
             }
             _servantPreviewAnim = null;
             usingCard = null;
             if (resetPlaceHolder)
             {
-                table.SelfField.setEmptyServantSlot(-1);
+                table.SelfField.setPreviewPosition(-1);
             }
             hideArrow();
             isSelectingTarget = false;
@@ -1622,10 +1642,11 @@ namespace Game.BattleTable
             {
                 updateCardControlable(player.getMaster());
                 updateCardControlable(player.getSkill());
-                foreach (Card servant in player.getField())
-                {
-                    updateCardControlable(servant);
-                }
+            }
+            foreach (var pair in cardServantDic)
+            {
+                var card = game.getCard(pair.Key);
+                updateCardControlable(card);
             }
         }
 
@@ -1633,30 +1654,37 @@ namespace Game.BattleTable
         {
             if (card == null)
                 return;
-            var owner = card.getOwner();
+            var desc = getCardDescriptor(card);
+            if (desc == null)
+                return;
+            var owner = desc.getOwner();
             bool highlight = owner == player && game.getCurrentPlayer() == player && canControl && !isSelectingTarget;
 
-            if (card.isMaster())
+            if (desc.isMaster())
             {
-                if (tryGetMaster(card.id, out Master master))
+                if (tryGetMaster(desc.id, out Master master))
                 {
-                    master.setHighlight(card.canAttack(game));
+                    bool usable = highlight && //是自己的回合
+                        card.canAttack(game);//可以攻击
+                    master.setHighlight(usable);
                 }
             }
-            else if (card.isSkill())
+            else if (desc.isSkill())
             {
-                if (tryGetSkill(card.id, out Skill skill))
+                if (tryGetSkill(desc.id, out Skill skill))
                 {
-                    bool skillUsable = highlight && //是自己的回合
+                    bool usable = highlight && //是自己的回合
                         card.isUsable(game, player, out _);//技能是可用的
-                    skill.setHighlight(skillUsable);
+                    skill.setHighlight(usable);
                 }
             }
-            else if (card.isServant())
+            else if (desc.isServant())
             {
-                if (tryGetServant(card.id, out Servant servant))
+                if (tryGetServant(desc.id, out Servant servant))
                 {
-                    servant.setHighlight(card.canAttack(game));
+                    bool usable = highlight && //是自己的回合
+                        card.canAttack(game);//可以攻击
+                    servant.setHighlight(usable);
                 }
             }
 
@@ -1727,13 +1755,13 @@ namespace Game.BattleTable
         [SerializeField]
         int _usingPosition = -1;
         [SerializeField]
-        Vector2 _tipBoxOffset = new Vector2(20, 20);
+        Vector3 _tipBoxOffset = new Vector3(20, 20, -20);
         [SerializeField]
-        float _servantAttackThreshold = 70;
+        float _servantAttackThreshold = 0.7f;
         [SerializeField]
-        float _masterAttackThreshold = 70;
+        float _masterAttackThreshold = 0.7f;
         [SerializeField]
-        float _cardHeight = 480;
+        float _cardHeight = 3;
         [SerializeField]
         int _maxBuffDisplayCount = 15;
         [SerializeField]
@@ -1747,7 +1775,6 @@ namespace Game.BattleTable
         [SerializeField]
         BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
         Servant _servant;
-        PointerEventData _pointer;
         Item _hoveredItem;
         /// <summary>
         /// 需要更新所有卡牌的可控绿光。

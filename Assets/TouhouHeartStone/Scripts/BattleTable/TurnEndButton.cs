@@ -1,6 +1,4 @@
 ﻿using System;
-using TMPro;
-using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,14 +9,15 @@ namespace Game.BattleTable
         #region 公有方法
         public void setHighlighted(bool highlighted)
         {
+            _clockRenderer.setSprite(highlighted ? _highlightSprite : _normalSprite);
         }
         public void setLongHandAngle(float angle)
         {
-            _longHandTrans.eulerAngles = Vector3.up * angle;
+            _longHandTrans.localEulerAngles = Vector3.down * angle;
         }
         public void setShortHandAngle(float angle)
         {
-            _shortHandTrans.eulerAngles = Vector3.up * angle;
+            _shortHandTrans.localEulerAngles = Vector3.down * angle;
         }
         public void setInteractable(bool interactable)
         {
@@ -62,7 +61,9 @@ namespace Game.BattleTable
         [SerializeField]
         private MeshRenderer _clockRenderer;
         [SerializeField]
-        private Texture _highlightTexture;
+        private Sprite _normalSprite;
+        [SerializeField]
+        private Sprite _highlightSprite;
         [SerializeField]
         private Transform _shortHandTrans;
         [SerializeField]

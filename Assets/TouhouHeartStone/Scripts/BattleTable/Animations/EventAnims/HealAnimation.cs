@@ -34,7 +34,7 @@ namespace Game.BattleTable
                 bool isAllAnimDone = true;
                 foreach (var anim in animList)
                 {
-                    if (!anim.update(table, _time))
+                    if (!anim.update(table, _deltaTime))
                         isAllAnimDone = false;
                 }
                 if (isAllAnimDone)

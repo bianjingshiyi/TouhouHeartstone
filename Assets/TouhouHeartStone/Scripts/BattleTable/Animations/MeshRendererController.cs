@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
 namespace Game.BattleTable
 {
@@ -6,40 +8,42 @@ namespace Game.BattleTable
     [RequireComponent(typeof(MeshRenderer))]
     public class MeshRendererController : MonoBehaviour
     {
-        public void setColor(string name, Color color)
+        private void Awake()
         {
-            meshRenderer.GetPropertyBlock(_propertyBlock);
-            _propertyBlock.SetColor(name, color);
-            meshRenderer.SetPropertyBlock(_propertyBlock);
-        }
-        public void setTexture(string name, Texture texture)
-        {
-            meshRenderer.GetPropertyBlock(_propertyBlock);
-            _propertyBlock.SetTexture(name, texture);
-            meshRenderer.SetPropertyBlock(_propertyBlock);
-        }
-        protected void Reset()
-        {
-            enabled = false;
+            _tmp = GetComponent<TextMeshPro>();
         }
         protected void Update()
         {
-            if (_propertyBlock != null)
+            Transform t = transform;
+            Color col = color;
+            while (t)
             {
-                meshRenderer.GetPropertyBlock(_propertyBlock);
-                _propertyBlock.SetColor("_Color", color);
-                meshRenderer.SetPropertyBlock(_propertyBlock);
+                t.GetComponents(_parentComponents);
+                foreach (var comp in _parentComponents)
+                {
+                    if (comp is MeshRendererGroup meshRendererGroup)
+                    {
+                        col *= meshRendererGroup.color;
+                    }
+                }
+                t = t.parent;
+            }
+            _parentComponents.Clear();
+            if (textMesh)
+            {
+                textMesh.color = col;
+            }
+            else
+            {
+                meshRenderer.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetColor("_Color", col);
+                meshRenderer.SetPropertyBlock(propertyBlock);
             }
         }
-        private void OnEnable()
-        {
-            _propertyBlock = new MaterialPropertyBlock();
-        }
-        private void OnDisable()
+        private void OnDestroy()
         {
             _propertyBlock = null;
         }
-
         [SerializeField]
         Texture _texture;
         [SerializeField]
@@ -49,6 +53,13 @@ namespace Game.BattleTable
         {
             get => _color;
             set => _color = value;
+        }
+        public TextMeshPro textMesh
+        {
+            get
+            {
+                return _tmp;
+            }
         }
         public MeshRenderer meshRenderer
         {
@@ -61,7 +72,20 @@ namespace Game.BattleTable
                 return _meshRenderer;
             }
         }
-        private MaterialPropertyBlock _propertyBlock;
+        public MaterialPropertyBlock propertyBlock
+        {
+            get
+            {
+                if (_propertyBlock == null)
+                {
+                    _propertyBlock = new MaterialPropertyBlock();
+                }
+                return _propertyBlock;
+            }
+        }
+        private TextMeshPro _tmp;
         private MeshRenderer _meshRenderer;
+        private MaterialPropertyBlock _propertyBlock;
+        private List<Component> _parentComponents = new List<Component>();
     }
 }

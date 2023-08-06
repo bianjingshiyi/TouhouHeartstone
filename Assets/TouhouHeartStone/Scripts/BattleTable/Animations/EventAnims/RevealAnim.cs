@@ -43,7 +43,7 @@ namespace Game.BattleTable
             //播放位移曲线动画到对应的位置
             Transform targetTrans = table.table.LeftDisplayTransform;
             TableAnimation animMove = new CardTransAnim(cardUI, targetTrans, targetTrans.localScale, table.cardShowCurve);
-            while (!animMove.update(table, _time))
+            while (!animMove.update(table, _deltaTime))
             {
                 yield return null;
             }
@@ -52,9 +52,9 @@ namespace Game.BattleTable
             //翻转揭示
             if (!startFaceUp)
             {
-                AnimAnim animFlipFace = new AnimAnim(cardUI.animator, cardUI.flipToFaceAnimName);
+                AnimAnim animFlipFace = new AnimAnim(cardUI.animator, cardUI.onFlipToFace.animName);
                 table.setCard(cardUI, _card);
-                while (!animFlipFace.update(table, _time))
+                while (!animFlipFace.update(table, _deltaTime))
                 {
                     yield return null;
                 }
@@ -63,7 +63,7 @@ namespace Game.BattleTable
 
             // 等待1秒。
             WaitAnim animWait = new WaitAnim(1);
-            while (!animWait.update(table, _time))
+            while (!animWait.update(table, _deltaTime))
             {
                 yield return null;
             }
@@ -73,8 +73,8 @@ namespace Game.BattleTable
             if (!startFaceUp)
             {
                 cardUI.animateFaceup(true);
-                AnimAnim animFlipBack = new AnimAnim(cardUI.animator, cardUI.flipToBackAnimName);
-                while (!animFlipBack.update(table, _time))
+                AnimAnim animFlipBack = new AnimAnim(cardUI.animator, cardUI.onFlipToBack.animName);
+                while (!animFlipBack.update(table, _deltaTime))
                 {
                     yield return null;
                 }
@@ -84,7 +84,7 @@ namespace Game.BattleTable
             targetTransform = getCardTargetTransfrom(table, record, arg);
             //放回去
             TableAnimation animMoveBack = new CardTransAnim(cardUI, targetTransform, startScale, table.cardShowCurve);
-            while (!animMoveBack.update(table, _time))
+            while (!animMoveBack.update(table, _deltaTime))
             {
                 yield return null;
             }

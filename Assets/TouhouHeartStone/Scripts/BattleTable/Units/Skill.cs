@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Policy;
 using TMPro;
 using UI;
 using UnityEngine;
@@ -23,9 +24,9 @@ namespace Game.BattleTable
             _closedRoot.SetActive(!open);
         }
 
-        public void setImageSprite(Sprite image)
+        public void setImageSprite(Sprite sprite)
         {
-            // TODO:_imageRenderer.SetTexture(image);
+            _imageRenderer.setTableImageSprite(sprite, propertyBlock);
         }
 
         #region 接口实现
@@ -81,5 +82,17 @@ namespace Game.BattleTable
         private PropertyNumber _costText;
         [SerializeField]
         private MeshRenderer _imageRenderer;
+        private MaterialPropertyBlock propertyBlock
+        {
+            get
+            {
+                if (_propertyBlock == null)
+                {
+                    _propertyBlock = new MaterialPropertyBlock();
+                }
+                return _propertyBlock;
+            }
+        }
+        private MaterialPropertyBlock _propertyBlock;
     }
 }

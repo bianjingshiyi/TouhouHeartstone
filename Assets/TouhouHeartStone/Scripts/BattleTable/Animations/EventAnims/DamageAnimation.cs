@@ -33,7 +33,7 @@ namespace Game.BattleTable
                 item.onLifeDown.invokeBeforeAnim();
                 anim = new AnimAnim(item.animator, item.onLifeDown.animName);
             }
-            while (anim != null && !anim.update(table, _time))
+            while (anim != null && !anim.update(table, _deltaTime))
                 yield return null;
 
             if (table.tryGetServant(target, out var animServant))

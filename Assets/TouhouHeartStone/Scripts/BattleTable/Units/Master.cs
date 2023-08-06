@@ -15,14 +15,14 @@ namespace Game.BattleTable
         {
 
         }
-        public void setHighlight(bool highlight)
+        public void setHighlight(bool highlight, bool yellow = false)
         {
-            _animator.SetBool("HighlightYellow", highlight);
+            _animator.SetBool("HighLightGreen", highlight && !yellow);
+            _animator.SetBool("HighLightYellow", highlight && yellow);
         }
         public void setAttackDisplay(bool display)
         {
             _animator.SetBool("ShowAttack", display);
-            _attackText.gameObject.SetActive(display);
         }
         public void setShackle(bool enabled)
         {
@@ -94,16 +94,14 @@ namespace Game.BattleTable
         }
         public void setImageSprite(Sprite sprite)
         {
-
+            _imageRenderer.setTableImageSprite(sprite, propertyBlock);
         }
         public void reset()
         {
             _positionLerp._time = 0.0f;
             _positionLerp.enabled = false;
-            transform.localPosition = new Vector3(0, 0, 0);
             transform.localScale = new Vector3(1, 1, 1);
             _healingImageObj.SetActive(false);
-            _imageRenderer.color = new Color(1, 1, 1, 1);
         }
         #endregion
 
@@ -173,7 +171,19 @@ namespace Game.BattleTable
         private List<Secret> _secretList = new List<Secret>();
 
         [SerializeField]
-        private MeshRendererController _imageRenderer;
+        private MeshRenderer _imageRenderer;
+        private MaterialPropertyBlock propertyBlock
+        {
+            get
+            {
+                if (_propertyBlock == null)
+                {
+                    _propertyBlock = new MaterialPropertyBlock();
+                }
+                return _propertyBlock;
+            }
+        }
+        private MaterialPropertyBlock _propertyBlock;
 
         #endregion
     }

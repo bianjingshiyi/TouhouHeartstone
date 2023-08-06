@@ -41,13 +41,13 @@ namespace Game.BattleTable
         {
             //不能将位置的更新放在LateUpdate中，LateUpdate中TargetTransform的位置与Update中的不同，可能与动画和Layout有关，此时处于没有计算Layout的状态。
             //也不能在Update中获取位置，然后在LateUpdate中更新位置，更新的位置仍然是错的。
-            if (targetTransofrm != null)
+            if (targetTransform != null)
             {
-                Vector3 targetPosition = Vector3.MoveTowards(targetTransofrm.position, _startPosition, _stopDistance);
+                Vector3 targetPosition = Vector3.MoveTowards(targetTransform.position, _startPosition, _stopDistance);
                 transform.position = Vector3.Lerp(_startPosition, targetPosition, _time);
             }
         }
-        public Transform targetTransofrm => _targetTransform;
+        public Transform targetTransform => _targetTransform;
         [Range(0, 1)]
         [SerializeField]
         public float _time;

@@ -9803,8 +9803,9 @@ MonoBehaviour:
   _SettingPage: {fileID: 1079336339}
   _Loading: {fileID: 276880609}
   _Dialog: {fileID: 915309858}
-  _game: {fileID: 0}
+  _game: {fileID: 1441166623}
   _debug: {fileID: 6930441576606399691}
+  _backgroundImage: {fileID: 773607382}
 --- !u!222 &1981269951
 CanvasRenderer:
   m_ObjectHideFlags: 0

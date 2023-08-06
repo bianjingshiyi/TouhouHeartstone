@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Policy;
 using TMPro;
 using UI;
 using UnityEngine;
@@ -36,7 +37,7 @@ namespace Game.BattleTable
 
         public void setImageSprite(Sprite image)
         {
-            // TODO:_imageRenderer.SetTexture(image);
+            _imageRenderer.setTableImageSprite(image, propertyBlock);
         }
 
         #region 事件回调
@@ -71,6 +72,18 @@ namespace Game.BattleTable
         private PropertyNumber _lifeText;
         [SerializeField]
         private MeshRenderer _imageRenderer;
+        private MaterialPropertyBlock propertyBlock
+        {
+            get
+            {
+                if (_propertyBlock == null)
+                {
+                    _propertyBlock = new MaterialPropertyBlock();
+                }
+                return _propertyBlock;
+            }
+        }
+        private MaterialPropertyBlock _propertyBlock;
         #endregion
     }
 }

@@ -32,8 +32,7 @@ namespace Game.BattleTable
         public event Action<Deck, PointerEventData> onPointerExit;
         #endregion
 
-        public SimpleAnim onFatigue;
         [SerializeField]
-        private float _cardHeight = 480;
+        private float _cardHeight = 3;
     }
 }

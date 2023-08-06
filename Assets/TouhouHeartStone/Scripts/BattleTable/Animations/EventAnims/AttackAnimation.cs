@@ -48,18 +48,18 @@ namespace Game.BattleTable
             if (attackObj && attackedObj)
             {
                 attackObj.positionLerp.setStart();
-                attackObj.positionLerp.setTarget(attackedObj.transform, 0.2f);
+                attackObj.positionLerp.setTarget(attackedObj.transform, 150);
             }
 
 
             if (attackObj && attackSimpleAnim != null)
             {
-                while (!SimpleAnimHelper.update(table, ref _attackAnim, attackSimpleAnim, attackObj.animator, _time))
+                while (!SimpleAnimHelper.update(table, ref _attackAnim, attackSimpleAnim, attackObj.animator, _deltaTime))
                     yield return null;
             }
             if (attackedObj && attackedSimpleAnim != null)
             {
-                while (!SimpleAnimHelper.update(table, ref _attackedAnim, attackedSimpleAnim, attackedObj.animator, _time))
+                while (!SimpleAnimHelper.update(table, ref _attackedAnim, attackedSimpleAnim, attackedObj.animator, _deltaTime))
                     yield return null;
             }
         }
