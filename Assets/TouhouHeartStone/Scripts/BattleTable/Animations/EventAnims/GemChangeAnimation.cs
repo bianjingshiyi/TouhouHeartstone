@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using UI;
 namespace Game.BattleTable
 {
     using Arg = HearthStoneRule.SetGemEventArg;

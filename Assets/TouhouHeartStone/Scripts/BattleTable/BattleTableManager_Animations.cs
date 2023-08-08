@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using TouhouHeartstone;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using TouhouCardEngine.Interfaces;
 using System.Reflection;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
+using UnityEngine;
 namespace Game.BattleTable
 {
     partial class BattleTableManager
@@ -127,7 +127,7 @@ namespace Game.BattleTable
             for (int i = _animationCache.Count - 1; i >= 0; i--)
             {
                 var anim = _animationCache[i];
-                if (anim is TableAnimation tableAnim && tableAnim.forceQueueAnimations) 
+                if (anim is TableAnimation tableAnim && tableAnim.forceQueueAnimations)
                 {
                     canAddToQueue = true;
                 }

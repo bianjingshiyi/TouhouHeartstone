@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;

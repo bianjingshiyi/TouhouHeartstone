@@ -18,10 +18,13 @@ namespace Game.BattleTable
 
         public SimpleAnim onFatigue;
         public Animator animator => _animator;
+        public PositionLerp positionLerp => _positionLerp;
         [TranslateMsg("疲劳描述（{0}为疲劳伤害）")]
         private const string GAME_FATIGUE_DESC = "没有牌了，你受到了{0}点伤害！";
         [SerializeField]
         private Animator _animator;
+        [SerializeField]
+        private PositionLerp _positionLerp;
         [SerializeField]
         private TextMeshPro _desc;
     }

@@ -1,7 +1,6 @@
 ﻿using System;
 using Boo.Lang;
 using TMPro;
-using TouhouCardEngine;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;

@@ -2,10 +2,11 @@
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
-using Card = UI.Card;
+
 namespace Game.BattleTable
 {
     using Arg = HearthStoneRule.ChooseOneEventArg;
+
     public class ChooseOneAnim : EventAnimation<Arg>
     {
         public override bool forceQueueAnimations => true;
@@ -21,15 +22,12 @@ namespace Game.BattleTable
 
             table.setOpponentWaiting(true);
 
-            while (!record.isCompleted)
-                yield return null;
+            yield return pauseWhileNotCompleted();
 
             table.setOpponentWaiting(false);
 
-            if (record.isCanceled)
-            {
-                yield break;
-            }
+            yield return stopWhenCanceled();
+
             var choose = table.getRecordCardSnapshot(record, EVENTVAR.CHOSEN_CARD);
 
             var isShow = arg.isShow;
@@ -57,5 +55,4 @@ namespace Game.BattleTable
             return base.blockAnim(nextAnim);
         }
     }
-
 }

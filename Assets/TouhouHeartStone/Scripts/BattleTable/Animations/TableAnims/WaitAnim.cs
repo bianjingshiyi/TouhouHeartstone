@@ -1,5 +1,4 @@
-﻿using UI;
-using BJSYGameCore;
+﻿using BJSYGameCore;
 
 namespace Game.BattleTable
 {

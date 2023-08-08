@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using TMPro;
+﻿using TMPro;
 using UI;
 using UnityEngine;
 
@@ -34,7 +33,7 @@ namespace Game.BattleTable
         {
             get => _text.text;
             set => _text.text = value;
-        } 
+        }
     }
 
     public enum PropertyNumberColor

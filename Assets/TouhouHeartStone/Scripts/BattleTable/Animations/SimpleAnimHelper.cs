@@ -1,6 +1,6 @@
-﻿using UI;
+﻿using System;
+using UI;
 using UnityEngine;
-using System;
 namespace Game.BattleTable
 {
     static class SimpleAnimHelper

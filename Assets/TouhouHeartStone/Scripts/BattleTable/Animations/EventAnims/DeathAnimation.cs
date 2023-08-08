@@ -1,7 +1,6 @@
-﻿using TouhouHeartstone;
-using UI;
+﻿using System.Collections;
 using TouhouCardEngine;
-using System.Collections;
+using TouhouHeartstone;
 
 namespace Game.BattleTable
 {

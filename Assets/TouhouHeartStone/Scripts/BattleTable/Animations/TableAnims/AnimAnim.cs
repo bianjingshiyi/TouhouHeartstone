@@ -1,6 +1,5 @@
-﻿using UI;
+﻿using System;
 using UnityEngine;
-using System;
 namespace Game.BattleTable
 {
     class AnimAnim : TableAnimation

@@ -21,9 +21,9 @@ namespace Game.BattleTable
         public string text
         {
             get => _text?.text ?? string.Empty;
-            set 
+            set
             {
-                if (_text) 
+                if (_text)
                     _text.text = value;
             }
         }

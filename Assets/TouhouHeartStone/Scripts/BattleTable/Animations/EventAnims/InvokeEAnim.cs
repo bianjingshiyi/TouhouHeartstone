@@ -1,8 +1,8 @@
-﻿using TouhouCardEngine;
+﻿using System.Collections;
+using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
 using UObject = UnityEngine.Object;
-using System.Collections;
 
 namespace Game.BattleTable
 {
@@ -27,12 +27,12 @@ namespace Game.BattleTable
             if (youCard != null)
             {
                 targetDeck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
-                cardUISelf = table.createInvokeCard(youCard, targetDeck.transform.position, targetDeck.getCardHeight(), false);
+                cardUISelf = table.createInvokeCard(youCard, targetDeck.HoverTransform.position, targetDeck.getCardHeight(), false);
             }
             if (oppoCard != null)
             {
                 targetDeck = player == table.player ? table.table.EnemyDeck : table.table.SelfDeck;
-                cardUIOppo = table.createInvokeCard(oppoCard, targetDeck.transform.position, targetDeck.getCardHeight(), false);
+                cardUIOppo = table.createInvokeCard(oppoCard, targetDeck.HoverTransform.position, targetDeck.getCardHeight(), false);
             }
 
             //播放位移曲线动画到对应的位置
@@ -96,12 +96,12 @@ namespace Game.BattleTable
             if (cardUISelf)
             {
                 targetDeck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
-                animMoveBackSelf = new CardTransAnim(cardUISelf, targetDeck.transform, Vector3.one * targetDeck.getCardHeight() / cardUISelf.height, table.cardShowCurve);
+                animMoveBackSelf = new CardTransAnim(cardUISelf, targetDeck.HoverTransform, Vector3.one * targetDeck.getCardHeight() / cardUISelf.height, table.cardShowCurve);
             }
             if (cardUIOppo)
             {
                 targetDeck = player == table.player ? table.table.EnemyDeck : table.table.SelfDeck;
-                animMoveBackOppo = new CardTransAnim(cardUIOppo, targetDeck.transform, Vector3.one * targetDeck.getCardHeight() / cardUIOppo.height, table.cardShowCurve);
+                animMoveBackOppo = new CardTransAnim(cardUIOppo, targetDeck.HoverTransform, Vector3.one * targetDeck.getCardHeight() / cardUIOppo.height, table.cardShowCurve);
             }
             while (AnimHelper.isAnyAnimUpdating(table, _deltaTime, animMoveBackSelf, animMoveBackOppo))
                 yield return null;

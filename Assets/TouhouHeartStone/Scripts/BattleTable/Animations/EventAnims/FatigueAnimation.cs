@@ -1,7 +1,6 @@
-﻿using TouhouHeartstone;
-using UI;
+﻿using System.Collections;
 using TouhouCardEngine;
-using System.Collections;
+using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
@@ -12,8 +11,7 @@ namespace Game.BattleTable
 
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
-            if (record.isCanceled)
-                yield break;
+            yield return stopWhenCanceled();
 
             var player = arg.player;
             var damage = arg.damage;
@@ -21,8 +19,9 @@ namespace Game.BattleTable
             var fatigue = table.table.Fatigue;
             fatigue.setDamage(damage, table.lang);
             var deck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
-            fatigue.transform.position = deck.transform.position;
+            fatigue.transform.position = deck.HoverTransform.position;
             fatigue.setActive(true);
+            fatigue.positionLerp.setStart();
             _anim = new AnimAnim(fatigue.animator, fatigue.onFatigue.animName);
             while (!_anim.update(table, _deltaTime))
                 yield return null;

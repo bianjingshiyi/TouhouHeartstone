@@ -7,18 +7,17 @@ using Timer = BJSYGameCore.Timer;
 namespace Game.BattleTable
 {
     using Arg = HearthStoneRule.BurnEventArg;
-    class BurnAnimation : EventAnimation<Arg>
+
+    internal class BurnAnimation : EventAnimation<Arg>
     {
-        Timer _timer = new Timer() { duration = .2f };
+        private Timer _timer = new Timer() { duration = .2f };
 
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
             yield break; // 以MoveCardAnim暂时代替
 
-            while (!record.isCompleted)
-                yield return null;
-            if (record.isCanceled)
-                yield break;
+            yield return pauseWhileNotCompleted();
+            yield return stopWhenCanceled();
 
             var player = arg.player;
             var card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
@@ -26,11 +25,11 @@ namespace Game.BattleTable
             var deck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
             var grave = player == table.player ? table.table.SelfGrave : table.table.EnemyGrave;
 
-            var cardItem = table.createCard(card, deck.transform.position, -1, true);
+            var cardItem = table.createCard(card, deck.HoverTransform.position, -1, true);
             _timer.start();
             while (!_timer.isExpired())
             {
-                cardItem.transform.position = Vector3.Lerp(deck.transform.position, grave.transform.position, _timer.progress);
+                cardItem.transform.position = Vector3.Lerp(deck.HoverTransform.position, grave.HoverTransform.position, _timer.progress);
                 yield return null;
             }
             Object.Destroy(cardItem.gameObject);

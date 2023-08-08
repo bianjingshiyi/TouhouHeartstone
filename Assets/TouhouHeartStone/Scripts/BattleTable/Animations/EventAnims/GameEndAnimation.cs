@@ -2,7 +2,6 @@
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using UI;
 
 namespace Game.BattleTable
 {

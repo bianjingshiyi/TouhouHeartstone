@@ -175,6 +175,8 @@ namespace Game.BattleTable
             ui.InitReplaceDialog.onItemClicked += onMulliganItemClickCallback;
             ui.InitReplaceDialog.onAccept += onMulliganAcceptCallback;
 
+            ui.PilePanel.onCloseButtonClicked += onClosePilePanelClickCallback;
+
             loadAnim(GetType().Assembly);
         }
         void Update()
@@ -325,6 +327,12 @@ namespace Game.BattleTable
             table.Discover.setHideButtonText(table.Discover.isShowing ? lang._(TAB_SHOW) : lang._(TAB_HIDE));
         }
         #endregion
+        #region 牌堆查看
+        private void onClosePilePanelClickCallback()
+        {
+            ui.PilePanel.setActive(false);
+        }
+        #endregion
         void onRequestHandler(IRequest request)
         {
             eventCache.cache(onRequest, request);
@@ -382,7 +390,7 @@ namespace Game.BattleTable
         /// <param name="arg"></param>
         private void onEventBefore(IEventArg arg)
         {
-           UIAnimation anim = getEventAnim(arg);
+            UIAnimation anim = getEventAnim(arg);
             if (anim != null)
                 addAnim(anim);
             _allControlDirty = true;

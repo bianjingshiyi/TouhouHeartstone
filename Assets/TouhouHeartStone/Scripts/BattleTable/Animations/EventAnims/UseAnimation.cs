@@ -1,11 +1,10 @@
 ﻿using System.Collections;
-using BJSYGameCore;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
+using ActorNotFoundException = UI.ActorNotFoundException;
 using CardSkinData = UI.CardSkinData;
 using SimpleAnim = UI.SimpleAnim;
-using ActorNotFoundException = UI.ActorNotFoundException;
 
 namespace Game.BattleTable
 {
@@ -15,10 +14,7 @@ namespace Game.BattleTable
         CardSnapshot _card;
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
-            while (!record.isCompleted)
-            {
-                yield return null;
-            }
+            yield return pauseWhileNotCompleted();
             yield return updateCard(table, record, arg);
         }
         private IEnumerator updateCard(BattleTableManager table, EventRecord record, Arg arg)
@@ -293,10 +289,6 @@ namespace Game.BattleTable
 
         public override bool blockAnim(UIAnimation nextAnim)
         {
-            if (!record.isCompleted)
-            {
-                return false;
-            }
             return base.blockAnim(nextAnim);
         }
     }

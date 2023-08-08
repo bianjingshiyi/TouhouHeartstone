@@ -3,7 +3,6 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
 using UObject = UnityEngine.Object;
-using Card = UI.Card;
 
 namespace Game.BattleTable
 {
@@ -112,7 +111,7 @@ namespace Game.BattleTable
             {
                 if (pile.name == PILE.DECK)
                 {
-                    trans = (player == table.player ? table.table.SelfDeck : table.table.EnemyDeck).transform;
+                    trans = (player == table.player ? table.table.SelfDeck : table.table.EnemyDeck).HoverTransform;
                 }
                 else if (pile.name == PILE.HAND)
                 {
@@ -127,7 +126,7 @@ namespace Game.BattleTable
                 }
                 else if (pile.name == PILE.GRAVE)
                 {
-                    trans = (player == table.player ? table.table.SelfGrave : table.table.EnemyGrave).transform;
+                    trans = (player == table.player ? table.table.SelfGrave : table.table.EnemyGrave).HoverTransform;
                 }
             }
             return trans;

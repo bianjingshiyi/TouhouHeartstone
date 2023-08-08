@@ -1,8 +1,6 @@
 ﻿using System.Collections;
-using BJSYGameCore.UI;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using UI;
 
 namespace Game.BattleTable
 {

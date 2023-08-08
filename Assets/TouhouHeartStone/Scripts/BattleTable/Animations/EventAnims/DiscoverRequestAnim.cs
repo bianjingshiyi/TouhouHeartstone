@@ -14,7 +14,7 @@ namespace Game.BattleTable
                 else
                     table.displayDiscoverDialog(request.cardIdArray, request.title);
             }
-            if (table.table.Discover.isShowing)
+            if (table.table.Discover.IsActive())
                 return false;
             return true;
         }

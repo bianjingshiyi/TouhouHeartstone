@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.XR;
 
 namespace Game.BattleTable
 {
@@ -147,7 +146,7 @@ namespace Game.BattleTable
             for (int i = 0; i < _servantList.Count; i++)
             {
                 // 空白位置。
-                for (int holderIndex = 0; holderIndex < _placeHolders.Count; holderIndex++ )
+                for (int holderIndex = 0; holderIndex < _placeHolders.Count; holderIndex++)
                 {
                     int placePos = _placeHolderPositions[holderIndex];
                     if (placePos == i)

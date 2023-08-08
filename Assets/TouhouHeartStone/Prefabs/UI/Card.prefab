@@ -719,6 +719,7 @@ MonoBehaviour:
             m_StringArgument: isShow
             m_BoolArgument: 0
           m_CallState: 2
+  _is_MASTER: 0
 --- !u!95 &613913946243370178
 Animator:
   serializedVersion: 3

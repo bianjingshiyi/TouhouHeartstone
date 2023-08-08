@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using UI;
 using UnityEngine;
 
 namespace Game.BattleTable

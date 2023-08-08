@@ -1,7 +1,7 @@
-﻿using BJSYGameCore;
-using UnityEngine;
+﻿using System;
 using System.Linq;
-using System;
+using BJSYGameCore;
+using UnityEngine;
 namespace Game.BattleTable
 {
     [Serializable]

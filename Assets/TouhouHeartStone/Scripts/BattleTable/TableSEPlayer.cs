@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using BJSYGameCore;
+﻿using BJSYGameCore;
+using UnityEngine;
 
 namespace Game.BattleTable
 {

@@ -1,6 +1,4 @@
-﻿using UI;
-using UnityEngine;
-using UnityEngine.Networking.Types;
+﻿using UnityEngine;
 
 namespace Game.BattleTable
 {

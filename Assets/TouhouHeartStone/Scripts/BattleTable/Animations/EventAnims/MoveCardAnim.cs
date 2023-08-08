@@ -3,12 +3,10 @@ using System.Collections;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 using UDeck = Game.BattleTable.Deck;
 namespace Game.BattleTable
 {
-    using static UnityEditor.PlayerSettings;
     using Arg = Pile.MoveCardEventArg;
     class MoveCardAnim : EventAnimation<Arg>
     {
@@ -35,10 +33,8 @@ namespace Game.BattleTable
         }
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
-            while (!record.isCompleted)
-                yield return null;
-            if (record.isCanceled)
-                yield break;
+            yield return pauseWhileNotCompleted();
+            yield return stopWhenCanceled();
 
 
             _from = arg.from;
@@ -97,7 +93,7 @@ namespace Game.BattleTable
             }
             bool fromSelf = _from == table.player.getDeck();
             UDeck deck = fromSelf ? table.table.SelfDeck : table.table.EnemyDeck;
-            Transform deckTransform = deck.transform;
+            Transform deckTransform = deck.HoverTransform;
 
             Vector3 startPos = deckTransform.position;
             float startHeight = deck.getCardHeight();
@@ -133,7 +129,7 @@ namespace Game.BattleTable
             }
             bool fromSelf = _from == table.player.getGrave();
             UDeck grave = fromSelf ? table.table.SelfGrave : table.table.EnemyGrave;
-            Transform graveTransform = grave.transform;
+            Transform graveTransform = grave.HoverTransform;
 
             Vector3 startPos = graveTransform.position;
             float startHeight = grave.getCardHeight();
@@ -181,6 +177,10 @@ namespace Game.BattleTable
         private IEnumerator moveFromItem(BattleTableManager table, Arg arg)
         {
             string toName = _to?.name;
+            if (toName == PILE.GRAVE && arg.parent is THHCard.DeathEventArg) // 阻止摧毁后播放置入墓地的动画
+            {
+                yield break;
+            }
             bool fromSelf = _from?.owner == table.player;
 
             var item = fromSelf ? table.table.SelfItem : table.table.EnemyItem;
@@ -192,10 +192,6 @@ namespace Game.BattleTable
                 table.removeItem(_card);
             }
 
-            if (toName == PILE.GRAVE && arg.parent is THHCard.DeathEventArg) // 阻止摧毁后播放置入墓地的动画
-            {
-                yield break;
-            }
             yield return moveToAnim(table, startPos, startHeight);
             updateItemMaster(table);
         }
@@ -251,9 +247,8 @@ namespace Game.BattleTable
                 case PILE.DECK: // 任意牌堆-->牌库
                     {
                         var deck = toSelf ? table.table.SelfDeck : table.table.EnemyDeck;
-                        var targetTransform = deck.transform;
-                        var targetSize = deck.getCardHeight() * deck.transform.lossyScale;
-                        yield return createCardToDeck(table, _card, startPos, targetTransform, targetSize, startHeight, known);
+                        var targetTransform = deck.HoverTransform;
+                        yield return createCardToDeck(table, _card, startPos, targetTransform, deck.getCardHeight(), startHeight, known);
                     }
                     break;
                 case PILE.HAND: // 任意牌堆-->手牌
@@ -271,9 +266,8 @@ namespace Game.BattleTable
                 case PILE.GRAVE: // 任意牌堆-->墓地
                     {
                         var targetGrave = toSelf ? table.table.SelfGrave : table.table.EnemyGrave;
-                        var targetTransform = targetGrave.transform;
-                        var targetSize = targetGrave.getCardHeight() * targetGrave.transform.lossyScale;
-                        yield return createCardToDeck(table, _card, startPos, targetTransform, targetSize, startHeight, known);
+                        var targetTransform = targetGrave.HoverTransform;
+                        yield return createCardToDeck(table, _card, startPos, targetTransform, targetGrave.getCardHeight(), startHeight, known);
                     }
                     break;
             }
@@ -359,12 +353,13 @@ namespace Game.BattleTable
             }
         }
         #endregion
-        private IEnumerator createCardToDeck(BattleTableManager table, CardSnapshot card, Vector3 startPos, Transform target, Vector3 targetSize, float startHeight = -1, bool isFaceUp = true)
+        private IEnumerator createCardToDeck(BattleTableManager table, CardSnapshot card, Vector3 startPos, Transform target, float targetHeight, float startHeight = -1, bool isFaceUp = true)
         {
             //创建卡牌
             var cardUI = table.createCard(card, startPos, startHeight, isFaceUp);
             //播放动画
-            var anim = new CardTransAnim(cardUI, target, targetSize / (cardUI.height * cardUI.transform.lossyScale.y), table.fieldToDeckCurve);
+            var targetLocalScale = Vector3.one * (targetHeight / cardUI.height);
+            var anim = new CardTransAnim(cardUI, target, targetLocalScale, table.fieldToDeckCurve);
             table.sounds.playSE(table.table.playCardSound);
             while (!anim.update(table, _deltaTime))//没放完动画就让它接着放
                 yield return null;
@@ -372,7 +367,7 @@ namespace Game.BattleTable
             Object.Destroy(cardUI.gameObject);
             //放完了
         }
-        
+
 
         void updateItemMaster(BattleTableManager table)
         {

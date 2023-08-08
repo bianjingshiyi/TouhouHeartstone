@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 
 namespace Game.BattleTable
 {
@@ -153,7 +151,7 @@ namespace Game.BattleTable
             var width = count * singleWidth;
             float startX = width * pivotX - singleWidth * 0.5f;
             float x = startX - singleWidth * position;
-            return  new Vector3(x, position * _cardThickness, 0);
+            return new Vector3(x, position * _cardThickness, 0);
         }
 
         #endregion

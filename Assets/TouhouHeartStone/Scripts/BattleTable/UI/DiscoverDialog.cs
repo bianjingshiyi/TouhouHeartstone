@@ -13,6 +13,10 @@ namespace Game.BattleTable
             gameObject.SetActive(active);
             isShowing = true;
         }
+        public bool IsActive()
+        {
+            return gameObject.activeSelf;
+        }
         public void setHideButtonText(string text)
         {
             _hideButtonText.text = text;
@@ -24,7 +28,7 @@ namespace Game.BattleTable
         public DiscoverItem addChoice()
         {
             var choice = Instantiate(_choiceTemplate, _choiceRoot).GetComponent<DiscoverItem>();
-            choice.gameObject.SetActive(false);
+            choice.gameObject.SetActive(true);
             _choices.Add(choice);
             choice.onClick += onItemClickCallback;
             return choice;

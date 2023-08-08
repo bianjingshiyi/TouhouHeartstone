@@ -12,10 +12,8 @@ namespace Game.BattleTable
         AnimAnim _attackedAnim;
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
-            while (!record.isCompleted)
-                yield return null;
-            if (record.isCanceled)
-                yield break;
+            yield return pauseWhileNotCompleted();
+            yield return stopWhenCanceled();
 
             var card = arg.card;
             var target = arg.target;

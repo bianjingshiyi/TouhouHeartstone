@@ -1,6 +1,6 @@
-﻿using TouhouHeartstone;
+﻿using System.Collections;
 using TouhouCardEngine;
-using System.Collections;
+using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
@@ -9,10 +9,8 @@ namespace Game.BattleTable
     {
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
-            while (!record.isCompleted)
-                yield return null;
-            if (record.isCanceled)
-                yield break;
+            yield return pauseWhileNotCompleted();
+            yield return stopWhenCanceled();
 
             var target = arg.target;
             var damagedValue = arg.damagedValue;

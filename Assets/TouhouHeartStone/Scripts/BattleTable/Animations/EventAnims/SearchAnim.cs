@@ -1,13 +1,10 @@
 ﻿using System.Collections;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using UI;
 using UnityEngine;
-using Card = UI.Card;
 
 namespace Game.BattleTable
 {
-    using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
     using Arg = HearthStoneRule.SearchPileEventArg;
     public class SearchAnim : EventAnimation<Arg>
     {
@@ -24,15 +21,12 @@ namespace Game.BattleTable
 
             table.setOpponentWaiting(true);
 
-            while (!record.isCompleted)
-                yield return null;
+            yield return pauseWhileNotCompleted();
 
             table.setOpponentWaiting(false);
 
-            if (record.isCanceled)
-            {
-                yield break;
-            }
+            yield return stopWhenCanceled();
+
             var searched = table.getRecordCardSnapshot(record, EVENTVAR.CHOSEN_CARD);
 
             TableCard searchedUI = null;

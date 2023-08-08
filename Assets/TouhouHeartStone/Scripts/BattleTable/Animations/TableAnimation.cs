@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using UnityEngine;
 
 namespace Game.BattleTable
 {
@@ -43,12 +42,16 @@ namespace Game.BattleTable
         }
         protected void finish()
         {
+            _coroutineStack.Clear();
             _finished = true;
         }
         private void updateCoroutine()
         {
             while (_coroutine.MoveNext())
             {
+                if (_finished)
+                    return;
+
                 var result = _coroutine.Current;
                 if (result is IEnumerator enumerator)
                 {
@@ -80,6 +83,24 @@ namespace Game.BattleTable
         public virtual EventAnimation clone()
         {
             return MemberwiseClone() as EventAnimation;
+        }
+        public override bool blockAnim(UIAnimation nextAnim)
+        {
+            if (!record.isCompleted)
+                return false;
+            return base.blockAnim(nextAnim);
+        }
+        protected IEnumerator pauseWhileNotCompleted()
+        {
+            while (!record.isCompleted)
+                yield return null;
+            yield break;
+        }
+        protected IEnumerator stopWhenCanceled()
+        {
+            if (record.isCanceled)
+                finish();
+            yield break;
         }
         protected CardSnapshot snapshotCard(BattleTableManager table, Card card)
         {

@@ -10,7 +10,7 @@ namespace Game.BattleTable
         public void setHovered(bool hovered)
         {
             _animator.SetBool("Show", hovered);
-        }    
+        }
         public void destroy()
         {
             Destroy(gameObject);

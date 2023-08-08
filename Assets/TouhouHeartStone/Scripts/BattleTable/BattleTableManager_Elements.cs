@@ -924,7 +924,7 @@ namespace Game.BattleTable
         }
         private void onHandItemClickCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
-            if (list != table.SelfHandList) 
+            if (list != table.SelfHandList)
                 return;
 
             Card card = getCard(hand);
@@ -1643,9 +1643,9 @@ namespace Game.BattleTable
                 updateCardControlable(player.getMaster());
                 updateCardControlable(player.getSkill());
             }
-            foreach (var pair in cardServantDic)
+            foreach (var id in cardServantDic.Keys.ToArray())
             {
-                var card = game.getCard(pair.Key);
+                var card = game.getCard(id);
                 updateCardControlable(card);
             }
         }

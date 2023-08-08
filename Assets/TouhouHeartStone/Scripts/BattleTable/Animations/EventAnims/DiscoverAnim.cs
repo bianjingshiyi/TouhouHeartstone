@@ -1,13 +1,10 @@
-﻿using UnityEngine;
-using TouhouHeartstone;
-using UI;
-using Card = UI.Card;
+﻿using System.Collections;
 using TouhouCardEngine;
-using System.Collections;
+using TouhouHeartstone;
+using UnityEngine;
 
 namespace Game.BattleTable
 {
-    using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
     using Arg = THHPlayer.DiscoverEventArg;
     public class DiscoverAnim : EventAnimation<Arg>
     {
@@ -25,15 +22,12 @@ namespace Game.BattleTable
 
             table.setOpponentWaiting(true);
 
-            while (!record.isCompleted)
-                yield return null;
+            yield return pauseWhileNotCompleted();
 
             table.setOpponentWaiting(false);
 
-            if (record.isCanceled)
-            {
-                yield break;
-            }
+            yield return stopWhenCanceled();
+
             var discovered = table.getRecordCardSnapshot(record, EVENTVAR.CHOSEN_CARD);
 
             TableCard discoveredUI = null;
