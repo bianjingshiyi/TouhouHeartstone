@@ -856,27 +856,6 @@ namespace Game.BattleTable
         }
 
 
-        public bool tryGetTranslatedTag(string tag, out string text)
-        {
-            if (_translateTagDic == null)
-            {
-                _translateTagDic = new Dictionary<string, string>();
-                var T = typeof(TranslateTags);
-                FieldInfo[] fields = T.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance);
-                for (int i = 0; i < fields.Length; i++)
-                {
-                    _translateTagDic.Add(fields[i].Name, fields[i].GetValue(null).ToString());
-                    //Debug.Log("这里是字典结果" + fields[i].Name + fields[i].GetValue(null).ToString());
-                }
-            }
-            if (_translateTagDic.TryGetValue(tag, out string translatedTag))
-            {
-                text = lang._(translatedTag);
-                return true;
-            }
-            text = null;
-            return false;
-        }
         #endregion
         #region 私有方法
 
@@ -1751,7 +1730,6 @@ namespace Game.BattleTable
         private Dictionary<int, MulliganCardItem> initDic = new Dictionary<int, MulliganCardItem>();
         private CardDescriptor _selfItemDesc;
         private CardDescriptor _enemyItemDesc;
-        private static Dictionary<string, string> _translateTagDic;
         [SerializeField]
         int _usingPosition = -1;
         [SerializeField]

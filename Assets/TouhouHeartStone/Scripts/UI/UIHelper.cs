@@ -224,17 +224,11 @@ namespace Game
         }
         public static void setTag(this UICard ui, string tag)
         {
-            LangManager Lang = ui.ui.getManager<LangManager>();
-            if (tag != null)
+            CardManager card = ui.ui.getManager<CardManager>();
+            
+            if (card.tryGetTranslatedTag(tag, out string text))
             {
-                if (ui.ui.getManager<TableManager>().TranslateTagDic.TryGetValue(tag, out string text))
-                {
-                    ui.servantCardFace.raceNameText.text = Lang._(text);
-                }
-                else
-                {
-                    ui.servantCardFace.raceNameText.text = tag;
-                }
+                ui.servantCardFace.raceNameText.text = text;
             }
             else
                 ui.servantCardFace.raceNameText.text = null;
@@ -318,10 +312,6 @@ namespace Game
                 default:
                     return null;
             }
-        }
-        public static RectTransform getRoot(this ServantItem servant)
-        {
-            return servant.getChild("Servant");
         }
 
         public static PropNumber getCostPropNum(this UICard ui, Card card)

@@ -16,6 +16,7 @@ using ILogger = TouhouCardEngine.Shared.ILogger;
 using IGensoukyo;
 using System.Text.RegularExpressions;
 using TouhouCardEngine.Shared;
+using TouhouHeartstone.Builtin;
 
 namespace Game
 {
@@ -424,21 +425,7 @@ namespace Game
             }
             //加载投射物
             string projPath = datarow.ReadCol("Projectile", "");
-            if (loadResources)
-            {
-                if (!string.IsNullOrEmpty(projPath))
-                {
-                    skin.projectile = await getManager<THHResourceManager>().loadObject<Projectile>(projPath);
-                    if (skin.projectile == null)
-                        UberDebug.LogWarningChannel("Card", skin + "加载投射物" + projPath + "失败");
-                    else
-                        UberDebug.LogChannel("Card", skin + "加载投射物" + skin.projectile);
-                }
-            }
-            else
-            {
-                skin.projectilePath = projPath;
-            }
+            skin.projectilePath = projPath;
             return skin;
         }
 
@@ -733,6 +720,33 @@ namespace Game
             }
             return true;
         }
+        /// <summary>
+        /// 尝试获取翻译过后的卡牌标签名称。
+        /// </summary>
+        /// <param name="tag">英文标签。</param>
+        /// <param name="text">翻译过后的标签。</param>
+        /// <returns>是否成功获取。</returns>
+        public bool tryGetTranslatedTag(string tag, out string text)
+        {
+            if (_translateTagDic == null)
+            {
+                _translateTagDic = new Dictionary<string, string>();
+                var T = typeof(TranslateTags);
+                FieldInfo[] fields = T.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance);
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    _translateTagDic.Add(fields[i].Name, fields[i].GetValue(null).ToString());
+                    //Debug.Log("这里是字典结果" + fields[i].Name + fields[i].GetValue(null).ToString());
+                }
+            }
+            if (tag != null && _translateTagDic.TryGetValue(tag, out string translatedTag))
+            {
+                text = game.lang._(translatedTag);
+                return true;
+            }
+            text = null;
+            return false;
+        }
         #region 属性字段
         public MainManager game
         {
@@ -741,6 +755,7 @@ namespace Game
         }
         [SerializeField]
         MainManager _game;
+        private static Dictionary<string, string> _translateTagDic;
         #endregion
     }
 

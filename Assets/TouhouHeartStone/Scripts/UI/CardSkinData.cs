@@ -145,16 +145,6 @@ namespace UI
             get { return _soundPath_onUse; }
             set { _soundPath_onUse = value; }
         }
-        [BsonIgnore]
-        [SerializeField]
-        Projectile _projectile;
-        [Obsolete("请使用projectilePath并使用资源加载器加载对应投射物替代")]
-        [BsonIgnore]
-        public Projectile projectile
-        {
-            get { return _projectile; }
-            set { _projectile = value; }
-        }
         [BsonElement]
         [SerializeField]
         string _projectilePath;

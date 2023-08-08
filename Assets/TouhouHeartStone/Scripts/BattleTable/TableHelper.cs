@@ -45,7 +45,7 @@ namespace Game.BattleTable
             ui.setAttack(card.getAttack());
             ui.setLife(card.getLife());
             ui.setType(card.type);
-            ui.setTranslatedTag(table, card.getTags().FirstOrDefault());
+            ui.setTranslatedTag(table.cardManager, card.getTags().FirstOrDefault());
         }
         public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, BattleTableManager table, bool isFaceUp = true)
         {
@@ -67,7 +67,7 @@ namespace Game.BattleTable
             ui.setAttack(card.getAttack(game));
             ui.setLife(card.getLife(game));
             ui.setType(card.define.type);
-            ui.setTranslatedTag(table, card.getTags(game).FirstOrDefault());
+            ui.setTranslatedTag(table.cardManager, card.getTags(game).FirstOrDefault());
         }
         public static void setCard(this UICard ui, CardDescriptor desc, CardSkinData skin, BattleTableManager table, bool isFaceUp = true)
         {
@@ -89,7 +89,7 @@ namespace Game.BattleTable
             ui.setAttack(desc.getAttack());
             ui.setLife(desc.getLife());
             ui.setType(desc.define.type);
-            ui.setTranslatedTag(table, desc.getTags().FirstOrDefault());
+            ui.setTranslatedTag(table.cardManager, desc.getTags().FirstOrDefault());
         }
 
         public static async Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, BattleTableManager table, bool isFaceUp = true)
@@ -137,10 +137,10 @@ namespace Game.BattleTable
             }
             ui.setImageSprite(image ?? defaultSpr);
         }
-        public static void setTranslatedTag(this UICard ui, BattleTableManager table, string tag)
+        public static void setTranslatedTag(this UICard ui, CardManager cardManager, string tag)
         {
             string name = tag;
-            if (tag != null && table.tryGetTranslatedTag(tag, out string text))
+            if (tag != null && cardManager.tryGetTranslatedTag(tag, out string text))
             {
                 name = text;
             }
