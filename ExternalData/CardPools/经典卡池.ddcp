@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 152, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 156, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -24914,6 +24914,385 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : 93,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 6,
+        "attack" : 4,
+        "life" : 8,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["unique"]
+        },
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(0),
+          "defineId" : 6291456
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableEventEffect",
+          "name" : "事件效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableEventEntryNode",
+                "_id" : 1,
+                "posX" : -276.30697631835938,
+                "posY" : 39.64404296875,
+                "eventName" : "BeforeDamageEvent",
+                "tags" : [],
+                "piles" : ["Field"]
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineName" : "伤害/更改伤害值",
+                "posX" : 942.37646484375,
+                "posY" : 59.76007080078125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineName" : "IntegerOperation",
+                "posX" : 382.01336669921875,
+                "posY" : -250.35595703125,
+                "constDict" : {
+                  "operator" : 2
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineName" : "IntegerConst",
+                "posX" : -209.559814453125,
+                "posY" : -358.47610473632813,
+                "constDict" : {
+                  "value" : 2
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineName" : "获取玩家技能",
+                "posX" : -757.13421630859375,
+                "posY" : 953.62860107421875,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 11,
+                "defineName" : "Compare",
+                "posX" : -277.16754150390625,
+                "posY" : 915.1219482421875,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 13,
+                "defineName" : "当前事件",
+                "posX" : 359.25164794921875,
+                "posY" : 129.47721862792969,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "伤害值",
+                "sourceNodeId" : 1,
+                "destName" : "arg",
+                "destParamIndex" : 1,
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 4,
+                "destName" : "arg",
+                "destParamIndex" : 2,
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 3,
+                "destName" : "value",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "A",
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "伤害来源",
+                "sourceNodeId" : 1,
+                "destName" : "B",
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 13
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 13,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 13,
+                "destName" : "eventArg",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 11,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }]
+          }
+        }, {
+          "_t" : "SerializableEventEffect",
+          "name" : "事件效果2",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableEventEntryNode",
+                "_id" : 1,
+                "posX" : 66.073455810546875,
+                "posY" : -192.213623046875,
+                "eventName" : "BeforeHealEvent",
+                "tags" : [],
+                "piles" : ["Field"]
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineName" : "IntegerOperation",
+                "posX" : 519.33538818359375,
+                "posY" : -666.9923095703125,
+                "constDict" : {
+                  "operator" : 2
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineName" : "IntegerConst",
+                "posX" : 8.42327880859375,
+                "posY" : -601.9923095703125,
+                "constDict" : {
+                  "value" : 2
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineName" : "获取玩家技能",
+                "posX" : -619.81219482421875,
+                "posY" : 601.99224853515625,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineName" : "Compare",
+                "posX" : -132.342041015625,
+                "posY" : 238.3145751953125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "defineName" : "获取卡牌拥有者",
+                "posX" : -608.9549560546875,
+                "posY" : 270.8145751953125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 8,
+                "defineName" : "获取卡牌拥有者",
+                "posX" : -609.5467529296875,
+                "posY" : -28.2677001953125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 9,
+                "defineName" : "这张卡牌",
+                "posX" : -952.7001953125,
+                "posY" : -28.2677001953125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 10,
+                "defineName" : "LogicOperation",
+                "posX" : 438.94198608398438,
+                "posY" : 530.985595703125,
+                "constDict" : {
+                  "operator" : 2
+                },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 11,
+                "defineName" : "Compare",
+                "posX" : -139.84552001953125,
+                "posY" : 563.485595703125,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineName" : "治疗/更改治疗值",
+                "posX" : 1100.00830078125,
+                "posY" : -158.69964599609375,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 12,
+                "defineName" : "当前事件",
+                "posX" : 741.838134765625,
+                "posY" : -151.49163818359375,
+                "constDict" : { },
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "result",
+                "sourceNodeId" : 4,
+                "destName" : "arg",
+                "destParamIndex" : 2,
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 8,
+                "destName" : "player",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "A",
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 7,
+                "destName" : "A",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 8,
+                "destName" : "B",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 6,
+                "destName" : "value",
+                "destParamIndex" : 1,
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 9,
+                "destName" : "card",
+                "destNodeId" : 8
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 11,
+                "destName" : "value",
+                "destParamIndex" : 2,
+                "destNodeId" : 10
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 10,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "治疗来源",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "治疗来源",
+                "sourceNodeId" : 1,
+                "destName" : "B",
+                "destNodeId" : 11
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 3,
+                "destName" : "value",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 12
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 12,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 12,
+                "destName" : "eventArg",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "值",
+                "sourceNodeId" : 1,
+                "destName" : "arg",
+                "destParamIndex" : 1,
+                "destNodeId" : 3
+              }]
+          }
+        }],
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : -2147418097,
@@ -25974,6 +26353,11 @@
       "_imagePath" : "7cfd2db45c6ad48614d64924a6f5ed9cc7a27b27eef3d1d25573ab65d204c8b1.jpg",
       "_desc" : "<b>无法攻击</b>。每当你的回合结束时，如果有角色在本回合中受到过治疗，则随机对一个敌方仆从造成4点伤害。",
       "_language" : "zh-Hans"
+    }, {
+      "_id" : 93,
+      "_name" : "八意永琳*",
+      "_imagePath" : "6c06884fdbd6266d8ad24f103da3a26a5b94a1e8a6681f32772fd2e1e854ed95.jpg",
+      "_desc" : "<b>唯一</b>\r\n你的治疗效果和技能造成的伤害翻倍。"
     }],
   "buffDefineList" : [{
       "_id" : 2,
