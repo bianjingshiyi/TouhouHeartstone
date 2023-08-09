@@ -284,7 +284,7 @@ Transform:
   m_GameObject: {fileID: 84853164}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_Children: []
   m_Father: {fileID: 1592494815}
   m_RootOrder: 0
@@ -1802,6 +1802,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d77f2f8916b62fe48bacd480f33ed376, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tableBackground: {fileID: 1929490916}
   _secretTemplate: {fileID: 1572423094}
   _cardTemplate: {fileID: 1812653705}
   _selfMaster: {fileID: 921699005}
@@ -5070,6 +5071,7 @@ GameObject:
   - component: {fileID: 1929490915}
   - component: {fileID: 1929490914}
   - component: {fileID: 1929490913}
+  - component: {fileID: 1929490916}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -5152,6 +5154,18 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1929490911}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1929490916
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1929490911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f29485d9fd2d2b4b8e53f37f148730f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1952450708
 PrefabInstance:
   m_ObjectHideFlags: 0

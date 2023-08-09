@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using BJSYGameCore;
 using UnityEngine;
 namespace Game.BattleTable
 {
@@ -8,26 +6,29 @@ namespace Game.BattleTable
     class FieldMoveAnim : TableAnimation
     {
         [SerializeField]
-        Servant _servant;
+        int _cardId;
         [SerializeField]
-        Vector3 _startPosition;
+        Field _targetField;
         [SerializeField]
-        Timer _timer;
-        public FieldMoveAnim(BattleTableManager table, Servant servant, Field field, int index)
+        int _position;
+        public FieldMoveAnim(int cardId, Field targetField, int index)
         {
-            _servant = servant;
-            _startPosition = servant.transform.position;
-            _timer = new Timer() { duration = table.fieldMoveCurve.keys.Last().time };
-
-            field.insertServant(index, servant);
-            _timer.start();
+            _cardId = cardId;
+            _targetField = targetField;
+            _position = index;
         }
         public override bool update(BattleTableManager table, float time)
         {
-            if (!_timer.isExpired())
+            if (table.tryGetServant(_cardId, out Servant servant))
             {
-                _servant.transform.position = Vector3.Lerp(_startPosition, _servant.transform.position, table.fieldMoveCurve.Evaluate(_timer.time));
-                return false;
+                var desc = table.getCardDescriptor(_cardId);
+                var sourceField = desc.getOwner() == table.player ? table.table.SelfField : table.table.EnemyField;
+                var sourcePosition = servant.transform.position;
+                if (sourceField.removeServant(servant, false))
+                {
+                    _targetField.insertServant(_position, servant);
+                    servant.transform.position = sourcePosition;
+                }
             }
             return true;
         }

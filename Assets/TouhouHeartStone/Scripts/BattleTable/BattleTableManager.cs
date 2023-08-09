@@ -112,6 +112,7 @@ namespace Game.BattleTable
             table.SelfField.onServantEndDrag += onServantEndDragCallback;
             table.SelfField.onServantPointerEnter += onServantPointerEnterCallback;
             table.SelfField.onServantPointerExit += onServantPointerExitCallback;
+            table.SelfField.onServantPointerUp += onServantPointerUpCallback;
 
             table.EnemyField.onServantClick += onServantClickCallback;
             table.EnemyField.onServantBeginDrag += onServantBeginDragCallback;
@@ -119,16 +120,19 @@ namespace Game.BattleTable
             table.EnemyField.onServantEndDrag += onServantEndDragCallback;
             table.EnemyField.onServantPointerEnter += onServantPointerEnterCallback;
             table.EnemyField.onServantPointerExit += onServantPointerExitCallback;
+            table.EnemyField.onServantPointerUp += onServantPointerUpCallback;
 
             table.SelfMaster.onClick += onMasterClickCallback;
             table.SelfMaster.onBeginDrag += onMasterBeginDragCallback;
             table.SelfMaster.onDrag += onMasterDragCallback;
             table.SelfMaster.onEndDrag += onMasterEndDragCallback;
+            table.SelfMaster.onPointerUp += onMasterPointerUpCallback;
 
             table.EnemyMaster.onClick += onMasterClickCallback;
             table.EnemyMaster.onBeginDrag += onMasterBeginDragCallback;
             table.EnemyMaster.onDrag += onMasterDragCallback;
             table.EnemyMaster.onEndDrag += onMasterEndDragCallback;
+            table.EnemyMaster.onPointerUp += onMasterPointerUpCallback;
 
 
             table.SelfSkill.onClick += onSkillClickCallback;
@@ -231,26 +235,17 @@ namespace Game.BattleTable
             Vector2 pointerPosition = EventSystem.current.currentInputModule.input.mousePosition;
             ui.TipBox.updatePos((Vector3)pointerPosition + _tipBoxOffset);
 
+            if (isSelectingTarget)
+            {
+                showArrowWhileSelecting(pointerPosition);
+            }
+
             //随从牌使用预览
             if (_servantPreviewAnim != null)
             {
-                if (_servantPreviewAnim.update(this, Time.time))
+                if (_servantPreviewAnim.isFinished())
                 {
                     _servantPreviewAnim = null;
-                    var hand = getHand(usingCard.id);
-                    hand.card.setVisible(false);
-                    //显示占位随从
-                    try
-                    {
-                        if (tryGetServant(usingCard.id, out var servant))
-                        {
-                            setServant(servant, usingCard.define);
-                        }
-                    }
-                    catch (NullReferenceException e)
-                    {
-                        Debug.LogError(e);
-                    }
                 }
             }
             //游戏事件处理

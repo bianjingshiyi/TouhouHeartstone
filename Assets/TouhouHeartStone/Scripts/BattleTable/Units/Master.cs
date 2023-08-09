@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Game.BattleTable
 {
-    public class Master : TableUnit, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+    public class Master : TableUnit, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         #region 公有事件
         public void updateSecrets()
@@ -110,6 +110,10 @@ namespace Game.BattleTable
             onClick?.Invoke(this, eventData);
         }
 
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            onPointerUp?.Invoke(this, eventData);
+        }
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
             onBeginDrag?.Invoke(this, eventData);
@@ -131,6 +135,7 @@ namespace Game.BattleTable
         public event Action<Master, PointerEventData> onBeginDrag;
         public event Action<Master, PointerEventData> onDrag;
         public event Action<Master, PointerEventData> onEndDrag;
+        public event Action<Master, PointerEventData> onPointerUp;
         #endregion
 
         #region 属性字段

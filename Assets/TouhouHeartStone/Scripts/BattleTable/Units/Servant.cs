@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace Game.BattleTable
 {
-    public class Servant : TableUnit, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
+    public class Servant : TableUnit, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
     {
         #region 公有方法
         public void setHighlight(bool highlight, bool yellow = false)
@@ -18,6 +18,10 @@ namespace Game.BattleTable
         {
             value = Mathf.Max(value, 0);
             _attackText.text = value.ToString();
+        }
+        public void setHidden(bool value)
+        {
+            _animator.SetBool("Hidden", value);
         }
         public void setLife(int value)
         {
@@ -92,6 +96,10 @@ namespace Game.BattleTable
         {
             onClick?.Invoke(this, eventData);
         }
+        void IPointerUpHandler.OnPointerUp(PointerEventData eventData)
+        {
+            onPointerUp?.Invoke(this, eventData);
+        }
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
@@ -120,6 +128,7 @@ namespace Game.BattleTable
 
         #region 事件
         public event Action<Servant, PointerEventData> onClick;
+        public event Action<Servant, PointerEventData> onPointerUp;
         public event Action<Servant, PointerEventData> onBeginDrag;
         public event Action<Servant, PointerEventData> onDrag;
         public event Action<Servant, PointerEventData> onEndDrag;

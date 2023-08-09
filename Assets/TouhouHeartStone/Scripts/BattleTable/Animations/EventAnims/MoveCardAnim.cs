@@ -146,10 +146,15 @@ namespace Game.BattleTable
                 case PILE.FIELD: // 战场-->战场
                     {
                         //获得控制权
-                        TableAnimation anim = null;
-                        if (table.tryGetServant(_card, out var servant))
-                            anim = new FieldMoveAnim(table, servant, toSelf ? table.table.SelfField : table.table.EnemyField, _position);
-
+                        TableAnimation anim = new FieldMoveAnim(_card.id, toSelf ? table.table.SelfField : table.table.EnemyField, _position);
+                        while (anim != null && !anim.update(table, _deltaTime))
+                            yield return null;
+                    }
+                    break;
+                case PILE.HAND: // 战场-->手牌
+                    {
+                        //获得控制权
+                        TableAnimation anim = new FieldToHandAnim(_card.id, _position);
                         while (anim != null && !anim.update(table, _deltaTime))
                             yield return null;
                     }
@@ -274,6 +279,8 @@ namespace Game.BattleTable
         }
         private IEnumerator moveToField(BattleTableManager table, Vector3 startPos)
         {
+            if (table.tryGetServant(_card, out _))
+                yield break;
             string fromName = _from?.name;
             int position = _position;
             bool toSelf = _to?.owner == table.player;

@@ -14,6 +14,7 @@ namespace Game.BattleTable
         [SerializeField]
         private Transform _target;
         CardDescriptor _servantDesc;
+        private TableCard _tableCard;
         public HandToFieldAnim(Vector3 startPosition, CardDescriptor servantDesc, int index)
         {
             _startPosition = startPosition;
@@ -23,13 +24,15 @@ namespace Game.BattleTable
         }
         public override IEnumerator update(BattleTableManager table)
         {
-            var card = table.createCard(_servantDesc, _startPosition);
+            _tableCard = table.createCard(_servantDesc, _startPosition);
+            var card = _tableCard;
             var field = _servantDesc.getOwner() == table.player ? table.table.SelfField : table.table.EnemyField;
             // 手牌移动到目标位置。
-            var placeHolder = field.addPlaceHolder(_position);
+            var servant = table.createServant(_servantDesc, _position);
+            servant.setHidden(true);
             AnimAnim anim = null;
             card.positionLerp.setStart(_startPosition);
-            card.positionLerp.setTarget(placeHolder);
+            card.positionLerp.setTarget(servant.transform);
 
             while (!SimpleAnimHelper.update(table, ref anim, card.onSummon, card.animator, _deltaTime))
             {
@@ -38,10 +41,10 @@ namespace Game.BattleTable
 
             // 移除手牌。
             card.destroy();
+            _tableCard = null;
 
             // 召唤仆从。
-            field.removePlaceHolder(placeHolder);
-            var servant = table.createServant(_servantDesc, _position);
+            servant.setHidden(false);
             while (!SimpleAnimHelper.update(table, ref anim, servant.onSummon, servant.animator, _deltaTime))
             {
                 servant.animator.Update(0);
@@ -49,6 +52,24 @@ namespace Game.BattleTable
             }
             table.game.logger.log("Animation", table.getCard(servant) + "移动动画结束");
             yield break;
+        }
+
+        public void forceFinish(BattleTableManager table)
+        {
+            if (_tableCard)
+            {
+                _tableCard.destroy();
+                _tableCard = null;
+            }
+            if (table.tryGetServant(_servantDesc.id, out var servant))
+            {
+                servant.setHidden(false);
+            }
+            else
+            {
+                table.createServant(_servantDesc, _position);
+            }
+            finish();
         }
     }
 }

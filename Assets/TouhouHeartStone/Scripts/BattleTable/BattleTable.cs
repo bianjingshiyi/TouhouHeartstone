@@ -13,6 +13,15 @@ namespace Game.BattleTable
             _selfHandList.updateHand(deltaTime);
             _enemyHandList.updateHand(deltaTime);
         }
+        private void Awake()
+        {
+            _tableBackground.onPointerDown += OnClickNoWhere;
+            _tableBackground.onPointerUp += OnClickNoWhere;
+        }
+        private void OnClickNoWhere(PointerEventData eventData)
+        {
+            onClickNoWhere?.Invoke(this, eventData);
+        }
 
         public event Action<BattleTable, PointerEventData> onClickNoWhere;
 
@@ -50,6 +59,8 @@ namespace Game.BattleTable
 
         public AudioClip playCardSound => _playCardSound;
 
+        [SerializeField]
+        private TableBackground _tableBackground;
         [SerializeField]
         private GameObject _secretTemplate;
         [SerializeField]

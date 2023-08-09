@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
-using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -568,6 +566,7 @@ namespace Game.BattleTable
         public UICard createInvokeCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
         {
             var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
+            card.transform.localEulerAngles = Vector3.zero;
             setCardDesc(card, desc, isFaceUp);
             if (height < 0)
                 return card;
@@ -765,7 +764,7 @@ namespace Game.BattleTable
         {
             //缩小动画
             //rectTransform.localScale = Vector3.one;
-            table.AttackArrowImage.setActive(false);
+            hideArrow();
             removeHighlights();
         }
         /// <summary>
@@ -920,11 +919,12 @@ namespace Game.BattleTable
             if (!hand.isDraggable)
                 return;
 
+            Card card = getCard(hand);
+            usingCard = card;
             list.ignoreAlignHand = hand;
         }
         private void onHandItemDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
-
             if (!hand.isDraggable)
                 return;
             if (!canControl)//无法进行控制
@@ -938,51 +938,45 @@ namespace Game.BattleTable
                 resetUse(true, true);
                 return;
             }
-            usingCard = card;
             //拖拽卡片
             var pos = hand.transform.position;
             pos.x = pointer.position.x;
             pos.y = pointer.position.y;
             hand.transform.position = pos;
+
+            // 拖回手牌
             var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(pointer.position);
             if (table.SelfHandList.containsPosition(inverseTransPosition))
             {
                 //移除随从占位
                 if (usingCard.isServant())
                     table.SelfField.setPreviewPosition(-1);
+                return;
             }
-            else
+
+            // 卡牌不可使用。
+            if (!usingCard.isUsable(game, player, out string info))
             {
-                //移动到手牌区以外的地方视作打算使用
-                if (!usingCard.isUsable(game, player, out string info))
+                //停止拖拽并提示
+                showTip(info);
+                resetUse(true, true);
+                return;
+            }
+
+            //移动到手牌区以外的地方视作打算使用
+            // 仆从牌。
+            if (usingCard.define.isServant())
+            {
+                //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
+                table.SelfField.setPreviewPosition(calcIndexInField(pointer.position));
+            }
+            else if (usingCard.define.isSpell())
+            {
+                if (usingCard.isNeedTarget(game))
                 {
-                    //卡牌不可用，停止拖拽并提示
-                    showTip(info);
-                    resetUse(true, true);
-                }
-                else
-                {
-                    //手牌在战场上大小和随从牌一致
-                    if (usingCard.define.isServant())
+                    if (!isSelectingTarget)
                     {
-                        //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
-                        table.SelfField.setPreviewPosition(calcIndexInField(pointer.position));
-                    }
-                    else if (usingCard.define.isSpell())
-                    {
-                        if (usingCard.isNeedTarget(game))
-                        {
-                            if (!isSelectingTarget)
-                            {
-                                isSelectingTarget = true;//TODO:这个地方一定要重写，怎么能这样的？isSelectingTarget就应该被usingCard取代
-                                highlightTargets(usingCard.getAvaliableTargets(game));//高亮所有可选目标
-                                table.SelfHandList.zoomOut();//手牌缩小
-                            }
-                            hand.card.setVisible(false);//将那张牌暂时隐藏
-                            if (tryGetMaster(usingCard.getOwner().getMaster(), out var castMaster))
-                                //拖出箭头
-                                displayArrow(castMaster.transform, castMaster.transform.position, pointer.position);
-                        }
+                        startSelectTarget();
                     }
                 }
             }
@@ -996,105 +990,77 @@ namespace Game.BattleTable
         {
             if (list != table.SelfHandList)//你不能用别人的卡
                 return;
+            if (usingCard == null) //不存在使用中的卡牌
+                return;
             if (!canControl)//不是你的回合，不生效
             {
                 resetUse(true, true);
                 return;
             }
-            usingCard = getCard(hand);
+            // 拖回手牌
             var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(pointer.position);
             if (table.SelfHandList.containsPosition(inverseTransPosition))
             {
                 //如果松开，取消使用
                 resetUse(true, true);
-                list.ignoreAlignHand = null;
+                return;
             }
-            else
+            //卡牌不可用
+            if (!usingCard.isUsable(game, player, out string info))
             {
-                if (!usingCard.isUsable(game, player, out string info))
+                showTip(info);
+                resetUse(true, true);
+                return;
+            }
+
+            // 随从牌。
+            if (usingCard.isServant())
+            {
+                //松开鼠标，确认使用随从牌
+                int index = calcIndexInField(pointer.position);
+                table.SelfField.setPreviewPosition(-1);
+                if (usingCard.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
                 {
-                    //卡牌不可用
-                    showTip(info);
-                    resetUse(true, true);
-                    list.ignoreAlignHand = null;
+                    _usingPosition = index;
+                    //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
+                    _servantPreviewAnim = new HandToFieldAnim(pointer.position, getCardDescriptor(usingCard), index);
+                    addAnim(_servantPreviewAnim);
+                    startSelectTarget();
                 }
-                else if (usingCard.isServant())
+                else
                 {
-                    //松开鼠标，确认使用随从牌
-                    int index = calcIndexInField(pointer.position);
-                    table.SelfField.setPreviewPosition(-1);
-                    if (usingCard.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
-                    {
-                        _usingPosition = index;
-                        //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                        _servantPreviewAnim = new HandToFieldAnim(pointer.position, getCardDescriptor(usingCard), index);
-                        isSelectingTarget = true;
-                        highlightTargets(targets);
-                        table.SelfHandList.zoomOut();
-                    }
-                    else
-                    {
-                        //使用无目标随从牌
-                        player.cmdUse(game, usingCard, index);
-                        resetUse(false, false);
-                    }
-                }
-                else if (usingCard.isSpell())
-                {
-                    if (usingCard.isNeedTarget(game))
-                    {
-                        //获取鼠标停留的那张卡，就是目标
-                        if (isOnTarget(pointer, out var target))
-                        {
-                            if (usingCard.isValidTarget(game, target))
-                            {
-                                //合法目标，生效
-                                player.cmdUse(game, usingCard, 0, target);
-                                resetUse(true, false);
-                            }
-                            else
-                            {
-                                //非法目标，跳出非法信息
-                                showTip(info);
-                                resetUse(true, true);
-                                hand.card.setVisible(true);
-                                list.ignoreAlignHand = null;
-                            }
-                        }
-                        else
-                        {
-                            cancelAttack();
-                            resetUse(true, true);
-                            hand.card.setVisible(true);
-                            list.ignoreAlignHand = null;
-                        }
-                    }
-                    else
-                    {
-                        //使用无目标随从牌
-                        player.cmdUse(game, usingCard, 0);
-                        resetUse(false, false);
-                    }
-                }
-                else if (usingCard.isItem())
-                {
-                    if (usingCard.isNeedTarget(game))
-                    {
-                        _usingPosition = 0;
-                        //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                        isSelectingTarget = true;
-                        highlightTargets(usingCard.getAvaliableTargets(game));
-                        table.SelfHandList.zoomOut();
-                    }
-                    else
-                    {
-                        //使用无目标随从牌
-                        player.cmdUse(game, usingCard, 0);
-                        resetUse(false, false);
-                    }
+                    //使用无目标随从牌
+                    player.cmdUse(game, usingCard, index);
+                    resetUse(false, false);
                 }
             }
-            //removeHighlights();
+            // 法术牌。
+            else if (usingCard.isSpell())
+            {
+                if (!usingCard.isNeedTarget(game))
+                {
+                    //使用无目标法术牌
+                    player.cmdUse(game, usingCard, 0);
+                    resetUse(false, false);
+                }
+                // 有目标法术牌的逻辑另写。
+            }
+            // 道具牌。
+            else if (usingCard.isItem())
+            {
+                if (usingCard.isNeedTarget(game))
+                {
+                    _usingPosition = 0;
+                    //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
+                    startSelectTarget();
+                }
+                else
+                {
+                    //使用无目标道具牌
+                    player.cmdUse(game, usingCard, 0);
+                    resetUse(false, false);
+                }
+            }
         }
 
         /// <summary>
@@ -1126,21 +1092,13 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onMasterClickCallback(Master master, PointerEventData pointer)
         {
-            // （目标选择模式）
-            if (isSelectingTarget)
-            {
-                if (usingCard.isValidTarget(game, getCard(master)))
-                {
-                    player.cmdUse(game, usingCard, _usingPosition, getCard(master));
-                    resetUse(false, false);
-                }
-                else
-                {
-                    showTip(TAB_THIS_INVALIDATION);
-                    resetUse(true, true);
-                }
-            }
         }
+        private void onMasterPointerUpCallback(Master master, PointerEventData pointer)
+        {
+            // （目标选择模式）
+            trySelectTarget(usingCard, getCard(master));
+        }
+
 
         private void onMasterBeginDragCallback(Master master, PointerEventData pointer)
         {
@@ -1316,20 +1274,11 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onServantClickCallback(Servant servant, Field field, PointerEventData pointer)
         {
+        }
+        private void onServantPointerUpCallback(Servant master, Field field, PointerEventData pointer)
+        {
             // （目标选择模式）
-            if (isSelectingTarget)
-            {
-                if (usingCard.isValidTarget(game, getCard(servant)))
-                {
-                    player.cmdUse(game, usingCard, _usingPosition, getCard(servant));
-                    resetUse(false, false);
-                }
-                else
-                {
-                    showTip(TAB_THIS_INVALIDATION);
-                    resetUse(true, true);
-                }
-            }
+            trySelectTarget(usingCard, getCard(master));
         }
 
         private void onServantPointerEnterCallback(Servant servant, Field field, PointerEventData pointer)
@@ -1476,7 +1425,7 @@ namespace Game.BattleTable
         {
             if (usingCard != null && usingCard.define.isServant() && isSelectingTarget)
             {
-                resetUse(true, true);
+                cancelSelectTarget(usingCard);
                 return true;
             }
             return false;
@@ -1527,17 +1476,19 @@ namespace Game.BattleTable
         {
             if (usingCard != null && resetItem)
             {
-                HandItem usingHand = getHand(usingCard);
-                usingHand.card.setVisible(true);
-                var desc = getCardDescriptor(usingCard);
-                setCardDesc(usingHand.card, desc, true);
-                usingHand.card.transform.localScale = Vector3.one;
-                usingHand.card.transform.localPosition = Vector2.zero;
-
-                var handList = desc.getOwner() == player ? table.SelfHandList : table.EnemyHandList;
-                if (handList.ignoreAlignHand == usingHand)
+                if (tryGetHand(usingCard, out var usingHand))
                 {
-                    handList.ignoreAlignHand = null;
+                    usingHand.card.setVisible(true);
+                    var desc = getCardDescriptor(usingCard);
+                    setCardDesc(usingHand.card, desc, true);
+                    usingHand.card.transform.localScale = Vector3.one;
+                    usingHand.card.transform.localPosition = Vector2.zero;
+
+                    var handList = desc.getOwner() == player ? table.SelfHandList : table.EnemyHandList;
+                    if (handList.ignoreAlignHand == usingHand)
+                    {
+                        handList.ignoreAlignHand = null;
+                    }
                 }
             }
             _servantPreviewAnim = null;
@@ -1549,6 +1500,96 @@ namespace Game.BattleTable
             hideArrow();
             isSelectingTarget = false;
             removeHighlights();
+        }
+        private void startSelectTarget()
+        {
+            var card = usingCard;
+            if (card == null || isSelectingTarget)
+                return;
+            isSelectingTarget = true;
+            highlightTargets(card.getAvaliableTargets(game));//高亮所有可选目标
+            table.SelfHandList.zoomOut();//手牌缩小
+            removeHand(usingCard);
+        }
+        private void showArrowWhileSelecting(Vector2 position)
+        {
+            var sourceTransform = table.SelfMaster.transform;
+            if (usingCard != null)
+            {
+                if (tryGetServant(usingCard, out Servant servant))
+                {
+                    sourceTransform = servant.transform;
+                }
+                else if (tryGetMaster(usingCard, out Master master))
+                {
+                    sourceTransform = master.transform;
+                }
+                else if (tryGetSkill(usingCard, out Skill skill))
+                {
+                    sourceTransform = skill.transform;
+                }
+                else if (tryGetHand(usingCard, out HandItem hand))
+                {
+                    sourceTransform = hand.transform;
+                }
+            }
+            //拖出箭头
+            displayArrow(sourceTransform, sourceTransform.position, position);
+        }
+        private void cancelSelectTarget(Card card)
+        {
+            if (!isSelectingTarget)
+                return;
+            isSelectingTarget = false;
+            // 如果没有手牌。
+            if (!tryGetHand(card, out _))
+            {
+                int handPosition = card.pile.indexOf(card);
+                // 强制完成随从的入场预览动画。
+                if (_servantPreviewAnim != null)
+                {
+                    _servantPreviewAnim.forceFinish(this);
+                    _servantPreviewAnim = null;
+                    addAnim(new FieldToHandAnim(card.id, handPosition));
+                }
+                else
+                {
+                    // 如果有这个随从，播放回手动画。
+                    if (tryGetServant(card, out _))
+                    {
+                        addAnim(new FieldToHandAnim(card.id, handPosition));
+                    }
+                    else //没有这个随从，直接创建手牌。
+                    {
+                        createHand(getCardDescriptor(card), handPosition);
+                    }
+                }
+            }
+            resetUse(true, true);
+        }
+        private bool trySelectTarget(Card card, Card target)
+        {
+            if (!isSelectingTarget)
+                return false;
+
+            //获取鼠标停留的那张卡，就是目标
+            if (target != null)
+            {
+                if (usingCard.isValidTarget(game, target, out string invalidMsg))
+                {
+                    //合法目标，生效
+                    player.cmdUse(game, usingCard, 0, target);
+                    resetUse(true, false);
+                    isSelectingTarget = false;
+                    return true;
+                }
+                else
+                {
+                    //非法目标，跳出非法信息
+                    showTip(invalidMsg);
+                }
+            }
+            return false;
         }
         private async Task<CardBuffListItemViewData[]> getCardBuffViewDatas(IEnumerable<Buff> buffs)
         {

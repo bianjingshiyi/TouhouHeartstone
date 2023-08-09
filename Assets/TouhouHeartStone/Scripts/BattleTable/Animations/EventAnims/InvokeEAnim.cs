@@ -85,7 +85,7 @@ namespace Game.BattleTable
             if (cardUIOppo)
             {
                 cardUIOppo.animateFaceup(false);
-                animflipBackOppo = new AnimAnim(cardUIOppo.animator, cardUIOppo.onFlipToFace.animName);
+                animflipBackOppo = new AnimAnim(cardUIOppo.animator, cardUIOppo.onFlipToBack.animName);
             }
             while (AnimHelper.isAnyAnimUpdating(table, _deltaTime, animflipBackSelf, animflipBackOppo))
                 yield return null;

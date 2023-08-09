@@ -39,6 +39,14 @@ namespace Game.BattleTable
             }
             return false;
         }
+        public void addIgnoreAlignServant(Servant servant)
+        {
+            _ignoreAlignServants.Add(servant);
+        }
+        public bool removeIgnoreAlignServant(Servant servant)
+        {
+            return _ignoreAlignServants.Remove(servant);
+        }
         public void addServant(Servant servant)
         {
             insertServant(_servantList.Count, servant);
@@ -50,6 +58,7 @@ namespace Game.BattleTable
         public void insertServant(int position, Servant servant)
         {
             servant.onClick += onServantClickCallback;
+            servant.onPointerUp += onServantPointerUpCallback;
             servant.onBeginDrag += onServantBeginDragCallback;
             servant.onDrag += onServantDragCallback;
             servant.onEndDrag += onServantEndDragCallback;
@@ -68,17 +77,21 @@ namespace Game.BattleTable
             servant.transform.localPosition = getItemTargetPosition(position, count);
             return servant;
         }
-        public bool removeServant(Servant servant)
+        public bool removeServant(Servant servant, bool destroy = true)
         {
             if (_servantList.Remove(servant))
             {
                 servant.onClick -= onServantClickCallback;
+                servant.onPointerUp -= onServantPointerUpCallback;
                 servant.onBeginDrag -= onServantBeginDragCallback;
                 servant.onDrag -= onServantDragCallback;
                 servant.onEndDrag -= onServantEndDragCallback;
                 servant.onPointerEnter -= onServantPointerEnterCallback;
                 servant.onPointerExit -= onServantPointerExitCallback;
-                servant.destroy();
+                if (destroy)
+                {
+                    servant.destroy();
+                }
                 return true;
             }
             return false;
@@ -88,6 +101,7 @@ namespace Game.BattleTable
             foreach (var servant in _servantList)
             {
                 servant.onClick -= onServantClickCallback;
+                servant.onPointerUp -= onServantPointerUpCallback;
                 servant.onBeginDrag -= onServantBeginDragCallback;
                 servant.onDrag -= onServantDragCallback;
                 servant.onEndDrag -= onServantEndDragCallback;
@@ -95,6 +109,7 @@ namespace Game.BattleTable
                 servant.onPointerExit -= onServantPointerExitCallback;
                 servant.destroy();
             }
+            _ignoreAlignServants.Clear();
             _servantList.Clear();
         }
         #region 私有方法
@@ -105,6 +120,10 @@ namespace Game.BattleTable
         private void onServantClickCallback(Servant servant, PointerEventData eventData)
         {
             onServantClick?.Invoke(servant, this, eventData);
+        }
+        private void onServantPointerUpCallback(Servant servant, PointerEventData eventData)
+        {
+            onServantPointerUp?.Invoke(servant, this, eventData);
         }
         private void onServantBeginDragCallback(Servant servant, PointerEventData eventData)
         {
@@ -164,8 +183,11 @@ namespace Game.BattleTable
                 }
                 // 更新随从位置。
                 var servant = _servantList[i];
-                updateItemTransform(servant.transform, position, count, deltaTime);
-                position++;
+                if (!_ignoreAlignServants.Contains(servant))
+                {
+                    updateItemTransform(servant.transform, position, count, deltaTime);
+                    position++;
+                }
             }
         }
 
@@ -193,6 +215,7 @@ namespace Game.BattleTable
 
         #region 事件
         public Action<Servant, Field, PointerEventData> onServantClick;
+        public Action<Servant, Field, PointerEventData> onServantPointerUp;
         public Action<Servant, Field, PointerEventData> onServantBeginDrag;
         public Action<Servant, Field, PointerEventData> onServantDrag;
         public Action<Servant, Field, PointerEventData> onServantEndDrag;
@@ -214,6 +237,8 @@ namespace Game.BattleTable
         private Transform _servantRoot;
         [SerializeField]
         private List<Servant> _servantList = new List<Servant>();
+        [SerializeField]
+        private List<Servant> _ignoreAlignServants = new List<Servant>();
         [SerializeField]
         private float _servantWidth = 1.7f;
         [SerializeField]

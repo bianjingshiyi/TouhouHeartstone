@@ -14,7 +14,7 @@ namespace Game.BattleTable
         protected float _duration;
         private Stack<IEnumerator> _coroutineStack;
         private IEnumerator _coroutine;
-        private bool _finished = true;
+        private bool _finished = false;
         /// <summary>
         /// 该动画是否会强制播放之前的动画，以及自身。
         /// 一般用于检视卡牌这种需要等待玩家操作的事件。
@@ -39,6 +39,10 @@ namespace Game.BattleTable
         public virtual IEnumerator update(BattleTableManager table)
         {
             yield break;
+        }
+        public bool isFinished()
+        {
+            return _finished;
         }
         protected void finish()
         {

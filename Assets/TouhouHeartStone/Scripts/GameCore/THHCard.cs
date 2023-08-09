@@ -249,7 +249,12 @@ namespace TouhouHeartstone
         }
         public static int getCurrentLife(this ICardData card, IGame game)
         {
-            return card.getProp<int>(game, CARD.CURRENT_LIFE);
+            var prop = card.getProp(game, CARD.CURRENT_LIFE);
+            if (prop is int life)
+            {
+                return life;
+            }
+            return card.getLife(game);
         }
         public static Task<IPropChangeEventArg> setCurrentLife(this Card card, IGame game, int value)
         {
@@ -1171,15 +1176,26 @@ namespace TouhouHeartstone
         }
         public static bool isValidTarget(this Card card, CardEngine game, Card target)
         {
+            return isValidTarget(card, game, target, out _);
+        }
+        public static bool isValidTarget(this Card card, CardEngine game, Card target, out string invalidMsg)
+        {
+            invalidMsg = null;
             if (card.isSilenced(game))
                 return false;
             ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
             GeneratedActiveEffect generatedEffect = card.define.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault();
-            return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect);
+            return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect, out invalidMsg);
         }
         private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedActiveEffect generatedEffect)
         {
+            return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect, out _);
+        }
+
+        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedActiveEffect generatedEffect, out string invalidMsg)
+        {
+            invalidMsg = null;
             //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
                 return false;
@@ -1192,7 +1208,7 @@ namespace TouhouHeartstone
             if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, null, new object[] { target }))
                 return false;
             HearthStoneRule.ActiveEventArg eventArg = new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target });
-            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, eventArg, out _))
+            if (generatedEffect != null && !generatedEffect.checkTarget(game, target, card, null, eventArg, out invalidMsg))
                 return false;
             return true;
         }

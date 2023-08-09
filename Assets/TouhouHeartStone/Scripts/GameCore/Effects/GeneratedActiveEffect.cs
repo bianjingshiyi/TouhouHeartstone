@@ -54,7 +54,7 @@ namespace TouhouHeartstone
         /// <param name="eventArg"></param>
         /// <param name="invalidMsg"></param>
         /// <returns></returns>
-        public virtual bool checkTarget(IGame game, ICard card, IBuff buff, IEventArg eventArg, out string invalidMsg)
+        public virtual bool checkTarget(IGame game, ICard target, ICard card, IBuff buff, IEventArg eventArg, out string invalidMsg)
         {
             var entryNode = this.entryNode;
             if (entryNode != null)
@@ -66,6 +66,11 @@ namespace TouhouHeartstone
                 foreach (var targetChecker in entryNode.targetCheckerList)
                 {
                     //检查目标条件
+                    if (target.isMaster() && targetChecker.targetType == DEFINE.SERVANT)
+                    {
+                        // 目标类型是仆从，但是卡牌是英雄。
+                        return false;
+                    }
                     FlowEnv env = new FlowEnv(game, card, buff, eventArg, this);
                     if (!targetChecker.isValidTarget(env, out invalidMsg))
                     {
