@@ -7,10 +7,6 @@ namespace Game.BattleTable
 {
     public class Item : TableUnit, IPointerEnterHandler, IPointerExitHandler
     {
-        public void setDisplay(bool display)
-        {
-            gameObject.SetActive(display);
-        }
         public void setAttack(int value)
         {
             value = Mathf.Max(value, 0);
@@ -31,6 +27,14 @@ namespace Game.BattleTable
         public void setOpen(bool open)
         {
             _animator.SetBool("ItemOff", !open);
+        }
+        public void setDeath(bool death)
+        {
+            _animator.SetBool("Death", death);
+        }
+        public void setExist(bool exist)
+        {
+            _animator.SetBool("Exists", exist);
         }
 
         public void setImageSprite(Sprite image)

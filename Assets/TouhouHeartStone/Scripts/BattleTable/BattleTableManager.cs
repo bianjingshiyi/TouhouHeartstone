@@ -61,6 +61,11 @@ namespace Game.BattleTable
         {
             ui.TurnTipImage.setActive(false);
         }
+        public void showTipBox(string tip, Vector3 position, GameObject source)
+        {
+            ui.TipBox.display(tip, position + _tipBoxOffset);
+            _tipboxSource = source;
+        }
         public void showGameResult(bool result)
         {
             ui.GameResultDialog.ShowGameResult(result);
@@ -192,14 +197,27 @@ namespace Game.BattleTable
             {
                 // 显示卡面
                 Card hoveringCard = null;
-                if (_servant != null)
-                    hoveringCard = getCard(_servant);
+                Vector3 targetPosition = table.CenterDisplayTransform.position;
+                if (_hoveredServant != null)
+                {
+                    hoveringCard = getCard(_hoveredServant);
+                    targetPosition = _hoveredServant.transform.position;
+                    targetPosition.x += targetPosition.x < table.CenterDisplayTransform.position.x ? 250 : -250;
+                }
                 else if (_hoveredItem != null)
+                {
                     hoveringCard = _hoveredItem == table.SelfItem ? player.getItem() : game.getOpponent(player).getItem();
+                    targetPosition = _hoveredItem.transform.position;
+                    targetPosition.y = targetPosition.y < table.CenterDisplayTransform.position.y ? 250 : -250;
+                }
 
                 if (hoveringCard != null)
                 {
-                    displayLargeCard(false, getCardDescriptor(hoveringCard));
+                    showCardDisplayer(targetPosition, getCardDescriptor(hoveringCard));
+                }
+                else
+                {
+                    hideCardDisplayer();
                 }
                 _showCardTimer.reset();
             }
@@ -232,12 +250,16 @@ namespace Game.BattleTable
             clock?.setShortHandAngle(-turn * 3.6f);
 
             // 更新提示框位置
-            Vector2 pointerPosition = EventSystem.current.currentInputModule.input.mousePosition;
+            Vector2 pointerPosition = table.Camera.ScreenToWorldPoint(Input.mousePosition);
             ui.TipBox.updatePos((Vector3)pointerPosition + _tipBoxOffset);
-
-            if (isSelectingTarget)
+            if (!_tipboxSource)
             {
-                showArrowWhileSelecting(pointerPosition);
+                ui.TipBox.hide();
+            }
+
+            if (isPlayedSelecting)
+            {
+                showArrowWhilePlaying(pointerPosition);
             }
 
             //随从牌使用预览
@@ -419,8 +441,8 @@ namespace Game.BattleTable
             table.SelfGem.setGem(0);
             table.EnemyGem.setGem(0);
 
-            table.SelfItem.setDisplay(false);
-            table.EnemyItem.setDisplay(false);
+            table.SelfItem.setExist(false);
+            table.EnemyItem.setExist(false);
             _enemyItemDesc = null;
             _selfItemDesc = null;
 
@@ -430,7 +452,6 @@ namespace Game.BattleTable
             table.SelfHandList.clear();
             table.EnemyHandList.clear();
 
-            table.CardDisplayer.setVisible(false);
             table.AttackArrowImage.setActive(false);
             table.Fatigue.setActive(false);
             table.Discover.setActive(false);
@@ -438,6 +459,7 @@ namespace Game.BattleTable
             // UI
             ui.TipText.gameObject.SetActive(false);
             ui.PilePanel.setActive(false);
+            ui.CardDisplayer.setVisible(false);
             ui.TipBox.hide();
             ui.GameResultDialog.hide();
 
@@ -471,6 +493,7 @@ namespace Game.BattleTable
         private ActionEventCache eventCache = new ActionEventCache();
         private List<Card> _mulliganedCards = new List<Card>();
         private MainManager _main;
+        private GameObject _tipboxSource;
         [SerializeField]
         private TableUI _ui;
         [SerializeField]

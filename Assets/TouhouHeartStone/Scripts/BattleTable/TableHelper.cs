@@ -98,14 +98,13 @@ namespace Game.BattleTable
             ui.setCardDefine(card, skin, table, isFaceUp);
 
             Sprite image = skin.image;
-            var defaultSpr = cardManager.getDefaultSprite();
             if (!image)
             {
-                ui.setImageSprite(defaultSpr);
+                ui.setImageSprite(null);
                 var cardPoolRef = cardManager.getCardPoolReferenceOfCard(card);
                 image = await cardManager.loadCardImage(cardPoolRef, card.id);
             }
-            ui.setImageSprite(image ?? defaultSpr);
+            ui.setImageSprite(image);
         }
         public static async Task setCard(this UICard ui, CardEngine game, Card card, CardManager cardManager, BattleTableManager table, bool isFaceUp = true)
         {
@@ -114,13 +113,12 @@ namespace Game.BattleTable
             ui.setCard(game, card, skin, table, isFaceUp);
 
             Sprite image = skin.image;
-            var defaultSpr = cardManager.getDefaultSprite();
             if (!image)
             {
-                ui.setImageSprite(defaultSpr);
+                ui.setImageSprite(null);
                 image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
             }
-            ui.setImageSprite(image ?? defaultSpr);
+            ui.setImageSprite(image);
         }
         public static async Task setCard(this UICard ui, CardDescriptor desc, CardManager cardManager, BattleTableManager table, bool isFaceUp = true)
         {
@@ -129,13 +127,12 @@ namespace Game.BattleTable
             ui.setCard(desc, skin, table, isFaceUp);
 
             Sprite image = skin.image;
-            var defaultSpr = cardManager.getDefaultSprite();
             if (!image)
             {
-                ui.setImageSprite(defaultSpr);
+                ui.setImageSprite(null);
                 image = await cardManager.loadImage(skin.imagePath, define.cardPoolId);
             }
-            ui.setImageSprite(image ?? defaultSpr);
+            ui.setImageSprite(image);
         }
         public static void setTranslatedTag(this UICard ui, CardManager cardManager, string tag)
         {

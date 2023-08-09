@@ -497,7 +497,10 @@ namespace Game
         public TriggerManager triggers => this.findInstance<TriggerManager>();
         public CacheManager cache => getManager<CacheManager>();
         public EditorManager editor => _editor;
+        public Camera camera => _camera;
         public int playerKey => _playerKey;
+        [SerializeField]
+        Camera _camera;
         [SerializeField]
         EditorManager _editor;
         [SerializeField]

@@ -26,6 +26,7 @@ namespace Game.BattleTable
         public event Action<BattleTable, PointerEventData> onClickNoWhere;
 
         #region 属性字段
+        public Camera Camera => _camera;
         public GameObject SecretTemplate => _secretTemplate;
         public GameObject CardTemplate => _cardTemplate;
         public Master SelfMaster => _selfMaster;
@@ -45,8 +46,6 @@ namespace Game.BattleTable
         public Item SelfItem => _selfItem;
         public Item EnemyItem => _enemyItem;
         public TurnEndButton TurnEndButton => _turnEndButton;
-        public GameObject CardDisplayerObj => _cardDisplayerObj;
-        public CardDisplayer CardDisplayer => _cardDisplayer;
         public Transform InvokeDisplayParent => _invokeDisplayParent;
         public Transform SpellDisplayTransform => _spellDisplayTransform;
         public Transform LeftDisplayTransform => _leftDisplayTransform;
@@ -59,6 +58,8 @@ namespace Game.BattleTable
 
         public AudioClip playCardSound => _playCardSound;
 
+        [SerializeField]
+        private Camera _camera;
         [SerializeField]
         private TableBackground _tableBackground;
         [SerializeField]
@@ -99,10 +100,6 @@ namespace Game.BattleTable
         private Item _enemyItem;
         [SerializeField]
         private TurnEndButton _turnEndButton;
-        [SerializeField]
-        private GameObject _cardDisplayerObj;
-        [SerializeField]
-        private CardDisplayer _cardDisplayer;
         [SerializeField]
         private Transform _invokeDisplayParent;
         [SerializeField]

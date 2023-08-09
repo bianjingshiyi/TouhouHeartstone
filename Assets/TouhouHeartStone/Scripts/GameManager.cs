@@ -308,6 +308,7 @@ namespace Game
             {
                 _mainUI.setBackgroundVisible(true);
                 _mainUI.display(_mainUI.MainMenu);
+                main.camera.gameObject.SetActive(true);
                 _battleTableManager = null;
                 _tableUI = null;
             };
@@ -414,6 +415,7 @@ namespace Game
             _tableUI = scene.findInstance<TableUI>();
             _mainUI.setBackgroundVisible(false);
             _mainUI.hidePages();
+            main.camera.gameObject.SetActive(false);
             if (battleTableManager)
             {
                 battleTableManager.setGame(main, game, localPlayer);

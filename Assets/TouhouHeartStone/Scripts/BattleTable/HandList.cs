@@ -147,9 +147,11 @@ namespace Game.BattleTable
         {
             float rectWidth = _rectTransform?.rect.width ?? 10;
             float pivotX = _rectTransform?.pivot.x ?? 0.5f;
-            float singleWidth = Mathf.Min(rectWidth / count, _maxHandWidth);
-            var width = count * singleWidth;
-            float startX = width * pivotX - singleWidth * 0.5f;
+            float singleWidth = Mathf.Min((rectWidth - _maxHandWidth) / (count - 1), _maxHandWidth);
+            float width = singleWidth * (count - 1);
+            float centerX = rectWidth * (pivotX - 0.5f);
+            float startX = centerX + width * 0.5f;
+
             float x = startX - singleWidth * position;
             return new Vector3(x, position * _cardThickness, 0);
         }

@@ -11,6 +11,10 @@ namespace Game.BattleTable
         {
             _animator.SetBool("Show", hovered);
         }
+        public void setSpellReady(bool ready)
+        {
+            _animator.SetBool("SpellReady", ready);
+        }
         public void destroy()
         {
             Destroy(gameObject);

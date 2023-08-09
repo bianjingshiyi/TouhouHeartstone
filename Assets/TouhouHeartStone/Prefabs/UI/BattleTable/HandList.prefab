@@ -58,7 +58,7 @@ MonoBehaviour:
   _handRoot: {fileID: 3699527998372571929}
   _hands: []
   _isZoomIn: 0
-  _maxHandWidth: 4
+  _maxHandWidth: 2
   _cardThickness: 0.1
   _alignSpeed: 30
 --- !u!95 &-429928977308094937

@@ -305,6 +305,8 @@ namespace Game.BattleTable
         private IEnumerator moveToItem(BattleTableManager table)
         {
             var item = _to.owner == table.player ? table.table.SelfItem : table.table.EnemyItem;
+            item.setExist(true);
+            item.setDeath(false);
             table.setItem(item, _card);
             AnimAnim anim = null;
             while (!SimpleAnimHelper.update(table, ref anim, item.onEquip, item.animator, _deltaTime))

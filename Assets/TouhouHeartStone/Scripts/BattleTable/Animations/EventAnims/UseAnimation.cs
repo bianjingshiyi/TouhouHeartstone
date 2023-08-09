@@ -248,20 +248,24 @@ namespace Game.BattleTable
                     while (!loadProjectileTask.IsCompleted)
                         yield return null;
 
-                    Transform target;
-                    if (table.tryGetMaster(targetCard, out var targetMaster))
-                        target = targetMaster.transform;
-                    else if (table.tryGetServant(targetCard, out var targetServant))
-                        target = targetServant.transform;
-                    else
-                        throw new ActorNotFoundException(targetCard);
+                    var projectile = loadProjectileTask.Result;
+                    if (projectile)
+                    {
+                        Transform target;
+                        if (table.tryGetMaster(targetCard, out var targetMaster))
+                            target = targetMaster.transform;
+                        else if (table.tryGetServant(targetCard, out var targetServant))
+                            target = targetServant.transform;
+                        else
+                            throw new ActorNotFoundException(targetCard);
 
-                    var targetedAnim = new ProjectileAnimation(
-                        table.createProjectile(loadProjectileTask.Result, source, target),
-                        target);
+                        var targetedAnim = new ProjectileAnimation(
+                            table.createProjectile(projectile, source, target),
+                            target);
 
-                    while (!targetedAnim.update(table, _deltaTime))
-                        yield return null;
+                        while (!targetedAnim.update(table, _deltaTime))
+                            yield return null;
+                    }
                 }
                 else
                 {

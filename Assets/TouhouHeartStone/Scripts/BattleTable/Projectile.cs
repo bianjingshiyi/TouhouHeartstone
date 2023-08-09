@@ -5,28 +5,6 @@ namespace Game.BattleTable
 {
     public class Projectile : MonoBehaviour
     {
-        [SerializeField]
-        float _speed;
-        public float speed
-        {
-            get { return _speed; }
-        }
-        [SerializeField]
-        Direction _direction;
-        [SerializeField]
-        Transform _target;
-        public Transform target
-        {
-            get { return _target; }
-            set { _target = value; }
-        }
-        [SerializeField]
-        SimpleAnim _onHit = new SimpleAnim()
-        {
-            animName = "Death"
-        };
-        bool _isOnHitPlayed;
-        bool _isOnHitFinished;
         enum Direction
         {
             up,
@@ -77,5 +55,27 @@ namespace Game.BattleTable
             }
             Destroy(gameObject);
         }
+        public float speed
+        {
+            get { return _speed; }
+        }
+        public Transform target
+        {
+            get { return _target; }
+            set { _target = value; }
+        }
+        bool _isOnHitPlayed;
+        bool _isOnHitFinished;
+        [SerializeField]
+        float _speed;
+        [SerializeField]
+        SimpleAnim _onHit = new SimpleAnim()
+        {
+            animName = "Death"
+        };
+        [SerializeField]
+        Direction _direction;
+        [SerializeField]
+        Transform _target;
     }
 }

@@ -31,6 +31,8 @@ namespace Game.BattleTable.UI
         public event Action onSurrender;
         #endregion
         #region 属性字段
+        public GameObject CardDisplayerObj => _cardDisplayerObj;
+        public CardDisplayer CardDisplayer => _cardDisplayer;
         public GameObject OpponentWaitingObj => _opponentWaitingObj;
         public PilePanel PilePanel => _pilePanel;
         public MulliganDialog InitReplaceDialog => _mulliganDialog;
@@ -39,6 +41,10 @@ namespace Game.BattleTable.UI
         public TipBox TipBox => _tipBox;
         public Text TipText => _tipText;
         public GameLogCtrl LogCtrl => _logCtrl;
+        [SerializeField]
+        private GameObject _cardDisplayerObj;
+        [SerializeField]
+        private CardDisplayer _cardDisplayer;
         [SerializeField]
         private Button _quitButton;
         [SerializeField]
