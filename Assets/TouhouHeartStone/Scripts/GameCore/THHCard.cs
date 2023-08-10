@@ -1196,6 +1196,9 @@ namespace TouhouHeartstone
         private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedActiveEffect generatedEffect, out string invalidMsg)
         {
             invalidMsg = null;
+            //不能是自己
+            if (card == target)
+                return false;
             //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
                 return false;

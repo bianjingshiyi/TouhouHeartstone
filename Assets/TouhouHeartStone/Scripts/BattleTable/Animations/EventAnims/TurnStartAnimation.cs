@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using Timer = BJSYGameCore.Timer;
@@ -12,6 +13,7 @@ namespace Game.BattleTable
         CardSnapshot lastItemSnapshot;
         CardSnapshot masterSnapshot;
         CardSnapshot itemSnapshot;
+        List<CardSnapshot> secretSnapshots = new List<CardSnapshot>();
         public override void init(BattleTableManager table, Arg eventArg)
         {
             base.init(table, eventArg);
@@ -28,6 +30,15 @@ namespace Game.BattleTable
             var lastItem = lastPlayer.getItem();
             if (lastItem != null)
                 lastItemSnapshot = table.game.snapshotCard(lastItem);
+
+            foreach (var p in table.game.players)
+            {
+                var head = p.getHead();
+                foreach (var card in head)
+                {
+                    secretSnapshots.Add(table.game.snapshotCard(card));
+                }
+            }
         }
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
@@ -67,6 +78,14 @@ namespace Game.BattleTable
             if (lastItemSnapshot != null && table.tryGetItem(lastItemSnapshot, out Item lastItem))
             {
                 table.setItem(lastItem, lastItemSnapshot);
+            }
+
+            foreach (var secret in secretSnapshots)
+            {
+                if (table.tryGetSecret(secret, out var secretUI))
+                {
+                    table.setSecret(secretUI, secret);
+                }
             }
         }
         public override bool blockAnim(UIAnimation nextAnim)

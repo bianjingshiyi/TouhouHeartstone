@@ -8,8 +8,6 @@ using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.XR;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using Card = TouhouCardEngine.Card;
 using UICard = Game.BattleTable.TableCard;
 
@@ -51,7 +49,6 @@ namespace Game.BattleTable
 
         public void initMaster(Master master)
         {
-            master.clearSecrets();
             master.setLifeColor(PropertyNumberColor.White);
             master.setShackle(false);
             master.setHighlight(false);
@@ -641,9 +638,10 @@ namespace Game.BattleTable
         public Secret createSecret(ICardData card) => createSecret(updateCardDescriptor(card));
         public Secret createSecret(CardDescriptor desc)
         {
-            Secret secret = Instantiate(table.SecretTemplate).GetComponent<Secret>();
             var master = desc.getOwner() == player ? table.SelfMaster : table.EnemyMaster;
-            master.addSecret(secret);
+            var headSlots = master.HeadSlots;
+            Secret secret = headSlots.createItem();
+            headSlots.addItem(secret);
             cardSecretDic.Add(desc.id, secret);
             return secret;
         }
@@ -661,6 +659,11 @@ namespace Game.BattleTable
             }
             return false;
         }
+        public void setSecret(Secret secret, ICardData card)
+        {
+            secret.setSecretOpen(currentAnimPlayer != player);
+            secret.setMission(card.define.hasKeyword(KEYWORD.MISSION));
+        }
         public bool removeSecret(ICardData card) => removeSecret(card.id);
         public bool removeSecret(CardDescriptor desc)
         {
@@ -671,9 +674,11 @@ namespace Game.BattleTable
             if (tryGetSecret(cardId, out var secret))
             {
                 cardSecretDic.Remove(cardId);
-                DestroyImmediate(secret.gameObject);
-                table.EnemyMaster.updateSecrets();
-                table.SelfMaster.updateSecrets();
+                var desc = getCardDescriptor(cardId);
+                var master = desc.getOwner() == player ? table.SelfMaster : table.EnemyMaster;
+                var headSlots = master.HeadSlots;
+                headSlots.removeItem(secret);
+                secret.destroy();
                 return true;
             }
             return false;

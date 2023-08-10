@@ -15,10 +15,6 @@ namespace Game.BattleTable
         {
             _animator.SetBool("SpellReady", ready);
         }
-        public void destroy()
-        {
-            Destroy(gameObject);
-        }
 
         #region 生命周期
         private void Awake()

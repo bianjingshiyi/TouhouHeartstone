@@ -33,6 +33,12 @@ namespace Game.BattleTable
                 animator = item.animator;
                 table.setItem(item, card);
             }
+            else if (table.tryGetSecret(card, out var secret))
+            {
+                simpleAnim = secret.onSetDefine;
+                animator = secret.animator;
+                table.setSecret(secret, card);
+            }
             else if (table.tryGetSkill(card, out var skill))
             {
                 simpleAnim = skill.onSetDefine;

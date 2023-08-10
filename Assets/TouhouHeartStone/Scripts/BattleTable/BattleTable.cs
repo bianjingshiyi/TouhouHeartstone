@@ -12,6 +12,8 @@ namespace Game.BattleTable
             _enemyField.updateField(deltaTime);
             _selfHandList.updateHand(deltaTime);
             _enemyHandList.updateHand(deltaTime);
+            _selfMaster.updateMaster(deltaTime);
+            _enemyMaster.updateMaster(deltaTime);
         }
         private void Awake()
         {
@@ -27,7 +29,6 @@ namespace Game.BattleTable
 
         #region 属性字段
         public Camera Camera => _camera;
-        public GameObject SecretTemplate => _secretTemplate;
         public GameObject CardTemplate => _cardTemplate;
         public Master SelfMaster => _selfMaster;
         public Master EnemyMaster => _enemyMaster;
@@ -62,8 +63,6 @@ namespace Game.BattleTable
         private Camera _camera;
         [SerializeField]
         private TableBackground _tableBackground;
-        [SerializeField]
-        private GameObject _secretTemplate;
         [SerializeField]
         private GameObject _cardTemplate;
         [SerializeField]

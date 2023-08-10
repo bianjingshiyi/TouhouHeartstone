@@ -85,10 +85,6 @@ namespace Game.BattleTable
         {
             _servantImage.setTableImageSprite(sprite, propertyBlock);
         }
-        public void destroy()
-        {
-            Destroy(gameObject);
-        }
         #endregion
 
         #region 接口实现

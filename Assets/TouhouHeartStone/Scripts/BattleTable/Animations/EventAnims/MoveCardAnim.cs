@@ -2,6 +2,7 @@
 using System.Collections;
 using TouhouCardEngine;
 using TouhouHeartstone;
+using UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using UDeck = Game.BattleTable.Deck;
@@ -203,6 +204,14 @@ namespace Game.BattleTable
         private IEnumerator moveFromHead(BattleTableManager table, Arg arg)
         {
             string toName = _to?.name;
+            if (toName == PILE.GRAVE && arg.parent is THHCard.SecretTriggerEventArg) // 阻止陷阱触发后播放动画
+            {
+                if (table.tryGetSecret(_card, out _))
+                {
+                    table.removeSecret(_card);
+                }
+                yield break;
+            }
             bool fromSelf = _from?.owner == table.player;
 
             Vector2 startPos = (fromSelf ? table.table.SelfMaster : table.table.EnemyMaster).transform.position;
@@ -210,16 +219,17 @@ namespace Game.BattleTable
             if (table.tryGetSecret(_card, out var secret))
             {
                 startPos = secret.transform.position;
+                SimpleAnim exitAnim = secret.onSecretExit;
+                if (_card.define.hasKeyword(KEYWORD.MISSION))
+                {
+                    exitAnim = secret.onMissionExit;
+                }
                 AnimAnim anim = null;
-                while (SimpleAnimHelper.update(table, ref anim, secret.onExit, secret.animator, _deltaTime))
+                while (!SimpleAnimHelper.update(table, ref anim, secret.onSecretExit, secret.animator, _deltaTime))
                     yield return null;
                 table.removeSecret(_card);
             }
 
-            if (toName == PILE.GRAVE && arg.parent is THHCard.SecretTriggerEventArg) // 阻止陷阱触发后播放置入墓地的动画
-            {
-                yield break;
-            }
             yield return moveToAnim(table, startPos, startHeight);
         }
         private IEnumerator moveFromWarp(BattleTableManager table)
@@ -327,12 +337,15 @@ namespace Game.BattleTable
             {
                 secret = table.createSecret(_card);
             }
+
+            SimpleAnim enterAnim = secret.onSecretEnter;
             if (_card.define.hasKeyword(KEYWORD.MISSION))
             {
-                secret.setMission(true);
+                enterAnim = secret.onMissionEnter;
             }
+            table.setSecret(secret, _card);
             AnimAnim anim = null;
-            while (!SimpleAnimHelper.update(table, ref anim, secret.onEnter, secret.animator, _deltaTime))
+            while (!SimpleAnimHelper.update(table, ref anim, enterAnim, secret.animator, _deltaTime))
                 yield return null;
         }
         private IEnumerator moveToHand(BattleTableManager table, Vector3? startPos)

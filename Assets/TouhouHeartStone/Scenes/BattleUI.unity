@@ -1818,7 +1818,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _camera: {fileID: 577032261}
   _tableBackground: {fileID: 1929490916}
-  _secretTemplate: {fileID: 1572423094}
   _cardTemplate: {fileID: 1812653705}
   _selfMaster: {fileID: 921699005}
   _enemyMaster: {fileID: 2580625166683455671}
@@ -3420,6 +3419,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1161106086}
   - component: {fileID: 1161106087}
+  - component: {fileID: 1161106088}
   m_Layer: 0
   m_Name: CardDisplayer
   m_TagString: Untagged
@@ -3461,6 +3461,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _card: {fileID: 1049957673}
   _buffList: {fileID: 1569347541}
+--- !u!225 &1161106088
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161106085}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1167637887
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4519,7 +4531,7 @@ PrefabInstance:
     - target: {fileID: 951190726353474460, guid: 28fc53439cd2cc14aa35a7e1efaeb43a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 951190726353474460, guid: 28fc53439cd2cc14aa35a7e1efaeb43a,
         type: 3}
@@ -4586,12 +4598,6 @@ PrefabInstance:
 --- !u!4 &1572423093 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 951190726353474460, guid: 28fc53439cd2cc14aa35a7e1efaeb43a,
-    type: 3}
-  m_PrefabInstance: {fileID: 1572423092}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1572423094 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7939481230814601632, guid: 28fc53439cd2cc14aa35a7e1efaeb43a,
     type: 3}
   m_PrefabInstance: {fileID: 1572423092}
   m_PrefabAsset: {fileID: 0}
@@ -5203,7 +5209,7 @@ PrefabInstance:
     - target: {fileID: 8895291951548913772, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8895291951548913772, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using TouhouCardEngine;
 using TouhouHeartstone;
+using UI;
 
 namespace Game.BattleTable
 {
@@ -13,13 +14,18 @@ namespace Game.BattleTable
             if (table.tryGetSecret(card, out var secret))
             {
                 secret.dummyTarget.position = table.table.CenterDisplayTransform.position;
+                table.setCard(secret.card, card, true);
 
-                AnimAnim anim = null;
-                while (!SimpleAnimHelper.update(table, ref anim, secret.onTrigger, secret.animator, _deltaTime))
+                AnimAnim triggerAnim = new AnimAnim(secret.animator, secret.onSecretTrigger.animName);
+                AnimAnim exitAnim = new AnimAnim(secret.animator, secret.onSecretExit.animName);
+                secret.onSecretTrigger.invokeBeforeAnim();
+                secret.onSecretExit.invokeBeforeAnim();
+                while (AnimHelper.isAnyAnimUpdating(table, _deltaTime, triggerAnim, exitAnim))
                 {
-                    table.setCard(secret.card, card, true);
                     yield return null;
                 }
+                secret.onSecretTrigger.invokeAfterAnim();
+                secret.onSecretExit.invokeAfterAnim();
             }
         }
     }

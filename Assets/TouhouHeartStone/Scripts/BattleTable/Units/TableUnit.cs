@@ -8,6 +8,10 @@ namespace Game.BattleTable
         {
             return _height;
         }
+        public void destroy()
+        {
+            Destroy(gameObject);
+        }
         public PositionLerp positionLerp => _positionLerp;
         public Animator animator => _animator;
         [SerializeField]

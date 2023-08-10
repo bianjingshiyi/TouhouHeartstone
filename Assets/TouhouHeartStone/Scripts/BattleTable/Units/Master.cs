@@ -1,5 +1,4 @@
 ﻿using System;
-using Boo.Lang;
 using TMPro;
 using UI;
 using UnityEngine;
@@ -10,9 +9,9 @@ namespace Game.BattleTable
     public class Master : TableUnit, IPointerClickHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         #region 公有事件
-        public void updateSecrets()
+        public void updateMaster(float deltaTime)
         {
-
+            HeadSlots.updateHead(deltaTime);
         }
         public void setHighlight(bool highlight, bool yellow = false)
         {
@@ -30,22 +29,6 @@ namespace Game.BattleTable
         public void setArmorDisplay(bool showArmor)
         {
             _animator.SetBool("hasArmor", showArmor);
-        }
-        public void addSecret(Secret secret)
-        {
-            _secretList.Add(secret);
-        }
-        public void insertSecret(int position, Secret secret)
-        {
-            _secretList.Insert(position, secret);
-        }
-        public void removeSecret(Secret secret)
-        {
-            _secretList.Remove(secret);
-        }
-        public void clearSecrets()
-        {
-            _secretList.Clear();
         }
         public void setArmor(int value)
         {
@@ -101,6 +84,7 @@ namespace Game.BattleTable
             _positionLerp.enabled = false;
             transform.localScale = new Vector3(1, 1, 1);
             _healingImageObj.SetActive(false);
+            HeadSlots.clear();
         }
         #endregion
 
@@ -141,6 +125,7 @@ namespace Game.BattleTable
         #region 属性字段
         public PropertyNumber attackNumber => _attackText;
         public PropertyNumber lifeNumber => _lifeText;
+        public HeadSlots HeadSlots => _headSlots;
         public SimpleAnim onTargeted;
         public SimpleAnim onAttack;
         public SimpleAnim onAttacked;
@@ -152,6 +137,8 @@ namespace Game.BattleTable
         private GameObject _armorObj;
         [SerializeField]
         private TextMeshPro _armorText;
+        [SerializeField]
+        private HeadSlots _headSlots;
         [SerializeField]
         private PropertyNumber _attackText;
         [SerializeField]
@@ -170,9 +157,6 @@ namespace Game.BattleTable
         private TextMeshPro _healText;
         [SerializeField]
         private GameObject _healingImageObj;
-
-        [SerializeField]
-        private List<Secret> _secretList = new List<Secret>();
 
         [SerializeField]
         private MeshRenderer _imageRenderer;

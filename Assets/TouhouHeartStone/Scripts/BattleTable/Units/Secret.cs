@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,14 +8,19 @@ namespace Game.BattleTable
 {
     public class Secret : TableUnit, IPointerEnterHandler, IPointerExitHandler
     {
-        public void setOpen(bool open)
-        {
-        }
-
         public void setMission(bool mission)
         {
             _secretObj.SetActive(!mission);
             _missionObj.SetActive(mission);
+        }
+        public void setSecretOpen(bool open)
+        {
+            animator.SetBool("Darken", !open);
+        }
+        public void triggerMission(string text)
+        {
+            _missionText.text = text;
+            animator.SetTrigger("MissionTrigger");
         }
 
         #region 事件回调
@@ -38,15 +44,22 @@ namespace Game.BattleTable
         public Transform dummyTarget => _dummyTarget;
         public TableCard card => _card;
 
-        public SimpleAnim onEnter;
-        public SimpleAnim onTrigger;
-        public SimpleAnim onExit;
+        public SimpleAnim onSecretEnter;
+        public SimpleAnim onSecretTrigger;
+        public SimpleAnim onSecretExit;
+        public SimpleAnim onMissionEnter;
+        public SimpleAnim onMissionTrigger;
+        public SimpleAnim onMissionExit;
+        public SimpleAnim onMissionCompleted;
+        public SimpleAnim onSetDefine;
         [SerializeField]
         private GameObject _secretObj;
         [SerializeField]
         private GameObject _missionObj;
         [SerializeField]
         private Transform _dummyTarget;
+        [SerializeField]
+        private TextMeshPro _missionText;
         [SerializeField]
         private TableCard _card;
         #endregion
