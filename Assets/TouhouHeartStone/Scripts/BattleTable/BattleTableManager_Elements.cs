@@ -40,6 +40,39 @@ namespace Game.BattleTable
         {
             _controlDirtyCards.Add(cardId);
         }
+        /// <summary>
+        /// 根据卡牌快照和指定的事件记录，更新某张卡牌。
+        /// </summary>
+        /// <param name="card">卡牌快照。</param>
+        /// <param name="record">事件记录。用于更新道具的同时更新英雄。</param>
+        public void updateCardBySnapshot(CardSnapshot card, EventRecord record)
+        {
+            if (tryGetServant(card, out var servant))
+            {
+                setServant(servant, card);
+            }
+            else if (tryGetMaster(card, out var master))
+            {
+                setMaster(master, card);
+            }
+            else if (tryGetSecret(card, out var secret))
+            {
+                setSecret(secret, card);
+            }
+            else if (tryGetItem(card, out var item))
+            {
+                setItem(item, card);
+                updateItemMaster(card, record);
+            }
+            else if (tryGetSkill(card, out var skill))
+            {
+                setSkill(skill, card);
+            }
+            else if (tryGetHand(card, out var hand))
+            {
+                setCard(hand.card, card, card.getOwner() == player);
+            }
+        }
 
         #region 英雄
         /// <summary>
@@ -88,32 +121,47 @@ namespace Game.BattleTable
                 return false;
             }
         }
+        public int getMasterItemAttack(ICardData card) => getMasterItemAttack(card.id);
+        public int getMasterItemAttack(int cardId) => getMasterItemAttack(getCardDescriptor(cardId));
+        public int getMasterItemAttack(CardDescriptor desc)
+        {
+            if (currentAnimPlayer == player)
+            {
+                var itemDesc = desc.getOwner() == player ? _selfItemDesc : _enemyItemDesc;
+                return itemDesc?.getAttack() ?? 0;
+            }
+            return 0;
+        }
+        public int getMasterAttack(ICardData card) => getMasterAttack(card.id);
+        public int getMasterAttack(int cardId) => getMasterAttack(getCardDescriptor(cardId));
+        public int getMasterAttack(CardDescriptor desc)
+        {
+            return desc.getAttack() + getMasterItemAttack(desc);
+        }
         /// <summary>
         /// 设置Master的UI
         /// </summary>
         /// <param name="master"></param>
         /// <param name="card"></param>
         /// <param name="isSelectable"></param>
-        public void setMaster(Master master, CardSnapshot card, bool isSelectable = false) => setMaster(master, updateCardDescriptor(card), isSelectable);
+        public void setMaster(Master master, CardSnapshot card) => setMaster(master, updateCardDescriptor(card));
         /// <summary>
         /// 设置Master的UI
         /// </summary>
         /// <param name="master"></param>
         /// <param name="desc"></param>
         /// <param name="isSelectable"></param>
-        public async void setMaster(Master master, CardDescriptor desc, bool isSelectable = false)
+        public async void setMaster(Master master, CardDescriptor desc)
         {
             master.setLife(desc.getCurrentLife());
 
-            var attack = desc.getAttack();
+            var attack = getMasterAttack(desc);
             master.setAttackDisplay(attack > 0);
             master.setAttack(attack);
 
             var armor = desc.getArmor();
             master.setArmorDisplay(armor > 0);
             master.setArmor(armor);
-
-            master.setHighlight(isSelectable);
 
             master.setShield(desc.hasShield);
 
@@ -222,7 +270,9 @@ namespace Game.BattleTable
                 _enemyItemDesc = desc;
 
             item.setOpen(desc.getOwner() == currentAnimPlayer);
-
+            item.setLethal(desc.isLethal);
+            item.setLifeDrain(desc.isDrain);
+            item.setLastword(desc.hasDeathRattle);
             int attack = desc.getAttack();
             item.setAttack(attack);
             item.setAttackColor(attack > desc.define.getAttack() ? PropertyNumberColor.Green : PropertyNumberColor.White);
@@ -234,6 +284,29 @@ namespace Game.BattleTable
             var cards = cardManager;
             var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
             item.setImageSprite(await cards.loadCardImage(poolRef, desc.define.id));
+        }
+        /// <summary>
+        /// 更新道具的拥有者英雄。
+        /// </summary>
+        /// <param name="itemId">道具的卡牌ID。</param>
+        /// <param name="record">当前的事件记录。</param>
+        public void updateItemMaster(int itemId, EventRecord record)
+        {
+            updateItemMaster(game.getCard(itemId), record);
+        }
+        /// <summary>
+        /// 更新道具的拥有者英雄。
+        /// </summary>
+        /// <param name="item">道具。</param>
+        /// <param name="record">当前的事件记录。</param>
+        public void updateItemMaster(ICardData item, EventRecord record)
+        {
+            var master = item.getOwner().getMaster();
+            if (tryGetMaster(master, out var masterUI))
+            {
+                var snapshot = game.getCardSnapshotOfEvent(master, record);
+                setMaster(masterUI, snapshot);
+            }
         }
         public bool removeItem(ICardData card) => removeItem(card.id);
         public bool removeItem(int id)
@@ -565,7 +638,7 @@ namespace Game.BattleTable
         public UICard createInvokeCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
         {
             var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
-            card.transform.localEulerAngles = Vector3.zero;
+            card.transform.localRotation = Quaternion.identity;
             setCardDesc(card, desc, isFaceUp);
             if (height < 0)
                 return card;
@@ -575,6 +648,7 @@ namespace Game.BattleTable
         public UICard createInvokeCard(CardDefine define, Vector3 position, float height = -1, bool isFaceUp = true)
         {
             var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
+            card.transform.localRotation = Quaternion.identity;
             setCardDefine(card, define, isFaceUp);
             if (height < 0)
                 return card;
@@ -1759,6 +1833,31 @@ namespace Game.BattleTable
             }
         }
 
+        private bool canCardBeControlled(int cardId)
+        {
+            return canCardBeControlled(game.getCard(cardId));
+        }
+        private bool canCardBeControlled(Card card)
+        {
+            if (card == null)
+                return false;
+            var desc = getCardDescriptor(card);
+            if (desc == null)
+                return false;
+            var owner = desc.getOwner();
+            bool highlight = owner == player && game.getCurrentPlayer() == player && canControl && !isPlayedSelecting && !isCastingSpell;
+            var pileName = card.pile?.name;
+            if ((pileName == PILE.FIELD && card.isServant()) || 
+                (pileName == PILE.MASTER && card.isMaster()))
+            {
+                return highlight && card.canAttack(game);//可以攻击
+            }
+            else if (pileName == PILE.SKILL && desc.isSkill())
+            {
+                return highlight && card.isUsable(game, player, out _);//技能是可用的
+            }
+            return false;
+        }
         private void updateCardControlable(Card card)
         {
             if (card == null)
@@ -1766,35 +1865,19 @@ namespace Game.BattleTable
             var desc = getCardDescriptor(card);
             if (desc == null)
                 return;
-            var owner = desc.getOwner();
-            bool highlight = owner == player && game.getCurrentPlayer() == player && canControl && !isPlayedSelecting && !isCastingSpell;
 
-            if (desc.isMaster())
+            var highlight = canCardBeControlled(card);
+            if (tryGetMaster(desc.id, out Master master))
             {
-                if (tryGetMaster(desc.id, out Master master))
-                {
-                    bool usable = highlight && //是自己的回合
-                        card.canAttack(game);//可以攻击
-                    master.setHighlight(usable);
-                }
+                master.setHighlight(highlight);
             }
-            else if (desc.isSkill())
+            else if (tryGetSkill(desc.id, out Skill skill))
             {
-                if (tryGetSkill(desc.id, out Skill skill))
-                {
-                    bool usable = highlight && //是自己的回合
-                        card.isUsable(game, player, out _);//技能是可用的
-                    skill.setHighlight(usable);
-                }
+                skill.setHighlight(highlight);
             }
-            else if (desc.isServant())
+            else if (tryGetServant(desc.id, out Servant servant))
             {
-                if (tryGetServant(desc.id, out Servant servant))
-                {
-                    bool usable = highlight && //是自己的回合
-                        card.canAttack(game);//可以攻击
-                    servant.setHighlight(usable);
-                }
+                servant.setHighlight(highlight);
             }
 
         }

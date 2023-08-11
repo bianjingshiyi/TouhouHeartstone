@@ -65,6 +65,7 @@ namespace Game.BattleTable
             servant.onPointerEnter += onServantPointerEnterCallback;
             servant.onPointerExit += onServantPointerExitCallback;
             servant.transform.SetParent(_servantRoot, false);
+            position = Mathf.Clamp(position, 0, _servantList.Count);
             _servantList.Insert(position, servant);
         }
         public Servant insertServant(int position)

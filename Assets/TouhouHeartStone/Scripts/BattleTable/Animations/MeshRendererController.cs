@@ -12,26 +12,17 @@ namespace Game.BattleTable
         {
             _tmp = GetComponent<TextMeshPro>();
         }
-        protected void Update()
+        private void OnWillRenderObject()
         {
-            Transform t = transform;
-            Color col = color;
-            while (t)
+            var col = color;
+            foreach (var group in _parentGroups)
             {
-                t.GetComponents(_parentComponents);
-                foreach (var comp in _parentComponents)
-                {
-                    if (comp is MeshRendererGroup meshRendererGroup)
-                    {
-                        col *= meshRendererGroup.color;
-                    }
-                }
-                t = t.parent;
+                col = col * group.color;
             }
-            _parentComponents.Clear();
             if (textMesh)
             {
                 textMesh.color = col;
+                textMesh.ForceMeshUpdate();
             }
             else
             {
@@ -40,12 +31,23 @@ namespace Game.BattleTable
                 meshRenderer.SetPropertyBlock(propertyBlock);
             }
         }
+        private void OnTransformParentChanged()
+        {
+            updateParents();
+        }
+        private void OnEnable()
+        {
+            updateParents();
+        }
         private void OnDestroy()
         {
             _propertyBlock = null;
         }
-        [SerializeField]
-        Texture _texture;
+        private void updateParents()
+        {
+            _parentGroups.Clear();
+            transform.GetComponentsInParent(false, _parentGroups);
+        }
         [SerializeField]
         Color _color = Color.white;
 
@@ -86,6 +88,6 @@ namespace Game.BattleTable
         private TextMeshPro _tmp;
         private MeshRenderer _meshRenderer;
         private MaterialPropertyBlock _propertyBlock;
-        private List<Component> _parentComponents = new List<Component>();
+        private List<MeshRendererGroup> _parentGroups = new List<MeshRendererGroup>();
     }
 }

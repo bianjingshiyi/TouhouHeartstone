@@ -28,7 +28,7 @@ namespace Game.BattleTable
 
             yield return stopWhenCanceled();
 
-            var choose = table.getRecordCardSnapshot(record, EVENTVAR.CHOSEN_CARD);
+            var choose = record.getVar<CardDefine>(EVENTVAR.CHOSEN_CARD);
 
             var isShow = arg.isShow;
             TableCard chooseCard = null;
@@ -42,7 +42,7 @@ namespace Game.BattleTable
                 AnimAnim anim = null;
                 while (!SimpleAnimHelper.update(table, ref anim, chooseCard.onShowAnim, chooseCard.animator, _deltaTime))
                     yield return null;
-                Object.Destroy(chooseCard.gameObject);
+                chooseCard.destroy();
             }
         }
 

@@ -180,7 +180,12 @@ namespace Game
                         await displayGameUI(game, localPlayer);
                 }
             }
-            tableUI?.showSurrenderButton(true);
+            if (tableUI != null)
+            {
+                tableUI.showSurrenderButton(true);
+                tableUI.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
+                tableUI.GameResultDialog.onSaveReplayButtonClick += quitGame; // 保存并退出
+            }
             await runGame(game);
         }
         public async Task startReplayGame(Replay rep)
@@ -190,6 +195,12 @@ namespace Game
             new ReplayPlayer(rep, game);
             localPlayer = game.players.First();
             await displayGameUI(game, localPlayer);
+            if (tableUI != null)
+            {
+                tableUI.showSurrenderButton(false);
+                tableUI.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
+                tableUI.GameResultDialog.onSaveReplayButtonClick += quitGame; // 保存并退出
+            }
             await runGame(game);
         }
 
@@ -335,8 +346,7 @@ namespace Game
         private void onSurrenderCallback()
         {
             main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, SURRENDER_QUESTION, () => {
-                Main main = GetComponentInParent<Main>();
-                main.game.surrender();
+                localPlayer.cmdSurrender(game);
             });
         }
         #endregion

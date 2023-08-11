@@ -40,7 +40,7 @@ namespace Game.BattleTable
             {
                 while (!SimpleAnimHelper.update(table, ref _anim, searchedUI.onShowAnim, searchedUI.animator, _deltaTime))
                     yield return null;
-                Object.Destroy(searchedUI.gameObject);
+                searchedUI.destroy();
             }
         }
     }

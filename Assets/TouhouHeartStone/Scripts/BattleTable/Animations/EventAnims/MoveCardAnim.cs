@@ -15,23 +15,6 @@ namespace Game.BattleTable
         Pile _from;
         Pile _to;
         int _position;
-
-        CardSnapshot _fromMaster;
-        CardSnapshot _toMaster;
-
-        public override void postEvent(BattleTableManager table, Arg eventArg)
-        {
-            base.postEvent(table, eventArg);
-
-            if (eventArg.from?.name == PILE.ITEM)
-            {
-                _fromMaster = snapshotCard(table, eventArg.from.owner.getMaster());
-            }
-            if (eventArg.to?.name == PILE.ITEM)
-            {
-                _toMaster = snapshotCard(table, eventArg.to.owner.getMaster());
-            }
-        }
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
             yield return pauseWhileNotCompleted();
@@ -183,6 +166,7 @@ namespace Game.BattleTable
         private IEnumerator moveFromItem(BattleTableManager table, Arg arg)
         {
             string toName = _to?.name;
+            table.updateItemMaster(_card, record);
             if (toName == PILE.GRAVE && arg.parent is THHCard.DeathEventArg) // 阻止摧毁后播放置入墓地的动画
             {
                 yield break;
@@ -199,7 +183,6 @@ namespace Game.BattleTable
             }
 
             yield return moveToAnim(table, startPos, startHeight);
-            updateItemMaster(table);
         }
         private IEnumerator moveFromHead(BattleTableManager table, Arg arg)
         {
@@ -276,7 +259,7 @@ namespace Game.BattleTable
                     yield return moveToField(table, startPos);
                     break;
                 case PILE.ITEM: // 任意牌堆-->道具
-                    yield return moveToItem(table);
+                    yield return moveToItem(table, record);
                     break;
                 case PILE.GRAVE: // 任意牌堆-->墓地
                     {
@@ -312,7 +295,7 @@ namespace Game.BattleTable
                 }
             }
         }
-        private IEnumerator moveToItem(BattleTableManager table)
+        private IEnumerator moveToItem(BattleTableManager table, EventRecord record)
         {
             var item = _to.owner == table.player ? table.table.SelfItem : table.table.EnemyItem;
             item.setExist(true);
@@ -323,7 +306,7 @@ namespace Game.BattleTable
             {
                 yield return null;
             }
-            updateItemMaster(table);
+            table.updateItemMaster(_card, record);
         }
         /// <summary>
         /// 奥秘入场
@@ -391,21 +374,6 @@ namespace Game.BattleTable
         }
 
 
-        void updateItemMaster(BattleTableManager table)
-        {
-            if (_fromMaster != null)
-            {
-                var masterUI = _fromMaster.getOwner() == table.player ? table.table.SelfMaster : table.table.EnemyMaster;
-                table.setMaster(masterUI, _fromMaster);
-                _fromMaster = null;
-            }
-            if (_toMaster != null)
-            {
-                var masterUI = _toMaster.getOwner() == table.player ? table.table.SelfMaster : table.table.EnemyMaster;
-                table.setMaster(masterUI, _toMaster);
-                _toMaster = null;
-            }
-        }
         public override bool blockAnim(UIAnimation nextAnim)
         {
             if (nextAnim is MoveCardAnim moveCard)

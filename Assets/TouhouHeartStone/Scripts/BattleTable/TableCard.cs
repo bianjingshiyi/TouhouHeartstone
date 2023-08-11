@@ -10,7 +10,7 @@ namespace Game.BattleTable
     {
         public void setVisible(bool visible)
         {
-            gameObject.SetActive(visible);
+            _cardRoot.SetActive(visible);
         }
         public void animateFaceup(bool faceup)
         {
@@ -163,6 +163,8 @@ namespace Game.BattleTable
         public SimpleAnim onFlipToFace;
         public SimpleAnim onFlipToBack;
         public SimpleAnim onNotify;
+        [SerializeField]
+        private GameObject _cardRoot;
         [SerializeField]
         private string _faceFrontStateName;
         [SerializeField]

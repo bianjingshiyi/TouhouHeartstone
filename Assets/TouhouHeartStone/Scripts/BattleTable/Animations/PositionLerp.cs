@@ -10,6 +10,10 @@ namespace Game.BattleTable
         }
         public void setStart(Vector3 position)
         {
+            if (_isLocalMode)
+            {
+                position = globalToLocalPoint(position);
+            }
             _startPosition = position;
         }
         public void setTarget(Transform target, float stopDistance = 0)
@@ -43,24 +47,58 @@ namespace Game.BattleTable
             //也不能在Update中获取位置，然后在LateUpdate中更新位置，更新的位置仍然是错的。
             if (targetTransform != null)
             {
-                Vector3 targetPosition = Vector3.MoveTowards(targetTransform.position, _startPosition, _stopDistance);
-                transform.position = Vector3.Lerp(_startPosition, targetPosition, _time);
+                Vector3 targetPosition = targetTransform.position;
+                Vector3 startPosition = _startPosition;
+                if (_isLocalMode)
+                {
+                    Vector3 globalStartPosition = localToGlobalPoint(startPosition);
+                    Vector3 closePosition = Vector3.MoveTowards(targetPosition, globalStartPosition, _stopDistance);
+                    closePosition = globalToLocalPoint(closePosition);
+                    transform.localPosition = Vector3.Lerp(startPosition, closePosition, _time);
+                }
+                else
+                {
+                    Vector3 closePosition = Vector3.MoveTowards(targetPosition, startPosition, _stopDistance);
+                    transform.position = Vector3.Lerp(startPosition, closePosition, _time);
+                }
             }
+        }
+        private Vector3 globalToLocalPoint(Vector3 global)
+        {
+            if (!transform.parent)
+            {
+                return global;
+            }
+            return transform.parent.InverseTransformPoint(global);
+        }
+        private Vector3 localToGlobalPoint(Vector3 global)
+        {
+            if (!transform.parent)
+            {
+                return global;
+            }
+            return transform.parent.TransformPoint(global);
         }
         public Transform targetTransform => _targetTransform;
         [Range(0, 1)]
         [SerializeField]
         public float _time;
         [SerializeField]
+        public bool _isLocalMode;
+        [SerializeField]
         Transform _targetTransform;
         [SerializeField]
         float _stopDistance;
         [SerializeField]
         Vector3 _startPosition;
+        public bool isLocalMode
+        {
+            get => _isLocalMode;
+            set => _isLocalMode = value;
+        }
         public Vector3 startPosition
         {
             get => _startPosition;
-            set => _startPosition = value;
         }
     }
 }

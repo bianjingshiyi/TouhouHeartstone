@@ -56,8 +56,6 @@ namespace Game.BattleTable
                 {
                     simpleAnim = _card.isSilenced(table.game) ? servant.onSilenceTrue : servant.onSilenceFalse;
                 }
-
-                table.setServant(servant, _card);
             }
             else if (table.tryGetMaster(_card, out var master))
             {
@@ -71,11 +69,11 @@ namespace Game.BattleTable
                 {
                     if (_card.getAttack(table.game) > _card.define.getAttack())
                     {
-                        simpleAnim = servant.attackNumber.textGreenAnim;
+                        simpleAnim = item.attackNumber.textGreenAnim;
                     }
                     else
                     {
-                        simpleAnim = servant.attackNumber.textWhiteAnim;
+                        simpleAnim = item.attackNumber.textWhiteAnim;
                     }
                 }
                 else if (propName == CARD.CURRENT_LIFE && value is int)
@@ -93,7 +91,6 @@ namespace Game.BattleTable
                         simpleAnim = item.durabilityNumber.textWhiteAnim;
                     }
                 }
-                table.setItem(item, _card);
             }
             else if (table.tryGetSkill(_card, out var skill))
             {
@@ -111,7 +108,6 @@ namespace Game.BattleTable
                 {
                     simpleAnim = propNum.textWhiteAnim;
                 }
-                table.setSkill(skill, _card);
             }
             else if (table.tryGetHand(_card, out var hand))
             {
@@ -130,9 +126,8 @@ namespace Game.BattleTable
                 {
                     simpleAnim = propNum.textWhiteAnim;
                 }
-                table.setCard(hand.card, _card, table.table.SelfHandList.contains(hand));
             }
-
+            table.updateCardBySnapshot(_card, record);
             AnimAnim anim = null;
             while (!SimpleAnimHelper.update(table, ref anim, simpleAnim, animator, _deltaTime))
             {
@@ -166,13 +161,23 @@ namespace Game.BattleTable
                         simpleAnim = master.lifeNumber.textWhiteAnim;
                     }
                     break;
+                case DEFINE.ATTACK:
+                    animator = master.attackNumber.animator;
+                    if (table.getMasterAttack(_card) > table.getMasterItemAttack(_card) + _card.define.getAttack())
+                    {
+                        simpleAnim = master.attackNumber.textGreenAnim;
+                    }
+                    else
+                    {
+                        simpleAnim = master.attackNumber.textWhiteAnim;
+                    }
+                    break;
                 case CARD.ARMOR:
                     var armor = _card.getArmor(table.game);
                     master.setArmorDisplay(armor > 0);
                     master.setArmor(armor);
                     break;
             }
-            table.setMaster(master, _card);
         }
 
         public override bool blockAnim(UIAnimation nextAnim)

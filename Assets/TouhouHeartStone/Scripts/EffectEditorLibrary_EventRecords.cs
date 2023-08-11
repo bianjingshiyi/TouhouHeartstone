@@ -120,33 +120,7 @@ namespace Game
         {
             if (card == null || record == null)
                 return null;
-            var records = game.triggers.getEventRecords();
-            var recordIndex = Array.IndexOf(records, record);
-            var histories = card.getHistories();
-            int historyIndex = -1;
-            for (int i = 0; i < histories.Length; i++)
-            {
-                var history = histories[i];
-                var rec = game.triggers.getEventRecord(history.eventArg);
-                if (rec == null)
-                    continue;
-                var historyRecIndex = Array.IndexOf(records, rec);
-                if (historyRecIndex <= recordIndex) // 还没到，或者刚好是指定事件
-                {
-                    historyIndex = i;
-                }
-                if (historyRecIndex >= recordIndex) // 超过了指定事件
-                {
-                    break;
-                }
-            }
-            if (historyIndex < 0)
-            {
-                return game.snapshotCard(card);
-            }
-            var snapshot = game.snapshotCard(card);
-            card.revertToHistory(snapshot, historyIndex);
-            return snapshot;
+            return game.getCardSnapshotOfEvent(card, record);
         }
         #endregion
     }

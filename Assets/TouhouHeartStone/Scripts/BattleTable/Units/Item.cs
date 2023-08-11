@@ -36,6 +36,18 @@ namespace Game.BattleTable
         {
             _animator.SetBool("Exists", exist);
         }
+        public void setLethal(bool value)
+        {
+            _lethalIconObj.SetActive(value);
+        }
+        public void setLifeDrain(bool value)
+        {
+            _lifeDrainIconObj.SetActive(value);
+        }
+        public void setLastword(bool value)
+        {
+            _lastwordIconObj.SetActive(value);
+        }
 
         public void setImageSprite(Sprite image)
         {
@@ -74,6 +86,12 @@ namespace Game.BattleTable
         private PropertyNumber _lifeText;
         [SerializeField]
         private MeshRenderer _imageRenderer;
+        [SerializeField]
+        private GameObject _lethalIconObj;
+        [SerializeField]
+        private GameObject _lifeDrainIconObj;
+        [SerializeField]
+        private GameObject _lastwordIconObj;
         private MaterialPropertyBlock propertyBlock
         {
             get

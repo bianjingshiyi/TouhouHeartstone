@@ -870,8 +870,9 @@ namespace TouhouHeartstone
         }
         public static Task cmdSurrender(this Player player, CardEngine game)
         {
-            game.logPlayerAction(player.id, new SurrenderResponse());
-            return game.surrender(player);
+            var resp = new SurrenderResponse();
+            game.logPlayerAction(player.id, resp);
+            return game.answers.answer(player.id, resp);
         }
         public static Task cmdDiscover(this Player player, CardEngine game, int cardId)
         {

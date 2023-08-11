@@ -142,6 +142,8 @@ namespace Controllers
         #endregion
         static string[] _hiddenEvents =
         {
+            "AddBuffEvent",
+            "RemoveBuffEvent",
             "SecretTriggerEvent",
             "MissionCompleteEvent",
             "ComeOnStageEvent",

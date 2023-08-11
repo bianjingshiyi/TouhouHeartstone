@@ -52,7 +52,7 @@ namespace Game.BattleTable
                 table.currentAnimPlayer = player;
                 table.canControl = player == table.player;
                 table.setAllCardControlDirty();
-                updateMastersAndItems(table);
+                updateCards(table);
             }
             while (!timer.isExpired())
                 yield return null;
@@ -60,7 +60,7 @@ namespace Game.BattleTable
             table.table.TurnEndButton.setInteractable(player == table.player);
         }
 
-        private void updateMastersAndItems(BattleTableManager table)
+        private void updateCards(BattleTableManager table)
         {
             if (masterSnapshot != null && table.tryGetMaster(masterSnapshot, out Master master))
             {

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using TouhouCardEngine;
-using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using Card = TouhouCardEngine.Card;
@@ -19,39 +18,33 @@ namespace Game.BattleTable
             {
                 simpleAnim = servant.onSetDefine;
                 animator = servant.animator;
-                table.setServant(servant, card);
             }
             else if (table.tryGetMaster(card, out var master))
             {
                 simpleAnim = master.onSetDefine;
                 animator = master.animator;
-                table.setMaster(master, card);
             }
             else if (table.tryGetItem(card, out var item))
             {
                 simpleAnim = item.onSetDefine;
                 animator = item.animator;
-                table.setItem(item, card);
             }
             else if (table.tryGetSecret(card, out var secret))
             {
                 simpleAnim = secret.onSetDefine;
                 animator = secret.animator;
-                table.setSecret(secret, card);
             }
             else if (table.tryGetSkill(card, out var skill))
             {
                 simpleAnim = skill.onSetDefine;
                 animator = skill.animator;
-                table.setSkill(skill, card);
             }
             else if (table.tryGetHand(card, out var hand))
             {
                 simpleAnim = hand.onSetDefine;
                 animator = hand.animator;
-                if (card.getOwner() == table.player)
-                    table.setCard(hand.card, card, true);
             }
+            table.updateCardBySnapshot(card, record);
             if (simpleAnim != null && animator)
             {
                 AnimAnim anim = null;

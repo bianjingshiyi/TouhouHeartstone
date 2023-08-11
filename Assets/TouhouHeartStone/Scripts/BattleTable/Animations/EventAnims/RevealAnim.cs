@@ -51,13 +51,13 @@ namespace Game.BattleTable
             //翻转揭示
             if (!startFaceUp)
             {
-                AnimAnim animFlipFace = new AnimAnim(cardUI.animator, cardUI.onFlipToFace.animName);
+                AnimAnim anim = null;
                 table.setCard(cardUI, _card);
-                while (!animFlipFace.update(table, _deltaTime))
+                cardUI.animateFaceup(true);
+                while (!SimpleAnimHelper.update(table, ref anim, cardUI.onFlipToFace, cardUI.animator, _deltaTime))
                 {
                     yield return null;
                 }
-
             }
 
             // 等待1秒。
@@ -71,9 +71,9 @@ namespace Game.BattleTable
             //重新翻回
             if (!startFaceUp)
             {
-                cardUI.animateFaceup(true);
-                AnimAnim animFlipBack = new AnimAnim(cardUI.animator, cardUI.onFlipToBack.animName);
-                while (!animFlipBack.update(table, _deltaTime))
+                AnimAnim anim = null;
+                cardUI.animateFaceup(false);
+                while (!SimpleAnimHelper.update(table, ref anim, cardUI.onFlipToBack, cardUI.animator, _deltaTime))
                 {
                     yield return null;
                 }
