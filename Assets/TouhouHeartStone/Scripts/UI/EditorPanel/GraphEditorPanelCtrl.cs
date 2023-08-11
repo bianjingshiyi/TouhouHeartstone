@@ -371,7 +371,7 @@ namespace UI
         {
             if (define.actionDefine != null)
             {
-                return _actionGraphCtrl.tryTranslateWithDict(define.actionDefine.defineName);
+                return _actionGraphCtrl.tryTranslateWithDict(define.actionDefine.editorName);
             }
             if (define.eventDefine != null)
             {

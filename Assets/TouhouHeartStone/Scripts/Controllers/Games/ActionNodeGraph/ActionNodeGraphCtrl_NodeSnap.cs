@@ -45,7 +45,7 @@ namespace Controllers
 
 
                     string docKey = CanNodeDefineOpenDocument(define) ? define.actionDefine.defineName : null;
-                    _ui.setPreviewNode(tryTranslateWithDict(define.actionDefine.defineName),
+                    _ui.setPreviewNode(tryTranslateWithDict(define.actionDefine.editorName),
                         inputInfos,
                         constsInfo,
                         outputInfos,
@@ -134,7 +134,7 @@ namespace Controllers
                 {
                     var define = actionNode.define;
                     string docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineName : null;
-                    _ui.setPreviewNode(tryTranslateWithDict(define.defineName),
+                    _ui.setPreviewNode(tryTranslateWithDict(define.editorName),
                         getNodeInputViewData(node),
                         getNodeConstValueInfos(node),
                         getNodeOutputViewData(node),

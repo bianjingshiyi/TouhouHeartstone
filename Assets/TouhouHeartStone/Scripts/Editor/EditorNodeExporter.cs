@@ -54,30 +54,39 @@ namespace Game
             List<ActionComment> list = new List<ActionComment>();
             foreach (var kv in defines)
             {
-                if (oldDict?.ContainsKey(kv.Key) == true)
+                var define = kv.Value;
+                ActionComment comment = null;
+                if (oldDict != null)
                 {
-                    var item = oldDict[kv.Key];
-                    item.Update(kv.Value);
-                    list.Add(item);
-                    continue;
-                }
-
-                bool hasOld = false;
-                foreach (var oldName in kv.Value.obsoleteNames)
-                {
-                    if (oldDict?.ContainsKey(oldName) == true)
+                    if (oldDict.TryGetValue(define.defineName, out var defineNameComment))
                     {
-                        var item = oldDict[oldName];
-                        item.Update(kv.Value);
-                        list.Add(item);
-                        hasOld = true;
-                        break;
+                        comment = defineNameComment;
+                    }
+                    else if (oldDict.TryGetValue(define.editorName, out var editorNameComment))
+                    {
+                        comment = editorNameComment;
+                    }
+                    else
+                    {
+                        foreach (var oldName in kv.Value.obsoleteNames)
+                        {
+                            if (oldDict.TryGetValue(oldName, out var oldNameComment))
+                            {
+                                comment = oldNameComment;
+                                break;
+                            }
+                        }
                     }
                 }
 
-                if (!hasOld)
+                if (comment != null)
                 {
-                    list.Add(new ActionComment(kv.Value));
+                    comment.Update(define);
+                    list.Add(comment);
+                }
+                else
+                {
+                    list.Add(new ActionComment(define));
                 }
             }
 

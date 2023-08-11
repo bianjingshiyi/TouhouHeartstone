@@ -25,7 +25,6 @@ namespace Game
                     }
                 }
                 id++;
-                id++;
                 var graph = new ActionGraph();
                 GeneratedActionDefine actionDefine = new GeneratedActionDefine(graph, id, null, name, null, null, null);
                 actionDefine.InitNodes();

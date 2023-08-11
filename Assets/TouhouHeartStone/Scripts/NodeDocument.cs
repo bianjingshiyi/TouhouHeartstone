@@ -242,7 +242,7 @@ namespace Game
         {
             defineName = act.defineName;
             editorName = act.editorName;
-            obsoleteNames = act.obsoleteNames;
+            obsoleteNames = act.obsoleteNames.Where(n => n != editorName).ToArray();
             obsoleteMsg = act.obsoleteMsg;
 
             inputs = ActionParameterComment.GetArray(inputs, act.inputDefines.ToArray());
