@@ -272,6 +272,9 @@ namespace Game.BattleTable
             }
             //游戏事件处理
             eventCache.poll();
+            //动画
+            queueAnims();
+            updateAnim();
             if (_allControlDirty)
             {
                 updateAllControlable();
@@ -287,9 +290,6 @@ namespace Game.BattleTable
                 }
                 _controlDirtyCards.Clear();
             }
-            //动画
-            queueAnims();
-            updateAnim();
         }
         #endregion
         #region 事件回调
@@ -389,6 +389,7 @@ namespace Game.BattleTable
                 addAnim(anim);
             else if (!(obj is FreeActRequest))
                 UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
+            _allControlDirty = true;
         }
         void onResponse(IResponse response)
         {
@@ -426,7 +427,6 @@ namespace Game.BattleTable
             {
                 anim.postEvent(this);
             }
-            table.TurnEndButton.setInteractable(game.getCurrentPlayer() == player);
         }
         #endregion
         private void reset()

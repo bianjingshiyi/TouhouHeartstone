@@ -57,7 +57,6 @@ namespace Game.BattleTable
             while (!timer.isExpired())
                 yield return null;
             table.hideTurnTipImage();
-            table.table.TurnEndButton.setInteractable(player == table.player);
         }
 
         private void updateCards(BattleTableManager table)

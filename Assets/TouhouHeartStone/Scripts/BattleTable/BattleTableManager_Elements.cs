@@ -1010,12 +1010,8 @@ namespace Game.BattleTable
         {
             if (!hand.isDraggable)
                 return;
-            if (!canControl)//无法进行控制
-            {
-                resetUse(true, true);
-                return;
-            }
             Card card = getCard(hand);
+            // 卡牌不可使用。
             if (usingCard != card)
             {
                 resetUse(true, true);
@@ -1032,13 +1028,13 @@ namespace Game.BattleTable
                 if (usingCard.isServant())
                     table.SelfField.setPreviewPosition(-1);
             }
-            // 卡牌不可使用。
-            else if (!usingCard.isUsable(game, player, out string info))
+            // 卡牌不可用
+            else if (!canCardBeControlled(card, out string info))
             {
                 //停止拖拽并提示
                 showTip(info);
                 resetUse(true, true);
-                setPosition = false;
+                return;
             }
             else
             {
@@ -1077,11 +1073,6 @@ namespace Game.BattleTable
                 return;
             if (usingCard == null) //不存在使用中的卡牌
                 return;
-            if (!canControl)//不是你的回合，不生效
-            {
-                resetUse(true, true);
-                return;
-            }
             // 拖回手牌
             var pos = pointer.pointerCurrentRaycast.worldPosition;
             var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(pos);
@@ -1092,7 +1083,7 @@ namespace Game.BattleTable
                 return;
             }
             //卡牌不可用
-            if (!usingCard.isUsable(game, player, out string info))
+            if (!canCardBeControlled(usingCard, out string info))
             {
                 showTip(info);
                 resetUse(true, true);
@@ -1193,12 +1184,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onMasterDragCallback(Master master, PointerEventData pointer)
         {
-            if (!canControl)//不是你的回合
-                return;
             Card card = getCard(master);
-            if (card.getOwner() != player)//不是你的英雄
-                return;
-            if (!card.canAttack(game))
+            if (!canCardBeControlled(card))
                 return;
             //拉动距离也应该有一个阈值
             var pos = pointer.pointerCurrentRaycast.worldPosition;
@@ -1223,12 +1210,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onMasterEndDragCallback(Master master, PointerEventData pointer)
         {
-            if (!canControl)//不是你的回合
-                return;
             Card card = getCard(master);
-            if (card.owner != player)//不是你的英雄
-                return;
-            if (!card.canAttack(game))//不能攻击
+            if (!canCardBeControlled(card))
                 return;
             //如果在随从上面
             if (isOnTarget(pointer, out var target))
@@ -1256,16 +1239,15 @@ namespace Game.BattleTable
                 cancelSkill();
                 return;
             }
-
-            if (player.getSkill().isUsable(game, player, out var info))
-            {
-                if (!player.getSkill().isNeedTarget(game))
-                    player.cmdUse(game, player.getSkill());
-            }
-            else
+            var skillCard = player.getSkill();
+            if (!canCardBeControlled(skillCard, out string info))
             {
                 showTip(info);
+                return;
             }
+
+            if (!skillCard.isNeedTarget(game))
+                player.cmdUse(game, skillCard);
         }
         private void onSkillBeginDragCallback(Skill skill, PointerEventData pointer)
         {
@@ -1281,9 +1263,10 @@ namespace Game.BattleTable
             //TODO:按帧记录Replay
             if (!canControl)
                 return;
+            var skillCard = player.getSkill();
             // Stage2: 当前正在拖拽，判断距离以决定是否退出目标选择模式
             var pos = pointer.pointerCurrentRaycast.worldPosition;
-            if (usingCard == player.getSkill())
+            if (usingCard == skillCard)
             {
                 if (Vector3.Distance(skill.transform.position, pos) < skillDragThreshold)
                     cancelSkill();
@@ -1296,17 +1279,18 @@ namespace Game.BattleTable
                 return;//已经在用别的牌了
             if (Vector3.Distance(skill.transform.position, pos) < skillDragThreshold)
                 return;
-            if (player.getSkill().isUsable(game, player, out var info))
+            // 不可用。
+            if (!canCardBeControlled(skillCard, out var info))
             {
-                if (player.getSkill().isNeedTarget(game))
-                {
-                    usingCard = player.getSkill();
-                    highlightTargets(player.getSkill().getAvaliableTargets(game));
-                    displayArrow(skill.transform, skill.transform.position, pos);
-                }
-            }
-            else
                 showTip(info);
+                return;
+            }
+            if (skillCard.isNeedTarget(game))
+            {
+                usingCard = skillCard;
+                highlightTargets(player.getSkill().getAvaliableTargets(game));
+                displayArrow(skill.transform, skill.transform.position, pos);
+            }
         }
         /// <summary>
         /// 技能结束拖拽
@@ -1320,19 +1304,24 @@ namespace Game.BattleTable
                 cancelSkill();
                 return;
             }
-            if (usingCard != null && usingCard != player.getSkill())
+            var skillCard = player.getSkill();
+            if (usingCard != null && usingCard != skillCard)
                 return;//在用其他卡片
-            if (usingCard != player.getSkill())
+            if (usingCard != skillCard)
             {
                 cancelSkill();
                 return;
             }
-            if (isOnTarget(pointer, out var target))
+            if (!canCardBeControlled(skillCard, out string info))
             {
-                if (player.getSkill().isUsable(game, player, out var info) && player.getSkill().isValidTarget(game, target))
+                showTip(info);
+            }
+            else if (isOnTarget(pointer, out var target))
+            {
+                if (skillCard.isValidTarget(game, target, out string invalidMsg))
                     player.cmdUse(game, player.getSkill(), 0, target);
                 else
-                    showTip(info);
+                    showTip(invalidMsg);
             }
             cancelSkill();
         }
@@ -1386,12 +1375,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onServantDragCallback(Servant servant, Field field, PointerEventData pointer)
         {
-            if (!canControl)//不是你的回合
-                return;
             Card card = getCard(servant);
-            if (card.getOwner() != player)//不是你的卡
-                return;
-            if (!card.canAttack(game))
+            if (!canCardBeControlled(card))
                 return;
             //拉动距离也应该有一个阈值
             var pos = pointer.pointerCurrentRaycast.worldPosition;
@@ -1416,12 +1401,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onServantEndDragCallback(Servant servant, Field field, PointerEventData pointer)
         {
-            if (!canControl)//不是你的回合
-                return;
             Card card = getCard(servant);
-            if (card.owner != player)//不是你的卡
-                return;
-            if (!card.canAttack(game))//不能攻击
+            if (!canCardBeControlled(card))
                 return;
             //如果在随从或英雄上面
             if (isOnTarget(pointer, out var target))
@@ -1821,6 +1802,7 @@ namespace Game.BattleTable
         #region 更新可控制高光
         private void updateAllControlable()
         {
+            _requesting = _animationQueue.Any(a => a is RequestAnimation);
             foreach (var player in game.players)
             {
                 updateCardControlable(player.getMaster());
@@ -1831,30 +1813,35 @@ namespace Game.BattleTable
                 var card = game.getCard(id);
                 updateCardControlable(card);
             }
+            table.TurnEndButton.setInteractable(game.getCurrentPlayer() == player && !_requesting && canControl);
         }
 
-        private bool canCardBeControlled(int cardId)
-        {
-            return canCardBeControlled(game.getCard(cardId));
-        }
         private bool canCardBeControlled(Card card)
         {
+            return canCardBeControlled(card, out _);
+        }
+        private bool canCardBeControlled(Card card, out string info)
+        {
+            info = string.Empty;
             if (card == null)
                 return false;
             var desc = getCardDescriptor(card);
             if (desc == null)
                 return false;
             var owner = desc.getOwner();
-            bool highlight = owner == player && game.getCurrentPlayer() == player && canControl && !isPlayedSelecting && !isCastingSpell;
+            bool highlight = owner == player && game.getCurrentPlayer() == player && canControl && !_requesting;
             var pileName = card.pile?.name;
+            if (pileName == PILE.HAND ||
+                (pileName == PILE.SKILL && desc.isSkill()))
+            {
+                var usable = card.isUsable(game, player, out info);
+                return highlight && usable;//手牌/技能是可用的
+            }
             if ((pileName == PILE.FIELD && card.isServant()) || 
                 (pileName == PILE.MASTER && card.isMaster()))
             {
-                return highlight && card.canAttack(game);//可以攻击
-            }
-            else if (pileName == PILE.SKILL && desc.isSkill())
-            {
-                return highlight && card.isUsable(game, player, out _);//技能是可用的
+                var canAttack = card.canAttack(game);
+                return highlight && canAttack;//可以攻击
             }
             return false;
         }
@@ -1866,7 +1853,7 @@ namespace Game.BattleTable
             if (desc == null)
                 return;
 
-            var highlight = canCardBeControlled(card);
+            var highlight = canCardBeControlled(card) && !isPlayedSelecting && !isCastingSpell;
             if (tryGetMaster(desc.id, out Master master))
             {
                 master.setHighlight(highlight);
@@ -1936,6 +1923,7 @@ namespace Game.BattleTable
         /// 是否进入法术目标选择模式
         /// </summary>
         public bool isCastingSpell { get; set; }
+        private bool _requesting;
         public float servantAttackThreshold => _servantAttackThreshold;
         public float masterAttackThreshold => _masterAttackThreshold;
         private CardChooseMode _cardChooseMode;

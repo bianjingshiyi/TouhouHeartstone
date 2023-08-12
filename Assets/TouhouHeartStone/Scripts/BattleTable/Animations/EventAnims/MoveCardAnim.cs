@@ -1,5 +1,6 @@
-﻿
+﻿using System;
 using System.Collections;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -15,8 +16,12 @@ namespace Game.BattleTable
         Pile _from;
         Pile _to;
         int _position;
+        float _breakDuration = 3f;
+        bool _breakDurationEvaluated;
+        private const float _minBreakDuration = 0.05f;
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
+            evaluateBreakDurations(table);
             yield return pauseWhileNotCompleted();
             yield return stopWhenCanceled();
 
@@ -373,19 +378,32 @@ namespace Game.BattleTable
             //放完了
         }
 
+        private void evaluateBreakDurations(BattleTableManager table)
+        {
+            if (_breakDuration <= _minBreakDuration || _breakDurationEvaluated)
+                return;
+
+            var anims = table.getAnimQueue();
+            var index = Array.IndexOf(anims, this);
+            var moveAnims = anims.OfType<MoveCardAnim>().Where((a, i) => i > index).ToArray();
+
+            var targetBreakTime = getBreakTimeByCount(moveAnims.Length);
+            foreach (var move in moveAnims)
+            {
+                move._breakDurationEvaluated = true;
+                move._breakDuration = Mathf.Min(move._breakDuration, targetBreakTime);
+            }
+        }
+        private float getBreakTimeByCount(int count)
+        {
+            return Mathf.Max(_minBreakDuration, 3f / count);
+        }
 
         public override bool blockAnim(UIAnimation nextAnim)
         {
-            if (nextAnim is MoveCardAnim moveCard)
+            if (_duration >= _breakDuration) // 加速。
             {
-                var from = tEventArg.from;
-                var to = tEventArg.to;
-                var nextFrom = moveCard.tEventArg.from;
-                var nextTo = moveCard.tEventArg.to;
-                if (from == nextFrom && to == nextTo && _duration >= 0.1f) // 加速所有来源和目标相同的牌堆移动。
-                {
-                    return false;
-                }
+                return false;
             }
             return base.blockAnim(nextAnim);
         }

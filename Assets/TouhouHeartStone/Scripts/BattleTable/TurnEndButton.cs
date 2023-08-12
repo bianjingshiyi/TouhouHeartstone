@@ -21,11 +21,18 @@ namespace Game.BattleTable
         }
         public void setInteractable(bool interactable)
         {
-            _interactable = interactable;
-            if (_isHovered && !_interactable)
+            if (_isHovered && _interactable != interactable)
             {
-                onPointerExit?.Invoke(this);
+                if (!interactable)
+                {
+                    onPointerExit?.Invoke(this);
+                }
+                else
+                {
+                    onPointerEnter?.Invoke(this);
+                }
             }
+            _interactable = interactable;
         }
         #endregion
 
@@ -37,15 +44,15 @@ namespace Game.BattleTable
         }
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
+            _isHovered = true;
             if (!_interactable) return;
             onPointerEnter?.Invoke(this);
-            _isHovered = true;
         }
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
+            _isHovered = false;
             if (!_interactable) return;
             onPointerExit?.Invoke(this);
-            _isHovered = false;
         }
         #endregion
 

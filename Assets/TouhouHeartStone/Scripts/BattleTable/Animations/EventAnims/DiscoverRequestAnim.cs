@@ -16,6 +16,7 @@ namespace Game.BattleTable
             }
             if (table.table.Discover.IsActive())
                 return false;
+            table.setAllCardControlDirty();
             return true;
         }
     }

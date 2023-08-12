@@ -12,7 +12,6 @@ namespace Game.BattleTable
             table.canControl = false;
             table.cancelAttack();
             table.closeDiscoverDialog();
-            table.table.TurnEndButton.setInteractable(false);
             yield break;
         }
     }
