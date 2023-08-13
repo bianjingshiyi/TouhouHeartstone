@@ -59,7 +59,7 @@ namespace Game.BattleTable
             }
             else if (table.tryGetMaster(_card, out var master))
             {
-                updateMaster(table, record, master, arg, out animator, out simpleAnim);
+                updateMaster(table, master, arg, out animator, out simpleAnim);
             }
             else if (table.tryGetItem(_card, out var item))
             {
@@ -111,23 +111,13 @@ namespace Game.BattleTable
             }
             else if (table.tryGetHand(_card, out var hand))
             {
-                var cardType = _card.define.type;
-                var propNum = hand.card.getCostPropNum(cardType);
-                animator = hand.card.getCostPropNum(cardType).animator;
-                if (_card.getCost(table.game) < _card.define.getCost())
-                {
-                    simpleAnim = propNum.textGreenAnim;
-                }
-                else if (_card.getCost(table.game) > _card.define.getCost())
-                {
-                    simpleAnim = propNum.textRedAnim;
-                }
-                else
-                {
-                    simpleAnim = propNum.textWhiteAnim;
-                }
+                updateHand(table, hand, arg, out animator, out simpleAnim);
             }
             table.updateCardBySnapshot(_card, record);
+            if (!animator || !animator.isActiveAndEnabled || simpleAnim == null)
+            {
+                yield break;
+            }
             AnimAnim anim = null;
             while (!SimpleAnimHelper.update(table, ref anim, simpleAnim, animator, _deltaTime))
             {
@@ -135,7 +125,7 @@ namespace Game.BattleTable
             }
         }
 
-        private void updateMaster(BattleTableManager table, EventRecord record, Master master, Arg arg, out Animator animator, out SimpleAnim simpleAnim)
+        private void updateMaster(BattleTableManager table, Master master, Arg arg, out Animator animator, out SimpleAnim simpleAnim)
         {
             var propName = arg.propName;
 
@@ -180,6 +170,53 @@ namespace Game.BattleTable
             }
         }
 
+        private void updateHand(BattleTableManager table, HandItem hand, Arg arg, out Animator animator, out SimpleAnim simpleAnim)
+        {
+            var propName = arg.propName;
+            var cardType = _card.define.type;
+            animator = null;
+            simpleAnim = null;
+            if (propName == DEFINE.ATTACK)
+            {
+                var attackNumber = hand.card.getAttackPropNum(cardType);
+                if (!attackNumber)
+                    return;
+
+                animator = attackNumber.animator;
+                if (_card.getAttack(table.game) > _card.define.getAttack())
+                    simpleAnim = attackNumber.textGreenAnim;
+                else
+                    simpleAnim = attackNumber.textWhiteAnim;
+            }
+            else if (propName == CARD.CURRENT_LIFE || propName == DEFINE.LIFE)
+            {
+                var lifeNumber = hand.card.getLifePropNum(cardType);
+                if (!lifeNumber)
+                    return;
+
+                animator = lifeNumber.animator;
+                if (_card.getCurrentLife(table.game) < _card.getLife(table.game))
+                    simpleAnim = lifeNumber.textRedAnim;
+                else if (_card.getLife(table.game) > _card.define.getLife())
+                    simpleAnim = lifeNumber.textGreenAnim;
+                else
+                    simpleAnim = lifeNumber.textWhiteAnim;
+            }
+            else if (propName == DEFINE.COST)
+            {
+                var costNumber = hand.card.getCostPropNum(cardType);
+                if (!costNumber)
+                    return;
+
+                animator = costNumber.animator;
+                if (_card.getCost(table.game) < _card.define.getCost())
+                    simpleAnim = costNumber.textGreenAnim;
+                else if (_card.getCost(table.game) > _card.define.getCost())
+                    simpleAnim = costNumber.textRedAnim;
+                else
+                    simpleAnim = costNumber.textWhiteAnim;
+            }
+        }
         public override bool blockAnim(UIAnimation nextAnim)
         {
             return false;

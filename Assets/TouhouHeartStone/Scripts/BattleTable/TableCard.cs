@@ -26,9 +26,33 @@ namespace Game.BattleTable
         }
         public void setType(string type)
         {
-            servantCardFace.setVisible(type == DEFINE.SERVANT || type == DEFINE.MASTER);
-            spellCardFace.setVisible(type == DEFINE.SPELL || type == DEFINE.SKILL);
-            itemCardFace.setVisible(type == DEFINE.ITEM);
+            _servantCardFace.setVisible(type == DEFINE.SERVANT || type == DEFINE.MASTER);
+            _spellCardFace.setVisible(type == DEFINE.SPELL || type == DEFINE.SKILL);
+            _itemCardFace.setVisible(type == DEFINE.ITEM);
+        }
+        public PropertyNumber getAttackPropNum(string cardType)
+        {
+            switch (cardType)
+            {
+                case DEFINE.SERVANT:
+                case DEFINE.MASTER:
+                    return _servantCardFace.attackPropNumber;
+                case DEFINE.ITEM:
+                    return _itemCardFace.attackPropNumber;
+            }
+            return null;
+        }
+        public PropertyNumber getLifePropNum(string cardType)
+        {
+            switch (cardType)
+            {
+                case DEFINE.SERVANT:
+                case DEFINE.MASTER:
+                    return _servantCardFace.lifePropNumber;
+                case DEFINE.ITEM:
+                    return _itemCardFace.lifePropNumber;
+            }
+            return null;
         }
         public PropertyNumber getCostPropNum(string cardType)
         {
@@ -36,12 +60,12 @@ namespace Game.BattleTable
             {
                 case DEFINE.SERVANT:
                 case DEFINE.MASTER:
-                    return servantCardFace.costPropNumber;
+                    return _servantCardFace.costPropNumber;
                 case DEFINE.SPELL:
                 case DEFINE.SKILL:
-                    return spellCardFace.costPropNumber;
+                    return _spellCardFace.costPropNumber;
                 case DEFINE.ITEM:
-                    return itemCardFace.costPropNumber;
+                    return _itemCardFace.costPropNumber;
             }
             return null;
         }
@@ -52,61 +76,45 @@ namespace Game.BattleTable
         }
         public void setTag(string name)
         {
-            servantCardFace.setTag(name);
+            _servantCardFace.setTag(name);
         }
         public void setName(string name)
         {
-            servantCardFace.nameText.text = name;
-            spellCardFace.nameText.text = name;
-            itemCardFace.nameText.text = name;
+            _servantCardFace.nameText.text = name;
+            _spellCardFace.nameText.text = name;
+            _itemCardFace.nameText.text = name;
         }
         public void setSubname(string name)
         {
-            servantCardFace.subnameText.text = name;
+            _servantCardFace.subnameText.text = name;
         }
         public void setDesc(string desc)
         {
-            servantCardFace.descText.text = desc;
-            spellCardFace.descText.text = desc;
-            itemCardFace.descText.text = desc;
+            _servantCardFace.descText.text = desc;
+            _spellCardFace.descText.text = desc;
+            _itemCardFace.descText.text = desc;
         }
         public void setCost(int value)
         {
-            servantCardFace.costPropNumber.text = value.ToString();
-            spellCardFace.costPropNumber.text = value.ToString();
-            itemCardFace.costPropNumber.text = value.ToString();
-        }
-        public void setCostColor(PropertyNumberColor color)
-        {
-            servantCardFace.costPropNumber.setTextColor(color);
-            spellCardFace.costPropNumber.setTextColor(color);
-            itemCardFace.costPropNumber.setTextColor(color);
+            _servantCardFace.costPropNumber.text = value.ToString();
+            _spellCardFace.costPropNumber.text = value.ToString();
+            _itemCardFace.costPropNumber.text = value.ToString();
         }
         public void setAttack(int value)
         {
-            servantCardFace.attackPropNumber.text = value.ToString();
-            itemCardFace.attackPropNumber.text = value.ToString();
-        }
-        public void setAttackColor(PropertyNumberColor color)
-        {
-            servantCardFace.attackPropNumber.setTextColor(color);
-            itemCardFace.attackPropNumber.setTextColor(color);
+            _servantCardFace.attackPropNumber.text = value.ToString();
+            _itemCardFace.attackPropNumber.text = value.ToString();
         }
         public void setLife(int value)
         {
-            servantCardFace.lifePropNumber.text = value.ToString();
-            itemCardFace.lifePropNumber.text = value.ToString();
-        }
-        public void setLifeColor(PropertyNumberColor color)
-        {
-            servantCardFace.lifePropNumber.setTextColor(color);
-            itemCardFace.lifePropNumber.setTextColor(color);
+            _servantCardFace.lifePropNumber.text = value.ToString();
+            _itemCardFace.lifePropNumber.text = value.ToString();
         }
         public void setImageSprite(Sprite sprite)
         {
-            servantCardFace.setImage(sprite);
-            spellCardFace.setImage(sprite);
-            itemCardFace.setImage(sprite);
+            _servantCardFace.setImage(sprite);
+            _spellCardFace.setImage(sprite);
+            _itemCardFace.setImage(sprite);
         }
         public void destroy()
         {
@@ -187,11 +195,11 @@ namespace Game.BattleTable
         [SerializeField]
         private GameObject cardFront;
         [SerializeField]
-        private ServantCardFace servantCardFace;
+        private ServantCardFace _servantCardFace;
         [SerializeField]
-        private SpellCardFace spellCardFace;
+        private SpellCardFace _spellCardFace;
         [SerializeField]
-        private ItemCardFace itemCardFace;
+        private ItemCardFace _itemCardFace;
         #endregion
     }
 }

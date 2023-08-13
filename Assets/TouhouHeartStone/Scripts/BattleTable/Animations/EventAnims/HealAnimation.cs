@@ -26,7 +26,7 @@ namespace Game.BattleTable
             }
             else if (table.tryGetMaster(card, out Master master))
             {
-                servant.showHealText(healedValue);
+                master.showHealText(healedValue);
                 animList.Add(new AnimAnim(master.animator, master.onHeal.animName));
             }
             while (true)

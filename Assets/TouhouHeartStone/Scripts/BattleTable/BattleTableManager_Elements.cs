@@ -70,7 +70,7 @@ namespace Game.BattleTable
             }
             else if (tryGetHand(card, out var hand))
             {
-                setCard(hand.card, card, card.getOwner() == player);
+                setCard(hand.card, card, isHandVisible(hand));
             }
         }
 
@@ -325,6 +325,10 @@ namespace Game.BattleTable
         #endregion 道具
 
         #region 手牌
+        public bool isHandVisible(HandItem hand)
+        {
+            return table.SelfHandList.contains(hand);
+        }
 
         /// <summary>
         /// 创建一张手牌
