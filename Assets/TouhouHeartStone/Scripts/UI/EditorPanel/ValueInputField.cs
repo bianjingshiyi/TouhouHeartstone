@@ -6,6 +6,7 @@ using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
 using UIHelper = BJSYGameCore.UI.UIHelper;
+using System.Linq;
 
 namespace UI
 {
@@ -558,17 +559,17 @@ namespace UI
             else if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
                 _listRoot.gameObject.SetActive(true);
-                if (!(_valueInfo.value is CardReferenceCollection cardReferenceCollection))
+                if (!(_valueInfo.value is IEnumerable<DefineReference> cardReferenceCollection))
                 {
                     cardReferenceCollection = null;
                 }
-                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, cardReferenceCollection != null ? cardReferenceCollection.Count : 0, (i, itemRect) =>
+                UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, cardReferenceCollection != null ? cardReferenceCollection.Count() : 0, (i, itemRect) =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.setValueInfo(null, new ActionNodeValueInfo()
                     {
                         type = ActionNodeValueType.cardReference,
-                        value = cardReferenceCollection[i]
+                        value = cardReferenceCollection.ElementAt(i)
                     }, true);
                 }, itemRect =>
                 {
