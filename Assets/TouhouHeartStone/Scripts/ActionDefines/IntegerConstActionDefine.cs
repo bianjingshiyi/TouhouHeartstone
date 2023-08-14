@@ -7,17 +7,14 @@ namespace TouhouCardEngine
     {
         public IntegerConstActionDefine() : base(BuiltinActionDefineID.IntegerConst, "IntegerConst")
         {
-            inputs = new PortDefine[]
-            {
-                enterPortDefine,
-            };
+            type = NodeDefineType.Function;
+            inputs = new PortDefine[0];
             consts = new PortDefine[1]
             {
                 PortDefine.Const(typeof(int), "value")
             };
             outputs = new PortDefine[]
             {
-                exitPortDefine,
                 PortDefine.Value(typeof(int), "result", "value")
             };
             obsoleteNames = new string[] { "IntegerConst" };

@@ -9,9 +9,9 @@ namespace TouhouCardEngine
     {
         public IntegerOperationActionDefine() : base(BuiltinActionDefineID.IntegerOperation, "IntegerOperation")
         {
+            type = NodeDefineType.Function;
             inputs = new PortDefine[]
             {
-                enterPortDefine,
                 PortDefine.Value(typeof(int), paramName, "Value", isParams: true)
             };
             consts = new PortDefine[]
@@ -20,7 +20,6 @@ namespace TouhouCardEngine
             };
             outputs = new PortDefine[]
             {
-                exitPortDefine,
                 PortDefine.Value(typeof(int), resultName, "Value")
             };
             obsoleteNames = new string[] { "IntegerOperation" };

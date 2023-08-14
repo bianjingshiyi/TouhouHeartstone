@@ -8,17 +8,14 @@ namespace TouhouCardEngine
     {
         public BooleanConstActionDefine() : base(BuiltinActionDefineID.BooleanConst, "BooleanConst")
         {
-            inputs = new PortDefine[]
-            {
-                enterPortDefine,
-            };
+            type = NodeDefineType.Function;
+            inputs = new PortDefine[0];
             consts = new PortDefine[1]
             {
                 PortDefine.Const(typeof(bool), "value", "Value")
             };
             outputs = new PortDefine[]
             {
-                exitPortDefine,
                 PortDefine.Value(typeof(bool), "return", "Value")
             };
             obsoleteNames = new string[] { "BooleanConst" };

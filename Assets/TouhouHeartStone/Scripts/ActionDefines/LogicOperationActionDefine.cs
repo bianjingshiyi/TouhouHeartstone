@@ -9,9 +9,9 @@ namespace TouhouCardEngine
     {
         public LogicOperationActionDefine() : base(BuiltinActionDefineID.LogicOperation, "LogicOperation")
         {
+            type = NodeDefineType.Function;
             inputs = new PortDefine[]
             {
-                enterPortDefine,
                 PortDefine.Value(typeof(bool), "value", isParams: true)
             };
             consts = new PortDefine[1]
@@ -20,7 +20,6 @@ namespace TouhouCardEngine
             };
             outputs = new PortDefine[]
             {
-                exitPortDefine,
                 PortDefine.Value(typeof(bool), "result")
             };
             obsoleteNames = new string[] { "LogicOperation" };

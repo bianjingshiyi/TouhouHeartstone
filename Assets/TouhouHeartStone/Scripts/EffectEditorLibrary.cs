@@ -95,7 +95,7 @@ namespace Game
         }
 
         [Obsolete]
-        [ActionNodeMethod(BuiltinActionDefineID.DoUntilAction_Obsolete, EDITOR_CATEGORY_NAME_OTHER, "重复动作直到（过时）", EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
+        [THHActionMethod(BuiltinActionDefineID.DoUntilAction_Obsolete, EDITOR_CATEGORY_NAME_OTHER, "重复动作直到（过时）", EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
         public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] ControlInput condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
@@ -128,7 +128,7 @@ namespace Game
             while (times < maxRepeatTime && !finished);
         }
 
-        [ActionNodeMethod(BuiltinActionDefineID.DoUntilAction, null, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
+        [THHActionMethod(BuiltinActionDefineID.DoUntilAction, null, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
         public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] NodeValueRef<bool> condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
@@ -516,7 +516,7 @@ namespace Game
         /// 信仰对决（旧）
         /// </summary>
         [Obsolete]
-        [ActionNodeMethod(BuiltinActionDefineID.FaithDuel_Obsolete, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "信仰对决（过时）", EDITOR_NODE_FAITHDUEL)]
+        [THHActionMethod(BuiltinActionDefineID.FaithDuel_Obsolete, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "信仰对决（过时）", EDITOR_NODE_FAITHDUEL)]
         [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
         public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -551,7 +551,7 @@ namespace Game
         /// <summary>
         /// 信仰对决
         /// </summary>
-        [ActionNodeMethod(BuiltinActionDefineID.FaithDuel, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_FAITHDUEL)]
+        [THHActionMethod(BuiltinActionDefineID.FaithDuel, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_FAITHDUEL)]
         [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
         public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -1116,7 +1116,7 @@ namespace Game
         /// 筛选（过时）
         /// </summary>
         [Obsolete]
-        [ActionNodeMethod(BuiltinActionDefineID.Where_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "筛选（过时）", StringTable.EDITOR_NODE_NAME_WHERE)]
+        [THHActionMethod(BuiltinActionDefineID.Where_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "筛选（过时）", StringTable.EDITOR_NODE_NAME_WHERE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
         public static async Task<object[]> where(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
@@ -1161,7 +1161,7 @@ namespace Game
         /// <summary>
         /// 筛选
         /// </summary>
-        [ActionNodeMethod(BuiltinActionDefineID.Where, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_WHERE)]
+        [THHActionMethod(BuiltinActionDefineID.Where, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_WHERE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
         public static async Task<object[]> where(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
@@ -1235,7 +1235,7 @@ namespace Game
         /// 根据排序依据排序。（过时）
         /// </summary>
         [Obsolete]
-        [ActionNodeMethod(BuiltinActionDefineID.OrderBy_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "排序（过时）", EDITOR_NODE_NAME_ORDER_BY)]
+        [THHActionMethod(BuiltinActionDefineID.OrderBy_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "排序（过时）", EDITOR_NODE_NAME_ORDER_BY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING, isConst: true)] bool descending,
@@ -1407,11 +1407,21 @@ namespace Game
     }
 
     /// <summary>
+    /// 自动从内置ID获取节点类型的动作定义属性。
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
+    public class THHActionMethodAttribute : ActionNodeMethodAttribute
+    {
+        public THHActionMethodAttribute(int id, string category, string editorName, params string[] obsoleteNames) : base(id, category, editorName, id.getNodeDefineType(), obsoleteNames)
+        {
+        }
+    }
+    /// <summary>
     /// 用于将过时的MethodActionDefine转换为以内置名为主键的动作定义。
     /// 主要用于向ObsoletedNames添加当前的编辑器名称，以实现卡池转换。
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public class ObsoletedKeyMethodAttribute : ActionNodeMethodAttribute
+    public class ObsoletedKeyMethodAttribute : THHActionMethodAttribute
     {
         public ObsoletedKeyMethodAttribute(int id, string category, string editorName, params string[] obsoleteNames) : base(id, category, editorName, obsoleteNames.Append(editorName).ToArray())
         {

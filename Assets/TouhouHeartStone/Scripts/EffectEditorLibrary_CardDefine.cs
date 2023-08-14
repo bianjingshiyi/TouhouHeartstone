@@ -108,7 +108,7 @@ namespace Game
         }
 
         /// 获取卡牌定义标签列表
-        [ActionNodeMethod(BuiltinActionDefineID.GetCardDefineTagList, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_GET_CARD_DEFINE_TAG_LIST)]
+        [THHActionMethod(BuiltinActionDefineID.GetCardDefineTagList, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_GET_CARD_DEFINE_TAG_LIST)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_TAG_LIST)]
         public static string[] getCardDefineTagList(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)

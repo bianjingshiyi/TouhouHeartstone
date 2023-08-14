@@ -8,6 +8,7 @@ namespace TouhouCardEngine
     {
         public GetBuffDefineAction() : base(BuiltinActionDefineID.GetBuffDefine, defName)
         {
+            type = NodeDefineType.Function;
             _inputs = new PortDefine[0];
             _consts = new PortDefine[]
             {

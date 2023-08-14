@@ -8,9 +8,9 @@ namespace TouhouCardEngine
     {
         public CompareActionDefine() : base(BuiltinActionDefineID.Compare, "Compare")
         {
+            type = NodeDefineType.Function;
             inputs = new PortDefine[]
             {
-                enterPortDefine,
                 PortDefine.Value(typeof(object), "A"),
                 PortDefine.Value(typeof(object), "B")
             };
@@ -20,7 +20,6 @@ namespace TouhouCardEngine
             };
             outputs = new PortDefine[]
             {
-                exitPortDefine,
                 PortDefine.Value(typeof(bool), "result")
             };
             obsoleteNames = new string[] { "Compare" };

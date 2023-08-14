@@ -273,6 +273,15 @@ namespace Game
 
         #endregion
 
+        public static NodeDefineType getNodeDefineType(this int id)
+        {
+            var typeFlag = id / 100000 * 100000;
+            if (typeFlag == Type_Function)
+            {
+                return NodeDefineType.Function;
+            }
+            return NodeDefineType.Action;
+        }
     }
     public static class ActionReferenceHelper
     {
