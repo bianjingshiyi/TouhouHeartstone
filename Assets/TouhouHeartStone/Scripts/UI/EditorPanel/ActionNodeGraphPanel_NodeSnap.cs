@@ -13,7 +13,7 @@ namespace UI
             ActionNodeValueInfo[] constsInfo,
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
-            string docKey = null)
+            int docKey = -1)
         {
             ActionNodeItem actionNodeItem = _simulationNode;
 

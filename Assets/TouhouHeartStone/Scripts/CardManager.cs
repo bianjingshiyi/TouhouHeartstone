@@ -27,6 +27,7 @@ namespace Game
             base.onAwake();
             onAwake_Sprite();
             onAwake_CardPool();
+            onAwake_Actions();
         }
         protected void Reset()
         {

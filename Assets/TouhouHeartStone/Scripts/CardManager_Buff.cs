@@ -62,7 +62,7 @@ namespace Game
 
             EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
 
-            var nodeDefiner = new THHNodeDefiner(name => game.getActionDefine(name, buffDefine.cardPoolId), eventFinder);
+            var nodeDefiner = new THHNodeDefiner(this);
             var clone = cloneSeri.toGeneratedBuffDefine(nodeDefiner);
             clone.cardPoolId = buffDefine.cardPoolId;
             return clone;

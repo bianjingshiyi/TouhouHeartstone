@@ -6,6 +6,7 @@ using TouhouCardEngine;
 using TouhouHeartstone;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Game
 {
@@ -36,12 +37,11 @@ namespace Game
                 actionDefineList = new List<SerializableActionDefine>();
         }
         #endregion
-        public CardPool toCardPool(ActionDefineFinder defineFinder, EventTypeInfoFinder eventFinder, TypeFinder typeFinder)
+        public CardPool toCardPool(long cardPoolId, CardManager cardManager, TypeFinder typeFinder)
         {
             _genActionDefines = new List<GeneratedActionDefine>();
-            _defineFinder = defineFinder;
-            _nodeDefiner = new THHNodeDefiner(getActionDefine, eventFinder);
-            getGeneratedActionDefines(typeFinder);
+            _nodeDefiner = new THHNodeDefiner(cardManager, (actRef, name) => getLoadingActionDefine(cardPoolId, cardManager, actRef, name));
+            getGeneratedActionDefines(cardPoolId, typeFinder);
 
             var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(_nodeDefiner));
             var buffDefines = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine(_nodeDefiner));
@@ -55,13 +55,14 @@ namespace Game
                 buffSkinList = buffSkinList,
             };
         }
-        private void getGeneratedActionDefines(TypeFinder typeFinder)
+        private void getGeneratedActionDefines(long cardPoolId, TypeFinder typeFinder)
         {
             var defines = actionDefineList;
             // 铺设节点。
             foreach (var seri in defines)
             {
                 var define = seri.toGeneratedActionDefine(typeFinder);
+                define.cardPoolId = cardPoolId;
                 _genActionDefines.Add(define);
             }
             // 定义所有节点。
@@ -78,17 +79,39 @@ namespace Game
                 graph.AddConnections(nodes);
             }
         }
-        private ActionDefine getActionDefine(string name)
+        private ActionDefine getLoadingActionDefine(long cardPoolId, CardManager cardManager, ActionReference actRef, string name)
         {
-            return _defineFinder?.Invoke(name) ?? _genActionDefines.FirstOrDefault(a => a.defineName == name || (a.obsoleteNames != null && a.obsoleteNames.Contains(name)));
+            ActionDefine def = null;
+            if (actRef != null)
+            {
+                if (actRef.cardPoolId == cardPoolId)
+                {
+                    def = _genActionDefines.FirstOrDefault(a => a.defineId == actRef.defineId);
+                }
+                else
+                {
+                    def = cardManager.getActionDefine(actRef);
+                }
+            }
+            else
+            {
+                actRef = cardManager.getBuiltinActionReferenceFromName(name);
+                if (actRef != null)
+                {
+                    def = cardManager.getActionDefine(actRef);
+                }
+                if (def == null)
+                {
+                    def = _genActionDefines.FirstOrDefault(a => a.editorName == name);
+                }
+            }
+            return def;
         }
 
         #endregion
         #region 属性字段
         [BsonIgnore]
         private INodeDefiner _nodeDefiner;
-        [BsonIgnore]
-        private ActionDefineFinder _defineFinder;
         [BsonIgnore]
         private List<GeneratedActionDefine> _genActionDefines;
 

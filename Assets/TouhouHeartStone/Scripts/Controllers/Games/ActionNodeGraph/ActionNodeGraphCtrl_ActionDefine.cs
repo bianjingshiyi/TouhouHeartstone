@@ -206,13 +206,13 @@ namespace Controllers
             return outputs;
         }
         #region 动作定义
-        private ActionDefine getActionDefine(string name)
+        private ActionDefine getActionDefine(ActionReference actRef)
         {
-            return game.getActionDefine(name, _curCardPoolId);
+            return game.card.getActionDefine(actRef);
         }
         private ActionDefine[] getAllActionDefines()
         {
-            return game.getActionDefinesArray(_curCardPoolId);
+            return game.card.getAllActionDefines(_curCardPoolId);
         }
         private string getActionDefineCategory(ActionDefine actionDefine)
         {

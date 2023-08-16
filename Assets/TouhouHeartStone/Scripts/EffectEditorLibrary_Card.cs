@@ -72,7 +72,7 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [KeyBondMethod("IsCardOfType", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE__IS_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardOfType, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE__IS_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardDefine(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
@@ -100,7 +100,7 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [KeyBondMethod("CardHasKeyword", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_IS_KEYWORDS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardHasKeyword, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_IS_KEYWORDS)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsKeywords(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD)] Card card,
@@ -115,7 +115,7 @@ namespace Game
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
-        [KeyBondMethod("GetRandomCard", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetRandomCard, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
         public static Card getRandomCard(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -131,7 +131,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
-        [KeyBondMethod("CreateTokenToField", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToField, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardToField(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -146,7 +146,7 @@ namespace Game
         /// 创建衍生卡并置入手牌
         /// </summary>
         /// <returns></returns>
-        [KeyBondMethod("CreateTokenToHand", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HAND)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToHand, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HAND)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardToHand(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -167,7 +167,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
-        [KeyBondMethod("CreateTokenToDeck", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToDeck, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardShuffleToDeck(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -189,7 +189,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
-        [KeyBondMethod("CreateTokenToItem", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CREATE_TOKEN_CARD_EQUIP_TO_ITEM)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToItem, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CREATE_TOKEN_CARD_EQUIP_TO_ITEM)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardEquipToItem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -207,7 +207,7 @@ namespace Game
         /// <summary>
         /// 这张卡牌
         /// </summary>
-        [KeyBondMethod("ThisCard", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_THIS_CARD)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ThisCard, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_THIS_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card thisCard(Card card)
         {
@@ -216,7 +216,7 @@ namespace Game
         /// <summary>
         /// 获取属性
         /// </summary>
-        [KeyBondMethod("GetCardProp", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_PROPERTY, "GetProperty")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_PROPERTY, "GetProperty")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getProp(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
@@ -227,7 +227,7 @@ namespace Game
         /// <summary>
         /// 设置属性
         /// </summary>
-        [KeyBondMethod("SetCardProp", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SET_PROPERTY, "SetProperty")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SET_PROPERTY, "SetProperty")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static Task<IPropChangeEventArg> setProp(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
@@ -241,7 +241,7 @@ namespace Game
         /// <summary>
         /// 获取花费
         /// </summary>
-        [KeyBondMethod("GetCardCost", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_COST)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardCost, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_COST)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCost(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -253,7 +253,7 @@ namespace Game
         /// <summary>
         /// 获取攻击
         /// </summary>
-        [KeyBondMethod("GetCardAttack", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ATTACK)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardAttack, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ATTACK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getAttack(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -265,7 +265,7 @@ namespace Game
         /// <summary>
         /// 获取最大生命值
         /// </summary>
-        [KeyBondMethod("GetCardMaxLife", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_MAX_LIFE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardMaxLife, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_MAX_LIFE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getMaxLife(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -277,7 +277,7 @@ namespace Game
         /// <summary>
         /// 获取当前生命值
         /// </summary>
-        [KeyBondMethod("GetCardCurrentLife", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_CURRENT_LIFE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardCurrentLife, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_CURRENT_LIFE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getLife(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -297,7 +297,7 @@ namespace Game
         /// <param name="eventArg"></param>
         /// <param name="propName"></param>
         /// <returns></returns>
-        [KeyBondMethod("GetUniquePropertyName", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetUniquePropertyName, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_UNIQUE_PROPERTY_NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)]
         public static string getUniquePropName(IBuff buff, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName)
         {
@@ -305,13 +305,13 @@ namespace Game
                 propName = buff.instanceID + propName;
             return propName;
         }
-        [KeyBondMethod("GetCardOwner", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_OWNER, "GetOwner")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardOwner, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_OWNER, "GetOwner")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
         public static Player getOwner([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             return card?.owner;
         }
-        [KeyBondMethod("GetCardSpelLDamage", StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, "GetSpellDamage")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardSpellDamage, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, "GetSpellDamage")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
         public static int getSpellDamage(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -327,7 +327,7 @@ namespace Game
         /// <param name="card"></param>
         /// <returns></returns>
         [Obsolete]
-        [KeyBondMethod("IsCardSpell", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_IS_SPELL, "IsSpell")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardSpell, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_IS_SPELL, "IsSpell")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool isSpell([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
@@ -355,8 +355,7 @@ namespace Game
         [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_PARAM_NAME_DAMAGE_SOURCE = "伤害源";
 
-
-        [KeyBondMethod("Damage", EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.Damage, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE, "Damage")]
         [Obsolete]
         public static Task damage(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] this Card card, CardEngine game,
@@ -370,7 +369,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害
         /// </summary>
-        [KeyBondMethod("DealDamageOrSpellDamage", EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageOrSpellDamage, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamage(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
@@ -393,7 +392,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害并分配给目标
         /// </summary>
-        [KeyBondMethod("DealDamageSplitAmong", EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageSplitAmong, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
@@ -416,7 +415,7 @@ namespace Game
         /// <summary>
         /// 对固定数量的随机目标造成伤害或法术伤害
         /// </summary>
-        [KeyBondMethod("DealDamageToRandomTargets", EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageToRandomTargets, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
@@ -447,7 +446,7 @@ namespace Game
         /// <param name="targets"></param>
         /// <returns></returns>
         [Obsolete]
-        [KeyBondMethod("DealSpecificSpellDamageToTargets", EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificSpellDamageToTargets, EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
@@ -467,7 +466,7 @@ namespace Game
         /// <param name="targets"></param>
         /// <returns></returns>
         [Obsolete]
-        [KeyBondMethod("DealSpellDamageToTargets", EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpellDamageToTargets, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpellDamageToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
@@ -486,7 +485,7 @@ namespace Game
         /// <param name="targets"></param>
         /// <returns></returns>
         [Obsolete]
-        [KeyBondMethod("DealSpecificSpellDamageToRandomTargets", EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificSpellDamageToRandomTargets, EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToRandomTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
@@ -505,7 +504,7 @@ namespace Game
         /// <param name="damage"></param>
         /// <returns></returns>
         [Obsolete]
-        [KeyBondMethod("DealSpecificDamageToSpecificNumberOfRandomTargets", EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificDamageToSpecificNumberOfRandomTargets, EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
@@ -525,7 +524,7 @@ namespace Game
         /// <param name="damage"></param>
         /// <returns></returns>
         [Obsolete]
-        [KeyBondMethod("DealSpecificSpellDamageToSpecificNumberOfRandomTargets", EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificSpellDamageToSpecificNumberOfRandomTargets, EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
@@ -540,7 +539,7 @@ namespace Game
         /// <summary>
         /// 治疗
         /// </summary>
-        [KeyBondMethod("HealTargets", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.HealTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
         public static Task<THHCard.HealEventArg[]> healTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
@@ -550,7 +549,7 @@ namespace Game
                 return Task.FromResult(Array.Empty<THHCard.HealEventArg>());
             return targets.heal(game, card, value);
         }
-        [KeyBondMethod("HealSpecificAmountTotargets", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.HealSpecificAmountToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
         public static Task<THHCard.HealEventArg[]> healSpecificAmountToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
@@ -563,7 +562,7 @@ namespace Game
 
 
         #region 获取场上的卡牌
-        [KeyBondMethod("GetAllServants", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ALL_SERVANTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllServants, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ALL_SERVANTS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getAllServants(CardEngine game)
         {
@@ -574,7 +573,7 @@ namespace Game
             }
             return cardList.ToArray();
         }
-        [KeyBondMethod("GetAllCharacters", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ALL_CHARACTERS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCharacters, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ALL_CHARACTERS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getAllCharacters(CardEngine game)
         {
@@ -594,14 +593,14 @@ namespace Game
         /// <returns></returns>
         [TranslateMsg("动作图编辑器中动作节点名称之获取友方随从")]
         public const string EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS = "获取友方随从";
-        [KeyBondMethod("GetFriendlyServants", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetFriendlyServants, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_FRIENDLY_SERVANTS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getFriendlyServants(CardEngine game, Card card)
         {
             Card[] servants = card.owner.getField();
             return servants;
         }
-        [KeyBondMethod("GetFriendlyCharacters", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_FRIEND_CHARACTERS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetFriendlyCharacters, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_FRIEND_CHARACTERS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getFriendCharacters(Card card)
         {
@@ -618,13 +617,13 @@ namespace Game
         /// <param name="game"></param>
         /// <param name="card"></param>
         /// <returns></returns>
-        [KeyBondMethod("GetEnemyServants", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ENEMY_SERVANTS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEnemyServants, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ENEMY_SERVANTS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getEnemyServants(CardEngine game, Card card)
         {
             return game.getOpponent(card.owner).getField();
         }
-        [KeyBondMethod("GetEnemyCharacters", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ENEMY_CHARACTERS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEnemyCharacters, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_ENEMY_CHARACTERS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getEnemyCharacters(CardEngine game, Card card)
         {
@@ -636,7 +635,7 @@ namespace Game
             return characters;
         }
         #endregion
-        [KeyBondMethod("Shackle", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_FREEZE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.Shackle, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_FREEZE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static Task<IPropChangeEventArg> freeze(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
@@ -650,7 +649,7 @@ namespace Game
         /// <param name="game"></param>
         /// <param name="cards"></param>
         /// <returns></returns>
-        [KeyBondMethod("Seal", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SILENCE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.Seal, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SILENCE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_SILENCE_EVENT)]
         public static Task<THHCard.SilenceEventArg> silence(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
@@ -658,7 +657,7 @@ namespace Game
                 return Task.FromResult<THHCard.SilenceEventArg>(default);
             return cards.silence(game);
         }
-        [KeyBondMethod("Kill", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DESTROY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.Kill, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DESTROY)]
         public static Task destroy(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
             if (cards == null)
@@ -666,13 +665,13 @@ namespace Game
             return cards.kill(game);
         }
 
-        [KeyBondMethod("ForceUpdateCardsState", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_UPDATE_CARDS_STATE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ForceUpdateCardsState, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_UPDATE_CARDS_STATE)]
         public static Task forceUpdateCardsState(CardEngine game)
         {
             return game.updateDeath();
         }
 
-        [KeyBondMethod("IsDead", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_IS_DEAD)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsDead, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_IS_DEAD)]
         [return : ActionNodeParam(EDITOR_PARAM_NAME_IS_DEAD)]
         public static bool isDead(CardEngine game, 
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
@@ -686,7 +685,7 @@ namespace Game
         /// <summary>
         /// 获取护甲
         /// </summary>
-        [KeyBondMethod("GetArmor", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_ARMOR)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_ARMOR)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getArmor(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -698,7 +697,7 @@ namespace Game
         /// <summary>
         /// 获取相邻卡牌(战场或者墓地)
         /// </summary>
-        [KeyBondMethod("GetNearbyCards", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_NEARBY_CARD)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetNearbyCards, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_NEARBY_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static Card[] getNearbyCards(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_NODE_CATEGORY_CARD)] Card card)
@@ -723,7 +722,7 @@ namespace Game
         /// <summary>
         /// 卡牌具有宣言
         /// </summary>
-        [KeyBondMethod("CardHasBattlecry", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_CARD_HAS_BATTLECRY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardHasBattlecry, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_CARD_HAS_BATTLECRY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardHasBattlecry(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -735,7 +734,7 @@ namespace Game
         /// <summary>
         /// 触发卡牌宣言
         /// </summary>
-        [KeyBondMethod("TriggerCardBattlecries", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_TRIGGER_BATTLECRY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardBattlecries, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_TRIGGER_BATTLECRY)]
         public static async Task triggerBattlecries(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
@@ -753,7 +752,7 @@ namespace Game
         /// <summary>
         /// 卡牌具有遗言
         /// </summary>
-        [KeyBondMethod("CardHasDeathrattle", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_CARD_HAS_DEATHRATTLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardHasDeathrattle, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_CARD_HAS_DEATHRATTLE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardHasDeathrattle(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -765,7 +764,7 @@ namespace Game
         /// <summary>
         /// 触发卡牌遗言
         /// </summary>
-        [KeyBondMethod("TriggerCardDeathrattles", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_TRIGGER_DEATHRATTLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDeathrattles, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_TRIGGER_DEATHRATTLE)]
         public static async Task triggerDeathRattles(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
@@ -781,7 +780,7 @@ namespace Game
         /// <summary>
         /// 触发法术或技能卡牌效果
         /// </summary>
-        [KeyBondMethod("TriggerCardActiveEffect", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_TRIGGER_SPELL_CARD_EFFECT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardActiveEffect, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_TRIGGER_SPELL_CARD_EFFECT)]
         public static async Task triggerActiveEffect(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
@@ -802,7 +801,7 @@ namespace Game
         /// <summary>
         /// 重置卡牌
         /// </summary>
-        [KeyBondMethod("ResetCard", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_RESET_CARD)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ResetCard, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_RESET_CARD)]
 
         public static async Task resetCards(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -819,7 +818,7 @@ namespace Game
         /// <summary>
         /// 强制攻击目标
         /// </summary>
-        [KeyBondMethod("ForceAttack", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_FORCE_ATTACK)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ForceAttack, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_FORCE_ATTACK)]
         public static async Task forceAttackTargets(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_FORCE_ATTACKER)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets)
@@ -841,7 +840,7 @@ namespace Game
         /// <summary>
         /// 本回合增加一次攻击次数
         /// </summary>
-        [KeyBondMethod("AddAttackChance", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_EXTRA_ATTACK)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.AddAttackChance, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_EXTRA_ATTACK)]
         public static async Task extraAttack(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_FORCE_ATTACKER)]Card[] cards)
         {
@@ -857,7 +856,7 @@ namespace Game
         /// <summary>
         /// 获取卡牌合法目标集合
         /// </summary>
-        [KeyBondMethod("GetValidCardTargets", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_CARD_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetValidCardTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_CARD_TARGETS)]
         [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
         public static Card[] getAllLegalCardTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -871,7 +870,7 @@ namespace Game
         /// <summary>
         /// 获取攻击目标集合
         /// </summary>
-        [KeyBondMethod("GetValidAttackTargets", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_ATTACK_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetValidAttackTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_ATTACK_TARGETS)]
         [return: ActionNodeParam(EDITOR_NODE_GET_ATTACK_TARGETS_TARGETS)]
         public static Card[] getAllLegalAttackTargets(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -889,7 +888,7 @@ namespace Game
         /// <summary>
         /// 揭示卡牌
         /// </summary>
-        [KeyBondMethod("RevealCard", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_REVEAL)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.RevealCard, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_REVEAL)]
         public static void revealCard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
@@ -904,7 +903,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="card"></param>
         /// <returns></returns>
-        [KeyBondMethod("TakeControl", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CARD_TAKE_CONTRL)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TakeControl, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CARD_TAKE_CONTRL)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task takeControl(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
@@ -921,7 +920,7 @@ namespace Game
         /// <summary>
         /// 是否已蓄力
         /// </summary>
-        [KeyBondMethod("IsCharged", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_IS_CHARGED)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCharged, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_IS_CHARGED)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_IS_CHARGED)]
         public static bool isCharged(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -934,7 +933,7 @@ namespace Game
         /// <summary>
         /// 获取蓄力层数
         /// </summary>
-        [KeyBondMethod("GetChargedLevel", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_CHARGED_LEVEL)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetChargedLevel, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_CHARGED_LEVEL)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_CHARGED_LEVEL)]
         public static int getChargedLevel(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -946,7 +945,7 @@ namespace Game
         /// <summary>
         /// 设置蓄力层数
         /// </summary>
-        [KeyBondMethod("SetChargedLevel", StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_SET_CHARGED_LEVEL)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetChargedLevel, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_SET_CHARGED_LEVEL)]
         public static async void setChargedLevel(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(EDITOR_PARAM_NAME_CHARGED_LEVEL)] int level)
@@ -957,7 +956,7 @@ namespace Game
         }
 
 
-        [KeyBondMethod("AddIntModifier", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_ADD_INT_MODIFIER)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.AddIntModifier, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_ADD_INT_MODIFIER)]
         [return: ActionNodeParam(StringTable.EDITOR_NODE_PARAM_NAME_MODIFIER)]
         [Obsolete]
         public static IntPropModifier addIntModifier(IGame game, 
@@ -970,7 +969,7 @@ namespace Game
             card.addModifier(game, modifier);
             return modifier;
         }
-        [KeyBondMethod("RemoveModifier", StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_REMOVE_MODIFIER)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.RemoveModifier, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_REMOVE_MODIFIER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REMOVE_MODIFIER_EVENT)]
         [Obsolete]
         public static Task<IRemoveModiEventArg> removeModifier(IGame game, 

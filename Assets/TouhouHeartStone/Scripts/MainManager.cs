@@ -215,14 +215,6 @@ namespace Game
             // 初始化玩家Key.
             InitPlayerKey();
 
-
-            // 加载内置动作定义
-            actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
-            {
-                typeof(CardEngine).Assembly,
-                typeof(HearthStoneRule).Assembly,
-                typeof(EffectEditorLibrary).Assembly
-            });
         }
         protected async void Start()
         {
@@ -482,47 +474,6 @@ namespace Game
         }
         #endregion
 
-        #region 动作定义
-
-        public ActionDefine getActionDefine(string name, long cardPoolId)
-        {
-            //内置
-            if (actionDefineDict.TryGetValue(name, out ActionDefine actionDefine))
-            {
-                return actionDefine;
-            }
-            var obsoleteDefine = actionDefineDict.Values.FirstOrDefault(d => d.obsoleteNames.Contains(name));
-            if (obsoleteDefine != null)
-            {
-                return obsoleteDefine;
-            }
-            //自定义
-            if (card.getActionDefine(cardPoolId, name, out GeneratedActionDefine generatedActionDefine))
-            {
-                return generatedActionDefine;
-            }
-            return null;
-        }
-        public ActionDefine[] getActionDefinesArray(params long[] includedCardPools)
-        {
-            //内置
-            List<ActionDefine> actionDefineList = new List<ActionDefine>();
-            foreach (var pair in actionDefineDict)
-            {
-                actionDefineList.Add(pair.Value);
-            }
-            //自定义
-            if (includedCardPools != null)
-            {
-                foreach (long poolId in includedCardPools)
-                {
-                    actionDefineList.AddRange(card.getActionDefines(poolId));
-                }
-            }
-            return actionDefineList.ToArray();
-        }
-        #endregion
-
         #region 属性字段
         public UIManager ui => getManager<UIManager>();
         public NetworkingManager network => getManager<NetworkingManager>();
@@ -547,7 +498,6 @@ namespace Game
         public CacheManager cache => getManager<CacheManager>();
         public EditorManager editor => _editor;
         public int playerKey => _playerKey;
-        public Dictionary<string, ActionDefine> actionDefineDict { get; private set; }
         [SerializeField]
         EditorManager _editor;
         [SerializeField]

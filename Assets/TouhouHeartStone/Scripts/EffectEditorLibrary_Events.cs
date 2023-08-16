@@ -40,14 +40,14 @@ namespace Game
 
         #region 事件
 
-        [KeyBondMethod("ThisEvent", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_THIS_EVENT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ThisEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_THIS_EVENT)]
         [return: ActionNodeParam(EDITOR_NODE_EVENT)]
         public static EventArg thisEvent(EventArg eventArg)
         {
             return eventArg;
         }
 
-        [KeyBondMethod("GetEventVariable", EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_GET_VARIABLE, "GetVariable")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_GET_VARIABLE, "GetVariable")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getVariable(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
@@ -56,7 +56,7 @@ namespace Game
             return eventArg.getVar(varName);
         }
 
-        [KeyBondMethod("SetEventVariable", EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
         public static void setVariable(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] string varName,
@@ -65,7 +65,7 @@ namespace Game
             eventArg.setVar(varName, value);
         }
 
-        [KeyBondMethod("StopEvent", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_STOP_EVENT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.StopEvent, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_STOP_EVENT)]
         public static void stopEvent(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg)
         {
@@ -74,7 +74,7 @@ namespace Game
             eventArg.isCanceled = true;
         }
 
-        [KeyBondMethod("ChangeAttackTarget", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeAttackTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET)]
         public static void changeAttackTarget(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card target)
@@ -84,7 +84,7 @@ namespace Game
                 attackArg.target = target;
             }
         }
-        [KeyBondMethod("ChangeUseTarget", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_USE_TARGET)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeUseTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_USE_TARGET)]
         public static void changeUseTargets(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] Card[] target)
@@ -93,7 +93,7 @@ namespace Game
                 eventArg.setVar(EVENTVAR.TARGETS, target);
         }
 
-        [KeyBondMethod("DamageEvent.ChangeTarget", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET)]
         public static void damageEvent_changeTarget(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card target)
@@ -103,7 +103,7 @@ namespace Game
                 damageArg.target = target;
             }
         }
-        [KeyBondMethod("DamageEvent.ChangeSource", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeSource, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE)]
         public static void damageEvent_changeSource(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card source)
@@ -113,7 +113,7 @@ namespace Game
                 damageArg.source = source;
             }
         }
-        [KeyBondMethod("DamageEvent.ChangeValue", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeValue, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE)]
         public static void damageEvent_changeValue(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)
@@ -124,7 +124,7 @@ namespace Game
             }
         }
 
-        [KeyBondMethod("HealEvent.ChangeValue", EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.HealEvent_ChangeValue, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE)]
         public static void healEvent_changeValue(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] int value)

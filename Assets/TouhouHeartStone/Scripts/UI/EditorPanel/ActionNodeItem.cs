@@ -297,10 +297,10 @@ namespace UI
         /// 设置帮助按钮对应的Key
         /// </summary>
         /// <param name="key"></param>
-        public void setDocumentKey(string key)
+        public void setDocumentKey(int key)
         {
             documentKey = key;
-            _helpBtn.gameObject.SetActive(key != null);
+            _helpBtn.gameObject.SetActive(key >= 0);
             SetDirty();
         }
 
@@ -659,7 +659,7 @@ namespace UI
         public event Action<ActionNodeItem, int> onClickRemoveTargetCheckerButton;
         public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         public event Action<ActionNodeItem> onUpdateTransform;
-        public event Action<string> onClickHelpButton;
+        public event Action<int> onClickHelpButton;
 
         #region 效果属性
         /// <summary>
@@ -686,7 +686,7 @@ namespace UI
         }
 
         string obsoleteMessage = "";
-        string documentKey = "";
+        int documentKey = -1;
         private bool _dirty;
 
         [Header("基本")]

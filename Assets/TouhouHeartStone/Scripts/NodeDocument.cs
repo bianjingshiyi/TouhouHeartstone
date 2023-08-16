@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using BJSYGameCore;
 using IGensoukyo;
@@ -22,7 +23,7 @@ namespace Game
         [SerializeField]
         Button _closeBtn;
 
-        Dictionary<string, ActionComment> comments = null;
+        List<ActionComment> comments = null;
         LangManager lang => this.findInstance<LangManager>();
 
         private void Awake()
@@ -58,15 +59,15 @@ namespace Game
         [TranslateMsg("节点示例模板, {0} 为节点自带说明")]
         const string ExampleTemplate = "<p>{0}</p>";
 
-        public void Show(string id)
+        public void Show(int id)
         {
             if (comments == null) comments = LoadDocument();
-            if (!comments.ContainsKey(id))
+            if (!comments.Any(d => id == d.defineId))
                 return;
 
             var doc = comments[id];
             string str = "";
-            str += lang._(TitleTemplate, lang._(doc.editorName ?? doc.defineName)); // 标题
+            str += lang._(TitleTemplate, lang._(doc.editorName)); // 标题
             if (!string.IsNullOrEmpty(doc.category))
                 str += lang._(CategoryTemplate, lang._(doc.category)); // 分类
             if (doc.obsoleteMsg != null)
@@ -125,9 +126,9 @@ namespace Game
         /// 载入节点文档
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<string, ActionComment> LoadDocument()
+        public static List<ActionComment> LoadDocument()
         {
-            Dictionary<string, ActionComment> commentDict = new Dictionary<string, ActionComment>();
+            List<ActionComment> commentDict = new List<ActionComment>();
 
             XmlSerializer deserializer = new XmlSerializer(typeof(ActionComment[]));
             using (var fs = MukioI18n.FileLoader.ReadStreamingAsset(FileName))
@@ -135,10 +136,7 @@ namespace Game
                 var obj = deserializer.Deserialize(fs);
                 if (obj is ActionComment[] comments)
                 {
-                    foreach (var comment in comments)
-                    {
-                        commentDict.Add(comment.defineName, comment);
-                    }
+                    commentDict.AddRange(comments);
                 }
             }
 
@@ -153,9 +151,9 @@ namespace Game
     public class ActionComment
     {
         /// <summary>
-        /// 定义名称（Key）
+        /// 定义ID
         /// </summary>
-        public string defineName;
+        public int defineId;
 
         /// <summary>
         /// 过期名称（替换Key）
@@ -240,7 +238,7 @@ namespace Game
         /// <param name="act"></param>
         public void Update(ActionDefine act)
         {
-            defineName = act.defineName;
+            defineId = act.defineId;
             editorName = act.editorName;
             obsoleteNames = act.obsoleteNames.Where(n => n != editorName).ToArray();
             obsoleteMsg = act.obsoleteMsg;

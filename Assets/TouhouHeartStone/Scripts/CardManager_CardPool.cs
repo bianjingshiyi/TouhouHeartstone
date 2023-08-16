@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Controllers;
-using ExcelDataReader.Log;
 using MongoDB.Bson.Serialization;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using UI;
@@ -222,24 +219,14 @@ namespace Game
         /// <returns>过时节点节点图列表。</returns>
         public (int cardId, int buffId, int actionId)[] getObsoleteNodeGraphs(CardPool cardPool)
         {
-            HashSet<(int cardId, int buffId, int actionId)> list = new HashSet<(int cardId, int buffId, int actionId)>(); 
-            Dictionary<string, ActionDefine> actionDefineDict = ActionDefine.loadDefinesFromAssemblies(new Assembly[]
-            {
-                typeof(CardEngine).Assembly,
-                typeof(HearthStoneRule).Assembly,
-                typeof(EffectEditorLibrary).Assembly
-            });
+            HashSet<(int cardId, int buffId, int actionId)> list = new HashSet<(int cardId, int buffId, int actionId)>();
             void checkObsoleteNodes(Node node, (int cardId, int buffId, int actionId) graphObj)
             {
                 if (!(node is ActionNode actionNode))
                 {
                     return;
                 }
-                ActionDefine define = null;
-                if (!actionDefineDict.TryGetValue(actionNode.defineName, out define))
-                {
-                    define = cardPool.actionDefineList.Find(a => a.defineName == actionNode.defineName);
-                }
+                ActionDefine define = getActionDefine(actionNode.defineRef);
                 if (define == null || define.obsoleteMsg != null)
                 {
                     list.Add(graphObj);
@@ -676,7 +663,7 @@ namespace Game
 
             EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
 
-            var nodeDefiner = new THHNodeDefiner(name => game.getActionDefine(name, define.cardPoolId), eventFinder);
+            var nodeDefiner = new THHNodeDefiner(this);
             var clone = cloneSeri.toCardDefine(nodeDefiner);
             clone.cardPoolId = define.cardPoolId;
             return clone;
@@ -880,7 +867,7 @@ namespace Game
                 var fileManager = game.fileManager;
                 bool fullPath = Path.GetFullPath(path) == path;
                 byte[] bytes;
-                if (fullPath && fileManager.isFileExist(path)) 
+                if (fullPath && fileManager.isFileExist(path))
                 {
                     //如果直接给出完整路径就直接从完整路径上读
                     bytes = await fileManager.readBinaryFile(path);
@@ -1236,11 +1223,9 @@ namespace Game
         {
             SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
 
-            ActionDefineFinder defineFinder = name => game.getActionDefine(name, cardPoolID);
-            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
             TypeFinder typeFinder = game.editor.getTypeByName;
 
-            CardPool cardPool = serializableCardPool.toCardPool(defineFinder, eventFinder, typeFinder);
+            CardPool cardPool = serializableCardPool.toCardPool(cardPoolID, this, typeFinder);
             for (int i = 0; i < cardPool.cardDefineList.Count; i++)
             {
                 cardPool.cardDefineList[i].cardPoolId = cardPoolID;
@@ -1262,11 +1247,9 @@ namespace Game
         {
             SerializableCardPool serializableCardPool = JsonHelper.fromJson<SerializableCardPool>(json);
 
-            ActionDefineFinder defineFinder = name => game.getActionDefine(name, cardPoolID);
-            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
             TypeFinder typeFinder = game.editor.getTypeByName;
 
-            var convertor = new CardPoolConvertor(cardPoolID, serializableCardPool, defineFinder, eventFinder, typeFinder);
+            var convertor = new CardPoolConvertor(cardPoolID, serializableCardPool, this, typeFinder);
             return convertor.Convert();
         }
 
@@ -1388,7 +1371,7 @@ namespace Game
                     fixActionNodeIncorrectData(action);
                 }
             }
-            Dictionary<string, ActionDefine> actionDefineDict = game.actionDefineDict;
+            var builtinActions = builtinActionDefines;
 
             // 遍历所有节点图并修复信息。
             traverseActionGraphs(cardPool,
@@ -1453,37 +1436,60 @@ namespace Game
                 define.traverse(fixData);
             }
 
-            void fixActionNodeIncorrectData(ActionNode actionNode)
+            async void fixActionNodeIncorrectData(ActionNode actionNode)
             {
-                if (!actionDefineDict.ContainsKey(actionNode.defineName) && !cardPool.actionDefineList.Exists(a => a.defineName == actionNode.defineName))
+                var defineRef = actionNode.defineRef;
+                bool actionExists = false;
+                CardPool definePool = null;
+                // 获取目标卡池的动作引用。
+                var localPoolRef = getLocalCardPoolReference(defineRef.cardPoolId, false);
+                if (!tryGetCardPool(localPoolRef, out definePool))
+                {
+                    var path = getCardPoolPath(localPoolRef);
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        var result = await loadCardPool(path, true);
+                        definePool = result.cardPool;
+                    }
+                }
+                // 检查动作是否存在。
+                if (defineRef.cardPoolId == 0)
+                {
+                    actionExists = builtinActions.ContainsKey(defineRef.defineId);
+                }
+                else if (definePool != null)
+                {
+                    actionExists = definePool.actionDefineList.Exists(a => a.id == defineRef.defineId);
+                }
+                if (!actionExists)
                 {
                     //包含不存在的动作名称，可能是名称过期了
-                    string newDefineName = null;
+                    ActionReference newDefineRef = null;
                     // 内置动作。
-                    foreach (ActionDefine actionDefine in actionDefineDict.Values)
+                    foreach (ActionDefine actionDefine in builtinActions.Values)
                     {
-                        if ((actionDefine.obsoleteNames != null && actionDefine.obsoleteNames.Contains(actionNode.defineName)))
+                        if (actionDefine.obsoleteNames?.Contains(actionNode.defineName) == true)
                         {
-                            newDefineName = actionDefine.defineName;
+                            newDefineRef = new ActionReference(actionDefine.cardPoolId, actionDefine.defineId);
                             break;
                         }
                     }
                     // 卡池内的自定义动作。
-                    if (newDefineName == null)
+                    if (newDefineRef == null)
                     {
                         foreach (GeneratedActionDefine actionDefine in cardPool.actionDefineList)
                         {
-                            if (actionNode.defineName == actionDefine.editorName) // 等同于编辑器名
+                            if (actionDefine.obsoleteNames?.Contains(actionNode.defineName) == true)
                             {
-                                newDefineName = actionDefine.defineName;
+                                newDefineRef = new ActionReference(actionDefine.cardPoolId, actionDefine.defineId);
                                 break;
                             }
                         }
                     }
-                    if (newDefineName != null)
+                    if (newDefineRef != null)
                     {
-                        Debug.LogWarning("将动作节点" + actionNode.id + "过期的动作名称" + actionNode.defineName + "替换为" + newDefineName);
-                        actionNode.defineName = newDefineName;
+                        Debug.LogWarning("将动作节点" + actionNode.id + "过期的动作名称" + actionNode.defineName + "替换为" + newDefineRef);
+                        actionNode.defineRef = newDefineRef;
                     }
                     else
                     {
@@ -1499,7 +1505,7 @@ namespace Game
                     }
                 }
                 // 将旧版的“获取增益定义”的ID从int变为DefineReference。
-                if (actionNode.defineName == GetBuffDefineAction.defName)
+                if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
                 {
                     var constValue = actionNode.getConst(GetBuffDefineAction.constName);
                     if (constValue is int buffId)
@@ -1560,7 +1566,7 @@ namespace Game
         }
 
         private void traverseActionGraphs(CardPool cardPool, Action<CardDefine, GeneratedEffect> cardAction,
-            Action<BuffDefine, GeneratedEffect> buffAction, 
+            Action<BuffDefine, GeneratedEffect> buffAction,
             Action<GeneratedActionDefine> defineAction)
         {
             foreach (var card in cardPool.cardDefineList)

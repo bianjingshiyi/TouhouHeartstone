@@ -44,7 +44,7 @@ namespace Controllers
 
 
 
-                    string docKey = CanNodeDefineOpenDocument(define) ? define.actionDefine.defineName : null;
+                    int docKey = CanNodeDefineOpenDocument(define) ? define.actionDefine.defineId : -1;
                     _ui.setPreviewNode(tryTranslateWithDict(define.actionDefine.editorName),
                         inputInfos,
                         constsInfo,
@@ -99,9 +99,7 @@ namespace Controllers
                     _ui.setPreviewNode(tryTranslateWithDict(nodeName),
                         getNodeInputViewData(node),
                         getNodeConstValueInfos(node),
-                        getNodeOutputViewData(node),
-                        null,
-                        null);
+                        getNodeOutputViewData(node));
                 }
                 else if (node is EventEntryNode eventEntry)
                 {
@@ -116,9 +114,7 @@ namespace Controllers
                     _ui.setPreviewNode(tryTranslateWithDict(nodeName),
                         getNodeInputViewData(node),
                         getNodeConstValueInfos(node),
-                        getNodeOutputViewData(node),
-                        null,
-                        null);
+                        getNodeOutputViewData(node));
                 }
                 else if (node is AuraEntryNode)
                 {
@@ -126,14 +122,12 @@ namespace Controllers
                     _ui.setPreviewNode(tryTranslateWithDict(nodeName),
                         getNodeInputViewData(node),
                         getNodeConstValueInfos(node),
-                        getNodeOutputViewData(node),
-                        null,
-                        null);
+                        getNodeOutputViewData(node));
                 }
                 else if (node is ActionNode actionNode)
                 {
                     var define = actionNode.define;
-                    string docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineName : null;
+                    int docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
                     _ui.setPreviewNode(tryTranslateWithDict(define.editorName),
                         getNodeInputViewData(node),
                         getNodeConstValueInfos(node),

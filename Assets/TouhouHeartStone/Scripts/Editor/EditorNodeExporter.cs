@@ -1,16 +1,14 @@
-﻿using Game;
-using System;
-using System.Reflection;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Xml;
+using System.Xml.Serialization;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using UnityEngine;
 using UnityEditor;
-using System.Xml.Serialization;
-using System.Linq;
-using System.IO;
-using System.Xml;
+using UnityEngine;
 
 namespace Game
 {
@@ -37,7 +35,7 @@ namespace Game
             typeof(EffectEditorLibrary).Assembly
             });
 
-            Dictionary<string, ActionComment> oldDict = null;
+            List<ActionComment> oldDict = null;
             try
             {
                 oldDict = NodeDocument.LoadDocument();
@@ -58,24 +56,13 @@ namespace Game
                 ActionComment comment = null;
                 if (oldDict != null)
                 {
-                    if (oldDict.TryGetValue(define.defineName, out var defineNameComment))
+                    if (oldDict.FirstOrDefault(d => define.defineId == d.defineId) is ActionComment defineNameComment)
                     {
                         comment = defineNameComment;
                     }
-                    else if (oldDict.TryGetValue(define.editorName, out var editorNameComment))
+                    else if (oldDict.FirstOrDefault(d => define.obsoleteNames.Contains(d.editorName)) is ActionComment oldNameComment)
                     {
-                        comment = editorNameComment;
-                    }
-                    else
-                    {
-                        foreach (var oldName in kv.Value.obsoleteNames)
-                        {
-                            if (oldDict.TryGetValue(oldName, out var oldNameComment))
-                            {
-                                comment = oldNameComment;
-                                break;
-                            }
-                        }
+                        comment = oldNameComment;
                     }
                 }
 

@@ -350,7 +350,7 @@ namespace Game
             //加载外部卡牌
             Dictionary<long, Dictionary<int, CardDefine>> cardDict = new Dictionary<long, Dictionary<int, CardDefine>>();
             Dictionary<long, Dictionary<int, BuffDefine>> buffDict = new Dictionary<long, Dictionary<int, BuffDefine>>();
-            List<ActionDefine> actionDefines = new List<ActionDefine>();
+            Dictionary<long, Dictionary<int, ActionDefine>> actionDefines = new Dictionary<long, Dictionary<int, ActionDefine>>();
             try
             {
                 await LoadExternalCardsAndBuffs(option, cardDict, buffDict, actionDefines);
@@ -386,9 +386,13 @@ namespace Game
             }
 #endif
 
-            foreach (var define in actionDefines)
+            foreach (var pair in actionDefines)
             {
-                game.addActionDefine(define.defineName, define);
+                long cardPoolId = pair.Key;
+                foreach (var actionPair in pair.Value)
+                {
+                    game.addActionDefine(new ActionReference(cardPoolId, actionPair.Key), actionPair.Value);
+                }
             }
 
             Rule rule = new HearthStoneRule(cardDict,buffDict);
@@ -469,7 +473,7 @@ namespace Game
         private async Task LoadExternalCardsAndBuffs(HearthstoneOption option,
             Dictionary<long, Dictionary<int, CardDefine>> cardDict,
             Dictionary<long, Dictionary<int, BuffDefine>> buffDict,
-            List<ActionDefine> actionDefines)
+            Dictionary<long, Dictionary<int, ActionDefine>> actionDefines)
         {
             var cardManager = getManager<CardManager>();
             // 尝试从本地获取卡组，否则读取缓存卡组。
@@ -501,11 +505,7 @@ namespace Game
                     var buffDefines = cardPool.buffDefineList.ToArray();
                     cardDict.Add(poolId, cardDefines.ToDictionary(c => c.id));
                     buffDict.Add(poolId, buffDefines.ToDictionary<BuffDefine, int>(c => c.id));
-                    // 加载自定义动作定义。
-                    foreach (var define in cardPool.actionDefineList)
-                    {
-                        actionDefines.Add(define);
-                    }
+                    actionDefines.Add(poolId, cardPool.actionDefineList.ToDictionary<ActionDefine, int>(c => c.defineId));
                 }
             }
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BJSYGameCore;
 using Game;
 using TouhouCardEngine;
 using UnityEngine;

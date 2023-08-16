@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Game;
 using Game.UndoRedo;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -64,10 +65,7 @@ namespace Controllers
             }
             public override async void redo()
             {
-                ActionDefineFinder defineFinder = name => _graphCtrl.game.getActionDefine(name, _graphCtrl._curCardPoolId);
-                EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
-
-                var definer = new THHNodeDefiner(defineFinder, eventFinder);
+                var definer = new THHNodeDefiner(_graphCtrl.game.card);
 
                 var newNode = _seriNode.ToActionNode(_graphCtrl.graph);
                 _graphCtrl.graph.addNode(newNode);
@@ -87,10 +85,7 @@ namespace Controllers
 
             public override async void undo()
             {
-                ActionDefineFinder defineFinder = name => _graphCtrl.game.getActionDefine(name, _graphCtrl._curCardPoolId);
-                EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
-
-                var definer = new THHNodeDefiner(defineFinder, eventFinder);
+                var definer = new THHNodeDefiner(_graphCtrl.game.card);
 
                 var newNode = _seriNode.ToActionNode(_graphCtrl.graph);
                 _graphCtrl.graph.addNode(newNode);

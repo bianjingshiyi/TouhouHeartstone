@@ -24,7 +24,7 @@ namespace UI
             ActionNodeValueInfo[] constsInfo,
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
-            string nodeKey = null)
+            int nodeKey = -1)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
@@ -1164,7 +1164,7 @@ namespace UI
             clearFreePlaceCheckRegion();
         }
 
-        private void onActionNodeClickHelpButton(string key)
+        private void onActionNodeClickHelpButton(int key)
         {
             setFocused();
             _nodeDocument?.Show(key);

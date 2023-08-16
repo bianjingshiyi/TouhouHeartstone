@@ -19,8 +19,8 @@ namespace Tests
             CardEngine game = new CardEngine();
             var constDefine = new IntegerConstActionDefine();
             var compareDefine = new CompareActionDefine();
-            game.addActionDefine("IntegerConst", constDefine);
-            game.addActionDefine("Compare", compareDefine);
+            game.addActionDefine(new ActionReference(0, 0), constDefine);
+            game.addActionDefine(new ActionReference(0, 1), compareDefine);
             ActionGraph graph = new ActionGraph();
             var compareNode = graph.createActionNode(compareDefine);
             var intNode1 = graph.createActionNode(constDefine);
@@ -54,8 +54,8 @@ namespace Tests
             CardEngine game = new CardEngine();
             var constDefine = new IntegerConstActionDefine();
             var opDefine = new IntegerOperationActionDefine();
-            game.addActionDefine("IntegerConst", constDefine);
-            game.addActionDefine("IntegerOperation", opDefine);
+            game.addActionDefine(new ActionReference(0, 0), constDefine);
+            game.addActionDefine(new ActionReference(0, 1), opDefine);
             ActionGraph graph = new ActionGraph();
             var intOpNode = graph.createActionNode(opDefine);
             var intNode1 = graph.createActionNode(constDefine);

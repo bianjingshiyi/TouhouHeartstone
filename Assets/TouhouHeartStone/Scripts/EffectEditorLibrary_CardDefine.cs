@@ -54,7 +54,7 @@ namespace Game
 
 
         /// 获取全部卡牌定义
-        [KeyBondMethod("GetAllCardDefines", EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetAllCardDefines, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine[] getAllCardDefines(CardEngine game)
         {
@@ -63,7 +63,7 @@ namespace Game
 
 
         /// 获取单个卡牌定义
-        [KeyBondMethod("GetCardDefine", EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefine(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] DefineReference cardRef)
@@ -75,7 +75,7 @@ namespace Game
 
 
         /// 获取卡牌定义列表
-        [KeyBondMethod("GetCardDefineArray", EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineArray, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_CARD_DEFINE_ARRAY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine[] getCardDefineArray(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_REFERENCE, true)] DefineReference[] cardRefs)
@@ -92,7 +92,7 @@ namespace Game
 
 
         /// 是否具有标签
-        [KeyBondMethod("CardDefineHasTag", EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_CARD_DEFINE_HAS_TAG)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasTag, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_CARD_DEFINE_HAS_TAG)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineHasTag(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
@@ -105,7 +105,7 @@ namespace Game
 
 
         ///获取随机卡牌定义
-        [KeyBondMethod("GetRandomCardDefine", EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetRandomCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         [Obsolete]
         public static CardDefine getRandomCardDefine(CardEngine game, 
@@ -125,7 +125,7 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [KeyBondMethod("IsCardDefineOfType", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineOfType, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_IS_CARD_DEFINE_OF_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool IsCardDefineOfType(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
@@ -155,7 +155,7 @@ namespace Game
         /// <param name="card">卡牌</param>
         /// <param name="select">选项</param>
         /// <returns>bool,是否属于该类型</returns>
-        [KeyBondMethod("CardDefineHasKeyword", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_KEYWORDS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasKeyword, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_KEYWORDS)]
         [return: ActionNodeParam(StringTable.EDITOR_TYPE_NAME_BOOL)]
         public static bool CardDefineHasKeywords(
             [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_CARD_DEFINE)] CardDefine card,
@@ -172,7 +172,7 @@ namespace Game
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
-        [KeyBondMethod("GetCardDefinesOfCardArray", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TARGET_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefinesOfCardArray, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TARGET_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine[] getTagetCardDefineArray(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -191,7 +191,7 @@ namespace Game
         /// <summary>
         /// 获取单张卡牌的定义
         /// </summary>
-        [KeyBondMethod("GetCardDefineOfCard", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_SPECIFIC_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineOfCard, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_SPECIFIC_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getSpecificCardDefine(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -203,7 +203,7 @@ namespace Game
         /// <summary>
         /// 变形为卡牌定义
         /// </summary>
-        [KeyBondMethod("SetCardDefineOfCard", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_SET_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardDefineOfCard, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_SET_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> cardSetDefine(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
@@ -220,7 +220,7 @@ namespace Game
         /// <summary>
         /// 获取属性
         /// </summary>
-        [KeyBondMethod("GetCardDefineProp", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineProp, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getCardDefineProp(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
@@ -231,7 +231,7 @@ namespace Game
         /// <summary>
         /// 获取花费
         /// </summary>
-        [KeyBondMethod("GetCardDefineCost", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_COST)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineCost, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_COST)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCardDefineCost(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -243,7 +243,7 @@ namespace Game
         /// <summary>
         /// 获取攻击
         /// </summary>
-        [KeyBondMethod("GetCardDefineAttack", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_ATTACK)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineAttack, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_ATTACK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCardDefineAttack(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -255,7 +255,7 @@ namespace Game
         /// <summary>
         /// 获取最大生命值
         /// </summary>
-        [KeyBondMethod("GetCardDefineMaxLife", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_LIFE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineMaxLife, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_LIFE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int getCardDefineMaxLife(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -265,7 +265,7 @@ namespace Game
             return card.getLife();
         }
 
-        [KeyBondMethod("GetCardDefineSpellDamage", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_SPELL_DAMAGE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineSpellDamage, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
         public static int getCardDefineSpellDamage(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -277,7 +277,7 @@ namespace Game
         /// <summary>
         /// 是否是衍生牌
         /// </summary>
-        [KeyBondMethod("IsCardDefineToken", EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_IS_TOKEN)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineToken, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_IS_TOKEN)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool isToken([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
         {
@@ -288,7 +288,7 @@ namespace Game
         /// <summary>
         /// 获取技能
         /// </summary>
-        [KeyBondMethod("GetCardDefineSkill", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_SKILL)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineSkill, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_SKILL)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getSkill(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -308,7 +308,7 @@ namespace Game
         /// <summary>
         /// 获取对应角色（职业）
         /// </summary>
-        [KeyBondMethod("GetCardDefineCharacter", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_CHARACTER)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardDefineCharacter, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_GET_CHARACTER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         public static CardDefine getCardDefineCharacter(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -326,7 +326,7 @@ namespace Game
             }
         }
 
-        [KeyBondMethod("IsCardDefineCollectible", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_COLLECTIBLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineCollectible, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_COLLECTIBLE)]
         [return: ActionNodeParam(EDITOR_NODE_PARAM_NAME_COLLECTIBLE)]
         public static bool isCardDefineCollectible(
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
@@ -336,7 +336,7 @@ namespace Game
         /// <summary>
         /// 触发卡牌宣言
         /// </summary>
-        [KeyBondMethod("TriggerCardDefineBattlecries", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_CARD_DEFINE_BATTLECRY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineBattlecries, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_CARD_DEFINE_BATTLECRY)]
         public static async Task triggerCardDefineBattlecry(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
@@ -354,7 +354,7 @@ namespace Game
         /// <summary>
         /// 卡牌定义具有宣言
         /// </summary>
-        [KeyBondMethod("CardDefineHasBattlecry", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_BATTLECRY)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasBattlecry, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_BATTLECRY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineHasBattlecry(
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -366,7 +366,7 @@ namespace Game
         /// <summary>
         /// 触发卡牌遗言
         /// </summary>
-        [KeyBondMethod("TriggerCardDefineDeathrattles", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_CARD_DEFINE_DEATHRATTLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineDeathrattles, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_CARD_DEFINE_DEATHRATTLE)]
         public static async Task triggerCardDefineDeathRattles(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -383,7 +383,7 @@ namespace Game
         /// <summary>
         /// 卡牌定义具有遗言
         /// </summary>
-        [KeyBondMethod("CardDefineHasDeathrattle", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CardDefineHasDeathrattle, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineHasDeathrattle(
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -395,7 +395,7 @@ namespace Game
         /// <summary>
         /// 触发法术或技能卡牌定义效果
         /// </summary>
-        [KeyBondMethod("TriggerCardDefineActiveEffect", EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.TriggerCardDefineActiveEffect, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE)]
         public static async Task activeSpellCardDefineEffect(CardEngine game,
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,

@@ -73,7 +73,22 @@ namespace Controllers
         }
         public bool isActionDefineNameExist(string name)
         {
-            return getActionDefine(name) != null;
+            foreach (var pair in game.card.builtinActionDefines)
+            {
+                var actionDefine = pair.Value;
+                if (actionDefine.editorName == name)
+                {
+                    return true;
+                }
+            }
+            foreach (var actionDefine in game.card.getActionDefines(_curCardPoolId))
+            {
+                if (actionDefine.editorName == name)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         public string tryTranslateWithDict(string input)
         {
@@ -132,10 +147,7 @@ namespace Controllers
             var seri = JsonHelper.fromJson<SerializableActionNodeGraph>(clipboard);
 
 
-            ActionDefineFinder defineFinder = name => game.getActionDefine(name, _curCardPoolId);
-            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
-
-            var definer = new THHNodeDefiner(defineFinder, eventFinder);
+            var definer = new THHNodeDefiner(game.card);
             var clipGraph = seri.toActionGraph(definer);
             clipGraph.updateSize();
             Vector2 centerPos = new Vector2(clipGraph.centerX, clipGraph.centerY);
@@ -147,7 +159,7 @@ namespace Controllers
                 node.graph = graph;
                 // 防止增益被跨卡池引用
                 // 虽然这以后肯定是要实现的，但是不是现在要做的事情
-                if (node is ActionNode action && action.defineName == GetBuffDefineAction.defName)
+                if (node is ActionNode action && action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
                 {
                     var pairs = node.consts.Where(p => p.Value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId).ToArray();
                     foreach (var pair in pairs)
@@ -205,7 +217,7 @@ namespace Controllers
         }
         public bool CanNodeBeEdited(Node node)
         {
-            return node is ActionNode action && getActionDefine(action.defineName) is GeneratedActionDefine;
+            return node is ActionNode action && getActionDefine(action.defineRef) is GeneratedActionDefine;
         }
         public bool CanActionDefineBeCreated(ActionDefine define)
         {
@@ -217,7 +229,7 @@ namespace Controllers
         {
             if (!(node is ActionNode actionNode)) // 不是动作节点
                 return false;
-            if (game.getActionDefine(actionNode.defineName, 0) == null) // 不是内置节点
+            if (actionNode.defineRef.cardPoolId != 0) // 不是内置节点
                 return false;
             return true;
         }
@@ -225,7 +237,7 @@ namespace Controllers
         {
             if (node.actionDefine == null) // 不是动作节点
                 return false;
-            if (game.getActionDefine(node.actionDefine.defineName, 0) == null) // 不是内置节点
+            if (node.actionDefine.cardPoolId != 0) // 不是内置节点
                 return false;
             return true;
         }
@@ -481,7 +493,7 @@ namespace Controllers
             var node = getActionNode(actionNodeItem);
             if (node is ActionNode action)
             {
-                var actionDefine = getActionDefine(action.defineName);
+                var actionDefine = getActionDefine(action.defineRef);
                 var name = actionDefine.constDefines.ElementAt(constIndex).name;
                 setNodeConst(node, name, value);
                 OnEdited();
@@ -505,7 +517,7 @@ namespace Controllers
             Node actionNode = getActionNode(actionNodeItem);
             if (!(actionNode is ActionNode action))
                 return;
-            ActionDefine actionDefine = getActionDefine(action.defineName);
+            ActionDefine actionDefine = getActionDefine(action.defineRef);
             var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
             if (constDefine == null)
                 return;
@@ -539,7 +551,7 @@ namespace Controllers
             Node actionNode = getActionNode(actionNodeItem);
             if (!(actionNode is ActionNode action))
                 return;
-            ActionDefine actionDefine = getActionDefine(action.defineName);
+            ActionDefine actionDefine = getActionDefine(action.defineRef);
             var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
             if (constDefine == null)
                 return;
@@ -663,7 +675,7 @@ namespace Controllers
                 // 先更新自定义动作节点，因为自定义节点的输出输入值可能会变动。
                 if (node is ActionNode action)
                 {
-                    var define = getActionDefine(action.defineName);
+                    var define = getActionDefine(action.defineRef);
                     if (define is GeneratedActionDefine gen)
                     {
                         action.define = gen;
@@ -754,7 +766,7 @@ namespace Controllers
         /// <returns>动作节点对应的UI组件</returns>
         private async Task<ActionNodeItem> createNodeUI4ActionNode(ActionNode actionNode)
         {
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
+            ActionDefine actionDefine = getActionDefine(actionNode.defineRef);
             ActionNodeItem actionNodeItem;
             if (actionDefine is GetBuffDefineAction getBuffDefineAction)
             {
@@ -818,7 +830,7 @@ namespace Controllers
             else if (actionDefine != null)
             {
                 ActionNodeValueInfo[] constsInfo = getActionNodeConstValueInfo(actionNode);
-                string nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineName : null;
+                int nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
                 actionNodeItem = _ui.createNode(
                     actionNode.posX,
                     actionNode.posY,
@@ -1395,11 +1407,11 @@ namespace Controllers
         }
         private string getActionNodeName(ActionNode actionNode)
         {
-            var define = getActionDefine(actionNode.defineName);
+            var define = getActionDefine(actionNode.defineRef);
             if (define == null)
             {
-                Debug.LogWarning("没有找到动作" + actionNode.defineName + "对应的名称");
-                return tryTranslateWithDict(actionNode.defineName);
+                Debug.LogWarning("没有找到动作" + actionNode.defineRef + "对应的名称");
+                return tryTranslateWithDict(StringTable.EDITOR_NODE_NAME_UNKNOW);
             }
             else
             {
@@ -1409,7 +1421,7 @@ namespace Controllers
 
         private string getActionNodeObsoleteMsg(ActionNode actionNode)
         {
-            ActionDefine actionDefine = getActionDefine(actionNode.defineName);
+            ActionDefine actionDefine = getActionDefine(actionNode.defineRef);
             if (actionDefine.obsoleteMsg == null) return null;
             if (actionDefine.obsoleteMsg == "") return "";
             return game.lang._(actionDefine.obsoleteMsg);
@@ -1519,7 +1531,7 @@ namespace Controllers
         }
         private ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
         {
-            var actionDefine = getActionDefine(actionNode.defineName);
+            var actionDefine = getActionDefine(actionNode.defineRef);
             var count = actionDefine.constDefines.Count();
             var infoArray = new ActionNodeValueInfo[count];
             for (int i = 0; i < count; i++)
@@ -1704,7 +1716,7 @@ namespace Controllers
         private async void updateNodeItemConsts(Node node)
         {
             var item = getActionNodeItem(node);
-            if (node is ActionNode actionNode && actionNode.defineName == GetBuffDefineAction.defName)
+            if (node is ActionNode actionNode && actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
             {
                 if (tryGetBuffDefine(actionNode.getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
                 {

@@ -296,7 +296,10 @@ namespace Controllers
         }
         private void saveAction()
         {
-            game.card.removeActionDefine(_cardPoolId, game.card.getActionDefine(_cardPoolId, _actionDefine.id));
+            if (game.card.getActionDefine(_actionDefine.cardPoolId, _actionDefine.id) is GeneratedActionDefine gen)
+            {
+                game.card.removeActionDefine(_cardPoolId, gen);
+            }
             game.card.addActionDefine(_cardPoolId, _actionDefine);
 
             scene.editor.hasUnsavedChanges = true;
