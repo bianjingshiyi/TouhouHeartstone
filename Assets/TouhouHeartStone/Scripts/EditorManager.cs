@@ -167,7 +167,7 @@ namespace Game
             new EditorTypeInfo() { type = typeof(TriggerGraph), typeName = StringTable.EDITOR_TYPE_NAME_TRIGGER_GRAPH, isVarType = true, color = new Color(1, .8f, .2f, 1) },
             //typeof(TriggerCollection),
             new EditorTypeInfo() { type = typeof(TargetChecker), typeName = StringTable.EDITOR_TYPE_NAME_TARGET_CHECKER, isVarType = true, color = new Color(1, .6f, .2f, 1) },
-            new EditorTypeInfo() { type = typeof(ActionValueRef), typeName = StringTable.EDITOR_TYPE_NAME_ACTION_VALUE_REF, isVarType = true, isConstType = true, color = new Color(1, .4f, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(NodeValueRef), typeName = StringTable.EDITOR_TYPE_NAME_ACTION_VALUE_REF, isVarType = true, isConstType = true, color = new Color(1, .4f, .2f, 1) },
             new EditorTypeInfo() { type = typeof(ActionDefine), typeName = StringTable.EDITOR_TYPE_NAME_ACTION_DEFINE, isVarType = true, color = new Color(.6f, .1f, .1f, 1) },
             new EditorTypeInfo() { type = typeof(ActionNode), typeName = StringTable.EDITOR_TYPE_NAME_ACTION_NODE, isVarType = true, isConstType = true, color = new Color(1, .2f, .2f, 1) },
             #endregion

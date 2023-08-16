@@ -157,15 +157,17 @@ namespace Game
         // 集合运算
         public const int CreateArray = Type_Function + Category_Collection + 1;    // 创建集合
         public const int AddElementToArray = Type_Function + Category_Collection + 2;    // 向集合添加元素
-        public const int Where = Type_Function + Category_Collection + 3;    // 筛选
+        public const int Where_Obsolete = Type_Function + Category_Collection + 3;    // 筛选（过时）
         public const int GetCount = Type_Function + Category_Collection + 4;    // 获取元素数量
         public const int Contains = Type_Function + Category_Collection + 5;    // 包含
-        public const int OrderBy = Type_Function + Category_Collection + 6;    // 排序
+        public const int OrderBy_Obsolete = Type_Function + Category_Collection + 6;    // 排序（过时）
         public const int GetElementByIndex = Type_Function + Category_Collection + 7;    // 获取第X个元素
         public const int GetRandomElement = Type_Function + Category_Collection + 8;    // 获取集合中的随机元素
         public const int ReverseCollection = Type_Function + Category_Collection + 9;    // 反转集合
         public const int Distinct = Type_Function + Category_Collection + 10;    // 集合去重
         public const int Except = Type_Function + Category_Collection + 11;    // 集合相减
+        public const int Where = Type_Function + Category_Collection + 12;    // 筛选
+        public const int OrderBy = Type_Function + Category_Collection + 13;    // 排序
 
         // 其他
         public const int BooleanConst = Type_Function + Category_Other + 1;       // 固定真值
@@ -191,7 +193,8 @@ namespace Game
         public const int AddPlayerGem = Type_Action + Category_Player + 8;    // 增加当前灵力值
         public const int SetPlayerMaxGem = Type_Action + Category_Player + 9;    // 设置灵力上限
         public const int AddPlayerMaxGem = Type_Action + Category_Player + 10;    // 增加灵力上限
-        public const int FaithDuel = Type_Action + Category_Player + 11;    // 信仰对决
+        public const int FaithDuel_Obsolete = Type_Action + Category_Player + 11;    // 信仰对决
+        public const int FaithDuel = Type_Action + Category_Player + 12;    // 信仰对决（过时）
 
         // 卡牌
         public const int Damage = Type_Action + Category_Card + 1;    // 造成伤害
@@ -260,8 +263,9 @@ namespace Game
         // 其他
         public const int BranchAction = Type_Action + Category_Other + 1;    // 分支动作
         public const int ForAction = Type_Action + Category_Other + 2;    // 重复动作
-        public const int DoUntilAction = Type_Action + Category_Other + 3;    // 重复动作直到
+        public const int DoUntilAction_Obsolete = Type_Action + Category_Other + 3;    // 重复动作直到（过时）
         public const int SetTempVar = Type_Action + Category_Other + 4;    // 设置临时变量
+        public const int DoUntilAction = Type_Action + Category_Other + 5;    // 重复动作直到
 
         #endregion
 

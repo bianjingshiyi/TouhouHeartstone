@@ -94,8 +94,8 @@ namespace Game
             }
         }
 
-
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DoUntilAction, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
+        [Obsolete]
+        [ActionNodeMethod(BuiltinActionDefineID.DoUntilAction_Obsolete, EDITOR_CATEGORY_NAME_OTHER, "重复动作直到（过时）", EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
         public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] ControlInput condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
@@ -120,6 +120,38 @@ namespace Game
                 flow.setValue(repeatTimePort, times);
                 await game.runActions(flow, action);
                 if (resultPort != null && await game.getValue<bool>(flow, resultPort))
+                {
+                    finished = true;
+                }
+                flow.ExitScope();
+            }
+            while (times < maxRepeatTime && !finished);
+        }
+
+        [ActionNodeMethod(BuiltinActionDefineID.DoUntilAction, null, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
+        public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+            [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] NodeValueRef<bool> condition,
+            [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REPEAT_TIME, isOut: true)] int repeatTime)
+        {
+            if (action == null)
+                return;
+            if (maxRepeatTime <= 0)
+                return;
+            int times = 0;
+            bool finished;
+
+            var repeatTimePort = node.getOutputPort<ValueOutput>(nameof(repeatTime));
+            do
+            {
+                times++;
+                finished = false;
+
+                flow.EnterScope();
+                flow.setValue(repeatTimePort, times);
+                await game.runActions(flow, action);
+                if (condition != null && await condition.getValue(flow))
                 {
                     finished = true;
                 }
@@ -481,9 +513,10 @@ namespace Game
 
 
         /// <summary>
-        /// 信仰对决
+        /// 信仰对决（旧）
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.FaithDuel, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_FAITHDUEL)]
+        [Obsolete]
+        [ActionNodeMethod(BuiltinActionDefineID.FaithDuel_Obsolete, StringTable.EDITOR_NODE_CATEGORY_PLAYER, "信仰对决（过时）", EDITOR_NODE_FAITHDUEL)]
         [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
         public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -505,6 +538,40 @@ namespace Game
                     flow.EnterScope();
                     flow.setValue(elementPort, c);
                     valid = game.getValue<bool>(flow, resultPort).Result;
+                    flow.ExitScope();
+                }
+                return valid;
+            }
+            var arg = player.revealDuel(game, filterFunc).Result;
+            flow.setValue(node.getOutputPort<ValueOutput>(nameof(selfCard)), arg.youCard);
+            flow.setValue(node.getOutputPort<ValueOutput>(nameof(opponentCard)), arg.oppoCard);
+            return arg.result;
+        }
+
+        /// <summary>
+        /// 信仰对决
+        /// </summary>
+        [ActionNodeMethod(BuiltinActionDefineID.FaithDuel, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_FAITHDUEL)]
+        [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
+        public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] NodeValueRef<bool> filter,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard)
+        {
+            if (player == null)
+                return false;
+
+            bool filterFunc(Card c)
+            {
+                bool valid = true;
+                if (filter != null)
+                {
+                    var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+                    flow.EnterScope();
+                    flow.setValue(elementPort, c);
+                    valid = filter.getValue(flow).Result;
                     flow.ExitScope();
                 }
                 return valid;
@@ -1046,9 +1113,10 @@ namespace Game
             return newArray;
         }
         /// <summary>
-        /// 筛选
+        /// 筛选（过时）
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.Where, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_WHERE)]
+        [Obsolete]
+        [ActionNodeMethod(BuiltinActionDefineID.Where_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "筛选（过时）", StringTable.EDITOR_NODE_NAME_WHERE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
         public static async Task<object[]> where(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
@@ -1076,6 +1144,50 @@ namespace Game
                 {
                     flow.EnterScope();
                     result = await game.getValue<bool>(flow, resultPort);
+                    flow.ExitScope();
+                }
+
+                if (result)
+                {
+                    objList.Add(obj);
+                }
+                else
+                {
+                    negList.Add(obj);
+                }
+            }
+            return objList.ToArray();
+        }
+        /// <summary>
+        /// 筛选
+        /// </summary>
+        [ActionNodeMethod(BuiltinActionDefineID.Where, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, StringTable.EDITOR_NODE_NAME_WHERE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_ARRAY_MATCHED)]
+        public static async Task<object[]> where(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CONDITION)] NodeValueRef<bool> condition,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
+        {
+            if (array == null)
+                return Array.Empty<object>();
+
+            List<object> objList = new List<object>();
+            List<object> negList = new List<object>();
+
+            var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                object obj = array.GetValue(i);
+
+                flow.setValue(elementPort, obj);
+
+
+                bool result = true;
+                if (condition != null)
+                {
+                    flow.EnterScope();
+                    result = await condition.getValue(flow);
                     flow.ExitScope();
                 }
 
@@ -1120,9 +1232,10 @@ namespace Game
         }
 
         /// <summary>
-        /// 根据排序依据排序。
+        /// 根据排序依据排序。（过时）
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.OrderBy, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_ORDER_BY)]
+        [Obsolete]
+        [ActionNodeMethod(BuiltinActionDefineID.OrderBy_Obsolete, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, "排序（过时）", EDITOR_NODE_NAME_ORDER_BY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
         public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING, isConst: true)] bool descending,
@@ -1146,6 +1259,46 @@ namespace Game
                 {
                     flow.EnterScope();
                     value = game.getValue<object>(flow, resultPort).Result;
+                    flow.ExitScope();
+                }
+                return value;
+            }
+            if (!descending)
+            {
+                return array.OrderBy(func).ToArray();
+            }
+            else
+            {
+                return array.OrderByDescending(func).ToArray();
+            }
+        }
+
+        /// <summary>
+        /// 根据排序依据排序。
+        /// </summary>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.OrderBy, StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, EDITOR_NODE_NAME_ORDER_BY)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COLLECTION)]
+        public static Array orderBy(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+            [ActionNodeParam(EDITOR_PARAM_NAME_DESCENDING, isConst: true)] bool descending,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ARRAY)] object[] array,
+            [ActionNodeParam(EDITOR_PARAM_NAME_ORDER_KEY)] NodeValueRef<object> condition,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ELEMENT, isOut: true)] object element)
+        {
+            if (array == null)
+                return Array.Empty<object>();
+            if (condition == null)
+                return array;
+
+            var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
+
+            object func(object obj)
+            {
+                flow.setValue(elementPort, obj);
+                object value = null;
+                if (condition != null)
+                {
+                    flow.EnterScope();
+                    value = condition.getValue(flow).Result;
                     flow.ExitScope();
                 }
                 return value;
@@ -1255,6 +1408,7 @@ namespace Game
 
     /// <summary>
     /// 用于将过时的MethodActionDefine转换为以内置名为主键的动作定义。
+    /// 主要用于向ObsoletedNames添加当前的编辑器名称，以实现卡池转换。
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class ObsoletedKeyMethodAttribute : ActionNodeMethodAttribute
