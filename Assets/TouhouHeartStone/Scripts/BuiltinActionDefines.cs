@@ -104,6 +104,7 @@ namespace Game
         public const int GetCardDefineCharacter = Type_Function + Category_CardDefine + 16;    // 获取卡牌定义对应角色
         public const int CardDefineHasBattlecry = Type_Function + Category_CardDefine + 17;    // 卡牌定义具有宣言
         public const int CardDefineHasDeathrattle = Type_Function + Category_CardDefine + 18;    // 卡牌定义具有遗言
+        public const int GetCardDefineTagList = Type_Function + Category_CardDefine + 19;    // 获取卡牌定义标签列表
 
         // 卡牌快照
         public const int GetCardOfCardSnapshot = Type_Function + Category_CardSnapshot + 1;    // 获取卡牌快照对应卡牌

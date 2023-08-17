@@ -235,6 +235,60 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>212004</defineId>
+    <obsoleteNames />
+    <editorName>设置临时变量</editorName>
+    <category>其他</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的临时变量值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>变量名</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要设置的临时变量名。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[设置一个临时变量的值，该值只在本次运行时存在。<br>如果该临时变量不存在，改为在当前作用域下创建一个临时变量。<br><b>注意：</b><b>分支动作</b>、<b>重复动作</b>等执行其他动作的节点，会在其下新建一个作用域。该作用域下可以访问到外部的临时变量，但外部无法访问到其内部的临时变量。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>112007</defineId>
+    <obsoleteNames />
+    <editorName>获取临时变量</editorName>
+    <category>其他</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Object</type>
+        <name>Value</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的临时变量值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>变量名</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的临时变量名。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[获取一个临时变量的值，该值只在本次运行时存在。<br><b>注意：</b><b>分支动作</b>、<b>重复动作</b>等执行其他动作的节点，会在其下新建一个作用域。该作用域下可以访问到外部的临时变量，但外部无法访问到其内部的临时变量。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>212001</defineId>
     <obsoleteNames />
     <editorName>分支动作</editorName>
@@ -739,117 +793,39 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>202002</defineId>
-    <obsoleteNames />
-    <editorName>丢弃卡牌</editorName>
-    <category>卡牌</category>
+    <defineId>101016</defineId>
+    <obsoleteNames>
+      <string>GetSpellDamage</string>
+    </obsoleteNames>
+    <editorName>获取法术伤害</editorName>
+    <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>手牌</name>
+        <type>TouhouCardEngine.Player</type>
+        <name>玩家</name>
         <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[要丢弃的手牌列表。]]></summary>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取法术伤害的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>基础伤害</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[最终法术伤害结果会加上该基础值，默认为0。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DiscardEventArg</type>
-        <name>抽牌事件</name>
+        <type>System.Int32</type>
+        <name>伤害</name>
         <isParams>false</isParams>
-        <isArray>true</isArray>
-        <summary><![CDATA[执行的弃牌事件。]]></summary>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的法术伤害。]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[弃掉一张或多张手牌，并将其置入墓地。<br>
-      <b>注：</b><ul>
-        <li>要求卡牌必须在手牌中。</li>
-        <li>“弃牌时”触发器触发时，卡牌仍在手牌中；</li>
-        <li>“弃牌后”触发器触发时，卡牌已经被移动到墓地中。</li>
-      </ul>]]></summary>
-    <example><![CDATA[<ul>
-      <li>蕾米莉亚·斯卡蕾特</li>
-      <li>芙兰朵露·斯卡蕾特</li>
-    </ul>]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>202019</defineId>
-    <obsoleteNames />
-    <editorName>增加固定数量护甲</editorName>
-    <category>卡牌</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts>
-      <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </consts>
-    <summary><![CDATA[]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>202018</defineId>
-    <obsoleteNames />
-    <editorName>增加护甲</editorName>
-    <category>卡牌</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts />
-    <summary><![CDATA[]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>202020</defineId>
-    <obsoleteNames />
-    <editorName>失去护甲</editorName>
-    <category>卡牌</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[获取一个玩家拥有的所有法术伤害加成。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -1240,7 +1216,9 @@
   </ActionComment>
   <ActionComment>
     <defineId>101001</defineId>
-    <obsoleteNames />
+    <obsoleteNames>
+      <string>GetPile</string>
+    </obsoleteNames>
     <editorName>获取牌堆</editorName>
     <category>玩家</category>
     <inputs>
@@ -2397,60 +2375,6 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>212004</defineId>
-    <obsoleteNames />
-    <editorName>设置临时变量</editorName>
-    <category>其他</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要设置的临时变量值。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs />
-    <consts>
-      <ActionParameterComment>
-        <type>System.String</type>
-        <name>变量名</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要设置的临时变量名。]]></summary>
-      </ActionParameterComment>
-    </consts>
-    <summary><![CDATA[设置一个临时变量的值，该值只在本次运行时存在。<br>如果该临时变量不存在，改为在当前作用域下创建一个临时变量。<br><b>注意：</b><b>分支动作</b>、<b>重复动作</b>等执行其他动作的节点，会在其下新建一个作用域。该作用域下可以访问到外部的临时变量，但外部无法访问到其内部的临时变量。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>112007</defineId>
-    <obsoleteNames />
-    <editorName>获取临时变量</editorName>
-    <category>其他</category>
-    <inputs />
-    <outputs>
-      <ActionParameterComment>
-        <type>System.Object</type>
-        <name>Value</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[获取到的临时变量值。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts>
-      <ActionParameterComment>
-        <type>System.String</type>
-        <name>变量名</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取的临时变量名。]]></summary>
-      </ActionParameterComment>
-    </consts>
-    <summary><![CDATA[获取一个临时变量的值，该值只在本次运行时存在。<br><b>注意：</b><b>分支动作</b>、<b>重复动作</b>等执行其他动作的节点，会在其下新建一个作用域。该作用域下可以访问到外部的临时变量，但外部无法访问到其内部的临时变量。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
     <defineId>102002</defineId>
     <obsoleteNames />
     <editorName>卡牌类型判断</editorName>
@@ -2923,6 +2847,120 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>202002</defineId>
+    <obsoleteNames />
+    <editorName>丢弃卡牌</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>手牌</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要丢弃的手牌列表。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>TouhouHeartstone.THHCard+DiscardEventArg</type>
+        <name>抽牌事件</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[执行的弃牌事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[弃掉一张或多张手牌，并将其置入墓地。<br>
+      <b>注：</b><ul>
+        <li>要求卡牌必须在手牌中。</li>
+        <li>“弃牌时”触发器触发时，卡牌仍在手牌中；</li>
+        <li>“弃牌后”触发器触发时，卡牌已经被移动到墓地中。</li>
+      </ul>]]></summary>
+    <example><![CDATA[<ul>
+      <li>蕾米莉亚·斯卡蕾特</li>
+      <li>芙兰朵露·斯卡蕾特</li>
+    </ul>]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202019</defineId>
+    <obsoleteNames />
+    <editorName>增加固定数量护甲</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Player</type>
+        <name>玩家</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>数量</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202018</defineId>
+    <obsoleteNames />
+    <editorName>增加护甲</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Player</type>
+        <name>玩家</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>数量</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202020</defineId>
+    <obsoleteNames />
+    <editorName>失去护甲</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Player</type>
+        <name>玩家</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>数量</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>102009</defineId>
     <obsoleteNames />
     <editorName>获取唯一属性名</editorName>
@@ -2976,42 +3014,6 @@
     </outputs>
     <consts />
     <summary><![CDATA[获取拥有这张卡牌的玩家。]]></summary>
-    <example><![CDATA[]]></example>
-  </ActionComment>
-  <ActionComment>
-    <defineId>101016</defineId>
-    <obsoleteNames>
-      <string>GetSpellDamage</string>
-    </obsoleteNames>
-    <editorName>获取法术伤害</editorName>
-    <category>玩家</category>
-    <inputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[要获取法术伤害的玩家。]]></summary>
-      </ActionParameterComment>
-      <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>基础伤害</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[最终法术伤害结果会加上该基础值，默认为0。]]></summary>
-      </ActionParameterComment>
-    </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[获取到的法术伤害。]]></summary>
-      </ActionParameterComment>
-    </outputs>
-    <consts />
-    <summary><![CDATA[获取一个玩家拥有的所有法术伤害加成。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -4418,6 +4420,33 @@
     </outputs>
     <consts />
     <summary><![CDATA[判断卡牌定义是否具有某种标签。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>103019</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌定义的标签列表</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.CardDefine</type>
+        <name>卡牌定义</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取标签列表的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.String</type>
+        <name>标签列表</name>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的标签列表。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌定义具有的所有标签所组成的列表。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>

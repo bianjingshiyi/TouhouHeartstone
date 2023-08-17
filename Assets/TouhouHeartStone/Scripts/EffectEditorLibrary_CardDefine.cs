@@ -51,6 +51,10 @@ namespace Game
         public const string EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE = "卡牌定义具有遗言";
         [TranslateMsg("编辑器-动作节点-触发法术或技能卡牌定义效果")]
         public const string EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE = "触发法术或技能卡牌定义效果";
+        [TranslateMsg("编辑器-节点名称-获取卡牌定义的标签列表")]
+        public const string EDITOR_NODE_NAME_GET_CARD_DEFINE_TAG_LIST = "获取卡牌定义的标签列表";
+        [TranslateMsg("编辑器-参数名称-标签列表")]
+        public const string EDITOR_PARAM_NAME_TAG_LIST = "标签列表";
 
 
         /// 获取全部卡牌定义
@@ -103,6 +107,16 @@ namespace Game
             return cardDefine.hasTag(tag);
         }
 
+        /// 获取卡牌定义标签列表
+        [ActionNodeMethod(BuiltinActionDefineID.GetCardDefineTagList, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_NAME_GET_CARD_DEFINE_TAG_LIST)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_TAG_LIST)]
+        public static string[] getCardDefineTagList(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            if (cardDefine == null)
+                return Array.Empty<string>();
+            return cardDefine.getTags();
+        }
 
         ///获取随机卡牌定义
         [ObsoletedKeyMethod(ObsoletedActionDefineID.GetRandomCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE)]
