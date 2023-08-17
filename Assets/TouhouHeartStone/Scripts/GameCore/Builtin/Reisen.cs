@@ -484,21 +484,29 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            if (card.getOwner().getSkill().isUsed(game))
+            var player = card.getOwner();
+            var skill = player.getSkill();
+
+            if (skill.isUsed(game))
             {
-                await card.getOwner().getSkill().setUsed(game, false);
+                await skill.setUsed(game, false);
             }
 
-            if (!(card.getOwner().getSkill().define.Equals(game.getDefine<LunaticShoot_MindDropping>())))
+            // 默认月狂射击
+            if (skill.define == game.getDefine<LunaticShoot>())
             {
-                var arg = await THHCard.setDefine(card.getOwner().getSkill(), game,
-                    game.getDefine<LunaticShoot_MindDropping>(), false);
-                await card.getOwner().getSkill().addBuff(game, new CodeBuff(ID,
-                    new THHEffectAfter<HearthStoneRule.UseEventArg>(PileFlag.field,
-                        (g, c, a) => { return a.player == c.getOwner() && a.card.isSkill(); },
+                var arg = await THHCard.setDefine(skill, game, game.getDefine<LunaticShoot_MindDropping>(), false);
+                await skill.addBuff(game, new CodeBuff(ID,
+                    new THHEffectAfter<HearthStoneRule.UseEventArg>(
+                        PileFlag.skill,
+                        (g, c, a) => 
+                        { 
+                            return a.card == skill; 
+                        },
                         async (g, c, a) =>
                         {
-                            await THHCard.setDefine(card.getOwner().getSkill(), game, arg.beforeDefine, false);
+                            await THHCard.setDefine(skill, game, arg.beforeDefine, false);
+                            await skill.removeBuff(game, skill.getBuffs().Where(b => b.id == ID));
                         }
                     )));
             }
@@ -662,18 +670,26 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await card.getOwner().getMaster().addBuff(game, new CodeBuff(ID,
-                new THHEffectBefore<THHCard.DamageEventArg>(PileFlag.field,
+            var player = card.getOwner();
+            await player.getMaster().addBuff(game, new CodeBuff(ID,
+                new THHEffectBefore<THHCard.DamageEventArg>(
+                    PileFlag.master,
                     (g, c, b, a) =>
                     {
-                        return a.source.getOwner() == c.getOwner() && a.source.isSkill();
-                    }, (g, c, b, a) =>
-                     {
-                         a.damageValue *= 2;
-                         return Task.CompletedTask;
-                     }),
-                new RemoveBuffAfter<HearthStoneRule.UseEventArg>(PileFlag.master,
-                    (g, c, b, a) => { return a.player == c.getOwner() && a.card.isSkill(); }, ID)));
+                        return player.getSkill() == a.source;
+                    }, 
+                    (g, c, b, a) =>
+                    {
+                        a.damageValue *= 2;
+                        return Task.CompletedTask;
+                    }),
+                new RemoveBuffAfter<HearthStoneRule.UseEventArg>(
+                    PileFlag.master,
+                    (g, c, b, a) =>
+                    {
+                        return player.getSkill() == a.card;
+                    }, 
+                    ID)));
         }
     }
 
