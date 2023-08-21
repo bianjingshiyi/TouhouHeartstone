@@ -24,6 +24,7 @@ namespace Game
             ui.type = CATEGORY.SERVANT;
             setAttack(ui, "0");
             setLife(ui, "0");
+            ui.setTag(string.Empty);
         }
         public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
         {

@@ -39,7 +39,7 @@ namespace Controllers
             {
                 tagsValue[i] = cardDefine.getTags().Contains(_tags[i]);
             }
-            _ui.setInitTags(cardDefine.getTags());
+            _ui.setTags(cardDefine.getTags());
             string[] charactersName = new string[selectableCharacters.Length + 1];
             charactersName[0] = StringTable.CARDVIEW_CHARACTER_NEUTRAL;
             for (int i = 1; i < charactersName.Length; i++)
@@ -60,10 +60,10 @@ namespace Controllers
                 int index = Array.IndexOf(_races, tags[0]);
                 if (index < 0)
                     index = 0;
-                _ui.setRace(index);
+                _ui.setRace(index, tags[0]);
             }
             else
-                _ui.setRace(0);
+                _ui.setRace(0, _races[0]);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             if (cardDefine.isSpell())
                 _ui.switchToSpell();
@@ -178,7 +178,7 @@ namespace Controllers
                 game.langManager.getString(StringTable.GAME_RACE_GOD),
                 game.langManager.getString(StringTable.GAME_RACE_MACHINE)
             };
-            _ui.setTags(racesName);
+            _ui.initTags(racesName);
             _ui.onChangeRace += onChangeRace;
             _ui.onClickEditEffectButton += onClickEditEffectButton;
             _ui.onClickRemoveEffectButton += onClickRemoveEffectButton;
@@ -405,15 +405,38 @@ namespace Controllers
             {
                 value = new string[1];
             }
-            value[0] = index > 0 ? _races[index] : null;
+            if (index >= 0)
+            {
+                value[0] = _races[index];
+            }
+            else
+            {
+                value[0] = null;
+                index = -1;
+            }
+            value = value.Where(s => !string.IsNullOrEmpty(s)).ToArray();
             _cardDefine.setTags(value);
-            _ui.setRace(index);
+            _ui.setTags(value);
+            _ui.setRace(index, value.Length > 0 ? value[0]: string.Empty);
         }
 
         private void onChangeTag(string text)
         {
             MarkCardUnsaved();
-            _cardDefine.setTags(text.Split(',', ' ', '，'));
+            var tags = text.Split(',', ' ', '，');
+            tags = tags.Where(s => !string.IsNullOrEmpty(s)).ToArray();
+            _cardDefine.setTags(tags);
+            _ui.setTags(tags);
+            if (tags.Length > 0)
+            {
+                string race = tags[0];
+                int index = Array.IndexOf(_races, race);
+                _ui.setRace(index, race);
+            }
+            else
+            {
+                _ui.setRace(-1, string.Empty);
+            }
         }
 
         #region Effects

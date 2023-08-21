@@ -87,7 +87,7 @@ namespace UI
         {
             _isTokenToggle.SetIsOnWithoutNotify(value);
         }
-        public void setInitTags(string[] tags)
+        public void setTags(string[] tags)
         {
             List<string> tagList = new List<string>(tags);
             tagList.RemoveAll(s => string.IsNullOrEmpty(s));
@@ -161,7 +161,7 @@ namespace UI
         /// 设置卡牌可选的标签
         /// </summary>
         /// <param name="tags"></param>
-        public void setTags(string[] tags)
+        public void initTags(string[] tags)
         {
 
             _tagDropdown.ClearOptions();
@@ -171,8 +171,9 @@ namespace UI
         /// 设置卡牌的标签
         /// </summary>
         /// <param name="tag"></param>
-        public void setRace(int index)
+        public void setRace(int index, string name)
         {
+            _card.setTag(name);
             _tagDropdown.SetValueWithoutNotify(index);
         }
         public void setSkillRef(CardDefine cardDefine, Sprite spr, string name)
