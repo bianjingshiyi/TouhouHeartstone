@@ -190,9 +190,10 @@ MonoBehaviour:
   _ui: {fileID: 5916370020909694337}
   _effectEditor: {fileID: 0}
   _cardPoolViewPanelCtrl: {fileID: 0}
-  _minNodeSnapHoriDistance: 20
-  _maxNodeSnapHoriDistance: 500
-  _maxNodeSnapVertDistance: 500
+  _config: {fileID: 0}
+  _minNodeSnapHoriDistance: 100
+  _maxNodeSnapHoriDistance: 300
+  _maxNodeSnapVertDistance: 300
   _nodeSnapConfirmHoriDistance: 100
 --- !u!114 &5916370020909694337
 MonoBehaviour:

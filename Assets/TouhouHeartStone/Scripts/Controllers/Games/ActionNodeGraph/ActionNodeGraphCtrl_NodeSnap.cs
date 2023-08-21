@@ -505,7 +505,7 @@ namespace Controllers
         /// </summary>
         [Header("节点吸附")]
         [SerializeField]
-        private float _minNodeSnapHoriDistance = 20;
+        private float _minNodeSnapHoriDistance = 100;
         /// <summary>
         /// 节点吸附的最远水平判断距离。
         /// </summary>
