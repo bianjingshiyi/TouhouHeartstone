@@ -858,9 +858,7 @@ namespace TouhouHeartstone
         public static string[] getTags(this ICardData card, IGame game)
         {
             string[] tags = card.getProp<string[]>(game, nameof(DEFINE.TAGS));
-            if (tags == null)
-                return new string[0];
-            return tags;
+            return tags ?? card.define.getTags();
         }
         public static Task<IPropChangeEventArg> setTags(this Card card, IGame game, string[] tags)
         {
