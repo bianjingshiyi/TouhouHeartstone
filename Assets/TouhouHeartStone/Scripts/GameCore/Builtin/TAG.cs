@@ -1,6 +1,4 @@
 ﻿using MukioI18n;
-using System;
-using System.Collections.Generic;
 
 namespace TouhouHeartstone.Builtin
 {
@@ -13,6 +11,7 @@ namespace TouhouHeartstone.Builtin
         public const string BEAST = "Beast";
         public const string BUG = "Bug";
         public const string GOD = "God";
+        public const string GHOST = "Ghost";
     }
 
     public static class TranslateTags
@@ -31,5 +30,7 @@ namespace TouhouHeartstone.Builtin
         public const string Bug = "昆虫";
         [TranslateMsg]
         public const string God = "神明";
+        [TranslateMsg]
+        public const string Ghost = "幽灵";
     }
 }

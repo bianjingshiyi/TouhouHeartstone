@@ -166,7 +166,8 @@ namespace Controllers
                 TAG.ELEMENT,
                 TAG.FAIRY,
                 TAG.GOD,
-                TAG.MACHINE
+                TAG.MACHINE,
+                TAG.GHOST
             };
             string[] racesName = new string[]
             {
@@ -176,7 +177,8 @@ namespace Controllers
                 game.langManager.getString(StringTable.GAME_RACE_ELEMENT),
                 game.langManager.getString(StringTable.GAME_RACE_FAIRY),
                 game.langManager.getString(StringTable.GAME_RACE_GOD),
-                game.langManager.getString(StringTable.GAME_RACE_MACHINE)
+                game.langManager.getString(StringTable.GAME_RACE_MACHINE),
+                game.langManager.getString(StringTable.GAME_RACE_GHOST)
             };
             _ui.initTags(racesName);
             _ui.onChangeRace += onChangeRace;

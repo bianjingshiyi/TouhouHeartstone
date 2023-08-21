@@ -150,6 +150,8 @@ namespace Game
         public const string GAME_RACE_GOD = "神明";
         [TranslateMsg("游戏中的种族机械")]
         public const string GAME_RACE_MACHINE = "机械";
+        [TranslateMsg("游戏中的种族幽灵")]
+        public const string GAME_RACE_GHOST = "幽灵";
         #endregion
         #region 标签
         [TranslateMsg("游戏中的法术标签火")]

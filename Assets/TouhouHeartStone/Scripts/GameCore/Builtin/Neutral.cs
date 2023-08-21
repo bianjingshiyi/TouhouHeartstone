@@ -97,6 +97,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { TAG.GHOST };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.DEATHRATTLE };
 
         private IEffect[] effects1 = new IEffect[]
@@ -127,6 +128,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 5;
         public override int attack { get; set; } = 4;
         public override int life { get; set; } = 3;
+        public override string[] tags { get; set; } = new string[] { TAG.GHOST };
         public override string[] keywords { get; set; } = new string[0];
 
         private IEffect[] effects1 = new IEffect[0];
@@ -1156,6 +1158,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 8;
         public override int attack { get; set; } = 8;
         public override int life { get; set; } = 8;
+        public override string[] tags { get; set; } = new string[] { TAG.GHOST };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.UNIQUE };
 
         private IEffect[] effects1 = new IEffect[]
@@ -1257,6 +1260,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 2;
+        public override string[] tags { get; set; } = new string[] { TAG.GHOST };
 
         private IEffect[] effects1 = new IEffect[]
         {
@@ -1314,6 +1318,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 1;
         public override int life { get; set; } = 2;
+        public override string[] tags { get; set; } = new string[] { TAG.GHOST };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.TAUNT };
 
         private IEffect[] effects1 = new IEffect[]
@@ -1345,6 +1350,7 @@ namespace TouhouHeartstone.Builtin
         public override int cost { get; set; } = 6;
         public override int attack { get; set; } = 2;
         public override int life { get; set; } = 1;
+        public override string[] tags { get; set; } = new string[] { TAG.GHOST };
         public override string[] keywords { get; set; } = new string[] { KEYWORD.SHIELD };
 
         private IEffect[] effects1 = new IEffect[]
