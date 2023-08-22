@@ -133,9 +133,21 @@ namespace Controllers
                 Node outputActionNode = _graphCtrl.graph.findNodeById(_srcNodeId);
                 Node inputActionNode = _graphCtrl.graph.findNodeById(_destNodeId);
                 IPort outputPort = outputActionNode.getOutputPort(_srcName);
-                IPort inputPort = _destParamIndex < 0 ?
-                    inputActionNode.getInputPort(_destName) :
-                    inputActionNode.getParamInputPort(_destName, _destParamIndex);
+                IPort inputPort;
+                if (_destParamIndex < 0)
+                {
+                    inputPort = inputActionNode.getInputPort(_destName);
+                }
+                else
+                {
+                    int length = inputActionNode.getParamInputPorts(_destName).Length;
+                    for (int i = length; i <= _destParamIndex; i++)
+                    {
+                        inputActionNode.extendParamsPort(_destName);
+                    }
+                    inputPort = inputActionNode.getParamInputPort(_destName, _destParamIndex);
+                    _graphCtrl.updateInputParamsPort(inputPort);
+                }
                 _graphCtrl.connectPorts(outputPort, inputPort, false);
             }
             private int _srcNodeId;
@@ -160,9 +172,21 @@ namespace Controllers
                 Node outputActionNode = _graphCtrl.graph.findNodeById(_srcNodeId);
                 Node inputActionNode = _graphCtrl.graph.findNodeById(_destNodeId);
                 IPort outputPort = outputActionNode.getOutputPort(_srcName);
-                IPort inputPort = _destParamIndex < 0 ?
-                    inputActionNode.getInputPort(_destName) :
-                    inputActionNode.getParamInputPort(_destName, _destParamIndex);
+                IPort inputPort;
+                if (_destParamIndex < 0)
+                {
+                    inputPort = inputActionNode.getInputPort(_destName);
+                }
+                else
+                {
+                    int length = inputActionNode.getParamInputPorts(_destName).Length;
+                    for (int i = length; i <= _destParamIndex; i++)
+                    {
+                        inputActionNode.extendParamsPort(_destName);
+                    }
+                    inputPort = inputActionNode.getParamInputPort(_destName, _destParamIndex);
+                    _graphCtrl.updateInputParamsPort(inputPort);
+                }
                 _graphCtrl.connectPorts(outputPort, inputPort, false);
             }
             public override void redo()

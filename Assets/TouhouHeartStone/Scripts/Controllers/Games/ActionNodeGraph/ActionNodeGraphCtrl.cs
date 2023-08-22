@@ -980,14 +980,7 @@ namespace Controllers
             updatePortMode(_connectingPort, outputPort);
             updatePortMode(_connectingPort, inputPort);
             //更新变长参数。
-            if (inputPort.node is ActionNode actionNode)
-            {
-                var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
-                if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
-                {
-                    inputNodeItem.setInputs(getNodeInputViewData(actionNode));
-                }
-            }
+            updateInputParamsPort(inputPort);
         }
 
         private void connectControlPorts(ControlOutput outputPort, ControlInput inputPort)
@@ -1278,14 +1271,7 @@ namespace Controllers
             updatePortMode(_connectingPort, outputPort);
             updatePortMode(_connectingPort, inputPort);
             //更新变长参数。
-            if (inputPort.node is ActionNode actionNode)
-            {
-                var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
-                if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
-                {
-                    inputNodeItem.setInputs(getNodeInputViewData(actionNode));
-                }
-            }
+            updateInputParamsPort(inputPort);
             if (addOperation)
             {
                 int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
@@ -1786,7 +1772,18 @@ namespace Controllers
             }
             cardInputField.setCard(cardDefine, cardSkin, image);
         }
-
+        private void updateInputParamsPort(IPort inputPort)
+        {
+            if (inputPort.node is ActionNode actionNode)
+            {
+                var inputNodeItem = getActionNodeItem(actionNode);
+                var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
+                if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
+                {
+                    inputNodeItem.setInputs(getNodeInputViewData(actionNode));
+                }
+            }
+        }
         private void setNodeConst(Node node, string name, object value)
         {
             var beforeValue = node.getConst(name);
