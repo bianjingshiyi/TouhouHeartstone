@@ -12,13 +12,20 @@ namespace UI
         {
             _closeButton.onClick.AddListener(onCloseButtonClicked);
         }
+        private void OnEnable()
+        {
+            _animator.SetBool("Closed", closed);
+            if (closed)
+            {
+                _animator.Play("Closed");
+            }
+        }
         public void onCloseButtonClicked()
         {
             closed = !closed;
             _animator.SetBool("Closed", closed);
         }
-        [SerializeField]
-        private bool closed = false;
+        private static bool closed = false;
         [SerializeField]
         private Button _closeButton;
         [SerializeField]
