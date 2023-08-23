@@ -740,7 +740,7 @@ namespace TouhouHeartstone
         public static (IEffect effect, Buff buff)[] getBattlecries(this Card card, IGame game)
         {
             List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
-            if (!card.getProp<bool>(game, CARD.SILENCE))
+            if (!card.isSilenced(game))
             {
                 results.AddRange(card.define.getBattlecries()
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
@@ -1045,6 +1045,8 @@ namespace TouhouHeartstone
         }
         public static bool isNeedTarget(this Card card, CardEngine game)
         {
+            if (card.isSilenced(game))
+                return false;
             if (card.define.getActiveEffect() is ITargetEffect targetEffect)
                 return true;
             else if (card.define.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault() is GeneratedActiveEffect activeEffect)
@@ -1063,6 +1065,8 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static Card[] getAvaliableTargets(this Card card, CardEngine game)
         {
+            if (card.isSilenced(game))
+                return Array.Empty<Card>();
             List<Card> targetList = new List<Card>();
             if (card.define.getActiveEffect() is ITargetEffect targetEffect)
             {
@@ -1108,12 +1112,14 @@ namespace TouhouHeartstone
         }
         public static bool isValidTarget(this Card card, CardEngine game, Card target)
         {
+            if (card.isSilenced(game))
+                return false;
             ITargetEffect targetEffect = card.define.getActiveEffect() as ITargetEffect;
             ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
-            GeneratedEffect generatedEffect = card.define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
+            GeneratedActiveEffect generatedEffect = card.define.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault();
             return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect);
         }
-        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedEffect generatedEffect)
+        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedActiveEffect generatedEffect)
         {
             //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
@@ -1127,7 +1133,7 @@ namespace TouhouHeartstone
             if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, null, new object[] { target }))
                 return false;
             HearthStoneRule.ActiveEventArg eventArg = new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target });
-            if (generatedEffect is GeneratedActiveEffect genActive && !genActive.checkTarget(game, card, null, eventArg, out _))
+            if (generatedEffect != null && !generatedEffect.checkTarget(game, card, null, eventArg, out _))
                 return false;
             return true;
         }
@@ -1178,20 +1184,24 @@ namespace TouhouHeartstone
         /// <returns></returns>
         public static Task activeEffect(this Card card, CardEngine game, Player player, Card[] targets)
         {
-            ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
-            if (triggerEffect != null)
+            bool silenced = card.isSilenced(game);
+            if (!silenced)
             {
-                var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                var vars = new object[] { eventArg };
-                if (triggerEffect.checkCondition(game, card, null, vars))
-                    return triggerEffect.execute(game, card, null, vars, targets);
-            }
-            IActiveEffect activeEffect = card.define.getActiveEffect();
-            if (activeEffect != null)
-            {
-                var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                if (activeEffect.checkCondition(game, card, null, eventArg))
-                    return activeEffect.execute(game, card, null, eventArg);
+                ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
+                if (triggerEffect != null)
+                {
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    var vars = new object[] { eventArg };
+                    if (triggerEffect.checkCondition(game, card, null, vars))
+                        return triggerEffect.execute(game, card, null, vars, targets);
+                }
+                IActiveEffect activeEffect = card.define.getActiveEffect();
+                if (activeEffect != null)
+                {
+                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                    if (activeEffect.checkCondition(game, card, null, eventArg))
+                        return activeEffect.execute(game, card, null, eventArg);
+                }
             }
             if (card.isServant() || card.isItem() || card.isMaster())
             {
@@ -1199,12 +1209,15 @@ namespace TouhouHeartstone
             }
             else if (card.isSpell() || card.isSkill())
             {
-                var defineActives = card.define.getEffects().OfType<GeneratedActiveEffect>();
-                foreach (var effect in defineActives)
+                if (!silenced)
                 {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                    if (effect.checkCondition(game, card, null, eventArg))
-                        return effect.execute(game, card, null, eventArg);
+                    var defineActives = card.define.getEffects().OfType<GeneratedActiveEffect>();
+                    foreach (var effect in defineActives)
+                    {
+                        var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+                        if (effect.checkCondition(game, card, null, eventArg))
+                            return effect.execute(game, card, null, eventArg);
+                    }
                 }
                 foreach (var buff in card.getBuffs())
                 {

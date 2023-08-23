@@ -26,8 +26,6 @@ namespace TouhouHeartstone
         }
         public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
-            if (isDisabled(game, card, buff))
-                return false;
             var entryNode = this.entryNode;
             if (entryNode != null)
             {
