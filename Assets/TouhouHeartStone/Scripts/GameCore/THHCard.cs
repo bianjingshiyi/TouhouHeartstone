@@ -762,7 +762,7 @@ namespace TouhouHeartstone
         }
         public static bool hasBattlecry(this ICardData card, IGame game)
         {
-            if (!card.getProp<bool>(game, CARD.SILENCE))
+            if (!card.isSilenced(game))
             {
                 if (card.define.hasBattlecry())
                     return true;
@@ -778,7 +778,7 @@ namespace TouhouHeartstone
         public static (IEffect effect, Buff buff)[] getDeathRattles(this Card card, IGame game)
         {
             List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
-            if (!card.getProp<bool>(game, CARD.SILENCE))
+            if (!card.isSilenced(game))
             {
                 results.AddRange(card.define.getDeathRattles()
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
@@ -805,25 +805,26 @@ namespace TouhouHeartstone
         public static (IEffect effect, Buff buff)[] getAuras(this Card card, IGame game)
         {
             List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
-            if (!card.getProp<bool>(game, CARD.SILENCE))
-            {
-                results.AddRange(card.define.getAuras()
-                    .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
-            }
+            results.AddRange(card.define.getAuras()
+                .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
             foreach (var buff in card.getBuffs())
             {
                 var effects = buff.getEffects(game as CardEngine);
                 results.AddRange(effects.Where(e => e.isAura())
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
-            return results.Where(e =>
+            return results.ToArray();
+        }
+        public static async Task updateAuras(this Card card, IGame game)
+        {
+            var aura = card.getAuras(game);
+            foreach (var (effect, buff) in aura)
             {
-                if (e.effect is GeneratedAura gen)
+                if (effect is GeneratedAura gen)
                 {
-                    return !gen.isDisabled(game, card, e.buff);
+                    await gen.execute(game, card, buff, null);
                 }
-                return false;
-            }).ToArray();
+            }
         }
         public static bool hasDeathRattle(this ICardData card, IGame game)
         {

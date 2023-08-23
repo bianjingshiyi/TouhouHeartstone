@@ -38,6 +38,15 @@ namespace TouhouHeartstone
             await base.onDisable(game, card, buff);
             await updateAura(game, card, buff, null);
         }
+        public override bool isDisabled(IGame game, ICard card, IBuff buff)
+        {
+            // 被封印，禁用效果
+            if (buff == null && card.isSilenced(game))
+            {
+                return true;
+            }
+            return base.isDisabled(game, card, buff);
+        }
         public override bool checkCondition(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
             return true;
@@ -55,8 +64,7 @@ namespace TouhouHeartstone
             Dictionary<Card, Buff> buffDict = getBuffDic(cardEngine, selfCard, selfBuff);
             // 如果该光环已被禁用。
             if (isDisabled(game, card, buff) || 
-                (selfCard != null && 
-                (pileList == null || !pileList.Contains(selfCard.pile.name))))
+                (selfCard != null && (pileList == null || !pileList.Contains(selfCard.pile.name))))
             {
                 // 遍历已经记录的卡牌和增益列表。
                 foreach (var pair in buffDict)

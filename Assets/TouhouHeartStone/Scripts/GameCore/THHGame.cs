@@ -575,14 +575,7 @@ namespace TouhouHeartstone
             var cards = game.players.SelectMany(p => p.getPiles().SelectMany(pile => pile));
             foreach (var card in cards)
             {
-                var aura = card.getAuras(game);
-                foreach (var (effect, buff) in aura)
-                {
-                    if (effect is GeneratedAura gen)
-                    {
-                        await gen.execute(game, card, buff, null);
-                    }
-                }
+                await card.updateAuras(game);
             }
         }
         #region Gameflow
