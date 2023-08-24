@@ -139,6 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _servantRoot: {fileID: 8346663672394069945}
   _servantList: []
+  _ignoreAlignServants: []
   _servantWidth: 1.7
   _servantTemplate: {fileID: 8556291235555441778}
   _previewPlaceHolder: {fileID: 7383993006625479821}
@@ -190,6 +191,12 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: bf14f256839a0254bbb42a24d3543ebd, type: 2}
+    - target: {fileID: 6575253070495977050, guid: 42f03ad386549fe41b7e38a9505f9013,
+        type: 3}
+      propertyPath: healEffectPrefab
+      value: 
+      objectReference: {fileID: 198025859805546612, guid: 721cfe8018b2cd04abd0748143d2a312,
+        type: 3}
     - target: {fileID: 7212515994960594931, guid: 42f03ad386549fe41b7e38a9505f9013,
         type: 3}
       propertyPath: _time

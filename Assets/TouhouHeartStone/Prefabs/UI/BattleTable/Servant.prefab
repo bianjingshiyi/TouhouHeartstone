@@ -1556,6 +1556,8 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  healEffectPrefab: {fileID: 198025859805546612, guid: 721cfe8018b2cd04abd0748143d2a312,
+    type: 3}
   onSetDefine:
     beforeAnim:
       m_PersistentCalls:

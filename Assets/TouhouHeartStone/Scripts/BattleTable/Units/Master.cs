@@ -132,6 +132,7 @@ namespace Game.BattleTable
         public SimpleAnim onDamage;
         public SimpleAnim onSetDefine;
         public SimpleAnim onHeal;
+        public ParticleSystem healEffectPrefab;
         public SimpleAnim onDeath;
         [SerializeField]
         private GameObject _armorObj;

@@ -1148,6 +1148,8 @@ MonoBehaviour:
     afterAnim:
       m_PersistentCalls:
         m_Calls: []
+  healEffectPrefab: {fileID: 198025859805546612, guid: 721cfe8018b2cd04abd0748143d2a312,
+    type: 3}
   onDeath:
     beforeAnim:
       m_PersistentCalls:
@@ -2481,7 +2483,7 @@ PrefabInstance:
     - target: {fileID: 7342428144847955128, guid: 3a388c211be88724d9243b6c50a46f36,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.001
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 7342428144847955128, guid: 3a388c211be88724d9243b6c50a46f36,
         type: 3}
