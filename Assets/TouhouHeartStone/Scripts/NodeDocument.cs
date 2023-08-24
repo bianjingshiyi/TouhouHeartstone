@@ -62,10 +62,10 @@ namespace Game
         public void Show(int id)
         {
             if (comments == null) comments = LoadDocument();
-            if (!comments.Any(d => id == d.defineId))
+            var doc = comments.FirstOrDefault(d => id == d.defineId);
+            if (doc == null)
                 return;
 
-            var doc = comments[id];
             string str = "";
             str += lang._(TitleTemplate, lang._(doc.editorName)); // 标题
             if (!string.IsNullOrEmpty(doc.category))
@@ -247,8 +247,7 @@ namespace Game
             outputs = ActionParameterComment.GetArray(outputs, act.outputDefines.ToArray());
             consts = ActionParameterComment.GetArray(consts, act.constDefines.ToArray());
 
-            if (act is MethodActionDefine method)
-                category = method.category;
+            category = act.category;
         }
     }
 

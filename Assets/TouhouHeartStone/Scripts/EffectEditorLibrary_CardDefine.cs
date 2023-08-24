@@ -105,7 +105,7 @@ namespace Game
 
 
         ///获取随机卡牌定义
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetRandomCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.GetRandomCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)]
         [Obsolete]
         public static CardDefine getRandomCardDefine(CardEngine game, 
@@ -326,8 +326,9 @@ namespace Game
             }
         }
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardDefineCollectible, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_COLLECTIBLE)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.IsCardDefineCollectible, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_COLLECTIBLE)]
         [return: ActionNodeParam(EDITOR_NODE_PARAM_NAME_COLLECTIBLE)]
+        [Obsolete]
         public static bool isCardDefineCollectible(
            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card)
         {

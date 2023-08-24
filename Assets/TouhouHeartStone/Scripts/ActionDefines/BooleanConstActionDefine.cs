@@ -6,7 +6,7 @@ namespace TouhouCardEngine
 {
     public class BooleanConstActionDefine : ActionDefine
     {
-        public BooleanConstActionDefine() : base((int)BuiltinActionDefineID.BooleanConst, "BooleanConst")
+        public BooleanConstActionDefine() : base(BuiltinActionDefineID.BooleanConst, "BooleanConst")
         {
             inputs = new PortDefine[]
             {
@@ -22,7 +22,7 @@ namespace TouhouCardEngine
                 PortDefine.Value(typeof(bool), "return", "Value")
             };
             obsoleteNames = new string[] { "BooleanConst" };
-            category = "Const";
+            category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
 
         public override Task<ControlOutput> run(Flow flow, Node node)

@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ArrayOfActionComment xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ActionComment>
-    <defineId>0</defineId>
+    <defineId>112001</defineId>
     <obsoleteNames />
     <editorName>BooleanConst</editorName>
+    <category>其他</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
@@ -27,9 +28,10 @@
     <example><![CDATA[调试卡牌时，需要保持一个开关打开或者关闭时的情况。]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>132</defineId>
+    <defineId>112002</defineId>
     <obsoleteNames />
     <editorName>Compare</editorName>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Object</type>
@@ -71,10 +73,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>170</defineId>
+    <defineId>106002</defineId>
     <obsoleteNames />
     <editorName>获取增益定义</editorName>
-    <category>增益</category>
+    <category>Buff</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
@@ -101,9 +103,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>1</defineId>
+    <defineId>112003</defineId>
     <obsoleteNames />
     <editorName>IntegerConst</editorName>
+    <category>其他</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
@@ -130,9 +133,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>3</defineId>
+    <defineId>112004</defineId>
     <obsoleteNames />
     <editorName>IntegerOperation</editorName>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
@@ -166,9 +170,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>4</defineId>
+    <defineId>112005</defineId>
     <obsoleteNames />
     <editorName>LogicOperation</editorName>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Boolean</type>
@@ -203,9 +208,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>2</defineId>
+    <defineId>112006</defineId>
     <obsoleteNames />
     <editorName>StringConst</editorName>
+    <category>其他</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
@@ -229,9 +235,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>129</defineId>
+    <defineId>212001</defineId>
     <obsoleteNames />
     <editorName>分支动作</editorName>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Boolean</type>
@@ -264,9 +271,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>130</defineId>
+    <defineId>212002</defineId>
     <obsoleteNames />
     <editorName>重复动作</editorName>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
@@ -300,9 +308,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>131</defineId>
+    <defineId>212003</defineId>
     <obsoleteNames />
     <editorName>重复动作直到</editorName>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
@@ -340,10 +349,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>5</defineId>
+    <defineId>112008</defineId>
     <obsoleteNames />
     <editorName>X到Y之间的随机整数</editorName>
-    <category>常量</category>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
@@ -374,7 +383,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>133</defineId>
+    <defineId>101002</defineId>
     <obsoleteNames />
     <editorName>获取玩家属性</editorName>
     <category>玩家</category>
@@ -411,7 +420,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>134</defineId>
+    <defineId>201002</defineId>
     <obsoleteNames />
     <editorName>设置玩家属性</editorName>
     <category>玩家</category>
@@ -447,7 +456,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>135</defineId>
+    <defineId>101003</defineId>
     <obsoleteNames />
     <editorName>获取玩家对手</editorName>
     <category>玩家</category>
@@ -476,7 +485,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>136</defineId>
+    <defineId>101004</defineId>
     <obsoleteNames>
       <string>GetMaster</string>
     </obsoleteNames>
@@ -508,7 +517,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>137</defineId>
+    <defineId>101005</defineId>
     <obsoleteNames />
     <editorName>获取当前回合的玩家</editorName>
     <category>玩家</category>
@@ -527,7 +536,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>138</defineId>
+    <defineId>101006</defineId>
     <obsoleteNames />
     <editorName>获取玩家的手牌</editorName>
     <category>玩家</category>
@@ -557,7 +566,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>139</defineId>
+    <defineId>101007</defineId>
     <obsoleteNames />
     <editorName>获取玩家的墓地卡牌</editorName>
     <category>玩家</category>
@@ -587,7 +596,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>140</defineId>
+    <defineId>101008</defineId>
     <obsoleteNames />
     <editorName>获取玩家牌库中的卡牌</editorName>
     <category>玩家</category>
@@ -617,7 +626,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>141</defineId>
+    <defineId>201003</defineId>
     <obsoleteNames />
     <editorName>抽目标卡牌</editorName>
     <category>玩家</category>
@@ -654,7 +663,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>142</defineId>
+    <defineId>201004</defineId>
     <obsoleteNames />
     <editorName>从一定数量的卡牌中选择一张</editorName>
     <category>玩家</category>
@@ -692,7 +701,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>143</defineId>
+    <defineId>201005</defineId>
     <obsoleteNames />
     <editorName>从一定数量的卡牌定义中选择一张</editorName>
     <category>玩家</category>
@@ -730,10 +739,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>144</defineId>
+    <defineId>202002</defineId>
     <obsoleteNames />
     <editorName>丢弃卡牌</editorName>
-    <category>玩家</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
@@ -765,10 +774,10 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>145</defineId>
+    <defineId>202019</defineId>
     <obsoleteNames />
     <editorName>增加固定数量护甲</editorName>
-    <category>玩家</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Player</type>
@@ -792,10 +801,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>146</defineId>
+    <defineId>202018</defineId>
     <obsoleteNames />
     <editorName>增加护甲</editorName>
-    <category>玩家</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Player</type>
@@ -818,10 +827,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>147</defineId>
+    <defineId>202020</defineId>
     <obsoleteNames />
     <editorName>失去护甲</editorName>
-    <category>玩家</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Player</type>
@@ -844,7 +853,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>148</defineId>
+    <defineId>101009</defineId>
     <obsoleteNames />
     <editorName>获取玩家延迟区</editorName>
     <category>玩家</category>
@@ -871,7 +880,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>149</defineId>
+    <defineId>101010</defineId>
     <obsoleteNames />
     <editorName>获取玩家技能</editorName>
     <category>玩家</category>
@@ -898,7 +907,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>150</defineId>
+    <defineId>201006</defineId>
     <obsoleteNames />
     <editorName>复原技能</editorName>
     <category>玩家</category>
@@ -917,7 +926,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>151</defineId>
+    <defineId>101011</defineId>
     <obsoleteNames />
     <editorName>获取玩家道具</editorName>
     <category>玩家</category>
@@ -944,7 +953,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>152</defineId>
+    <defineId>101012</defineId>
     <obsoleteNames />
     <editorName>玩家是否装备道具</editorName>
     <category>玩家</category>
@@ -971,7 +980,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>153</defineId>
+    <defineId>201007</defineId>
     <obsoleteNames />
     <editorName>摧毁道具</editorName>
     <category>玩家</category>
@@ -990,7 +999,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>154</defineId>
+    <defineId>101013</defineId>
     <obsoleteNames />
     <editorName>获取玩家暂存区</editorName>
     <category>玩家</category>
@@ -1017,7 +1026,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>155</defineId>
+    <defineId>101014</defineId>
     <obsoleteNames />
     <editorName>获取当前灵力值</editorName>
     <category>玩家</category>
@@ -1044,7 +1053,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>156</defineId>
+    <defineId>101015</defineId>
     <obsoleteNames />
     <editorName>获取灵力上限</editorName>
     <category>玩家</category>
@@ -1071,7 +1080,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>157</defineId>
+    <defineId>201001</defineId>
     <obsoleteNames />
     <editorName>设置当前灵力值</editorName>
     <category>玩家</category>
@@ -1097,7 +1106,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>158</defineId>
+    <defineId>201008</defineId>
     <obsoleteNames />
     <editorName>增加当前灵力值</editorName>
     <category>玩家</category>
@@ -1123,7 +1132,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>159</defineId>
+    <defineId>201009</defineId>
     <obsoleteNames />
     <editorName>设置灵力上限</editorName>
     <category>玩家</category>
@@ -1149,7 +1158,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>160</defineId>
+    <defineId>201010</defineId>
     <obsoleteNames />
     <editorName>增加灵力上限</editorName>
     <category>玩家</category>
@@ -1175,7 +1184,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>161</defineId>
+    <defineId>201011</defineId>
     <obsoleteNames />
     <editorName>信仰对决</editorName>
     <category>玩家</category>
@@ -1230,7 +1239,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>162</defineId>
+    <defineId>101001</defineId>
     <obsoleteNames />
     <editorName>获取牌堆</editorName>
     <category>玩家</category>
@@ -1264,7 +1273,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>163</defineId>
+    <defineId>-10</defineId>
     <obsoleteNames />
     <editorName>获取目标</editorName>
     <obsoleteMsg />
@@ -1292,7 +1301,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>164</defineId>
+    <defineId>105002</defineId>
     <obsoleteNames />
     <editorName>获取牌堆中的牌</editorName>
     <category>牌堆</category>
@@ -1319,7 +1328,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>165</defineId>
+    <defineId>-6</defineId>
     <obsoleteNames />
     <editorName>获取牌库中满足条件的卡牌</editorName>
     <obsoleteMsg />
@@ -1346,7 +1355,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>166</defineId>
+    <defineId>-7</defineId>
     <obsoleteNames />
     <editorName>过滤满足条件的卡牌</editorName>
     <obsoleteMsg />
@@ -1388,7 +1397,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>167</defineId>
+    <defineId>-5</defineId>
     <obsoleteNames />
     <editorName>获取卡牌数量</editorName>
     <obsoleteMsg />
@@ -1416,7 +1425,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>168</defineId>
+    <defineId>105001</defineId>
     <obsoleteNames />
     <editorName>卡牌所在牌堆判断</editorName>
     <category>牌堆</category>
@@ -1462,9 +1471,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>169</defineId>
+    <defineId>-13</defineId>
     <obsoleteNames />
     <editorName>玩家牌堆是否发生改变</editorName>
+    <obsoleteMsg />
     <category>牌堆</category>
     <inputs>
       <ActionParameterComment>
@@ -1496,7 +1506,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>171</defineId>
+    <defineId>106001</defineId>
     <obsoleteNames />
     <editorName>该增益</editorName>
     <category>增益</category>
@@ -1518,7 +1528,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>172</defineId>
+    <defineId>206001</defineId>
     <obsoleteNames />
     <editorName>添加增益</editorName>
     <category>增益</category>
@@ -1555,7 +1565,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>173</defineId>
+    <defineId>206002</defineId>
     <obsoleteNames />
     <editorName>移除增益</editorName>
     <category>增益</category>
@@ -1591,7 +1601,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>174</defineId>
+    <defineId>106003</defineId>
     <obsoleteNames />
     <editorName>是否具有增益</editorName>
     <category>增益</category>
@@ -1625,7 +1635,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>175</defineId>
+    <defineId>206003</defineId>
     <obsoleteNames />
     <editorName>设置增益属性</editorName>
     <category>增益</category>
@@ -1661,7 +1671,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>176</defineId>
+    <defineId>106004</defineId>
     <obsoleteNames />
     <editorName>获取增益属性</editorName>
     <category>增益</category>
@@ -1698,7 +1708,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>177</defineId>
+    <defineId>210001</defineId>
     <obsoleteNames />
     <editorName>简单抽牌</editorName>
     <category>行动</category>
@@ -1727,7 +1737,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>178</defineId>
+    <defineId>210002</defineId>
     <obsoleteNames />
     <editorName>卡牌置入战场</editorName>
     <category>行动</category>
@@ -1763,7 +1773,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>179</defineId>
+    <defineId>210003</defineId>
     <obsoleteNames />
     <editorName>卡牌移回手牌</editorName>
     <category>行动</category>
@@ -1800,7 +1810,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>180</defineId>
+    <defineId>210004</defineId>
     <obsoleteNames />
     <editorName>卡牌洗入牌库</editorName>
     <category>行动</category>
@@ -1844,7 +1854,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>181</defineId>
+    <defineId>210005</defineId>
     <obsoleteNames />
     <editorName>卡牌置入墓地</editorName>
     <category>行动</category>
@@ -1880,7 +1890,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>182</defineId>
+    <defineId>210006</defineId>
     <obsoleteNames />
     <editorName>卡牌置入延迟区</editorName>
     <category>行动</category>
@@ -1916,7 +1926,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>183</defineId>
+    <defineId>210007</defineId>
     <obsoleteNames />
     <editorName>卡牌装备到道具栏</editorName>
     <category>行动</category>
@@ -1950,7 +1960,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>184</defineId>
+    <defineId>210008</defineId>
     <obsoleteNames />
     <editorName>卡牌移动到暂存区</editorName>
     <category>行动</category>
@@ -1984,7 +1994,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>185</defineId>
+    <defineId>111001</defineId>
     <obsoleteNames />
     <editorName>创建集合</editorName>
     <category>集合运算</category>
@@ -2011,7 +2021,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>186</defineId>
+    <defineId>111002</defineId>
     <obsoleteNames />
     <editorName>向集合添加元素</editorName>
     <category>集合运算</category>
@@ -2045,7 +2055,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>187</defineId>
+    <defineId>111003</defineId>
     <obsoleteNames />
     <editorName>筛选</editorName>
     <category>集合运算</category>
@@ -2086,7 +2096,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>188</defineId>
+    <defineId>111004</defineId>
     <obsoleteNames />
     <editorName>获取元素数量</editorName>
     <category>集合运算</category>
@@ -2115,7 +2125,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>189</defineId>
+    <defineId>111005</defineId>
     <obsoleteNames />
     <editorName>包含</editorName>
     <category>集合运算</category>
@@ -2149,7 +2159,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>190</defineId>
+    <defineId>111006</defineId>
     <obsoleteNames />
     <editorName>排序</editorName>
     <category>集合运算</category>
@@ -2198,7 +2208,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>191</defineId>
+    <defineId>111007</defineId>
     <obsoleteNames />
     <editorName>获取第X个元素</editorName>
     <category>集合运算</category>
@@ -2234,7 +2244,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>192</defineId>
+    <defineId>211001</defineId>
     <obsoleteNames />
     <editorName>遍历</editorName>
     <category>集合运算</category>
@@ -2268,7 +2278,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>193</defineId>
+    <defineId>111008</defineId>
     <obsoleteNames />
     <editorName>获取集合中的随机元素</editorName>
     <category>集合运算</category>
@@ -2297,7 +2307,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>194</defineId>
+    <defineId>111009</defineId>
     <obsoleteNames />
     <editorName>反转集合</editorName>
     <category>集合运算</category>
@@ -2324,7 +2334,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>195</defineId>
+    <defineId>111010</defineId>
     <obsoleteNames />
     <editorName>集合去重</editorName>
     <category>集合运算</category>
@@ -2351,7 +2361,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>196</defineId>
+    <defineId>111011</defineId>
     <obsoleteNames>
       <string>Except</string>
     </obsoleteNames>
@@ -2387,10 +2397,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>127</defineId>
+    <defineId>212004</defineId>
     <obsoleteNames />
     <editorName>设置临时变量</editorName>
-    <category>高级</category>
+    <category>其他</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Object</type>
@@ -2414,10 +2424,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>128</defineId>
+    <defineId>112007</defineId>
     <obsoleteNames />
     <editorName>获取临时变量</editorName>
-    <category>高级</category>
+    <category>其他</category>
     <inputs />
     <outputs>
       <ActionParameterComment>
@@ -2441,7 +2451,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>68</defineId>
+    <defineId>102002</defineId>
     <obsoleteNames />
     <editorName>卡牌类型判断</editorName>
     <category>卡牌</category>
@@ -2479,7 +2489,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>69</defineId>
+    <defineId>102003</defineId>
     <obsoleteNames />
     <editorName>卡牌关键词判断</editorName>
     <category>卡牌</category>
@@ -2528,7 +2538,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>70</defineId>
+    <defineId>-9</defineId>
     <obsoleteNames />
     <editorName>获取随机卡牌</editorName>
     <obsoleteMsg />
@@ -2558,7 +2568,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>71</defineId>
+    <defineId>202003</defineId>
     <obsoleteNames />
     <editorName>创建衍生卡并置入战场</editorName>
     <category>卡牌</category>
@@ -2594,7 +2604,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>72</defineId>
+    <defineId>202004</defineId>
     <obsoleteNames />
     <editorName>创建衍生卡并置入手牌</editorName>
     <category>卡牌</category>
@@ -2631,7 +2641,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>73</defineId>
+    <defineId>202005</defineId>
     <obsoleteNames />
     <editorName>创建衍生卡并洗入牌库</editorName>
     <category>卡牌</category>
@@ -2665,7 +2675,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>74</defineId>
+    <defineId>202006</defineId>
     <obsoleteNames />
     <editorName>创建衍生卡并装备到道具栏</editorName>
     <category>卡牌</category>
@@ -2699,7 +2709,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>75</defineId>
+    <defineId>102001</defineId>
     <obsoleteNames />
     <editorName>这张卡牌</editorName>
     <category>卡牌</category>
@@ -2718,7 +2728,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>76</defineId>
+    <defineId>102004</defineId>
     <obsoleteNames>
       <string>GetProperty</string>
     </obsoleteNames>
@@ -2754,7 +2764,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>77</defineId>
+    <defineId>202007</defineId>
     <obsoleteNames>
       <string>SetProperty</string>
     </obsoleteNames>
@@ -2797,7 +2807,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>78</defineId>
+    <defineId>102005</defineId>
     <obsoleteNames />
     <editorName>获取花费</editorName>
     <category>卡牌</category>
@@ -2826,7 +2836,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>79</defineId>
+    <defineId>102006</defineId>
     <obsoleteNames />
     <editorName>获取攻击力</editorName>
     <category>卡牌</category>
@@ -2855,7 +2865,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>80</defineId>
+    <defineId>102007</defineId>
     <obsoleteNames />
     <editorName>获取最大生命值</editorName>
     <category>卡牌</category>
@@ -2884,7 +2894,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>81</defineId>
+    <defineId>102008</defineId>
     <obsoleteNames />
     <editorName>获取当前生命值</editorName>
     <category>卡牌</category>
@@ -2913,7 +2923,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>82</defineId>
+    <defineId>102009</defineId>
     <obsoleteNames />
     <editorName>获取唯一属性名</editorName>
     <category>卡牌</category>
@@ -2940,7 +2950,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>83</defineId>
+    <defineId>102010</defineId>
     <obsoleteNames>
       <string>GetOwner</string>
     </obsoleteNames>
@@ -2969,7 +2979,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>84</defineId>
+    <defineId>101016</defineId>
     <obsoleteNames>
       <string>GetSpellDamage</string>
     </obsoleteNames>
@@ -3005,7 +3015,34 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>85</defineId>
+    <defineId>102011</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌法术伤害</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>TouhouCardEngine.Card</type>
+        <name>卡牌</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>System.Int32</type>
+        <name>值</name>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>-14</defineId>
     <obsoleteNames>
       <string>IsSpell</string>
     </obsoleteNames>
@@ -3037,13 +3074,13 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>116</defineId>
+    <defineId>202001</defineId>
     <obsoleteNames>
       <string>Damage</string>
     </obsoleteNames>
     <editorName>造成伤害</editorName>
     <obsoleteMsg />
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
@@ -3073,10 +3110,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>117</defineId>
+    <defineId>202008</defineId>
     <obsoleteNames />
     <editorName>造成伤害或法伤</editorName>
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
@@ -3129,10 +3166,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>118</defineId>
+    <defineId>202009</defineId>
     <obsoleteNames />
     <editorName>造成伤害或法伤并分配给目标</editorName>
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
@@ -3185,10 +3222,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>119</defineId>
+    <defineId>202010</defineId>
     <obsoleteNames />
     <editorName>对固定数量的随机目标造成伤害或法伤</editorName>
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
@@ -3255,11 +3292,11 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>120</defineId>
+    <defineId>-4</defineId>
     <obsoleteNames />
     <editorName>对目标造成固定法术伤害</editorName>
     <obsoleteMsg />
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
@@ -3291,11 +3328,11 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>121</defineId>
+    <defineId>202011</defineId>
     <obsoleteNames />
     <editorName>造成法术伤害</editorName>
     <obsoleteMsg />
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>System.Int32</type>
@@ -3326,11 +3363,11 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>122</defineId>
+    <defineId>202012</defineId>
     <obsoleteNames />
     <editorName>造成固定法术伤害并分配给随机目标</editorName>
     <obsoleteMsg />
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
@@ -3362,11 +3399,11 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>123</defineId>
+    <defineId>-2</defineId>
     <obsoleteNames />
     <editorName>对固定数量的随机目标造成固定伤害</editorName>
     <obsoleteMsg />
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
@@ -3405,11 +3442,11 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>124</defineId>
+    <defineId>-3</defineId>
     <obsoleteNames />
     <editorName>对固定数量的随机目标造成固定法术伤害</editorName>
     <obsoleteMsg />
-    <category>伤害</category>
+    <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
         <type>TouhouCardEngine.Card</type>
@@ -3448,7 +3485,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>125</defineId>
+    <defineId>202013</defineId>
     <obsoleteNames />
     <editorName>治疗目标卡牌</editorName>
     <category>卡牌</category>
@@ -3482,9 +3519,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>126</defineId>
+    <defineId>-11</defineId>
     <obsoleteNames />
     <editorName>对目标卡牌造成固定治疗</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -3517,7 +3555,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>86</defineId>
+    <defineId>102012</defineId>
     <obsoleteNames />
     <editorName>获取所有随从</editorName>
     <category>卡牌</category>
@@ -3536,7 +3574,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>87</defineId>
+    <defineId>102013</defineId>
     <obsoleteNames />
     <editorName>获取所有角色</editorName>
     <category>卡牌</category>
@@ -3555,7 +3593,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>88</defineId>
+    <defineId>102014</defineId>
     <obsoleteNames />
     <editorName>获取友方随从</editorName>
     <category>卡牌</category>
@@ -3574,7 +3612,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>89</defineId>
+    <defineId>102015</defineId>
     <obsoleteNames />
     <editorName>获取友方角色</editorName>
     <category>卡牌</category>
@@ -3593,7 +3631,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>90</defineId>
+    <defineId>102016</defineId>
     <obsoleteNames />
     <editorName>获取敌方随从</editorName>
     <category>卡牌</category>
@@ -3612,7 +3650,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>91</defineId>
+    <defineId>102017</defineId>
     <obsoleteNames />
     <editorName>获取敌方角色</editorName>
     <category>卡牌</category>
@@ -3631,7 +3669,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>92</defineId>
+    <defineId>202014</defineId>
     <obsoleteNames />
     <editorName>禁锢</editorName>
     <category>卡牌</category>
@@ -3658,7 +3696,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>93</defineId>
+    <defineId>202015</defineId>
     <obsoleteNames />
     <editorName>沉默</editorName>
     <category>卡牌</category>
@@ -3685,7 +3723,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>94</defineId>
+    <defineId>202016</defineId>
     <obsoleteNames />
     <editorName>消灭</editorName>
     <category>卡牌</category>
@@ -3704,7 +3742,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>95</defineId>
+    <defineId>202017</defineId>
     <obsoleteNames />
     <editorName>强制更新所有卡牌状态</editorName>
     <category>卡牌</category>
@@ -3715,7 +3753,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>96</defineId>
+    <defineId>102018</defineId>
     <obsoleteNames />
     <editorName>是否濒死</editorName>
     <category>卡牌</category>
@@ -3757,7 +3795,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>97</defineId>
+    <defineId>102019</defineId>
     <obsoleteNames />
     <editorName>获取护甲值</editorName>
     <category>卡牌</category>
@@ -3784,7 +3822,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>98</defineId>
+    <defineId>102020</defineId>
     <obsoleteNames />
     <editorName>获取相邻卡牌</editorName>
     <category>卡牌</category>
@@ -3811,7 +3849,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>99</defineId>
+    <defineId>102021</defineId>
     <obsoleteNames />
     <editorName>卡牌具有宣言</editorName>
     <category>卡牌</category>
@@ -3838,7 +3876,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>100</defineId>
+    <defineId>202021</defineId>
     <obsoleteNames />
     <editorName>触发卡牌宣言</editorName>
     <category>卡牌</category>
@@ -3864,7 +3902,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>101</defineId>
+    <defineId>102022</defineId>
     <obsoleteNames />
     <editorName>卡牌具有遗言</editorName>
     <category>卡牌</category>
@@ -3891,7 +3929,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>102</defineId>
+    <defineId>202022</defineId>
     <obsoleteNames />
     <editorName>触发卡牌遗言</editorName>
     <category>卡牌</category>
@@ -3910,7 +3948,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>103</defineId>
+    <defineId>202023</defineId>
     <obsoleteNames />
     <editorName>触发法术或技能卡牌效果</editorName>
     <category>卡牌</category>
@@ -3936,7 +3974,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>104</defineId>
+    <defineId>202024</defineId>
     <obsoleteNames />
     <editorName>重置卡牌</editorName>
     <category>卡牌</category>
@@ -3955,7 +3993,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>105</defineId>
+    <defineId>202025</defineId>
     <obsoleteNames />
     <editorName>强制攻击目标</editorName>
     <category>卡牌</category>
@@ -3983,7 +4021,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>106</defineId>
+    <defineId>202026</defineId>
     <obsoleteNames />
     <editorName>本回合攻击次数增加一次</editorName>
     <category>卡牌</category>
@@ -4004,7 +4042,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>107</defineId>
+    <defineId>102023</defineId>
     <obsoleteNames />
     <editorName>获取合法卡牌使用目标</editorName>
     <category>卡牌</category>
@@ -4031,7 +4069,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>108</defineId>
+    <defineId>102024</defineId>
     <obsoleteNames />
     <editorName>获取合法攻击目标</editorName>
     <category>卡牌</category>
@@ -4058,7 +4096,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>109</defineId>
+    <defineId>202027</defineId>
     <obsoleteNames />
     <editorName>揭示卡牌</editorName>
     <category>卡牌</category>
@@ -4077,7 +4115,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>110</defineId>
+    <defineId>202028</defineId>
     <obsoleteNames />
     <editorName>获得控制权</editorName>
     <category>卡牌</category>
@@ -4103,7 +4141,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>111</defineId>
+    <defineId>102025</defineId>
     <obsoleteNames />
     <editorName>是否已蓄力</editorName>
     <category>卡牌</category>
@@ -4130,7 +4168,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>112</defineId>
+    <defineId>102026</defineId>
     <obsoleteNames />
     <editorName>获取蓄力层数</editorName>
     <category>卡牌</category>
@@ -4157,7 +4195,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>113</defineId>
+    <defineId>202033</defineId>
     <obsoleteNames />
     <editorName>设置蓄力层数</editorName>
     <category>卡牌</category>
@@ -4183,7 +4221,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>114</defineId>
+    <defineId>-1</defineId>
     <obsoleteNames />
     <editorName>添加整数修改器</editorName>
     <obsoleteMsg />
@@ -4232,7 +4270,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>115</defineId>
+    <defineId>-15</defineId>
     <obsoleteNames />
     <editorName>移除修改器</editorName>
     <obsoleteMsg />
@@ -4267,7 +4305,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>44</defineId>
+    <defineId>103001</defineId>
     <obsoleteNames />
     <editorName>获取所有卡牌定义</editorName>
     <category>卡牌定义</category>
@@ -4286,7 +4324,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>45</defineId>
+    <defineId>103002</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义</editorName>
     <category>卡牌定义</category>
@@ -4313,7 +4351,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>46</defineId>
+    <defineId>103003</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义列表</editorName>
     <category>卡牌定义</category>
@@ -4340,7 +4378,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>47</defineId>
+    <defineId>103004</defineId>
     <obsoleteNames />
     <editorName>卡牌定义是否具有标签</editorName>
     <category>卡牌定义</category>
@@ -4383,7 +4421,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>48</defineId>
+    <defineId>-8</defineId>
     <obsoleteNames />
     <editorName>获取随机卡牌定义</editorName>
     <obsoleteMsg />
@@ -4411,7 +4449,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>49</defineId>
+    <defineId>103005</defineId>
     <obsoleteNames />
     <editorName>卡牌定义类型判断</editorName>
     <category>卡牌定义</category>
@@ -4446,7 +4484,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>50</defineId>
+    <defineId>103006</defineId>
     <obsoleteNames />
     <editorName>卡牌定义关键词判断</editorName>
     <category>卡牌定义</category>
@@ -4495,7 +4533,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>51</defineId>
+    <defineId>103007</defineId>
     <obsoleteNames />
     <editorName>获取目标卡牌的定义列表</editorName>
     <category>卡牌定义</category>
@@ -4522,7 +4560,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>52</defineId>
+    <defineId>103008</defineId>
     <obsoleteNames />
     <editorName>获取单张卡牌的定义</editorName>
     <category>卡牌定义</category>
@@ -4549,7 +4587,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>53</defineId>
+    <defineId>202029</defineId>
     <obsoleteNames />
     <editorName>变形为卡牌定义</editorName>
     <category>卡牌定义</category>
@@ -4591,7 +4629,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>54</defineId>
+    <defineId>103009</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义属性</editorName>
     <category>卡牌定义</category>
@@ -4625,7 +4663,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>55</defineId>
+    <defineId>103010</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义花费</editorName>
     <category>卡牌定义</category>
@@ -4652,7 +4690,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>56</defineId>
+    <defineId>103011</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义攻击力</editorName>
     <category>卡牌定义</category>
@@ -4679,7 +4717,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>57</defineId>
+    <defineId>103012</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义生命值</editorName>
     <category>卡牌定义</category>
@@ -4706,7 +4744,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>58</defineId>
+    <defineId>103013</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义法术伤害</editorName>
     <category>卡牌定义</category>
@@ -4733,7 +4771,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>59</defineId>
+    <defineId>103014</defineId>
     <obsoleteNames />
     <editorName>是否为衍生牌</editorName>
     <category>卡牌定义</category>
@@ -4760,7 +4798,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>60</defineId>
+    <defineId>103015</defineId>
     <obsoleteNames />
     <editorName>获取英雄牌技能</editorName>
     <category>卡牌定义</category>
@@ -4787,7 +4825,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>61</defineId>
+    <defineId>103016</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义对应角色</editorName>
     <category>卡牌定义</category>
@@ -4814,9 +4852,10 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>62</defineId>
+    <defineId>-12</defineId>
     <obsoleteNames />
     <editorName>卡牌是否可收藏</editorName>
+    <obsoleteMsg />
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
@@ -4841,7 +4880,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>63</defineId>
+    <defineId>202030</defineId>
     <obsoleteNames />
     <editorName>触发卡牌定义宣言</editorName>
     <category>卡牌定义</category>
@@ -4874,7 +4913,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>64</defineId>
+    <defineId>103017</defineId>
     <obsoleteNames />
     <editorName>卡牌定义具有宣言</editorName>
     <category>卡牌定义</category>
@@ -4901,7 +4940,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>65</defineId>
+    <defineId>202031</defineId>
     <obsoleteNames />
     <editorName>触发卡牌定义遗言</editorName>
     <category>卡牌定义</category>
@@ -4927,7 +4966,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>66</defineId>
+    <defineId>103018</defineId>
     <obsoleteNames />
     <editorName>卡牌定义具有遗言</editorName>
     <category>卡牌定义</category>
@@ -4954,7 +4993,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>67</defineId>
+    <defineId>202032</defineId>
     <obsoleteNames />
     <editorName>触发法术或技能卡牌定义效果</editorName>
     <category>卡牌定义</category>
@@ -4987,7 +5026,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>29</defineId>
+    <defineId>104001</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照对应卡牌</editorName>
     <category>卡牌快照</category>
@@ -5014,7 +5053,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>30</defineId>
+    <defineId>104002</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照卡牌定义</editorName>
     <category>卡牌快照</category>
@@ -5041,7 +5080,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>31</defineId>
+    <defineId>104003</defineId>
     <obsoleteNames />
     <editorName>卡牌快照类型判断</editorName>
     <category>卡牌快照</category>
@@ -5076,7 +5115,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>32</defineId>
+    <defineId>104004</defineId>
     <obsoleteNames />
     <editorName>卡牌快照关键词判断</editorName>
     <category>卡牌快照</category>
@@ -5111,7 +5150,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>33</defineId>
+    <defineId>104005</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照属性</editorName>
     <category>卡牌快照</category>
@@ -5145,7 +5184,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>34</defineId>
+    <defineId>104006</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照花费</editorName>
     <category>卡牌快照</category>
@@ -5172,7 +5211,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>35</defineId>
+    <defineId>104007</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照攻击力</editorName>
     <category>卡牌快照</category>
@@ -5199,7 +5238,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>36</defineId>
+    <defineId>104008</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照最大生命值</editorName>
     <category>卡牌快照</category>
@@ -5226,7 +5265,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>37</defineId>
+    <defineId>104009</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照当前生命值</editorName>
     <category>卡牌快照</category>
@@ -5253,7 +5292,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>38</defineId>
+    <defineId>104010</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照拥有者</editorName>
     <category>卡牌快照</category>
@@ -5280,7 +5319,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>39</defineId>
+    <defineId>104011</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照护甲值</editorName>
     <category>卡牌快照</category>
@@ -5307,7 +5346,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>40</defineId>
+    <defineId>104012</defineId>
     <obsoleteNames />
     <editorName>卡牌快照是否已蓄力</editorName>
     <category>卡牌快照</category>
@@ -5334,7 +5373,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>41</defineId>
+    <defineId>104013</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照蓄力层数</editorName>
     <category>卡牌快照</category>
@@ -5361,7 +5400,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>42</defineId>
+    <defineId>104014</defineId>
     <obsoleteNames />
     <editorName>卡牌快照具有宣言</editorName>
     <category>卡牌快照</category>
@@ -5388,7 +5427,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>43</defineId>
+    <defineId>104015</defineId>
     <obsoleteNames />
     <editorName>卡牌快照具有遗言</editorName>
     <category>卡牌快照</category>
@@ -5415,7 +5454,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>23</defineId>
+    <defineId>107001</defineId>
     <obsoleteNames />
     <editorName>该效果</editorName>
     <category>效果</category>
@@ -5434,7 +5473,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>24</defineId>
+    <defineId>107002</defineId>
     <obsoleteNames />
     <editorName>效果具有标签</editorName>
     <category>效果</category>
@@ -5469,7 +5508,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>25</defineId>
+    <defineId>107003</defineId>
     <obsoleteNames />
     <editorName>获取效果属性</editorName>
     <category>效果</category>
@@ -5504,7 +5543,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>26</defineId>
+    <defineId>107004</defineId>
     <obsoleteNames />
     <editorName>获取卡牌的所有效果</editorName>
     <category>效果</category>
@@ -5531,7 +5570,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>27</defineId>
+    <defineId>107005</defineId>
     <obsoleteNames />
     <editorName>获取增益的所有效果</editorName>
     <category>效果</category>
@@ -5558,7 +5597,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>28</defineId>
+    <defineId>107006</defineId>
     <obsoleteNames />
     <editorName>获取卡牌定义的所有效果</editorName>
     <category>效果</category>
@@ -5585,7 +5624,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>16</defineId>
+    <defineId>109001</defineId>
     <obsoleteNames />
     <editorName>获取当前回合数</editorName>
     <category>事件记录</category>
@@ -5604,7 +5643,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>17</defineId>
+    <defineId>109002</defineId>
     <obsoleteNames />
     <editorName>获取事件记录变量</editorName>
     <category>事件记录</category>
@@ -5649,7 +5688,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>18</defineId>
+    <defineId>109003</defineId>
     <obsoleteNames />
     <editorName>事件记录类型判断</editorName>
     <category>事件记录</category>
@@ -5684,7 +5723,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>19</defineId>
+    <defineId>109004</defineId>
     <obsoleteNames />
     <editorName>获取本局游戏事件记录</editorName>
     <category>事件记录</category>
@@ -5703,7 +5742,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>20</defineId>
+    <defineId>109005</defineId>
     <obsoleteNames />
     <editorName>获取本回合事件记录</editorName>
     <category>事件记录</category>
@@ -5722,7 +5761,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>21</defineId>
+    <defineId>109006</defineId>
     <obsoleteNames />
     <editorName>获取前X-Y回合内的事件记录</editorName>
     <category>事件记录</category>
@@ -5768,7 +5807,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>22</defineId>
+    <defineId>109007</defineId>
     <obsoleteNames />
     <editorName>获取卡牌在某事件时的快照</editorName>
     <category>事件记录</category>
@@ -5802,7 +5841,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>7</defineId>
+    <defineId>108001</defineId>
     <obsoleteNames />
     <editorName>当前事件</editorName>
     <category>事件</category>
@@ -5821,7 +5860,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>8</defineId>
+    <defineId>108002</defineId>
     <obsoleteNames>
       <string>GetVariable</string>
     </obsoleteNames>
@@ -5866,7 +5905,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>9</defineId>
+    <defineId>208001</defineId>
     <obsoleteNames>
       <string>SetVariable</string>
     </obsoleteNames>
@@ -5910,7 +5949,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>6</defineId>
+    <defineId>208002</defineId>
     <obsoleteNames />
     <editorName>阻止事件</editorName>
     <category>事件</category>
@@ -5929,7 +5968,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>10</defineId>
+    <defineId>208003</defineId>
     <obsoleteNames />
     <editorName>更改攻击目标</editorName>
     <category>事件</category>
@@ -5958,7 +5997,7 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>11</defineId>
+    <defineId>208004</defineId>
     <obsoleteNames />
     <editorName>更改使用目标</editorName>
     <category>事件</category>
@@ -5984,7 +6023,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>12</defineId>
+    <defineId>208005</defineId>
     <obsoleteNames />
     <editorName>伤害/更改受伤卡牌</editorName>
     <category>事件</category>
@@ -6010,7 +6049,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>13</defineId>
+    <defineId>208006</defineId>
     <obsoleteNames />
     <editorName>伤害/更改伤害源</editorName>
     <category>事件</category>
@@ -6036,7 +6075,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>14</defineId>
+    <defineId>208007</defineId>
     <obsoleteNames />
     <editorName>伤害/更改伤害值</editorName>
     <category>事件</category>
@@ -6062,7 +6101,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>15</defineId>
+    <defineId>208008</defineId>
     <obsoleteNames />
     <editorName>治疗/更改治疗值</editorName>
     <category>事件</category>

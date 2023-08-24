@@ -5,7 +5,7 @@ namespace TouhouCardEngine
 {
     public class IntegerConstActionDefine : ActionDefine
     {
-        public IntegerConstActionDefine() : base((int)BuiltinActionDefineID.IntegerConst, "IntegerConst")
+        public IntegerConstActionDefine() : base(BuiltinActionDefineID.IntegerConst, "IntegerConst")
         {
             inputs = new PortDefine[]
             {
@@ -21,7 +21,7 @@ namespace TouhouCardEngine
                 PortDefine.Value(typeof(int), "result", "value")
             };
             obsoleteNames = new string[] { "IntegerConst" };
-            category = "Const";
+            category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
         public override Task<ControlOutput> run(Flow flow, Node node)
         {

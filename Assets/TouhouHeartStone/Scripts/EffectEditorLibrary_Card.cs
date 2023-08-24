@@ -115,7 +115,7 @@ namespace Game
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetRandomCard, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.GetRandomCard, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_GET_RANDOM_CARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
         public static Card getRandomCard(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -288,6 +288,54 @@ namespace Game
         }
 
         /// <summary>
+        /// 丢弃卡牌
+        /// </summary>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.Discard, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DISCARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
+        public static Task<THHCard.DiscardEventArg[]> discard(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HANDS)] Card[] hands)
+        {
+            if (hands == null)
+                return null;
+            return hands.discard(game);
+        }
+
+
+        /// <summary>
+        /// 增加固定数量的护甲
+        /// </summary>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.AddArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_ADD_AMOUNT_OF_ARMOR)]
+        public static async Task addArmorToTarget(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player != null)
+                await player.getMaster().gainArmor(game, count);
+        }
+        /// <summary>
+        /// 增加护甲
+        /// </summary>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.AddAmountOfArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_ADD_ARMOR)]
+        public static async Task addAmountOfArmorToTarget(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            if (player != null)
+                await player.getMaster().gainArmor(game, count);
+        }
+        /// <summary>
+        /// 失去护甲
+        /// </summary>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.LoseArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_LOSE_ARMOR)]
+        public static async Task loseArmor(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+        {
+            if (player != null)
+                await player.getMaster().loseArmor(game, count);
+        }
+
+        /// <summary>
         /// 获取一个独一无二的属性名。当你在一段可以重复生效的效果中为卡牌设置额外属性的时候，应该使用这个方法。
         /// 注意，这个方法是为了避免属性名之间的冲突，在不会发生冲突的情况下，输入相同的参数仍然会让这个方法返回相同的属性名。
         /// </summary>
@@ -311,24 +359,23 @@ namespace Game
         {
             return card?.owner;
         }
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardSpellDamage, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, "GetSpellDamage")]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
-        public static int getSpellDamage(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BASE_DAMAGE)] int baseDamage)
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardSpellDamage, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_GET_CARD_SPELL_DAMAGE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static int getCardSpellDamage(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
-            if (player == null)
+            if (card == null)
                 return 0;
-            return player.getSpellDamage(game, baseDamage);
+            return card.getSpellDamage(game);
         }
         /// <summary>
         /// 这是不是一张法术牌
         /// </summary>
         /// <param name="card"></param>
         /// <returns></returns>
-        [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsCardSpell, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_IS_SPELL, "IsSpell")]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.IsSpellCard, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_IS_SPELL, "IsSpell")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        [Obsolete]
         public static bool isSpell([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             if (card == null)
@@ -336,8 +383,6 @@ namespace Game
             return card.define.type == DEFINE.SPELL;
         }
         #region 伤害类节点
-        [TranslateMsg("编辑器/分类名称")]
-        public const string EDITOR_TYPE_NAME_DAMAGE = "伤害";
         [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_NODE_IS_SPELL_DAMAGE = "是否为法术伤害";
         [TranslateMsg("编辑器/伤害分类/节点名称")]
@@ -355,7 +400,7 @@ namespace Game
         [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_PARAM_NAME_DAMAGE_SOURCE = "伤害源";
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.Damage, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE, "Damage")]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.Damage, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE, "Damage")]
         [Obsolete]
         public static Task damage(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] this Card card, CardEngine game,
@@ -369,7 +414,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageOrSpellDamage, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageOrSpellDamage, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamage(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
@@ -392,7 +437,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害并分配给目标
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageSplitAmong, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageSplitAmong, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
@@ -415,7 +460,7 @@ namespace Game
         /// <summary>
         /// 对固定数量的随机目标造成伤害或法术伤害
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageToRandomTargets, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageToRandomTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
@@ -446,7 +491,7 @@ namespace Game
         /// <param name="targets"></param>
         /// <returns></returns>
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificSpellDamageToTargets, EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.DealSpecificSpellDamageToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
@@ -466,7 +511,7 @@ namespace Game
         /// <param name="targets"></param>
         /// <returns></returns>
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpellDamageToTargets, EDITOR_TYPE_NAME_DAMAGE, EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpellDamageToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpellDamageToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: false)] int damage,
@@ -485,7 +530,7 @@ namespace Game
         /// <param name="targets"></param>
         /// <returns></returns>
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificSpellDamageToRandomTargets, EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificSpellDamageToRandomTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_RANDOM_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToRandomTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE, isConst: true)] int damage,
@@ -504,7 +549,7 @@ namespace Game
         /// <param name="damage"></param>
         /// <returns></returns>
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificDamageToSpecificNumberOfRandomTargets, EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.DealSpecificDamageToSpecificNumberOfRandomTarget, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
@@ -524,7 +569,7 @@ namespace Game
         /// <param name="damage"></param>
         /// <returns></returns>
         [Obsolete]
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DealSpecificSpellDamageToSpecificNumberOfRandomTargets, EDITOR_TYPE_NAME_DAMAGE, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.DealSpecificSpellDamageToSpecificNumberOfRandomTarget, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DEAL_SPECIFIC_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_RANDOM_TARGET)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealSpecificSpellDamageToSpecificNumberOfRandomTarget(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
@@ -549,8 +594,9 @@ namespace Game
                 return Task.FromResult(Array.Empty<THHCard.HealEventArg>());
             return targets.heal(game, card, value);
         }
-        [ObsoletedKeyMethod(BuiltinActionDefineID.HealSpecificAmountToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.HealSpecificAmountToTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_SPECIFIC_AMOUNT_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
+        [Obsolete]
         public static Task<THHCard.HealEventArg[]> healSpecificAmountToTargets(CardEngine game, Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)] Card[] targets,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE, isConst: true)] int value)
@@ -956,7 +1002,7 @@ namespace Game
         }
 
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.AddIntModifier, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_ADD_INT_MODIFIER)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.AddIntModifier, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_ADD_INT_MODIFIER)]
         [return: ActionNodeParam(StringTable.EDITOR_NODE_PARAM_NAME_MODIFIER)]
         [Obsolete]
         public static IntPropModifier addIntModifier(IGame game, 
@@ -969,7 +1015,7 @@ namespace Game
             card.addModifier(game, modifier);
             return modifier;
         }
-        [ObsoletedKeyMethod(BuiltinActionDefineID.RemoveModifier, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_REMOVE_MODIFIER)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.RemoveModifier, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_REMOVE_MODIFIER)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_REMOVE_MODIFIER_EVENT)]
         [Obsolete]
         public static Task<IRemoveModiEventArg> removeModifier(IGame game, 

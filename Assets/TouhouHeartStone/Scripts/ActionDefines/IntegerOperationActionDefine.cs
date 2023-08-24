@@ -7,7 +7,7 @@ namespace TouhouCardEngine
 {
     public class IntegerOperationActionDefine : ActionDefine
     {
-        public IntegerOperationActionDefine() : base((int)BuiltinActionDefineID.IntegerOperation, "IntegerOperation")
+        public IntegerOperationActionDefine() : base(BuiltinActionDefineID.IntegerOperation, "IntegerOperation")
         {
             inputs = new PortDefine[]
             {
@@ -24,6 +24,7 @@ namespace TouhouCardEngine
                 PortDefine.Value(typeof(int), resultName, "Value")
             };
             obsoleteNames = new string[] { "IntegerOperation" };
+            category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
         public override async Task<ControlOutput> run(Flow flow, Node node)
         {

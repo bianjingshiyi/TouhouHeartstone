@@ -566,17 +566,19 @@ namespace UI
         public static readonly string[] categories = new string[]
         {
             ACTION_CATEGORY_NAME_NONE,
-            StringTable.EDITOR_NODE_CATEGORY_PLAYER,
-            StringTable.EDITOR_NODE_CATEGORY_CARD,
-            EffectEditorLibrary.EDITOR_NODE_CATEGORY_CARD_DEFINE,
-            StringTable.EDITOR_NODE_CATEGORY_PILE,
-            StringTable.EDITOR_CATEGORY__ACTION__NAME,
-            StringTable.EDITOR_NODE_CATEGORY_BUFF,
-            StringTable.EDITOR_NODE_CATEGORY_MODIFIER,
-            StringTable.EDITOR_NODE_CATEGORY_EVENT,
-            ActionNodeGraphCtrl.EDITOR_CATEGORY_EVENT_ENTRY_NODE,
-            StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION,
-            EffectEditorLibrary.EDIOTR_CATEGORY_NAME_ADVANCED,
+            StringTable.EDITOR_NODE_CATEGORY_PLAYER, // 玩家
+            StringTable.EDITOR_NODE_CATEGORY_CARD, // 卡牌
+            EffectEditorLibrary.EDITOR_NODE_CATEGORY_CARD_DEFINE, // 卡牌定义
+            EffectEditorLibrary.EDITOR_NODE_CATEGORY_CARD_SNAPSHOT, // 卡牌快照
+            StringTable.EDITOR_NODE_CATEGORY_PILE, // 牌堆
+            StringTable.EDITOR_NODE_CATEGORY_BUFF, //增益
+            EffectEditorLibrary.EDITOR_CATEGORY_NAME_EFFECTS, // 效果
+            StringTable.EDITOR_NODE_CATEGORY_EVENT, // 事件
+            EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_RECORD, // 事件记录
+            ActionNodeGraphCtrl.EDITOR_CATEGORY_EVENT_ENTRY_NODE, // 事件入口
+            StringTable.EDITOR_CATEGORY__ACTION__NAME, // 行动
+            StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, // 集合运算
+            EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER, // 其他
         };
     }
 }

@@ -12,7 +12,9 @@ namespace Game
 
     public static partial class EffectEditorLibrary
     {
-        #region 无分类
+        #region 其他
+        [TranslateMsg("动作图编辑器中动作节点名称之X到Y之间的随机数")]
+        public const string EDITOR_NODE_NAME_GET_RANDOM_INT = "X到Y之间的随机整数";
         [TranslateMsg("动作图编辑器中动作节点名称之重复动作直到动作")]
         private const string EDIOTR_NODE_NAME_DO_UNTIL_ACTION = "重复动作直到";
         [TranslateMsg("动作图编辑器中动作节点参数名称之最多重复次数参数")]
@@ -20,8 +22,46 @@ namespace Game
         [TranslateMsg("动作图编辑器中动作节点参数名称之结束条件参数")]
         private const string EDIOTR_PARAM_NAME_STOP_CONDITION = "结束条件";
 
+        [TranslateMsg("编辑器-节点分类名")]
+        public const string EDITOR_CATEGORY_NAME_OTHER = "其他";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_GET_INT_X = "整数X";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_GET_INT_Y = "整数Y";
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.BranchAction, null, StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION)]
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDIOTR_NODE_NAME_SET_TEMP_VARIABLE = "设置临时变量";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDIOTR_NODE_NAME_GET_TEMP_VARIABLE = "获取临时变量";
+        /// <summary>
+        /// 设置临时变量
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <param name="variableName"></param>
+        /// <param name="value"></param>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.SetTempVar, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_SET_TEMP_VARIABLE)]
+        public static void setTempVariable(Flow flow,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] string variableName,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
+        {
+            var key = variableName;
+            flow.setFlowVariable(key, value);
+        }
+        /// <summary>
+        /// 获取临时变量
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <param name="variableName"></param>
+        /// <param name="value"></param>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTempVar, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_GET_TEMP_VARIABLE)]
+        public static object getTempVariable(Flow flow,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] string variableName)
+        {
+            var key = variableName;
+            return flow.getFlowVariable(key);
+        }
+
+        [ObsoletedKeyMethod(BuiltinActionDefineID.BranchAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDIOTR_NODE_NAME_BRANCH_ACTION)]
         public static async Task branchAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)] bool isTrue,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput thenAction,
@@ -36,7 +76,7 @@ namespace Game
         }
 
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.ForAction, null, StringTable.EDIOTR_NODE_NAME_FOR_ACTION)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.ForAction, EDITOR_CATEGORY_NAME_OTHER, StringTable.EDIOTR_NODE_NAME_FOR_ACTION)]
         public static async Task forAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)] int count,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_ACTION, isOut: true)] ControlInput action,
@@ -55,7 +95,7 @@ namespace Game
         }
 
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.DoUntilAction, null, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.DoUntilAction, EDITOR_CATEGORY_NAME_OTHER, EDIOTR_NODE_NAME_DO_UNTIL_ACTION)]
         public static async Task doUntilAction(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(EDIOTR_PARAM_NAME_STOP_CONDITION, isOut: false)] ControlInput condition,
             [ActionNodeParam(EDIOTR_PARAM_NAME_MAX_REPEAT_TIME)] int maxRepeatTime,
@@ -87,19 +127,10 @@ namespace Game
             }
             while (times < maxRepeatTime && !finished);
         }
-        #endregion
-
-        #region 常量
-        [TranslateMsg("动作图编辑器中动作节点名称之X到Y之间的随机数")]
-        public const string EDITOR_NODE_NAME_GET_RANDOM_INT = "X到Y之间的随机整数";
-        [TranslateMsg("编辑器-参数名称")]
-        public const string EDITOR_PARAM_NAME_GET_INT_X = "整数X";
-        [TranslateMsg("编辑器-参数名称")]
-        public const string EDITOR_PARAM_NAME_GET_INT_Y = "整数Y";
         /// <summary>
         /// X到Y之间随机整数
         /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.RandomInt, StringTable.EDITOR_ACTIONGRAPH_MENU_CATEGORY_CONST, EDITOR_NODE_NAME_GET_RANDOM_INT)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.RandomInt, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_GET_RANDOM_INT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static int randomInt(CardEngine game,
            [ActionNodeParam(EDITOR_PARAM_NAME_GET_INT_X, isConst: false)] int countX,
@@ -108,6 +139,7 @@ namespace Game
             return game.randomInt(countX, countY);
         }
         #endregion
+
 
         #region 玩家
         [TranslateMsg("编辑器-节点名称")]
@@ -118,6 +150,8 @@ namespace Game
         public const string EDITOR_NODE_ADD_ARMOR = "增加护甲";
         [TranslateMsg("动作图编辑器中动作节点名称之失去护甲")]
         public const string EDITOR_NODE_LOSE_ARMOR = "失去护甲";
+        [TranslateMsg("动作图编辑器中动作节点名称之获取卡牌法术伤害")]
+        public const string EDITOR_NODE_NAME_GET_CARD_SPELL_DAMAGE = "获取卡牌法术伤害";
         [TranslateMsg("动作图编辑器中动作节点名称之获取玩家延迟区")]
         public const string EDITOR_NODE_NAME_GET_HEAD = "获取玩家延迟区";
         [TranslateMsg("动作图编辑器中动作节点名称之获取玩家技能")]
@@ -282,52 +316,15 @@ namespace Game
                 return null;
             return game.askSelect(card.owner, defines, count);
         }
-        /// <summary>
-        /// 丢弃卡牌
-        /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.Discard, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_DISCARD)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
-        public static Task<THHCard.DiscardEventArg[]> discard(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HANDS)] Card[] hands)
-        {
-            if (hands == null)
-                return null;
-            return hands.discard(game);
-        }
-
-
-        /// <summary>
-        /// 增加固定数量的护甲
-        /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.AddArmor, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_AMOUNT_OF_ARMOR)]
-        public static async Task addArmorToTarget(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
-        {
-            if (player != null)
-                await player.getMaster().gainArmor(game, count);
-        }
-        /// <summary>
-        /// 增加护甲
-        /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.AddAmountOfArmor, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_ARMOR)]
-        public static async Task addAmountOfArmorToTarget(CardEngine game,
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetPlayerSpellDamage, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_SPELL_DAMAGE, "GetSpellDamage")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
+        public static int getSpellDamage(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BASE_DAMAGE)] int baseDamage)
         {
-            if (player != null)
-                await player.getMaster().gainArmor(game, count);
-        }
-        /// <summary>
-        /// 失去护甲
-        /// </summary>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.LoseArmor, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_LOSE_ARMOR)]
-        public static async Task loseArmor(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
-        {
-            if (player != null)
-                await player.getMaster().loseArmor(game, count);
+            if (player == null)
+                return 0;
+            return player.getSpellDamage(game, baseDamage);
         }
         /// <summary>
         /// 获取延迟区
@@ -534,7 +531,7 @@ namespace Game
         }
 
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTarget, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_TARGET)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.GetTarget, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_TARGET)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_TARGET_CARD)]
         [Obsolete]
         public static Card getTarget(HearthStoneRule.ActiveEventArg eventArg, 
@@ -565,7 +562,7 @@ namespace Game
         {
             return pile;
         }
-        [ObsoletedKeyMethod(BuiltinActionDefineID.FilterCardsInDeck, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.GetCardsInDeckWithCondition, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_GET_CARDS_IN_DECK_WITH_CONDITION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
         public static async Task<Card[]> getCardsInDeckWithCondition(CardEngine game, Card card, IBuff buff, IEventArg eventArg, Flow flow, ActionNode node,
@@ -591,7 +588,7 @@ namespace Game
             }
             return cardList.ToArray();
         }
-        [ObsoletedKeyMethod(BuiltinActionDefineID.FilterCards, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.GetCardsWithCondition, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_FILTER_CARDS_WITH_CONDITION)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         [Obsolete]
         public static async Task<Card[]> getCardsWithCondition(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
@@ -623,7 +620,7 @@ namespace Game
             }
             return cardList.ToArray();
         }
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetCardsCount, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_GET_CARDS_COUNT)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.GetCardsCount, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_GET_CARDS_COUNT)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT)]
         [Obsolete]
         public static int getCardsCount([ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -648,8 +645,9 @@ namespace Game
         }
 
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.IsPlayerPileChanged, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED)]
+        [ObsoletedKeyMethod(ObsoletedActionDefineID.IsPlayerPileChanged, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_IS_CHANGED)]
+        [Obsolete]
         public static bool isPlayerPileChanged(Pile.MoveCardEventArg moveCardEvent, 
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player, 
             [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] string pileName)
@@ -1254,18 +1252,12 @@ namespace Game
 
     }
 
-
-
     /// <summary>
     /// 用于将过时的MethodActionDefine转换为以内置名为主键的动作定义。
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class ObsoletedKeyMethodAttribute : ActionNodeMethodAttribute
     {
-        public ObsoletedKeyMethodAttribute(BuiltinActionDefineID id, string category, string editorName, params string[] obsoleteNames) : 
-            this((int)id, category, editorName, obsoleteNames.Append(editorName).ToArray())
-        {
-        }
         public ObsoletedKeyMethodAttribute(int id, string category, string editorName, params string[] obsoleteNames) : base(id, category, editorName, obsoleteNames.Append(editorName).ToArray())
         {
         }

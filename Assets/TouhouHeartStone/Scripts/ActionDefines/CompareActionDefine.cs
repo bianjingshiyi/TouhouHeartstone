@@ -6,7 +6,7 @@ namespace TouhouCardEngine
 {
     public class CompareActionDefine : ActionDefine
     {
-        public CompareActionDefine() : base((int)BuiltinActionDefineID.Compare, "Compare")
+        public CompareActionDefine() : base(BuiltinActionDefineID.Compare, "Compare")
         {
             inputs = new PortDefine[]
             {
@@ -24,6 +24,7 @@ namespace TouhouCardEngine
                 PortDefine.Value(typeof(bool), "result")
             };
             obsoleteNames = new string[] { "Compare" };
+            category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
         public override async Task<ControlOutput> run(Flow flow, Node node)
         {

@@ -6,7 +6,7 @@ namespace TouhouCardEngine
 {
     public class GetBuffDefineAction : ActionDefine
     {
-        public GetBuffDefineAction() : base((int)BuiltinActionDefineID.GetBuffDefine, defName)
+        public GetBuffDefineAction() : base(BuiltinActionDefineID.GetBuffDefine, defName)
         {
             _inputs = new PortDefine[0];
             _consts = new PortDefine[]
