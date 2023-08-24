@@ -521,7 +521,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="pileName"></param>
         /// <returns></returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetPile, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PILE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetPile, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PILE, "GetPile")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]
         public static Pile getPile(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player, 
@@ -689,14 +689,15 @@ namespace Game
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.RemoveBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_REMOVE_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_IS_BUFF_REMOVED)]
-        public static Task<bool> removeBuff(CardEngine game,
+        public static async Task<bool> removeBuff(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
         {
             if (card == null || buff == null)
-                return Task.FromResult(false);
+                return false;
 
-            return card.removeBuff(game, buff);
+            var arg = await card.removeBuff(game, buff);
+            return arg?.removed ?? false;
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.HasBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_HAS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
