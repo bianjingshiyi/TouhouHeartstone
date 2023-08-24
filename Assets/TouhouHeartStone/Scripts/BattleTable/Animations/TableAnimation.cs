@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using UnityEngine;
 
 namespace Game.BattleTable
 {
@@ -12,9 +13,8 @@ namespace Game.BattleTable
     {
         protected float _deltaTime;
         protected float _duration;
-        private Stack<IEnumerator> _coroutineStack;
-        private IEnumerator _coroutine;
         private bool _finished = false;
+        private Coroutine _coroutine;
         /// <summary>
         /// 该动画是否会强制播放之前的动画，以及自身。
         /// 一般用于检视卡牌这种需要等待玩家操作的事件。
@@ -29,11 +29,8 @@ namespace Game.BattleTable
             _duration += _deltaTime;
             if (_coroutine == null)
             {
-                _coroutineStack = _coroutineStack ?? new Stack<IEnumerator>();
-                _finished = false;
-                _coroutine = update(table);
+                _coroutine = table.StartCoroutine(updateCoroutine(table));
             }
-            updateCoroutine();
             return _finished;
         }
         public virtual IEnumerator update(BattleTableManager table)
@@ -46,35 +43,12 @@ namespace Game.BattleTable
         }
         protected void finish()
         {
-            _coroutineStack.Clear();
             _finished = true;
         }
-        private void updateCoroutine()
+        private IEnumerator updateCoroutine(BattleTableManager table)
         {
-            while (_coroutine.MoveNext())
-            {
-                if (_finished)
-                    return;
-
-                var result = _coroutine.Current;
-                if (result is IEnumerator enumerator)
-                {
-                    _coroutineStack.Push(_coroutine);
-                    _coroutine = enumerator;
-                }
-                else
-                {
-                    return;
-                }
-            }
-            if (_coroutineStack.Count > 0)
-            {
-                _coroutine = _coroutineStack.Pop();
-            }
-            else
-            {
-                finish();
-            }
+            yield return update(table);
+            finish();
         }
     }
     public abstract class EventAnimation : TableAnimation
