@@ -1364,21 +1364,20 @@ namespace Game
         {
 
             bool hasUnsavedFix = false;
-            void fixData(Node node)
-            {
-                if (node is ActionNode action)
-                {
-                    fixActionNodeIncorrectData(action);
-                }
-            }
             var builtinActions = builtinActionDefines;
 
+            List<Node> collectedNodes = new List<Node>();
             // 遍历所有节点图并修复信息。
             traverseActionGraphs(cardPool,
                 (c, e) => effectAction(e),
                 (b, e) => effectAction(e),
                 defineAction);
 
+            // 修复所有收集到的节点。
+            foreach (var node in collectedNodes)
+            {
+                fixNode(node);
+            }
 
             foreach (var skin in cardPool.cardSkinList)
             {
@@ -1428,14 +1427,27 @@ namespace Game
                 {
                     fixActiveEntryIncorrectData(active.entryNode);
                 }
-                effect.traverseActionNode(fixData);
+                effect.traverseActionNode(collectNode);
             }
             // 用于遍历自定义动作的方法。
             void defineAction(GeneratedActionDefine define)
             {
-                define.traverse(fixData);
+                define.traverse(collectNode);
             }
-
+            // 收集节点，防止在traverse节点的时候因为操作节点图而报错。
+            void collectNode(Node node)
+            {
+                collectedNodes.Add(node);
+            }
+            // 修复节点信息。
+            void fixNode(Node node)
+            {
+                if (node is ActionNode action)
+                {
+                    fixActionNodeIncorrectData(action);
+                }
+            }
+            // 修复动作节点的错误。
             async void fixActionNodeIncorrectData(ActionNode actionNode)
             {
                 var defineRef = actionNode.defineRef;
@@ -1513,7 +1525,9 @@ namespace Game
                         actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
                     }
                 }
+                fixConditionalNode(actionNode);
             }
+            // 修复主动效果入口节点的错误。
             void fixActiveEntryIncorrectData(ActiveEntryNode activeEntry)
             {
                 foreach (var targetChecker in activeEntry.targetCheckerList)
@@ -1522,6 +1536,65 @@ namespace Game
                     {
                         //目标的类型不能为空，如果为空则默认为仆从
                         targetChecker.targetType = DEFINE.TARGET_TYPE_SERVANT;
+                    }
+                }
+            }
+            // 将旧版的“筛选”、“排序”、“重复动作直到”和“信仰对决”换为新的节点。
+            void fixConditionalNode(ActionNode actionNode)
+            {
+                // 内置动作
+                if (actionNode.defineRef.cardPoolId == 0)
+                {
+                    int newId = 0;
+                    string oldConditionName = null;
+                    string newConditionName = null;
+                    switch (actionNode.defineRef.defineId)
+                    {
+                        case BuiltinActionDefineID.Where_Obsolete:
+                            newId = BuiltinActionDefineID.Where;
+                            oldConditionName = "condition";
+                            newConditionName = "condition";
+                            break;
+                        case BuiltinActionDefineID.OrderBy_Obsolete:
+                            newId = BuiltinActionDefineID.OrderBy;
+                            oldConditionName = "condition";
+                            newConditionName = "condition";
+                            break;
+                        case BuiltinActionDefineID.DoUntilAction_Obsolete:
+                            newId = BuiltinActionDefineID.DoUntilAction;
+                            oldConditionName = "condition";
+                            newConditionName = "condition";
+                            break;
+                        case BuiltinActionDefineID.FaithDuel_Obsolete:
+                            newId = BuiltinActionDefineID.FaithDuel;
+                            oldConditionName = "filter";
+                            newConditionName = "filter";
+                            break;
+                    }
+
+                    if (newId != 0)
+                    {
+                        // 断开原先的连接。
+                        var connectedConditionOutput = actionNode.getOutputPort<ControlOutput>(oldConditionName);
+                        var connectedConditionInput = connectedConditionOutput?.getConnectedInputPort();
+                        var connectedConditionFirstOutput = connectedConditionInput?.node?.getOutputPorts<ValueOutput>()?.FirstOrDefault();
+
+                        if (connectedConditionOutput != null && connectedConditionInput != null)
+                        {
+                            actionNode.graph.disconnect(connectedConditionOutput, connectedConditionInput);
+                        }
+
+                        // 更新节点的信息和端口。
+                        actionNode.defineRef = new ActionReference(0, newId);
+                        var definer = new THHNodeDefiner(this);
+                        definer.Define(actionNode);
+
+                        // 连接之前的条件节点的第一个输出端口和该节点的条件端口。
+                        var newConditionPort = actionNode.getInputPort<ValueInput>(newConditionName);
+                        if (newConditionPort != null && connectedConditionFirstOutput != null)
+                        {
+                            actionNode.graph.connect(connectedConditionFirstOutput, newConditionPort);
+                        }
                     }
                 }
             }
