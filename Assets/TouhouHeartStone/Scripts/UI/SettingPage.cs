@@ -1,38 +1,33 @@
-﻿using BJSYGameCore;
+﻿using System.Collections.Generic;
+using BJSYGameCore;
+using BJSYGameCore.UI;
 using Game;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine;
 using MukioI18n;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
-    partial class SettingPage
+    public class SettingPage : UIObject
     {
-        ConfigManager config => this.findInstance<ConfigManager>();
-        LangManager lang => this.findInstance<LangManager>();
-
-        List<string> langItemList = new List<string>();
-        
-        [SerializeField]
-        GameOptionItemSlider _cacheSlider;
-
-        UnityEngine.UI.Dropdown langDropdown => LanguageGameOptionItemDropdown.DropdownLight.asDropdown;
-        partial void onAwake()
+        #region 私有方法
+        #region 生命周期
+        protected override void Awake()
         {
-            VolumeGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
+            base.Awake();
+            _VolumeGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
             {
                 config.Config.Volume = vol;
                 updateLabels();
                 config.MarkChange();
             });
-            BGMGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
+            _BGMGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
             {
                 config.Config.BGM = vol;
                 updateLabels();
                 config.MarkChange();
             });
-            SEGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
+            _SEGameOptionItemSlider.Slider.onValueChanged.AddListener((vol) =>
             {
                 config.Config.SE = vol;
                 updateLabels();
@@ -51,13 +46,13 @@ namespace UI
                 updateLabels();
                 config.MarkChange();
             });
-            BackButtonBlack.asButton.onClick.AddListener(() =>
+            _BackButtonBlack.asButton.onClick.AddListener(() =>
             {
                 config.SaveConfig();
                 var parent = GetComponentInParent<Main>();
                 parent.display(parent.MainMenu);
             });
-            FullScreenGameOptionItemToggle.Toggle.onValueChanged.AddListener(onFullScreenToggleValueChange);
+            _FullScreenGameOptionItemToggle.Toggle.onValueChanged.AddListener(onFullScreenToggleValueChange);
 
             langDropdown.onValueChanged.AddListener((val) =>
             {
@@ -70,12 +65,12 @@ namespace UI
             foreach (var culture in lang.Cultures)
             {
                 langItemList.Add(culture.Name);
-                langDropdown.options.Add(new UnityEngine.UI.Dropdown.OptionData(culture.NativeName));
+                langDropdown.options.Add(new Dropdown.OptionData(culture.NativeName));
             }
             _clearCacheButton.onClick.AddListener(() =>
             {
-                string desc = main.lang._(SETTING_CLEAR_CACHE_WARNING) + "\n" + 
-                main.lang._(SETTING_CLEAR_CACHE_SIZE, (double)main.cache.GetCacheSize() / 1024 / 1024) + "\n" + 
+                string desc = main.lang._(SETTING_CLEAR_CACHE_WARNING) + "\n" +
+                main.lang._(SETTING_CLEAR_CACHE_SIZE, (double)main.cache.GetCacheSize() / 1024 / 1024) + "\n" +
                 main.lang._(SETTING_CLEAR_CACHE_WARNING_2);
 
                 main.ui.dialog.ShowQuestion(main.lang._(StringTable.WARNING), desc, () =>
@@ -84,31 +79,16 @@ namespace UI
                     main.ui.dialog.ShowConfirm(main.lang._(StringTable.HINT_TITLE), main.lang._(SETTING_CACHE_CLEARED));
                 });
             });
+            _nodeSnapToggle.Toggle.onValueChanged.AddListener(onNodeSnapToggleValueChanged);
         }
-
-        private void updateLabels()
-        {
-            VolumeGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.Volume * 100)}%";
-            BGMGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.BGM * 100)}%";
-            SEGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.SE * 100)}%";
-            if (config.Config.CacheSize < 0)
-            {
-                _cacheSlider.DescText.text = lang._(OPTIONS_CACHE_UNLIMITED);
-            }
-            else
-            {
-                _cacheSlider.DescText.text = lang._(CACHE_SIZE, config.Config.CacheSize);
-            }
-        }
-
         private void OnEnable()
         {
             _isUpdating = true;
-            VolumeGameOptionItemSlider.Slider.value = config.Config.Volume;
-            BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
-            SEGameOptionItemSlider.Slider.value = config.Config.SE;
+            _VolumeGameOptionItemSlider.Slider.value = config.Config.Volume;
+            _BGMGameOptionItemSlider.Slider.value = config.Config.BGM;
+            _SEGameOptionItemSlider.Slider.value = config.Config.SE;
 
-            FullScreenGameOptionItemToggle.Toggle.isOn = config.Config.FullScreen;
+            _FullScreenGameOptionItemToggle.Toggle.isOn = config.Config.FullScreen;
             if (config.Config.CacheSize < 0)
             {
                 _cacheSlider.Slider.value = 20;
@@ -126,10 +106,13 @@ namespace UI
                     break;
                 }
             }
+            _nodeSnapToggle.Toggle.isOn = config.Config.NodeSnap;
             updateLabels();
 
             _isUpdating = false;
         }
+        #endregion
+        #region 事件回调
         private void onFullScreenToggleValueChange(bool value)
         {
             if (_isUpdating)
@@ -137,7 +120,30 @@ namespace UI
             config.Config.FullScreen = value;
             config.MarkChange();
         }
-        bool _isUpdating = false;
+        private void onNodeSnapToggleValueChanged(bool value)
+        {
+            if (_isUpdating)
+                return;
+            config.Config.NodeSnap = value;
+            config.MarkChange();
+        }
+        #endregion
+        private void updateLabels()
+        {
+            _VolumeGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.Volume * 100)}%";
+            _BGMGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.BGM * 100)}%";
+            _SEGameOptionItemSlider.DescText.text = $"{System.Math.Floor(config.Config.SE * 100)}%";
+            if (config.Config.CacheSize < 0)
+            {
+                _cacheSlider.DescText.text = lang._(OPTIONS_CACHE_UNLIMITED);
+            }
+            else
+            {
+                _cacheSlider.DescText.text = lang._(CACHE_SIZE, config.Config.CacheSize);
+            }
+        }
+        #endregion
+        #region 字段属性
         [TranslateMsg("设置-最大缓存大小-无限制")]
         const string OPTIONS_CACHE_UNLIMITED = "无限制";
         [TranslateMsg("缓存大小单位")]
@@ -151,8 +157,32 @@ namespace UI
         [TranslateMsg("设置界面-删除缓存后提示")]
         const string SETTING_CACHE_CLEARED = "缓存文件已清除";
 
+        MainManager main => this.findInstance<MainManager>();
+        ConfigManager config => this.findInstance<ConfigManager>();
+        LangManager lang => this.findInstance<LangManager>();
+
+        List<string> langItemList = new List<string>();
+        Dropdown langDropdown => _LanguageGameOptionItemDropdown.DropdownLight.asDropdown;
+
+        bool _isUpdating = false;
+        [SerializeField()]
+        private GameOptionItemDropdown _LanguageGameOptionItemDropdown;
+        [SerializeField()]
+        private GameOptionItemSlider _VolumeGameOptionItemSlider;
+        [SerializeField()]
+        private GameOptionItemSlider _BGMGameOptionItemSlider;
+        [SerializeField()]
+        private GameOptionItemSlider _SEGameOptionItemSlider;
+        [SerializeField()]
+        private GameOptionItemToggle _FullScreenGameOptionItemToggle;
+        [SerializeField()]
+        private ButtonBlack _BackButtonBlack;
+        [SerializeField]
+        GameOptionItemSlider _cacheSlider;
         [SerializeField]
         private Button _clearCacheButton;
-        MainManager main => this.findInstance<MainManager>();
+        [SerializeField]
+        private GameOptionItemToggle _nodeSnapToggle;
+        #endregion
     }
 }

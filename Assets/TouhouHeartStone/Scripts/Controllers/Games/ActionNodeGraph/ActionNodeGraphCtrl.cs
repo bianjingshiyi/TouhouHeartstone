@@ -308,7 +308,7 @@ namespace Controllers
             var item = getActionNodeItem(node);
             _ui.updateGraphFreePlaceCheckRegion(item.getNodeItemRect().size * 2, item);
             var pos = _ui.findFreeNodeCreatePosition(item);
-            moveNode(node.id,pos);
+            moveNode(node.id, pos);
         }
         public void moveNode(int nodeID, Vector2 pos)
         {
@@ -372,7 +372,7 @@ namespace Controllers
 
             _ui.initPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
             _ui.initEventNames(
-                _eventTypeNames.Select(n => EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, n)).ToArray(), 
+                _eventTypeNames.Select(n => EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, n)).ToArray(),
                 _eventTypeNames.ToArray());
             var keywords = CardEditorCtrl.getKeywords();
             _ui.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
@@ -1851,6 +1851,22 @@ namespace Controllers
         EffectEditorCtrl _effectEditor = null;
         [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
+        [SerializeField]
+        ConfigManager _config;
+
+
+        ConfigManager config 
+        {
+            get
+            {
+                if (!_config)
+                {
+                    _config = this.findInstance<ConfigManager>();
+                }
+                return _config;
+            }
+        }
+
         string _curCategroy = null;
         float _curPosX;
         float _curPosY;

@@ -2,6 +2,8 @@
 using UnityEngine;
 using BJSYGameCore;
 using UnityEngine.Audio;
+using UI;
+using UnityEngine.UI;
 
 namespace Game
 {
@@ -16,6 +18,7 @@ namespace Game
         const string keyFullScreen = "FullScreen";
         const string keyLanguage = "Language";
         const string keyCache = "Cache Size";
+        const string keyNodeSnap = "NodeSnap";
 
         public class PlayerConfig
         {
@@ -25,6 +28,7 @@ namespace Game
             public bool FullScreen;
             public string Language;
             public float CacheSize;
+            public bool NodeSnap;
         }
 
         public PlayerConfig Config { get; } = new PlayerConfig();
@@ -42,6 +46,7 @@ namespace Game
             Config.FullScreen = (PlayerPrefs.HasKey(keyFullScreen) ? PlayerPrefs.GetInt(keyFullScreen, 0) : 0) == 1;
             Config.Language = PlayerPrefs.HasKey(keyLanguage) ? PlayerPrefs.GetString(keyLanguage) : lang.CurrentCulture.Name;
             Config.CacheSize = PlayerPrefs.HasKey(keyCache) ? PlayerPrefs.GetFloat(keyCache) : 0.5f;
+            Config.NodeSnap = (PlayerPrefs.HasKey(keyNodeSnap) ? PlayerPrefs.GetInt(keyNodeSnap, 0) : 1) == 1;
             MarkChange();
         }
 
@@ -53,6 +58,7 @@ namespace Game
             PlayerPrefs.SetInt(keyFullScreen, Config.FullScreen ? 1 : 0);
             PlayerPrefs.SetString(keyLanguage, Config.Language);
             PlayerPrefs.SetFloat(keyCache, Config.CacheSize);
+            PlayerPrefs.SetInt(keyNodeSnap, Config.NodeSnap ? 1 : 0);
         }
 
         public void MarkChange()
@@ -85,5 +91,6 @@ namespace Game
             return 20 * Mathf.Log10(p);
         }
         #endregion Volume
+
     }
 }

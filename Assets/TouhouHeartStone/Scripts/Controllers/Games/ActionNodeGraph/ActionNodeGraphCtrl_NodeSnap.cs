@@ -145,21 +145,25 @@ namespace Controllers
         public void dragNodeItemToGraph(NodeDefine nodeDefine, Vector2 position)
         {
             Vector2 previewSize = _ui.getPreviewNodeSize();
-            Rect previewRect = new Rect(position - previewSize * 0.5f, previewSize);
 
-            // 寻找合适的节点。
-            var targets = findNodeSnapTargets(previewRect, nodeDefine);
+            NodeSnapTarget snapResult = null;
+            if (config.Config.NodeSnap)
+            {
+                Rect previewRect = new Rect(position - previewSize * 0.5f, previewSize);
 
-            // 有左侧连接节点。
-            var result = getNodeSnapResult(position, previewRect, targets);
+                // 寻找合适的节点。
+                var targets = findNodeSnapTargets(previewRect, nodeDefine);
 
+                // 有左侧连接节点。
+                snapResult = getNodeSnapResult(position, previewRect, targets);
+            }
             showPreviewNode(nodeDefine);
             Vector2 previewPos = position;
-            if (result != null)
+            if (snapResult != null)
             {
-                previewPos = result.position;
-                setNodeSnapConnections(result);
-                _currentNodeSnapTarget = result;
+                previewPos = snapResult.position;
+                setNodeSnapConnections(snapResult);
+                _currentNodeSnapTarget = snapResult;
             }
             else
             {
@@ -224,17 +228,20 @@ namespace Controllers
 
         private void moveExistingNodeItem(ActionNodeItem item)
         {
-            Vector2 previewSize = _ui.getPreviewNodeSize();
-            Vector2 position = new Vector2(item.posX, item.posY);
-            Rect previewRect = new Rect(position - previewSize * 0.5f, previewSize);
-
+            NodeSnapTarget result = null;
             var node = getActionNode(item);
-            // 寻找合适的节点。
-            var targets = findNodeSnapTargets(node);
+            if (config.Config.NodeSnap)
+            {
+                Vector2 previewSize = _ui.getPreviewNodeSize();
+                Vector2 position = new Vector2(item.posX, item.posY);
+                Rect previewRect = new Rect(position - previewSize * 0.5f, previewSize);
 
-            // 有左侧连接节点。
-            var result = getNodeSnapResult(position, previewRect, targets);
+                // 寻找合适的节点。
+                var targets = findNodeSnapTargets(node);
 
+                // 有左侧连接节点。
+                result = getNodeSnapResult(position, previewRect, targets);
+            }
             if (result != null)
             {
                 Vector2 previewPos = result.position;
