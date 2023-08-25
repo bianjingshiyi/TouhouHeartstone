@@ -33,7 +33,8 @@ namespace Game.BattleTable
             var isShow = arg.isShow;
             if (isShow)
             {
-                discoveredUI = table.createInvokeCard(discovered, table.table.LeftDisplayTransform.position, -1, true);
+                var cardPos = table.WorldToTablePosition(table.table.LeftDisplayTransform.position);
+                discoveredUI = table.createInvokeCard(discovered, cardPos, -1, true);
                 discoveredUI.setFaceup(true);
             }
             if (discoveredUI != null)

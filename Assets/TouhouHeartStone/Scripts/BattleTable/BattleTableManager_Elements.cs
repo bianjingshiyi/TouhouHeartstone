@@ -641,7 +641,8 @@ namespace Game.BattleTable
         public UICard createInvokeCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createInvokeCard(updateCardDescriptor(card), position, height, isFaceUp);
         public UICard createInvokeCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
         {
-            var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
+            var worldPos = TableToWorldPosition(position);
+            var card = Instantiate(table.CardTemplate, worldPos, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
             card.transform.localRotation = Quaternion.identity;
             setCardDesc(card, desc, isFaceUp);
             if (height < 0)
@@ -651,7 +652,8 @@ namespace Game.BattleTable
         }
         public UICard createInvokeCard(CardDefine define, Vector3 position, float height = -1, bool isFaceUp = true)
         {
-            var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
+            var worldPos = TableToWorldPosition(position);
+            var card = Instantiate(table.CardTemplate, worldPos, Quaternion.identity, table.InvokeDisplayParent).GetComponent<UICard>();
             card.transform.localRotation = Quaternion.identity;
             setCardDefine(card, define, isFaceUp);
             if (height < 0)
@@ -808,7 +810,8 @@ namespace Game.BattleTable
         public UICard createCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createCard(updateCardDescriptor(card), position, height, isFaceUp);
         public UICard createCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
         {
-            var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.DisplayerCardsParent).GetComponent<UICard>();
+            var worldPos = TableToWorldPosition(position);
+            var card = Instantiate(table.CardTemplate, worldPos, Quaternion.identity, table.DisplayerCardsParent).GetComponent<UICard>();
             card.transform.localEulerAngles = Vector3.zero;
             setCardDesc(card, desc, isFaceUp);
             if (height >= 0)
@@ -817,7 +820,8 @@ namespace Game.BattleTable
         }
         public UICard createCard(CardDefine define, Vector3 position, float height = -1, bool isFaceUp = true)
         {
-            var card = Instantiate(table.CardTemplate, position, Quaternion.identity, table.DisplayerCardsParent).GetComponent<UICard>();
+            var worldPos = TableToWorldPosition(position);
+            var card = Instantiate(table.CardTemplate, worldPos, Quaternion.identity, table.DisplayerCardsParent).GetComponent<UICard>();
             card.transform.localEulerAngles = Vector3.zero;
             setCardDefine(card, define, isFaceUp);
             if (height >= 0)
@@ -1024,8 +1028,9 @@ namespace Game.BattleTable
 
             bool setPosition = true;
             // 拖回手牌
-            var pos = pointer.pointerCurrentRaycast.worldPosition;
-            var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(pos);
+            var worldPos = pointer.pointerCurrentRaycast.worldPosition;
+            var pos = WorldToTablePosition(worldPos);
+            var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(worldPos);
             if (table.SelfHandList.containsPosition(inverseTransPosition))
             {
                 //移除随从占位
@@ -1047,7 +1052,7 @@ namespace Game.BattleTable
                 if (usingCard.define.isServant())
                 {
                     //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
-                    table.SelfField.setPreviewPosition(calcIndexInField(pos));
+                    table.SelfField.setPreviewPosition(calcIndexInField(pos.x));
                 }
                 else if (usingCard.define.isSpell())
                 {
@@ -1062,8 +1067,8 @@ namespace Game.BattleTable
             if (setPosition)
             {
                 var handPos = pos;
-                handPos.z = hand.transform.position.z;
-                hand.transform.position = handPos;
+                handPos.y = hand.transform.position.y;
+                hand.transform.position = TableToWorldPosition(pos);
             }
         }
         /// <summary>
@@ -1078,8 +1083,9 @@ namespace Game.BattleTable
             if (usingCard == null) //不存在使用中的卡牌
                 return;
             // 拖回手牌
-            var pos = pointer.pointerCurrentRaycast.worldPosition;
-            var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(pos);
+            var worldPos = pointer.pointerCurrentRaycast.worldPosition;
+            var pos = WorldToTablePosition(worldPos);
+            var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(worldPos);
             if (table.SelfHandList.containsPosition(inverseTransPosition))
             {
                 //如果松开，取消使用
@@ -1098,7 +1104,7 @@ namespace Game.BattleTable
             if (usingCard.isServant())
             {
                 //松开鼠标，确认使用随从牌
-                int index = calcIndexInField(pos);
+                int index = calcIndexInField(pos.x);
                 table.SelfField.setPreviewPosition(-1);
                 if (usingCard.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
                 {
@@ -1192,13 +1198,14 @@ namespace Game.BattleTable
             if (!canCardBeControlled(card))
                 return;
             //拉动距离也应该有一个阈值
-            var pos = pointer.pointerCurrentRaycast.worldPosition;
-            if (Vector2.Distance(master.transform.position, pos) > masterAttackThreshold)
+            var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
+            var masterPos = WorldToTablePosition(master.transform.position);
+            if (Vector3.Distance(masterPos, pos) > masterAttackThreshold)
             {
                 //播放一个变大的动画？
                 //servant.rectTransform.localScale = Vector3.one * 1.1f;
                 //显示指针
-                displayArrow(master.transform, master.transform.position, pos);
+                displayArrow(master.transform, masterPos, pos);
                 //高亮标记所有目标
                 highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
             }
@@ -1269,19 +1276,20 @@ namespace Game.BattleTable
                 return;
             var skillCard = player.getSkill();
             // Stage2: 当前正在拖拽，判断距离以决定是否退出目标选择模式
-            var pos = pointer.pointerCurrentRaycast.worldPosition;
+            var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
+            var skillPos = WorldToTablePosition(skill.transform.position);
             if (usingCard == skillCard)
             {
-                if (Vector3.Distance(skill.transform.position, pos) < skillDragThreshold)
+                if (Vector3.Distance(skillPos, pos) < skillDragThreshold)
                     cancelSkill();
                 else
-                    displayArrow(skill.transform, skill.transform.position, pos);
+                    displayArrow(skill.transform, skillPos, pos);
                 return;
             }
             // Stage1: 当前没有拖拽，进入目标选择模式
             if (usingCard != null)
                 return;//已经在用别的牌了
-            if (Vector3.Distance(skill.transform.position, pos) < skillDragThreshold)
+            if (Vector3.Distance(skillPos, pos) < skillDragThreshold)
                 return;
             // 不可用。
             if (!canCardBeControlled(skillCard, out var info))
@@ -1293,7 +1301,7 @@ namespace Game.BattleTable
             {
                 usingCard = skillCard;
                 highlightTargets(player.getSkill().getAvaliableTargets(game));
-                displayArrow(skill.transform, skill.transform.position, pos);
+                displayArrow(skill.transform, skillPos, pos);
             }
         }
         /// <summary>
@@ -1383,13 +1391,14 @@ namespace Game.BattleTable
             if (!canCardBeControlled(card))
                 return;
             //拉动距离也应该有一个阈值
-            var pos = pointer.pointerCurrentRaycast.worldPosition;
-            if (Vector2.Distance(servant.transform.position, pos) > servantAttackThreshold)
+            var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
+            var servantPos = WorldToTablePosition(servant.transform.position);
+            if (Vector3.Distance(servantPos, pos) > servantAttackThreshold)
             {
                 //播放一个变大的动画？
                 //servant.rectTransform.localScale = Vector3.one * 1.1f;
                 //显示指针
-                displayArrow(table.SelfField.transform, servant.transform.position, pos);
+                displayArrow(table.SelfField.transform, servantPos, pos);
                 //高亮标记所有目标
                 highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
             }
@@ -1500,10 +1509,10 @@ namespace Game.BattleTable
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
-        void displayArrow(Transform source, Vector2 from, Vector2 to)
+        void displayArrow(Transform source, Vector3 from, Vector3 to)
         {
             table.AttackArrowImage.setActive(true);
-            table.AttackArrowImage.connect(from, to);
+            table.AttackArrowImage.connect(this, from, to);
         }
         /// <summary>
         /// 隐藏箭头
@@ -1515,9 +1524,9 @@ namespace Game.BattleTable
         /// <summary>
         /// 计算随从空位位置
         /// </summary>
-        /// <param name="position"></param>
+        /// <param name="worldPos"></param>
         /// <returns></returns>
-        private int calcIndexInField(Vector2 position)
+        private int calcIndexInField(float x)
         {
             int index = 0;
             var servants = table.SelfField;
@@ -1526,7 +1535,8 @@ namespace Game.BattleTable
                 //需要选择空位，计算空位
                 for (int i = 0; i < servants.Count; i++)
                 {
-                    if (servants[i].transform.position.x < position.x)
+                    var servantPos = WorldToTablePosition(servants[i].transform.position);
+                    if (servantPos.x < x)
                         index = i + 1;
                 }
             }
@@ -1548,7 +1558,7 @@ namespace Game.BattleTable
                     var desc = getCardDescriptor(usingCard);
                     setCardDesc(usingHand.card, desc, true);
                     usingHand.card.transform.localScale = Vector3.one;
-                    usingHand.card.transform.localPosition = Vector2.zero;
+                    usingHand.card.transform.localPosition = Vector3.zero;
 
                     var handList = desc.getOwner() == player ? table.SelfHandList : table.EnemyHandList;
                     if (handList.ignoreAlignHand == usingHand)
@@ -1588,7 +1598,7 @@ namespace Game.BattleTable
         /// 在宣言目标选择期间，更新箭头。
         /// </summary>
         /// <param name="position"></param>
-        private void showArrowWhilePlaying(Vector2 position)
+        private void showArrowWhilePlaying(Vector3 position)
         {
             var sourceTransform = table.SelfMaster.transform;
             if (usingCard != null)
@@ -1611,7 +1621,8 @@ namespace Game.BattleTable
                 }
             }
             //拖出箭头
-            displayArrow(sourceTransform, sourceTransform.position, position);
+            var sourcePos = WorldToTablePosition(sourceTransform.position);
+            displayArrow(sourceTransform, sourcePos, position);
         }
         /// <summary>
         /// 取消宣言目标选择。
@@ -1696,8 +1707,12 @@ namespace Game.BattleTable
                 table.SelfHandList.zoomOut();//手牌缩小
             }
             if (tryGetMaster(card.getOwner().getMaster(), out var castMaster))
+            {
+                var masterPos = WorldToTablePosition(castMaster.transform.position);
+                var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
                 //拖出箭头
-                displayArrow(castMaster.transform, castMaster.transform.position, pointer.pointerCurrentRaycast.worldPosition);
+                displayArrow(castMaster.transform, masterPos, pos);
+            }
         }
         private void playSpellCard(Card card, PointerEventData pointer)
         {

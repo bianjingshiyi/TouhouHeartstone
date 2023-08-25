@@ -19,12 +19,10 @@ namespace Game.BattleTable
         }
         public override IEnumerator update(BattleTableManager table)
         {
-            Vector2 sourcePosition = Vector2.zero;
-            float startHeight = -1;
+            Vector3 sourcePosition = Vector3.zero;
             if (table.tryGetServant(_cardId, out var servant))
             {
                 sourcePosition = servant.transform.position;
-                startHeight = servant.getHeight() * servant.transform.lossyScale.y;
                 table.removeServant(_cardId);
             }
             if (!table.tryGetHand(_cardId, out _))

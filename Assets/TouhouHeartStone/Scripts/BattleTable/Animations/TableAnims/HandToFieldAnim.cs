@@ -25,22 +25,21 @@ namespace Game.BattleTable
         public override IEnumerator update(BattleTableManager table)
         {
             _tableCard = table.createCard(_servantDesc, _startPosition);
-            var card = _tableCard;
             var field = _servantDesc.getOwner() == table.player ? table.table.SelfField : table.table.EnemyField;
             // 手牌移动到目标位置。
             var servant = table.createServant(_servantDesc, _position);
             servant.setHidden(true);
             AnimAnim anim = null;
-            card.positionLerp.setStart(_startPosition);
-            card.positionLerp.setTarget(servant.transform);
+            _tableCard.positionLerp.setStart(table.TableToWorldPosition(_startPosition));
+            _tableCard.positionLerp.setTarget(servant.transform);
 
-            while (!SimpleAnimHelper.update(table, ref anim, card.onSummon, card.animator, _deltaTime))
+            while (!SimpleAnimHelper.update(table, ref anim, _tableCard.onSummon, _tableCard.animator, _deltaTime))
             {
                 yield return null;
             }
 
             // 移除手牌。
-            card.destroy();
+            _tableCard.destroy();
             _tableCard = null;
 
             // 召唤仆从。

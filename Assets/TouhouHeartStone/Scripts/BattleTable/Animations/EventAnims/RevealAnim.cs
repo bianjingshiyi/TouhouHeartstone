@@ -28,7 +28,9 @@ namespace Game.BattleTable
 
             // 如果该牌在你的手牌里，起始正面朝上。
             bool startFaceUp = player == table.player && _card.pile.name == PILE.HAND;
-            TableCard cardUI = table.createInvokeCard(_card, targetTransform?.position ?? Vector3.zero, -1, startFaceUp);
+            var worldPos = targetTransform?.position ?? Vector3.zero;
+            var cardPos = table.WorldToTablePosition(targetTransform?.position ?? Vector3.zero);
+            TableCard cardUI = table.createInvokeCard(_card, cardPos, -1, startFaceUp);
 
 
             var startScale = Vector3.one * startHeight / cardUI.height;
@@ -136,28 +138,26 @@ namespace Game.BattleTable
         {
             var player = arg.player;
 
-            float height = 1;
+            float height = 100;
             var pile = _card.pile;
             if (pile != null)
             {
                 if (pile.name == PILE.DECK)
                 {
-                    height = (player == table.player ? table.table.SelfDeck : table.table.EnemyDeck).getCardHeight();
+                    var deck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
+                    height = deck.getCardHeight();
                 }
                 else if (pile.name == PILE.HAND)
                 {
                     if (table.tryGetHand(_card, out var handItem))
                     {
-                        height = handItem.card.height * handItem.transform.lossyScale.y;
-                    }
-                    else
-                    {
-                        height = 1;
+                        height = handItem.card.height * handItem.card.transform.lossyScale.z;
                     }
                 }
                 else if (pile.name == PILE.GRAVE)
                 {
-                    height = (player == table.player ? table.table.SelfGrave : table.table.EnemyGrave).getCardHeight();
+                    var grave = player == table.player ? table.table.SelfGrave : table.table.EnemyGrave;
+                    height = grave.getCardHeight();
                 }
             }
             return height;

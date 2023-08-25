@@ -27,12 +27,16 @@ namespace Game.BattleTable
             if (youCard != null)
             {
                 targetDeck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
-                cardUISelf = table.createInvokeCard(youCard, targetDeck.HoverTransform.position, targetDeck.getCardHeight(), false);
+                var deckPos = table.WorldToTablePosition(targetDeck.HoverTransform.position);
+                var lossyScale = table.WorldToTableScale(targetDeck.transform.lossyScale);
+                cardUISelf = table.createInvokeCard(youCard, deckPos, targetDeck.getCardHeight() * lossyScale.z, false);
             }
             if (oppoCard != null)
             {
                 targetDeck = player == table.player ? table.table.EnemyDeck : table.table.SelfDeck;
-                cardUIOppo = table.createInvokeCard(oppoCard, targetDeck.HoverTransform.position, targetDeck.getCardHeight(), false);
+                var deckPos = table.WorldToTablePosition(targetDeck.HoverTransform.position);
+                var lossyScale = table.WorldToTableScale(targetDeck.transform.lossyScale);
+                cardUIOppo = table.createInvokeCard(oppoCard, deckPos, targetDeck.getCardHeight() * lossyScale.z, false);
             }
 
             //播放位移曲线动画到对应的位置

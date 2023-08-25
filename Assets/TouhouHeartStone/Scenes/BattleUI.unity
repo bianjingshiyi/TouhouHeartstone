@@ -1718,7 +1718,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577032259}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 9.6, y: 9.33, z: 5.4}
+  m_LocalPosition: {x: 9.6, y: 10, z: 5.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1846,6 +1846,7 @@ MonoBehaviour:
   _discover: {fileID: 635482350501438396}
   _attackArrow: {fileID: 1980511463}
   _playCardSound: {fileID: 8300000, guid: 050743a5f576d70409c269585fb863cb, type: 3}
+  _worldToTableScale: 100
 --- !u!114 &702626784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4044,7 +4045,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1517992566}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 50}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6399991}
@@ -4978,7 +4979,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 577032261}
-  m_PlaneDistance: 9
+  m_PlaneDistance: 5
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -5400,7 +5401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ui: {fileID: 702626784}
   _table: {fileID: 702626783}
-  _skillDragThreshold: 0.75
+  _skillDragThreshold: 75
   _moveToFieldCurve:
     serializedVersion: 2
     m_Curve:
@@ -5501,9 +5502,9 @@ MonoBehaviour:
   _animationQueue: []
   _usingPosition: -1
   _tipBoxOffset: {x: 20, y: 20, z: -40}
-  _servantAttackThreshold: 0.7
-  _masterAttackThreshold: 0.7
-  _cardHeight: 3
+  _servantAttackThreshold: 70
+  _masterAttackThreshold: 70
+  _cardHeight: 300
   _maxBuffDisplayCount: 15
   _maxBuffNameLength: 10
   _maxBuffDescLength: 32
@@ -5871,7 +5872,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1980511461}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 10, z: 0}
+  m_LocalPosition: {x: 0, y: 5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2130963804}

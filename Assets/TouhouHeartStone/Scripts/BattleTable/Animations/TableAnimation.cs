@@ -31,6 +31,10 @@ namespace Game.BattleTable
             {
                 _coroutine = table.StartCoroutine(updateCoroutine(table));
             }
+            if (_finished)
+            {
+                table.StopCoroutine(_coroutine);
+            }
             return _finished;
         }
         public virtual IEnumerator update(BattleTableManager table)

@@ -25,7 +25,8 @@ namespace Game.BattleTable
             var deck = player == table.player ? table.table.SelfDeck : table.table.EnemyDeck;
             var grave = player == table.player ? table.table.SelfGrave : table.table.EnemyGrave;
 
-            var cardItem = table.createCard(card, deck.HoverTransform.position, -1, true);
+            var cardPos = table.WorldToTablePosition(deck.HoverTransform.position);
+            var cardItem = table.createCard(card, cardPos, -1, true);
             _timer.start();
             while (!_timer.isExpired())
             {

@@ -8,6 +8,7 @@ namespace Game.BattleTable
     using Arg = THHCard.AttackEventArg;
     class AttackAnimation : EventAnimation<Arg>
     {
+        bool _attacked = false;
         AnimAnim _attackAnim;
         AnimAnim _attackedAnim;
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
@@ -46,7 +47,7 @@ namespace Game.BattleTable
             if (attackObj && attackedObj)
             {
                 attackObj.positionLerp.setStart();
-                attackObj.positionLerp.setTarget(attackedObj.transform, 150);
+                attackObj.positionLerp.setTarget(attackedObj.transform, table.TableToWorldDistance(150));
             }
 
 
@@ -55,6 +56,7 @@ namespace Game.BattleTable
                 while (!SimpleAnimHelper.update(table, ref _attackAnim, attackSimpleAnim, attackObj.animator, _deltaTime))
                     yield return null;
             }
+            _attacked = true;
             if (attackedObj && attackedSimpleAnim != null)
             {
                 while (!SimpleAnimHelper.update(table, ref _attackedAnim, attackedSimpleAnim, attackedObj.animator, _deltaTime))
@@ -63,7 +65,7 @@ namespace Game.BattleTable
         }
         public override bool blockAnim(UIAnimation nextAnim)
         {
-            if (_attackAnim == null && nextAnim is DamageAnimation)
+            if (_attacked && nextAnim is DamageAnimation)
                 return false;
             return base.blockAnim(nextAnim);
         }

@@ -34,7 +34,8 @@ namespace Game.BattleTable
             TableCard chooseCard = null;
             if (isShow)
             {
-                chooseCard = table.createInvokeCard(choose, table.table.LeftDisplayTransform.position, -1, true);
+                var cardPos = table.WorldToTablePosition(table.table.LeftDisplayTransform.position);
+                chooseCard = table.createInvokeCard(choose, cardPos, -1, true);
                 chooseCard.setFaceup(true);
             }
             if (chooseCard)

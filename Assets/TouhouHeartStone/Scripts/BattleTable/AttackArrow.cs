@@ -8,10 +8,12 @@ namespace Game.BattleTable
         {
             gameObject.SetActive(active);
         }
-        public void connect(Vector3 from, Vector3 to)
+        public void connect(BattleTableManager table, Vector3 from, Vector3 to)
         {
-            _arrowLineTransform.position = from;
-            _arrowHeadTransform.position = to;
+            from.y = 0;
+            to.y = 0;
+            _arrowLineTransform.position = table.TableToWorldPosition(from);
+            _arrowHeadTransform.position = table.TableToWorldPosition(to);
 
             var localPos = _arrowLineTransform.localPosition;
             localPos.y = 0;
@@ -21,7 +23,7 @@ namespace Game.BattleTable
             localPos.y = 0;
             _arrowHeadTransform.localPosition = localPos;
 
-            var angle = Vector3.SignedAngle(to - from, Vector3.up, Vector3.forward);
+            var angle = Vector3.SignedAngle(to - from, Vector3.forward, Vector3.down);
             var euler = Vector3.up * angle;
             _arrowLineTransform.localEulerAngles = euler;
             _arrowHeadTransform.localEulerAngles = euler;

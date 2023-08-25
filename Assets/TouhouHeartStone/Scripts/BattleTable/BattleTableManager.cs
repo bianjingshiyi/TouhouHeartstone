@@ -74,6 +74,20 @@ namespace Game.BattleTable
         {
             ui.OpponentWaitingObj.SetActive(waiting);
         }
+        #region 坐标转换
+        // 为了防止Table的Transform被随便旋转缩放后造成的坐标错乱问题，现分为世界坐标和桌面坐标两个坐标系。
+        // 世界坐标即Unity场景中各种transform的position，单位为每100px为1。
+        // 桌面坐标则是xz平面组成2D画面，y为深度的坐标系，单位为每1px为1。
+        // 
+        // 简单来说，TableManager的大多数方法使用的都是桌面坐标，因此需要将transform.position转换为桌面坐标才能使用。
+        // transform.localPosition等局部变换则不需要动，因为这些不会受到影响。
+        public Vector3 WorldToTablePosition(Vector3 worldPos) => table.WorldToTablePosition(worldPos);
+        public Vector3 WorldToTableScale(Vector3 worldScale) => table.WorldToTableScale(worldScale);
+        public float WorldToTableDistance(float worldDis) => table.WorldToTableDistance(worldDis);
+        public Vector3 TableToWorldPosition(Vector3 tablePos) => table.TableToWorldPosition(tablePos);
+        public Vector3 TableToWorldScale(Vector3 tableScale) => table.TableToWorldScale(tableScale);
+        public float TableToWorldDistance(float tableDis) => table.TableToWorldDistance(tableDis);
+        #endregion
         #region 皮肤
         public CardSkinData getSkin(ICardData card)
         {
@@ -197,23 +211,25 @@ namespace Game.BattleTable
             {
                 // 显示卡面
                 Card hoveringCard = null;
-                Vector3 targetPosition = table.CenterDisplayTransform.position;
+                Vector3 centerPosition = WorldToTablePosition(table.CenterDisplayTransform.position);
+                Vector3 targetPosition = centerPosition;
                 if (_hoveredServant != null)
                 {
                     hoveringCard = getCard(_hoveredServant);
-                    targetPosition = _hoveredServant.transform.position;
-                    targetPosition.x += targetPosition.x < table.CenterDisplayTransform.position.x ? 250 : -250;
+                    targetPosition = WorldToTablePosition(_hoveredServant.transform.position);
+                    targetPosition.x += targetPosition.x < centerPosition.x ? 250 : -250;
                 }
                 else if (_hoveredItem != null)
                 {
                     hoveringCard = _hoveredItem == table.SelfItem ? player.getItem() : game.getOpponent(player).getItem();
-                    targetPosition = _hoveredItem.transform.position;
-                    targetPosition.y = targetPosition.y < table.CenterDisplayTransform.position.y ? 250 : -250;
+                    targetPosition = WorldToTablePosition(_hoveredItem.transform.position);
+                    targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
                 }
 
                 if (hoveringCard != null)
                 {
-                    showCardDisplayer(targetPosition, getCardDescriptor(hoveringCard));
+                    var worldPosition = TableToWorldPosition(targetPosition);
+                    showCardDisplayer(worldPosition, getCardDescriptor(hoveringCard));
                 }
                 else
                 {
@@ -250,8 +266,10 @@ namespace Game.BattleTable
             clock?.setShortHandAngle(-turn * 3.6f);
 
             // 更新提示框位置
-            Vector2 pointerPosition = table.Camera.ScreenToWorldPoint(Input.mousePosition);
-            ui.TipBox.updatePos((Vector3)pointerPosition + _tipBoxOffset);
+            Vector3 pointerWorldPosition = table.Camera.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 pointerPosition = WorldToTablePosition(pointerWorldPosition);
+            Vector3 tipboxPos = pointerPosition + _tipBoxOffset;
+            ui.TipBox.updatePos(TableToWorldPosition(tipboxPos));
             if (!_tipboxSource)
             {
                 ui.TipBox.hide();

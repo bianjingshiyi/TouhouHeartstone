@@ -15,6 +15,30 @@ namespace Game.BattleTable
             _selfMaster.updateMaster(deltaTime);
             _enemyMaster.updateMaster(deltaTime);
         }
+        public Vector3 WorldToTablePosition(Vector3 worldPos)
+        {
+            return worldPos * _worldToTableScale;
+        }
+        public Vector3 WorldToTableScale(Vector3 worldScale)
+        {
+            return worldScale * _worldToTableScale;
+        }
+        public float WorldToTableDistance(float worldDis)
+        {
+            return worldDis * _worldToTableScale;
+        }
+        public Vector3 TableToWorldPosition(Vector3 tablePos)
+        {
+            return tablePos / _worldToTableScale;
+        }
+        public Vector3 TableToWorldScale(Vector3 tableScale)
+        {
+            return tableScale / _worldToTableScale;
+        }
+        public float TableToWorldDistance(float tableDis)
+        {
+            return tableDis / _worldToTableScale;
+        }
         private void Awake()
         {
             _tableBackground.onPointerDown += OnClickNoWhere;
@@ -120,6 +144,9 @@ namespace Game.BattleTable
 
         [SerializeField]
         private AudioClip _playCardSound;
+
+        [SerializeField]
+        private float _worldToTableScale = 100;
         #endregion
     }
 }

@@ -84,8 +84,9 @@ namespace Game.BattleTable
             UDeck deck = fromSelf ? table.table.SelfDeck : table.table.EnemyDeck;
             Transform deckTransform = deck.HoverTransform;
 
-            Vector3 startPos = deckTransform.position;
-            float startHeight = deck.getCardHeight();
+            Vector3 startPos = table.WorldToTablePosition(deckTransform.position);
+            var lossyScale = table.WorldToTableScale(deckTransform.lossyScale);
+            float startHeight = deck.getCardHeight() * lossyScale.z;
             yield return moveToAnim(table, startPos, startHeight);
         }
         private IEnumerator moveFromHand(BattleTableManager table)
@@ -93,20 +94,21 @@ namespace Game.BattleTable
             bool fromSelf = _from?.owner == table.player;
 
             float startHeight;
-            Vector3 startPos;
+            Vector3 worldPos;
             if (table.tryGetHand(_card, out var h))
             {
-                startHeight = h.card.height * h.transform.lossyScale.y;
-                startPos = h.transform.position;
+                var lossyScale = table.WorldToTableScale(h.transform.lossyScale);
+                startHeight = h.card.height * lossyScale.z;
+                worldPos = h.transform.position;
                 // 移除原先手牌UI。
                 table.removeHand(_card);
             }
             else
             {
                 startHeight = -1;
-                startPos = (fromSelf ? table.table.SelfHandList : table.table.EnemyHandList).transform.position;
+                worldPos = (fromSelf ? table.table.SelfHandList : table.table.EnemyHandList).transform.position;
             }
-
+            var startPos = table.WorldToTablePosition(worldPos);
             // 为目标牌堆创建UI。
             yield return moveToAnim(table, startPos, startHeight);
         }
@@ -120,8 +122,9 @@ namespace Game.BattleTable
             UDeck grave = fromSelf ? table.table.SelfGrave : table.table.EnemyGrave;
             Transform graveTransform = grave.HoverTransform;
 
-            Vector3 startPos = graveTransform.position;
-            float startHeight = grave.getCardHeight();
+            Vector3 startPos = table.WorldToTablePosition(graveTransform.position);
+            var lossyScale = table.WorldToTableScale(graveTransform.lossyScale);
+            float startHeight = grave.getCardHeight() * lossyScale.z;
 
             yield return moveToAnim(table, startPos, startHeight);
         }
@@ -155,15 +158,17 @@ namespace Game.BattleTable
                             break;
                         }
                         Transform fieldTransform = fromSelf ? table.table.SelfField.transform : table.table.SelfField.transform;
-                        Vector2 sourcePosition = fieldTransform.position;
+                        Vector3 worldPos = fieldTransform.position;
                         float startHeight = -1;
                         if (table.tryGetServant(_card, out var servant))
                         {
-                            sourcePosition = servant.transform.position;
-                            startHeight = servant.getHeight() * servant.transform.lossyScale.y;
+                            worldPos = servant.transform.position;
+                            var lossyScale = table.WorldToTableScale(servant.transform.lossyScale);
+                            startHeight = servant.getHeight() * lossyScale.z;
                             table.removeServant(_card);
                         }
-                        yield return moveToAnim(table, sourcePosition, startHeight);
+                        var startPos = table.WorldToTablePosition(worldPos);
+                        yield return moveToAnim(table, startPos, startHeight);
                     }
                     break;
             }
@@ -179,8 +184,9 @@ namespace Game.BattleTable
             bool fromSelf = _from?.owner == table.player;
 
             var item = fromSelf ? table.table.SelfItem : table.table.EnemyItem;
-            Vector3 startPos = item.transform.position;
-            float startHeight = item.getHeight() * item.transform.lossyScale.y;
+            Vector3 startPos = table.WorldToTablePosition(item.transform.position);
+            var lossyScale = table.WorldToTableScale(item.transform.lossyScale);
+            float startHeight = item.getHeight() * lossyScale.z;
 
             if (table.tryGetItem(_card, out _))
             {
@@ -202,11 +208,11 @@ namespace Game.BattleTable
             }
             bool fromSelf = _from?.owner == table.player;
 
-            Vector2 startPos = (fromSelf ? table.table.SelfMaster : table.table.EnemyMaster).transform.position;
+            Vector3 worldPos = (fromSelf ? table.table.SelfMaster : table.table.EnemyMaster).transform.position;
             float startHeight = 0;
             if (table.tryGetSecret(_card, out var secret))
             {
-                startPos = secret.transform.position;
+                worldPos = secret.transform.position;
                 SimpleAnim exitAnim = secret.onSecretExit;
                 if (_card.define.hasKeyword(KEYWORD.MISSION))
                 {
@@ -217,7 +223,7 @@ namespace Game.BattleTable
                     yield return null;
                 table.removeSecret(_card);
             }
-
+            var startPos = table.WorldToTablePosition(worldPos);
             yield return moveToAnim(table, startPos, startHeight);
         }
         private IEnumerator moveFromWarp(BattleTableManager table)
@@ -227,11 +233,13 @@ namespace Game.BattleTable
             {
                 yield break;
             }
-            yield return moveToAnim(table, table.table.transform.position, 0);
+            var startPos = table.WorldToTablePosition(table.table.transform.position);
+            yield return moveToAnim(table, startPos, 0);
         }
         private IEnumerator moveFromNull(BattleTableManager table)
         {
-            yield return moveToAnim(table, table.table.transform.position, 0);
+            var startPos = table.WorldToTablePosition(table.table.transform.position);
+            yield return moveToAnim(table, startPos, 0);
         }
         #endregion
         #region 目标牌堆
@@ -251,7 +259,8 @@ namespace Game.BattleTable
                     {
                         var deck = toSelf ? table.table.SelfDeck : table.table.EnemyDeck;
                         var targetTransform = deck.HoverTransform;
-                        yield return createCardToDeck(table, _card, startPos, targetTransform, deck.getCardHeight(), startHeight, known);
+                        var targetHeight = deck.getCardHeight();
+                        yield return createCardToDeck(table, _card, startPos, targetTransform, targetHeight, startHeight, known);
                     }
                     break;
                 case PILE.HAND: // 任意牌堆-->手牌
@@ -270,7 +279,8 @@ namespace Game.BattleTable
                     {
                         var targetGrave = toSelf ? table.table.SelfGrave : table.table.EnemyGrave;
                         var targetTransform = targetGrave.HoverTransform;
-                        yield return createCardToDeck(table, _card, startPos, targetTransform, targetGrave.getCardHeight(), startHeight, known);
+                        var targetHeight = targetGrave.getCardHeight();
+                        yield return createCardToDeck(table, _card, startPos, targetTransform, targetHeight, startHeight, known);
                     }
                     break;
             }
@@ -342,13 +352,12 @@ namespace Game.BattleTable
             {
                 var hand = table.createHand(_card);
                 var positionLerp = hand.positionLerp;
-
                 if (startPos.HasValue)
                 {
-                    var pos = startPos.Value;
-                    hand.transform.position = pos;
-                    positionLerp.setStart(pos);
-                    positionLerp.setPosition(pos);
+                    var worldPos = table.TableToWorldPosition(startPos.Value);
+                    hand.transform.position = worldPos;
+                    positionLerp.setStart(worldPos);
+                    positionLerp.setPosition(worldPos);
                 }
                 else
                 {
@@ -385,7 +394,7 @@ namespace Game.BattleTable
 
             var anims = table.getAnimQueue();
             var index = Array.IndexOf(anims, this);
-            var moveAnims = anims.OfType<MoveCardAnim>().Where((a, i) => i > index).ToArray();
+            var moveAnims = anims.Where((a, i) => i > index).OfType<MoveCardAnim>().ToArray();
 
             var targetBreakTime = getBreakTimeByCount(moveAnims.Length);
             foreach (var move in moveAnims)
