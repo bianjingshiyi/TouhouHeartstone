@@ -695,22 +695,35 @@ namespace TouhouHeartstone
             /// <summary>
             /// 对决发起方
             /// </summary>
-            public Player player;
-
+            public Player player
+            {
+                get => getVar<Player>(EVENTVAR.PLAYER);
+                set => setVar(EVENTVAR.PLAYER, value);
+            }
             /// <summary>
             /// 发起方揭示的牌
             /// </summary>
-            public Card youCard;
-
+            public Card youCard
+            {
+                get => getVar<Card>(VAR_SELF_CARD);
+                set => setVar(VAR_SELF_CARD, value);
+            }
             /// <summary>
             /// 另一方揭示的牌
             /// </summary>
-            public Card oppoCard;
-
+            public Card oppoCard
+            {
+                get => getVar<Card>(VAR_OPPO_CARD);
+                set => setVar(VAR_OPPO_CARD, value);
+            }
             /// <summary>
             /// 是否胜利
             /// </summary>
-            public bool result;
+            public bool result
+            {
+                get => getVar<bool>(VAR_RESULT);
+                set => setVar(VAR_RESULT, value);
+            }
 
             public ICard getCard(IGame game, IPlayer viewer)
             {
@@ -731,7 +744,7 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
             [MukioI18n.TranslateMsg("{0}是玩家，{1}是自己的卡，{2}是对手的卡，{3}是结果")]
@@ -750,6 +763,25 @@ namespace TouhouHeartstone
                     youCard?.getFormatString(),
                     oppoCard?.getFormatString(),
                     result?"胜利":"失败"
+                };
+            }
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { name = EVENTVAR.PLAYER, type = typeof(Player) },
+                    new EventVariableInfo() { name = VAR_SELF_CARD, type = typeof(Card) },
+                    new EventVariableInfo() { name = VAR_OPPO_CARD, type = typeof(Card) },
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { name = EVENTVAR.PLAYER, type = typeof(Player) },
+                    new EventVariableInfo() { name = VAR_SELF_CARD, type = typeof(Card) },
+                    new EventVariableInfo() { name = VAR_OPPO_CARD, type = typeof(Card) },
+                    new EventVariableInfo() { name = VAR_RESULT, type = typeof(bool) },
                 };
             }
             public const string VAR_SELF_CARD = "己方卡牌";
