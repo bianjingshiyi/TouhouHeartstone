@@ -529,7 +529,7 @@ namespace UI
         /// </summary>
         public void setFocused()
         {
-            EventSystem.current.SetSelectedGameObject(gameObject);
+            _focused = true;
         }
         /// <summary>
         /// 操作焦点是否为节点图。
@@ -615,6 +615,14 @@ namespace UI
             addScreenTouchIntoBackground.triggers.Add(ScreenEndTouch);
 
             #endregion
+        }
+        private void Update()
+        {
+            if (_focused)
+            {
+                _focused = false;
+                EventSystem.current.SetSelectedGameObject(gameObject);
+            }
         }
         #endregion
         #region 事件回调
@@ -1572,7 +1580,10 @@ namespace UI
         /// 用于检测空闲节点区域的对象的大小。
         /// </summary>
         private Vector2 _graphRegionSize;
-
+        /// <summary>
+        /// 被设置为焦点，会在下一次Update中将EventSystem的选择物体设置为自身。
+        /// </summary>
+        private bool _focused;
         #endregion
     }
     public struct ActionNodeValueInfo
