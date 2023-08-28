@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game;
+using MukioI18n;
 using TouhouCardEngine;
 using UnityEngine;
 
@@ -161,6 +162,8 @@ namespace Controllers
         };
         static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
         {
+            { "AddBuffEvent", EDITOR_EVENT_NAME_ADD_BUFF },
+            { "RemoveBuffEvent", EDITOR_EVENT_NAME_REMOVE_BUFF },
             { "TurnStartEvent", StringTable.EDITOR_EVENT_NAME_TURN_START },
             { "UseEvent", StringTable.EDITOR_EVENT_NAME_USE },
             { "SetArmorEvent", StringTable.EDITOR_EVENT_NAME_ARMOR_CHANGE },
@@ -206,6 +209,10 @@ namespace Controllers
         static List<string> _eventNames = null;
         static Dictionary<string, string> _eventDefineBeforeTranslations = null;
         static Dictionary<string, string> _eventDefineAfterTranslations = null;
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_ADD_BUFF = "添加增益";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_REMOVE_BUFF = "移除增益";
     }
     public class EventTypeInfoCollection : List<EventDefine>
     {
