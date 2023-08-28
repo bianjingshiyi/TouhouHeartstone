@@ -140,6 +140,7 @@ namespace Game.BattleTable
         public SimpleAnim onAttack;
         public SimpleAnim onAttacked;
         public SimpleAnim onDamage;
+        public ParticleSystem damageEffectPrefab;
         public SimpleAnim onHeal;
         public ParticleSystem healEffectPrefab;
         public SimpleAnim onSetDefine;

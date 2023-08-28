@@ -20,6 +20,8 @@ namespace Game.BattleTable
             {
                 //显示治疗数字
                 servant.showHealText(healedValue);
+                if (AnimHelper.hasAnim(servant.animator, servant.onHeal.animName, out int layer))
+                    servant.animator.Play(servant.onHeal.animName, layer);
                 //播放粒子特效
                 _healEffect = UnityEngine.Object.Instantiate(servant.healEffectPrefab, servant.transform.position, Quaternion.identity);
             }
@@ -27,6 +29,8 @@ namespace Game.BattleTable
             {
                 //显示治疗数字
                 master.showHealText(healedValue);
+                if (AnimHelper.hasAnim(master.animator, master.onHeal.animName, out int layer))
+                    master.animator.Play(master.onHeal.animName, layer);
                 //播放粒子特效
                 _healEffect = UnityEngine.Object.Instantiate(master.healEffectPrefab, master.transform.position, Quaternion.identity);
             }
