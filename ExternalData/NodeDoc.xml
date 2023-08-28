@@ -8,8 +8,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>Value</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>Value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[输出的真值常量。]]></summary>
@@ -17,8 +18,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>Value</name>
+        <type>Boolean</type>
+        <name>value</name>
+        <displayName>Value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[选中为true，未选中为false]]></summary>
@@ -34,15 +36,17 @@
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
+        <type>Object</type>
         <name>A</name>
+        <displayName>A</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要比较的值A]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
+        <type>Object</type>
         <name>B</name>
+        <displayName>B</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要比较的值B]]></summary>
@@ -50,8 +54,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
+        <type>Boolean</type>
         <name>result</name>
+        <displayName>result</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[两者的比较结果。]]></summary>
@@ -59,8 +64,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CompareOperator</type>
+        <type>CompareOperator</type>
         <name>operator</name>
+        <displayName>operator</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[比较操作符，包括：<ul><li>等于</li><li>不等于</li><li>大于</li><li>大于等于</li><li>小于</li><li>小于等于</li></ul>]]></summary>
@@ -80,8 +86,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.BuffDefine</type>
-        <name>BuffDefine</name>
+        <type>BuffDefine</type>
+        <name>value</name>
+        <displayName>BuffDefine</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -89,8 +96,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>TouhouCardEngine.DefineReference</type>
-        <name>BuffDefine</name>
+        <type>DefineReference</type>
+        <name>buffDefine</name>
+        <displayName>BuffDefine</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -110,8 +118,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>value</name>
+        <type>Int32</type>
+        <name>result</name>
+        <displayName>value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[输出的真整数常量。]]></summary>
@@ -119,8 +128,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
+        <type>Int32</type>
         <name>value</name>
+        <displayName>value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[整数的值。]]></summary>
@@ -139,8 +149,9 @@
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>Value</name>
+        <type>Int32</type>
+        <name>arg</name>
+        <displayName>Value</displayName>
         <isParams>true</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[整数参数列表。]]></summary>
@@ -148,8 +159,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>Value</name>
+        <type>Int32</type>
+        <name>result</name>
+        <displayName>Value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[运算后的结果。]]></summary>
@@ -157,8 +169,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>TouhouCardEngine.IntegerOperator</type>
+        <type>IntegerOperator</type>
         <name>operator</name>
+        <displayName>operator</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[整数运算符，包括：<ul><li>加</li><li>减</li><li>乘</li><li>除</li><li>取模（即获取余数）</li></ul>]]></summary>
@@ -176,8 +189,9 @@
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
+        <type>Boolean</type>
         <name>value</name>
+        <displayName>value</displayName>
         <isParams>true</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[真值参数列表。]]></summary>
@@ -185,8 +199,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
+        <type>Boolean</type>
         <name>result</name>
+        <displayName>result</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[运算后的结果。]]></summary>
@@ -194,8 +209,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>TouhouCardEngine.LogicOperator</type>
+        <type>LogicOperator</type>
         <name>operator</name>
+        <displayName>operator</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[逻辑运算符，包括：<ul><li>非（输出与输入相反的真值）</li><li>与（所有输入都为true时，输出true，否则输出false）</li><li>或（任意输入为true时，输出true，否则输出false）</li></ul>]]></summary>
@@ -215,8 +231,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>Value</name>
+        <type>String</type>
+        <name>value</name>
+        <displayName>Value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[输出的字符串常量。]]></summary>
@@ -224,8 +241,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>Value</name>
+        <type>String</type>
+        <name>value</name>
+        <displayName>Value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[字符串的值。]]></summary>
@@ -241,8 +259,9 @@
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的临时变量值。]]></summary>
@@ -251,8 +270,9 @@
     <outputs />
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>变量名</name>
+        <type>String</type>
+        <name>variableName</name>
+        <displayName>变量名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的临时变量名。]]></summary>
@@ -269,8 +289,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>Value</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>Value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的临时变量值。]]></summary>
@@ -278,8 +299,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>变量名</name>
+        <type>String</type>
+        <name>variableName</name>
+        <displayName>变量名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的临时变量名。]]></summary>
@@ -295,8 +317,9 @@
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>isTrue</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[用于判断的真值。]]></summary>
@@ -304,15 +327,17 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>动作</name>
+        <type>ActionNode</type>
+        <name>thenAction</name>
+        <displayName>动作</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[真值为true时执行的动作。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>否则动作</name>
+        <type>ActionNode</type>
+        <name>elseAction</name>
+        <displayName>否则动作</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[真值为false时执行的动作。]]></summary>
@@ -331,8 +356,9 @@
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[重复次数。]]></summary>
@@ -340,15 +366,17 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>动作</name>
+        <type>ActionNode</type>
+        <name>action</name>
+        <displayName>动作</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要重复执行的动作。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>重复次数</name>
+        <type>Int32</type>
+        <name>repeatTime</name>
+        <displayName>重复次数</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[提供给执行的动作的值。第1次执行时输出1，第2次输出2……第n次输出n。]]></summary>
@@ -363,13 +391,17 @@
   </ActionComment>
   <ActionComment>
     <defineId>212003</defineId>
-    <obsoleteNames />
-    <editorName>重复动作直到</editorName>
+    <obsoleteNames>
+      <string>重复动作直到</string>
+    </obsoleteNames>
+    <editorName>重复动作直到（过时）</editorName>
+    <obsoleteMsg />
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>最多重复次数</name>
+        <type>Int32</type>
+        <name>maxRepeatTime</name>
+        <displayName>最多重复次数</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[最多重复的次数，超过这个次数后自动结束重复。]]></summary>
@@ -377,22 +409,69 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>结束条件</name>
+        <type>ActionNode</type>
+        <name>condition</name>
+        <displayName>结束条件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[结束整个重复流程的条件，在动作重复一次后执行。<br>需要连接一个输出真值的节点，如果其输出值为true，结束重复。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>动作</name>
+        <type>ActionNode</type>
+        <name>action</name>
+        <displayName>动作</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要重复执行的动作。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>重复次数</name>
+        <type>Int32</type>
+        <name>repeatTime</name>
+        <displayName>重复次数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[提供给执行的动作的值。第1次执行时输出1，第2次输出2……第n次输出n。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[重复执行某个动作，直到条件达成。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>212005</defineId>
+    <obsoleteNames />
+    <editorName>重复动作直到</editorName>
+    <inputs>
+      <ActionParameterComment>
+        <type>NodeValueRef&lt;Boolean&gt;</type>
+        <name>condition</name>
+        <displayName>结束条件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[结束整个重复流程的条件，在动作重复一次后执行。<br>需要连接一个真值，如果其输出值为true，结束重复。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>maxRepeatTime</name>
+        <displayName>最多重复次数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[最多重复的次数，超过这个次数后自动结束重复。必须提供该参数，否则该节点不会被执行。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>ActionNode</type>
+        <name>action</name>
+        <displayName>动作</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要重复执行的动作。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>repeatTime</name>
+        <displayName>重复次数</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[提供给执行的动作的值。第1次执行时输出1，第2次输出2……第n次输出n。]]></summary>
@@ -409,15 +488,17 @@
     <category>其他</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>整数X</name>
+        <type>Int32</type>
+        <name>countX</name>
+        <displayName>整数X</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[随机数中的可以取到的最小值]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>整数Y</name>
+        <type>Int32</type>
+        <name>countY</name>
+        <displayName>整数Y</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[随机数中的可以取到的最大值]]></summary>
@@ -425,8 +506,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[最小整数X到最大整数Y中随机获取的一个整数]]></summary>
@@ -443,8 +525,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的玩家。]]></summary>
@@ -452,8 +535,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的属性。]]></summary>
@@ -461,8 +545,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的属性名称。]]></summary>
@@ -480,15 +565,17 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置属性的玩家。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的属性值。]]></summary>
@@ -497,8 +584,9 @@
     <outputs />
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的属性名称。]]></summary>
@@ -516,8 +604,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取对手的玩家。]]></summary>
@@ -525,8 +614,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>对手玩家</name>
+        <type>Player</type>
+        <name>return</name>
+        <displayName>对手玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[该玩家的对手。]]></summary>
@@ -547,8 +637,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取英雄的玩家。]]></summary>
@@ -556,8 +647,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的英雄。]]></summary>
@@ -578,8 +670,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>return</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[当前回合的玩家。]]></summary>
@@ -596,8 +689,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取手牌的玩家。]]></summary>
@@ -605,8 +699,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的玩家手牌集合。]]></summary>
@@ -626,8 +721,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取墓地卡牌的玩家。]]></summary>
@@ -635,8 +731,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的玩家墓地卡牌集合。]]></summary>
@@ -656,8 +753,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取牌库卡牌的玩家。]]></summary>
@@ -665,8 +763,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的玩家牌库卡牌集合。]]></summary>
@@ -686,8 +785,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>targetCard</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要抽的卡牌。]]></summary>
@@ -695,15 +795,17 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.HearthStoneRule+DrawEventArg</type>
-        <name>抽牌事件</name>
+        <type>DrawEventArg</type>
+        <name>drawEvent</name>
+        <displayName>抽牌事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[抽牌的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouHeartstone.HearthStoneRule+BurnEventArg</type>
-        <name>爆牌事件</name>
+        <type>BurnEventArg</type>
+        <name>burnEvent</name>
+        <displayName>爆牌事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[手牌达到上限后，抽牌导致卡牌进入墓地的事件。]]></summary>
@@ -723,8 +825,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要检视的卡牌列表。]]></summary>
@@ -732,8 +835,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[选择的卡牌。]]></summary>
@@ -741,8 +845,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[一次最多检视的卡牌数量。]]></summary>
@@ -761,8 +866,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>defines</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要检视的卡牌定义列表。]]></summary>
@@ -770,8 +876,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[选择的卡牌定义。]]></summary>
@@ -779,8 +886,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[一次最多检视的卡牌定义数量。]]></summary>
@@ -801,15 +909,17 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取法术伤害的玩家。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>基础伤害</name>
+        <type>Int32</type>
+        <name>baseDamage</name>
+        <displayName>基础伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[最终法术伤害结果会加上该基础值，默认为0。]]></summary>
@@ -817,8 +927,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的法术伤害。]]></summary>
@@ -835,8 +946,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -844,8 +956,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -862,8 +975,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -871,8 +985,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -889,8 +1004,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -908,8 +1024,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -917,8 +1034,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -935,8 +1053,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -944,8 +1063,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -962,8 +1082,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -981,8 +1102,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -990,8 +1112,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -1008,8 +1131,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1017,8 +1141,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1035,8 +1160,9 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1044,8 +1170,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1062,15 +1189,17 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1088,15 +1217,17 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1114,15 +1245,17 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1140,15 +1273,17 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1161,13 +1296,17 @@
   </ActionComment>
   <ActionComment>
     <defineId>201011</defineId>
-    <obsoleteNames />
-    <editorName>信仰对决</editorName>
+    <obsoleteNames>
+      <string>信仰对决</string>
+    </obsoleteNames>
+    <editorName>信仰对决（过时）</editorName>
+    <obsoleteMsg />
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[进行信仰对决的玩家。]]></summary>
@@ -1175,36 +1314,102 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>筛选条件</name>
+        <type>ActionNode</type>
+        <name>filter</name>
+        <displayName>筛选条件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[牌库内的卡牌要满足的条件。需要连接一个输出真值的节点。<br>不连接则使用牌库中的所有卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>筛选卡牌</name>
+        <type>Card</type>
+        <name>element</name>
+        <displayName>筛选卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[提供给“筛选条件”的输出值，表示每个要检查满足条件的牌库中的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>己方卡牌</name>
+        <type>Card</type>
+        <name>selfCard</name>
+        <displayName>己方卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[进行信仰对决一方揭示的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>对方卡牌</name>
+        <type>Card</type>
+        <name>opponentCard</name>
+        <displayName>对方卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[被进行信仰对决一方揭示的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否胜利</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>是否胜利</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行信仰对决的玩家是否胜利。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[使双方玩家各从牌库中选择并揭示一张符合条件的牌进行信仰对决，揭示的牌灵力值消耗较大的一方获胜。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>201012</defineId>
+    <obsoleteNames />
+    <editorName>信仰对决</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行信仰对决的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>NodeValueRef&lt;Boolean&gt;</type>
+        <name>filter</name>
+        <displayName>筛选条件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行信仰对决的卡牌要满足的条件。需要连接一个输出真值的节点。<br>不连接则使用牌库中的所有卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>element</name>
+        <displayName>筛选卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[提供给“筛选条件”的输出值，表示每个要检查满足条件的牌库中的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>selfCard</name>
+        <displayName>己方卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行信仰对决一方揭示的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>opponentCard</name>
+        <displayName>对方卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[被进行信仰对决一方揭示的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>是否胜利</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[进行信仰对决的玩家是否胜利。]]></summary>
@@ -1223,15 +1428,17 @@
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>牌堆名</name>
+        <type>String</type>
+        <name>pileName</name>
+        <displayName>牌堆名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1239,8 +1446,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Pile</type>
-        <name>牌堆</name>
+        <type>Pile</type>
+        <name>return</name>
+        <displayName>牌堆</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1259,8 +1467,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1268,8 +1477,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>目标名</name>
+        <type>String</type>
+        <name>targetName</name>
+        <displayName>目标名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1285,8 +1495,9 @@
     <category>牌堆</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Pile</type>
-        <name>牌堆</name>
+        <type>Pile</type>
+        <name>pile</name>
+        <displayName>牌堆</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取卡牌的牌堆。]]></summary>
@@ -1294,8 +1505,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[牌堆中的卡牌集合。]]></summary>
@@ -1314,15 +1526,17 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>条件</name>
+        <type>ActionNode</type>
+        <name>condition</name>
+        <displayName>条件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌要满足的条件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要筛选的卡牌集合。]]></summary>
@@ -1340,8 +1554,9 @@
     <category>牌堆</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要过滤的卡牌集合。]]></summary>
@@ -1349,22 +1564,25 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>条件</name>
+        <type>ActionNode</type>
+        <name>condition</name>
+        <displayName>条件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌要满足的条件，需要连接一个输出真值的动作节点。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>被过滤的卡牌</name>
+        <type>Card</type>
+        <name>filteringCard</name>
+        <displayName>被过滤的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[提供给“条件”的输出值，表示每张要检查满足条件的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[满足条件的所有卡牌组成的集合。]]></summary>
@@ -1382,8 +1600,9 @@
     <category>牌堆</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要获取数量的卡牌集合。]]></summary>
@@ -1391,8 +1610,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌集合内卡牌的数量。]]></summary>
@@ -1409,8 +1629,9 @@
     <category>牌堆</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断所在牌堆的卡牌。]]></summary>
@@ -1418,8 +1639,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌是否位于该牌堆中？]]></summary>
@@ -1427,8 +1649,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>牌堆</name>
+        <type>String</type>
+        <name>pileName</name>
+        <displayName>牌堆</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[牌堆名，包括：<ul>
@@ -1456,15 +1679,17 @@
     <category>牌堆</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>牌堆名</name>
+        <type>String</type>
+        <name>pileName</name>
+        <displayName>牌堆名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1472,8 +1697,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否已改变</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>是否已改变</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -1491,8 +1717,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Buff</type>
-        <name>增益</name>
+        <type>Buff</type>
+        <name>return</name>
+        <displayName>增益</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[当前增益。]]></summary>
@@ -1512,15 +1739,17 @@
     <category>增益</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要添加增益的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.BuffDefine</type>
-        <name>增益定义</name>
+        <type>BuffDefine</type>
+        <name>buffDefine</name>
+        <displayName>增益定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要添加的增益定义。]]></summary>
@@ -1528,8 +1757,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Buff</type>
-        <name>增益</name>
+        <type>Buff</type>
+        <name>return</name>
+        <displayName>增益</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[添加后的增益。]]></summary>
@@ -1549,15 +1779,17 @@
     <category>增益</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要移除增益的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Buff</type>
-        <name>增益</name>
+        <type>Buff</type>
+        <name>buff</name>
+        <displayName>增益</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要移除的增益。]]></summary>
@@ -1565,8 +1797,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>增益是否移除</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>增益是否移除</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[增益是否被成功移除？]]></summary>
@@ -1585,15 +1818,17 @@
     <category>增益</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断是否拥有增益的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.BuffDefine</type>
-        <name>增益定义</name>
+        <type>BuffDefine</type>
+        <name>buffDefine</name>
+        <displayName>增益定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的增益种类。]]></summary>
@@ -1601,8 +1836,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[是否具有该增益？]]></summary>
@@ -1619,15 +1855,17 @@
     <category>增益</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Buff</type>
-        <name>增益</name>
+        <type>Buff</type>
+        <name>buffs</name>
+        <displayName>增益</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要设置属性的增益。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的属性值。]]></summary>
@@ -1636,8 +1874,9 @@
     <outputs />
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的属性名称。]]></summary>
@@ -1655,8 +1894,9 @@
     <category>增益</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Buff</type>
-        <name>增益</name>
+        <type>Buff</type>
+        <name>buff</name>
+        <displayName>增益</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的增益。]]></summary>
@@ -1664,8 +1904,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的属性值。]]></summary>
@@ -1673,8 +1914,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的属性名称。]]></summary>
@@ -1692,8 +1934,9 @@
     <category>行动</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要抽牌的玩家。]]></summary>
@@ -1701,8 +1944,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>抽到的卡</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>抽到的卡</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[抽到的牌。]]></summary>
@@ -1721,15 +1965,17 @@
     <category>行动</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>生效玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>生效玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要置入哪位玩家的战场？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>移动的卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>移动的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要置入战场的一张或多张卡牌。]]></summary>
@@ -1737,8 +1983,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[置入完毕后的卡牌。]]></summary>
@@ -1757,15 +2004,17 @@
     <category>行动</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>生效玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>生效玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[移动到哪位玩家的手牌？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>移动的卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>移动的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要移动到手牌中的一张或多张卡牌。]]></summary>
@@ -1773,8 +2022,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[移动完毕后的卡牌。]]></summary>
@@ -1794,15 +2044,17 @@
     <category>行动</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>生效玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>生效玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[洗入到哪位玩家的牌库？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>移动的卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>移动的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要洗入牌库的一张或多张卡牌。]]></summary>
@@ -1810,8 +2062,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[洗入完毕后的卡牌。]]></summary>
@@ -1819,8 +2072,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否至于牌库顶</name>
+        <type>Boolean</type>
+        <name>top</name>
+        <displayName>是否至于牌库顶</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[是否要将这些卡牌置入牌库顶？]]></summary>
@@ -1838,15 +2092,17 @@
     <category>行动</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>生效玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>生效玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[置入哪位玩家的墓地？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>移动的卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>移动的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要置入墓地的一张或多张卡牌。]]></summary>
@@ -1854,8 +2110,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[置入墓地完毕后的卡牌。]]></summary>
@@ -1874,15 +2131,17 @@
     <category>行动</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>生效玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>生效玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[置入哪位玩家的延迟区？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>移动的卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>移动的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要置入延迟区的一张或多张卡牌。]]></summary>
@@ -1890,8 +2149,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[置入延迟区完毕后的卡牌。]]></summary>
@@ -1910,15 +2170,17 @@
     <category>行动</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>生效玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>生效玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要装备到哪位玩家的道具栏？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>移动的卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>移动的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要装备到道具栏的卡牌。]]></summary>
@@ -1926,8 +2188,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.HearthStoneRule+EquipItemEventArg</type>
-        <name>装备事件</name>
+        <type>EquipItemEventArg</type>
+        <name>return</name>
+        <displayName>装备事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[执行的装备道具事件。]]></summary>
@@ -1944,15 +2207,17 @@
     <category>行动</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>生效玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>生效玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要移动到哪位玩家的暂存区？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>移动的卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>移动的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要移动到暂存区的一张或多张卡牌。]]></summary>
@@ -1960,8 +2225,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[移动完毕后的卡牌。]]></summary>
@@ -1978,8 +2244,9 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>元素</name>
+        <type>Object</type>
+        <name>elements</name>
+        <displayName>元素</displayName>
         <isParams>true</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要加入到集合内的元素。]]></summary>
@@ -1987,8 +2254,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Array</type>
-        <name>集合</name>
+        <type>Array</type>
+        <name>return</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[创建的集合。]]></summary>
@@ -2005,15 +2273,17 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要添加元素的集合。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>元素</name>
+        <type>Object</type>
+        <name>elements</name>
+        <displayName>元素</displayName>
         <isParams>true</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要添加的元素。]]></summary>
@@ -2021,8 +2291,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Array</type>
-        <name>集合</name>
+        <type>Array</type>
+        <name>return</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[添加元素完毕的集合。]]></summary>
@@ -2034,13 +2305,17 @@
   </ActionComment>
   <ActionComment>
     <defineId>111003</defineId>
-    <obsoleteNames />
-    <editorName>筛选</editorName>
+    <obsoleteNames>
+      <string>筛选</string>
+    </obsoleteNames>
+    <editorName>筛选（过时）</editorName>
+    <obsoleteMsg />
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要筛选的集合。]]></summary>
@@ -2048,22 +2323,70 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>条件</name>
+        <type>ActionNode</type>
+        <name>condition</name>
+        <displayName>条件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[集合元素要满足的条件。需要连接一个输出真值的节点。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>元素</name>
+        <type>Object</type>
+        <name>element</name>
+        <displayName>元素</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[提供给“条件”的输出值，表示每个要检查满足条件的元素。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>匹配的集合</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>匹配的集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[所有满足条件的元素的集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[从一个集合中筛选所有满足条件的元素，并将它们输出为集合。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>111012</defineId>
+    <obsoleteNames />
+    <editorName>筛选</editorName>
+    <category>集合运算</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要筛选的集合。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>NodeValueRef&lt;Boolean&gt;</type>
+        <name>condition</name>
+        <displayName>条件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[集合元素要满足的条件。需要连接一个真值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>element</name>
+        <displayName>元素</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[提供给“条件”的输出值，表示每个要检查满足条件的元素。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>匹配的集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[所有满足条件的元素的集合。]]></summary>
@@ -2080,8 +2403,9 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>collection</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要获取元素数量的集合。]]></summary>
@@ -2089,8 +2413,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[集合内的元素数量。]]></summary>
@@ -2109,15 +2434,17 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>collection</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要判断是否包含元素的集合。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>元素</name>
+        <type>Object</type>
+        <name>element</name>
+        <displayName>元素</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断是否包含的元素。]]></summary>
@@ -2125,8 +2452,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否包含元素</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>是否包含元素</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[集合内是否包含元素？]]></summary>
@@ -2138,13 +2466,17 @@
   </ActionComment>
   <ActionComment>
     <defineId>111006</defineId>
-    <obsoleteNames />
-    <editorName>排序</editorName>
+    <obsoleteNames>
+      <string>排序</string>
+    </obsoleteNames>
+    <editorName>排序（过时）</editorName>
+    <obsoleteMsg />
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要进行排序的集合。]]></summary>
@@ -2152,22 +2484,25 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>排序依据</name>
+        <type>ActionNode</type>
+        <name>condition</name>
+        <displayName>排序依据</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[集合进行排序的依据。需要连接一个输出可比较大小的值（如整数）的节点。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>元素</name>
+        <type>Object</type>
+        <name>element</name>
+        <displayName>元素</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[提供给“排序依据”的输出值，表示每个要进行排序的元素。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Array</type>
-        <name>集合</name>
+        <type>Array</type>
+        <name>return</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[排序完毕后的集合。]]></summary>
@@ -2175,8 +2510,63 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>降序</name>
+        <type>Boolean</type>
+        <name>descending</name>
+        <displayName>降序</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否进行降序排序？]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[对集合内的元素进行排序。<br>可以用于选出集合内某属性最高/最低的元素。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>111013</defineId>
+    <obsoleteNames />
+    <editorName>排序</editorName>
+    <category>集合运算</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要进行排序的集合。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>NodeValueRef&lt;Object&gt;</type>
+        <name>condition</name>
+        <displayName>排序依据</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[集合进行排序的依据。需要连接一个输出可比较大小的值（如整数）。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>element</name>
+        <displayName>元素</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[提供给“排序依据”的输出值，表示每个要进行排序的元素。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Array</type>
+        <name>return</name>
+        <displayName>集合</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[排序完毕后的集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>descending</name>
+        <displayName>降序</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[是否进行降序排序？]]></summary>
@@ -2192,15 +2582,17 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要获取元素的集合。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>元素位置</name>
+        <type>Int32</type>
+        <name>index</name>
+        <displayName>元素位置</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的元素位置。]]></summary>
@@ -2208,8 +2600,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>元素</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>元素</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的元素。]]></summary>
@@ -2228,8 +2621,9 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要遍历的集合。]]></summary>
@@ -2237,15 +2631,17 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.ActionNode</type>
-        <name>动作</name>
+        <type>ActionNode</type>
+        <name>action</name>
+        <displayName>动作</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要执行的动作。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>元素</name>
+        <type>Object</type>
+        <name>element</name>
+        <displayName>元素</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[提供给“动作”的输出值，表示当前正在遍历的元素。]]></summary>
@@ -2262,8 +2658,9 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>collection</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要获取元素的集合。]]></summary>
@@ -2271,8 +2668,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>元素</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>元素</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的元素。]]></summary>
@@ -2291,8 +2689,9 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要反转的集合。]]></summary>
@@ -2300,8 +2699,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[反转元素位置后的集合。]]></summary>
@@ -2318,8 +2718,9 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要去重的集合。]]></summary>
@@ -2327,8 +2728,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Array</type>
-        <name>集合</name>
+        <type>Array</type>
+        <name>return</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[去重后的集合。]]></summary>
@@ -2347,15 +2749,17 @@
     <category>集合运算</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>集合</name>
+        <type>Object</type>
+        <name>array</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要保留元素内容的集合。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>减去的集合</name>
+        <type>Object</type>
+        <name>excepted</name>
+        <displayName>减去的集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要从“集合”参数中去除的元素。]]></summary>
@@ -2363,8 +2767,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Array</type>
-        <name>集合</name>
+        <type>Array</type>
+        <name>return</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[相减后的结果。]]></summary>
@@ -2381,8 +2786,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断卡牌类型的卡牌。]]></summary>
@@ -2390,8 +2796,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌是否属于该类型？]]></summary>
@@ -2399,8 +2806,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>Game.CardDefineSelect</type>
-        <name>卡牌类型</name>
+        <type>CardDefineSelect</type>
+        <name>select</name>
+        <displayName>卡牌类型</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的卡牌类型。]]></summary>
@@ -2419,8 +2827,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断拥有关键词的卡牌。]]></summary>
@@ -2428,8 +2837,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌是否拥有该关键词？]]></summary>
@@ -2437,8 +2847,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>关键词类型</name>
+        <type>String</type>
+        <name>select</name>
+        <displayName>关键词类型</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的关键词类型，包括：<ul>
@@ -2469,8 +2880,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要获取随机卡牌的集合。]]></summary>
@@ -2478,8 +2890,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的随机卡牌。]]></summary>
@@ -2498,15 +2911,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要置入哪位玩家的战场？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要创建衍生卡牌的卡牌定义。]]></summary>
@@ -2514,8 +2929,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[创建出的卡牌。]]></summary>
@@ -2534,15 +2950,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要置入哪位玩家的手牌？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要创建衍生卡牌的卡牌定义。]]></summary>
@@ -2550,8 +2968,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[创建出的卡牌。]]></summary>
@@ -2571,15 +2990,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要洗入哪位玩家的牌库？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要创建衍生卡牌的卡牌定义。]]></summary>
@@ -2587,8 +3008,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[创建出的卡牌。]]></summary>
@@ -2605,15 +3027,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要装备到哪位玩家的道具栏？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要创建衍生卡牌的卡牌定义。]]></summary>
@@ -2621,8 +3045,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[创建出的卡牌。]]></summary>
@@ -2640,8 +3065,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[拥有该效果的卡牌。]]></summary>
@@ -2660,15 +3086,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的属性名称。]]></summary>
@@ -2676,8 +3104,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的属性值。]]></summary>
@@ -2696,22 +3125,25 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置属性的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的属性名称。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的属性值。]]></summary>
@@ -2719,8 +3151,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IPropChangeEventArg</type>
-        <name>属性更改事件</name>
+        <type>IPropChangeEventArg</type>
+        <name>return</name>
+        <displayName>属性更改事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[更改该卡牌属性的事件。]]></summary>
@@ -2737,8 +3170,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取灵力值消耗的卡牌。]]></summary>
@@ -2746,8 +3180,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的灵力值消耗。]]></summary>
@@ -2766,8 +3201,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取攻击力的卡牌。]]></summary>
@@ -2775,8 +3211,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的攻击力。]]></summary>
@@ -2795,8 +3232,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取最大生命值的卡牌。]]></summary>
@@ -2804,8 +3242,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的最大生命值。]]></summary>
@@ -2824,8 +3263,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取当前生命值的卡牌。]]></summary>
@@ -2833,8 +3273,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的当前生命值。]]></summary>
@@ -2853,8 +3294,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>手牌</name>
+        <type>Card</type>
+        <name>hands</name>
+        <displayName>手牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要丢弃的手牌列表。]]></summary>
@@ -2862,8 +3304,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DiscardEventArg</type>
-        <name>抽牌事件</name>
+        <type>DiscardEventArg</type>
+        <name>return</name>
+        <displayName>抽牌事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[执行的弃牌事件。]]></summary>
@@ -2888,8 +3331,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -2898,8 +3342,9 @@
     <outputs />
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -2915,15 +3360,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -2941,15 +3388,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -2967,8 +3416,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[基础属性名。]]></summary>
@@ -2976,8 +3426,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>return</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[根据增益获得的独一无二的属性名。]]></summary>
@@ -2996,8 +3447,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取拥有者的卡牌。]]></summary>
@@ -3005,8 +3457,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>return</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[拥有这张卡牌的玩家。]]></summary>
@@ -3023,8 +3476,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3032,8 +3486,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3053,8 +3508,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的卡牌。]]></summary>
@@ -3062,8 +3518,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[是否是法术牌？]]></summary>
@@ -3085,22 +3542,25 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>伤害源</name>
+        <type>Card</type>
+        <name>source</name>
+        <displayName>伤害源</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3121,22 +3581,25 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要造成的伤害。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要造成伤害的目标。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>伤害源</name>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
@@ -3144,8 +3607,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[产生的伤害事件。]]></summary>
@@ -3153,15 +3617,17 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否为法术伤害</name>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>+</name>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
@@ -3180,22 +3646,25 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要造成的总伤害量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[可能会将伤害分配到的目标列表。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>伤害源</name>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
@@ -3203,8 +3672,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[产生的伤害事件。]]></summary>
@@ -3212,15 +3682,17 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否为法术伤害</name>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>+</name>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
@@ -3239,29 +3711,33 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要造成伤害的随机目标的数量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要对每个目标造成的伤害。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[可能会选中的目标列表。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>伤害源</name>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。<br><b>注意：</b>如果为空，默认为“这张卡牌”，而非无来源。]]></summary>
@@ -3269,8 +3745,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[产生的伤害事件。]]></summary>
@@ -3278,22 +3755,25 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否为法术伤害</name>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>+</name>
+        <type>Int32</type>
+        <name>count2</name>
+        <displayName>+</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要增加的目标数量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>+</name>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
@@ -3309,22 +3789,25 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要造成的伤害。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要造成伤害的目标。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>伤害源</name>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
@@ -3332,8 +3815,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[产生的伤害事件。]]></summary>
@@ -3341,15 +3825,17 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否为法术伤害</name>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>+</name>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
@@ -3365,22 +3851,25 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要造成的总伤害量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[可能会将伤害分配到的目标列表。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>伤害源</name>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
@@ -3388,8 +3877,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[产生的伤害事件。]]></summary>
@@ -3397,15 +3887,17 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否为法术伤害</name>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>+</name>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
@@ -3421,29 +3913,33 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要造成伤害的随机目标的数量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要对每个目标造成的伤害。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[可能会选中的目标列表。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>伤害源</name>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
@@ -3451,8 +3947,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[产生的伤害事件。]]></summary>
@@ -3460,22 +3957,25 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否为法术伤害</name>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>+</name>
+        <type>Int32</type>
+        <name>count2</name>
+        <displayName>+</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要增加的目标数量。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>+</name>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要增加的伤害量。]]></summary>
@@ -3492,8 +3992,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3501,8 +4002,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3510,8 +4012,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3528,15 +4031,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3544,8 +4049,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3563,8 +4069,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3572,8 +4079,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3581,8 +4089,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3599,8 +4108,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3608,8 +4118,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3617,15 +4128,17 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3642,8 +4155,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3651,8 +4165,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+DamageEventArg</type>
-        <name>伤害事件</name>
+        <type>DamageEventArg</type>
+        <name>return</name>
+        <displayName>伤害事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3660,15 +4175,17 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>数量</name>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3684,15 +4201,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3700,8 +4219,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+HealEventArg</type>
-        <name>治疗事件</name>
+        <type>HealEventArg</type>
+        <name>return</name>
+        <displayName>治疗事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3719,8 +4239,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3728,8 +4249,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+HealEventArg</type>
-        <name>治疗事件</name>
+        <type>HealEventArg</type>
+        <name>return</name>
+        <displayName>治疗事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3737,8 +4259,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3755,8 +4278,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3774,8 +4298,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3793,8 +4318,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3812,8 +4338,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3831,8 +4358,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3850,8 +4378,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3868,22 +4397,15 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs>
-      <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IPropChangeEventArg</type>
-        <name>属性更改事件</name>
-        <isParams>false</isParams>
-        <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
-      </ActionParameterComment>
-    </outputs>
+    <outputs />
     <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
@@ -3895,8 +4417,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3904,8 +4427,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouHeartstone.THHCard+SilenceEventArg</type>
-        <name>沉默事件</name>
+        <type>SilenceEventArg</type>
+        <name>return</name>
+        <displayName>沉默事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3922,8 +4446,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -3952,8 +4477,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3961,8 +4487,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>濒死</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>濒死</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3970,15 +4497,17 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>检查生命值&lt;=0</name>
+        <type>Boolean</type>
+        <name>checkHealth</name>
+        <displayName>检查生命值&lt;=0</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>检查待摧毁</name>
+        <type>Boolean</type>
+        <name>checkKilled</name>
+        <displayName>检查待摧毁</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -3994,8 +4523,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4003,8 +4533,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4021,8 +4552,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4030,8 +4562,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4048,8 +4581,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的是否具有宣言关键词的卡牌。]]></summary>
@@ -4057,8 +4591,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌是否具有宣言关键词？]]></summary>
@@ -4075,15 +4610,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[需要被触发宣言的卡牌]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[卡牌宣言效果所指向的目标]]></summary>
@@ -4101,8 +4638,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的是否具有遗言关键词的卡牌。]]></summary>
@@ -4110,8 +4648,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌是否具有遗言关键词？]]></summary>
@@ -4128,8 +4667,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[需要被触发遗言的卡牌]]></summary>
@@ -4147,15 +4687,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[需要被触发效果的卡牌（必须是法术或者技能卡牌）]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[法术或者技能效果所指向的目标]]></summary>
@@ -4173,8 +4715,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[需要被重置为初始状态的卡牌]]></summary>
@@ -4192,15 +4735,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>发动攻击的卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>发动攻击的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[主动发起攻击的一方卡牌]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[被攻击的一方卡牌]]></summary>
@@ -4220,8 +4765,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>发动攻击的卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>发动攻击的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[需要在本回合中额外获得攻击次数的卡牌]]></summary>
@@ -4241,8 +4787,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4250,8 +4797,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>合法目标集合</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>合法目标集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4268,8 +4816,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4277,8 +4826,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>合法目标集合</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>合法目标集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4295,8 +4845,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要展示的卡牌。]]></summary>
@@ -4314,15 +4865,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>生效玩家</name>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>生效玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取仆从控制权的玩家。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>移动的卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>移动的卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要被获得控制权的仆从。]]></summary>
@@ -4340,8 +4893,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断是否已蓄力的卡牌。]]></summary>
@@ -4349,8 +4903,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>已蓄力</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>已蓄力</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[判断是否已蓄力的结果。]]></summary>
@@ -4367,8 +4922,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取蓄力层数的卡牌。]]></summary>
@@ -4376,8 +4932,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>蓄力层数</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>蓄力层数</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[这张卡牌的蓄力层数。]]></summary>
@@ -4394,15 +4951,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置蓄力层数的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>蓄力层数</name>
+        <type>Int32</type>
+        <name>level</name>
+        <displayName>蓄力层数</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的这张卡牌的蓄力层数。]]></summary>
@@ -4421,29 +4980,33 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>设置</name>
+        <type>Boolean</type>
+        <name>isSet</name>
+        <displayName>设置</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4451,8 +5014,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.IntPropModifier</type>
-        <name>修改器</name>
+        <type>IntPropModifier</type>
+        <name>return</name>
+        <displayName>修改器</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4470,15 +5034,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.PropModifier</type>
-        <name>修改器</name>
+        <type>PropModifier</type>
+        <name>modifier</name>
+        <displayName>修改器</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4486,8 +5052,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IRemoveModiEventArg</type>
-        <name>移除修改器事件</name>
+        <type>IRemoveModiEventArg</type>
+        <name>return</name>
+        <displayName>移除修改器事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4505,8 +5072,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4524,8 +5092,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4533,8 +5102,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>TouhouCardEngine.DefineReference</type>
-        <name>卡牌引用</name>
+        <type>DefineReference</type>
+        <name>cardRef</name>
+        <displayName>卡牌引用</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4551,8 +5121,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4560,8 +5131,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>TouhouCardEngine.DefineReference</type>
-        <name>卡牌引用</name>
+        <type>DefineReference</type>
+        <name>cardRefs</name>
+        <displayName>卡牌引用</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4577,15 +5149,17 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的卡牌定义。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>标签</name>
+        <type>String</type>
+        <name>tag</name>
+        <displayName>标签</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[标签名，包括：<ul>
@@ -4602,8 +5176,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4620,8 +5195,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取标签列表的卡牌定义。]]></summary>
@@ -4629,8 +5205,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>标签列表</name>
+        <type>String</type>
+        <name>return</name>
+        <displayName>标签列表</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的标签列表。]]></summary>
@@ -4648,8 +5225,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefines</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4657,8 +5235,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4675,8 +5254,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4684,8 +5264,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4693,8 +5274,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>Game.CardDefineSelect</type>
-        <name>卡牌类型</name>
+        <type>CardDefineSelect</type>
+        <name>select</name>
+        <displayName>卡牌类型</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4710,8 +5292,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的卡牌定义。]]></summary>
@@ -4719,8 +5302,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[是否拥有该关键词？]]></summary>
@@ -4728,8 +5312,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>关键词类型</name>
+        <type>String</type>
+        <name>select</name>
+        <displayName>关键词类型</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的关键词类型，包括：<ul>
@@ -4759,8 +5344,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4768,8 +5354,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
@@ -4786,8 +5373,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4795,8 +5383,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4813,15 +5402,17 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>define</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4829,8 +5420,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4838,8 +5430,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>是否重置卡牌</name>
+        <type>Boolean</type>
+        <name>isreset</name>
+        <displayName>是否重置卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4855,15 +5448,17 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4871,8 +5466,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4889,8 +5485,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4898,8 +5495,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4916,8 +5514,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4925,8 +5524,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4943,8 +5543,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4952,8 +5553,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4970,8 +5572,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4979,8 +5582,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>伤害</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>伤害</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -4997,8 +5601,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -5006,8 +5611,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -5024,8 +5630,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取技能的英雄牌卡牌定义。]]></summary>
@@ -5033,8 +5640,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的技能卡牌定义。]]></summary>
@@ -5051,8 +5659,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取角色的卡牌定义。]]></summary>
@@ -5060,8 +5669,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的角色的卡牌定义。]]></summary>
@@ -5079,8 +5689,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断是否可收藏的卡牌定义。]]></summary>
@@ -5088,8 +5699,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>可收藏</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>可收藏</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌定义是否可收藏？]]></summary>
@@ -5106,22 +5718,25 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要触发宣言的卡牌定义。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要触发该宣言的卡牌载体。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[宣言的目标。]]></summary>
@@ -5139,8 +5754,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断是否具有宣言的卡牌定义。]]></summary>
@@ -5148,8 +5764,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌定义是否具有宣言言？]]></summary>
@@ -5166,15 +5783,17 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要触发遗言的卡牌定义。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要触发该遗言的卡牌载体。]]></summary>
@@ -5192,8 +5811,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断是否具有遗言的卡牌定义。]]></summary>
@@ -5201,8 +5821,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌定义是否具有遗言？]]></summary>
@@ -5219,22 +5840,25 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要触发效果的卡牌定义。（类型必须是法术或技能）]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要触发该效果的卡牌载体。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[法术或技能效果的目标]]></summary>
@@ -5252,8 +5876,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取对应卡牌的卡牌快照。]]></summary>
@@ -5261,8 +5886,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌快照对应的卡牌。]]></summary>
@@ -5279,8 +5905,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取卡牌定义的卡牌快照。]]></summary>
@@ -5288,8 +5915,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>return</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌快照在当时的的卡牌定义。]]></summary>
@@ -5306,8 +5934,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要进行类型判断的卡牌快照。]]></summary>
@@ -5315,8 +5944,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌快照是否是该类型？]]></summary>
@@ -5324,8 +5954,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>Game.CardDefineSelect</type>
-        <name>卡牌类型</name>
+        <type>CardDefineSelect</type>
+        <name>select</name>
+        <displayName>卡牌类型</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要进行判断的卡牌类型。]]></summary>
@@ -5341,8 +5972,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要进行关键词判断的卡牌快照。]]></summary>
@@ -5350,8 +5982,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌快照是否具有该关键词？]]></summary>
@@ -5359,8 +5992,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>关键词类型</name>
+        <type>String</type>
+        <name>select</name>
+        <displayName>关键词类型</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要进行判断的关键词。]]></summary>
@@ -5376,15 +6010,17 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的卡牌快照。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的属性名称。]]></summary>
@@ -5392,8 +6028,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的属性值。]]></summary>
@@ -5410,8 +6047,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取灵力值消耗的卡牌快照。]]></summary>
@@ -5419,8 +6057,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的灵力值消耗。]]></summary>
@@ -5437,8 +6076,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取攻击力的卡牌快照。]]></summary>
@@ -5446,8 +6086,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的攻击力。]]></summary>
@@ -5464,8 +6105,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取最大生命值的卡牌快照。]]></summary>
@@ -5473,8 +6115,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的最大生命值。]]></summary>
@@ -5491,8 +6134,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取当前生命值的卡牌快照。]]></summary>
@@ -5500,8 +6144,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的当前生命值。]]></summary>
@@ -5518,8 +6163,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取拥有者的卡牌快照。]]></summary>
@@ -5527,8 +6173,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Player</type>
-        <name>玩家</name>
+        <type>Player</type>
+        <name>return</name>
+        <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的玩家。]]></summary>
@@ -5545,8 +6192,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取护甲值的卡牌快照。]]></summary>
@@ -5554,8 +6202,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的护甲值。]]></summary>
@@ -5572,8 +6221,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取是否已蓄力的卡牌快照。]]></summary>
@@ -5581,8 +6231,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>已蓄力</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>已蓄力</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌快照是否已蓄力。]]></summary>
@@ -5599,8 +6250,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取蓄力层数的卡牌快照。]]></summary>
@@ -5608,8 +6260,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>蓄力层数</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>蓄力层数</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的卡牌快照蓄力层数。]]></summary>
@@ -5626,8 +6279,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断具有宣言的卡牌快照。]]></summary>
@@ -5635,8 +6289,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌快照是否具有宣言。]]></summary>
@@ -5653,8 +6308,9 @@
     <category>卡牌快照</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>card</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断具有遗言的卡牌快照。]]></summary>
@@ -5662,8 +6318,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[卡牌快照是否具有遗言。]]></summary>
@@ -5681,8 +6338,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IEffect</type>
-        <name>效果</name>
+        <type>IEffect</type>
+        <name>return</name>
+        <displayName>效果</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[当前效果。]]></summary>
@@ -5699,8 +6357,9 @@
     <category>效果</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IEffect</type>
-        <name>效果</name>
+        <type>IEffect</type>
+        <name>effect</name>
+        <displayName>效果</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断标签的效果。]]></summary>
@@ -5708,8 +6367,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>Value</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>Value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[效果是否具有标签。]]></summary>
@@ -5717,8 +6377,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>Game.EffectTag</type>
-        <name>效果标签</name>
+        <type>EffectTag</type>
+        <name>tag</name>
+        <displayName>效果标签</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断的效果标签。]]></summary>
@@ -5734,8 +6395,9 @@
     <category>效果</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IEffect</type>
-        <name>效果</name>
+        <type>IEffect</type>
+        <name>effect</name>
+        <displayName>效果</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的效果。]]></summary>
@@ -5743,8 +6405,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>Value</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>Value</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的属性值。]]></summary>
@@ -5752,8 +6415,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>属性名称</name>
+        <type>String</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[属性名。]]></summary>
@@ -5769,8 +6433,9 @@
     <category>效果</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取效果的卡牌。]]></summary>
@@ -5778,8 +6443,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IEffect</type>
-        <name>效果集合</name>
+        <type>IEffect</type>
+        <name>return</name>
+        <displayName>效果集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的效果集合。]]></summary>
@@ -5796,8 +6462,9 @@
     <category>效果</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Buff</type>
-        <name>增益</name>
+        <type>Buff</type>
+        <name>buff</name>
+        <displayName>增益</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取效果的增益。]]></summary>
@@ -5805,8 +6472,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IEffect</type>
-        <name>效果集合</name>
+        <type>IEffect</type>
+        <name>return</name>
+        <displayName>效果集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的效果集合。]]></summary>
@@ -5823,8 +6491,9 @@
     <category>效果</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取效果的卡牌定义。]]></summary>
@@ -5832,8 +6501,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Interfaces.IEffect</type>
-        <name>效果集合</name>
+        <type>IEffect</type>
+        <name>return</name>
+        <displayName>效果集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的效果集合。]]></summary>
@@ -5851,8 +6521,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>回合数</name>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>回合数</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的回合数。]]></summary>
@@ -5869,8 +6540,9 @@
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventRecord</type>
-        <name>事件记录</name>
+        <type>EventRecord</type>
+        <name>record</name>
+        <displayName>事件记录</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取变量的事件记录。]]></summary>
@@ -5878,8 +6550,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的事件记录变量。<br>
@@ -5889,8 +6562,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>变量名</name>
+        <type>String</type>
+        <name>varName</name>
+        <displayName>变量名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
@@ -5914,8 +6588,9 @@
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventRecord</type>
-        <name>事件记录</name>
+        <type>EventRecord</type>
+        <name>evt</name>
+        <displayName>事件记录</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要判断类型的事件记录。]]></summary>
@@ -5923,8 +6598,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Boolean</type>
-        <name>真值</name>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[事件记录是否属于该类型？]]></summary>
@@ -5932,8 +6608,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>Game.EventArgReference</type>
-        <name>事件类型</name>
+        <type>EventArgReference</type>
+        <name>argRef</name>
+        <displayName>事件类型</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要进行判断的事件类型。]]></summary>
@@ -5950,8 +6627,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventRecord</type>
-        <name>事件集合</name>
+        <type>EventRecord</type>
+        <name>return</name>
+        <displayName>事件集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的事件列表。]]></summary>
@@ -5969,8 +6647,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventRecord</type>
-        <name>事件集合</name>
+        <type>EventRecord</type>
+        <name>return</name>
+        <displayName>事件集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的事件列表。]]></summary>
@@ -5987,8 +6666,9 @@
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>前X回合开始</name>
+        <type>Int32</type>
+        <name>farther</name>
+        <displayName>前X回合开始</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[距离本回合的最大距离。
@@ -6000,8 +6680,9 @@
           </ul>]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>前Y回合结束</name>
+        <type>Int32</type>
+        <name>nearer</name>
+        <displayName>前Y回合结束</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[距离本回合的最小距离。
@@ -6015,8 +6696,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventRecord</type>
-        <name>事件集合</name>
+        <type>EventRecord</type>
+        <name>return</name>
+        <displayName>事件集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[获取到的事件列表。]]></summary>
@@ -6033,15 +6715,17 @@
     <category>事件记录</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取快照的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventRecord</type>
-        <name>事件记录</name>
+        <type>EventRecord</type>
+        <name>record</name>
+        <displayName>事件记录</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[事件记录，用于获取快照的时间点。]]></summary>
@@ -6049,8 +6733,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardSnapshot</type>
-        <name>卡牌快照</name>
+        <type>CardSnapshot</type>
+        <name>return</name>
+        <displayName>卡牌快照</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的卡牌快照。]]></summary>
@@ -6068,8 +6753,9 @@
     <inputs />
     <outputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[当前的事件。]]></summary>
@@ -6088,8 +6774,9 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取变量的事件。]]></summary>
@@ -6097,8 +6784,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的事件变量。]]></summary>
@@ -6106,8 +6794,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>变量名</name>
+        <type>String</type>
+        <name>varName</name>
+        <displayName>变量名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
@@ -6133,15 +6822,17 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置变量的事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的事件变量的值。]]></summary>
@@ -6150,8 +6841,9 @@
     <outputs />
     <consts>
       <ActionParameterComment>
-        <type>System.String</type>
-        <name>变量名</name>
+        <type>String</type>
+        <name>varName</name>
+        <displayName>变量名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
@@ -6175,8 +6867,9 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要阻止的事件。]]></summary>
@@ -6194,15 +6887,17 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[“攻击时”事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>目标卡牌</name>
+        <type>Card</type>
+        <name>target</name>
+        <displayName>目标卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要修改为攻击目标的卡牌。]]></summary>
@@ -6223,15 +6918,17 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[“使用卡牌时”事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>集合</name>
+        <type>Card</type>
+        <name>target</name>
+        <displayName>集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[要修改为使用目标的一个或多个卡牌。]]></summary>
@@ -6249,15 +6946,17 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[“伤害时”事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>target</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要更改为受伤目标的卡牌。]]></summary>
@@ -6275,15 +6974,17 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[“伤害时”事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>source</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要更改为伤害源的卡牌。]]></summary>
@@ -6301,15 +7002,17 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[“伤害时”事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要更改为的伤害值。]]></summary>
@@ -6327,15 +7030,17 @@
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.EventArg</type>
-        <name>事件</name>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Int32</type>
-        <name>值</name>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>

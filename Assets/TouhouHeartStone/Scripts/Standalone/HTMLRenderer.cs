@@ -231,11 +231,12 @@ namespace IGensoukyo
 
         TextMeshProUGUI TryCreateNodeWithContent()
         {
-            if (currentSectionText == "")
+            if (string.IsNullOrEmpty(currentSectionText))
                 return null;
 
             var item = createItem();
 
+            currentSectionText = currentSectionText.Replace("&lt;", "<").Replace("&gt;", ">");
             if (listIntent > 0)
                 currentSectionText = $"<margin={listIntent * 1}em>" + currentSectionText;
 

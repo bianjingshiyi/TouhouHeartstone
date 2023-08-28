@@ -414,7 +414,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害
         /// </summary>
-        [ActionNodeMethod(BuiltinActionDefineID.DealDamageOrSpellDamage_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "造成伤害或法伤（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
+        [THHActionMethod(BuiltinActionDefineID.DealDamageOrSpellDamage_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "造成伤害或法伤（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         [Obsolete]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageObsolete(CardEngine game, Card card,
@@ -438,7 +438,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害并分配给目标
         /// </summary>
-        [ActionNodeMethod(BuiltinActionDefineID.DealDamageSplitAmong_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "造成伤害或法伤并分配给目标（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
+        [THHActionMethod(BuiltinActionDefineID.DealDamageSplitAmong_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "造成伤害或法伤并分配给目标（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         [Obsolete]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargetsObsolete(CardEngine game, Card card,
@@ -462,7 +462,7 @@ namespace Game
         /// <summary>
         /// 对固定数量的随机目标造成伤害或法术伤害
         /// </summary>
-        [ActionNodeMethod(BuiltinActionDefineID.DealDamageToRandomTargets_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "对固定数量的随机目标造成伤害或法伤（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
+        [THHActionMethod(BuiltinActionDefineID.DealDamageToRandomTargets_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, "对固定数量的随机目标造成伤害或法伤（过时）", EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         [Obsolete]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargetsObsolete(CardEngine game, Card card,

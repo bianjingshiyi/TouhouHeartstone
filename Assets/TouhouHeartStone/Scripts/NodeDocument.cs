@@ -108,7 +108,9 @@ namespace Game
         {
             var dotIndex = item.type.LastIndexOf(".");
             string type = dotIndex > 0 ? item.type.Substring(dotIndex + 1) : item.type;
-            return lang._(ParameterTemplate, lang._(item.name), type, item.isArray, item.isParams, lang._(item.summaryString));
+            type = type.Replace("<", "&lt;").Replace(">", "&gt;");
+            string displayName = lang._(item.displayName ?? item.name);
+            return lang._(ParameterTemplate, displayName, type, item.isArray, item.isParams, lang._(item.summaryString));
         }
         string GetParametersStr(ActionParameterComment[] items)
         {
@@ -266,6 +268,10 @@ namespace Game
         /// </summary>
         public string name;
         /// <summary>
+        /// 显示名称
+        /// </summary>
+        public string displayName;
+        /// <summary>
         /// 参数
         /// </summary>
         public bool isParams;
@@ -307,8 +313,10 @@ namespace Game
         /// <param name="val"></param>
         public void Update(PortDefine val)
         {
-            type = val.type.IsArray ? val.type.GetElementType().FullName : val.type.FullName;
-            name = val.getDisplayName();
+            var portType = val.type.IsArray ? val.type.GetElementType() : val.type;
+            type = getTypeName(portType);
+            name = val.name;
+            displayName = val.getDisplayName();
             isParams = val.isParams;
             isArray = val.type.IsArray;
         }
@@ -325,7 +333,7 @@ namespace Game
             for (int i = 0; i < defines.Length; i++)
             {
                 var input = defines[i];
-                if (input.GetPortType() == PortType.Control && i == 0)
+                if (input.name == ActionDefine.enterPortName || input.name == ActionDefine.exitPortName)
                 {
                     // 跳过第一个动作端口。
                     continue;
@@ -339,7 +347,7 @@ namespace Game
                 bool hasOld = false;
                 foreach (var item in orig)
                 {
-                    if (item.name == defines[i].getDisplayName())
+                    if (item.name == defines[i].name || item.name == defines[i].getDisplayName())
                     {
                         item.Update(input);
                         list.Add(item);
@@ -353,6 +361,25 @@ namespace Game
                 }
             }
             return list.ToArray();
+        }
+
+        private static string getTypeName(Type portType)
+        {
+            string typeStr = null;
+            if (portType.IsGenericType)
+            {
+                var definition = portType.GetGenericTypeDefinition();
+                var genericArgs = portType.GenericTypeArguments;
+                var fullName = definition.Name;
+                var index = fullName.IndexOf('`');
+                var trueName = fullName.Substring(0, index);
+                typeStr = $"{trueName}<{string.Join(",", genericArgs.Select(a => getTypeName(a)))}>";
+            }
+            else
+            {
+                typeStr = portType.Name;
+            }
+            return typeStr;
         }
     }
 }
