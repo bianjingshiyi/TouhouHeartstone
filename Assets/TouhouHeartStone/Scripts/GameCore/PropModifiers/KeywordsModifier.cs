@@ -2,6 +2,10 @@
 using TouhouCardEngine.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections;
+using System.Collections.Generic;
+using System;
+using ExcelLibrary.BinaryFileFormat;
 
 namespace TouhouHeartstone
 {
@@ -34,9 +38,15 @@ namespace TouhouHeartstone
                 }
                 if (value.Contains(KEYWORD.FROZEN))
                 {
-                    await card.setFreeze(game, true);
+                    await card.addKeywords(game, KEYWORD.IS_FROZEN);
                 }
             }
+            await card.updateConsumableKeywords(game);
+        }
+        public override async Task afterRemove(IGame game, Card card)
+        {
+            await base.afterRemove(game, card);
+            await card.updateConsumableKeywords(game);
         }
         public override string[] calc(IGame game, Card card, string[] value)
         {

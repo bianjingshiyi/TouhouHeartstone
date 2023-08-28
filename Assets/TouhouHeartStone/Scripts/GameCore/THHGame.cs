@@ -800,7 +800,7 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
-            await game.triggers.doEvent(new TurnEndEventArg() { player = player }, arg =>
+            await game.triggers.doEvent(new TurnEndEventArg() { player = player }, async arg =>
             {
                 game.logger.logTrace("Debug", getCurrentPlayer(game) + "回合结束");
 
@@ -816,13 +816,13 @@ namespace TouhouHeartstone
                             chara.isServant() && chara.isReady(game))
                         {
                             game.logger.logTrace("被冻结的随从解除冰冻");
-                            chara.setFreeze(game, false);
+                            await chara.setFreeze(game, false);
                         }
                         else if ((chara.getMaxAttackTimes(game) - chara.getAttackTimes(game) >= 1) &&
                                 chara.isMaster())
                         {
                             game.logger.logTrace("被冻结的英雄解除冰冻");
-                            chara.setFreeze(game, false);
+                            await chara.setFreeze(game, false);
                         }
                     }
                 }
@@ -831,12 +831,11 @@ namespace TouhouHeartstone
                 {
                     if (hand.canBeCharged(game) && player.getMaxGem() >= hand.getCost(game))
                     {
-                        hand.setChargeLevel(game, hand.getChargedLevel(game) + 1);
+                        await hand.setChargeLevel(game, hand.getChargedLevel(game) + 1);
                     }
                 }
 
                 game.answers.cancel(game.answers.getRequests(player.id));
-                return Task.CompletedTask;
             });
             await game.updateDeath();
             game.time.cancel(getTurnTimer(game));

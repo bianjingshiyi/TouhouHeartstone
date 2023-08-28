@@ -421,34 +421,34 @@ namespace TouhouHeartstone
         {
             return card.hasKeyword(game, KEYWORD.SHIELD) && card.hasKeyword(game, KEYWORD.HAS_SHIELD);
         }
-        public static void setShield(this Card card, IGame game, bool value)
+        public static async Task setShield(this Card card, IGame game, bool value)
         {
             if (value)
             {
-                card.addKeywords(game, KEYWORD.SHIELD);
-                card.addKeywords(game, KEYWORD.HAS_SHIELD);
+                await card.addKeywords(game, KEYWORD.SHIELD);
+                await card.addKeywords(game, KEYWORD.HAS_SHIELD);
             }
             else
             {
-                card.removeKeywords(game, KEYWORD.SHIELD);
-                card.removeKeywords(game, KEYWORD.HAS_SHIELD);
+                await card.removeKeywords(game, KEYWORD.SHIELD);
+                await card.removeKeywords(game, KEYWORD.HAS_SHIELD);
             }
         }
         public static bool isStealth(this ICardData card, IGame game)
         {
             return (card.hasKeyword(game, KEYWORD.STEALTH) && card.hasKeyword(game, KEYWORD.HAS_STEALTH)) || card.hasKeyword(game, KEYWORD.PERMANENTSTEALTH);
         }
-        public static void setStealth(this Card card, IGame game, bool value)
+        public static async Task setStealth(this Card card, IGame game, bool value)
         {
             if (value)
             {
-                card.addKeywords(game, KEYWORD.STEALTH);
-                card.addKeywords(game, KEYWORD.HAS_STEALTH);
+                await card.addKeywords(game, KEYWORD.STEALTH);
+                await card.addKeywords(game, KEYWORD.HAS_STEALTH);
             }
             else
             {
-                card.removeKeywords(game, KEYWORD.STEALTH);
-                card.removeKeywords(game, KEYWORD.HAS_STEALTH);
+                await card.removeKeywords(game, KEYWORD.STEALTH);
+                await card.removeKeywords(game, KEYWORD.HAS_STEALTH);
             }
         }
         public static bool isDrain(this ICardData card, IGame game)
@@ -486,20 +486,26 @@ namespace TouhouHeartstone
         }
         public static bool isFreeze(this ICardData card, IGame game)
         {
-            return card.hasKeyword(game, KEYWORD.IS_FROZEN) || card.hasKeyword(game, KEYWORD.PERMANENT_FROZEN);
+            return (card.hasKeyword(game, KEYWORD.FROZEN) && card.hasKeyword(game, KEYWORD.IS_FROZEN)) || card.hasKeyword(game, KEYWORD.PERMANENT_FROZEN);
         }
-        public static Task<IPropChangeEventArg> setFreeze(this Card card, IGame game, bool value)
+        public static async Task setFreeze(this Card card, IGame game, bool value)
         {
             if (value)
-                return card.addKeywords(game, KEYWORD.IS_FROZEN);
+            {
+                await card.addKeywords(game, KEYWORD.FROZEN);
+                await card.addKeywords(game, KEYWORD.IS_FROZEN);
+            }
             else
-                return card.removeKeywords(game, KEYWORD.IS_FROZEN);
+            {
+                await card.removeKeywords(game, KEYWORD.FROZEN);
+                await card.removeKeywords(game, KEYWORD.IS_FROZEN);
+            }
         }
-        public static void setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
+        public static async Task setFreeze(this IEnumerable<Card> cards, IGame game, bool value)
         {
             foreach (var card in cards)
             {
-                card.setFreeze(game, value);
+                await card.setFreeze(game, value);
             }
         }
         public static bool isWindfury(this ICardData card, IGame game)
@@ -558,6 +564,7 @@ namespace TouhouHeartstone
             {
                 await card.setProp(game, keyword, true);
             }
+            await card.updateConsumableKeywords(game);
             return result;
         }
         /// <summary>
@@ -580,11 +587,19 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card">卡牌。</param>
         /// <param name="game">游戏。</param>
-        /// <param name="raw">是否忽略修改器。</param>
         /// <returns>关键词列表。</returns>
         public static string[] getKeywords(this ICardData card, IGame game)
         {
             return card.getProp<string[]>(game, DEFINE.KEYWORDS) ?? Array.Empty<string>();
+        }
+        public static bool hasKeyword(this ICard card, IGame game, string keyword, bool raw)
+        {
+            string[] keywords = card.getKeywords(game, raw);
+            if (keywords == null)
+            {
+                return false;
+            }
+            return keywords.Contains(keyword);
         }
         public static bool hasKeyword(this ICardData card, IGame game, string keyword)
         {
@@ -895,17 +910,46 @@ namespace TouhouHeartstone
         /// </summary>
         /// <param name="card"></param>
         /// <param name="game"></param>
-        public static void InitConsumableKeywords(this Card card, CardEngine game)
+        public static async Task InitConsumableKeywords(this Card card, IGame game)
         {
             if (card.hasKeyword(game, KEYWORD.SHIELD))
             {
-                card.addKeywords(game, KEYWORD.HAS_SHIELD);
+                await card.addKeywords(game, KEYWORD.HAS_SHIELD);
             }
             if (card.hasKeyword(game, KEYWORD.STEALTH))
             {
-                card.addKeywords(game, KEYWORD.HAS_STEALTH);
+                await card.addKeywords(game, KEYWORD.HAS_STEALTH);
             }
-            card.setFreeze(game, card.hasKeyword(game, KEYWORD.FROZEN));
+            if (card.hasKeyword(game, KEYWORD.FROZEN))
+            {
+                await card.addKeywords(game, KEYWORD.IS_FROZEN);
+            }
+        }
+        /// <summary>
+        /// 更新卡牌的可消耗关键字，如隐匿、护盾。
+        /// 如果不再具有护盾或隐匿的条件，把表示当前关键字状态的关键字也取消。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        public static async Task updateConsumableKeywords(this Card card, IGame game)
+        {
+            List<string> removeKeywords = new List<string>();
+            if (!card.hasKeyword(game, KEYWORD.SHIELD) && card.hasKeyword(game, KEYWORD.HAS_SHIELD, true))
+            {
+                removeKeywords.Add(KEYWORD.HAS_SHIELD);
+            }
+            if (!card.hasKeyword(game, KEYWORD.STEALTH) && card.hasKeyword(game, KEYWORD.HAS_STEALTH, true))
+            {
+                removeKeywords.Add(KEYWORD.HAS_STEALTH);
+            }
+            if (!card.hasKeyword(game, KEYWORD.FROZEN) && card.hasKeyword(game, KEYWORD.IS_FROZEN, true))
+            {
+                removeKeywords.Add(KEYWORD.IS_FROZEN);
+            }
+            if (removeKeywords.Count > 0)
+            {
+                await card.removeKeywords(game, removeKeywords.ToArray());
+            }
         }
         [TranslateMsg]
         const string NOT_YOUR_TURN = "这不是你的回合";
@@ -1186,7 +1230,7 @@ namespace TouhouHeartstone
             await card.setChargeLevel(game, 0);
             if (card.isServant() && card.pile.name == PILE.FIELD)
             {
-                card.InitConsumableKeywords(game);
+                await card.InitConsumableKeywords(game);
             }
             if (card.isSkill())
             {
@@ -1624,7 +1668,7 @@ namespace TouhouHeartstone
                 int dmgValue = arg.damageValue;
                 if (src != null && src.isStealth(game))
                 {
-                    src.setStealth(game, false);
+                    await src.setStealth(game, false);
                 }
                 if (dmgValue < 1)
                 {
@@ -1639,7 +1683,7 @@ namespace TouhouHeartstone
                 {
                     arg.isCanceled = true;
                     game.logger.log(target + "受到伤害，失去圣盾");
-                    target.setShield(game, false);
+                    await target.setShield(game, false);
                 }
                 else
                 {

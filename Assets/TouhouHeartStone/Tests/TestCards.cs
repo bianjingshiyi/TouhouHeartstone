@@ -941,8 +941,7 @@ namespace Tests
         {
             new LambdaSingleTargetEffect((g, c, t) =>
             {
-                t.setFreeze(g,true);
-                return Task.CompletedTask;
+                return t.setFreeze(g,true);
             },PileFlag.both | PileFlag.character)
         };
 

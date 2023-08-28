@@ -268,7 +268,7 @@ namespace TouhouHeartstone.Builtin
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new LambdaSingleTargetEffect(async (g, c, t) => { await t.addKeywords(g, KEYWORD.STEALTH, KEYWORD.HAS_STEALTH); },
+            new LambdaSingleTargetEffect(async (g, c, t) => { await t.setStealth(g, true); },
                 PileFlag.both | PileFlag.field)
         };
 
@@ -402,7 +402,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     foreach (var character in game.getAllCharacters().randomTake(game, 3))
                     {
-                        character.setFreeze(game, true);
+                        await character.setFreeze(game, true);
                     }
                 })
         };

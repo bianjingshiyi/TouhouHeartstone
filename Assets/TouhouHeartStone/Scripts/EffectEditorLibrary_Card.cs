@@ -753,11 +753,10 @@ namespace Game
         }
         #endregion
         [ObsoletedKeyMethod(BuiltinActionDefineID.Shackle, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_FREEZE)]
-        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
-        public static Task<IPropChangeEventArg> freeze(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        public static Task freeze(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
             if (card == null)
-                return Task.FromResult<IPropChangeEventArg>(null);
+                return Task.CompletedTask;
             return card.setFreeze(game, true);
         }
         /// <summary>

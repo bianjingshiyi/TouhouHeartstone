@@ -275,7 +275,7 @@ namespace TouhouHeartstone
                     await from.moveTo(game, card, player[PILE.ITEM]);
                 else
                     await player[PILE.ITEM].insert(game, card, 0);
-				item.InitConsumableKeywords(game);
+				await item.InitConsumableKeywords(game);
                 if (from != null)
                     game.logger.logTrace(player + "从" + arg.from + "装备了" + arg.card);
                 else
@@ -471,7 +471,7 @@ namespace TouhouHeartstone
                     await from.moveTo(game, arg.card, player.getField(), arg.position);//从某pile召唤随从
                 else
                     await player.getField().insert(game, card, position);//虚空生成随从
-                card.InitConsumableKeywords(game);
+                await card.InitConsumableKeywords(game);
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }
