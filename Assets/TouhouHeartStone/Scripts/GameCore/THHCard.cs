@@ -165,7 +165,8 @@ namespace TouhouHeartstone
         }
         public static Task<SetArmorEventArg> setArmor(this Card card, CardEngine game, int value)
         {
-            return game.triggers.doEvent(new SetArmorEventArg() { card = card, value = value }, arg =>
+            int beforeValue = card.getArmor(game);
+            return game.triggers.doEvent(new SetArmorEventArg() { card = card, beforeValue = beforeValue, value = value }, arg =>
             {
                 card = arg.card;
                 value = arg.value;
@@ -175,7 +176,6 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
             });
         }
-        [Obsolete]
         public class SetArmorEventArg : EventArg, IDescribableEventArg
         {
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
@@ -190,13 +190,14 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
             public override void Record(IGame game, EventRecord record)
             {
                 record.setCardState(EVENTVAR.CARD, card);
                 record.setVar(EVENTVAR.VALUE, value);
+                record.setVar(VAR_BEFORE_VALUE, beforeValue);
             }
             [TranslateMsg("{0}是卡，{1}是护甲值")]
             const string TEMPLATE = "{0} 的护甲变为 {1}";
@@ -211,16 +212,40 @@ namespace TouhouHeartstone
                     value
                 };
             }
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card) },
+                    new EventVariableInfo() { name = VAR_BEFORE_VALUE, type = typeof(int) },
+                    new EventVariableInfo() { name = EVENTVAR.VALUE, type = typeof(int) }
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo() { name = EVENTVAR.CARD, type = typeof(Card) },
+                    new EventVariableInfo() { name = VAR_BEFORE_VALUE, type = typeof(int) },
+                    new EventVariableInfo() { name = EVENTVAR.VALUE, type = typeof(int) }
+                };
+            }
             public Card card
             {
                 get { return getVar<Card>(EVENTVAR.CARD); }
                 set { setVar(EVENTVAR.CARD, value); }
+            }
+            public int beforeValue
+            {
+                get { return getVar<int>(VAR_BEFORE_VALUE); }
+                set { setVar(VAR_BEFORE_VALUE, value); }
             }
             public int value
             {
                 get { return getVar<int>(EVENTVAR.VALUE); }
                 set { setVar(EVENTVAR.VALUE, value); }
             }
+            public const string VAR_BEFORE_VALUE = "原数值";
         }
         public static int getCurrentLife(this ICardData card, IGame game)
         {
