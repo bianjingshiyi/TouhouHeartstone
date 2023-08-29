@@ -2066,11 +2066,13 @@ namespace Controllers
         };
         static readonly string[] _passiveEffectTags = new string[]
         {
-            EFFECTTAG.PASSIVE_LASTWORD
+            EFFECTTAG.PASSIVE_LASTWORD,
+            EFFECTTAG.EVENT_TRAP,
         };
         static readonly string[] _passiveEffectTagNames = new string[]
         {
-            StringTable.GAME_KEYWORD_DEATHRATTLE
+            StringTable.GAME_KEYWORD_DEATHRATTLE,
+            StringTable.GAME_KEYWORD_SECRET,
         };
         #endregion
         #region 内部类

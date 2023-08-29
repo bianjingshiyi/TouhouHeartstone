@@ -6,7 +6,6 @@ using MongoDB.Bson;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using TouhouCardEngine.Shared;
 using TouhouHeartstone.Builtin;
 
 namespace TouhouHeartstone
@@ -605,6 +604,7 @@ namespace TouhouHeartstone
             for (int i = 0; i < 100; i++)
             {
                 game.setProp(GAME.TURNCOUNT, i);
+                updateSecrets(game);
                 await turnStart(game, game.getCurrentPlayer());
                 await turnLoop(game, game.getCurrentPlayer());
                 await turnEnd(game, game.getCurrentPlayer());
@@ -710,6 +710,13 @@ namespace TouhouHeartstone
 
         private void setCurrentPlayer(CardEngine game, Player value) => game.setProp(GAME.CURRENTPLAYER, value);
 
+        private async Task updateSecrets(CardEngine game)
+        {
+            var thisTurnPlayer = game.getCurrentPlayer();
+            var lastTurnPlayer = game.getOpponent(thisTurnPlayer);
+            await lastTurnPlayer.updateSecrets(game);
+            await thisTurnPlayer.updateSecrets(game);
+        }
         private async Task turnStart(CardEngine game, Player player)
         {
             if (!game.isRunning)

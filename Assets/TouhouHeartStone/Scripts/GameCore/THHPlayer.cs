@@ -187,6 +187,13 @@ namespace TouhouHeartstone
             }
         }
 
+        public static async Task updateSecrets(this Player player, CardEngine game)
+        {
+            foreach (var secret in player.getHead()) // 位于延迟区。
+            {
+                await secret.updateSecret(game);
+            }
+        }
         /// <summary>
         /// 尝试使用一张卡牌
         /// </summary>
@@ -230,7 +237,10 @@ namespace TouhouHeartstone
                     //法术卡,释放效果
                     await p.getHand().moveTo(game, card, p.getWarp());
                     if (card.hasKeyword(game, KEYWORD.SECRET) || card.hasKeyword(game, KEYWORD.MISSION))
+                    {
                         await player.tryEnterHead(game, player.getWarp(), card);
+                        await card.updateSecret(game);
+                    }
                     else
                     {
                         await card.activeEffect(game, p, targets);

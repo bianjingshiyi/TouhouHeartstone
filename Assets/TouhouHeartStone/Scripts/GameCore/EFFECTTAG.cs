@@ -10,5 +10,9 @@
         /// 遗言
         /// </summary>
         public const string PASSIVE_LASTWORD = "lastword";
+        /// <summary>
+        /// 陷阱
+        /// </summary>
+        public const string EVENT_TRAP = "trap";
     }
 }

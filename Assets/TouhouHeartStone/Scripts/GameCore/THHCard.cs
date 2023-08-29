@@ -2466,6 +2466,21 @@ namespace TouhouHeartstone
                 await player.getHead().moveTo(game, arg.card, player.getGrave());
             });
         }
+        public static async Task updateSecret(this Card secret, CardEngine game)
+        {
+            if (secret.isSpell() && secret.hasKeyword(game, KEYWORD.SECRET)) // 是陷阱。
+            {
+                // 查找所有自定义事件效果。
+                // 如果是陷阱效果，改变其启用或禁用。
+                foreach (var effect in secret.define.getEffects().Where(e => e.isTrap()))
+                {
+                    if (game.getCurrentPlayer() == secret.getOwner())
+                        await effect.onDisable(game, secret, null);
+                    else
+                        await effect.onEnable(game, secret, null);
+                }
+            }
+        }
         public class SecretTriggerEventArg : EventArg, IDescribableEventArg
         {
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)

@@ -55,6 +55,29 @@ namespace TouhouHeartstone
         {
             eventEntry?.setPiles(tags);
         }
+        public override async Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
+        {
+            if (card.isSpell() && card.hasKeyword(game, KEYWORD.SECRET) && this.isTrap())
+            {
+                // 陷阱触发
+                var gameCard = card as Card;
+                await game.triggers.doEvent(new THHCard.SecretTriggerEventArg() { card = gameCard }, async arg =>
+                {
+                    var argCard = arg.card;
+                    game.logger.log("触发陷阱" + argCard);
+                    var entry = passiveEntry;
+                    if (entry != null)
+                    {
+                        var flow = new Flow(game, argCard, buff, eventArg, this);
+                        await game.runActions(flow, entry.getActionOutputPort());
+                    }
+                    Player player = argCard.getOwner();
+                    await player.getHead().moveTo(game, argCard, player.getGrave());
+                });
+                return;
+            }
+            await base.execute(game, card, buff, eventArg);
+        }
         public override SerializableEffect Serialize()
         {
             return new SerializableEventEffect(this);
