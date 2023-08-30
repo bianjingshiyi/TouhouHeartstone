@@ -48,6 +48,12 @@ namespace TouhouHeartstone
             await base.afterRemove(game, card);
             await card.updateConsumableKeywords(game);
         }
+        public override async Task<IPropChangeEventArg> setValue(IGame game, Card card, string[] value)
+        {
+            var arg = await base.setValue(game, card, value);
+            await card.updateConsumableKeywords(game);
+            return arg;
+        }
         public override string[] calc(IGame game, Card card, string[] value)
         {
             switch (modifyType)
