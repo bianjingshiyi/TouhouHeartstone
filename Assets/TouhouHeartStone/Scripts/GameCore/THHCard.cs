@@ -1488,7 +1488,7 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-        public class AttackEventArg : EventArg, IDescribableEventArg
+        public class AttackEventArg : EventArg, IDescribableEventArg, ITargetEventArg
         {
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -1497,6 +1497,10 @@ namespace TouhouHeartstone
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return new ICard[] { target };
+            }
+            ICard ITargetEventArg.getTarget()
+            {
+                return target;
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -1839,7 +1843,7 @@ namespace TouhouHeartstone
             return cards.damage(game, source, value);
 
         }
-        public class DamageEventArg : EventArg, IDescribableEventArg
+        public class DamageEventArg : EventArg, IDescribableEventArg, ITargetEventArg
         {
             public Card target
             {
@@ -1879,6 +1883,10 @@ namespace TouhouHeartstone
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return new ICard[] { target };
+            }
+            ICard ITargetEventArg.getTarget()
+            {
+                return target;
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -1997,7 +2005,7 @@ namespace TouhouHeartstone
             });
 
         }
-        public class HealEventArg : EventArg, IDescribableEventArg
+        public class HealEventArg : EventArg, IDescribableEventArg, ITargetEventArg
         {
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
@@ -2008,6 +2016,10 @@ namespace TouhouHeartstone
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
+            }
+            ICard ITargetEventArg.getTarget()
+            {
+                return card;
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
@@ -2624,5 +2636,9 @@ namespace TouhouHeartstone
             if (isreset) { await card.resetCard(game); }//卡牌重置
             return eventArg;
         }
+    }
+    public interface ITargetEventArg : IEventArg
+    {
+        ICard getTarget();
     }
 }

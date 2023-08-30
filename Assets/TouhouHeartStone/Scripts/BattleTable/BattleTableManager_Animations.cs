@@ -174,33 +174,17 @@ namespace Game.BattleTable
         }
         public Card getEventSkinAnimTarget(IEventArg arg)
         {
-            // TODO: 需要进行修改，以方便进行扩展。
-            switch (arg)
+            if (arg is ITargetEventArg targetEventArg)
             {
-                case THHCard.DamageEventArg damageArg:
-                    return damageArg.target;
-                case THHCard.HealEventArg healArg:
-                    return healArg.card;
+                return targetEventArg.getTarget() as Card;
             }
             return null;
         }
         private bool isCorrectEventForNode(IEventArg arg, Node node)
         {
-            // TODO: 需要进行修改，以方便进行扩展。
             if (node is ActionNode action)
             {
-                var defineRef = action.defineRef;
-                if (defineRef.cardPoolId == 0) // 内置动作定义。
-                {
-                    var defineId = defineRef.defineId;
-                    if (defineId == BuiltinActionDefineID.Damage ||
-                        defineId == BuiltinActionDefineID.DealDamageOrSpellDamage ||
-                        defineId == BuiltinActionDefineID.DealDamageSplitAmong ||
-                        defineId == BuiltinActionDefineID.DealDamageToRandomTargets)
-                    {
-                        return arg is THHCard.DamageEventArg;
-                    }
-                }
+                return EffectEditorLibrary.getActionBindedEventType(action.defineRef).IsAssignableFrom(arg.GetType());
             }
             return false;
         }
