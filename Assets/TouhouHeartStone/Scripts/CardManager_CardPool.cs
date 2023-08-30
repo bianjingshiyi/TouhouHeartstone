@@ -1482,7 +1482,7 @@ namespace Game
                     {
                         if (actionDefine.obsoleteNames?.Contains(actionNode.defineName) == true)
                         {
-                            newDefineRef = new ActionReference(actionDefine.cardPoolId, actionDefine.defineId);
+                            newDefineRef = new ActionReference(0, actionDefine.defineId);
                             break;
                         }
                     }
