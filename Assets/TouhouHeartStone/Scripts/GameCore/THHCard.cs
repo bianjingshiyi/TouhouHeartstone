@@ -2474,10 +2474,13 @@ namespace TouhouHeartstone
                 // 如果是陷阱效果，改变其启用或禁用。
                 foreach (var effect in secret.define.getEffects().Where(e => e.isTrap()))
                 {
-                    if (game.getCurrentPlayer() == secret.getOwner())
-                        await effect.onDisable(game, secret, null);
-                    else
-                        await effect.onEnable(game, secret, null);
+                    if (effect is IPileRangedEffect rangedEffect && rangedEffect.piles.Contains(PILE.HEAD))
+                    {
+                        if (game.getCurrentPlayer() == secret.getOwner())
+                            await effect.onDisable(game, secret, null);
+                        else
+                            await effect.onEnable(game, secret, null);
+                    }
                 }
             }
         }
