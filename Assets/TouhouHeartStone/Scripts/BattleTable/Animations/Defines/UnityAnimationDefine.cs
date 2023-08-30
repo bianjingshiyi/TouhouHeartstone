@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Game.BattleTable;
+﻿using Game.BattleTable;
 using UnityEngine;
 
 namespace Game.Animations
@@ -19,12 +18,11 @@ namespace Game.Animations
         }
         public override TableEffect createEffect(BattleTableManager table, Transform parent)
         {
-            var prefab = table.resources.loadObject<TableEffect>(prefabPath).Result;
             if (!prefab)
                 return null;
             return Object.Instantiate(prefab, parent, false);
         }
-        public string prefabPath;
+        public TableEffect prefab;
 
     }
 }

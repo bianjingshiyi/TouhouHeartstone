@@ -244,7 +244,7 @@ namespace Game
                 logger,
                 false
             );
-            card.loadBuiltinAnimations();
+            anims.loadBuiltinAnimations();
             //加载外部卡片数据
             await card.loadCardPoolInfosAsync();
             //foreach (var pair in cardPoolInfos)
@@ -497,6 +497,7 @@ namespace Game
         public DeckManager deck => getManager<DeckManager>();
         public TriggerManager triggers => this.findInstance<TriggerManager>();
         public CacheManager cache => getManager<CacheManager>();
+        public AnimationManager anims => getManager<AnimationManager>();
         public EditorManager editor => _editor;
         public Camera camera => _camera;
         public int playerKey => _playerKey;

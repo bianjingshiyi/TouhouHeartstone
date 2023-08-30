@@ -367,7 +367,7 @@ namespace Game
                 if (cards.isBuiltinCardPool(poolId))
                 {
                     cardDict.Add(poolId, cardManager.GetCardDefines().ToDictionary(c => c.id));
-                    animDict.Add(poolId, cardManager.getBuiltinAnimationDefines().ToDictionary(a => a.id));
+                    animDict.Add(poolId, main.anims.getBuiltinAnimationDefines().ToDictionary(a => a.id));
                     continue;
                 }
                 CardPool cardPool = null;

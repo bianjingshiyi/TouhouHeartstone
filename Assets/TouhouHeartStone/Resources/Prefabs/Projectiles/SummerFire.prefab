@@ -77034,6 +77034,7 @@ GameObject:
   - component: {fileID: 640545565303505470}
   - component: {fileID: 7527580489375798917}
   - component: {fileID: 8797299633640501442}
+  - component: {fileID: 3842044945674065406}
   m_Layer: 5
   m_Name: SummerFire
   m_TagString: Untagged
@@ -77138,3 +77139,19 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3842044945674065406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7527580489375798939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 1
+  defineName: SummerFire
+  duration: 2
+  blockTime: 1.5

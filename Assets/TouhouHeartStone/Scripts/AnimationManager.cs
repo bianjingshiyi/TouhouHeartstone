@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using BJSYGameCore;
 using Game.Animations;
-using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UnityEngine;
 
 namespace Game
 {
-    partial class CardManager
+    /// <summary>
+    /// 用于管理卡牌的特效等内容。
+    /// </summary>
+    public class AnimationManager : Manager
     {
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
@@ -16,13 +19,11 @@ namespace Game
         /// <returns></returns>
         public void loadBuiltinAnimations()
         {
-            // TODO: 需要对内置的一些素材库进行动态加载。
-            builtinAnimationDic.Add(BuiltinAnimationID.SUMMER_FIRE, new UnityAnimationDefine(0, BuiltinAnimationID.SUMMER_FIRE, "SummerFire")
+            foreach (var effect in builtinEffectList)
             {
-                prefabPath = "res:Prefabs/Projectiles/SummerFire",
-                duration = 2f,
-                blockTime = 1.5f
-            });
+                var define = effect.toAnimationDefine();
+                builtinAnimationDic.Add(effect.id, define);
+            }
         }
         public AnimationDefine getAnimationDefine(ICardPoolReference poolRef, int id)
         {
@@ -33,7 +34,7 @@ namespace Game
                     return define;
                 }
             }
-            if (_cardPoolDict.TryGetValue(poolRef, out var pool))
+            if (main.card.tryGetCardPool(poolRef, out var pool))
             {
                 return pool.animationDefineList.FirstOrDefault(a => a.id == id);
             }
@@ -44,5 +45,8 @@ namespace Game
             return builtinAnimationDic.Values.ToArray();
         }
         Dictionary<int, AnimationDefine> builtinAnimationDic { get; set; } = new Dictionary<int, AnimationDefine>();
+        public MainManager main => getManager<MainManager>();
+        [SerializeField]
+        private BuiltinEffect[] builtinEffectList;
     }
 }
