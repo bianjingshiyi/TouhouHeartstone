@@ -4,6 +4,7 @@ using System.Linq;
 using BJSYGameCore;
 using FreespaceFinder;
 using Game;
+using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -1179,9 +1180,14 @@ namespace UI
         private void onActionNodeClickHelpButton(int key)
         {
             setFocused();
-            _nodeDocument?.Show(key);
+            if (_nodeDocument != null)
+                _nodeDocument.Show(key);
         }
-
+        private void onActionNodeVisualEffectEditButtonClick(ActionNodeItem item)
+        {
+            setFocused();
+            onNodeVisualEffectEditButtonClick?.Invoke(item);
+        }
 
         #region 效果属性
         private void onClickAddEffectPropertyButtonCallback()
@@ -1458,6 +1464,7 @@ namespace UI
         /// 当取消选择节点
         /// </summary>
         public event Action<ActionNodeItem> onNodeDeselected;
+        public event Action<ActionNodeItem> onNodeVisualEffectEditButtonClick;
 
 
         #region 效果属性

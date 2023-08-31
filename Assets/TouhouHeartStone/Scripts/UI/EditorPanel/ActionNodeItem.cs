@@ -485,6 +485,7 @@ namespace UI
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
             _warningObj.onClick.AddListener(onClickObsoleteBtn);
             _helpBtn.onClick.AddListener(onClickHelpBtn);
+            _visualEffectButton.onClick.AddListener(onClickVisualEffectEditButtonCallback);
             _addEffectPropertyItemButton.onClick.AddListener(onClickAddEffectPropertyButtonCallback);
             //增益
             onAwake_Buff();
@@ -616,6 +617,10 @@ namespace UI
         {
             onClickHelpButton?.Invoke(documentKey);
         }
+        private void onClickVisualEffectEditButtonCallback()
+        {
+            onClickVisualEffectEditButton?.Invoke(this);
+        }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
@@ -669,6 +674,7 @@ namespace UI
         public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         public event Action<ActionNodeItem> onUpdateTransform;
         public event Action<int> onClickHelpButton;
+        public event Action<ActionNodeItem> onClickVisualEffectEditButton;
 
         #region 效果属性
         /// <summary>
@@ -707,6 +713,8 @@ namespace UI
         Button _warningObj;
         [SerializeField]
         Button _helpBtn;
+        [SerializeField]
+        Button _visualEffectButton;
         [SerializeField]
         GameObject _selectedIndicator;
         [SerializeField]
