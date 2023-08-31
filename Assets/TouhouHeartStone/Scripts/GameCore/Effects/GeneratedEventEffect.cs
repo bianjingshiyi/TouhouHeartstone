@@ -19,6 +19,9 @@ namespace TouhouHeartstone
         #endregion
         public override async Task onEnable(IGame game, ICard card, IBuff buff)
         {
+            if (!isDisabled(game, card, buff))
+                return;
+
             await base.onEnable(game, card, buff);
 
             if (eventEntry != null)
@@ -40,6 +43,9 @@ namespace TouhouHeartstone
         }
         public override async Task onDisable(IGame game, ICard card, IBuff buff)
         {
+            if (isDisabled(game, card, buff))
+                return;
+
             var eventEntry = this.eventEntry;
             if (eventEntry != null)
             {
