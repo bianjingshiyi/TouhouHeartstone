@@ -1574,7 +1574,7 @@ namespace UI
         [SerializeField]
         private Vector2 _backgroundDragStartPosition;
         private bool _isDragging;
-        private Timer _longPressTimer = new Timer() { duration = .5f };
+        private BJSYGameCore.Timer _longPressTimer = new BJSYGameCore.Timer() { duration = .5f };
         private Touch _perviousTouch1;
         private Touch _perviousTouch2;
         private bool _isTouchZooming;
