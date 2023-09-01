@@ -16,21 +16,6 @@ namespace UI
         List<EffectNodeAnimationRef> _effectNodeAnimationRefs = new List<EffectNodeAnimationRef>();
 
 
-        public void setEffectNodeAnimationRef(int effectIndex, int nodeId, DefineReference animationRef)
-        {
-            if (animationRef == null)
-            {
-                _effectNodeAnimationRefs.RemoveAll(r => r.effectIndex == effectIndex && r.nodeId == nodeId);
-                return;
-            }
-            var existed = getAnimRef(effectIndex, nodeId);
-            if (existed != null)
-            {
-                existed.animRef = animationRef;
-                return;
-            }
-            _effectNodeAnimationRefs.Add(new EffectNodeAnimationRef(effectIndex, nodeId, animationRef));
-        }
         public DefineReference getEffectNodeAnimationRef(int effectIndex, int nodeId)
         {
             var existed = getAnimRef(effectIndex, nodeId);
@@ -40,9 +25,17 @@ namespace UI
             }
             return null;
         }
-        private EffectNodeAnimationRef getAnimRef(int effectIndex, int nodeId)
+        public EffectNodeAnimationRef getAnimRef(int effectIndex, int nodeId)
         {
             return _effectNodeAnimationRefs.FirstOrDefault(r => r.effectIndex == effectIndex && r.nodeId == nodeId);
+        }
+        public void addAnimRef(EffectNodeAnimationRef animRef)
+        {
+            _effectNodeAnimationRefs.Add(animRef);
+        }
+        public int removeAnimRef(int effectIndex, int nodeId)
+        {
+            return _effectNodeAnimationRefs.RemoveAll(r => r.effectIndex == effectIndex && r.nodeId == nodeId);
         }
     }
 }

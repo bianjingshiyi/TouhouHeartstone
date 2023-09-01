@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace UI
 {
@@ -13,7 +14,8 @@ namespace UI
             ActionNodeValueInfo[] constsInfo,
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
-            int docKey = -1)
+            int docKey = -1,
+            bool visualEffect = false)
         {
             ActionNodeItem actionNodeItem = _simulationNode;
 
@@ -25,6 +27,7 @@ namespace UI
             actionNodeItem.setOutputs(outputViewData);
             actionNodeItem.setObsoleteMsg(obsoleteMsg);
             actionNodeItem.setDocumentKey(docKey);
+            actionNodeItem.showVisualEffectButton(visualEffect);
         }
         public void setPreviewEventNode(string nodeName,
             PortItemInfo[] inputViewData,

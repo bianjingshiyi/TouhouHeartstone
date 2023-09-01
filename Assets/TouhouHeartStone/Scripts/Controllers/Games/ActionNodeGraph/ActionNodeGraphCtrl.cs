@@ -346,6 +346,7 @@ namespace Controllers
             _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
             _ui.onNodeSelected += onNodeSelected;
             _ui.onNodeDeselected += onNodeDeselected;
+            _ui.onNodeVisualEffectEditButtonClick += OnNodeVisualEffectButtonClickedCallback;
             //触发
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
@@ -635,7 +636,11 @@ namespace Controllers
         }
         private void onNodeDeselected(ActionNodeItem actionNodeItem)
         {
-            OnNodeDeselected.Invoke(getActionNode(actionNodeItem));
+            OnNodeDeselected?.Invoke(getActionNode(actionNodeItem));
+        }
+        private void OnNodeVisualEffectButtonClickedCallback(ActionNodeItem actionNodeItem)
+        {
+            OnNodeVisualEffectButtonClicked?.Invoke(getActionNode(actionNodeItem));
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
@@ -832,6 +837,7 @@ namespace Controllers
             {
                 ActionNodeValueInfo[] constsInfo = getActionNodeConstValueInfo(actionNode);
                 int nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
+                bool visualEffect = EffectEditorLibrary.canActionAddEffect(actionNode.defineRef);
                 actionNodeItem = _ui.createNode(
                     actionNode.posX,
                     actionNode.posY,
@@ -840,7 +846,8 @@ namespace Controllers
                     constsInfo,
                     getNodeOutputViewData(actionNode),
                     getActionNodeObsoleteMsg(actionNode),
-                    nodeKey);
+                    nodeKey,
+                    visualEffect);
                 for (int i = 0; i < constsInfo.Length; i++)
                 {
                     var constInfo = constsInfo[i];
@@ -1802,6 +1809,7 @@ namespace Controllers
         public event Action OnGraphEdited;
         public event Action<Node> OnNodeSelected;
         public event Action<Node> OnNodeDeselected;
+        public event Action<Node> OnNodeVisualEffectButtonClicked;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]

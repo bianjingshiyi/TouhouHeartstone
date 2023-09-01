@@ -1590,6 +1590,7 @@ MonoBehaviour:
   _nameBackground: {fileID: 2877460363004271784}
   _warningObj: {fileID: 5087106211961207276}
   _helpBtn: {fileID: 7720451179140336804}
+  _visualEffectButton: {fileID: 3582876279577343406}
   _selectedIndicator: {fileID: 4471771113480628849}
   _selectedOutline: {fileID: 8785175581389378990}
   _inputRoot: {fileID: 2877460361944030062}

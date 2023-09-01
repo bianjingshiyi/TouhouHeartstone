@@ -25,7 +25,8 @@ namespace UI
             ActionNodeValueInfo[] constsInfo,
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
-            int nodeKey = -1)
+            int nodeKey = -1,
+            bool visualEffect = false)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
@@ -37,6 +38,7 @@ namespace UI
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.onClickHelpButton += onActionNodeClickHelpButton;
+            actionNodeItem.onClickVisualEffectEditButton += onActionNodeVisualEffectEditButtonClick;
 
             actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
             actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
@@ -54,6 +56,7 @@ namespace UI
             actionNodeItem.setOutputs(outputViewData);
             actionNodeItem.setObsoleteMsg(obsoleteMsg);
             actionNodeItem.setDocumentKey(nodeKey);
+            actionNodeItem.showVisualEffectButton(visualEffect);
             return actionNodeItem;
         }
         /// <summary>

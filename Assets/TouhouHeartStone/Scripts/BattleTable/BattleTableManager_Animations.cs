@@ -6,6 +6,9 @@ using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using Game.Animations;
 using UnityEngine;
+using Card = TouhouCardEngine.Card;
+using UI;
+
 namespace Game.BattleTable
 {
     partial class BattleTableManager
@@ -117,11 +120,12 @@ namespace Game.BattleTable
             var skinAnimRef = getEventSkinAnimRef(arg, effectTriggerArg);
             if (skinAnimRef == null)
                 return;
-            var targetCard = getEventSkinAnimTarget(arg);
-            var animationDef = gameManager.getAnimationDefine(skinAnimRef);
+            var animationDef = gameManager.getAnimationDefine(skinAnimRef.animRef);
+            var sourceCard = getEventSkinAnimCard(effectTriggerArg, arg, skinAnimRef.sourcePosition);
+            var targetCard = getEventSkinAnimCard(effectTriggerArg, arg, skinAnimRef.targetPosition);
             if (animationDef != null)
             {
-                addAnim(new GameTableAnim(animationDef, effectTriggerArg.card, targetCard));
+                addAnim(new GameTableAnim(animationDef, sourceCard, targetCard));
             }
         }
         public EffectTriggerEventArg getEffectEventTriggerArg(IEventArg arg)
@@ -137,11 +141,11 @@ namespace Game.BattleTable
             }
             return null;
         }
-        public DefineReference getEventSkinAnimRef(IEventArg arg, EffectTriggerEventArg effectArg)
+        public EffectNodeAnimationRef getEventSkinAnimRef(IEventArg arg, EffectTriggerEventArg effectArg)
         {
             var card = effectArg.card;
             var buff = effectArg.buff;
-            DefineReference animRef = null;
+            EffectNodeAnimationRef animRef = null;
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
@@ -152,7 +156,7 @@ namespace Game.BattleTable
                     var node = genEffect.graph.findNodeById(arg.flowNodeId);
                     if (node != null && isCorrectEventForNode(arg, node))
                     {
-                        animRef = skin.getEffectNodeAnimationRef(effectIndex, arg.flowNodeId);
+                        animRef = skin.getAnimRef(effectIndex, arg.flowNodeId);
                     }
                 }
             }
@@ -166,17 +170,28 @@ namespace Game.BattleTable
                     var node = genEffect.graph.findNodeById(arg.flowNodeId);
                     if (node != null && isCorrectEventForNode(arg, node))
                     {
-                        animRef = skin.getEffectNodeAnimationRef(effectIndex, arg.flowNodeId);
+                        animRef = skin.getAnimRef(effectIndex, arg.flowNodeId);
                     }
                 }
             }
             return animRef;
         }
-        public Card getEventSkinAnimTarget(IEventArg arg)
+        public Card getEventSkinAnimCard(EffectTriggerEventArg effectArg, IEventArg arg, int position)
         {
-            if (arg is ITargetEventArg targetEventArg)
+            switch (position)
             {
-                return targetEventArg.getTarget() as Card;
+                case VisualEffectPosition.SELF_MASTER:
+                    return effectArg.card.getOwner().getMaster();
+                case VisualEffectPosition.ENEMY_MASTER:
+                    return game.getOpponent(effectArg.card.getOwner()).getMaster();
+                case VisualEffectPosition.THIS_CARD:
+                    return effectArg.card;
+                case VisualEffectPosition.TARGET_CARD:
+                    if (arg is ITargetEventArg targetEventArg)
+                    {
+                        return targetEventArg.getTarget() as Card;
+                    }
+                    break;
             }
             return null;
         }

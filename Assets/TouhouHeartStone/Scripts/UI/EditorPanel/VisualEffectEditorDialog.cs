@@ -24,6 +24,12 @@ namespace UI
             _targetPositionDropdown.ClearOptions();
             _targetPositionDropdown.AddOptions(new List<string>(options));
         }
+        public void update(int effectIndex, int sourceIndex, int targetIndex)
+        {
+            _effectDropdown.SetValueWithoutNotify(effectIndex);
+            _sourcePositionDropdown.SetValueWithoutNotify(sourceIndex);
+            _targetPositionDropdown.SetValueWithoutNotify(targetIndex);
+        }
         #endregion
         #region 私有方法
         protected void Awake()

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Game;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using UI;
@@ -45,12 +46,14 @@ namespace Controllers
 
 
                     int docKey = CanNodeDefineOpenDocument(define) ? define.actionDefine.defineId : -1;
+                    bool visualEffect = EffectEditorLibrary.canActionAddEffect(new ActionReference(define.actionDefine.cardPoolId, define.actionDefine.defineId));
                     _ui.setPreviewNode(tryTranslateWithDict(define.actionDefine.editorName),
                         inputInfos,
                         constsInfo,
                         outputInfos,
                         define.actionDefine.obsoleteMsg,
-                        docKey);
+                        docKey,
+                        visualEffect);
                 }
                 else if (define.eventDefine != null)
                 {
@@ -128,12 +131,14 @@ namespace Controllers
                 {
                     var define = actionNode.define;
                     int docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
+                    bool visualEffect = EffectEditorLibrary.canActionAddEffect(actionNode.defineRef);
                     _ui.setPreviewNode(tryTranslateWithDict(define.editorName),
                         getNodeInputViewData(node),
                         getNodeConstValueInfos(node),
                         getNodeOutputViewData(node),
                         define.obsoleteMsg,
-                        docKey);
+                        docKey,
+                        visualEffect);
                 }
             }
         }

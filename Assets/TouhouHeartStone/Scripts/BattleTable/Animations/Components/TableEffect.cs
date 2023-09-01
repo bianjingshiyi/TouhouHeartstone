@@ -9,7 +9,8 @@ namespace Game.Animations
         {
             _table = table;
             _srcTransform = sourceTransform;
-            transform.position = _srcTransform.position;
+            if (_srcTransform)
+                transform.position = _srcTransform.position;
             _destTransform = destTransform;
             _duration = define.duration;
             _blockTime = define.blockTime;

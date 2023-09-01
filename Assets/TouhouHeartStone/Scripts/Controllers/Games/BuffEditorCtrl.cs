@@ -104,6 +104,11 @@ namespace Controllers
 
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
+
+            _graphEditorPanelCtrl.onOpenNodeVisualEffect += onDisplayOpenNodeVisualEffect;
+            _graphEditorPanelCtrl.onVisualEffectChanged += onVisualEffectChanged;
+            _graphEditorPanelCtrl.onVisualEffectSourcePositionChanged += onVisualEffectSourcePositionChanged;
+            _graphEditorPanelCtrl.onVisualEffectTargetPositionChanged += onVisualEffectTargetPositionChanged;
         }
         #endregion
         #region 事件回调
@@ -275,6 +280,86 @@ namespace Controllers
             effect.name = value;
             _ui.hideEffectListItemInputField(index);
             updateEffectList(effects.ToArray());
+            markBuffUnsaved();
+        }
+        #endregion
+
+        #region 特效
+        private void onDisplayOpenNodeVisualEffect(Node node)
+        {
+            var defines = game.anims.getBuiltinAnimationDefines();
+
+            var effects = _buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            var effectIndex = Array.IndexOf(effects, currentEffect);
+            var animRef = _curBuffSkin.getAnimRef(effectIndex, node.id);
+            int animIndex = 0;
+            int sourceIndex = VisualEffectPosition.SELF_MASTER;
+            int targetIndex = VisualEffectPosition.SELF_MASTER;
+            if (animRef != null)
+            {
+                for (int i = 0; i < defines.Length; i++)
+                {
+                    var define = defines[i];
+                    if (define.cardPoolId == animRef.animRef.cardPoolId && define.id == animRef.animRef.defineId)
+                    {
+                        animIndex = i;
+                        break;
+                    }
+                }
+                sourceIndex = animRef.sourcePosition;
+                targetIndex = animRef.targetPosition;
+            }
+            _graphEditorPanelCtrl.setVisualEffectDialog(animIndex, sourceIndex, targetIndex);
+        }
+        private void onVisualEffectChanged(int nodeId, int index)
+        {
+            var defines = game.anims.getBuiltinAnimationDefines();
+
+            var effects = _buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            var effectIndex = Array.IndexOf(effects, currentEffect);
+            var animRef = _curBuffSkin.getAnimRef(effectIndex, nodeId);
+            var defineRef = new DefineReference(0, defines[index].id);
+            if (animRef == null)
+            {
+                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, defineRef);
+                _curBuffSkin.addAnimRef(animRef);
+            }
+            else
+            {
+                animRef.animRef = defineRef;
+            }
+            markBuffUnsaved();
+        }
+        private void onVisualEffectSourcePositionChanged(int nodeId, int index)
+        {
+            var effects = _buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            var effectIndex = Array.IndexOf(effects, currentEffect);
+            var animRef = _curBuffSkin.getAnimRef(effectIndex, nodeId);
+            if (animRef == null)
+            {
+                var defines = game.anims.getBuiltinAnimationDefines();
+                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, new DefineReference(0, defines[0].id));
+                _curBuffSkin.addAnimRef(animRef);
+            }
+            animRef.sourcePosition = index;
+            markBuffUnsaved();
+        }
+        private void onVisualEffectTargetPositionChanged(int nodeId, int index)
+        {
+            var effects = _buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            var effectIndex = Array.IndexOf(effects, currentEffect);
+            var animRef = _curBuffSkin.getAnimRef(effectIndex, nodeId);
+            if (animRef == null)
+            {
+                var defines = game.anims.getBuiltinAnimationDefines();
+                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, new DefineReference(0, defines[0].id));
+                _curBuffSkin.addAnimRef(animRef);
+            }
+            animRef.targetPosition = index;
             markBuffUnsaved();
         }
         #endregion

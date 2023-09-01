@@ -216,6 +216,11 @@ namespace Controllers
 
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
+
+            _graphEditorPanelCtrl.onOpenNodeVisualEffect += onDisplayOpenNodeVisualEffect;
+            _graphEditorPanelCtrl.onVisualEffectChanged += onVisualEffectChanged;
+            _graphEditorPanelCtrl.onVisualEffectSourcePositionChanged += onVisualEffectSourcePositionChanged;
+            _graphEditorPanelCtrl.onVisualEffectTargetPositionChanged += onVisualEffectTargetPositionChanged;
         }
         #endregion
         #region 事件回调
@@ -793,6 +798,90 @@ namespace Controllers
             MarkCardUnsaved();
             updateCustomProperties();
         }
+
+        #region 特效
+
+        #region 特效
+        private void onDisplayOpenNodeVisualEffect(Node node)
+        {
+            var defines = game.anims.getBuiltinAnimationDefines();
+
+            var effects = _cardDefine.getGeneratedEffects().ToArray();
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            var effectIndex = Array.IndexOf(effects, currentEffect);
+            var animRef = _curCardSkin.getAnimRef(effectIndex, node.id);
+            int animIndex = 0;
+            int sourceIndex = VisualEffectPosition.SELF_MASTER;
+            int targetIndex = VisualEffectPosition.SELF_MASTER;
+            if (animRef != null)
+            {
+                for (int i = 0; i < defines.Length; i++)
+                {
+                    var define = defines[i];
+                    if (define.cardPoolId == animRef.animRef.cardPoolId && define.id == animRef.animRef.defineId)
+                    {
+                        animIndex = i;
+                        break;
+                    }
+                }
+                sourceIndex = animRef.sourcePosition;
+                targetIndex = animRef.targetPosition;
+            }
+            _graphEditorPanelCtrl.setVisualEffectDialog(animIndex, sourceIndex, targetIndex);
+        }
+        private void onVisualEffectChanged(int nodeId, int index)
+        {
+            var defines = game.anims.getBuiltinAnimationDefines();
+
+            var effects = _cardDefine.getGeneratedEffects().ToArray();
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            var effectIndex = Array.IndexOf(effects, currentEffect);
+            var animRef = _curCardSkin.getAnimRef(effectIndex, nodeId);
+            var defineRef = new DefineReference(0, defines[index].id);
+            if (animRef == null)
+            {
+                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, defineRef);
+                _curCardSkin.addAnimRef(animRef);
+            }
+            else
+            {
+                animRef.animRef = defineRef;
+            }
+            MarkCardUnsaved();
+        }
+        private void onVisualEffectSourcePositionChanged(int nodeId, int index)
+        {
+            var effects = _cardDefine.getGeneratedEffects().ToArray();
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            var effectIndex = Array.IndexOf(effects, currentEffect);
+            var animRef = _curCardSkin.getAnimRef(effectIndex, nodeId);
+            if (animRef == null)
+            {
+                var defines = game.anims.getBuiltinAnimationDefines();
+                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, new DefineReference(0, defines[0].id));
+                _curCardSkin.addAnimRef(animRef);
+            }
+            animRef.sourcePosition = index;
+            MarkCardUnsaved();
+        }
+        private void onVisualEffectTargetPositionChanged(int nodeId, int index)
+        {
+            var effects = _cardDefine.getGeneratedEffects().ToArray();
+            var currentEffect = _effectEditorCtrl.getCurrentEffect();
+            var effectIndex = Array.IndexOf(effects, currentEffect);
+            var animRef = _curCardSkin.getAnimRef(effectIndex, nodeId);
+            if (animRef == null)
+            {
+                var defines = game.anims.getBuiltinAnimationDefines();
+                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, new DefineReference(0, defines[0].id));
+                _curCardSkin.addAnimRef(animRef);
+            }
+            animRef.targetPosition = index;
+            MarkCardUnsaved();
+        }
+        #endregion
+
+        #endregion
         #endregion
 
         private CardDefine[] getSelectableCharacters()

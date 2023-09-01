@@ -312,6 +312,15 @@ namespace UI
             _helpBtn.gameObject.SetActive(key >= 0);
             SetDirty();
         }
+        /// <summary>
+        /// 显示特效按钮
+        /// </summary>
+        /// <param name="key"></param>
+        public void showVisualEffectButton(bool value)
+        {
+            _visualEffectButton.gameObject.SetActive(value);
+            SetDirty();
+        }
 
         public void updateTargetCheckerList(string[] targetTypes, (int typeIndex, string name, string errorTip)[] targetCheckers)
         {

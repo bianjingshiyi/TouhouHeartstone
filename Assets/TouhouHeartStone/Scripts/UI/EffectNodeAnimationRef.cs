@@ -17,6 +17,8 @@ namespace UI
         }
         public int effectIndex;
         public int nodeId;
+        public int sourcePosition;
+        public int targetPosition;
         public DefineReference animRef;
     }
 }

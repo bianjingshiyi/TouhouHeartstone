@@ -7,6 +7,7 @@ using MukioI18n;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
 namespace UI
@@ -24,6 +25,7 @@ namespace UI
             updateUndoRedoButton();
             updateNodeDefines();
             updateNodesList();
+            initVisualEffectOptions();
         }
         public void updateNodeDefines()
         {
@@ -71,6 +73,10 @@ namespace UI
             _undoButton.interactable = _actionGraphCtrl.canUndo();
             _redoButton.interactable = _actionGraphCtrl.canRedo();
         }
+        public void setVisualEffectDialog(int effectIndex, int sourceIndex, int targetIndex)
+        {
+            _selectVisualEffectDialog.update(effectIndex, sourceIndex, targetIndex);
+        }
         #region 私有方法
         #region 生命周期
         void Awake()
@@ -85,6 +91,7 @@ namespace UI
             _actionGraphCtrl.OnNodeSelected += OnNodeSelected;
             _actionGraphCtrl.OnNodeDeselected += OnNodeDeselected;
             _actionGraphCtrl.OnGraphEdited += OnGraphEdited;
+            _actionGraphCtrl.OnNodeVisualEffectButtonClicked += OnNodeVisualEffectButtonClicked;
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
@@ -98,6 +105,11 @@ namespace UI
             _nodesPanel.onOutputFilterValueChanged += onOutputFilterValueChanged;
             _nodesPanel.onSearchFilterEndEdit += onSearchFilterEndEdit;
             _nodesPanel.onCreateActionClicked += onCreateActionClicked;
+
+            _selectVisualEffectDialog.onEffectDropdownValueChanged += onVisualEffectValueChangedCallback;
+            _selectVisualEffectDialog.onSourcePositionDropdownValueChanged += onVisualEffectSourcePositionChangedCallback;
+            _selectVisualEffectDialog.onTargetPositionDropdownValueChanged += onVisualEffectTargetPositionChangedCallback;
+            _visualEffectConfirmButton.onClick.AddListener(onVisualEffectConfirmCallback);
         }
         private void Update()
         {
@@ -151,6 +163,12 @@ namespace UI
         private void OnGraphEdited()
         {
             updateUndoRedoButton();
+        }
+        private void OnNodeVisualEffectButtonClicked(Node node)
+        {
+            _selectVisualEffectDialogObj.SetActive(true);
+            _visualEffectEditingNodeId = node.id;
+            onOpenNodeVisualEffect?.Invoke(node);
         }
         public async void onCreateActionDefineCallback(string name, string category)
         {
@@ -310,6 +328,25 @@ namespace UI
         {
             displayCreateActionDefineDialog(true);
         }
+        #region 特效
+        private void onVisualEffectValueChangedCallback(int index)
+        {
+            onVisualEffectChanged?.Invoke(_visualEffectEditingNodeId, index);
+        }
+        private void onVisualEffectSourcePositionChangedCallback(int index)
+        {
+            onVisualEffectSourcePositionChanged?.Invoke(_visualEffectEditingNodeId, index);
+        }
+        private void onVisualEffectTargetPositionChangedCallback(int index)
+        {
+            onVisualEffectTargetPositionChanged?.Invoke(_visualEffectEditingNodeId, index);
+        }
+        private void onVisualEffectConfirmCallback()
+        {
+            _selectVisualEffectDialogObj.SetActive(false);
+            _visualEffectEditingNodeId = -1;
+        }
+        #endregion
         #endregion
         #region 节点拖拽
         /// <summary>
@@ -356,6 +393,14 @@ namespace UI
             _createActionDefineDialog.showErrorTip(message);
         }
         #endregion
+        private void initVisualEffectOptions()
+        {
+            var defines = game.anims.getBuiltinAnimationDefines();
+            _selectVisualEffectDialog.setEffects(defines.Select(d => d.name).ToArray());
+            var positions = visualEffectPositions.Select(p => game.lang._(p)).ToArray();
+            _selectVisualEffectDialog.setSourcePositionOptions(positions);
+            _selectVisualEffectDialog.setTargetPositionOptions(positions);
+        }
         private void updatePasteButton()
         {
             _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard);
@@ -507,9 +552,16 @@ namespace UI
             }
         }
         #endregion
+        #region 
+        public event Action<int, int> onVisualEffectChanged;
+        public event Action<int, int> onVisualEffectSourcePositionChanged;
+        public event Action<int, int> onVisualEffectTargetPositionChanged;
+        public event Action<Node> onOpenNodeVisualEffect;
+        #endregion
 
         private long _cardPoolId;
         private bool _deleteButtonDirty;
+        private int _visualEffectEditingNodeId;
         [SerializeField]
         ActionNodeGraphCtrl _actionGraphCtrl;
         [SerializeField]
@@ -518,6 +570,12 @@ namespace UI
         RectTransform _actionGraphContent;
         [SerializeField]
         CreateActionDefineDialog _createActionDefineDialog;
+        [SerializeField]
+        VisualEffectEditorDialog _selectVisualEffectDialog;
+        [SerializeField]
+        Button _visualEffectConfirmButton;
+        [SerializeField]
+        GameObject _selectVisualEffectDialogObj;
 
         [Header("按钮")]
         [SerializeField]
@@ -574,6 +632,16 @@ namespace UI
         [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
         public const string EDITOR_ERROR_ACTION_DEFINE_NAME_EMPTY = "请输入动作名称";
 
+
+        [TranslateMsg("特效动画的始末位置选项")]
+        public const string VISUAL_EFFECT_POSITION_SELF_MASTER = "己方英雄";
+        [TranslateMsg("特效动画的始末位置选项")]
+        public const string VISUAL_EFFECT_POSITION_ENEMY_MASTER = "敌方英雄";
+        [TranslateMsg("特效动画的始末位置选项")]
+        public const string VISUAL_EFFECT_POSITION_THIS_CARD = "这张卡牌";
+        [TranslateMsg("特效动画的始末位置选项")]
+        public const string VISUAL_EFFECT_POSITION_TARGET_CARD = "目标卡牌";
+
         public static readonly string[] categories = new string[]
         {
             ACTION_CATEGORY_NAME_NONE,
@@ -591,5 +659,20 @@ namespace UI
             StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, // 集合运算
             EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER, // 其他
         };
+
+        public static readonly string[] visualEffectPositions = new string[]
+        {
+            VISUAL_EFFECT_POSITION_SELF_MASTER,
+            VISUAL_EFFECT_POSITION_ENEMY_MASTER,
+            VISUAL_EFFECT_POSITION_THIS_CARD,
+            VISUAL_EFFECT_POSITION_TARGET_CARD
+        };
+    }
+    public static class VisualEffectPosition
+    {
+        public const int SELF_MASTER = 0;
+        public const int ENEMY_MASTER = 1;
+        public const int THIS_CARD = 2;
+        public const int TARGET_CARD = 3;
     }
 }
