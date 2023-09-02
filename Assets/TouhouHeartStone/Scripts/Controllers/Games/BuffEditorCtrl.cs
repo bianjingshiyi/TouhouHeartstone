@@ -105,10 +105,12 @@ namespace Controllers
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
 
-            _graphEditorPanelCtrl.onOpenNodeVisualEffect += onDisplayOpenNodeVisualEffect;
-            _graphEditorPanelCtrl.onVisualEffectChanged += onVisualEffectChanged;
-            _graphEditorPanelCtrl.onVisualEffectSourcePositionChanged += onVisualEffectSourcePositionChanged;
-            _graphEditorPanelCtrl.onVisualEffectTargetPositionChanged += onVisualEffectTargetPositionChanged;
+            _graphEditorPanelCtrl.onAddAnimationRef += onConfirmAddAnimationRef;
+            _ui.onAddAnimationRefButtonClicked += onAddAnimationRef;
+            _ui.onRemoveAnimationRefButtonClicked += onRemoveAnimationRef;
+            _ui.onAnimationRefAnimationChanged += onVisualEffectChanged;
+            _ui.onAnimationRefSourcePositionChanged += onVisualEffectSourcePositionChanged;
+            _ui.onAnimationRefTargetPositionChanged += onVisualEffectTargetPositionChanged;
         }
         #endregion
         #region 事件回调
@@ -126,6 +128,7 @@ namespace Controllers
                 _curBuffSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, _curLanguage);
                 _buffSkins.Add(_curBuffSkin);
                 updateSkinNames();
+                updateAnimationRefs();
             }
             await setCurSkinIndex(skinIndex);
         }
@@ -216,6 +219,7 @@ namespace Controllers
             string path = targetSkin.imagePath;
             Sprite image = await game.card.loadImage(targetSkin.imagePath, _buffDefine.cardPoolId);
             _ui.setImage(image);
+            updateAnimationRefs();
         }
 
         #region 效果
@@ -285,84 +289,64 @@ namespace Controllers
         #endregion
 
         #region 特效
-        private void onDisplayOpenNodeVisualEffect(Node node)
+        private void onAddAnimationRef()
         {
-            var defines = game.anims.getBuiltinAnimationDefines();
-
-            var effects = _buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
-            var currentEffect = _effectEditorCtrl.getCurrentEffect();
-            var effectIndex = Array.IndexOf(effects, currentEffect);
-            var animRef = _curBuffSkin.getAnimRef(effectIndex, node.id);
-            int animIndex = 0;
-            int sourceIndex = VisualEffectPosition.SELF_MASTER;
-            int targetIndex = VisualEffectPosition.SELF_MASTER;
-            if (animRef != null)
-            {
-                for (int i = 0; i < defines.Length; i++)
-                {
-                    var define = defines[i];
-                    if (define.cardPoolId == animRef.animRef.cardPoolId && define.id == animRef.animRef.defineId)
-                    {
-                        animIndex = i;
-                        break;
-                    }
-                }
-                sourceIndex = animRef.sourcePosition;
-                targetIndex = animRef.targetPosition;
-            }
-            _graphEditorPanelCtrl.setVisualEffectDialog(animIndex, sourceIndex, targetIndex);
+            _graphEditorPanelCtrl.openAnimationRefCreateDialog(true);
         }
-        private void onVisualEffectChanged(int nodeId, int index)
+        private void onConfirmAddAnimationRef(string key)
         {
+            if (string.IsNullOrEmpty(key))
+            {
+                _graphEditorPanelCtrl.setAnimationRefCreateErrorTip(game.lang._(ANIM_REF_KEY_EMPTY));
+                return;
+            }
+            var curAnimRef = _curBuffSkin.getAnimRef(key);
+            if (curAnimRef != null)
+            {
+                _graphEditorPanelCtrl.setAnimationRefCreateErrorTip(game.lang._(ANIM_REF_KEY_TAKEN));
+                return;
+            }
+            _graphEditorPanelCtrl.openAnimationRefCreateDialog(false);
             var defines = game.anims.getBuiltinAnimationDefines();
-
-            var effects = _buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
-            var currentEffect = _effectEditorCtrl.getCurrentEffect();
-            var effectIndex = Array.IndexOf(effects, currentEffect);
-            var animRef = _curBuffSkin.getAnimRef(effectIndex, nodeId);
-            var defineRef = new DefineReference(0, defines[index].id);
-            if (animRef == null)
-            {
-                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, defineRef);
-                _curBuffSkin.addAnimRef(animRef);
-            }
-            else
-            {
-                animRef.animRef = defineRef;
-            }
+            var defaultDefine = defines[0];
+            var skinAnimRef = new SkinAnimationRef(key, new DefineReference(defaultDefine.cardPoolId, defaultDefine.id));
+            _curBuffSkin.addAnimRef(skinAnimRef);
+            updateAnimationRefs();
             markBuffUnsaved();
         }
-        private void onVisualEffectSourcePositionChanged(int nodeId, int index)
+        private void onRemoveAnimationRef(int index)
         {
-            var effects = _buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
-            var currentEffect = _effectEditorCtrl.getCurrentEffect();
-            var effectIndex = Array.IndexOf(effects, currentEffect);
-            var animRef = _curBuffSkin.getAnimRef(effectIndex, nodeId);
-            if (animRef == null)
-            {
-                var defines = game.anims.getBuiltinAnimationDefines();
-                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, new DefineReference(0, defines[0].id));
-                _curBuffSkin.addAnimRef(animRef);
-            }
+            var animRefs = _curBuffSkin.getAllAnimRefs();
+            var animRef = animRefs[index];
+            _curBuffSkin.removeAnimRef(animRef.key);
+            updateAnimationRefs();
+            markBuffUnsaved();
+        }
+        private void onVisualEffectChanged(int animIndex, int index)
+        {
+            var animRefs = _curBuffSkin.getAllAnimRefs();
+            var animRef = animRefs[animIndex];
+            var defines = game.anims.getBuiltinAnimationDefines();
+            var define = defines[index];
+            animRef.animRef = new DefineReference(define.cardPoolId, define.id);
+            markBuffUnsaved();
+        }
+        private void onVisualEffectSourcePositionChanged(int animIndex, int index)
+        {
+            var animRefs = _curBuffSkin.getAllAnimRefs();
+            var animRef = animRefs[animIndex];
             animRef.sourcePosition = index;
             markBuffUnsaved();
         }
-        private void onVisualEffectTargetPositionChanged(int nodeId, int index)
+        private void onVisualEffectTargetPositionChanged(int animIndex, int index)
         {
-            var effects = _buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
-            var currentEffect = _effectEditorCtrl.getCurrentEffect();
-            var effectIndex = Array.IndexOf(effects, currentEffect);
-            var animRef = _curBuffSkin.getAnimRef(effectIndex, nodeId);
-            if (animRef == null)
-            {
-                var defines = game.anims.getBuiltinAnimationDefines();
-                animRef = new EffectNodeAnimationRef(effectIndex, nodeId, new DefineReference(0, defines[0].id));
-                _curBuffSkin.addAnimRef(animRef);
-            }
+            var animRefs = _curBuffSkin.getAllAnimRefs();
+            var animRef = animRefs[animIndex];
             animRef.targetPosition = index;
             markBuffUnsaved();
         }
         #endregion
+
 
         #region 修改器
         private void onAddModifier()
@@ -427,6 +411,29 @@ namespace Controllers
         }
         #endregion
 
+        private void updateAnimationRefs()
+        {
+            var defines = game.anims.getBuiltinAnimationDefines();
+            var animRefs = _curBuffSkin.getAllAnimRefs();
+            AnimationRefViewData[] viewDatas = new AnimationRefViewData[animRefs.Length];
+            for (int i = 0; i < animRefs.Length; i++)
+            {
+                var animRef = animRefs[i];
+                var define = defines.FirstOrDefault(d => d.cardPoolId == animRef.animRef.cardPoolId && d.id == animRef.animRef.defineId);
+                var animIndex = Array.IndexOf(defines, define);
+                var viewData = new AnimationRefViewData()
+                {
+                    key = animRef.key,
+                    animationIndex = animIndex,
+                    sourcePosition = animRef.sourcePosition,
+                    targetPosition = animRef.targetPosition
+                };
+                viewDatas[i] = viewData;
+            }
+            var anims = defines.Select(d => d.name).ToArray();
+            var positions = GraphEditorPanelCtrl.visualEffectPositions;
+            _ui.updateAnimationRefs(viewDatas, anims, positions);
+        }
         private void onClickDeleteCardButton()
         {
             //询问玩家
@@ -505,6 +512,7 @@ namespace Controllers
             _ui.setDesc(skin.desc);
             Sprite image = await game.card.loadImage(skin.imagePath, _buffDefine.cardPoolId);
             _ui.setImage(image);
+            updateAnimationRefs();
         }
         private int getSkinCount()
         {
@@ -820,6 +828,11 @@ namespace Controllers
         public const string BUFF_WARNING_OPTION_DONT_SAVE = "不保存";
         [TranslateMsg("尝试退出一个增益的编辑页面，但没有保存情况下的按钮名称")]
         public const string BUFF_WARNING_OPTION_CANCEL = "取消";
+
+        [TranslateMsg("尝试添加重复名称的特效引用的错误提示")]
+        public const string ANIM_REF_KEY_TAKEN = "该名称已被使用！";
+        [TranslateMsg("尝试添加空名称的特效引用的错误提示")]
+        public const string ANIM_REF_KEY_EMPTY = "请输入特效引用名！";
 
         public static string[] propertyTypes = new string[]
         {

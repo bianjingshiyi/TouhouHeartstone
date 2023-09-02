@@ -346,7 +346,7 @@ namespace Controllers
             _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
             _ui.onNodeSelected += onNodeSelected;
             _ui.onNodeDeselected += onNodeDeselected;
-            _ui.onNodeVisualEffectEditButtonClick += OnNodeVisualEffectButtonClickedCallback;
+            _ui.onNodeAnimationKeyChanged += OnNodeAnimationRefKeyChangedCallback;
             //触发
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
@@ -638,9 +638,13 @@ namespace Controllers
         {
             OnNodeDeselected?.Invoke(getActionNode(actionNodeItem));
         }
-        private void OnNodeVisualEffectButtonClickedCallback(ActionNodeItem actionNodeItem)
+        private void OnNodeAnimationRefKeyChangedCallback(ActionNodeItem actionNodeItem, string key)
         {
-            OnNodeVisualEffectButtonClicked?.Invoke(getActionNode(actionNodeItem));
+            var node = getActionNode(actionNodeItem);
+            key = key ?? string.Empty;
+            setNodeConst(node, SkinAnimationRef.NODE_CONST_KEY, key);
+            actionNodeItem.setAnimationRefKey(key);
+            OnEdited();
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
@@ -835,7 +839,7 @@ namespace Controllers
             }
             else if (actionDefine != null)
             {
-                ActionNodeValueInfo[] constsInfo = getActionNodeConstValueInfo(actionNode);
+                ActionNodeValueInfo[] constsInfo = getNodeConstValueInfos(actionNode);
                 int nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
                 bool visualEffect = EffectEditorLibrary.canActionAddEffect(actionNode.defineRef);
                 actionNodeItem = _ui.createNode(
@@ -847,7 +851,8 @@ namespace Controllers
                     getNodeOutputViewData(actionNode),
                     getActionNodeObsoleteMsg(actionNode),
                     nodeKey,
-                    visualEffect);
+                    visualEffect,
+                    actionNode.getConst<string>(SkinAnimationRef.NODE_CONST_KEY));
                 for (int i = 0; i < constsInfo.Length; i++)
                 {
                     var constInfo = constsInfo[i];
@@ -1458,75 +1463,51 @@ namespace Controllers
             item.setInputs(getNodeInputViewData(node));
             item.setOutputs(getNodeOutputViewData(node));
         }
-        private ActionNodeValueInfo[] getNodeConstValueInfos(Node node)
+        private PortDefine[] getNodeConstDefines(Node node)
         {
-            if (node is ActiveEntryNode activeEntry)
+            if (node is ActiveEntryNode)
             {
-                object tags = activeEntry.tags;
-                if (tags is ICloneable clonable)
+                return new PortDefine[]
                 {
-                    tags = clonable.Clone();
-                }
-                return new ActionNodeValueInfo[]
-                {
-                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, tags)
+                    PortDefine.Const(typeof(EffectTagCollection), ActiveEntryNode.tagsConstName, StringTable.EDITOR_PARAM_NAME_TAG)
                 };
             }
-            else if (node is AuraEntryNode auraEntry)
+            else if (node is AuraEntryNode)
             {
-                object piles = auraEntry.getPiles();
-                object ranges = auraEntry.getRanges();
-                if (piles is ICloneable pilesCloneable)
+                return new PortDefine[]
                 {
-                    piles = pilesCloneable.Clone();
-                }
-                if (ranges is ICloneable rangesCloneable)
-                {
-                    ranges = rangesCloneable.Clone();
-                }
-                return new ActionNodeValueInfo[]
-                {
-                    new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, piles),
-                    new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST, ActionNodeValueType.pileNameCollection, ranges)
+                    PortDefine.Const(typeof(PileNameCollection), AuraEntryNode.pileListName, StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST),
+                    PortDefine.Const(typeof(PileNameCollection), AuraEntryNode.rangeListName, StringTable.EDITOR_EFFECT_PROP_NAME_RANGE_LIST)
                 };
             }
-            else if (node is PassiveEntryNode passiveEntry)
+            else if (node is PassiveEntryNode)
             {
-                object tags = passiveEntry.tags;
-                object piles = passiveEntry.piles;
-                if (tags is ICloneable tagsCloneable)
+                return new PortDefine[]
                 {
-                    tags = tagsCloneable.Clone();
-                }
-                if (piles is ICloneable pilesCloneable)
-                {
-                    piles = pilesCloneable.Clone();
-                }
-                return new ActionNodeValueInfo[]
-                {
-                    new ActionNodeValueInfo(StringTable.EDITOR_PARAM_NAME_TAG, ActionNodeValueType.effectTagCollection, tags),
-                    new ActionNodeValueInfo(StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST, ActionNodeValueType.pileNameCollection, piles)
+                    PortDefine.Const(typeof(EffectTagCollection), PassiveEntryNode.tagsConstName, StringTable.EDITOR_PARAM_NAME_TAG),
+                    PortDefine.Const(typeof(PileNameCollection), PassiveEntryNode.pileListName, StringTable.EDITOR_EFFECT_PROP_NAME_PILE_LIST),
                 };
             }
             else if (node is ActionNode actionNode)
             {
-                return getActionNodeConstValueInfo(actionNode);
+                var define = getActionDefine(actionNode.defineRef);
+                return define.constDefines.ToArray();
             }
             else
             {
-                return Array.Empty<ActionNodeValueInfo>();
+                return Array.Empty<PortDefine>();
             }
         }
-        private ActionNodeValueInfo[] getActionNodeConstValueInfo(ActionNode actionNode)
+        private ActionNodeValueInfo[] getNodeConstValueInfos(Node node)
         {
-            var actionDefine = getActionDefine(actionNode.defineRef);
-            var count = actionDefine.constDefines.Count();
+            var constDefines = getNodeConstDefines(node);
+            var count = constDefines.Length;
             var infoArray = new ActionNodeValueInfo[count];
             for (int i = 0; i < count; i++)
             {
-                var constDefine = actionDefine.constDefines.ElementAt(i);
+                var constDefine = constDefines[i];
                 // 翻译名称
-                infoArray[i] = getConstValueInfoFromDefine(constDefine, actionNode.getConst(constDefine.name));
+                infoArray[i] = getConstValueInfoFromDefine(constDefine, node.getConst(constDefine.name));
             }
             return infoArray;
         }
@@ -1576,6 +1557,8 @@ namespace Controllers
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.keywords, value);
             else if (type == typeof(EventArgReference))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventReference, value);
+            else if (type == typeof(EffectTagCollection))
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.effectTagCollection, value);
             else if (type == typeof(CardPropertySetterName))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardPropertyNameSet, value);
             else if (type == typeof(CardPropertyGetterName))
@@ -1721,6 +1704,7 @@ namespace Controllers
             if (constViewData == null)
                 return;
             item.setConsts(constViewData);
+            item.setAnimationRefKey(node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY));
 
             // 更新卡牌引用。
             foreach (var constPair in node.consts)
@@ -1730,8 +1714,11 @@ namespace Controllers
         }
         private Task updateCardDefineConst(ActionNodeItem item, Node node, string name, object value)
         {
-            var consts = node.consts.Keys.ToList();
-            var constIndex = consts.IndexOf(name);
+            var consts = getNodeConstDefines(node);
+            var constDefine = consts.FirstOrDefault(c => c.name == name);
+            if (constDefine == null)
+                return Task.CompletedTask;
+            var constIndex = Array.IndexOf(consts, constDefine);
             return updateCardDefineConst(item, node, constIndex, value);
         }
         private async Task updateCardDefineConst(ActionNodeItem item, Node node, int constIndex, object value)
@@ -1809,7 +1796,6 @@ namespace Controllers
         public event Action OnGraphEdited;
         public event Action<Node> OnNodeSelected;
         public event Action<Node> OnNodeDeselected;
-        public event Action<Node> OnNodeVisualEffectButtonClicked;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]

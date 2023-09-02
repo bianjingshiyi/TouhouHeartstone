@@ -141,22 +141,22 @@ namespace Game.BattleTable
             }
             return null;
         }
-        public EffectNodeAnimationRef getEventSkinAnimRef(IEventArg arg, EffectTriggerEventArg effectArg)
+        public SkinAnimationRef getEventSkinAnimRef(IEventArg arg, EffectTriggerEventArg effectArg)
         {
             var card = effectArg.card;
             var buff = effectArg.buff;
-            EffectNodeAnimationRef animRef = null;
+            SkinAnimationRef animRef = null;
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
                 var skin = cardManager.getBuffSkin(define);
                 if (define is GeneratedBuffDefine genBuffDef && effectArg.effect is GeneratedEffect genEffect)
                 {
-                    var effectIndex = genBuffDef.effectList.IndexOf(genEffect);
                     var node = genEffect.graph.findNodeById(arg.flowNodeId);
                     if (node != null && isCorrectEventForNode(arg, node))
                     {
-                        animRef = skin.getAnimRef(effectIndex, arg.flowNodeId);
+                        var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+                        animRef = skin.getAnimRef(key);
                     }
                 }
             }
@@ -166,11 +166,11 @@ namespace Game.BattleTable
                 var skin = cardManager.getCardSkin(define);
                 if (effectArg.effect is GeneratedEffect genEffect)
                 {
-                    var effectIndex = Array.IndexOf(define.getGeneratedEffects(), genEffect);
                     var node = genEffect.graph.findNodeById(arg.flowNodeId);
                     if (node != null && isCorrectEventForNode(arg, node))
                     {
-                        animRef = skin.getAnimRef(effectIndex, arg.flowNodeId);
+                        var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+                        animRef = skin.getAnimRef(key);
                     }
                 }
             }
@@ -199,7 +199,10 @@ namespace Game.BattleTable
         {
             if (node is ActionNode action)
             {
-                return EffectEditorLibrary.getActionBindedEventType(action.defineRef).IsAssignableFrom(arg.GetType());
+                var type = EffectEditorLibrary.getActionBindedEventType(action.defineRef);
+                if (type == null)
+                    return false;
+                return type.IsAssignableFrom(arg.GetType());
             }
             return false;
         }

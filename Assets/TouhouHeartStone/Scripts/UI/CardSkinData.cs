@@ -31,31 +31,35 @@ namespace UI
             _soundPath_onUse = other._soundPath_onUse;
             _projectilePath = other._projectilePath;
             _language = other.language;
-            foreach (var animRef in other._effectNodeAnimationRefs)
+            foreach (var animRef in other._animationRefs)
             {
-                _effectNodeAnimationRefs.Add(animRef);
+                _animationRefs.Add(new SkinAnimationRef(animRef));
             }
         }
-        public DefineReference getEffectNodeAnimationRef(int effectIndex, int nodeId)
+        public DefineReference getEffectNodeAnimationRef(string key)
         {
-            var existed = getAnimRef(effectIndex, nodeId);
+            var existed = getAnimRef(key);
             if (existed != null)
             {
                 return existed.animRef;
             }
             return null;
         }
-        public EffectNodeAnimationRef getAnimRef(int effectIndex, int nodeId)
+        public SkinAnimationRef[] getAllAnimRefs()
         {
-            return _effectNodeAnimationRefs.FirstOrDefault(r => r.effectIndex == effectIndex && r.nodeId == nodeId);
+            return _animationRefs.ToArray();
         }
-        public void addAnimRef(EffectNodeAnimationRef animRef)
+        public SkinAnimationRef getAnimRef(string key)
         {
-            _effectNodeAnimationRefs.Add(animRef);
+            return _animationRefs.FirstOrDefault(r => r.key == key);
         }
-        public int removeAnimRef(int effectIndex, int nodeId)
+        public void addAnimRef(SkinAnimationRef animRef)
         {
-            return _effectNodeAnimationRefs.RemoveAll(r => r.effectIndex == effectIndex && r.nodeId == nodeId);
+            _animationRefs.Add(animRef);
+        }
+        public int removeAnimRef(string key)
+        {
+            return _animationRefs.RemoveAll(r => r.key == key);
         }
         [BsonElement]
         [SerializeField]
@@ -192,7 +196,7 @@ namespace UI
             set { _language = value; }
         }
         [BsonElement]
-        List<EffectNodeAnimationRef> _effectNodeAnimationRefs = new List<EffectNodeAnimationRef>();
+        List<SkinAnimationRef> _animationRefs = new List<SkinAnimationRef>();
         public override string ToString()
         {
             string name = this.name;

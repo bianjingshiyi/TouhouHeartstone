@@ -62,9 +62,6 @@ namespace UI
         }
         private int getValueDropdownIndex(string value)
         {
-            if (value == _tempValue)
-                return -1;
-
             for (int i = 0; i < _dropdownValues.Length; i++)
             {
                 if (_dropdownValues[i] == value)

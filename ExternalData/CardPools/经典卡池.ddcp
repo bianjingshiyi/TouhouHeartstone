@@ -39451,16 +39451,7 @@
       "_name" : "大图书馆*",
       "_imagePath" : "560d58711a8b3583137faca6eeb64ed9c705e7b24c878b0570d5306a4f04010a.jpg",
       "_desc" : "检视你牌库中的五张法术牌，选择一张并抽取。",
-      "_language" : "zh-Hans",
-	  "_effectNodeAnimationRefs" : [{ 
-		"_t" : "EffectNodeAnimationRef", 
-		"effectIndex" : 0, 
-		"nodeId" : 2, 
-		"animRef" : { 
-		"cardPoolId" : NumberLong(0), 
-		  "defineId" : 2 
-		} 
-	  }]
+      "_language" : "zh-Hans"
     }, {
       "_id" : 26,
       "_name" : "醉猫乱步*",

@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,60 +8,43 @@ namespace UI
     public class VisualEffectEditorDialog : MonoBehaviour
     {
         #region 公有方法
-        public void setEffects(string[] effectNames)
+        public void setKey(string key)
         {
-            _effectDropdown.ClearOptions();
-            _effectDropdown.AddOptions(new List<string>(effectNames));
+            _nameInputField.SetTextWithoutNotify(key);
         }
-        public void setSourcePositionOptions(string[] options)
+        public void setErrorTip(string key)
         {
-            _sourcePositionDropdown.ClearOptions();
-            _sourcePositionDropdown.AddOptions(new List<string>(options));
-        }
-        public void setTargetPositionOptions(string[] options)
-        {
-            _targetPositionDropdown.ClearOptions();
-            _targetPositionDropdown.AddOptions(new List<string>(options));
-        }
-        public void update(int effectIndex, int sourceIndex, int targetIndex)
-        {
-            _effectDropdown.SetValueWithoutNotify(effectIndex);
-            _sourcePositionDropdown.SetValueWithoutNotify(sourceIndex);
-            _targetPositionDropdown.SetValueWithoutNotify(targetIndex);
+            _errorTipText.text = key;
         }
         #endregion
         #region 私有方法
         protected void Awake()
         {
-            _effectDropdown.onValueChanged.AddListener(OnEffectDropdownValueChangedCallback);
-            _sourcePositionDropdown.onValueChanged.AddListener(OnSourcePositionDropdownValueChangedCallback);
-            _targetPositionDropdown.onValueChanged.AddListener(OnTargetPositionDropdownValueChangedCallback);
+            _confirmButton.onClick.AddListener(onConfirmButtonClickedCallback);
+            _cancelButton.onClick.AddListener(onCancelButtonClickedCallback);
         }
-        private void OnEffectDropdownValueChangedCallback(int value)
+        private void onConfirmButtonClickedCallback()
         {
-            onEffectDropdownValueChanged?.Invoke(value);
+            onConfirm?.Invoke(_nameInputField.text);
         }
-        private void OnSourcePositionDropdownValueChangedCallback(int value)
+        private void onCancelButtonClickedCallback()
         {
-            onSourcePositionDropdownValueChanged?.Invoke(value);
-        }
-        private void OnTargetPositionDropdownValueChangedCallback(int value)
-        {
-            onTargetPositionDropdownValueChanged?.Invoke(value);
+            onCancel?.Invoke();
         }
         #endregion
-        #region 事件
-        public event Action<int> onEffectDropdownValueChanged;
-        public event Action<int> onSourcePositionDropdownValueChanged;
-        public event Action<int> onTargetPositionDropdownValueChanged;
+        #region 
+        public event Action<string> onConfirm;
+        public event Action onCancel;
         #endregion
         #region 属性字段
         [SerializeField]
-        private Dropdown _effectDropdown;
+        private InputField _nameInputField;
         [SerializeField]
-        private Dropdown _sourcePositionDropdown;
+        private Text _errorTipText;
         [SerializeField]
-        private Dropdown _targetPositionDropdown;
+        private Button _confirmButton;
+        [SerializeField]
+        private Button _cancelButton;
         #endregion
     }
 }

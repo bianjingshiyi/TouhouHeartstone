@@ -166,6 +166,10 @@ namespace UI
         {
             _cardPoolViewPanelObj.SetActive(display);
         }
+        public void updateAnimationRefs(AnimationRefViewData[] viewDatas, string[] anims, string[] positions)
+        {
+            _animationRefList.update(viewDatas, anims, positions);
+        }
         #endregion
 
         #region 私有方法
@@ -204,6 +208,12 @@ namespace UI
             _buffPageButton.onClick.AddListener(() => displayPage(_buffPage, _buffPageIndicator));
             _propertyPageButton.onClick.AddListener(() => displayPage(_propertyPage, _propertyPageIndicator));
             _nodesPageButton.onClick.AddListener(() => displayPage(_nodesPage, _nodesPageIndicator));
+
+            _animationRefList.onAddButtonClicked += onAddAnimationRefButtonClickedCallback;
+            _animationRefList.onAnimationChanged += onAnimationRefAnimationChangedCallback;
+            _animationRefList.onSourcePositionChanged += onAnimationRefSourcePositionChangedCallback;
+            _animationRefList.onTargetPositionChanged += onAnimationRefTargetPositionChangedCallback;
+            _animationRefList.onRemoveButtonClicked += onRemoveAnimationRefButtonClickedCallback;
         }
         #endregion
         #region 事件回调
@@ -325,6 +335,29 @@ namespace UI
         {
             onClickCloseButton?.Invoke();
         }
+
+        #region 特效
+        private void onAddAnimationRefButtonClickedCallback()
+        {
+            onAddAnimationRefButtonClicked?.Invoke();
+        }
+        private void onAnimationRefAnimationChangedCallback(int index, int animationIndex)
+        {
+            onAnimationRefAnimationChanged?.Invoke(index, animationIndex);
+        }
+        private void onAnimationRefSourcePositionChangedCallback(int index, int sourcePosition)
+        {
+            onAnimationRefSourcePositionChanged?.Invoke(index, sourcePosition);
+        }
+        private void onAnimationRefTargetPositionChangedCallback(int index, int targetPosition)
+        {
+            onAnimationRefTargetPositionChanged?.Invoke(index, targetPosition);
+        }
+        private void onRemoveAnimationRefButtonClickedCallback(int index)
+        {
+            onRemoveAnimationRefButtonClicked?.Invoke(index);
+        }
+        #endregion
         #endregion
         private void displayPage(GameObject toDisplay, GameObject indicator)
         {
@@ -414,6 +447,13 @@ namespace UI
         ///// 当点击关闭按钮
         ///// </summary>
         public event Action onClickCloseButton;
+        #region 特效
+        public event Action onAddAnimationRefButtonClicked;
+        public event Action<int, int> onAnimationRefAnimationChanged;
+        public event Action<int, int> onAnimationRefSourcePositionChanged;
+        public event Action<int, int> onAnimationRefTargetPositionChanged;
+        public event Action<int> onRemoveAnimationRefButtonClicked;
+        #endregion
         #endregion
 
         #region 属性字段
@@ -461,6 +501,8 @@ namespace UI
         InputField _nameInputField;
         [SerializeField]
         InputField _descInputField;
+        [SerializeField]
+        AnimationRefList _animationRefList;
 
         [SerializeField]
         Dropdown _languageDropdown;

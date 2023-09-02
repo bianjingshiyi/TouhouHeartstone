@@ -7,7 +7,6 @@ using MukioI18n;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
 namespace UI
@@ -25,7 +24,6 @@ namespace UI
             updateUndoRedoButton();
             updateNodeDefines();
             updateNodesList();
-            initVisualEffectOptions();
         }
         public void updateNodeDefines()
         {
@@ -73,9 +71,15 @@ namespace UI
             _undoButton.interactable = _actionGraphCtrl.canUndo();
             _redoButton.interactable = _actionGraphCtrl.canRedo();
         }
-        public void setVisualEffectDialog(int effectIndex, int sourceIndex, int targetIndex)
+        public void openAnimationRefCreateDialog(bool display)
         {
-            _selectVisualEffectDialog.update(effectIndex, sourceIndex, targetIndex);
+            _createVisualEffectDialogObj.SetActive(display);
+            _createVisualEffectDialog.setKey(string.Empty);
+            _createVisualEffectDialog.setErrorTip(string.Empty);
+        }
+        public void setAnimationRefCreateErrorTip(string errorTip)
+        {
+            _createVisualEffectDialog.setErrorTip(errorTip);
         }
         #region 私有方法
         #region 生命周期
@@ -91,7 +95,6 @@ namespace UI
             _actionGraphCtrl.OnNodeSelected += OnNodeSelected;
             _actionGraphCtrl.OnNodeDeselected += OnNodeDeselected;
             _actionGraphCtrl.OnGraphEdited += OnGraphEdited;
-            _actionGraphCtrl.OnNodeVisualEffectButtonClicked += OnNodeVisualEffectButtonClicked;
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
@@ -106,10 +109,8 @@ namespace UI
             _nodesPanel.onSearchFilterEndEdit += onSearchFilterEndEdit;
             _nodesPanel.onCreateActionClicked += onCreateActionClicked;
 
-            _selectVisualEffectDialog.onEffectDropdownValueChanged += onVisualEffectValueChangedCallback;
-            _selectVisualEffectDialog.onSourcePositionDropdownValueChanged += onVisualEffectSourcePositionChangedCallback;
-            _selectVisualEffectDialog.onTargetPositionDropdownValueChanged += onVisualEffectTargetPositionChangedCallback;
-            _visualEffectConfirmButton.onClick.AddListener(onVisualEffectConfirmCallback);
+            _createVisualEffectDialog.onConfirm += onAddAnimationRefCallback;
+            _createVisualEffectDialog.onCancel += onCancelAddAnimationRefCallback;
         }
         private void Update()
         {
@@ -163,12 +164,6 @@ namespace UI
         private void OnGraphEdited()
         {
             updateUndoRedoButton();
-        }
-        private void OnNodeVisualEffectButtonClicked(Node node)
-        {
-            _selectVisualEffectDialogObj.SetActive(true);
-            _visualEffectEditingNodeId = node.id;
-            onOpenNodeVisualEffect?.Invoke(node);
         }
         public async void onCreateActionDefineCallback(string name, string category)
         {
@@ -329,22 +324,13 @@ namespace UI
             displayCreateActionDefineDialog(true);
         }
         #region 特效
-        private void onVisualEffectValueChangedCallback(int index)
+        private void onAddAnimationRefCallback(string key)
         {
-            onVisualEffectChanged?.Invoke(_visualEffectEditingNodeId, index);
+            onAddAnimationRef?.Invoke(key);
         }
-        private void onVisualEffectSourcePositionChangedCallback(int index)
+        private void onCancelAddAnimationRefCallback()
         {
-            onVisualEffectSourcePositionChanged?.Invoke(_visualEffectEditingNodeId, index);
-        }
-        private void onVisualEffectTargetPositionChangedCallback(int index)
-        {
-            onVisualEffectTargetPositionChanged?.Invoke(_visualEffectEditingNodeId, index);
-        }
-        private void onVisualEffectConfirmCallback()
-        {
-            _selectVisualEffectDialogObj.SetActive(false);
-            _visualEffectEditingNodeId = -1;
+            openAnimationRefCreateDialog(false);
         }
         #endregion
         #endregion
@@ -393,14 +379,6 @@ namespace UI
             _createActionDefineDialog.showErrorTip(message);
         }
         #endregion
-        private void initVisualEffectOptions()
-        {
-            var defines = game.anims.getBuiltinAnimationDefines();
-            _selectVisualEffectDialog.setEffects(defines.Select(d => d.name).ToArray());
-            var positions = visualEffectPositions.Select(p => game.lang._(p)).ToArray();
-            _selectVisualEffectDialog.setSourcePositionOptions(positions);
-            _selectVisualEffectDialog.setTargetPositionOptions(positions);
-        }
         private void updatePasteButton()
         {
             _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard);
@@ -482,7 +460,7 @@ namespace UI
                 _actionGraphCtrl.hidePreviewNode();
             }
         }
-        
+
         private async void shortcutsUpdate()
         {
             if (!_actionGraphCtrl.isFocused())
@@ -553,15 +531,11 @@ namespace UI
         }
         #endregion
         #region 
-        public event Action<int, int> onVisualEffectChanged;
-        public event Action<int, int> onVisualEffectSourcePositionChanged;
-        public event Action<int, int> onVisualEffectTargetPositionChanged;
-        public event Action<Node> onOpenNodeVisualEffect;
+        public event Action<string> onAddAnimationRef;
         #endregion
 
         private long _cardPoolId;
         private bool _deleteButtonDirty;
-        private int _visualEffectEditingNodeId;
         [SerializeField]
         ActionNodeGraphCtrl _actionGraphCtrl;
         [SerializeField]
@@ -571,11 +545,9 @@ namespace UI
         [SerializeField]
         CreateActionDefineDialog _createActionDefineDialog;
         [SerializeField]
-        VisualEffectEditorDialog _selectVisualEffectDialog;
+        VisualEffectEditorDialog _createVisualEffectDialog;
         [SerializeField]
-        Button _visualEffectConfirmButton;
-        [SerializeField]
-        GameObject _selectVisualEffectDialogObj;
+        GameObject _createVisualEffectDialogObj;
 
         [Header("按钮")]
         [SerializeField]
