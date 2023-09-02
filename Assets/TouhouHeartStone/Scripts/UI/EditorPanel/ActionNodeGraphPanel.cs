@@ -26,8 +26,7 @@ namespace UI
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
             int nodeKey = -1,
-            bool visualEffect = false,
-            string animRefKey = null)
+            bool visualEffect = false)
         {
             //当对应名称数组长度为0的时候，直接隐藏列表根节点。
             ActionNodeItem actionNodeItem = createNode(posX, posY);
@@ -39,7 +38,7 @@ namespace UI
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.onClickHelpButton += onActionNodeClickHelpButton;
-            actionNodeItem.onAnimationRefKeyChanged += onActionNodeAnimationRefKeyChanged;
+            actionNodeItem.onClickVisualEffectButton += onActionNodeVisualEffectButtonClickedCallback;
 
             actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
             actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
@@ -58,7 +57,6 @@ namespace UI
             actionNodeItem.setObsoleteMsg(obsoleteMsg);
             actionNodeItem.setDocumentKey(nodeKey);
             actionNodeItem.showVisualEffectButton(visualEffect);
-            actionNodeItem.setAnimationRefKey(animRefKey);
             return actionNodeItem;
         }
         /// <summary>
@@ -1188,9 +1186,9 @@ namespace UI
             if (_nodeDocument != null)
                 _nodeDocument.Show(key);
         }
-        private void onActionNodeAnimationRefKeyChanged(ActionNodeItem item, string key)
+        private void onActionNodeVisualEffectButtonClickedCallback(ActionNodeItem item)
         {
-            onNodeAnimationKeyChanged?.Invoke(item, key);
+            onNodeVisualEffectButtonClicked?.Invoke(item);
         }
 
         #region 效果属性
@@ -1468,7 +1466,7 @@ namespace UI
         /// 当取消选择节点
         /// </summary>
         public event Action<ActionNodeItem> onNodeDeselected;
-        public event Action<ActionNodeItem, string> onNodeAnimationKeyChanged;
+        public event Action<ActionNodeItem> onNodeVisualEffectButtonClicked;
 
 
         #region 效果属性

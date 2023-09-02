@@ -24,6 +24,10 @@ namespace UI
             updateUndoRedoButton();
             updateNodeDefines();
             updateNodesList();
+
+            var animations = game.anims.getAllAnimationDefines().Select(d => d.name).Prepend(game.lang._(VISUAL_EFFECT_NAME_NONE)).ToArray();
+            var positions = visualEffectPositions.Select(p => game.lang._(p)).ToArray();
+            initNodeAnimationDialog(animations, positions);
         }
         public void updateNodeDefines()
         {
@@ -71,15 +75,17 @@ namespace UI
             _undoButton.interactable = _actionGraphCtrl.canUndo();
             _redoButton.interactable = _actionGraphCtrl.canRedo();
         }
-        public void openAnimationRefCreateDialog(bool display)
+        public void initNodeAnimationDialog(string[] animations, string[] positions)
         {
-            _createVisualEffectDialogObj.SetActive(display);
-            _createVisualEffectDialog.setKey(string.Empty);
-            _createVisualEffectDialog.setErrorTip(string.Empty);
+            _editVisualEffectDialog.initEffects(animations);
+            _editVisualEffectDialog.initSourcePositionOptions(positions);
+            _editVisualEffectDialog.initTargetPositionOptions(positions);
         }
-        public void setAnimationRefCreateErrorTip(string errorTip)
+        public void setNodeAnimationDialog(int animIndex, int sourcePosition, int targetPosition)
         {
-            _createVisualEffectDialog.setErrorTip(errorTip);
+            _editVisualEffectDialog.setAnimation(animIndex + 1);
+            _editVisualEffectDialog.setSourcePosition(sourcePosition);
+            _editVisualEffectDialog.setTargetPosition(targetPosition);
         }
         #region 私有方法
         #region 生命周期
@@ -95,6 +101,7 @@ namespace UI
             _actionGraphCtrl.OnNodeSelected += OnNodeSelected;
             _actionGraphCtrl.OnNodeDeselected += OnNodeDeselected;
             _actionGraphCtrl.OnGraphEdited += OnGraphEdited;
+            _actionGraphCtrl.OnNodeVisualEffectButtonClicked += OnNodeVisualEffectButtonClicked;
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
@@ -109,8 +116,10 @@ namespace UI
             _nodesPanel.onSearchFilterEndEdit += onSearchFilterEndEdit;
             _nodesPanel.onCreateActionClicked += onCreateActionClicked;
 
-            _createVisualEffectDialog.onConfirm += onAddAnimationRefCallback;
-            _createVisualEffectDialog.onCancel += onCancelAddAnimationRefCallback;
+            _editVisualEffectDialog.onEffectDropdownValueChanged += onAnimationValueChangedCallback;
+            _editVisualEffectDialog.onSourcePositionDropdownValueChanged += onAnimationSourcePositionChangedCallback;
+            _editVisualEffectDialog.onTargetPositionDropdownValueChanged += onAnimationTargetPositionChangedCallback;
+            _editVisualEffectDialog.onConfirm += onAnimationConfirmButtonClickedCallback;
         }
         private void Update()
         {
@@ -164,6 +173,12 @@ namespace UI
         private void OnGraphEdited()
         {
             updateUndoRedoButton();
+        }
+        private void OnNodeVisualEffectButtonClicked(Node node)
+        {
+            _editVisualEffectDialogObj.SetActive(true);
+            _curEditingVisualEffectNode = node;
+            onOpenNodeAnimationDialog?.Invoke(node);
         }
         public async void onCreateActionDefineCallback(string name, string category)
         {
@@ -324,13 +339,22 @@ namespace UI
             displayCreateActionDefineDialog(true);
         }
         #region 特效
-        private void onAddAnimationRefCallback(string key)
+        private void onAnimationValueChangedCallback(int index)
         {
-            onAddAnimationRef?.Invoke(key);
+            onAnimationValueChanged?.Invoke(_curEditingVisualEffectNode, index - 1);
         }
-        private void onCancelAddAnimationRefCallback()
+        private void onAnimationSourcePositionChangedCallback(int index)
         {
-            openAnimationRefCreateDialog(false);
+            onAnimationSourcePositionChanged?.Invoke(_curEditingVisualEffectNode, index);
+        }
+        private void onAnimationTargetPositionChangedCallback(int index)
+        {
+            onAnimationTargetPositionChanged?.Invoke(_curEditingVisualEffectNode, index);
+        }
+        private void onAnimationConfirmButtonClickedCallback()
+        {
+            _editVisualEffectDialogObj.SetActive(false);
+            _curEditingVisualEffectNode = null;
         }
         #endregion
         #endregion
@@ -531,11 +555,15 @@ namespace UI
         }
         #endregion
         #region 
-        public event Action<string> onAddAnimationRef;
+        public event Action<Node> onOpenNodeAnimationDialog;
+        public event Action<Node, int> onAnimationValueChanged;
+        public event Action<Node, int> onAnimationSourcePositionChanged;
+        public event Action<Node, int> onAnimationTargetPositionChanged;
         #endregion
 
         private long _cardPoolId;
         private bool _deleteButtonDirty;
+        private Node _curEditingVisualEffectNode;
         [SerializeField]
         ActionNodeGraphCtrl _actionGraphCtrl;
         [SerializeField]
@@ -545,9 +573,9 @@ namespace UI
         [SerializeField]
         CreateActionDefineDialog _createActionDefineDialog;
         [SerializeField]
-        VisualEffectEditorDialog _createVisualEffectDialog;
+        VisualEffectEditorDialog _editVisualEffectDialog;
         [SerializeField]
-        GameObject _createVisualEffectDialogObj;
+        GameObject _editVisualEffectDialogObj;
 
         [Header("按钮")]
         [SerializeField]
@@ -605,6 +633,8 @@ namespace UI
         public const string EDITOR_ERROR_ACTION_DEFINE_NAME_EMPTY = "请输入动作名称";
 
 
+        [TranslateMsg("特效动画的无特效引用选项")]
+        public const string VISUAL_EFFECT_NAME_NONE = "无";
         [TranslateMsg("特效动画的始末位置选项")]
         public const string VISUAL_EFFECT_POSITION_SELF_MASTER = "己方英雄";
         [TranslateMsg("特效动画的始末位置选项")]

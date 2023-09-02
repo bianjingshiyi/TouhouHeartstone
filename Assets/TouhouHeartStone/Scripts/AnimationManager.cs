@@ -44,6 +44,10 @@ namespace Game
         {
             return builtinAnimationDic.Values.ToArray();
         }
+        public AnimationDefine[] getAllAnimationDefines()
+        {
+            return getBuiltinAnimationDefines();
+        }
         Dictionary<int, AnimationDefine> builtinAnimationDic { get; set; } = new Dictionary<int, AnimationDefine>();
         public MainManager main => getManager<MainManager>();
         [SerializeField]

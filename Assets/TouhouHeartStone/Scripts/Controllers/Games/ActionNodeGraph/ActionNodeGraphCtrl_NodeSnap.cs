@@ -138,8 +138,7 @@ namespace Controllers
                         getNodeOutputViewData(node),
                         define.obsoleteMsg,
                         docKey,
-                        visualEffect,
-                        actionNode.getConst<string>(SkinAnimationRef.NODE_CONST_KEY));
+                        visualEffect);
                 }
             }
         }

@@ -123,12 +123,6 @@ namespace UI
         {
             return _valueList[index].GetComponent<ValueInputField>();
         }
-        public void setAnimationRefKey(string key)
-        {
-            key = key ?? string.Empty;
-            _animRefKeyPopup.setKey(key);
-            onAnimationRefKeyUpdated?.Invoke(key);
-        }
         /// <summary>
         /// 初始化事件名称
         /// </summary>
@@ -324,7 +318,7 @@ namespace UI
         /// <param name="key"></param>
         public void showVisualEffectButton(bool value)
         {
-            _animationRefButtonObj.SetActive(value);
+            _visualEffectButtonObj.SetActive(value);
             SetDirty();
         }
 
@@ -458,10 +452,6 @@ namespace UI
             itemRect.center = itemPos;
             return itemRect;
         }
-        public void notifyAnimationRefKeyChange(string key)
-        {
-            onAnimationRefKeyChanged?.Invoke(this, key);
-        }
         #region 选择
         public void select()
         {
@@ -504,6 +494,7 @@ namespace UI
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
             _warningObj.onClick.AddListener(onClickObsoleteBtn);
             _helpBtn.onClick.AddListener(onClickHelpBtn);
+            _visualEffectButton.onClick.AddListener(onClickVisualEffectButtonCallback);
             _addEffectPropertyItemButton.onClick.AddListener(onClickAddEffectPropertyButtonCallback);
             //增益
             onAwake_Buff();
@@ -635,6 +626,10 @@ namespace UI
         {
             onClickHelpButton?.Invoke(documentKey);
         }
+        private void onClickVisualEffectButtonCallback()
+        {
+            onClickVisualEffectButton?.Invoke(this);
+        }
 
         void IPointerDownHandler.OnPointerDown(PointerEventData eventData)
         {
@@ -688,14 +683,7 @@ namespace UI
         public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         public event Action<ActionNodeItem> onUpdateTransform;
         public event Action<int> onClickHelpButton;
-        /// <summary>
-        /// 通知上层节点图，表示数据被玩家进行更改。
-        /// </summary>
-        public event Action<ActionNodeItem, string> onAnimationRefKeyChanged;
-        /// <summary>
-        /// 通知下层弹窗，表示显示数据需要更新。
-        /// </summary>
-        public event Action<string> onAnimationRefKeyUpdated;
+        public event Action<ActionNodeItem> onClickVisualEffectButton;
 
         #region 效果属性
         /// <summary>
@@ -735,9 +723,9 @@ namespace UI
         [SerializeField]
         Button _helpBtn;
         [SerializeField]
-        GameObject _animationRefButtonObj;
+        GameObject _visualEffectButtonObj;
         [SerializeField]
-        NodeAnimRefKeyPopup _animRefKeyPopup;
+        Button _visualEffectButton;
         [SerializeField]
         GameObject _selectedIndicator;
         [SerializeField]

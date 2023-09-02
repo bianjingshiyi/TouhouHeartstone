@@ -346,7 +346,7 @@ namespace Controllers
             _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
             _ui.onNodeSelected += onNodeSelected;
             _ui.onNodeDeselected += onNodeDeselected;
-            _ui.onNodeAnimationKeyChanged += OnNodeAnimationRefKeyChangedCallback;
+            _ui.onNodeVisualEffectButtonClicked += onNodeVisualEffectButtonClickedCallback;
             //触发
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
@@ -638,13 +638,9 @@ namespace Controllers
         {
             OnNodeDeselected?.Invoke(getActionNode(actionNodeItem));
         }
-        private void OnNodeAnimationRefKeyChangedCallback(ActionNodeItem actionNodeItem, string key)
+        private void onNodeVisualEffectButtonClickedCallback(ActionNodeItem actionNodeItem)
         {
-            var node = getActionNode(actionNodeItem);
-            key = key ?? string.Empty;
-            setNodeConst(node, SkinAnimationRef.NODE_CONST_KEY, key);
-            actionNodeItem.setAnimationRefKey(key);
-            OnEdited();
+            OnNodeVisualEffectButtonClicked?.Invoke(getActionNode(actionNodeItem));
         }
         /// <summary>
         /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
@@ -851,8 +847,7 @@ namespace Controllers
                     getNodeOutputViewData(actionNode),
                     getActionNodeObsoleteMsg(actionNode),
                     nodeKey,
-                    visualEffect,
-                    actionNode.getConst<string>(SkinAnimationRef.NODE_CONST_KEY));
+                    visualEffect);
                 for (int i = 0; i < constsInfo.Length; i++)
                 {
                     var constInfo = constsInfo[i];
@@ -1704,7 +1699,6 @@ namespace Controllers
             if (constViewData == null)
                 return;
             item.setConsts(constViewData);
-            item.setAnimationRefKey(node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY));
 
             // 更新卡牌引用。
             foreach (var constPair in node.consts)
@@ -1796,6 +1790,7 @@ namespace Controllers
         public event Action OnGraphEdited;
         public event Action<Node> OnNodeSelected;
         public event Action<Node> OnNodeDeselected;
+        public event Action<Node> OnNodeVisualEffectButtonClicked;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]

@@ -354,10 +354,6 @@ namespace UI
         {
             _createCustomPropDialog.showErrorTip(message);
         }
-        public void updateAnimationRefs(AnimationRefViewData[] viewDatas, string[] anims, string[] positions)
-        {
-            _animationRefList.update(viewDatas, anims, positions);
-        }
         #region 私有方法
         #region 生命周期
         protected void Awake()
@@ -432,12 +428,6 @@ namespace UI
             _keywordsFoldout.onPropChildValueChanged += onKeywordItemValueChangedCallback;
             _keywordsFoldout.onClickPropAddChildButton += onClickKeywordAddItemButtonCallback;
             _keywordsFoldout.onClickPropRemoveChildButton += onClickKeywordRemoveItemButtonCallback;
-
-            _animationRefList.onAddButtonClicked += onAddAnimationRefButtonClickedCallback;
-            _animationRefList.onAnimationChanged += onAnimationRefAnimationChangedCallback;
-            _animationRefList.onSourcePositionChanged += onAnimationRefSourcePositionChangedCallback;
-            _animationRefList.onTargetPositionChanged += onAnimationRefTargetPositionChangedCallback;
-            _animationRefList.onRemoveButtonClicked += onRemoveAnimationRefButtonClickedCallback;
         }
         #endregion
         #region 事件回调
@@ -769,28 +759,6 @@ namespace UI
         {
             displayPage(_nodesPage, _nodesPageIndicator);
         }
-        #region 特效
-        private void onAddAnimationRefButtonClickedCallback()
-        {
-            onAddAnimationRefButtonClicked?.Invoke();
-        }
-        private void onAnimationRefAnimationChangedCallback(int index, int animationIndex)
-        {
-            onAnimationRefAnimationChanged?.Invoke(index, animationIndex);
-        }
-        private void onAnimationRefSourcePositionChangedCallback(int index, int sourcePosition)
-        {
-            onAnimationRefSourcePositionChanged?.Invoke(index, sourcePosition);
-        }
-        private void onAnimationRefTargetPositionChangedCallback(int index, int targetPosition)
-        {
-            onAnimationRefTargetPositionChanged?.Invoke(index, targetPosition);
-        }
-        private void onRemoveAnimationRefButtonClickedCallback(int index)
-        {
-            onRemoveAnimationRefButtonClicked?.Invoke(index);
-        }
-        #endregion
         #endregion
 
         private void displayPage(GameObject toDisplay, GameObject indicator)
@@ -925,14 +893,6 @@ namespace UI
         public event Action<bool, string, int> onClickPropertyRemoveItemButton;
         #endregion
 
-        #region 特效
-        public event Action onAddAnimationRefButtonClicked;
-        public event Action<int, int> onAnimationRefAnimationChanged;
-        public event Action<int, int> onAnimationRefSourcePositionChanged;
-        public event Action<int, int> onAnimationRefTargetPositionChanged;
-        public event Action<int> onRemoveAnimationRefButtonClicked;
-        #endregion
-
         #endregion
         public Card card => _card;
         [SerializeField]
@@ -1013,8 +973,6 @@ namespace UI
         Button _closeCardButton;
         [SerializeField]
         InputField _tagInputField;
-        [SerializeField]
-        AnimationRefList _animationRefList;
 
         [Header("Pages")]
         [SerializeField]

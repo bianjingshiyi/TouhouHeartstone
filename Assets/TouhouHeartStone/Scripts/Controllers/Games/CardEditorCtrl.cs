@@ -102,6 +102,11 @@ namespace Controllers
             }
             return Task.CompletedTask;
         }
+        public override void hide()
+        {
+            base.hide();
+            cleanUnusedVisualEffects();
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -217,12 +222,10 @@ namespace Controllers
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
 
-            _graphEditorPanelCtrl.onAddAnimationRef += onConfirmAddAnimationRef;
-            _ui.onAddAnimationRefButtonClicked += onAddAnimationRef;
-            _ui.onRemoveAnimationRefButtonClicked += onRemoveAnimationRef;
-            _ui.onAnimationRefAnimationChanged += onVisualEffectChanged;
-            _ui.onAnimationRefSourcePositionChanged += onVisualEffectSourcePositionChanged;
-            _ui.onAnimationRefTargetPositionChanged += onVisualEffectTargetPositionChanged;
+            _graphEditorPanelCtrl.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
+            _graphEditorPanelCtrl.onAnimationValueChanged += onNodeAnimationValueChangedCallback;
+            _graphEditorPanelCtrl.onAnimationSourcePositionChanged += onNodeAnimationSourcePositionChangedCallback;
+            _graphEditorPanelCtrl.onAnimationTargetPositionChanged += onNodeAnimationTargetPositionChangedCallback;
         }
         #endregion
         #region 事件回调
@@ -239,7 +242,6 @@ namespace Controllers
                 _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 _cardSkins.Add(_curCardSkin);
                 updateSkinNames();
-                updateAnimationRefs();
             }
             await setCurSkinIndex(skinIndex);
         }
@@ -289,7 +291,6 @@ namespace Controllers
             string path = targetSkin.imagePath;
             Sprite image = await game.card.loadImage(targetSkin.imagePath, _cardDefine.cardPoolId);
             _ui.setImage(image);
-            updateAnimationRefs();
         }
         /// <summary>
         /// 当用户更改类型
@@ -804,87 +805,75 @@ namespace Controllers
         }
 
         #region 特效
-        private void onAddAnimationRef()
+        private void onOpenNodeAnimationDialogCallback(Node node)
         {
-            _graphEditorPanelCtrl.openAnimationRefCreateDialog(true);
-        }
-        private void onConfirmAddAnimationRef(string key)
-        {
-            if (string.IsNullOrEmpty(key))
+            var defines = game.anims.getAllAnimationDefines();
+            int animIndex = -1;
+            int sourcePosition = 0;
+            int targetPosition = 0;
+            var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+            if (!string.IsNullOrEmpty(key))
             {
-                _graphEditorPanelCtrl.setAnimationRefCreateErrorTip(game.lang._(ANIM_REF_KEY_EMPTY));
-                return;
+                var animRef = _curCardSkin.getAnimRef(key);
+                if (animRef != null)
+                {
+                    var define = defines.FirstOrDefault(d => d.cardPoolId == animRef.animRef.cardPoolId && d.id == animRef.animRef.defineId);
+                    animIndex = Array.IndexOf(defines, define);
+                    sourcePosition = animRef.sourcePosition;
+                    targetPosition = animRef.targetPosition;
+                }
             }
-            var curAnimRef = _curCardSkin.getAnimRef(key);
-            if (curAnimRef != null)
+            _graphEditorPanelCtrl.setNodeAnimationDialog(animIndex, sourcePosition, targetPosition);
+        }
+        private void onNodeAnimationValueChangedCallback(Node node, int index)
+        {
+            var defines = game.anims.getAllAnimationDefines();
+            var animRef = getOrInitNodeAnimationRef(node);
+            if (index < 0)
             {
-                _graphEditorPanelCtrl.setAnimationRefCreateErrorTip(game.lang._(ANIM_REF_KEY_TAKEN));
-                return;
+                animRef.animRef = new DefineReference(0 ,0);
             }
-            _graphEditorPanelCtrl.openAnimationRefCreateDialog(false);
-            var defines = game.anims.getBuiltinAnimationDefines();
-            var defaultDefine = defines[0];
-            var skinAnimRef = new SkinAnimationRef(key, new DefineReference(defaultDefine.cardPoolId, defaultDefine.id));
-            _curCardSkin.addAnimRef(skinAnimRef);
-            updateAnimationRefs();
+            else
+            {
+                var define = defines[index];
+                animRef.animRef = new DefineReference(define.cardPoolId, define.id);
+            }
             MarkCardUnsaved();
         }
-        private void onRemoveAnimationRef(int index)
+        private void onNodeAnimationSourcePositionChangedCallback(Node node, int index)
         {
-            var animRefs = _curCardSkin.getAllAnimRefs();
-            var animRef = animRefs[index];
-            _curCardSkin.removeAnimRef(animRef.key);
-            updateAnimationRefs();
-            MarkCardUnsaved();
-        }
-        private void onVisualEffectChanged(int animIndex, int index)
-        {
-            var animRefs = _curCardSkin.getAllAnimRefs();
-            var animRef = animRefs[animIndex];
-            var defines = game.anims.getBuiltinAnimationDefines();
-            var define = defines[index];
-            animRef.animRef = new DefineReference(define.cardPoolId, define.id);
-            MarkCardUnsaved();
-        }
-        private void onVisualEffectSourcePositionChanged(int animIndex, int index)
-        {
-            var animRefs = _curCardSkin.getAllAnimRefs();
-            var animRef = animRefs[animIndex];
+            var animRef = getOrInitNodeAnimationRef(node);
             animRef.sourcePosition = index;
             MarkCardUnsaved();
         }
-        private void onVisualEffectTargetPositionChanged(int animIndex, int index)
+        private void onNodeAnimationTargetPositionChangedCallback(Node node, int index)
         {
-            var animRefs = _curCardSkin.getAllAnimRefs();
-            var animRef = animRefs[animIndex];
+            var animRef = getOrInitNodeAnimationRef(node);
             animRef.targetPosition = index;
             MarkCardUnsaved();
         }
         #endregion
 
         #endregion
-        private void updateAnimationRefs()
+        private SkinAnimationRef getOrInitNodeAnimationRef(Node node)
         {
-            var defines = game.anims.getBuiltinAnimationDefines();
-            var animRefs = _curCardSkin.getAllAnimRefs();
-            AnimationRefViewData[] viewDatas = new AnimationRefViewData[animRefs.Length];
-            for (int i = 0; i < animRefs.Length; i++)
+            var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+            if (string.IsNullOrEmpty(key))
             {
-                var animRef = animRefs[i];
-                var define = defines.FirstOrDefault(d => d.cardPoolId == animRef.animRef.cardPoolId && d.id == animRef.animRef.defineId);
-                var animIndex = Array.IndexOf(defines, define);
-                var viewData = new AnimationRefViewData()
-                {
-                    key = animRef.key,
-                    animationIndex = animIndex,
-                    sourcePosition = animRef.sourcePosition,
-                    targetPosition = animRef.targetPosition
-                };
-                viewDatas[i] = viewData;
+                var animRefs = _curCardSkin.getAllAnimRefs();
+                key = $"AnimRef{animRefs.Length}_{node.id}";
+                node.setConst(SkinAnimationRef.NODE_CONST_KEY, key);
             }
-            var anims = defines.Select(d => d.name).ToArray();
-            var positions = GraphEditorPanelCtrl.visualEffectPositions;
-            _ui.updateAnimationRefs(viewDatas, anims, positions);
+            var animRef = _curCardSkin.getAnimRef(key);
+            if (animRef == null)
+            {
+                var defines = game.anims.getAllAnimationDefines();
+                var defaultDefine = defines.FirstOrDefault();
+                var defRef = new DefineReference(defaultDefine?.cardPoolId ?? 0, defaultDefine?.id ?? 1);
+                animRef = new SkinAnimationRef(key, defRef);
+                _curCardSkin.addAnimRef(animRef);
+            }
+            return animRef;
         }
         private CardDefine[] getSelectableCharacters()
         {
@@ -963,6 +952,20 @@ namespace Controllers
         #endregion
 
 
+        private void cleanUnusedVisualEffects()
+        {
+            var allAnimRefs = _curCardSkin.getAllAnimRefs();
+            foreach (var animRef in allAnimRefs)
+            {
+                var key = animRef.key;
+                var keys = _cardDefine.getGeneratedEffects().SelectMany(e => e.graph.nodes).Select(n => n.getConst<string>(SkinAnimationRef.NODE_CONST_KEY));
+                var hasKey = keys.Contains(key);
+                if (!hasKey)
+                {
+                    _curCardSkin.removeAnimRef(key);
+                }
+            }
+        }
         private void updateSkinNames()
         {
             CardSkinData[] skins = getCurrentCardSkins();
@@ -992,7 +995,6 @@ namespace Controllers
             _ui.setDesc(skin.desc);
             Sprite image = await game.card.loadImage(skin.imagePath, _cardDefine.cardPoolId);
             _ui.setImage(image);
-            updateAnimationRefs();
         }
         private int getSkinCount()
         {

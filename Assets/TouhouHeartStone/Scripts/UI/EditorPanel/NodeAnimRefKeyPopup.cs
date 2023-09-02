@@ -14,17 +14,11 @@ namespace UI
         private void Awake()
         {
             _inputField.onEndEdit.AddListener(onEndEditCallback);
-            _node.onAnimationRefKeyUpdated += onAnimationRefKeyUpdatedCallback;
         }
         #endregion
         #region 事件回调
         private void onEndEditCallback(string text)
         {
-            _node.notifyAnimationRefKeyChange(text);
-        }
-        private void onAnimationRefKeyUpdatedCallback(string key)
-        {
-            _inputField.SetTextWithoutNotify(key);
         }
         #endregion
         #endregion

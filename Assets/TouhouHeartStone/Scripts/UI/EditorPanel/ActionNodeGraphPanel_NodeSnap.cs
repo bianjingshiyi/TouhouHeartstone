@@ -15,8 +15,7 @@ namespace UI
             PortItemInfo[] outputViewData,
             string obsoleteMsg = null,
             int docKey = -1,
-            bool visualEffect = false,
-            string animRefKey = null)
+            bool visualEffect = false)
         {
             ActionNodeItem actionNodeItem = _simulationNode;
 
@@ -29,7 +28,6 @@ namespace UI
             actionNodeItem.setObsoleteMsg(obsoleteMsg);
             actionNodeItem.setDocumentKey(docKey);
             actionNodeItem.showVisualEffectButton(visualEffect);
-            actionNodeItem.setAnimationRefKey(animRefKey);
         }
         public void setPreviewEventNode(string nodeName,
             PortItemInfo[] inputViewData,
