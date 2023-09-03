@@ -829,18 +829,7 @@ namespace TouhouHeartstone
                 results.AddRange(effects.Where(e => e.isDeathRattle())
                     .Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
             }
-            return results.Where(e =>
-            {
-                if (e.effect is DeathRattle rattle)
-                {
-                    return !rattle.isDisabled(game, card, e.buff);
-                }
-                else if (e.effect is GeneratedEffect gen)
-                {
-                    return !gen.isDisabled(game, card, e.buff);
-                }
-                return false;
-            }).ToArray();
+            return results.ToArray();
         }
         public static (IEffect effect, Buff buff)[] getAuras(this Card card, IGame game)
         {

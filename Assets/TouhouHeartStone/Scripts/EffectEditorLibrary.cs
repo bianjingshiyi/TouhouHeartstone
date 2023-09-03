@@ -151,7 +151,7 @@ namespace Game
                 flow.EnterScope();
                 flow.setValue(repeatTimePort, times);
                 await game.runActions(flow, action);
-                if (condition != null && await condition.getValue(flow))
+                if (condition.outputPort != null && await condition.getValue(flow))
                 {
                     finished = true;
                 }
@@ -566,7 +566,7 @@ namespace Game
             bool filterFunc(Card c)
             {
                 bool valid = true;
-                if (filter != null)
+                if (filter.outputPort != null)
                 {
                     var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
                     flow.EnterScope();
@@ -1184,7 +1184,7 @@ namespace Game
 
 
                 bool result = true;
-                if (condition != null)
+                if (condition.outputPort != null)
                 {
                     flow.EnterScope();
                     result = await condition.getValue(flow);
@@ -1295,7 +1295,7 @@ namespace Game
             {
                 flow.setValue(elementPort, obj);
                 object value = null;
-                if (condition != null)
+                if (condition.outputPort != null)
                 {
                     flow.EnterScope();
                     value = condition.getValue(flow).Result;
