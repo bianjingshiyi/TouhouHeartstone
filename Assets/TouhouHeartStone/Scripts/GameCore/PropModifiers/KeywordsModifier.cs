@@ -54,7 +54,7 @@ namespace TouhouHeartstone
             await card.updateConsumableKeywords(game);
             return arg;
         }
-        public override string[] calc(IGame game, Card card, string[] value)
+        public override string[] calcGeneric(IGame game, Card card, string[] value)
         {
             switch (modifyType)
             {

@@ -14,9 +14,10 @@ namespace UI
             _propertyTypeDropdown.ClearOptions();
             _propertyTypeDropdown.AddOptions(new List<string>(propertyTypes));
         }
-        public void updateValues(int propertyTypeIndex, string[] modifyTypes, int modifyTypeIndex, ActionNodeValueInfo valueInfo)
+        public void updateValues(int propertyTypeIndex, string customPropName, string[] modifyTypes, int modifyTypeIndex, ActionNodeValueInfo valueInfo)
         {
             _propertyTypeDropdown.SetValueWithoutNotify(propertyTypeIndex);
+            _customPropertyField.SetTextWithoutNotify(customPropName);
             _modifyTypeDropdown.ClearOptions();
             _modifyTypeDropdown.AddOptions(new List<string>(modifyTypes));
             _modifyTypeDropdown.SetValueWithoutNotify(modifyTypeIndex);
@@ -26,11 +27,16 @@ namespace UI
         {
             _valueField.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
         }
+        public void setCustomPropertyFieldVisible(bool visible)
+        {
+            _customPropertyField.gameObject.SetActive(visible);
+        }
         #endregion
         #region 私有方法
         protected void Awake()
         {
             _propertyTypeDropdown.onValueChanged.AddListener(onPropertyDropdownValueChangedCallback);
+            _customPropertyField.onValueChanged.AddListener(onCustomPropFieldValueChangedCallback);
             _modifyTypeDropdown.onValueChanged.AddListener(onModifyDropdownValueChangedCallback);
             _valueField.onValueChanged += onValueFieldValueChangedCallback;
             _removeButton.onClick.AddListener(onClickRemoveButtonCallback);
@@ -38,6 +44,10 @@ namespace UI
         private void onPropertyDropdownValueChangedCallback(int index)
         {
             onPropertyDropdownValueChanged?.Invoke(this, index);
+        }
+        private void onCustomPropFieldValueChangedCallback(string value)
+        {
+            onCustomPropFieldValueChanged?.Invoke(this, value);
         }
         private void onModifyDropdownValueChangedCallback(int index)
         {
@@ -54,6 +64,7 @@ namespace UI
         #endregion
         #region 事件
         public event Action<PropertyModifierListItem, int> onPropertyDropdownValueChanged;
+        public event Action<PropertyModifierListItem, string> onCustomPropFieldValueChanged;
         public event Action<PropertyModifierListItem, int> onModifyDropdownValueChanged;
         public event Action<PropertyModifierListItem, object> onValueFieldValueChanged;
         public event Action<PropertyModifierListItem> onClickRemoveButton;
@@ -61,6 +72,8 @@ namespace UI
         #region 属性字段
         [SerializeField]
         Dropdown _propertyTypeDropdown;
+        [SerializeField]
+        InputField _customPropertyField;
         [SerializeField]
         Dropdown _modifyTypeDropdown;
         [SerializeField]

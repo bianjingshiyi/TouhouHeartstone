@@ -6,6 +6,7 @@ using BJSYGameCore;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -97,6 +98,7 @@ namespace Controllers
             _ui.onAddModifier += onAddModifier;
             _ui.OnRemoveModifier += onRemoveModifier;
             _ui.OnChangeModifierProperty += onChangeModifierProperty;
+            _ui.OnChangeModifierCustomPropName += onChangeModifierCustomPropName;
             _ui.OnChangeModifierOperator += onChangeModifierOperator;
             _ui.OnChangeModifierValue += onChangeModifierValue;
 
@@ -297,6 +299,16 @@ namespace Controllers
             updateModifiers();
             markBuffUnsaved();
         }
+        private void onChangeModifierCustomPropName(int modifierIndex, string name)
+        {
+            PropModifier propModifier = _buffDefine.propModifierList[modifierIndex];
+            if (propModifier is CustomPropertyModifier customPropModifier)
+            {
+                customPropModifier.propertyName = name;
+                updateModifiers();
+                markBuffUnsaved();
+            }
+        }
         private void onChangeModifierOperator(int modifierIndex, int operatorIndex)
         {
             setModifyTypeByIndex(_buffDefine.propModifierList[modifierIndex], operatorIndex);
@@ -319,6 +331,10 @@ namespace Controllers
                 else if (propModifier is KeywordsModifier keywordsModifier)
                 {
                     keywordsModifier.value = ((KeywordCollection)value).ToArray();
+                }
+                else if (propModifier is CustomPropertyModifier customPropModifier)
+                {
+                    customPropModifier.value = value;
                 }
             }
             updateModifiers();
@@ -431,6 +447,7 @@ namespace Controllers
             {
                 var propModifier = _buffDefine.propModifierList[i];
                 int typeIndex = getPropertyModifierIndex(propModifier);
+                var customPropertyName = getPropertyModifierCustomPropName(propModifier);
                 var propertyTypes = getBuffDefinePropertyTypes();
                 var modifyTypes = getBuffDefineModifyTypes(typeIndex < 0 ? string.Empty : propertyTypes[typeIndex]);
                 var modifyTypeIndex = getModifyTypeIndex(propModifier);
@@ -439,6 +456,8 @@ namespace Controllers
                 infos[i] = new BuffModifierInfo()
                 {
                     propertyTypeIndex = typeIndex,
+                    isCustomProperty = propModifier is CustomPropertyModifier,
+                    customPropertyName = customPropertyName,
                     modifyTypes = modifyTypes,
                     modifyTypeIndex = modifyTypeIndex,
                     valueType = valueType,
@@ -491,6 +510,17 @@ namespace Controllers
                 else if (propModifier.relatedPropName != null)
                     return 2;
                 else if (intPropModifier.isSet)
+                    return 1;
+                else
+                    return 0;
+            }
+            else if (propModifier is CustomPropertyModifier customPropModifier)
+            {
+                if (customPropModifier.relatedPropName != null && customPropModifier.isSet)
+                    return 3;
+                else if (customPropModifier.relatedPropName != null)
+                    return 2;
+                else if (customPropModifier.isSet)
                     return 1;
                 else
                     return 0;
@@ -555,6 +585,29 @@ namespace Controllers
                     intPropModifier.isSet = false;
                 }
             }
+            else if (propModifier is CustomPropertyModifier customPropModifier)
+            {
+                if (index == 3)
+                {
+                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
+                    customPropModifier.isSet = true;
+                }
+                else if (index == 2)
+                {
+                    propModifier.relatedPropName = game.langManager.getString(StringTable.EDITOR_ACTIONGRAPH_BUFF_PROP_NAME_DEFAULT);
+                    customPropModifier.isSet = false;
+                }
+                else if (index == 1)
+                {
+                    propModifier.relatedPropName = null;
+                    customPropModifier.isSet = true;
+                }
+                else
+                {
+                    propModifier.relatedPropName = null;
+                    customPropModifier.isSet = false;
+                }
+            }
         }
         private ActionNodeValueType getPropModifierValueType(PropModifier propModifier)
         {
@@ -576,6 +629,8 @@ namespace Controllers
                     return ActionNodeValueType.keywords;
                 else if (propModifier is SpellDamageModifier)
                     return ActionNodeValueType.integer;
+                else if (propModifier is CustomPropertyModifier)
+                    return ActionNodeValueType.integer;
                 throw new NotImplementedException();
             }
         }
@@ -590,6 +645,8 @@ namespace Controllers
         }
         private PropModifier createPropertyModifierByIndex(int index)
         {
+            if (index == 6)
+                return new CustomPropertyModifier(string.Empty, 0);
             if (index == 5)
                 return new SpellDamageModifier(0);
             if (index == 4)
@@ -604,6 +661,8 @@ namespace Controllers
         }
         private int getPropertyModifierIndex(PropModifier propModifier)
         {
+            if (propModifier is CustomPropertyModifier)
+                return 6;
             if (propModifier is SpellDamageModifier)
                 return 5;
             if (propModifier is KeywordsModifier)
@@ -615,6 +674,12 @@ namespace Controllers
             if (propModifier is AttackModifier)
                 return 1;
             return 0;
+        }
+        private string getPropertyModifierCustomPropName(PropModifier propModifier)
+        {
+            if (propModifier is CustomPropertyModifier customModifier)
+                return customModifier.propertyName;
+            return string.Empty;
         }
         #endregion
         protected override void setUIEffects(string[] names, int activeIndex)
@@ -656,6 +721,8 @@ namespace Controllers
         [SerializeField]
         GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
+        [TranslateMsg("游戏中卡牌的自定义属性的名称")]
+        public const string GAME_CARD_PROP_NAME_CUSTOM_PROPERTY = "自定义属性";
         [TranslateMsg("尝试删除增益的警告")]
         public const string EDITOR_WARNING_DELETE_BUFF = "确认要删除这个增益吗？";
         [TranslateMsg("增益编辑器/标题")]
@@ -677,6 +744,7 @@ namespace Controllers
             StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE,
             StringTable.GAME_CARD_PROP_NAME_KEYWORDS,
             StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE,
+            GAME_CARD_PROP_NAME_CUSTOM_PROPERTY,
         };
         public static string[] intModifierTypes = new string[]
         {

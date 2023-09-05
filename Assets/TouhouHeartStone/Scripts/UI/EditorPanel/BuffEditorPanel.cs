@@ -39,13 +39,15 @@ namespace UI
                     type = info.valueType, 
                     value = info.value
                 };
-                item.updateValues(info.propertyTypeIndex, info.modifyTypes, info.modifyTypeIndex, valueInfo);
+                item.updateValues(info.propertyTypeIndex, info.customPropertyName, info.modifyTypes, info.modifyTypeIndex, valueInfo);
+                item.setCustomPropertyFieldVisible(info.isCustomProperty);
             },
             rect =>
             {
                 var item = rect.GetComponent<PropertyModifierListItem>();
                 item.onClickRemoveButton += onClickRemoveModifierButton;
                 item.onPropertyDropdownValueChanged += onModifierPropertyChanged;
+                item.onCustomPropFieldValueChanged += onModifierCustomPropNameChanged;
                 item.onModifyDropdownValueChanged += onModifierOperatorChanged;
                 item.onValueFieldValueChanged += onModifierValueChanged;
             },
@@ -54,6 +56,7 @@ namespace UI
                 var item = rect.GetComponent<PropertyModifierListItem>();
                 item.onClickRemoveButton -= onClickRemoveModifierButton;
                 item.onPropertyDropdownValueChanged -= onModifierPropertyChanged;
+                item.onCustomPropFieldValueChanged -= onModifierCustomPropNameChanged;
                 item.onModifyDropdownValueChanged -= onModifierOperatorChanged;
                 item.onValueFieldValueChanged -= onModifierValueChanged;
             }
@@ -281,6 +284,10 @@ namespace UI
         {
             OnChangeModifierProperty?.Invoke(_propertyModifierList.IndexOf(item.transform as RectTransform), propertyIndex);
         }
+        private void onModifierCustomPropNameChanged(PropertyModifierListItem item, string name)
+        {
+            OnChangeModifierCustomPropName?.Invoke(_propertyModifierList.IndexOf(item.transform as RectTransform), name);
+        }
         private void onModifierOperatorChanged(PropertyModifierListItem item, int operatorIndex)
         {
             OnChangeModifierOperator?.Invoke(_propertyModifierList.IndexOf(item.transform as RectTransform), operatorIndex);
@@ -375,6 +382,7 @@ namespace UI
         public event Action<int> OnRemoveModifier;
         public event Action onAddModifier;
         public event Action<int, int> OnChangeModifierProperty;
+        public event Action<int, string> OnChangeModifierCustomPropName;
         public event Action<int, int> OnChangeModifierOperator;
         public event Action<int, object> OnChangeModifierValue;
         #endregion
@@ -482,6 +490,8 @@ namespace UI
     public struct BuffModifierInfo
     {
         public int propertyTypeIndex;
+        public bool isCustomProperty;
+        public string customPropertyName;
         public string[] modifyTypes;
         public int modifyTypeIndex;
         public ActionNodeValueType valueType;
