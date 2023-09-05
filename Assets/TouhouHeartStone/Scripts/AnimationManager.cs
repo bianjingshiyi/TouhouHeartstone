@@ -19,10 +19,14 @@ namespace Game
         /// <returns></returns>
         public void loadBuiltinAnimations()
         {
-            foreach (var effect in builtinEffectList)
+            for (int i = 0; i < builtinEffectList.Length; i++)
             {
+                var effect = builtinEffectList[i];
+                if (effect == null)
+                    continue;
                 var define = effect.toAnimationDefine();
-                builtinAnimationDic.Add(effect.id, define);
+                define.id = i + 1;
+                builtinAnimationDic.Add(define.id, define);
             }
         }
         public AnimationDefine getAnimationDefine(ICardPoolReference poolRef, int id)

@@ -1488,7 +1488,7 @@ namespace TouhouHeartstone
             });
             return eventArg;
         }
-        public class AttackEventArg : EventArg, IDescribableEventArg, ITargetEventArg
+        public class AttackEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -1498,9 +1498,9 @@ namespace TouhouHeartstone
             {
                 return new ICard[] { target };
             }
-            ICard ITargetEventArg.getTarget()
+            ICard ICardEventArg.getCard()
             {
-                return target;
+                return card;
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -1843,7 +1843,7 @@ namespace TouhouHeartstone
             return cards.damage(game, source, value);
 
         }
-        public class DamageEventArg : EventArg, IDescribableEventArg, ITargetEventArg
+        public class DamageEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             public Card target
             {
@@ -1884,7 +1884,7 @@ namespace TouhouHeartstone
             {
                 return new ICard[] { target };
             }
-            ICard ITargetEventArg.getTarget()
+            ICard ICardEventArg.getCard()
             {
                 return target;
             }
@@ -2005,7 +2005,7 @@ namespace TouhouHeartstone
             });
 
         }
-        public class HealEventArg : EventArg, IDescribableEventArg, ITargetEventArg
+        public class HealEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
@@ -2017,7 +2017,7 @@ namespace TouhouHeartstone
             {
                 return null;
             }
-            ICard ITargetEventArg.getTarget()
+            ICard ICardEventArg.getCard()
             {
                 return card;
             }
@@ -2636,9 +2636,5 @@ namespace TouhouHeartstone
             if (isreset) { await card.resetCard(game); }//卡牌重置
             return eventArg;
         }
-    }
-    public interface ITargetEventArg : IEventArg
-    {
-        ICard getTarget();
     }
 }

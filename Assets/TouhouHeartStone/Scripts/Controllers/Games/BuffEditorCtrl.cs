@@ -112,8 +112,7 @@ namespace Controllers
 
             _graphEditorPanelCtrl.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
             _graphEditorPanelCtrl.onAnimationValueChanged += onNodeAnimationValueChangedCallback;
-            _graphEditorPanelCtrl.onAnimationSourcePositionChanged += onNodeAnimationSourcePositionChangedCallback;
-            _graphEditorPanelCtrl.onAnimationTargetPositionChanged += onNodeAnimationTargetPositionChangedCallback;
+            _graphEditorPanelCtrl.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
         }
         #endregion
         #region 事件回调
@@ -294,21 +293,18 @@ namespace Controllers
         {
             var defines = game.anims.getAllAnimationDefines();
             int animIndex = -1;
-            int sourcePosition = 0;
-            int targetPosition = 0;
             var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+            SkinAnimationRef animRef = null;
             if (!string.IsNullOrEmpty(key))
             {
-                var animRef = _curBuffSkin.getAnimRef(key);
+                animRef = _curBuffSkin.getAnimRef(key);
                 if (animRef != null)
                 {
                     var define = defines.FirstOrDefault(d => d.cardPoolId == animRef.animRef.cardPoolId && d.id == animRef.animRef.defineId);
                     animIndex = Array.IndexOf(defines, define);
-                    sourcePosition = animRef.sourcePosition;
-                    targetPosition = animRef.targetPosition;
                 }
             }
-            _graphEditorPanelCtrl.setNodeAnimationDialog(animIndex, sourcePosition, targetPosition);
+            _graphEditorPanelCtrl.setNodeAnimationDialog(animIndex, new VisualEffectDialogInfo(animRef));
         }
         private void onNodeAnimationValueChangedCallback(Node node, int index)
         {
@@ -325,16 +321,10 @@ namespace Controllers
             }
             markBuffUnsaved();
         }
-        private void onNodeAnimationSourcePositionChangedCallback(Node node, int index)
+        private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
         {
             var animRef = getOrInitNodeAnimationRef(node);
-            animRef.sourcePosition = index;
-            markBuffUnsaved();
-        }
-        private void onNodeAnimationTargetPositionChangedCallback(Node node, int index)
-        {
-            var animRef = getOrInitNodeAnimationRef(node);
-            animRef.targetPosition = index;
+            info.update(animRef);
             markBuffUnsaved();
         }
         #endregion

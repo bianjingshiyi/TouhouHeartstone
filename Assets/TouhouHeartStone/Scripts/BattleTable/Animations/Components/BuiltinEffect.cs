@@ -6,13 +6,12 @@ namespace Game.Animations
     {
         public UnityAnimationDefine toAnimationDefine()
         {
-            var anim = new UnityAnimationDefine(0, id, defineName);
+            var anim = new UnityAnimationDefine(0, 0, defineName);
             anim.duration = duration;
             anim.blockTime = blockTime;
             anim.prefab = GetComponent<TableEffect>();
             return anim;
         }
-        public int id;
         public string defineName;
         public float duration;
         public float blockTime;

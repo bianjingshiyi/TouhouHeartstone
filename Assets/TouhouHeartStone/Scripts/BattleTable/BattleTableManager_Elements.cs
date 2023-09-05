@@ -767,18 +767,18 @@ namespace Game.BattleTable
         #endregion
 
         #region 特效
-        public TableEffect createEffect(DefineReference defRef, Transform srcTransform, Transform destTransform = null)
+        public TableEffect createEffect(DefineReference defRef, VisualEffectInfo info)
         {
             var define = gameManager.getAnimationDefine(defRef);
-            return createEffect(define, srcTransform, destTransform);
+            return createEffect(define, info);
         }
-        public TableEffect createEffect(AnimationDefine animDef, Transform srcTransform, Transform destTransform = null)
+        public TableEffect createEffect(AnimationDefine animDef, VisualEffectInfo info)
         {
             if (animDef == null)
                 return null;
             var effect = animDef.createEffect(this, table.EffectsParent);
             if (effect)
-                effect.init(this, animDef, srcTransform, destTransform);
+                effect.init(this, animDef, info);
             return effect;
         }
         public bool removeEffect(TableEffect effect)

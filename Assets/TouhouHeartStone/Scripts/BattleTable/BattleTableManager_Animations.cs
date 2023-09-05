@@ -125,7 +125,7 @@ namespace Game.BattleTable
             var targetCard = getEventSkinAnimCard(effectTriggerArg, arg, skinAnimRef.targetPosition);
             if (animationDef != null)
             {
-                addAnim(new GameTableAnim(animationDef, sourceCard, targetCard));
+                addAnim(new GameTableAnim(animationDef, arg, sourceCard, targetCard));
             }
         }
         public EffectTriggerEventArg getEffectEventTriggerArg(IEventArg arg)
@@ -187,9 +187,9 @@ namespace Game.BattleTable
                 case VisualEffectPosition.THIS_CARD:
                     return effectArg.card;
                 case VisualEffectPosition.TARGET_CARD:
-                    if (arg is ITargetEventArg targetEventArg)
+                    if (arg is ICardEventArg targetEventArg)
                     {
-                        return targetEventArg.getTarget() as Card;
+                        return targetEventArg.getCard() as Card;
                     }
                     break;
             }

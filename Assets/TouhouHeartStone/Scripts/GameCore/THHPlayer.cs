@@ -1175,7 +1175,7 @@ namespace TouhouHeartstone
 
         }
 
-        public class ActiveEventArg : EventArg, IDescribableEventArg, ITargetEventArg
+        public class ActiveEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             public override EventVariableInfo[] getBeforeEventVarInfos()
             {
@@ -1222,9 +1222,9 @@ namespace TouhouHeartstone
             {
                 return targets.OfType<Card>().ToArray();
             }
-            ICard ITargetEventArg.getTarget()
+            ICard ICardEventArg.getCard()
             {
-                return targets.OfType<Card>().FirstOrDefault();
+                return card;
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {

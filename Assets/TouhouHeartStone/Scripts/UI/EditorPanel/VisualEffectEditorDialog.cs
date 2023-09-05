@@ -24,6 +24,11 @@ namespace UI
             _targetPositionDropdown.ClearOptions();
             _targetPositionDropdown.AddOptions(new List<string>(options));
         }
+        public void setVisualEffectInfo(VisualEffectDialogInfo info)
+        {
+            setSourcePosition(info.sourcePosition);
+            setTargetPosition(info.targetPosition);
+        }
         public void setAnimation(int index)
         {
             _effectDropdown.SetValueWithoutNotify(index);
@@ -51,21 +56,28 @@ namespace UI
         }
         private void OnSourcePositionDropdownValueChangedCallback(int value)
         {
-            onSourcePositionDropdownValueChanged?.Invoke(value);
+            onPropValueChanged?.Invoke(toInfo());
         }
         private void OnTargetPositionDropdownValueChangedCallback(int value)
         {
-            onTargetPositionDropdownValueChanged?.Invoke(value);
+            onPropValueChanged?.Invoke(toInfo());
         }
         private void OnConfirmCallback()
         {
             onConfirm?.Invoke();
         }
+        private VisualEffectDialogInfo toInfo()
+        {
+            return new VisualEffectDialogInfo()
+            {
+                sourcePosition = _sourcePositionDropdown.value,
+                targetPosition = _targetPositionDropdown.value,
+            };
+        }
         #endregion
         #region 事件
         public event Action<int> onEffectDropdownValueChanged;
-        public event Action<int> onSourcePositionDropdownValueChanged;
-        public event Action<int> onTargetPositionDropdownValueChanged;
+        public event Action<VisualEffectDialogInfo> onPropValueChanged;
         public event Action onConfirm;
         #endregion
         #region 属性字段
@@ -78,5 +90,31 @@ namespace UI
         [SerializeField]
         private Button _confirmButton;
         #endregion
+    }
+    public class VisualEffectDialogInfo
+    {
+        public VisualEffectDialogInfo()
+        {
+        }
+        public VisualEffectDialogInfo(SkinAnimationRef animRef)
+        {
+            if (animRef != null)
+            {
+                sourcePosition = animRef.sourcePosition;
+                targetPosition = animRef.targetPosition;
+            }
+            else
+            {
+                sourcePosition = 0;
+                targetPosition = 0;
+            }
+        }
+        public void update(SkinAnimationRef animRef)
+        {
+            animRef.sourcePosition = sourcePosition;
+            animRef.targetPosition = targetPosition;
+        }
+        public int sourcePosition;
+        public int targetPosition;
     }
 }

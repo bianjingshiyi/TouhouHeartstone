@@ -5,13 +5,13 @@ namespace Game.Animations
 {
     public class TableEffect : MonoBehaviour
     {
-        public virtual void init(BattleTableManager table, AnimationDefine define, Transform sourceTransform, Transform destTransform)
+        public virtual void init(BattleTableManager table, AnimationDefine define, VisualEffectInfo info)
         {
             _table = table;
-            _srcTransform = sourceTransform;
+            _srcTransform = info.srcTransform;
             if (_srcTransform)
                 transform.position = _srcTransform.position;
-            _destTransform = destTransform;
+            _destTransform = info.destTransform;
             _duration = define.duration;
             _blockTime = define.blockTime;
         }
@@ -53,5 +53,10 @@ namespace Game.Animations
         protected float _duration;
         protected float _blockTime;
         protected BattleTableManager _table;
+    }
+    public class VisualEffectInfo
+    {
+        public Transform srcTransform;
+        public Transform destTransform;
     }
 }

@@ -81,11 +81,10 @@ namespace UI
             _editVisualEffectDialog.initSourcePositionOptions(positions);
             _editVisualEffectDialog.initTargetPositionOptions(positions);
         }
-        public void setNodeAnimationDialog(int animIndex, int sourcePosition, int targetPosition)
+        public void setNodeAnimationDialog(int animIndex, VisualEffectDialogInfo info)
         {
             _editVisualEffectDialog.setAnimation(animIndex + 1);
-            _editVisualEffectDialog.setSourcePosition(sourcePosition);
-            _editVisualEffectDialog.setTargetPosition(targetPosition);
+            _editVisualEffectDialog.setVisualEffectInfo(info);
         }
         #region 私有方法
         #region 生命周期
@@ -117,8 +116,7 @@ namespace UI
             _nodesPanel.onCreateActionClicked += onCreateActionClicked;
 
             _editVisualEffectDialog.onEffectDropdownValueChanged += onAnimationValueChangedCallback;
-            _editVisualEffectDialog.onSourcePositionDropdownValueChanged += onAnimationSourcePositionChangedCallback;
-            _editVisualEffectDialog.onTargetPositionDropdownValueChanged += onAnimationTargetPositionChangedCallback;
+            _editVisualEffectDialog.onPropValueChanged += onAnimationPropChangedCallback;
             _editVisualEffectDialog.onConfirm += onAnimationConfirmButtonClickedCallback;
         }
         private void Update()
@@ -343,13 +341,9 @@ namespace UI
         {
             onAnimationValueChanged?.Invoke(_curEditingVisualEffectNode, index - 1);
         }
-        private void onAnimationSourcePositionChangedCallback(int index)
+        private void onAnimationPropChangedCallback(VisualEffectDialogInfo info)
         {
-            onAnimationSourcePositionChanged?.Invoke(_curEditingVisualEffectNode, index);
-        }
-        private void onAnimationTargetPositionChangedCallback(int index)
-        {
-            onAnimationTargetPositionChanged?.Invoke(_curEditingVisualEffectNode, index);
+            onAnimationPropChanged?.Invoke(_curEditingVisualEffectNode, info);
         }
         private void onAnimationConfirmButtonClickedCallback()
         {
@@ -557,8 +551,7 @@ namespace UI
         #region 
         public event Action<Node> onOpenNodeAnimationDialog;
         public event Action<Node, int> onAnimationValueChanged;
-        public event Action<Node, int> onAnimationSourcePositionChanged;
-        public event Action<Node, int> onAnimationTargetPositionChanged;
+        public event Action<Node, VisualEffectDialogInfo> onAnimationPropChanged;
         #endregion
 
         private long _cardPoolId;
