@@ -172,6 +172,26 @@ namespace Game
         public const int Except = Type_Function + Category_Collection + 11;    // 集合相减
         public const int Where = Type_Function + Category_Collection + 12;    // 筛选
         public const int OrderBy = Type_Function + Category_Collection + 13;    // 排序
+        public const int Sum = Type_Function + Category_Collection + 14; // 求和
+        public const int Min = Type_Function + Category_Collection + 15; // 获取最小值
+        public const int Max = Type_Function + Category_Collection + 16; // 获取最大值
+        public const int Average = Type_Function + Category_Collection + 17; // 获取平均值
+        public const int Concat = Type_Function + Category_Collection + 18; // 集合相加
+        public const int Union = Type_Function + Category_Collection + 19; // 获取并集
+        public const int Intersect = Type_Function + Category_Collection + 20; // 获取交集
+        public const int IsSubset = Type_Function + Category_Collection + 21; // 是否是某集合的子集
+        public const int All = Type_Function + Category_Collection + 22; // 是否所有元素都满足条件
+        public const int Any = Type_Function + Category_Collection + 23; // 是否有任意元素满足条件
+        public const int First = Type_Function + Category_Collection + 24; // 获取第一个元素
+        public const int Last = Type_Function + Category_Collection + 25; // 获取最后一个元素
+        public const int Take = Type_Function + Category_Collection + 26; // 获取集合内前X个元素
+        public const int Skip = Type_Function + Category_Collection + 27; // 获取集合内前X个元素之外的元素
+        public const int RandomTake = Type_Function + Category_Collection + 28; // 获取随机X个元素
+        public const int TakeWhile = Type_Function + Category_Collection + 29; // 获取集合内结果直到条件不成立
+        public const int SkipWhile = Type_Function + Category_Collection + 30; // 条件不成立后获取剩余结果
+        public const int Select = Type_Function + Category_Collection + 31; // 获取集合内所有元素的某项属性
+        public const int Randomize = Type_Function + Category_Collection + 32; // 打乱集合内元素的顺序
+        public const int ContentEquals = Type_Function + Category_Collection + 33; // 集合内容是否相同
 
         // 其他
         public const int BooleanConst = Type_Function + Category_Other + 1;       // 固定真值
