@@ -128,6 +128,9 @@ namespace Game
             get { return _game; }
             set { _game = value; }
         }
+        public string categoryFilter { get; set; }
+        public bool[] outputFilter { get; set; }
+        public string searchFilter { get; set; }
         [SerializeField]
         MainManager _game;
         EditorTypeInfo[] _editorTypeInfos = new EditorTypeInfo[]

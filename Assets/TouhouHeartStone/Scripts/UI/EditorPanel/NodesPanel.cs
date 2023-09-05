@@ -10,6 +10,7 @@ namespace UI
 {
     public class NodesPanel : MonoBehaviour
     {
+        #region 公有方法
         public void initCategories(string[] names, string[] values)
         {
             _categoryFilter.setDropdownValues(names, values);
@@ -50,7 +51,21 @@ namespace UI
                 item.onDoubleClicked -= onItemDoubleClickedCallback;
             });
         }
-
+        public void setCategoryFilter(string category)
+        {
+            _categoryFilter.setValueWithoutNotify(category);
+        }
+        public void setOutputFilter(bool[] outputs)
+        {
+            _outputFilter.SetValueWithoutNotify(outputs ?? Array.Empty<bool>());
+        }
+        public void setSearchFilter(string search)
+        {
+            _searchFilter.SetTextWithoutNotify(search);
+        }
+        #endregion
+        #region 私有方法
+        #region 生命周期
         private void Awake()
         {
             _categoryFilter.onValueChanged += onCategoryFilterEndEditCallback;
@@ -58,6 +73,8 @@ namespace UI
             _searchFilter.onEndEdit.AddListener(onSearchFilterEndEditCallback);
             _createActionButton.onClick.AddListener(onCreateActionClickedCallback);
         }
+        #endregion
+        #region 事件回调
         private async void onBeginDragCallback(NodesPanelItem item, PointerEventData data)
         {
             bool dragged = false;
@@ -118,8 +135,9 @@ namespace UI
         {
             onCreateActionClicked?.Invoke();
         }
-
-
+        #endregion
+        #endregion
+        #region 事件
         public event Func<int, PointerEventData, Task<bool>> onItemBeginDrag;
         public event Func<int, PointerEventData, Task<bool>> onItemDrag;
         public event Func<int, PointerEventData, Task<bool>> onItemEndDrag;
@@ -130,7 +148,9 @@ namespace UI
         public event Action<bool[]> onOutputFilterValueChanged;
         public event Action<string> onSearchFilterEndEdit;
         public event Action onCreateActionClicked;
+        #endregion
 
+        #region 属性字段
         [SerializeField]
         private ScrollRect _nodeScrollRect;
         [SerializeField]
@@ -147,6 +167,7 @@ namespace UI
         private InputField _searchFilter;
         [SerializeField]
         private Button _createActionButton;
+        #endregion
     }
 
     public struct NodeViewData

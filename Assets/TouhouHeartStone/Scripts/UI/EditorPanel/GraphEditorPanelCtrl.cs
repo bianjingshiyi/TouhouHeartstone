@@ -16,10 +16,9 @@ namespace UI
         public void display(long cardPoolId)
         {
             _cardPoolId = cardPoolId;
-            _categoryFilter = null;
-            _outputFilter = null;
-            _searchFilter = null;
-            _filteredDefines = null;
+            _nodesPanel.setCategoryFilter(categoryFilter);
+            _nodesPanel.setOutputFilter(outputFilter);
+            _nodesPanel.setSearchFilter(searchFilter);
             updatePasteButton();
             updateDeleteButton();
             updateUndoRedoButton();
@@ -294,17 +293,17 @@ namespace UI
         }
         private void onCategoryFilterEndEdit(string value)
         {
-            _categoryFilter = value;
+            categoryFilter = value;
             updateNodesList();
         }
         private void onOutputFilterValueChanged(bool[] value)
         {
-            _outputFilter = value;
+            outputFilter = value;
             updateNodesList();
         }
         private void onSearchFilterEndEdit(string value)
         {
-            _searchFilter = value;
+            searchFilter = value;
             updateNodesList();
         }
         private void onCreateActionClicked()
@@ -381,28 +380,28 @@ namespace UI
         }
         private bool filterNodeDefine(NodeDefine define)
         {
-            if (!string.IsNullOrEmpty(_categoryFilter))
+            if (!string.IsNullOrEmpty(categoryFilter))
             {
-                if (_categoryFilter != ACTION_CATEGORY_NAME_NONE)
+                if (categoryFilter != ACTION_CATEGORY_NAME_NONE)
                 {
                     string category = _actionGraphCtrl.tryTranslateWithDict(define.getCategory());
                     if (string.IsNullOrEmpty(category))
                         return false;
-                    if (!(category + '/').Contains(_categoryFilter + '/'))
+                    if (!(category + '/').Contains(categoryFilter + '/'))
                     {
                         return false;
                     }
                 }
             }
-            if (_outputFilter != null && _outputFilter.Length > 0)
+            if (outputFilter != null && outputFilter.Length > 0)
             {
                 var outputs = define.getOutputTypes();
                 if (outputs == null || outputs.Length <= 0)
                     return false;
 
-                for (int i = 0; i < _outputFilter.Length; i++)
+                for (int i = 0; i < outputFilter.Length; i++)
                 {
-                    if (!_outputFilter[i])
+                    if (!outputFilter[i])
                         continue;
                     var outputType = game.editor.getEditorVarTypeAt(i);
                     if (!outputs.Any(d => d == outputType))
@@ -411,12 +410,12 @@ namespace UI
                     }
                 }
             }
-            if (!string.IsNullOrEmpty(_searchFilter))
+            if (!string.IsNullOrEmpty(searchFilter))
             {
                 string name = getNodeDefineName(define);
                 if (string.IsNullOrEmpty(name))
                     return false;
-                if (!name.Contains(_searchFilter))
+                if (!name.Contains(searchFilter))
                 {
                     return false;
                 }
@@ -552,9 +551,21 @@ namespace UI
         bool _isDraggingVertical = false;
         NodeDefine _dragNode;
 
-        private string _categoryFilter;
-        private bool[] _outputFilter;
-        private string _searchFilter;
+        private string categoryFilter
+        {
+            get => game.editor.categoryFilter;
+            set => game.editor.categoryFilter = value;
+        }
+        private bool[] outputFilter
+        {
+            get => game.editor.outputFilter;
+            set => game.editor.outputFilter = value;
+        }
+        private string searchFilter
+        {
+            get => game.editor.searchFilter;
+            set => game.editor.searchFilter = value;
+        }
         private NodeDefine[] _nodeDefines;
         private NodeDefine[] _filteredDefines;
 
