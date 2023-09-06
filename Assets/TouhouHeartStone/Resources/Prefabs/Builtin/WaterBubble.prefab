@@ -81,8 +81,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defineName: WaterBubble
-  duration: 3
-  blockTime: 3
+  duration: 2
+  blockTime: 1.2
 --- !u!1 &3251208211436822494
 GameObject:
   m_ObjectHideFlags: 0

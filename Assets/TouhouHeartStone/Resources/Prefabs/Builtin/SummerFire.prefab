@@ -77091,6 +77091,7 @@ MonoBehaviour:
   _animator: {fileID: 7527580489375798917}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _testMode: 0
   _flyCurve:
     serializedVersion: 2
     m_Curve:
@@ -77151,7 +77152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 1
   defineName: SummerFire
   duration: 2
   blockTime: 1.5

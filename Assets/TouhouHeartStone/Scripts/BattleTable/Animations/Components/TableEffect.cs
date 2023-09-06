@@ -15,6 +15,20 @@ namespace Game.Animations
             _duration = define.duration;
             _blockTime = define.blockTime;
         }
+        private void OnEnable()
+        {
+            if (isTestMode())
+            {
+                _time = 0;
+            }
+        }
+        private void Update()
+        {
+            if (isTestMode())
+            {
+                update(Time.deltaTime);
+            }
+        }
         public virtual void update(float deltaTime)
         {
             if (_animator)
@@ -31,10 +45,22 @@ namespace Game.Animations
         public void finish()
         {
             _finished = true;
+            if (isTestMode())
+            {
+                gameObject.SetActive(false);
+            }
         }
         public bool isFinished()
         {
             return _finished;
+        }
+        protected bool isTestMode()
+        {
+#if UNITY_EDITOR
+            return _testMode;
+#else
+            return false;
+#endif
         }
         public float blockTime => _blockTime;
         public Transform sourceTransform => _srcTransform;
@@ -48,6 +74,10 @@ namespace Game.Animations
         private Transform _srcTransform;
         [SerializeField]
         private Transform _destTransform;
+#if UNITY_EDITOR
+        [SerializeField]
+        protected bool _testMode;
+#endif
         protected bool _finished;
         protected float _time;
         protected float _duration;

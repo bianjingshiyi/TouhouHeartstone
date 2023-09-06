@@ -14619,5 +14619,6 @@ MonoBehaviour:
   builtinEffectList:
   - {fileID: 3842044945674065406, guid: 2c48990da7b1f0349a6cd573dc1e7e92, type: 3}
   - {fileID: 7469736703990675199, guid: d776dff55a7ee28428b651727eb4672b, type: 3}
+  - {fileID: 662290119607227730, guid: 25d5f4b29011fa746873967258c63bd8, type: 3}
 #remote deletes#
 #local deletes#
