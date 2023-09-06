@@ -289,7 +289,7 @@ namespace TouhouHeartstone
             return game.triggers.doEvent(new HearthStoneRule.RevealEventArg() { player = card?.getOwner(), card = card, shouldAnimate = shouldAnimate }, arg =>
             {
                 var show = arg.card;
-                game.logger.logTrace(show != null ? "揭示了{card:" + show.define.id + "}" : "揭示了null");
+                game.logger.logTrace(show != null ? $"揭示了{show.getFormatString()}" : "什么也没揭示");
                 return Task.CompletedTask;
             });
         }
@@ -1325,7 +1325,7 @@ namespace TouhouHeartstone
                 {
                     player.name,
                     card?.getFormatString(),
-                    string.Join("，", targets?.Select(c => "{card:" + c.define.id + "}"))
+                    string.Join("，", targets?.Select(c => c.getFormatString()))
                 };
             }
         }

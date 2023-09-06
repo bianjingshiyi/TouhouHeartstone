@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using BJSYGameCore;
 using Game;
 using Game.BattleTable;
@@ -12,6 +13,8 @@ using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
+using Card = TouhouCardEngine.Card;
+using UICard = UI.Card;
 
 namespace Controllers
 {
@@ -264,25 +267,28 @@ namespace Controllers
                         return "未知卡牌";
                     });
                 logInfoHori.Text.text = info;
-                if (describable.getCard(_game, _localPlayer) != null)
+
+                var eventCard = describable.getCard(_game, _localPlayer);
+                if (eventCard != null)
                 {
                     logInfoHori.InfoCard.display();
-                    CardDefine card = describable.getCard(_game, _localPlayer).define;
-                    await logInfoHori.InfoCard.Card.setCardDefine(card, _main.card);
+                    await setCardUIByEvent(logInfoHori.InfoCard.Card, eventCard, arg);
                 }
                 else
                     logInfoHori.InfoCard.hide();
+
                 logInfoHori.TargetGridList.clearItems();
-                if (describable.getTargets(_game, _localPlayer) != null && describable.getTargets(_game, _localPlayer).Length > 0)
+                var targets = describable.getTargets(_game, _localPlayer);
+                if (targets != null && targets.Length > 0)
                 {
                     logInfoHori.TargetGridList.gameObject.SetActive(true);
-                    foreach (var target in describable.getTargets(_game, _localPlayer))
+                    foreach (var target in targets)
                     {
                         if (target == null)
                             continue;
                         var targetItem = logInfoHori.TargetGridList.addItem();
-                        CardDefine card = target.define;
-                        await targetItem.Card.setCardDefine(card, _main.card);
+
+                        await setCardUIByEvent(targetItem.Card, target, arg);
                     }
                 }
                 else
@@ -308,6 +314,27 @@ namespace Controllers
             };
             logItems.Add(item);
             _logScrollView.LogList.updateLogListCount(logItems.Count);
+        }
+        private async Task setCardUIByEvent(UICard ui, ICard card, IEventArg arg)
+        {
+            if (ui == null || card == null)
+                return;
+            var cardObj = card as Card;
+            if (cardObj != null)
+            {
+                EventRecord record = _game.triggers.getEventRecord(arg);
+                if (record != null)
+                {
+                    CardSnapshot cardSnapshot = _game.getCardSnapshotOfEvent(cardObj, record);
+                    if (cardSnapshot != null)
+                    {
+                        var descriptor = new CardDescriptor(_game, cardSnapshot);
+                        await ui.setCard(descriptor, _main.card);
+                        return;
+                    }
+                }
+            }
+            await ui.setCardDefine(card.define, _main.card);
         }
 
         public CardManager cards => _main.card;

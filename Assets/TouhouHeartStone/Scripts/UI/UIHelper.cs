@@ -8,6 +8,8 @@ using Card = TouhouCardEngine.Card;
 using System.Linq;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using TouhouCardEngine.Interfaces;
+using Game.BattleTable;
 
 namespace Game
 {
@@ -24,6 +26,9 @@ namespace Game
             ui.type = CATEGORY.SERVANT;
             setAttack(ui, "0");
             setLife(ui, "0");
+            setCostColor(ui, PropertyNumberColor.White);
+            setAttackColor(ui, PropertyNumberColor.White);
+            setLifeColor(ui, PropertyNumberColor.White);
             ui.setTag(string.Empty);
         }
         public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
@@ -99,28 +104,39 @@ namespace Game
 
             setCost(ui, card.getCost(game).ToString());
             if (card.define.type == DEFINE.MASTER)
-            {
                 ui.type = CATEGORY.MASTER;
-                ui.setLife("30");
-            }
             else if (card.define.type == DEFINE.SERVANT)
-            {
                 ui.type = CATEGORY.SERVANT;
-                ui.servantCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
-                ui.servantCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
-            }
             else if (card.define.type == DEFINE.SPELL)
                 ui.type = CATEGORY.SPELL;
             else if (card.define.type == DEFINE.SKILL)
                 ui.type = CATEGORY.SKILL;
             else if (card.define.type == DEFINE.ITEM)
-            {
                 ui.type = CATEGORY.ITEM;
-                ui.itemCardFace.attackPropNumber.text.text = card.getAttack(game).ToString();
-                ui.itemCardFace.lifePropNumber.text.text = card.getLife(game).ToString();
-            }
             else
                 throw new NotImplementedException();
+
+            var attack = card.getAttack(game);
+            var curLife = card.getCurrentLife(game);
+            var life = card.getLife(game);
+            var cost = card.getCost(game);
+            ui.setAttack(attack.ToString());
+            ui.setLife(curLife.ToString());
+
+            var costColor =
+                cost > card.define.getCost() ? PropertyNumberColor.Red :
+                cost < card.define.getCost() ? PropertyNumberColor.Green :
+                PropertyNumberColor.White;
+            var attackColor =
+                attack > card.define.getAttack() ? PropertyNumberColor.Green :
+                PropertyNumberColor.White;
+            var lifeColor =
+                curLife < life ? PropertyNumberColor.Red :
+                life > card.define.getLife() ? PropertyNumberColor.Green :
+                PropertyNumberColor.White;
+            ui.setCostColor(costColor);
+            ui.setAttackColor(attackColor);
+            ui.setLifeColor(lifeColor);
             setTag(ui, card.getTags(game).FirstOrDefault());
         }
         public static async Task setCard(this UICard ui, CardEngine game, Card card, CardManager cardManager, bool isFaceUp = true)
@@ -156,28 +172,40 @@ namespace Game
 
             setCost(ui, card.getCost().ToString());
             if (card.define.type == DEFINE.MASTER)
-            {
                 ui.type = CATEGORY.MASTER;
-                ui.setLife("30");
-            }
             else if (card.define.type == DEFINE.SERVANT)
-            {
                 ui.type = CATEGORY.SERVANT;
-                ui.servantCardFace.attackPropNumber.text.text = card.getAttack().ToString();
-                ui.servantCardFace.lifePropNumber.text.text = card.getLife().ToString();
-            }
             else if (card.define.type == DEFINE.SPELL)
                 ui.type = CATEGORY.SPELL;
             else if (card.define.type == DEFINE.SKILL)
                 ui.type = CATEGORY.SKILL;
             else if (card.define.type == DEFINE.ITEM)
-            {
                 ui.type = CATEGORY.ITEM;
-                ui.itemCardFace.attackPropNumber.text.text = card.getAttack().ToString();
-                ui.itemCardFace.lifePropNumber.text.text = card.getLife().ToString();
-            }
             else
                 throw new NotImplementedException();
+
+            var attack = card.getAttack();
+            var curLife = card.getCurrentLife();
+            var life = card.getLife();
+            var cost = card.getCost();
+            ui.setAttack(attack.ToString());
+            ui.setLife(curLife.ToString());
+
+            var costColor =
+                cost > card.define.getCost() ? PropertyNumberColor.Red :
+                cost < card.define.getCost() ? PropertyNumberColor.Green :
+                PropertyNumberColor.White;
+            var attackColor =
+                attack > card.define.getAttack() ? PropertyNumberColor.Green :
+                PropertyNumberColor.White;
+            var lifeColor =
+                curLife < life ? PropertyNumberColor.Red :
+                life > card.define.getLife() ? PropertyNumberColor.Green :
+                PropertyNumberColor.White;
+            ui.setCostColor(costColor);
+            ui.setAttackColor(attackColor);
+            ui.setLifeColor(lifeColor);
+
             setTag(ui, card.getTags().FirstOrDefault());
         }
         public static async Task setCard(this UICard ui, CardDescriptor desc, CardManager cardManager, bool isFaceUp = true)
@@ -199,6 +227,11 @@ namespace Game
             ui.servantCardFace.attackPropNumber.text.text = attack;
             ui.itemCardFace.attackPropNumber.text.text = attack;
         }
+        public static void setAttackColor(this UICard ui, PropertyNumberColor color)
+        {
+            ui.servantCardFace.attackPropNumber.setTextColor(color);
+            ui.itemCardFace.attackPropNumber.setTextColor(color);
+        }
         public static string getAttack(this UICard ui)
         {
             return ui.servantCardFace.attackPropNumber.text.text;
@@ -207,6 +240,11 @@ namespace Game
         {
             ui.servantCardFace.lifePropNumber.text.text = life;
             ui.itemCardFace.lifePropNumber.text.text = life;
+        }
+        public static void setLifeColor(this UICard ui, PropertyNumberColor color)
+        {
+            ui.servantCardFace.lifePropNumber.setTextColor(color);
+            ui.itemCardFace.lifePropNumber.setTextColor(color);
         }
         public static string getLife(this UICard ui)
         {
@@ -270,6 +308,12 @@ namespace Game
             ui.servantCardFace.costPropNumber.text.text = value;
             ui.spellCardFace.costPropNumber.text.text = value;
             ui.itemCardFace.costPropNumber.text.text = value;
+        }
+        public static void setCostColor(this UICard ui, PropertyNumberColor color)
+        {
+            ui.servantCardFace.costPropNumber.setTextColor(color);
+            ui.spellCardFace.costPropNumber.setTextColor(color);
+            ui.itemCardFace.costPropNumber.setTextColor(color);
         }
         public static string getCost(this UICard ui)
         {
