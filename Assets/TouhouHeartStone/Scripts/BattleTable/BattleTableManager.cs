@@ -63,7 +63,8 @@ namespace Game.BattleTable
         }
         public void showTipBox(string tip, Vector3 position, GameObject source)
         {
-            ui.TipBox.display(tip, position + _tipBoxOffset);
+            var worldPos = table.TableToWorldPosition(position + _tipBoxOffset);
+            ui.TipBox.display(tip, worldPos);
             _tipboxSource = source;
         }
         public void showGameResult(bool result)

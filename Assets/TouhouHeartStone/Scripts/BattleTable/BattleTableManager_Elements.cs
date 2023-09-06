@@ -1153,11 +1153,13 @@ namespace Game.BattleTable
         {
             if (list == table.SelfHandList)
                 hand.setHovered(true);
-            if (!table.SelfHandList.isZoomIn &&
-                player.getHand().count > 0)
+            Player targetPlayer = list == table.SelfHandList ? player : game.getOpponent(player);
+            if (!table.SelfHandList.isZoomIn && targetPlayer.getHand().count > 0)
             {
                 var pos = pointer.pointerCurrentRaycast.worldPosition;
-                showTipBox(lang._(TAB_CARD_NUMBER, getCard(hand).getOwner().getHand().count), pos, hand.gameObject);
+                var tablePos = WorldToTablePosition(pos);
+                tablePos.y = 0;
+                showTipBox(lang._(TAB_CARD_NUMBER, getCard(hand).getOwner().getHand().count), tablePos, hand.gameObject);
             }
         }
         private void onHandItemPointerExitCallback(HandItem hand, HandList list, PointerEventData pointer)
@@ -1346,7 +1348,9 @@ namespace Game.BattleTable
         {
             string desc = getSkin(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill()).desc;
             var pos = pointer.pointerCurrentRaycast.worldPosition;
-            showTipBox(desc, pos, skill.gameObject);
+            var tablePos = WorldToTablePosition(pos);
+            tablePos.y = 0;
+            showTipBox(desc, tablePos, skill.gameObject);
         }
         #endregion
 
@@ -1457,7 +1461,9 @@ namespace Game.BattleTable
                 tip = lang._(self ? TAB_YOUR_NO_HAVE_CARD : TAB_OPPONENT_OUT_OF_CARDS);
             }
             var pos = pointer.pointerCurrentRaycast.worldPosition;
-            showTipBox(tip, pos, deck.gameObject);
+            var tablePos = WorldToTablePosition(pos);
+            tablePos.y = 0;
+            showTipBox(tip, tablePos, deck.gameObject);
         }
         private void onDeckPointerExitCallback(Deck deck, PointerEventData pointer)
         {
@@ -1486,7 +1492,9 @@ namespace Game.BattleTable
                 lang._(TAB_GRAVEYARD_HAS, curGrave.count) :
                 lang._(TAB_GRAVEYARD_NULL);
             var pos = pointer.pointerCurrentRaycast.worldPosition;
-            showTipBox(tip, pos, deck.gameObject);
+            var tablePos = WorldToTablePosition(pos);
+            tablePos.y = 0;
+            showTipBox(tip, tablePos, deck.gameObject);
         }
         private void onGravePointerExitCallback(Deck deck, PointerEventData pointer)
         {
