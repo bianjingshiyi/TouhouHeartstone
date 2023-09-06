@@ -686,14 +686,14 @@ namespace TouhouHeartstone
         }
         public static int getDamageReduce(this ICardData card, IGame game)
         {
-            int result = card.getProp<int>(game, nameof(DEFINE.DAMAGE_REDUCE));
+            int result = card.getProp<int>(game, DEFINE.DAMAGE_REDUCE);
             if (result < 0)
                 return 0;
             return result;
         }
         public static Task<IPropChangeEventArg> setDamageReduce(this Card card, IGame game, int value)
         {
-            return card.setProp(game, nameof(DEFINE.DAMAGE_REDUCE), value);
+            return card.setProp(game, DEFINE.DAMAGE_REDUCE, value);
         }
         public static Task<SilenceEventArg> silence(this IEnumerable<Card> cards, CardEngine game)
         {
