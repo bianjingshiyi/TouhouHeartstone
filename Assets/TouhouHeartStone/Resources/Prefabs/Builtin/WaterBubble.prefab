@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5003032364708990534}
   - component: {fileID: 4101508808025387383}
-  - component: {fileID: 2375472387727924927}
+  - component: {fileID: 3972456941824174780}
   - component: {fileID: 7469736703990675199}
   m_Layer: 0
   m_Name: WaterBubble
@@ -53,7 +53,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2375472387727924927
+--- !u!114 &3972456941824174780
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -62,12 +62,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 543127354755271106}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18f45a30f313ba841af1ee13ba00278d, type: 3}
+  m_Script: {fileID: 11500000, guid: 592cd4d7f1a03d2488d873d315b9c80d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 4101508808025387383}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  _testMode: 0
 --- !u!114 &7469736703990675199
 MonoBehaviour:
   m_ObjectHideFlags: 0

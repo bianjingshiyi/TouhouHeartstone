@@ -700,47 +700,39 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, DEFINE.DAMAGE_REDUCE, value);
         }
-        public static Task<SilenceEventArg> silence(this IEnumerable<Card> cards, CardEngine game)
+        public static async Task<SilenceEventArg[]> silence(this IEnumerable<Card> cards, CardEngine game)
         {
-            SilenceEventArg eventArg = new SilenceEventArg() { cards = cards.ToArray() };
-            return game.triggers.doEvent(eventArg, async arg =>
+            List<SilenceEventArg> eventArgs = new List<SilenceEventArg>();
+            foreach (var card in cards)
             {
-                cards = arg.cards;
-                foreach (var card in cards)
-                {
-                    if (card == null)
-                        continue;
-                    await card.setProp(game, CARD.SILENCE, true);
-                    await card.removeBuff(game, card.getBuffs());
-                    foreach (var effect in card.define.getEffects().OfType<IPassiveEffect>())
-                    {
-                        await effect.onDisable(game, card, null);
-                    }
-                    await card.setKeywords(game, new string[0]);
-
-                }
-            });
+                eventArgs.Add(await silence(card, game));
+            }
+            return eventArgs.ToArray();
         }
-        public class SilenceEventArg : EventArg, IDescribableEventArg
+        public class SilenceEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             public override void Record(IGame game, EventRecord record)
             {
-                record.setCardStates(EVENTVAR.CARD, cards);
+                record.setCardState(EVENTVAR.CARD, card);
             }
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                return cards.Length < 2 ? cards[0] : null;
+                return card;
             }
 
             ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return cards.Length > 1 ? cards : null;
+                return null;
+            }
+            ICard ICardEventArg.getCard()
+            {
+                return card;
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
 
             [MukioI18n.TranslateMsg("{0}是卡牌列表")]
@@ -751,7 +743,7 @@ namespace TouhouHeartstone
             }
             object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
             {
-                return new object[] { string.Join("，", cards.Select(c => c.getFormatString())) };
+                return new object[] { string.Join("，", card.getFormatString()) };
             }
 
             public override EventVariableInfo[] getBeforeEventVarInfos()
@@ -768,15 +760,30 @@ namespace TouhouHeartstone
                     new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card[])}
                 };
             }
-            public Card[] cards
+            public Card card
             {
-                get { return getVar<Card[]>(EVENTVAR.CARD); }
+                get { return getVar<Card>(EVENTVAR.CARD); }
                 set { setVar(EVENTVAR.CARD, value); }
             }
         }
         public static Task<SilenceEventArg> silence(this Card card, CardEngine game)
         {
-            return silence(new Card[] { card }, game);
+            SilenceEventArg eventArg = new SilenceEventArg() { card = card };
+            return game.triggers.doEvent(eventArg, func);
+
+            async Task func(SilenceEventArg arg)
+            {
+                var argCard = arg.card;
+                if (argCard == null)
+                    return;
+                await argCard.setProp(game, CARD.SILENCE, true);
+                await argCard.removeBuff(game, argCard.getBuffs());
+                foreach (var effect in argCard.define.getEffects().OfType<IPassiveEffect>())
+                {
+                    await effect.onDisable(game, argCard, null);
+                }
+                await argCard.setKeywords(game, new string[0]);
+            }
         }
         public static bool isSilenced(this ICardData card, IGame game)
         {

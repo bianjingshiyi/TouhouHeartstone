@@ -798,10 +798,10 @@ namespace Game
         /// <returns></returns>
         [ObsoletedKeyMethod(BuiltinActionDefineID.Seal, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SILENCE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_SILENCE_EVENT)]
-        public static Task<THHCard.SilenceEventArg> silence(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
+        public static Task<THHCard.SilenceEventArg[]> silence(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
             if (cards == null)
-                return Task.FromResult<THHCard.SilenceEventArg>(default);
+                return Task.FromResult(Array.Empty<THHCard.SilenceEventArg>());
             return cards.silence(game);
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.Kill, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DESTROY)]

@@ -1782,6 +1782,7 @@ GameObject:
   - component: {fileID: 702626782}
   - component: {fileID: 702626783}
   - component: {fileID: 702626784}
+  - component: {fileID: 702626785}
   m_Layer: 0
   m_Name: Table
   m_TagString: Untagged
@@ -1873,6 +1874,20 @@ MonoBehaviour:
   _tipBox: {fileID: 1952450713}
   _tipText: {fileID: 432962491}
   _logCtrl: {fileID: 6399993}
+--- !u!114 &702626785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702626781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de477a54e5e9d044bb114916f2528494, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _light: {fileID: 295076637}
+  maxIntensity: 2
 --- !u!1 &819838742
 GameObject:
   m_ObjectHideFlags: 0

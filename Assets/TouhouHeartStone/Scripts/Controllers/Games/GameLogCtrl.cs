@@ -220,8 +220,8 @@ namespace Controllers
                 case THHCard.SilenceEventArg silence:
                     item.IconImage.sprite = item.silenceIcon;
                     item.Text.text = lang._(GAME_MANAGER_SILENCE);
-                    item.Image.sprite = tableManager.getSkin(silence.cards[0]).image;
-                    item.BorderImage.color = silence.cards[0].getOwner() == _localPlayer ? item.selfColor : item.oppoColor;
+                    item.Image.sprite = tableManager.getSkin(silence.card).image;
+                    item.BorderImage.color = silence.card.getOwner() == _localPlayer ? item.selfColor : item.oppoColor;
                     break;
                 case THHCard.SecretTriggerEventArg secret:
                     item.IconImage.sprite = item.secretIcon;
