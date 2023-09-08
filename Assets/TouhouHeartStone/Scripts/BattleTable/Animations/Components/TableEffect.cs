@@ -20,6 +20,7 @@ namespace Game.Animations
             if (isTestMode())
             {
                 _time = 0;
+                _duration = GetComponent<BuiltinEffect>()?.duration ?? 0;
             }
         }
         private void Update()
