@@ -54,6 +54,34 @@ namespace Game.BattleTable
             yield return update(table);
             finish();
         }
+        /// <summary>
+        /// 是否会阻挡组内的另一个动画？
+        /// </summary>
+        /// <param name="other">另一个动画</param>
+        /// <returns></returns>
+        public virtual bool blockAnimInGroup(TableAnimation other)
+        {
+            return false;
+        }
+        /// <summary>
+        /// 获取可以一组同时播放的动画。
+        /// </summary>
+        /// <param name="following">剩余的动画</param>
+        /// <returns></returns>
+        public virtual IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
+        {
+            yield break;
+        }
+        /// <summary>
+        /// 是否会继续下一个动画组？
+        /// </summary>
+        /// <param name="nextGroup">下一个动画组</param>
+        /// <returns></returns>
+        public virtual bool continueNextGroup(AnimationGroup nextGroup)
+        {
+            return false;
+        }
+        
     }
     public abstract class EventAnimation : TableAnimation
     {
@@ -66,11 +94,11 @@ namespace Game.BattleTable
         {
             return MemberwiseClone() as EventAnimation;
         }
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override bool continueNextGroup(AnimationGroup nextGroup)
         {
             if (!record.isCompleted)
-                return false;
-            return base.blockAnim(nextAnim);
+                return true;
+            return base.continueNextGroup(nextGroup);
         }
         protected IEnumerator pauseWhileNotCompleted()
         {

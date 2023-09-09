@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -63,11 +65,15 @@ namespace Game.BattleTable
                     yield return null;
             }
         }
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
-            if (_attacked && nextAnim is DamageAnimation)
-                return false;
-            return base.blockAnim(nextAnim);
+            yield return following.FirstOrDefault(a => a is DamageAnimation damageAnim && damageAnim.tEventArg.parent == tEventArg);
+        }
+        public override bool blockAnimInGroup(TableAnimation other)
+        {
+            if (!_attacked || !(other is DamageAnimation))
+                return true;
+            return base.blockAnimInGroup(other);
         }
     }
 }

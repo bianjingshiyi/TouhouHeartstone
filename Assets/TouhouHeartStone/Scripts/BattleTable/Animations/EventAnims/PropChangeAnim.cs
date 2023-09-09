@@ -217,9 +217,9 @@ namespace Game.BattleTable
                     simpleAnim = costNumber.textWhiteAnim;
             }
         }
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            return false;
+            return true;
         }
     }
 }

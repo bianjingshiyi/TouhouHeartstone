@@ -290,10 +290,5 @@ namespace Game.BattleTable
                 }
             }
         }
-
-        public override bool blockAnim(UIAnimation nextAnim)
-        {
-            return base.blockAnim(nextAnim);
-        }
     }
 }

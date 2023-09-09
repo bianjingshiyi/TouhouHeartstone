@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 
@@ -56,17 +58,9 @@ namespace Game.BattleTable
             }
         }
 
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
-            if (nextAnim is MoveCardAnim moveAnim)
-            {
-                var to = moveAnim.tEventArg.to;
-                if (to?.name == PILE.FIELD)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return following.OfType<DeathAnimation>().Where(a => a.tEventArg.parent == tEventArg.parent);
         }
     }
 }

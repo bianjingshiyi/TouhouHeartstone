@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using Timer = BJSYGameCore.Timer;
@@ -87,14 +88,13 @@ namespace Game.BattleTable
                 }
             }
         }
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            if (nextAnim is TurnStartAnimation)
-                return true;
-            else if (!(nextAnim is UseAnimation))
+            if (nextGroup.Any(a => a is TurnStartAnimation))
                 return false;
-            else
-                return base.blockAnim(nextAnim);
+            if (nextGroup.Any(a => a is UseAnimation))
+                return false;
+            return true;
         }
     }
 }

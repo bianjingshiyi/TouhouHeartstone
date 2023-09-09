@@ -528,13 +528,26 @@ namespace TouhouHeartstone
             // 更新光环。
             await updateAura(game);
 
-            // 死亡结算。
-
             bool anyCleared = false;
             const int MAX_UPDATE_TIMES = 30;
             List<Card> deathList = new List<Card>();
             int updateTimes = 0;
             do
+            {
+                var eventArg = new UpdateDeathEventArg();
+                await game.triggers.doEvent(eventArg, func);
+                updateTimes++;
+            }
+            // 受不了了，什么寄吧卡能让死亡结算运行30多次，跳了
+            while (deathList.Count > 0 && game.isRunning && updateTimes < MAX_UPDATE_TIMES);
+
+            // 如果有死亡的卡牌，再更新一次光环。
+            if (anyCleared)
+            {
+                await updateAura(game);
+            }
+            // 死亡结算。
+            async Task func(UpdateDeathEventArg arg)
             {
                 deathList.Clear();
                 foreach (Player player in game.players)
@@ -552,19 +565,10 @@ namespace TouhouHeartstone
 
                 if (deathList.Count <= 0 || !game.isRunning)
                 {
-                    break;
+                    return;
                 }
                 await deathList.destroy(game);
                 anyCleared = true;
-                updateTimes++;
-            }
-            // 受不了了，什么寄吧卡能让死亡结算运行30多次，跳了
-            while (updateTimes < MAX_UPDATE_TIMES);
-
-            // 如果有死亡的卡牌，再更新一次光环。
-            if (anyCleared)
-            {
-                await updateAura(game);
             }
         }
         #endregion
@@ -1631,6 +1635,12 @@ namespace TouhouHeartstone
             // 是否应该播放动画。
             public bool shouldAnimate;
             public const string VAR_ANIMATE = "播放动画";
+        }
+        public class UpdateDeathEventArg : EventArg
+        {
+            public override void Record(IGame game, EventRecord record)
+            {
+            }
         }
     }
 }

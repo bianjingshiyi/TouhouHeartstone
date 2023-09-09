@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
@@ -38,13 +39,13 @@ namespace Game.BattleTable
             Object.Destroy(_healEffect.gameObject);
         }
 
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            if (nextAnim is RequestAnimation)
-                return true;
-            if (nextAnim is TurnEndAnimation)
-                return true;
-            return false;
+            if (nextGroup.Any(a => a is RequestAnimation))
+                return false;
+            if (nextGroup.Any(a => a is TurnEndAnimation))
+                return false;
+            return true;
         }
         private ParticleSystem _healEffect;
     }

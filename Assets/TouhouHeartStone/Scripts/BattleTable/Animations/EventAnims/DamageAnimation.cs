@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine;
@@ -50,13 +52,17 @@ namespace Game.BattleTable
             if (_damageEffect != null)
                 UnityEngine.Object.Destroy(_damageEffect.gameObject);
         }
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
-            if (nextAnim is RequestAnimation)
-                return true;
-            if (nextAnim is TurnEndAnimation)
-                return true;
-            return false;
+            return following.OfType<DamageAnimation>().Where(a => a.tEventArg.parent == tEventArg.parent);
+        }
+        public override bool continueNextGroup(AnimationGroup nextGroup)
+        {
+            if (nextGroup.Any(a => a is RequestAnimation))
+                return false;
+            if (nextGroup.Any(a => a is TurnEndAnimation))
+                return false;
+            return true;
         }
         ParticleSystem _damageEffect;
     }

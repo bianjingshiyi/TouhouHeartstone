@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using UnityEngine;
 
 namespace Game.BattleTable
 {
@@ -45,15 +46,6 @@ namespace Game.BattleTable
                     yield return null;
                 chooseCard.destroy();
             }
-        }
-
-        public override bool blockAnim(UIAnimation nextAnim)
-        {
-            if (nextAnim is RequestAnimation)
-            {
-                return false;
-            }
-            return base.blockAnim(nextAnim);
         }
     }
 }

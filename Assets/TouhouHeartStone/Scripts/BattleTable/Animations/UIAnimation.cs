@@ -2,6 +2,8 @@
 using TouhouCardEngine.Interfaces;
 using UnityEngine;
 using Game.Animations;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Game.BattleTable
 {
@@ -38,15 +40,6 @@ namespace Game.BattleTable
             _content = ToString();
         }
 #endif
-        /// <summary>
-        /// 是否会阻挡下一个动画？
-        /// </summary>
-        /// <param name="nextAnim">下一个动画</param>
-        /// <returns></returns>
-        public virtual bool blockAnim(UIAnimation nextAnim)
-        {
-            return true;
-        }
     }
     [Serializable]
     public abstract class UIAnimation<T> : UIAnimation where T : IEventArg

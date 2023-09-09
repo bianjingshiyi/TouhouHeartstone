@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Game.BattleTable;
 using TouhouCardEngine.Interfaces;
 using UnityEngine;
@@ -41,24 +43,16 @@ namespace Game.Animations
             table.removeEffect(effect);
             effect = null;
         }
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
+        {
+            return following.OfType<GameTableAnim>().Where(a => a.define == define && a.eventArg.parent == eventArg.parent && a.eventArg.GetType() == eventArg.GetType());
+        }
+        public override bool continueNextGroup(AnimationGroup nextGroup)
         {
             if (!effect)
-                return false;
-            if (nextAnim is PropChangeAnim)
-                return false;
-            IEventArg nextEventArg = null;
-            if (nextAnim is GameTableAnim gameTableAnim)
-                nextEventArg = gameTableAnim.eventArg;
-            else if (nextAnim is EventAnimation eventAnimation)
-                nextEventArg = eventAnimation.eventArg;
-            if (nextEventArg != null)
-            {
-                if (eventArg.parent == nextEventArg.parent && eventArg.GetType() == nextEventArg.GetType())
-                    return false;
-            }
+                return true;
             var blockTime = effect.blockTime;
-            return _duration <= blockTime || blockTime < 0;
+            return _duration > blockTime && blockTime >= 0;
         }
         private AnimationDefine define;
         private IEventArg eventArg;

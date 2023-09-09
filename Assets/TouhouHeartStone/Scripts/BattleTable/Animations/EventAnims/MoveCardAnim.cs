@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -16,7 +17,7 @@ namespace Game.BattleTable
         Pile _from;
         Pile _to;
         int _position;
-        float _breakDuration = 3f;
+        float _breakDuration = 2f;
         bool _breakDurationEvaluated;
         private const float _minBreakDuration = 0.05f;
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
@@ -392,8 +393,8 @@ namespace Game.BattleTable
             if (_breakDuration <= _minBreakDuration || _breakDurationEvaluated)
                 return;
 
-            var anims = table.getAnimQueue();
-            var index = Array.IndexOf(anims, this);
+            var anims = table.getAnimGroupOfAnim(this);
+            var index = anims.IndexOf(this);
             var moveAnims = anims.Where((a, i) => i > index).OfType<MoveCardAnim>().ToArray();
 
             var targetBreakTime = getBreakTimeByCount(moveAnims.Length);
@@ -405,16 +406,16 @@ namespace Game.BattleTable
         }
         private float getBreakTimeByCount(int count)
         {
-            return Mathf.Max(_minBreakDuration, 3f / count);
+            return Mathf.Max(_minBreakDuration, 2f / count);
         }
 
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override bool blockAnimInGroup(TableAnimation other)
         {
-            if (_duration >= _breakDuration) // 加速。
-            {
-                return false;
-            }
-            return base.blockAnim(nextAnim);
+            return _duration < _breakDuration;
+        }
+        public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
+        {
+            return following.OfType<MoveCardAnim>().Where(a => a.tEventArg.parent == tEventArg.parent);
         }
     }
 }

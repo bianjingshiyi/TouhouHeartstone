@@ -13,9 +13,9 @@ namespace Game.BattleTable
             table.updateCardBySnapshot(_card, record);
             yield break;
         }
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override bool continueNextGroup(AnimationGroup nextGroup)
         {
-            return false;
+            return true;
         }
     }
 }

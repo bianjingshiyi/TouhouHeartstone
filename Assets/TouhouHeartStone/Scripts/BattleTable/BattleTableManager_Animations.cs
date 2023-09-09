@@ -8,6 +8,8 @@ using Game.Animations;
 using UnityEngine;
 using Card = TouhouCardEngine.Card;
 using UI;
+using System.Linq;
+using Coffee.UIExtensions;
 
 namespace Game.BattleTable
 {
@@ -211,6 +213,8 @@ namespace Game.BattleTable
         List<TableAnimation> _animationCache = new List<TableAnimation>();
         [SerializeField]
         List<TableAnimation> _animationQueue = new List<TableAnimation>();
+        [SerializeField]
+        List<AnimationGroup> _animationGroups = new List<AnimationGroup>();
         List<TableAnimation> insertingAnims = new List<TableAnimation>();
         public void addAnim(TableAnimation anim)
         {
@@ -249,53 +253,57 @@ namespace Game.BattleTable
                 insertingAnims.Clear();
             }
         }
-        public TableAnimation[] getAnimQueue()
+        public bool isPlayingAnimation()
         {
-            return _animationQueue.ToArray();
+            return _animationGroups.Count > 0;
+        }
+        public AnimationGroup getAnimGroupOfAnim(TableAnimation anim)
+        {
+            return _animationGroups.FirstOrDefault(g => g.Contains(anim));
         }
         public void updateAnim()
         {
-            if (_animationQueue.Count > 0)
+            while (_animationQueue.Count > 0)
             {
-                for (int i = 0; i < _animationQueue.Count; i++)
+                var first = _animationQueue.FirstOrDefault();
+                if (first == null)
                 {
-                    TableAnimation anim = _animationQueue[i];
-                    bool isBlocked = false;
-                    if (i == 0)
+                    _animationQueue.RemoveAt(0);
+                    continue;
+                }
+                var group = new AnimationGroup
+                {
+                    first
+                };
+                group.AddRange(first.getGroupedAnimations(_animationQueue.Skip(1)).Where(a => a != null));
+                _animationGroups.Add(group);
+                _animationQueue.RemoveAll(t => group.Contains(t));
+            }
+            if (_animationGroups.Count > 0)
+            {
+                for (int i = 0; i < _animationGroups.Count; i++)
+                {
+                    var group = _animationGroups[i];
+                    bool blocked = false;
+                    for (int j = 0; j < i; j++)
                     {
-                        //第一个永远不被阻挡
-                    }
-                    else
-                    {
-                        for (int j = 0; j < i; j++)
+                        var prevGroup = _animationGroups[j];
+                        if (!prevGroup.continueNextGroup(group))
                         {
-                            TableAnimation prevAnim = _animationQueue[j];
-                            if (prevAnim.blockAnim(anim))
-                            {
-                                isBlocked = true;
-                                break;
-                            }
+                            blocked = true;
+                            break;
                         }
                     }
-                    if (isBlocked)
-                        //continue;
-                        break; // 一个动画被阻挡之后，之后的都肯定会被阻挡。
-                    try
+                    if (blocked)
+                        break;
+                    group.update(this, Time.deltaTime);
+                    if (group == null || group.Count <= 0)
                     {
-                        if (anim.update(this, Time.deltaTime))
-                        {
-                            _animationQueue.RemoveAt(i);
-                            i--;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        _animationQueue.RemoveAt(i);
+                        _animationGroups.RemoveAt(i);
                         i--;
-                        Debug.LogError("动画" + anim + "播放异常被跳过：" + e);
                     }
                 }
-                if (_animationQueue.Count < 1)
+                if (_animationGroups.Count <= 0)
                     onAllAnimsFinished?.Invoke();
             }
         }

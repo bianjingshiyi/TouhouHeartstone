@@ -13,8 +13,8 @@ namespace Game.BattleTable
             get => _isFinished;
             private set => _isFinished = value;
         }
-        Func<UIAnimation, bool> _onBlockAnim;
-        public AnimAnim(Animator animator, string animName, Func<UIAnimation, bool> onBlockAnim = null)
+        Func<AnimationGroup, bool> _onBlockAnim;
+        public AnimAnim(Animator animator, string animName, Func<AnimationGroup, bool> onBlockAnim = null)
         {
             _animator = animator;
             _animName = animName;
@@ -24,11 +24,11 @@ namespace Game.BattleTable
         {
             return AnimHelper.update(_animator, _animName, ref _isPlayed, ref _isFinished);
         }
-        public override bool blockAnim(UIAnimation nextAnim)
+        public override bool continueNextGroup(AnimationGroup nextGroup)
         {
             if (_onBlockAnim != null)
-                return _onBlockAnim(nextAnim);
-            return base.blockAnim(nextAnim);
+                return !_onBlockAnim(nextGroup);
+            return base.continueNextGroup(nextGroup);
         }
     }
 }

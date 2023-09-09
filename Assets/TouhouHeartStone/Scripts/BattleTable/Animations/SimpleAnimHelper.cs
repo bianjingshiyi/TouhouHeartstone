@@ -5,7 +5,7 @@ namespace Game.BattleTable
 {
     static class SimpleAnimHelper
     {
-        public static bool update(BattleTableManager table, ref AnimAnim anim, SimpleAnim simpleAnim, Animator animator, float time, Func<UIAnimation, bool> onBlockAnim = null)
+        public static bool update(BattleTableManager table, ref AnimAnim anim, SimpleAnim simpleAnim, Animator animator, float time, Func<AnimationGroup, bool> onBlockAnim = null)
         {
             if (simpleAnim == null)
                 return true;
@@ -20,7 +20,7 @@ namespace Game.BattleTable
             anim = null;
             return true;
         }
-        public static bool update(BattleTableManager table, ref TableAnimation anim, SimpleAnim simpleAnim, Animator animator, float time, Func<UIAnimation, bool> onBlockAnim = null)
+        public static bool update(BattleTableManager table, ref TableAnimation anim, SimpleAnim simpleAnim, Animator animator, float time, Func<AnimationGroup, bool> onBlockAnim = null)
         {
             if (simpleAnim == null)
                 return true;

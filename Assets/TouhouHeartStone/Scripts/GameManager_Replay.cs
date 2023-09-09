@@ -31,7 +31,7 @@ namespace Game
         void onReplayGameUpdate()
         {
             BattleTableManager table = battleTableManager;
-            if (table.getAnimQueue().Length < 1 &&//没有其他动画在播放
+            if (!table.isPlayingAnimation() &&//没有其他动画在播放
                 game.answers.getAllRequests().FirstOrDefault() is IRequest request &&//有询问
                 !_replayPlayer.isReplayEnd//没放完
                 )
