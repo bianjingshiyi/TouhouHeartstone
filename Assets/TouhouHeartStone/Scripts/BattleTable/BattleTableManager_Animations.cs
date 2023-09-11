@@ -123,11 +123,9 @@ namespace Game.BattleTable
             if (skinAnimRef == null)
                 return;
             var animationDef = gameManager.getAnimationDefine(skinAnimRef.animRef);
-            var sourceCard = getEventSkinAnimCard(effectTriggerArg, arg, skinAnimRef.sourcePosition);
-            var targetCard = getEventSkinAnimCard(effectTriggerArg, arg, skinAnimRef.targetPosition);
             if (animationDef != null)
             {
-                addAnim(new GameTableAnim(animationDef, arg, sourceCard, targetCard));
+                addAnim(new GameTableAnim(animationDef, arg, effectTriggerArg, skinAnimRef));
             }
         }
         public EffectTriggerEventArg getEffectEventTriggerArg(IEventArg arg)

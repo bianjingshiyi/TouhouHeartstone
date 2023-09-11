@@ -4,10 +4,9 @@ namespace Game.Animations
 {
     public class ProjectileEffect : TableEffect
     {
-        public override void update(float deltaTime)
+        protected override void updateAnim(float deltaTime)
         {
-            base.update(deltaTime);
-            var sourcePos = sourceTransform.position;
+            var sourcePos = sourceTransform ? sourceTransform.position : Vector3.zero;
             var targetPos = destTransform ? destTransform.position : sourcePos;
             var distance = targetPos - sourcePos;
             var axis = distance.normalized;

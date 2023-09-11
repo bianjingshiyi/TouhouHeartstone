@@ -1322,9 +1322,13 @@ namespace TouhouHeartstone
             public Player player;
             public Card card;
         }
-        public class CreateTokenEventArg : EventArg, IDescribableEventArg
+        public class CreateTokenEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+            ICard ICardEventArg.getCard()
             {
                 return card;
             }

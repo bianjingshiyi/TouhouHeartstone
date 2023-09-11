@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Animations
 {
-    public class TableEffect : MonoBehaviour
+    public abstract class TableEffect : MonoBehaviour
     {
         public virtual void init(BattleTableManager table, AnimationDefine define, VisualEffectInfo info)
         {
@@ -30,19 +30,34 @@ namespace Game.Animations
                 update(Time.deltaTime);
             }
         }
-        public virtual void update(float deltaTime)
+        public void update(float deltaTime)
         {
+            if (!isPlayed)
+            {
+                if (sourceTransform == null && needSourceToPlay)
+                {
+                    rootObj?.SetActive(false);
+                    return;
+                }
+                else if (!rootObj.activeSelf)
+                {
+                    rootObj?.SetActive(true);
+                }
+                isPlayed = true;
+            }
             if (_animator)
             {
                 _animator.enabled = false;
                 _animator.Update(deltaTime);
             }
+            updateAnim(deltaTime);
             _time += deltaTime;
             if (_duration > 0 && _time > _duration)
             {
                 finish();
             }
         }
+        protected abstract void updateAnim(float deltaTime);
         public void finish()
         {
             _finished = true;
@@ -64,8 +79,27 @@ namespace Game.Animations
 #endif
         }
         public float blockTime => _blockTime;
-        public Transform sourceTransform => _srcTransform;
-        public Transform destTransform => _destTransform;
+        public Transform sourceTransform 
+        {
+            get => _srcTransform;
+            set => _srcTransform = value;
+        }
+        public Transform destTransform
+        {
+            get => _destTransform;
+            set => _destTransform = value;
+        }
+        public GameObject rootObj
+        {
+            get 
+            { 
+                if (!_rootObj)
+                {
+                    _rootObj = transform.Find("Root").gameObject;
+                }
+                return _rootObj;
+            }
+        }
         public BattleTableManager table => _table;
         public float time => _time;
         public float duration => _duration;
@@ -75,6 +109,8 @@ namespace Game.Animations
         private Transform _srcTransform;
         [SerializeField]
         private Transform _destTransform;
+        [SerializeField]
+        private bool needSourceToPlay = true;
 #if UNITY_EDITOR
         [SerializeField]
         protected bool _testMode;
@@ -83,7 +119,9 @@ namespace Game.Animations
         protected float _time;
         protected float _duration;
         protected float _blockTime;
+        protected GameObject _rootObj;
         protected BattleTableManager _table;
+        private bool isPlayed;
     }
     public class VisualEffectInfo
     {

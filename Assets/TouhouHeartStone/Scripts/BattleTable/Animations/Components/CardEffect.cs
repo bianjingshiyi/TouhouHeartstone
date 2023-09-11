@@ -4,9 +4,8 @@ namespace Game.Animations
 {
     public class CardEffect : TableEffect
     {
-        public override void update(float deltaTime)
+        protected override void updateAnim(float deltaTime)
         {
-            base.update(deltaTime);
             if (sourceTransform)
             {
                 var sourcePos = sourceTransform.position;
