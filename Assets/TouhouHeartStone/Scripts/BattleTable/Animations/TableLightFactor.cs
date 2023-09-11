@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Game.BattleTable
 {
-    [ExecuteInEditMode]
     public class TableLightFactor : MonoBehaviour
     {
         private void OnTransformParentChanged()

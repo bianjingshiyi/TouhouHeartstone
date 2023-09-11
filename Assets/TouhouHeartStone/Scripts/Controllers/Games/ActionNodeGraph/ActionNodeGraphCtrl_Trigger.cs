@@ -198,6 +198,7 @@ namespace Controllers
             { "DiscardEvent", StringTable.EDITOR_EVENT_NAME_DISCARD },
             { "CreateTokenEvent", StringTable.EDITOR_EVENT_NAME_CREATETOKEN },
             { "SetDefineEvent", StringTable.EDITOR_EVENT_NAME_SETDEFINE },
+            { "ShackleEvent", EDITOR_EVENT_NAME_SHACKLE },
             //{ "AddModiEvent", StringTable.EDITOR_EVENT_NAME_ADDMODI },
             //{ "RemoveModiEvent", StringTable.EDITOR_EVENT_NAME_REMOVEMODI },
             //{ "PropChangeEvent", StringTable.EDITOR_EVENT_NAME_PROPCHANGE },
@@ -216,6 +217,8 @@ namespace Controllers
         public const string EDITOR_EVENT_NAME_ADD_BUFF = "添加增益";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_REMOVE_BUFF = "移除增益";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_SHACKLE = "禁锢";
     }
     public class EventTypeInfoCollection : List<EventDefine>
     {

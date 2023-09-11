@@ -29,6 +29,7 @@ namespace Game
             { BuiltinActionDefineID.DealSpellDamageToTargets, typeof(THHCard.DamageEventArg) },    // 造成法术伤害
             { BuiltinActionDefineID.DealSpecificSpellDamageToRandomTargets, typeof(THHCard.DamageEventArg) },    // 造成固定法术伤害并分配给随机目标
             { BuiltinActionDefineID.HealTargets, typeof(THHCard.HealEventArg) },    // 治疗目标卡牌
+            { BuiltinActionDefineID.Shackle, typeof(THHCard.ShackleEventArg) },    // 禁锢
             { BuiltinActionDefineID.Seal, typeof(THHCard.SilenceEventArg) },    // 沉默
             { BuiltinActionDefineID.AddAmountOfArmor, typeof(THHCard.SetArmorEventArg) },    // 增加固定数量护甲
             { BuiltinActionDefineID.AddArmor, typeof(THHCard.SetArmorEventArg) },    // 增加护甲

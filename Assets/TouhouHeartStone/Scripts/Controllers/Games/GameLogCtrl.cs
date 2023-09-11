@@ -65,6 +65,7 @@ namespace Controllers
                 case THHCard.SetArmorEventArg _:
                 case THHCard.HealEventArg _:
                 case THHCard.SilenceEventArg _:
+                case THHCard.ShackleEventArg _:
                 case THHCard.DeathEventArg _:
                 case THHPlayer.DiscoverEventArg _:
                 case THHPlayer.RevealDuelEventArg _:
@@ -242,6 +243,11 @@ namespace Controllers
                     item.Text.text = lang._(GAME_MANAGER_REVEAL_DUEL);
                     item.BorderImage.sprite = revealDuel.player == _localPlayer ? item.selfsprite : item.opposprite;
                     break;
+                case THHCard.ShackleEventArg shackle:
+                    item.Text.text = lang._(GAME_MANAGER_SHACKLE);
+                    item.Image.sprite = tableManager.getSkin(shackle.card).image;
+                    item.BorderImage.color = shackle.card.getOwner() == _localPlayer ? item.selfColor : item.oppoColor;
+                    break;
                 default:
                     break;
             }
@@ -347,6 +353,8 @@ namespace Controllers
         private const string GAME_MANAGER_SECRET = "陷阱";
         [TranslateMsg]
         private const string GAME_MANAGER_SILENCE = "封印";
+        [TranslateMsg]
+        private const string GAME_MANAGER_SHACKLE = "禁锢";
         [TranslateMsg]
         private const string GAME_MANAGER_ATTACK = "攻击";
         [TranslateMsg]

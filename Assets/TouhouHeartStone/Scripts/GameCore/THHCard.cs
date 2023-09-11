@@ -497,8 +497,7 @@ namespace TouhouHeartstone
         {
             if (value)
             {
-                await card.addKeywords(game, KEYWORD.FROZEN);
-                await card.addKeywords(game, KEYWORD.IS_FROZEN);
+                await card.shackle(game);
             }
             else
             {
@@ -512,6 +511,19 @@ namespace TouhouHeartstone
             {
                 await card.setFreeze(game, value);
             }
+        }
+        public static async Task<ShackleEventArg> shackle(this Card card, IGame game)
+        {
+            ShackleEventArg eventArg = new ShackleEventArg()
+            {
+                card = card
+            };
+            return await game.triggers.doEvent(eventArg, async (arg) =>
+            {
+                var argCard = arg.card;
+                await argCard.addKeywords(game, KEYWORD.FROZEN);
+                await argCard.addKeywords(game, KEYWORD.IS_FROZEN);
+            });
         }
         public static bool isWindfury(this ICardData card, IGame game)
         {
@@ -750,14 +762,14 @@ namespace TouhouHeartstone
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card[])}
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
             {
                 return new EventVariableInfo[]
                 {
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card[])}
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
                 };
             }
             public Card card
@@ -2643,5 +2655,66 @@ namespace TouhouHeartstone
             if (isreset) { await card.resetCard(game); }//卡牌重置
             return eventArg;
         }
+
+        #region 内嵌类
+
+        public class ShackleEventArg : EventArg, IDescribableEventArg, ICardEventArg
+        {
+            public override void Record(IGame game, EventRecord record)
+            {
+                record.setCardState(EVENTVAR.CARD, card);
+            }
+            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            {
+                return card;
+            }
+
+            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            {
+                return null;
+            }
+            ICard ICardEventArg.getCard()
+            {
+                return card;
+            }
+
+            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
+            {
+                IDescribableEventArg arg = this;
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+            }
+
+            [MukioI18n.TranslateMsg("{0}是卡牌列表")]
+            const string TEMPLATE = "{0} 被禁锢";
+            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
+            {
+                return TEMPLATE;
+            }
+            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
+            {
+                return new object[] { string.Join("，", card.getFormatString()) };
+            }
+
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
+                };
+            }
+            public Card card
+            {
+                get { return getVar<Card>(EVENTVAR.CARD); }
+                set { setVar(EVENTVAR.CARD, value); }
+            }
+        }
+        #endregion
     }
 }
