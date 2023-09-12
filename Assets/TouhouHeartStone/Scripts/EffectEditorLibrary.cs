@@ -993,7 +993,7 @@ namespace Game
             {
                 if (card == null)
                     continue;
-                if (card.hasKeyword(game, KEYWORD.SECRET) || card.hasKeyword(game, KEYWORD.MISSION))
+                if (card.isTrap(game) || card.hasKeyword(game, KEYWORD.MISSION))
                 {
                     if (player.getHead().isFull)
                     {

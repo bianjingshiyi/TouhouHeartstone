@@ -63,7 +63,7 @@ namespace TouhouHeartstone
         }
         public override async Task execute(IGame game, ICard card, IBuff buff, IEventArg eventArg)
         {
-            if (card.isSpell() && card.hasKeyword(game, KEYWORD.SECRET) && this.isTrap())
+            if (card.isSpell() && this.isTrap())
             {
                 // 陷阱触发
                 var gameCard = card as Card;

@@ -630,7 +630,7 @@ namespace TouhouHeartstone.Builtin
             Card topCard = card.getOwner().getDeck().top;
 
             while (topCard != null &&
-                   topCard.hasKeyword(game, KEYWORD.SECRET) &&
+                   topCard.isTrap(game) &&
                    topCard.isSpell() &&
                    card.getOwner().getHead().count < card.getOwner().getHead().maxCount &&
                    card.getOwner().getHead().All(c => c.define != topCard.define))
@@ -713,7 +713,7 @@ namespace TouhouHeartstone.Builtin
                     return a.from.owner == c.getOwner() &&
                            a.to == c.getOwner().getHead() &&
                            a.card.isSpell() &&
-                           a.card.hasKeyword(g, KEYWORD.SECRET);
+                           a.card.isTrap(g);
                 },
                 async (g, c, a) => { await c.addBuff(g, new CodeBuff(ID, new LifeModifier(1))); })
         };

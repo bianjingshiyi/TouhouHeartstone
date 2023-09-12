@@ -236,7 +236,7 @@ namespace TouhouHeartstone
                 {
                     //法术卡,释放效果
                     await p.getHand().moveTo(game, card, p.getWarp());
-                    if (card.hasKeyword(game, KEYWORD.SECRET) || card.hasKeyword(game, KEYWORD.MISSION))
+                    if (card.isTrap(game) || card.hasKeyword(game, KEYWORD.MISSION))
                     {
                         await player.tryEnterHead(game, player.getWarp(), card);
                         await card.updateSecret(game);

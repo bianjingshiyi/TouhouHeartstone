@@ -1187,7 +1187,6 @@ namespace Controllers
             { KEYWORD.CANTATTACK, (StringTable.GAME_KEYWORD_CANTATTACK, typeof(bool)) },
             { KEYWORD.WINDFURY, (StringTable.GAME_KEYWORD_WINDFURY, typeof(bool)) },
             { KEYWORD.IMMUNITY, (StringTable.GAME_KEYWORD_IMMUNITY, typeof(bool)) },
-            { KEYWORD.SECRET, (StringTable.GAME_KEYWORD_SECRET, typeof(bool)) },
             { KEYWORD.MISSION, (StringTable.GAME_KEYWORD_MISSION, typeof(bool)) },
             { KEYWORD.PERMANENT_FROZEN, (StringTable.GAME_KEYWORD_PERMANENT_FROZEN, typeof(bool)) },
             { KEYWORD.CAN_BE_CHARGED, (StringTable.GAME_KEYWORD_CAN_BE_CHARGED, typeof(bool)) },

@@ -1281,7 +1281,7 @@ namespace TouhouHeartstone
 
             ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                if (card.hasKeyword(game, KEYWORD.SECRET))
+                if (card.isTrap(game))
                     return viewer == player ? card : null;
                 return card;
             }
@@ -1308,7 +1308,7 @@ namespace TouhouHeartstone
 
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
-                if (card.hasKeyword(game, KEYWORD.SECRET))
+                if (card.isTrap(game))
                 {
                     return viewer == player ? TEMPLATE_NO_TARGET : TEMPLATE_SECRET_OTHER;
                 }

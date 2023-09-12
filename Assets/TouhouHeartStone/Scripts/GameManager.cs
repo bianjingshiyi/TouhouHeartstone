@@ -181,7 +181,7 @@ namespace Game
                 case HearthStoneRule.UseEventArg use:
                     item.IconImage.sprite = item.useIcon;
                     item.Text.text = lang._(GAME_MANAGER_USE);
-                    item.Image.sprite = use.card.hasKeyword(game, KEYWORD.SECRET) ?
+                    item.Image.sprite = use.card.isTrap(game) ?
                         getManager<TableManager>().getSkin(use.card.getOwner().getMaster()).image :
                         getManager<TableManager>().getSkin(use.card).image;
                     item.BorderImage.sprite = use.player == localPlayer ? item.selfsprite : item.opposprite;

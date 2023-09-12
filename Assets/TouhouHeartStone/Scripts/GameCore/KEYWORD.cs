@@ -1,4 +1,6 @@
-﻿namespace TouhouHeartstone
+﻿using System;
+
+namespace TouhouHeartstone
 {
     public class KEYWORD
     {
@@ -77,6 +79,7 @@
         /// <summary>
         /// 奥秘
         /// </summary>
+        [Obsolete]
         public const string SECRET = "secret";
         /// <summary>
         /// 任务，委托，或者别的什么东西

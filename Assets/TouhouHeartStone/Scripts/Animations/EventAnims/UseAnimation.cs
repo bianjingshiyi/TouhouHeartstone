@@ -225,7 +225,7 @@ namespace Game
             // 播放使用动画。
             if (hand)
             {
-                table.setCard(hand.Card, _card, !_card.hasKeyword(table.game, KEYWORD.SECRET));
+                table.setCard(hand.Card, _card, !_card.isTrap(table.game));
                 hand.GetComponentInChildren<PositionLerp>().setTarget(table.ui.getChild("SpellDisplay"));
                 AnimAnim useAnim = null;
                 while (!SimpleAnimHelper.update(table, ref useAnim, hand.onEnemyUse, hand.animator, _time))

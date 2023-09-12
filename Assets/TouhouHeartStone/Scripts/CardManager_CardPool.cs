@@ -1370,7 +1370,7 @@ namespace Game
             List<ActionGraph> collectedGraphs = new List<ActionGraph>();
             // 遍历所有节点图并修复信息。
             traverseActionGraphs(cardPool,
-                (c, e) => effectAction(e),
+                (b, e) => effectAction(e),
                 (b, e) => effectAction(e),
                 defineAction);
 
@@ -1378,6 +1378,11 @@ namespace Game
             foreach (var graph in collectedGraphs)
             {
                 fixGraph(graph);
+            }
+
+            foreach (var cardDefine in cardPool.cardDefineList)
+            {
+                fixCardDefine(cardDefine);
             }
 
             foreach (var skin in cardPool.cardSkinList)
@@ -1549,6 +1554,25 @@ namespace Game
                     {
                         //目标的类型不能为空，如果为空则默认为仆从
                         targetChecker.targetType = DEFINE.TARGET_TYPE_SERVANT;
+                    }
+                }
+            }
+            // 修复卡牌定义。
+            void fixCardDefine(CardDefine define)
+            {
+                // 移除陷阱关键词，并给第一个事件效果加入陷阱标签。
+                if (define.hasKeyword(KEYWORD.SECRET))
+                {
+                    var keywords = define.getKeywords();
+                    define.setKeywords(keywords.Where(k => k != KEYWORD.SECRET).ToArray());
+                    var firstEvent = define.getGeneratedEffects().OfType<GeneratedEventEffect>().FirstOrDefault();
+                    if (firstEvent != null)
+                    {
+                        var tags = firstEvent.getTags();
+                        if (!tags.Contains(EFFECTTAG.EVENT_TRAP))
+                        {
+                            firstEvent.setTags(tags.Append(EFFECTTAG.EVENT_TRAP).ToArray());
+                        }
                     }
                 }
             }

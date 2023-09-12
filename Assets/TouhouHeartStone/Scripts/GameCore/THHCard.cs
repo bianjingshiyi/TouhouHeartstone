@@ -1022,7 +1022,7 @@ namespace TouhouHeartstone
                     info = NO_TARGET;
                     return false;
                 }
-                if (card.hasKeyword(game, KEYWORD.SECRET))
+                if (card.isTrap(game))
                 {
                     if (card.getOwner().getHead().count >= card.getOwner().getHead().maxCount)
                     {
@@ -2439,6 +2439,10 @@ namespace TouhouHeartstone
                 await card.removeBuff(game, card.getBuffs(b => b.id == buffId));
             }
         }
+        public static bool isTrap(this ICardData card, IGame game)
+        {
+            return card.define.getGeneratedEffects().Any(e => e.isTrap()) || card.hasKeyword(game, KEYWORD.SECRET);
+        }
         /// <summary>
         /// 触发奥秘
         /// </summary>
@@ -2457,7 +2461,7 @@ namespace TouhouHeartstone
         }
         public static async Task updateSecret(this Card secret, CardEngine game)
         {
-            if (secret.isSpell() && secret.hasKeyword(game, KEYWORD.SECRET)) // 是陷阱。
+            if (secret.isSpell() && secret.isTrap(game)) // 是陷阱。
             {
                 // 查找所有自定义事件效果。
                 // 如果是陷阱效果，改变其启用或禁用。
