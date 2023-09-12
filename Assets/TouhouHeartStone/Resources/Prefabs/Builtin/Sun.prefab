@@ -28960,27 +28960,28 @@ MonoBehaviour:
   _animator: {fileID: 65972746486911399}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
+  needSourceToPlay: 1
   _testMode: 0
   _flyCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.33333334
+      time: 2
       value: 0
-      inSlope: 0.61276615
-      outSlope: 0.61276615
+      inSlope: -0
+      outSlope: -0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.19583327
+      outWeight: 0.22916663
     - serializedVersion: 3
-      time: 0.6666667
+      time: 4
       value: 1
-      inSlope: 7.7005215
-      outSlope: 7.7005215
+      inSlope: 1.1858836
+      outSlope: 1.1858836
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.04583341
+      inWeight: 0.041666627
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
