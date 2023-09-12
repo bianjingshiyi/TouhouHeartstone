@@ -2542,8 +2542,9 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取属性的卡牌。]]></summary>
@@ -2551,8 +2552,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[获取到的属性值。]]></summary>
@@ -2560,8 +2562,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>Game.CardPropertyGetterName</type>
-        <name>属性名称</name>
+        <type>CardPropertyGetterName</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要获取的属性名称。]]></summary>
@@ -2577,15 +2580,17 @@
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.Card</type>
-        <name>卡牌</name>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置属性的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的属性值。]]></summary>
@@ -2594,8 +2599,9 @@
     <outputs />
     <consts>
       <ActionParameterComment>
-        <type>Game.CardPropertySetterName</type>
-        <name>属性名称</name>
+        <type>CardPropertySetterName</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[要设置的属性名称。]]></summary>
@@ -4238,6 +4244,35 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>102028</defineId>
+    <obsoleteNames />
+    <editorName>卡牌是否是陷阱</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断是否是陷阱的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌是否是陷阱？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一张卡牌是否是陷阱。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>202024</defineId>
     <obsoleteNames />
     <editorName>重置卡牌</editorName>
@@ -5015,8 +5050,9 @@
     <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
-        <type>TouhouCardEngine.CardDefine</type>
-        <name>卡牌定义</name>
+        <type>CardDefine</type>
+        <name>card</name>
+        <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -5024,8 +5060,9 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>System.Object</type>
-        <name>值</name>
+        <type>Object</type>
+        <name>return</name>
+        <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -5033,8 +5070,9 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>Game.CardPropertyGetterName</type>
-        <name>属性名称</name>
+        <type>CardPropertyGetterName</type>
+        <name>propName</name>
+        <displayName>属性名称</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[]]></summary>
@@ -5432,6 +5470,35 @@
     <outputs />
     <consts />
     <summary><![CDATA[以一张卡牌为载体，触发另一个法术或技能卡牌定义的效果。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>103021</defineId>
+    <obsoleteNames />
+    <editorName>卡牌定义是否是陷阱</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断是否是陷阱的卡牌定义。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌定义是否是陷阱？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一个卡牌定义是否是陷阱。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -5893,6 +5960,35 @@
     </outputs>
     <consts />
     <summary><![CDATA[判断一个卡牌快照在当时是否具有遗言。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>104016</defineId>
+    <obsoleteNames />
+    <editorName>卡牌快照是否是陷阱</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardSnapshot</type>
+        <name>cardSnapshot</name>
+        <displayName>卡牌快照</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断是否是陷阱的卡牌快照。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌快照是否是陷阱？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一个卡牌快照是否是陷阱。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>

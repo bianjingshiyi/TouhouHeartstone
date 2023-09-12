@@ -200,5 +200,9 @@ namespace TouhouHeartstone
         {
             return card.getEffects().Any(e => e.isDeathRattle());
         }
+        public static bool isTrap(this CardDefine cardDefine)
+        {
+            return cardDefine.getGeneratedEffects().Any(e => e.isTrap()) || cardDefine.hasKeyword(KEYWORD.SECRET);
+        }
     }
 }

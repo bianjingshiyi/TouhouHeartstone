@@ -36,6 +36,9 @@ namespace Game
         public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_BATTLECRY = "卡牌快照具有宣言";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_HAS_DEATHRATTLE = "卡牌快照具有遗言";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_NAME_CARD_SNAPSHOT_IS_TRAP = "卡牌快照是否是陷阱";
+        
         [TranslateMsg("编辑器/卡牌快照-节点名称")]
         public const string EDITOR_NODE_CARD_SNAPSHOT_IS_CHARGED = "卡牌快照是否已蓄力";
         [TranslateMsg("编辑器/卡牌快照-节点名称")]
@@ -243,6 +246,18 @@ namespace Game
             if (card == null)
                 return false;
             return card.hasDeathRattle(game);
+        }
+        /// <summary>
+        /// 卡牌快照是否是陷阱
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.CardSnapshotIsTrap, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CARD_SNAPSHOT_IS_TRAP)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardSnapshotIsTrap(CardEngine game,
+            [ActionNodeParam(EDITOR_VAR_TYPE_CARD_SNAPSHOT)] CardSnapshot cardSnapshot)
+        {
+            if (cardSnapshot == null)
+                return false;
+            return cardSnapshot.isTrap(game);
         }
     }
 }

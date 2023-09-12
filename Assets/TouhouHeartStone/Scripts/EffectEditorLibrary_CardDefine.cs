@@ -50,6 +50,8 @@ namespace Game
         public const string EDITOR_NODE_TRIGGER_CARD_DEFINE_DEATHRATTLE = "触发卡牌定义遗言";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE = "卡牌定义具有遗言";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_CARD_DEFINE_IS_TRAP = "卡牌定义是否是陷阱";
         [TranslateMsg("编辑器-动作节点-触发法术或技能卡牌定义效果")]
         public const string EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE = "触发法术或技能卡牌定义效果";
         [TranslateMsg("编辑器-节点名称-获取卡牌定义的标签列表")]
@@ -437,6 +439,18 @@ namespace Game
                     continue;
                 await card.activeSpellCardDefineEffect(game, card.getOwner(), cardDefine, targets);
             }
+        }
+        /// <summary>
+        /// 卡牌定义是否是陷阱
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.CardDefineIsTrap, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_CARD_DEFINE_IS_TRAP)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardDefineIsTrap(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
+        {
+            if (cardDefine == null)
+                return false;
+            return cardDefine.isTrap();
         }
     }
     public enum CardDefineSelect

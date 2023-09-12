@@ -866,6 +866,8 @@ namespace Game
         public const string EDITOR_NODE_TRIGGER_DEATHRATTLE = "触发卡牌遗言";
         [TranslateMsg("动作图编辑器中动作节点名称之触发法术或技能卡牌效果")]
         public const string EDITOR_NODE_TRIGGER_SPELL_CARD_EFFECT = "触发法术或技能卡牌效果";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_CARD_IS_TRAP = "卡牌是否是陷阱";
         /// <summary>
         /// 卡牌具有宣言
         /// </summary>
@@ -941,6 +943,18 @@ namespace Game
                 else if (card.isSpell() || card.isSkill())
                     await card.activeEffect(game, card.getOwner(), targets);
             }
+        }
+        /// <summary>
+        /// 卡牌是否是陷阱
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.CardIsTrap, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_CARD_IS_TRAP)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool cardIsTrap(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            if (card == null)
+                return false;
+            return card.isTrap(game);
         }
         #endregion
 

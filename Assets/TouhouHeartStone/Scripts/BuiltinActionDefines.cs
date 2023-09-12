@@ -84,6 +84,7 @@ namespace Game
         public const int IsCharged = Type_Function + Category_Card + 25;    // 是否已蓄力
         public const int GetChargedLevel = Type_Function + Category_Card + 26;    // 获取蓄力层数
         public const int GetCardProp = Type_Function + Category_Card + 27;    // 获取卡牌属性
+        public const int CardIsTrap = Type_Function + Category_Card + 28;    // 卡牌是否是陷阱
 
 
         // 卡牌定义
@@ -107,6 +108,7 @@ namespace Game
         public const int CardDefineHasDeathrattle = Type_Function + Category_CardDefine + 18;    // 卡牌定义具有遗言
         public const int GetCardDefineTagList = Type_Function + Category_CardDefine + 19;    // 获取卡牌定义标签列表
         public const int GetCardDefineProp = Type_Function + Category_CardDefine + 20;    // 获取卡牌定义属性
+        public const int CardDefineIsTrap = Type_Function + Category_CardDefine + 21;    // 卡牌定义是否是陷阱
 
 
         // 卡牌快照
@@ -125,6 +127,7 @@ namespace Game
         public const int GetCardSnapshotChargedLevel = Type_Function + Category_CardSnapshot + 13;    // 获取卡牌快照蓄力层数
         public const int DoesCardSnapshotHaveBattlecry = Type_Function + Category_CardSnapshot + 14;    // 卡牌快照具有宣言
         public const int DoesCardSnapshotHaveDeathrattle = Type_Function + Category_CardSnapshot + 15;    // 卡牌快照具有遗言
+        public const int CardSnapshotIsTrap = Type_Function + Category_CardSnapshot + 16;    // 卡牌快照是否是陷阱
 
 
         // 牌堆
