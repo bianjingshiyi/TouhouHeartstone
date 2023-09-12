@@ -167,6 +167,7 @@ namespace Controllers
         {
             { "AddBuffEvent", EDITOR_EVENT_NAME_ADD_BUFF },
             { "RemoveBuffEvent", EDITOR_EVENT_NAME_REMOVE_BUFF },
+            { "MoveCardEvent", EDITOR_EVENT_NAME_MOVE_CARD },
             { "TurnStartEvent", StringTable.EDITOR_EVENT_NAME_TURN_START },
             { "UseEvent", StringTable.EDITOR_EVENT_NAME_USE },
             { "SetArmorEvent", StringTable.EDITOR_EVENT_NAME_ARMOR_CHANGE },
@@ -219,6 +220,8 @@ namespace Controllers
         public const string EDITOR_EVENT_NAME_REMOVE_BUFF = "移除增益";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_SHACKLE = "禁锢";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MOVE_CARD = "卡牌移动";
     }
     public class EventTypeInfoCollection : List<EventDefine>
     {

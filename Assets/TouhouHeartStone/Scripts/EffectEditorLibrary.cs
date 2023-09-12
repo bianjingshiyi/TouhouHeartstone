@@ -614,6 +614,10 @@ namespace Game
         #region 牌堆
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_CHECK_CARD_PILE = "卡牌所在牌堆判断";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_PILE_NAME = "获取牌堆名";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_OWNER_OF_PILE = "获取牌堆所属玩家";
         [TranslateMsg("编辑器-参数名称 PileName")]
         private const string EDITOR_PARAM_PILE_NAME = "牌堆名";
         [TranslateMsg("编辑器-参数名称 IsChanged")]
@@ -721,6 +725,34 @@ namespace Game
         {
             return (moveCardEvent.from.owner == player && moveCardEvent.from.name == pileName) ||
                 (moveCardEvent.to.owner == player && moveCardEvent.to.name == pileName);
+        }
+        /// <summary>
+        /// 获取牌堆名
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.GetPileName, StringTable.EDITOR_NODE_CATEGORY_PILE, EDITOR_NODE_NAME_GET_PILE_NAME)]
+        [return: ActionNodeParam(EDITOR_PARAM_PILE_NAME)]
+        public static string getPileName(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] Pile pile)
+        {
+            if (pile == null)
+                return null;
+            return pile.name;
+        }
+        /// <summary>
+        /// 获取牌堆所属玩家
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.GetOwnerOfPile, StringTable.EDITOR_NODE_CATEGORY_PILE, EDITOR_NODE_NAME_GET_OWNER_OF_PILE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
+        public static Player getOwnerOfPile(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] Pile pile)
+        {
+            if (pile == null)
+                return null;
+            return game.players.FirstOrDefault(p => p.getPiles().Contains(pile));
         }
         #endregion
         //  与增益相关

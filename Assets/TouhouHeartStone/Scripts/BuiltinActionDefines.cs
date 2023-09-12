@@ -133,6 +133,8 @@ namespace Game
         // 牌堆
         public const int CheckCardPile = Type_Function + Category_Pile + 1;    // 卡牌所在牌堆判断
         public const int GetCardsInPile = Type_Function + Category_Pile + 2;    // 获取牌堆中的卡牌
+        public const int GetPileName = Type_Function + Category_Pile + 3;    // 获取牌堆名
+        public const int GetOwnerOfPile = Type_Function + Category_Pile + 4;    // 获取牌堆所属玩家
 
         // 增益
         public const int ThisBuff = Type_Function + Category_Buff + 1; // 该增益

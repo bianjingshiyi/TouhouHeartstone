@@ -1710,6 +1710,74 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>105003</defineId>
+    <obsoleteNames />
+    <editorName>获取牌堆名</editorName>
+    <category>牌堆</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>pile</name>
+        <displayName>牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取名称的牌堆。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>return</name>
+        <displayName>牌堆名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的牌堆名称。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个牌堆的名称。内置的牌堆名包括：
+          <li>Master: 英雄牌堆</li>
+          <li>Init: 初始手牌牌堆</li>
+          <li>Hand: 手牌牌堆</li>
+          <li>Skill: 英雄技能牌堆</li>
+          <li>Deck: 牌库牌堆</li>
+          <li>Field: 战场牌堆</li>
+          <li>Grave: 墓地牌堆</li>
+          <li>Warp: 暂存区牌堆</li>
+          <li>Item: 道具牌堆</li>
+          <li>Head: 延迟区牌堆</li>]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>105004</defineId>
+    <obsoleteNames />
+    <editorName>获取牌堆所属玩家</editorName>
+    <category>牌堆</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>pile</name>
+        <displayName>牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取所属玩家的牌堆。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>return</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的牌堆的所属玩家。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个牌堆的所属玩家。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>106001</defineId>
     <obsoleteNames />
     <editorName>该增益</editorName>
