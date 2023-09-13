@@ -41,6 +41,7 @@ namespace UI
             actionNodeItem.setInputs(inputViewData);
             actionNodeItem.setOutputs(outputViewData);
             actionNodeItem.switchToEventEntryNode();
+            actionNodeItem.showVisualEffectButton(true);
         }
         public void setPreviewActiveEntryNode(string nodeName,
             PortItemInfo[] inputViewData,
@@ -53,6 +54,7 @@ namespace UI
             actionNodeItem.setActiveEntry(targetCheckerTypes, targetCheckers);
             actionNodeItem.setInputs(inputViewData);
             actionNodeItem.setOutputs(outputViewData);
+            actionNodeItem.showVisualEffectButton(true);
         }
         public void hidePreviewNode()
         {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BJSYGameCore;
 using FreespaceFinder;
 using Game;
-using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -77,6 +75,7 @@ namespace UI
             actionNodeItem.setActiveEntry(targetCheckerTypes, targetCheckers);
             actionNodeItem.setInputs(inputViewData);
             actionNodeItem.setOutputs(outputViewData);
+            actionNodeItem.showVisualEffectButton(true);
 
             actionNodeItem.onBeginDragInputNode += onBeginDragInputNode;
             actionNodeItem.onDragInputNode += onDragInputNode;
@@ -108,6 +107,7 @@ namespace UI
             actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
             actionNodeItem.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
             actionNodeItem.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
+            actionNodeItem.onClickVisualEffectButton += onActionNodeVisualEffectButtonClickedCallback;
 
             clearFreePlaceCheckRegion();
             return actionNodeItem;

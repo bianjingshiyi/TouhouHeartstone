@@ -155,7 +155,7 @@ namespace TouhouCardEngine
         public SerializableActiveEntryNode(ActiveEntryNode activeEntry)
         {
             id = activeEntry.id;
-            tags = activeEntry.tags?.ToArray() ?? Array.Empty<string>();
+            consts = activeEntry.consts != null ? new Dictionary<string, object>(activeEntry.consts) : null;
             targetCheckerList = activeEntry.targetCheckerList.ConvertAll(t => new SerializableTargetChecker(t));
             posX = activeEntry.posX;
             posY = activeEntry.posY;
@@ -168,7 +168,15 @@ namespace TouhouCardEngine
                 posY = posY,
             };
             entry.graph = graph;
-            entry.setTags(tags);
+            if (consts != null)
+            {
+                foreach (var pair in consts)
+                {
+                    entry.setConst(pair.Key, pair.Value);
+                }
+            }
+            if (tags != null)
+                entry.setTags(tags);
             foreach (var seri in targetCheckerList)
             {
                 var checker = seri.toTargetChecker();
@@ -178,10 +186,12 @@ namespace TouhouCardEngine
         }
         Node ISerializableNode.ToActionNode(ActionGraph graph) => ToActionNode(graph);
 
+        [Obsolete]
         public string[] tags;
         public int id;
         public float posX;
         public float posY;
+        public Dictionary<string, object> consts;
         public List<SerializableTargetChecker> targetCheckerList = new List<SerializableTargetChecker>();
     }
 }

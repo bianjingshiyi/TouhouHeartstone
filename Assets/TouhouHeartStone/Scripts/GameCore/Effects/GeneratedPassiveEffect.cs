@@ -7,7 +7,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class GeneratedPassiveEffect : GeneratedEffect, IPassiveEffect, IPileRangedEffect
+    public class GeneratedPassiveEffect : GeneratedEffect, IPassiveEffect, IPileRangedEffect, IEntryNodeEffect
     {
         #region 公有方法
         #region 构造方法
@@ -102,6 +102,7 @@ namespace TouhouHeartstone
         public const string disableActionName = "disableAction";
         public static readonly PortDefine enableActionPortDefine = PortDefine.Control(enableActionName, "EnableAction");
         public static readonly PortDefine disableActionPortDefine = PortDefine.Control(disableActionName, "DisableAction");
+        Node IEntryNodeEffect.entryNode => entryNode;
         #endregion
     }
 

@@ -114,8 +114,11 @@ namespace Game.BattleTable
         }
         private void checkCardSkinEffectAnimations(IEventArg arg)
         {
-            if (arg is EffectTriggerEventArg)
+            if (arg is EffectTriggerEventArg effectTriggerEventArg)
+            {
+                checkCardSkinEffectEntryAnimation(effectTriggerEventArg);
                 return;
+            }
             var effectTriggerArg = getEffectEventTriggerArg(arg);
             if (effectTriggerArg == null)
                 return;
@@ -125,7 +128,20 @@ namespace Game.BattleTable
             var animationDef = gameManager.getAnimationDefine(skinAnimRef.animRef);
             if (animationDef != null)
             {
-                addAnim(new GameTableAnim(animationDef, arg, effectTriggerArg, skinAnimRef));
+                addAnim(new EventEffectAnim(animationDef, arg, effectTriggerArg, skinAnimRef));
+            }
+        }
+        private void checkCardSkinEffectEntryAnimation(EffectTriggerEventArg arg)
+        {
+            if (arg == null)
+                return;
+            var skinAnimRef = getEffectEntrySkinAnimRef(arg);
+            if (skinAnimRef == null)
+                return;
+            var animationDef = gameManager.getAnimationDefine(skinAnimRef.animRef);
+            if (animationDef != null)
+            {
+                addAnim(new EventEffectAnim(animationDef, arg, arg, skinAnimRef));
             }
         }
         public EffectTriggerEventArg getEffectEventTriggerArg(IEventArg arg)
@@ -168,6 +184,41 @@ namespace Game.BattleTable
                 {
                     var node = genEffect.graph.findNodeById(arg.flowNodeId);
                     if (node != null && isCorrectEventForNode(arg, node))
+                    {
+                        var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+                        animRef = skin.getAnimRef(key);
+                    }
+                }
+            }
+            return animRef;
+        }
+        public SkinAnimationRef getEffectEntrySkinAnimRef(EffectTriggerEventArg effectArg)
+        {
+            var card = effectArg.card;
+            var buff = effectArg.buff;
+            SkinAnimationRef animRef = null;
+            if (buff is GeneratedBuff genBuff)
+            {
+                var define = game.getBuffDefine(genBuff.defineRef);
+                var skin = cardManager.getBuffSkin(define);
+                if (define is GeneratedBuffDefine && effectArg.effect is IEntryNodeEffect entryNodeEffect)
+                {
+                    Node node = entryNodeEffect.entryNode;
+                    if (node != null)
+                    {
+                        var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+                        animRef = skin.getAnimRef(key);
+                    }
+                }
+            }
+            else if (card != null)
+            {
+                var define = card.define;
+                var skin = cardManager.getCardSkin(define);
+                if (effectArg.effect is IEntryNodeEffect entryNodeEffect)
+                {
+                    var node = entryNodeEffect.entryNode;
+                    if (node != null)
                     {
                         var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
                         animRef = skin.getAnimRef(key);

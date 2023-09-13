@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 192415093246030735}
   - component: {fileID: 8969597479079374652}
   - component: {fileID: 68121268622577268}
-  - component: {fileID: 8896954736909383663}
-  - component: {fileID: 3667932208492547611}
   m_Layer: 0
   m_Name: PatchouliMagicCircle
   m_TagString: Untagged
@@ -4849,34 +4847,3 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &8896954736909383663
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3817175490067499715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 592cd4d7f1a03d2488d873d315b9c80d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _animator: {fileID: 0}
-  _srcTransform: {fileID: 0}
-  _destTransform: {fileID: 0}
---- !u!114 &3667932208492547611
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3817175490067499715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: 2
-  defineName: PatchouliMagicCircle
-  duration: 2
-  blockTime: 2

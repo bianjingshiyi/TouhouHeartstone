@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TouhouHeartstone.Builtin;
 
 namespace TouhouCardEngine
 {
@@ -107,8 +108,7 @@ namespace TouhouCardEngine
             id = entryNode.id;
             posX = entryNode.posX;
             posY = entryNode.posY;
-            piles = entryNode.getPiles().ToArray();
-            ranges = entryNode.getRanges()?.ToArray();
+            consts = entryNode.consts != null ? new Dictionary<string, object>(entryNode.consts) : null;
         }
         public AuraEntryNode ToActionNode(ActionGraph graph)
         {
@@ -118,8 +118,17 @@ namespace TouhouCardEngine
                 posX = posX,
                 posY = posY
             };
-            entry.setPiles(piles);
-            entry.setRanges(ranges);
+            if (consts != null)
+            {
+                foreach (var pair in consts)
+                {
+                    entry.setConst(pair.Key, pair.Value);
+                }
+            }
+            if (piles != null)
+                entry.setPiles(piles);
+            if (ranges != null)
+                entry.setPiles(ranges);
             entry.graph = graph;
             return entry;
         }
@@ -128,7 +137,10 @@ namespace TouhouCardEngine
         public int id;
         public float posX;
         public float posY;
+        public Dictionary<string, object> consts;
+        [Obsolete]
         public string[] piles;
+        [Obsolete]
         public string[] ranges;
     }
 }

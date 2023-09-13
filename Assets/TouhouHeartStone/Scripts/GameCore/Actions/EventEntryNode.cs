@@ -54,8 +54,7 @@ namespace TouhouCardEngine
             eventName = eventEntryNode.eventName;
             posX = eventEntryNode.posX;
             posY = eventEntryNode.posY;
-            tags = eventEntryNode.tags?.ToArray() ?? Array.Empty<string>();
-            piles = eventEntryNode.piles?.ToArray() ?? Array.Empty<string>();
+            consts = eventEntryNode.consts != null ? new Dictionary<string, object>(eventEntryNode.consts) : null;
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {
@@ -65,8 +64,17 @@ namespace TouhouCardEngine
                 posX = posX,
                 posY = posY
             };
-            entry.setTags(tags);
-            entry.setPiles(piles);
+            if (consts != null)
+            {
+                foreach (var pair in consts)
+                {
+                    entry.setConst(pair.Key, pair.Value);
+                }
+            }
+            if (tags != null)
+                entry.setTags(tags);
+            if (piles != null)
+                entry.setPiles(piles);
             entry.graph = graph;
             return entry;
         }
@@ -76,7 +84,10 @@ namespace TouhouCardEngine
         public float posX;
         public float posY;
         public string eventName;
+        public Dictionary<string, object> consts;
+        [Obsolete]
         public string[] tags;
+        [Obsolete]
         public string[] piles;
     }
 }

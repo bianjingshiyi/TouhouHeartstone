@@ -7,7 +7,7 @@ using TouhouCardEngine.Interfaces;
 
 namespace TouhouHeartstone
 {
-    public class GeneratedActiveEffect : GeneratedEffect, IActiveEffect
+    public class GeneratedActiveEffect : GeneratedEffect, IActiveEffect, IEntryNodeEffect
     {
         #region 公有方法
         #region 构造方法
@@ -129,6 +129,7 @@ namespace TouhouHeartstone
         #endregion
         #region 属性字段
         public virtual ActiveEntryNode entryNode => graph?.nodes?.OfType<ActiveEntryNode>().FirstOrDefault();
+        Node IEntryNodeEffect.entryNode => entryNode;
         #endregion
     }
 
