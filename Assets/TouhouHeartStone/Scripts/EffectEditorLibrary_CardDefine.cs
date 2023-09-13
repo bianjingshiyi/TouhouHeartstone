@@ -253,7 +253,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getCardDefinePropByPropertyName(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardPropertyGetterName propName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] CardDefinePropertyGetterName propName)
         {
             return card?.getProp<object>(propName);
         }

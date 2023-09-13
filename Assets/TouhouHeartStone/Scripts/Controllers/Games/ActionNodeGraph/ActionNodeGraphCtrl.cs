@@ -1559,6 +1559,8 @@ namespace Controllers
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardPropertyNameSet, value);
             else if (type == typeof(CardPropertyGetterName))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardPropertyNameGet, value);
+            else if (type == typeof(CardDefinePropertyGetterName))
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardDefinePropertyNameGet, value);
             else
                 throw new NotImplementedException("没有" + type + "对应的常数类型");
         }

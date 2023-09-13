@@ -1741,7 +1741,11 @@ namespace UI
         /// <summary>
         /// 卡牌属性（可读取）
         /// </summary>
-        cardPropertyNameGet
+        cardPropertyNameGet,
+        /// <summary>
+        /// 卡牌定义属性（可读取）
+        /// </summary>
+        cardDefinePropertyNameGet
     }
     public enum ActionNodeConnectionType
     {

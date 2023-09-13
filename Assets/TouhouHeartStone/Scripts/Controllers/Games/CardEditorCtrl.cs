@@ -1376,12 +1376,12 @@ namespace Controllers
         public const string CARD_PROP_NAME_ATTACK_TIMES = "攻击次数";
         public static readonly List<CardPropertyNameItem> cardProps = new List<CardPropertyNameItem>
         {
-            new CardPropertyNameItem(CARD.ISDEAD, CARD_PROP_NAME_ISDEAD, true, true),
-            new CardPropertyNameItem(CARD.CURRENT_LIFE, CARD_PROP_NAME_CURRENT_LIFE, true, true),
-            new CardPropertyNameItem(CARD.ARMOR, CARD_PROP_NAME_ARMOR, true, true),
-            new CardPropertyNameItem(CARD.SILENCE, CARD_PROP_NAME_SILENCED, true, true),
-            new CardPropertyNameItem(CARD.ISREADY, CARD_PROP_NAME_ISREADY, true, true),
-            new CardPropertyNameItem(CARD.ATTACK_TIMES, CARD_PROP_NAME_ATTACK_TIMES, true, true),
+            new CardPropertyNameItem(CARD.ISDEAD, CARD_PROP_NAME_ISDEAD, true, true, false),
+            new CardPropertyNameItem(CARD.CURRENT_LIFE, CARD_PROP_NAME_CURRENT_LIFE, true, true, false),
+            new CardPropertyNameItem(CARD.ARMOR, CARD_PROP_NAME_ARMOR, true, true, false),
+            new CardPropertyNameItem(CARD.SILENCE, CARD_PROP_NAME_SILENCED, true, true, false),
+            new CardPropertyNameItem(CARD.ISREADY, CARD_PROP_NAME_ISREADY, true, true, false),
+            new CardPropertyNameItem(CARD.ATTACK_TIMES, CARD_PROP_NAME_ATTACK_TIMES, true, true, false),
 
             // 只读
             new CardPropertyNameItem(DEFINE.ATTACK, StringTable.GAME_CARD_PROP_NAME_ATTACK),

@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UIHelper = BJSYGameCore.UI.UIHelper;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace UI
 {
@@ -69,21 +70,7 @@ namespace UI
         }
         public void initCardProperties(CardPropertyNameItem[] values)
         {
-            var setters = values.Where(v => v.canSet);
-            var setterNames = setters.Select(v => v.name).ToArray();
-            var setterValues = setters.Select(v => v.value).ToArray();
-
-            var getters = values.Where(v => v.canGet);
-            var getterNames = getters.Select(v => v.name).ToArray();
-            var getterValues = getters.Select(v => v.value).ToArray();
-            initCardProperties(setterNames, setterValues, getterNames, getterValues);
-        }
-        public void initCardProperties(string[] setterNames, string[] setterValues, string[] getterNames, string[] getterValues)
-        {
-            _cardPropertySetterNames = setterNames;
-            _cardPropertySetterValues = setterValues;
-            _cardPropertyGetterNames = getterNames;
-            _cardPropertyGetterValues = getterValues;
+            _cardPropertyNameItems = values;
         }
         #endregion
         #region 私有方法
@@ -462,8 +449,12 @@ namespace UI
             // 设置卡牌属性。
             if (_valueInfo.type == ActionNodeValueType.cardPropertyNameSet)
             {
+                var nameItems = _cardPropertyNameItems.Where(v => v.canSet);
+                var names = nameItems.Select(v => v.name).ToArray();
+                var values = nameItems.Select(v => v.value).ToArray();
+
                 _inputDropdown.gameObject.SetActive(true);
-                _inputDropdown.setDropdownValues(_cardPropertySetterNames, _cardPropertySetterValues);
+                _inputDropdown.setDropdownValues(names, values);
                 string value = null;
                 if (_valueInfo.value is string str)
                 {
@@ -471,21 +462,25 @@ namespace UI
                 }
                 else if (_valueInfo.value is int index)
                 {
-                    value = _cardPropertySetterValues[index];
+                    value = values[index];
                 }
                 else if (_valueInfo.value is CardPropertySetterName propName)
                 {
                     value = propName.name;
                 }
                 if (value == null)
-                    value = _cardPropertySetterValues.FirstOrDefault();
+                    value = values.FirstOrDefault();
                 _inputDropdown.setValueWithoutNotify(value);
             }
             // 获取卡牌属性。
             else if (_valueInfo.type == ActionNodeValueType.cardPropertyNameGet)
             {
+                var nameItems = _cardPropertyNameItems.Where(v => v.canGet);
+                var names = nameItems.Select(v => v.name).ToArray();
+                var values = nameItems.Select(v => v.value).ToArray();
+
                 _inputDropdown.gameObject.SetActive(true);
-                _inputDropdown.setDropdownValues(_cardPropertyGetterNames, _cardPropertyGetterValues);
+                _inputDropdown.setDropdownValues(names, values);
                 string value = null;
                 if (_valueInfo.value is string str)
                 {
@@ -493,14 +488,40 @@ namespace UI
                 }
                 else if (_valueInfo.value is int index)
                 {
-                    value = _cardPropertyGetterValues[index];
+                    value = values[index];
                 }
                 else if (_valueInfo.value is CardPropertyGetterName propName)
                 {
                     value = propName.name;
                 }
                 if (value == null)
-                    value = _cardPropertyGetterValues.FirstOrDefault();
+                    value = values.FirstOrDefault();
+                _inputDropdown.setValueWithoutNotify(value);
+            }
+            // 获取卡牌定义属性。
+            else if (_valueInfo.type == ActionNodeValueType.cardDefinePropertyNameGet)
+            {
+                var nameItems = _cardPropertyNameItems.Where(v => v.canDefineGet);
+                var names = nameItems.Select(v => v.name).ToArray();
+                var values = nameItems.Select(v => v.value).ToArray();
+
+                _inputDropdown.gameObject.SetActive(true);
+                _inputDropdown.setDropdownValues(names, values);
+                string value = null;
+                if (_valueInfo.value is string str)
+                {
+                    value = str;
+                }
+                else if (_valueInfo.value is int index)
+                {
+                    value = values[index];
+                }
+                else if (_valueInfo.value is CardDefinePropertyGetterName propName)
+                {
+                    value = propName.name;
+                }
+                if (value == null)
+                    value = values.FirstOrDefault();
                 _inputDropdown.setValueWithoutNotify(value);
             }
             else if (_valueInfo.type == ActionNodeValueType.effectTag)
@@ -737,13 +758,7 @@ namespace UI
         [SerializeField]
         private string[] _eventValues;
         [SerializeField]
-        private string[] _cardPropertySetterNames;
-        [SerializeField]
-        private string[] _cardPropertySetterValues;
-        [SerializeField]
-        private string[] _cardPropertyGetterNames;
-        [SerializeField]
-        private string[] _cardPropertyGetterValues;
+        private CardPropertyNameItem[] _cardPropertyNameItems;
         [SerializeField]
         ActionNodeValueInfo _valueInfo;
         [SerializeField]

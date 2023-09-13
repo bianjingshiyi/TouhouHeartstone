@@ -5070,7 +5070,7 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>CardPropertyGetterName</type>
+        <type>CardDefinePropertyGetterName</type>
         <name>propName</name>
         <displayName>属性名称</displayName>
         <isParams>false</isParams>

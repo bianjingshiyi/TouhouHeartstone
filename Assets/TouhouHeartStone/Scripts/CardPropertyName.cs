@@ -1,4 +1,6 @@
-﻿namespace Game
+﻿using System;
+
+namespace Game
 {
     public abstract class CardPropertyName
     {
@@ -46,18 +48,32 @@
             return new CardPropertyGetterName(str);
         }
     }
+    public class CardDefinePropertyGetterName : CardPropertyName
+    {
+        public CardDefinePropertyGetterName(string name) : base(name)
+        {
+        }
+
+        public static explicit operator CardDefinePropertyGetterName(string str)
+        {
+            return new CardDefinePropertyGetterName(str);
+        }
+    }
+    [Serializable]
     public struct CardPropertyNameItem
     {
         public string value;
         public string name;
         public bool canGet;
         public bool canSet;
-        public CardPropertyNameItem(string value, string name, bool canGet = true, bool canSet = false)
+        public bool canDefineGet;
+        public CardPropertyNameItem(string value, string name, bool canGet = true, bool canSet = false, bool canDefineGet = true)
         {
             this.value = value;
             this.name = name;
             this.canGet = canGet;
             this.canSet = canSet;
+            this.canDefineGet = canDefineGet;
         }
     }
 }

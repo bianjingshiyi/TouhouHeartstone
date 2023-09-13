@@ -57,6 +57,8 @@ namespace Game
                     return new CardPropertyGetterName(str);
                 else if (to == typeof(CardPropertySetterName))
                     return new CardPropertySetterName(str);
+                else if (to == typeof(CardDefinePropertyGetterName))
+                    return new CardDefinePropertyGetterName(str);
                 else if (to == typeof(string))
                     return str;
             }
