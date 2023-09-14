@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using TouhouCardEngine;
 
 namespace Game
@@ -9,7 +10,7 @@ namespace Game
         public static void init()
         {
             Flow.addConversion(new CardDefineConversion());
-            Flow.addConversion(new CardPropertyNameConversion());
+            Flow.addConversion(new NodeConstProxyConversion());
             Flow.addConversion(new CollectionConversion());
         }
     }
@@ -33,36 +34,48 @@ namespace Game
         }
     }
 
-    public class CardPropertyNameConversion : ParamConversion
+    public class NodeConstProxyConversion : ParamConversion
     {
         public override bool canConvert(Type from, Type to)
         {
-            return (typeof(string).IsAssignableFrom(from) || typeof(CardPropertyName).IsAssignableFrom(from)) && 
-                (typeof(CardPropertyName).IsAssignableFrom(to) || typeof(string).IsAssignableFrom(to));
+            Type fromUnpacked = from;
+            Type toUnpacked = to;
+            if (IsSubclassOfRawGeneric(typeof(NodeConstProxy<>), from, out var fromGenArgs))
+            {
+                fromUnpacked = fromGenArgs[0];
+            }
+            if (IsSubclassOfRawGeneric(typeof(NodeConstProxy<>), to, out var toGenArgs))
+            {
+                toUnpacked = toGenArgs[0];
+            }
+            return toUnpacked.IsAssignableFrom(fromUnpacked);
         }
         public override object convert(Flow flow, object input, Type to)
         {
-            string str = null;
-            if (input is string inputStr)
+            if (input != null)
             {
-                str = inputStr;
-            }
-            else if (input is CardPropertyName propName)
-            {
-                str = propName.name;
-            }
-            if (str != null)
-            {
-                if (to == typeof(CardPropertyGetterName))
-                    return new CardPropertyGetterName(str);
-                else if (to == typeof(CardPropertySetterName))
-                    return new CardPropertySetterName(str);
-                else if (to == typeof(CardDefinePropertyGetterName))
-                    return new CardDefinePropertyGetterName(str);
-                else if (to == typeof(string))
-                    return str;
+                var constructor = to.GetConstructor(new Type[] { input.GetType() });
+                if (constructor != null)
+                {
+                    return constructor.Invoke(new object[1] { input });
+                }
             }
             return input;
+        }
+        private static bool IsSubclassOfRawGeneric(Type generic, Type toCheck, out Type[] genericArgs)
+        {
+            while (toCheck != null && toCheck != typeof(object))
+            {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur)
+                {
+                    genericArgs = toCheck.GetGenericArguments();
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            genericArgs = null;
+            return false;
         }
     }
     public class CollectionConversion : ParamConversion

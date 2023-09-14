@@ -372,7 +372,7 @@ namespace Controllers
             _cardPoolViewPanelCtrl.enableCount(false);
             _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
 
-            _ui.initPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray());
+            _ui.initPiles(getAllPiles());
             _ui.initCardProperties(CardEditorCtrl.cardProps.ToArray());
             _ui.initEventNames(
                 _eventTypeNames.Select(n => EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, n)).ToArray(),
@@ -380,7 +380,7 @@ namespace Controllers
             var keywords = CardEditorCtrl.getKeywords();
             _ui.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
             var effectTagNames = _activeEffectTagNames.Union(_passiveEffectTagNames).ToArray();
-            var effectTagValues = _activeEffectTags.Union(_passiveEffectTags).ToArray();
+            var effectTagValues = getAllEffectTagValues();
             _ui.initEffectTags(effectTagNames, effectTagValues);
 
             var customPropTypes = CardEditorCtrl.customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
@@ -854,16 +854,13 @@ namespace Controllers
                 {
                     var constInfo = constsInfo[i];
                     var name = constInfo.name;
+                    if (actionNode.getConst(name) == null)
+                    {
+                        await initNodeConstDefaultValue(actionNodeItem, actionNode, i, constInfo);
+                    }
                     if (constInfo.type == ActionNodeValueType.cardReference || constInfo.type == ActionNodeValueType.cardReferenceCollection)
                     {
                         await updateCardDefineConst(actionNodeItem, actionNode, i, actionNode.getConst(name));
-                    }
-                    else if (constInfo.type == ActionNodeValueType.eventReference)
-                    {
-                        if (actionNode.getConst(name) == null)
-                        {
-                            actionNode.setConst(name, new EventArgReference(_eventTypeNames[0]));
-                        }
                     }
                 }
             }
@@ -1567,6 +1564,8 @@ namespace Controllers
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardPropertyNameGet, value);
             else if (type == typeof(CardDefinePropertyGetterName))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardDefinePropertyNameGet, value);
+            else if (type == typeof(PileName))
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileName, value);
             else
                 throw new NotImplementedException("没有" + type + "对应的常数类型");
         }
@@ -1740,10 +1739,6 @@ namespace Controllers
                     await updateCardDefineInputField(node, childInputField, defRef);
                 }
             }
-            else if (value == null)
-            {
-                await updateCardDefineInputField(node, cardInputField, null);
-            }
         }
         private async Task updateCardDefineInputField(Node node, ValueInputField cardInputField, DefineReference cardReference)
         {
@@ -1793,6 +1788,46 @@ namespace Controllers
             node.setConst(name, value);
             _recordList.addOperation(new ChangeNodeConstOperation(this, node, name, beforeValue, value));
             _recordList.addBreakpoint();
+        }
+        private async Task initNodeConstDefaultValue(ActionNodeItem item, Node node, int constIndex, ActionNodeValueInfo constInfo)
+        {
+            if (constInfo.type == ActionNodeValueType.cardReference || constInfo.type == ActionNodeValueType.cardReferenceCollection)
+            {
+                ValueInputField field = item.getConstInputField(constIndex);
+                await updateCardDefineInputField(node, field, null);
+            }
+            else
+            {
+                var value = getNodeConstDefaultValue(constInfo.type);
+                node.setConst(constInfo.name, value);
+            }
+        }
+        private object getNodeConstDefaultValue(ActionNodeValueType valueType)
+        {
+            switch (valueType)
+            {
+                case ActionNodeValueType.cardDefinePropertyNameGet:
+                    return CardEditorCtrl.cardProps.FirstOrDefault(p => p.canDefineGet).value;
+                case ActionNodeValueType.cardPropertyNameGet:
+                    return CardEditorCtrl.cardProps.FirstOrDefault(p => p.canGet).value;
+                case ActionNodeValueType.cardPropertyNameSet:
+                    return CardEditorCtrl.cardProps.FirstOrDefault(p => p.canSet).value;
+                case ActionNodeValueType.effectTag:
+                    return getAllEffectTagValues()[0];
+                case ActionNodeValueType.eventReference:
+                    return _eventTypeNames[0];
+                case ActionNodeValueType.pileName:
+                    return getAllPiles()[0].value;
+            }
+            return null;
+        }
+        private (string name, string value)[] getAllPiles()
+        {
+            return CardEditorCtrl.piles.Select(p => (p.Value, p.Key)).ToArray();
+        }
+        private string[] getAllEffectTagValues()
+        {
+            return _activeEffectTags.Union(_passiveEffectTags).ToArray();
         }
         #endregion
         #region 事件

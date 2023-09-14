@@ -45,7 +45,7 @@ namespace UI
             _dropdown.ClearOptions();
             var options = new List<string>();
             int index = getValueDropdownIndex(value);
-            if (index < 0)
+            if (index < 0 && !string.IsNullOrEmpty(value))
             {
                 _tempValue = value;
                 options.Add(_tempValue);

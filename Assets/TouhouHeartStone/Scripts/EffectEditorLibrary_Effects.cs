@@ -117,52 +117,20 @@ namespace Game
         }
     }
     [Serializable]
-    public class EffectTag
+    public class EffectTag : NodeConstProxyString
     {
-        public string effectTag;
-        public EffectTag(string tag)
+        public string effectTag
         {
-            effectTag = tag;
+            get => value;
+            set => this.value = value;
         }
+        public EffectTag(string value) : base(value)
+        {
 
-        public override string ToString()
-        {
-            return effectTag;
         }
-        public override bool Equals(object obj)
+        public static explicit operator EffectTag(string value)
         {
-            if (obj is string str)
-            {
-                return effectTag == str;
-            }
-            else if (obj is EffectTag other)
-            {
-                return effectTag == other.effectTag;
-            }
-            return base.Equals(obj);
-        }
-        public override int GetHashCode()
-        {
-            return effectTag.GetHashCode();
-        }
-
-        public static bool operator ==(EffectTag lhs, EffectTag rhs)
-        {
-            if (lhs is null)
-                return rhs is null;
-            return lhs.Equals(rhs);
-        }
-        public static bool operator !=(EffectTag lhs, EffectTag rhs)
-        {
-            if (lhs is null)
-                return !(rhs is null);
-            return !lhs.Equals(rhs);
-        }
-        public static implicit operator string(EffectTag tag)
-        {
-            if (tag is null)
-                return null;
-            return tag.effectTag;
+            return new EffectTag(value);
         }
     }
 }

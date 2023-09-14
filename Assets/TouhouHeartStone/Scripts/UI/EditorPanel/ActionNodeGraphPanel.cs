@@ -1750,7 +1750,11 @@ namespace UI
         /// <summary>
         /// 卡牌定义属性（可读取）
         /// </summary>
-        cardDefinePropertyNameGet
+        cardDefinePropertyNameGet,
+        /// <summary>
+        /// 牌堆名称
+        /// </summary>
+        pileName
     }
     public enum ActionNodeConnectionType
     {

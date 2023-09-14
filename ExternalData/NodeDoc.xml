@@ -1424,7 +1424,8 @@
     <obsoleteNames>
       <string>GetPile</string>
     </obsoleteNames>
-    <editorName>获取牌堆</editorName>
+    <editorName>获取牌堆（过时）</editorName>
+    <obsoleteMsg />
     <category>玩家</category>
     <inputs>
       <ActionParameterComment>
@@ -1456,6 +1457,44 @@
     </outputs>
     <consts />
     <summary><![CDATA[获取玩家的某个牌堆。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>101017</defineId>
+    <obsoleteNames />
+    <editorName>获取牌堆</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取牌堆的玩家。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>return</name>
+        <displayName>牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的牌堆。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>PileName</type>
+        <name>pileName</name>
+        <displayName>牌堆名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取的牌堆名称。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[获取一个玩家的某个牌堆。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -1625,7 +1664,7 @@
   <ActionComment>
     <defineId>105001</defineId>
     <obsoleteNames />
-    <editorName>卡牌所在牌堆判断</editorName>
+    <editorName>卡牌所在牌堆判断（过时）</editorName>
     <category>牌堆</category>
     <inputs>
       <ActionParameterComment>
@@ -1666,6 +1705,44 @@
           <li>Item: 道具牌堆</li>
           <li>Head: 延迟区牌堆</li>
         </ul>]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[判断一张卡牌是否位于某牌堆内。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>105003</defineId>
+    <obsoleteNames />
+    <editorName>卡牌所在牌堆判断</editorName>
+    <category>牌堆</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断所在牌堆的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌是否位于该牌堆中？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>PileName</type>
+        <name>pileName</name>
+        <displayName>牌堆名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断卡牌所在的牌堆的名称。]]></summary>
       </ActionParameterComment>
     </consts>
     <summary><![CDATA[判断一张卡牌是否位于某牌堆内。]]></summary>

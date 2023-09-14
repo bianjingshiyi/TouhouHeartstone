@@ -222,6 +222,8 @@ namespace Game
         public const string EDITOR_NODE_FAITHDUEL_SELF_CARD = "己方卡牌";
         [TranslateMsg("编辑器/卡牌-信仰对决节点参数")]
         public const string EDITOR_NODE_FAITHDUEL_OPPONENT_CARD = "对方卡牌";
+        [TranslateMsg("编辑器/卡牌-节点名称")]
+        public const string EDITOR_NODE_NAME_GET_PILE_OBSOLETE = "获取牌堆（过时）";
         [TranslateMsg("节点参数 TargetName")]
         const string EDITOR_PARAM_TARGET_NAME = "目标名";
 
@@ -583,16 +585,31 @@ namespace Game
         }
 
         /// <summary>
+        /// 获取牌堆（过时）
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="pileName"></param>
+        /// <returns></returns>
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetPile_Obsolete, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_NAME_GET_PILE_OBSOLETE, "GetPile")]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]
+        [Obsolete]
+        public static Pile getPileObsolete(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player, 
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] string pileName)
+        {
+            return player.getPile(pileName);
+        }
+        /// <summary>
         /// 获取牌堆
         /// </summary>
         /// <param name="player"></param>
         /// <param name="pileName"></param>
         /// <returns></returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetPile, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PILE, "GetPile")]
+        [THHActionMethod(BuiltinActionDefineID.GetPile, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_GET_PILE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]
         public static Pile getPile(
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player, 
-            [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] string pileName)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME, isConst: true)] PileName pileName)
         {
             return player.getPile(pileName);
         }
@@ -612,6 +629,8 @@ namespace Game
 
         //  有关牌堆的操作，比如说洗牌，获取特定牌等等
         #region 牌堆
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_CHECK_CARD_PILE_OBSOLETE = "卡牌所在牌堆判断（过时）";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_CHECK_CARD_PILE = "卡牌所在牌堆判断";
         [TranslateMsg("编辑器-节点名称")]
@@ -702,19 +721,32 @@ namespace Game
         }
 
         /// <summary>
-        /// 卡牌所在牌堆判断
+        /// 卡牌所在牌堆判断（过时）
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
-        [ObsoletedKeyMethod(BuiltinActionDefineID.CheckCardPile, StringTable.EDITOR_NODE_CATEGORY_PILE, EDITOR_NODE_NAME_CHECK_CARD_PILE)]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.CheckCardPile_Obsolete, StringTable.EDITOR_NODE_CATEGORY_PILE, EDITOR_NODE_NAME_CHECK_CARD_PILE_OBSOLETE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
-        public static bool checkCardPile(
+        public static bool checkCardPileObsolete(
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE, isConst: true)] string pileName)
         {
             return card?.pile?.name == pileName;
         }
 
+        /// <summary>
+        /// 卡牌所在牌堆判断
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.CheckCardPile, StringTable.EDITOR_NODE_CATEGORY_PILE, EDITOR_NODE_NAME_CHECK_CARD_PILE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
+        public static bool checkCardPile(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME, isConst: true)] PileName pileName)
+        {
+            return card?.pile?.name == pileName;
+        }
 
         [ObsoletedKeyMethod(ObsoletedActionDefineID.IsPlayerPileChanged, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_IS_CHANGED)]

@@ -2,31 +2,7 @@
 
 namespace Game
 {
-    public abstract class CardPropertyName
-    {
-        public string name { get; set; }
-        public CardPropertyName(string name)
-        {
-            this.name = name;
-        }
-        public override bool Equals(object obj)
-        {
-            return name.Equals(obj);
-        }
-        public override int GetHashCode()
-        {
-            return name.GetHashCode();
-        }
-        public override string ToString()
-        {
-            return name;
-        }
-        public static implicit operator string(CardPropertyName propName)
-        {
-            return propName.name;
-        }
-    }
-    public class CardPropertySetterName : CardPropertyName
+    public class CardPropertySetterName : NodeConstProxyString
     {
         public CardPropertySetterName(string name) : base(name)
         {
@@ -37,7 +13,7 @@ namespace Game
             return new CardPropertySetterName(str);
         }
     }
-    public class CardPropertyGetterName : CardPropertyName
+    public class CardPropertyGetterName : NodeConstProxyString
     {
         public CardPropertyGetterName(string name) : base(name)
         {
@@ -48,7 +24,7 @@ namespace Game
             return new CardPropertyGetterName(str);
         }
     }
-    public class CardDefinePropertyGetterName : CardPropertyName
+    public class CardDefinePropertyGetterName : NodeConstProxyString
     {
         public CardDefinePropertyGetterName(string name) : base(name)
         {

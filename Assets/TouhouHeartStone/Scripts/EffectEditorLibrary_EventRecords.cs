@@ -68,7 +68,7 @@ namespace Game
         {
             if (evt == null || argRef == null)
                 return false;
-            if (game.triggers.getName(evt.eventArg) == argRef.eventName)
+            if (game.triggers.getName(evt.eventArg) == argRef.value)
                 return true;
             return false;
         }
@@ -125,46 +125,18 @@ namespace Game
         #endregion
     }
     [Serializable]
-    public class EventArgReference
+    public class EventArgReference : NodeConstProxyString
     {
-        public string eventName;
-        public EventArgReference(string name)
+        public string eventName
         {
-            eventName = name;
+            get => value;
+            set => this.value = value;
         }
-        public override bool Equals(object obj)
+        public EventArgReference(string value) : base(value)
         {
-            if (obj is EventArgReference eventArg)
-            {
-                return eventName == eventArg.eventName;
-            }
-            return base.Equals(obj);
+
         }
-        public override int GetHashCode()
-        {
-            return eventName.GetHashCode();
-        }
-        public override string ToString()
-        {
-            return eventName;
-        }
-        public static bool operator ==(EventArgReference lhs, EventArgReference rhs)
-        {
-            if (lhs is null)
-            {
-                return rhs is null;
-            }
-            return lhs.Equals(rhs);
-        }
-        public static bool operator !=(EventArgReference lhs, EventArgReference rhs)
-        {
-            if (lhs is null)
-            {
-                return !(rhs is null);
-            }
-            return !lhs.Equals(rhs);
-        }
-        public static implicit operator EventArgReference(string str)
+        public static explicit operator EventArgReference(string str)
         {
             return new EventArgReference(str);
         }

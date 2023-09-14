@@ -39,7 +39,7 @@ namespace Game
 
         #region 函数
         // 玩家
-        public const int GetPile = Type_Function + Category_Player + 1;    // 获取牌堆
+        public const int GetPile_Obsolete = Type_Function + Category_Player + 1;    // 获取牌堆
         public const int GetPlayerProp = Type_Function + Category_Player + 2;    // 获取玩家属性
         public const int GetPlayerOpponent = Type_Function + Category_Player + 3;    // 获取玩家对手
         public const int GetPlayerMaster = Type_Function + Category_Player + 4;    // 获取玩家英雄
@@ -55,6 +55,7 @@ namespace Game
         public const int GetPlayerGem = Type_Function + Category_Player + 14;    // 获取当前灵力值
         public const int GetPlayerMaxGem = Type_Function + Category_Player + 15;    // 获取灵力上限
         public const int GetPlayerSpellDamage = Type_Function + Category_Player + 16;    // 获取玩家法术伤害
+        public const int GetPile = Type_Function + Category_Player + 17;    // 获取牌堆
 
         // 卡牌
         public const int ThisCard = Type_Function + Category_Card + 1; // 这张卡牌
@@ -131,10 +132,11 @@ namespace Game
 
 
         // 牌堆
-        public const int CheckCardPile = Type_Function + Category_Pile + 1;    // 卡牌所在牌堆判断
+        public const int CheckCardPile_Obsolete = Type_Function + Category_Pile + 1;    // 卡牌所在牌堆判断（过时）
         public const int GetCardsInPile = Type_Function + Category_Pile + 2;    // 获取牌堆中的卡牌
         public const int GetPileName = Type_Function + Category_Pile + 3;    // 获取牌堆名
         public const int GetOwnerOfPile = Type_Function + Category_Pile + 4;    // 获取牌堆所属玩家
+        public const int CheckCardPile = Type_Function + Category_Pile + 5;    // 卡牌所在牌堆判断
 
         // 增益
         public const int ThisBuff = Type_Function + Category_Buff + 1; // 该增益

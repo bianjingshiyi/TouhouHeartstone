@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UIHelper = BJSYGameCore.UI.UIHelper;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 
 namespace UI
 {
@@ -127,21 +126,14 @@ namespace UI
             {
                 onValueChanged?.Invoke(this, _valueInfo.optionalValues[index]);
             }
-            else
+            else if (_valueInfo.type == ActionNodeValueType.eventReference)
             {
-                onValueChanged?.Invoke(this, new EventArgReference(_eventValues[index]));
+                onValueChanged?.Invoke(this, _eventValues[index]);
             }
         }
         private void onInputDropdownValueChangedCallback(string value)
         {
-            if (_valueInfo.type == ActionNodeValueType.effectTag)
-            {
-                onValueChanged?.Invoke(this, new EffectTag(value));
-            }
-            else
-            {
-                onValueChanged?.Invoke(this, value);
-            }
+            onValueChanged?.Invoke(this, value);
         }
         private void onMultiInputDropdownValueChangedCallback(string[] values)
         {
@@ -431,7 +423,7 @@ namespace UI
                 }
                 else if (_valueInfo.value is EventArgReference evtRef)
                 {
-                    index = Array.IndexOf(_eventValues, evtRef.eventName);
+                    index = Array.IndexOf(_eventValues, evtRef.value);
                 }
                 if (index < 0)
                     index = 0;
@@ -446,8 +438,30 @@ namespace UI
         {
             //自定义单选下拉菜单
 
+            // 牌堆名称。
+            if (_valueInfo.type == ActionNodeValueType.pileName)
+            {
+                _inputDropdown.gameObject.SetActive(true);
+                _inputDropdown.setDropdownValues(_pileNames, _pileValues);
+                string value = null;
+                if (_valueInfo.value is string str)
+                {
+                    value = str;
+                }
+                else if (_valueInfo.value is int index)
+                {
+                    value = _pileValues[index];
+                }
+                else if (_valueInfo.value is PileName propName)
+                {
+                    value = propName.value;
+                }
+                if (value == null)
+                    value = _pileValues.FirstOrDefault();
+                _inputDropdown.setValueWithoutNotify(value);
+            }
             // 设置卡牌属性。
-            if (_valueInfo.type == ActionNodeValueType.cardPropertyNameSet)
+            else if (_valueInfo.type == ActionNodeValueType.cardPropertyNameSet)
             {
                 var nameItems = _cardPropertyNameItems.Where(v => v.canSet);
                 var names = nameItems.Select(v => v.name).ToArray();
@@ -466,7 +480,7 @@ namespace UI
                 }
                 else if (_valueInfo.value is CardPropertySetterName propName)
                 {
-                    value = propName.name;
+                    value = propName.value;
                 }
                 if (value == null)
                     value = values.FirstOrDefault();
@@ -492,7 +506,7 @@ namespace UI
                 }
                 else if (_valueInfo.value is CardPropertyGetterName propName)
                 {
-                    value = propName.name;
+                    value = propName.value;
                 }
                 if (value == null)
                     value = values.FirstOrDefault();
@@ -518,7 +532,7 @@ namespace UI
                 }
                 else if (_valueInfo.value is CardDefinePropertyGetterName propName)
                 {
-                    value = propName.name;
+                    value = propName.value;
                 }
                 if (value == null)
                     value = values.FirstOrDefault();
@@ -539,7 +553,7 @@ namespace UI
                 }
                 else if (_valueInfo.value is EffectTag tag)
                 {
-                    value = tag.effectTag;
+                    value = tag.value;
                 }
                 if (value == null)
                     value = _effectTagValues.FirstOrDefault();
