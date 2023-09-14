@@ -97,12 +97,17 @@ namespace FreespaceFinder
         /// <param name="height">Height of the area</param>
         public void Cut(Rect cutRect)
         {
-            List<Rect> freeSpaces = new List<Rect>();
-            foreach (Rect rect in freeRects)
+            Cut(cutRect.x, cutRect.y, cutRect.width, cutRect.height);
+        }
+        public void Cut(float cutRectX, float cutRectY, float cutRectWidth, float cutRectHeight)
+        {
+            int lastCount = freeRects.Count;
+            for (int i = 0; i < lastCount; i++)
             {
-                freeSpaces.AddRange(CutRect(rect, cutRect));
+                var rect = freeRects[i];
+                CutRectNonAlloc(freeRects, rect, cutRectX, cutRectY, cutRectWidth, cutRectHeight);
             }
-            freeRects = freeSpaces;
+            freeRects.RemoveRange(0, lastCount);
         }
         public bool ContainsFreeRect(Rect rect)
         {
@@ -146,44 +151,62 @@ namespace FreespaceFinder
         public static List<Rect> CutRect(Rect rect, Rect cutRect)
         {
             List<Rect> res = new List<Rect>();
-            if (cutRect.x >= rect.x + rect.width ||
-                cutRect.y >= rect.y + rect.height ||
-                (cutRect.x + cutRect.width) < rect.x ||
-                (cutRect.y + cutRect.height) < rect.y)
+            CutRectNonAlloc(res, rect, cutRect);
+            return res;
+        }
+        public static void CutRectNonAlloc(List<Rect> list, Rect rect, Rect cutRect)
+        {
+            CutRectNonAlloc(list, rect, cutRect.x, cutRect.y, cutRect.width, cutRect.height);
+        }
+        public static void CutRectNonAlloc(List<Rect> list, Rect rect, float cutRectX, float cutRectY, float cutRectWidth, float cutRectHeight)
+        {
+            float cutRectMaxX = cutRectX + cutRectWidth;
+            float cutRectMaxY = cutRectY + cutRectHeight;
+
+            float rectX = rect.x;
+            float rectY = rect.y;
+            float rectWidth = rect.width;
+            float rectHeight = rect.height;
+            float rectMaxX = rectX + rectWidth;
+            float rectMaxY = rectY + rectHeight;
+
+            if (cutRectX >= rectMaxX ||
+                cutRectY >= rectMaxY ||
+                cutRectMaxX < rectX ||
+                cutRectMaxY < rectY)
             {
                 // no intersection, return myself
-                res.Add(rect);
-                return res;
+                list.Add(rect);
+                return;
             }
-            if (cutRect.x <= rect.x &&
-                cutRect.y <= rect.y &&
-                (cutRect.x + cutRect.width) >= (rect.x + rect.width) &&
-                (cutRect.y + cutRect.height) >= (rect.y + rect.height))
+            if (cutRectX <= rectX &&
+                cutRectY <= rectY &&
+                cutRectMaxX >= rectMaxX &&
+                cutRectMaxY >= rectMaxY)
             {
                 // the cut covers the whole freespce, return empty list
-                return res;
+                return;
             }
-            if (cutRect.x > rect.x)
+            if (cutRectX > rectX)
             {
                 // cut this freespace with the semiplane of abscissas less than x
-                res.Add(new Rect(rect.x, rect.y, cutRect.x - rect.x, rect.height));
+                list.Add(new Rect(rectX, rectY, cutRectX - rectX, rectHeight));
             }
-            if (cutRect.y > rect.y)
+            if (cutRectY > rectY)
             {
                 // cut this freespace with the semiplane of ordinates less than y
-                res.Add(new Rect(rect.x, rect.y, rect.width, cutRect.y - rect.y));
+                list.Add(new Rect(rectX, rectY, rectWidth, cutRectY - rectY));
             }
-            if ((cutRect.x + cutRect.width) < (rect.x + rect.width))
+            if (cutRectMaxX < rectMaxX)
             {
                 // cut this freespace with the semiplane of abscissas greater than x+width
-                res.Add(new Rect(cutRect.x + cutRect.width, rect.y, (rect.x + rect.width) - (cutRect.x + cutRect.width), rect.height));
+                list.Add(new Rect(cutRectX + cutRectWidth, rectY, rectMaxX - cutRectMaxX, rectHeight));
             }
-            if ((cutRect.y + cutRect.height) < (rect.y + rect.height))
+            if (cutRectMaxY < rectMaxY)
             {
                 // cut this freespace with the semiplane of ordinates greater than y+height
-                res.Add(new Rect(rect.x, cutRect.y + cutRect.height, rect.width, (rect.y + rect.height) - (cutRect.y + cutRect.height)));
+                list.Add(new Rect(rectX, cutRectY + cutRectHeight, rectWidth, rectMaxY - cutRectMaxY));
             }
-            return res;
         }
     }
 }
