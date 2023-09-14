@@ -64,6 +64,25 @@ namespace TouhouHeartstone
                 card.setProp(DEFINE.SPELL_DAMAGE, value);
             }
         }
+        public static int getDamageReduce(this CardDefine card)
+        {
+            if (card is ServantCardDefine servant)
+            {
+                return servant.damageReduce;
+            }
+            return card.getProp<int>(DEFINE.DAMAGE_REDUCE);
+        }
+        public static void setDamageReduce(this CardDefine card, int value)
+        {
+            if (card is ServantCardDefine servant)
+            {
+                servant.damageReduce = value;
+            }
+            else
+            {
+                card.setProp(DEFINE.DAMAGE_REDUCE, value);
+            }
+        }
         public static bool hasKeyword(this CardDefine define, string keyword)
         {
             string[] keywords = define.getProp<string[]>(DEFINE.KEYWORDS);

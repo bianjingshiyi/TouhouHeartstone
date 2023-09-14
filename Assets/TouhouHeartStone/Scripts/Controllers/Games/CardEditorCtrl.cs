@@ -1190,7 +1190,8 @@ namespace Controllers
             { KEYWORD.MISSION, (StringTable.GAME_KEYWORD_MISSION, typeof(bool)) },
             { KEYWORD.PERMANENT_FROZEN, (StringTable.GAME_KEYWORD_PERMANENT_FROZEN, typeof(bool)) },
             { KEYWORD.CAN_BE_CHARGED, (StringTable.GAME_KEYWORD_CAN_BE_CHARGED, typeof(bool)) },
-            { DEFINE.SPELL_DAMAGE, (StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE, typeof(int)) }
+            { DEFINE.SPELL_DAMAGE, (StringTable.GAME_CARD_PROP_NAME_SPELL_DAMAGE, typeof(int)) },
+            { DEFINE.DAMAGE_REDUCE, (StringTable.GAME_CARD_PROP_NAME_DAMAGE_REDUCE, typeof(int)) }
         };
         private static readonly Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)> keywordActions = 
             new Dictionary<string, (Action<CardDefine, object> setter, Func<CardDefine, object> getter)>()
@@ -1198,6 +1199,11 @@ namespace Controllers
             { DEFINE.SPELL_DAMAGE,(
                     (card, value) => card.setSpellDamage((int)value),
                     (card) => card.getSpellDamage()
+                )
+            },
+            { DEFINE.DAMAGE_REDUCE,(
+                    (card, value) => card.setDamageReduce((int)value),
+                    (card) => card.getDamageReduce()
                 )
             }
 
@@ -1252,6 +1258,7 @@ namespace Controllers
             DEFINE.COST,
             DEFINE.ATTACK,
             DEFINE.SPELL_DAMAGE,
+            DEFINE.DAMAGE_REDUCE,
             DEFINE.KEYWORDS,
             DEFINE.TAGS,
             DEFINE.CARD_PROP_SKILL_ID,
