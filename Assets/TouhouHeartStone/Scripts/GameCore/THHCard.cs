@@ -128,7 +128,7 @@ namespace TouhouHeartstone
         {
             foreach (var card in cards)
             {
-                if (cards == null)
+                if (card == null)
                     continue;
                 await card.kill(game);
             }
