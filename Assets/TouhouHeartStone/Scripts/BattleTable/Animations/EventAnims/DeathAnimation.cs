@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
+using UnityEngine;
 
 namespace Game.BattleTable
 {
@@ -40,9 +41,11 @@ namespace Game.BattleTable
             }
             while (anim != null && !anim.update(table, _deltaTime))
                 yield return null;
+            Vector3? position = null;
             if (table.tryGetServant(card, out var servant))//尝试获取死亡的随从的随从UI
             {
                 servant.onDeath.invokeAfterAnim();
+                position = servant.transform.position;
                 table.table.SelfField.removeServant(servant);//从自己的场上移除随从UI
                 table.table.EnemyField.removeServant(servant);//从敌人的场上移除随从UI
             }
@@ -54,7 +57,12 @@ namespace Game.BattleTable
             {
                 Item item = card.getOwner() == table.player ? table.table.SelfItem : table.table.EnemyItem;
                 item.onDestroy.invokeAfterAnim();
+                position = item.transform.position;
                 table.removeItem(card);
+            }
+            if (position.HasValue)
+            {
+                table.createDeadCardAnchor(arg.card, position.Value);
             }
         }
 

@@ -502,6 +502,7 @@ namespace Game.BattleTable
                 pair.Value.destroy();
             }
             cardHandDic.Clear();
+            clearDeadCardAnchors();
             DestroyInvokeCard();
         }
         #endregion

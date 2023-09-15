@@ -78,6 +78,7 @@ namespace Game.BattleTable
         public Transform CenterDisplayTransform => _centerDisplayTransform;
         public Transform RightDisplayTransform => _rightDisplayTransform;
         public Transform DisplayerCardsParent => _displayerCardsParent;
+        public Transform DeadCardAnchorsTransform => _deadCardAnchorsTransform;
         public Transform EffectsParent => _effectsParent;
         public Fatigue Fatigue => _fatigue;
         public DiscoverDialog Discover => _discover;
@@ -137,6 +138,8 @@ namespace Game.BattleTable
         private Transform _rightDisplayTransform;
         [SerializeField]
         private Transform _displayerCardsParent;
+        [SerializeField]
+        private Transform _deadCardAnchorsTransform;
         [SerializeField]
         private Transform _effectsParent;
         [SerializeField]

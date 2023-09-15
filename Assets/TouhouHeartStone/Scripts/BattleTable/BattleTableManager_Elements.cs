@@ -860,6 +860,10 @@ namespace Game.BattleTable
             {
                 return skill.transform;
             }
+            else if (tryGetDeadCardAnchor(card.id, out Transform trans))
+            {
+                return trans;
+            }
             return null;
         }
         public UICard createCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createCard(updateCardDescriptor(card), position, height, isFaceUp);

@@ -112,6 +112,36 @@ namespace Game.BattleTable
             else
                 return null;
         }
+        public void createDeadCardAnchor(Card card, Vector3 position)
+        {
+            var name = cardManager.getCardSkin(card.define)?.name ?? card.ToString();
+            var cardId = card.id;
+            Transform transform;
+            if (deadCardAnchors.ContainsKey(cardId))
+            {
+                transform = deadCardAnchors[cardId];
+            }
+            else
+            {
+                transform = new GameObject().transform;
+                transform.parent = table.DeadCardAnchorsTransform;
+                deadCardAnchors.Add(cardId, transform);
+            }
+            transform.name = name;
+            transform.position = position;
+        }
+        public bool tryGetDeadCardAnchor(int cardId, out Transform transform)
+        {
+            return deadCardAnchors.TryGetValue(cardId, out transform);
+        }
+        public void clearDeadCardAnchors()
+        {
+            foreach (var pair in deadCardAnchors)
+            {
+                Destroy(pair.Value.gameObject);
+            }
+            deadCardAnchors.Clear();
+        }
         private void checkCardSkinEffectAnimations(IEventArg arg)
         {
             if (arg is EffectTriggerEventArg effectTriggerEventArg)
@@ -363,6 +393,7 @@ namespace Game.BattleTable
         /// </summary>
         public Player currentAnimPlayer { get; set; }
         HandToFieldAnim _servantPreviewAnim = null;
+        Dictionary<int, Transform> deadCardAnchors = new Dictionary<int, Transform>();
         #endregion
     }
 }

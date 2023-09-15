@@ -1349,6 +1349,7 @@ Transform:
   - {fileID: 1520265005}
   - {fileID: 14748893}
   - {fileID: 1005560207}
+  - {fileID: 852465581}
   m_Father: {fileID: 702626782}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -1844,6 +1845,7 @@ MonoBehaviour:
   _centerDisplayTransform: {fileID: 508968763}
   _rightDisplayTransform: {fileID: 1471951940}
   _displayerCardsParent: {fileID: 14748893}
+  _deadCardAnchorsTransform: {fileID: 852465581}
   _effectsParent: {fileID: 1005560207}
   _fatigue: {fileID: 1520265007}
   _discover: {fileID: 635482350501438396}
@@ -1919,6 +1921,36 @@ Transform:
   - {fileID: 2061368166}
   m_Father: {fileID: 98220226}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &852465580
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 852465581}
+  m_Layer: 0
+  m_Name: DeadCardAnchors
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &852465581
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 852465580}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 450401108}
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &860959582
 PrefabInstance:

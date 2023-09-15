@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Game.Animations
+﻿namespace Game.Animations
 {
     public class CardEffect : TableEffect
     {
@@ -8,8 +6,7 @@ namespace Game.Animations
         {
             if (sourceTransform)
             {
-                var sourcePos = sourceTransform.position;
-                transform.position = sourcePos;
+                transform.position = sourceTransform.position;
             }
         }
     }
