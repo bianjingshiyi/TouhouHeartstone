@@ -795,6 +795,8 @@ namespace TouhouHeartstone
                     await effect.onDisable(game, argCard, null);
                 }
                 await argCard.setKeywords(game, new string[0]);
+                await card.setSpellDamage(game, 0);
+                await card.setDamageReduce(game, 0);
             }
         }
         public static bool isSilenced(this ICardData card, IGame game)
@@ -1246,6 +1248,7 @@ namespace TouhouHeartstone
             var define = card.define;
             await card.removeBuff(game, card.getBuffs());
             await card.setSpellDamage(game, define.getSpellDamage());
+            await card.setDamageReduce(game, define.getDamageReduce());
             await card.setDead(game, false);
             await card.setCurrentLife(game, define.getLife());
             // await card.setCost(game, servant.cost);
