@@ -94,8 +94,7 @@ namespace TouhouHeartstone.Builtin
                 //让玩家选择一个融合结果
                 CardDefine mixedResult = await game.askSelect(player, mixedResults, title: "元素融合");
                 //将卡牌变为融合结果
-                await mixCard.setDefine(game, mixedResult);
-                await mixCard.resetCard(game);
+                await mixCard.setDefine(game, mixedResult, true);
             });
         }
         public class ElementMixEventArg : EventArg, IDescribableEventArg

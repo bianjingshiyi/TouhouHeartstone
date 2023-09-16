@@ -68,14 +68,24 @@ namespace TouhouHeartstone
                     var argCard = arg.card;
                     var argPosition = arg.position;
 
-                    arg.success = argFrom.moveCard(game, argCard, argTo, argPosition, arg);
+                    var success = Pile.moveCard(game, argCard, argFrom, argTo, argPosition, arg);
+                    arg.success = success;
+                    if (success && arg.resetProps)
+                    {
+                        resetCardMoveProps(game, card, from, to);
+                    }
                     return Task.CompletedTask;
                 }
                 return game.triggers.doEvent(eventArg, func);
             }
             else
             {
-                from.moveCard(card, to, position, eventArg);
+                var success = Pile.moveCard(card, from, to, position, eventArg);
+                eventArg.success = success;
+                if (success && eventArg.resetProps)
+                {
+                    resetCardMoveProps(game, card, from, to);
+                }
                 return Task.CompletedTask;
             }
         }
@@ -103,17 +113,52 @@ namespace TouhouHeartstone
             }
             return replaced;
         }
+        private static int getPilePropResetPriority(this Pile pile)
+        {
+            switch (pile?.name)
+            {
+                case PILE.GRAVE:
+                    return 0;
+                case PILE.DECK:
+                    return 1;
+                case PILE.HAND:
+                    return 2;
+                case PILE.FIELD:
+                case PILE.MASTER:
+                case PILE.HEAD:
+                case PILE.SKILL:
+                case PILE.ITEM:
+                case PILE.WARP:
+                    return 3;
+            }
+            return -1;
+        }
+        private static bool shouldCardMoveResetCardProp(Pile from, Pile to)
+        {
+            int fromPriority = from.getPilePropResetPriority();
+            int toPriority = to.getPilePropResetPriority();
+            if (fromPriority < 0 || toPriority < 0)
+                return false;
+            return fromPriority > toPriority;
+        }
+        private static Task resetCardMoveProps(IGame game, Card card, Pile from, Pile to)
+        {
+            if (!shouldCardMoveResetCardProp(from, to))
+                return Task.CompletedTask;
+            return card.resetCard(game as CardEngine);
+        }
         public class MoveCardEventArg : EventArg
         {
             public MoveCardEventArg()
             {
             }
-            public MoveCardEventArg(Pile from, Pile to, Card card, int position)
+            public MoveCardEventArg(Pile from, Pile to, Card card, int position, bool resetProps = true)
             {
                 this.from = from;
                 this.to = to;
                 this.card = card;
                 this.position = position;
+                this.resetProps = resetProps;
             }
             public override string ToString()
             {
@@ -173,6 +218,7 @@ namespace TouhouHeartstone
                 get => getVar<bool>(VAR_SUCCESS);
                 set => setVar(VAR_SUCCESS, value);
             }
+            public bool resetProps;
 
             public const string VAR_FROM_PILE = "源牌堆";
             public const string VAR_TO_PILE = "目标牌堆";

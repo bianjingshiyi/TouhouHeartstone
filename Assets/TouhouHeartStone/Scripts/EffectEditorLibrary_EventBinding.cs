@@ -46,13 +46,13 @@ namespace Game
 
             // 行动
             { BuiltinActionDefineID.SimpleDraw, typeof(HearthStoneRule.DrawEventArg) },    // 简单抽牌
-            { BuiltinActionDefineID.MoveToField, typeof(Pile.MoveCardEventArg) },    // 卡牌置入战场
-            { BuiltinActionDefineID.MoveToHand, typeof(Pile.MoveCardEventArg) },    // 卡牌移回手牌
-            { BuiltinActionDefineID.MoveToDeck, typeof(Pile.MoveCardEventArg) },    // 卡牌洗入牌库
-            { BuiltinActionDefineID.MoveToGrave, typeof(Pile.MoveCardEventArg) },    // 卡牌置入墓地
-            { BuiltinActionDefineID.MoveToHead, typeof(Pile.MoveCardEventArg) },    // 卡牌置入延迟区
-            { BuiltinActionDefineID.MoveToItem, typeof(Pile.MoveCardEventArg) },    // 卡牌装备到道具栏
-            { BuiltinActionDefineID.MoveToWarp, typeof(Pile.MoveCardEventArg) },    // 卡牌移动到暂存区
+            { BuiltinActionDefineID.MoveToField, typeof(THHPile.MoveCardEventArg) },    // 卡牌置入战场
+            { BuiltinActionDefineID.MoveToHand, typeof(THHPile.MoveCardEventArg) },    // 卡牌移回手牌
+            { BuiltinActionDefineID.MoveToDeck, typeof(THHPile.MoveCardEventArg) },    // 卡牌洗入牌库
+            { BuiltinActionDefineID.MoveToGrave, typeof(THHPile.MoveCardEventArg) },    // 卡牌置入墓地
+            { BuiltinActionDefineID.MoveToHead, typeof(THHPile.MoveCardEventArg) },    // 卡牌置入延迟区
+            { BuiltinActionDefineID.MoveToItem, typeof(THHPile.MoveCardEventArg) },    // 卡牌装备到道具栏
+            { BuiltinActionDefineID.MoveToWarp, typeof(THHPile.MoveCardEventArg) },    // 卡牌移动到暂存区
         };
         public static bool canActionAddEffect(ActionReference actionRef)
         {

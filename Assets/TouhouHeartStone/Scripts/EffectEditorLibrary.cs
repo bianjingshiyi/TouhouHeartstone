@@ -943,11 +943,6 @@ namespace Game
                     else
                     {
                         game.logger.log("将" + string.Join("，", card) + "置入" + player + "的战场");
-                        //await card.pile.moveTo(game, card, player.getField());//直接移动卡牌似乎没有入场事件
-                        if (card.pile?.name == PILE.GRAVE)//如果是墓地置入战场需要清除增益
-                        {
-                            await card.resetCard(game);
-                        }
                         await player.tryEnterField(game, card.pile, card, player.getField().count);
                         MoveList.Add(card);
                     }
@@ -978,7 +973,6 @@ namespace Game
             {
                 if (card == null)
                     continue;
-                await card.resetCard(game);
                 await card.returnToHand(game, player);
                 MoveList.Add(card);
             }
@@ -1006,7 +1000,6 @@ namespace Game
                     continue;
                 int position = top ? player.getDeck().count : game.randomInt(0, player.getDeck().count);
                 game.logger.log("将" + string.Join("，", card) + "洗入" + player + "的牌库");
-                await card.resetCard(game);
                 await card.pile.moveTo(game, card, player.getDeck(), position);
                 MoveList.Add(card);
             }
@@ -1032,7 +1025,6 @@ namespace Game
                 if (card == null)
                     continue;
                 game.logger.log("将" + string.Join("，", card) + "置入" + player + "的墓地");
-                await card.resetCard(game);
                 await card.pile.moveTo(game, card, player.getGrave());
                 MoveList.Add(card);
             }

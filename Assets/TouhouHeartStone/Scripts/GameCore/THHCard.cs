@@ -1428,11 +1428,15 @@ namespace TouhouHeartstone
                 }
             }
         }
-        public static async Task triggerDeathRattles(this Card card, CardEngine game)
+        public static Task triggerDeathRattles(this Card card, CardEngine game)
         {
-            var deathRattles = getDeathRattles(card, game);
+            var deathrattles = getDeathRattles(card, game);
+            return card.triggerDeathRattles(game, deathrattles);
+        }
+        private static async Task triggerDeathRattles(this Card card, CardEngine game, (IEffect effect, Buff buff)[] deathrattles)
+        {
             var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
-            foreach (var (effect, buff) in deathRattles)
+            foreach (var (effect, buff) in deathrattles)
             {
                 if (effect is GeneratedPassiveEffect genPassive)
                 {
@@ -2150,13 +2154,14 @@ namespace TouhouHeartstone
             }
             // 触发死亡事件。
             List<DeathEventArg> eventArgs = new List<DeathEventArg>();
-            List<Card> successfullyDied = new List<Card>();
+            Dictionary<Card, (IEffect deathRattle, Buff buff)[]> deathrattles = new Dictionary<Card, (IEffect deathRattle, Buff buff)[]>();
             foreach (Card card in cards)
             {
                 var eventArg = await game.triggers.doEvent(new DeathEventArg(card), onDie);
                 async Task onDie(DeathEventArg arg)
                 {
                     Card death = arg.card;
+                    deathrattles.Add(death, death.getDeathRattles(game));
                     if (death.pile.name == PILE.MASTER)//英雄阵亡
                     {
                         remainPlayerList.Remove(death.getOwner());
@@ -2172,7 +2177,6 @@ namespace TouhouHeartstone
                         await death.pile.moveTo(game, death, death.getOwner().getGrave());
                         game.logger.log(death + "摧毁");
                     }
-                    successfullyDied.Add(death);
                 }
                 eventArgs.Add(eventArg);
             }
@@ -2180,14 +2184,10 @@ namespace TouhouHeartstone
             // 触发遗言。
             try
             {
-                foreach (Card card in successfullyDied)
+                foreach (var pair in deathrattles)
                 {
-                    // 只在战场、墓地或武器栏位触发遗言。
-                    if ((card.pile?.name == PILE.GRAVE || card.pile?.name == PILE.FIELD || card.pile?.name == PILE.ITEM) && card.hasDeathRattle(game))
-                    {
-                        await card.triggerDeathRattles(game);
-                        await card.resetCard(game);
-                    }
+                    var card = pair.Key;
+                    await triggerDeathRattles(card, game, pair.Value);
                 }
             }
             catch (Exception e)

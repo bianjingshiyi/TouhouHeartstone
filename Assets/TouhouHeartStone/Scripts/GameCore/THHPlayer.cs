@@ -244,14 +244,10 @@ namespace TouhouHeartstone
                     else
                     {
                         await card.activeEffect(game, p, targets);
-                        await card.resetCard(game);
+                        await p.getWarp().moveTo(game, card, p.getGrave());//送入墓地
                         if (card.hasKeyword(game, KEYWORD._RETURNHEAD))
                         {
                             await card.returnToHand(game, p);
-                        }
-                        else
-                        {
-                            await p.getWarp().moveTo(game, card, p.getGrave());//如果是普通法术，则送入墓地
                         }
                     }
                 }
