@@ -1806,7 +1806,7 @@ namespace TouhouHeartstone
             var to = player.getHand();
             if (!to.isFull) // 手牌未满
             {
-                await Pile.moveTo(game, card, from, to, to.count);
+                await from.moveTo(game, card, to, to.count);
                 game.logger.log("将" + card + "置入" + player + "的手牌");
             }
             else // 手牌已满
@@ -1820,7 +1820,7 @@ namespace TouhouHeartstone
                     var grave = player.getGrave();
                     if (from != grave)
                     {
-                        await Pile.moveTo(game, card, from, grave, grave.count);
+                        await from.moveTo(game, card, grave, grave.count);
                     }
                 }
                 game.logger.log(player + "的手牌已满，无法将" + card + "置入手牌");

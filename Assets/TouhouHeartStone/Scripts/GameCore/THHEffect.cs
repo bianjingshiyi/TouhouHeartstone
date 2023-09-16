@@ -600,13 +600,13 @@ namespace TouhouHeartstone
             return propName;
         }
 
-        private Trigger<Pile.MoveCardEventArg> getOnCardEnterHandTrigger(CardEngine game, Card card, Buff buff)
+        private Trigger<THHPile.MoveCardEventArg> getOnCardEnterHandTrigger(CardEngine game, Card card, Buff buff)
         {
-            return card.getProp<Trigger<Pile.MoveCardEventArg>>(game, getPropName(buff, "onCardEnterHandTrigger"));
+            return card.getProp<Trigger<THHPile.MoveCardEventArg>>(game, getPropName(buff, "onCardEnterHandTrigger"));
         }
 
         private void setOnCardEnterHandTrigger(CardEngine game, Card card, Buff buff,
-            Trigger<Pile.MoveCardEventArg> value)
+            Trigger<THHPile.MoveCardEventArg> value)
         {
             card.setProp(game, getPropName(buff, "onCardEnterHandTrigger"), value);
         }
@@ -638,7 +638,7 @@ namespace TouhouHeartstone
             Pile[] ranges = getRange != null ? getRange(game, card) : null;
             if (getOnCardEnterHandTrigger(game, card, buff) == null)
             {
-                setOnCardEnterHandTrigger(game, card, buff, new Trigger<Pile.MoveCardEventArg>(action: async arg =>
+                setOnCardEnterHandTrigger(game, card, buff, new Trigger<THHPile.MoveCardEventArg>(action: async arg =>
                 {
                     if (ranges == null)
                         return;

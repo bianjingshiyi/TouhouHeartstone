@@ -751,7 +751,7 @@ namespace Game
         [ObsoletedKeyMethod(ObsoletedActionDefineID.IsPlayerPileChanged, StringTable.EDITOR_NODE_CATEGORY_PILE, StringTable.EDITOR_NODE_NAME_IS_PLAYER_PILE_CHANGED)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_IS_CHANGED)]
         [Obsolete]
-        public static bool isPlayerPileChanged(Pile.MoveCardEventArg moveCardEvent, 
+        public static bool isPlayerPileChanged(THHPile.MoveCardEventArg moveCardEvent, 
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player, 
             [ActionNodeParam(EDITOR_PARAM_PILE_NAME)] string pileName)
         {

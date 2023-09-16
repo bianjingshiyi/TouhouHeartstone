@@ -393,7 +393,7 @@ namespace Tests
             );
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             you.cmdUse(game, you.getHand().getCard<DoyouSpear>());
-            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>()
+            THHPile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<THHPile.MoveCardEventArg>()
                 .LastOrDefault(c => c.to == you.getGrave());
             you.cmdUse(game, you.getHand().getCard<Koakuma_N>());
             Assert.True(you.getHand().Contains(movecardevent.card));
@@ -456,10 +456,10 @@ namespace Tests
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 6);
             var handBeforeUse = you.getHand().ToArray();
             you.cmdUse(game, you.getHand().getCard<RemiliaScarlet_N>());
-            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>()
+            THHPile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<THHPile.MoveCardEventArg>()
                 .LastOrDefault(c => c.to == you.getGrave());
             Assert.AreEqual(4,
-                game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>()
+                game.triggers.getRecordedEvents().OfType<THHPile.MoveCardEventArg>()
                     .Count(c => c.to == you.getGrave())); //前面爆了一张牌，所以是4
             Card throwcard = movecardevent.card;
             Assert.True(handBeforeUse.Contains(throwcard));
@@ -477,7 +477,7 @@ namespace Tests
             oppo.cmdTurnEnd(game);
             var handBeforeUse = you.getHand().ToArray();
             you.cmdUse(game, you.getHand().getCard<FlandreScarlet_N>());
-            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>()
+            THHPile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<THHPile.MoveCardEventArg>()
                 .LastOrDefault(c => c.to == you.getGrave());
             Card throwcard = movecardevent.card;
             Assert.True(handBeforeUse.Contains(throwcard));

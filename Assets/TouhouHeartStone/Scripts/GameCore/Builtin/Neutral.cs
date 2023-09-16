@@ -2526,7 +2526,7 @@ namespace TouhouHeartstone.Builtin
                     {
                         var oppoField = (game as CardEngine).getOpponent(card.getOwner()).getField();
                         return -(oppoField.count > 0 ? oppoField.Select(s => s.getAttack(game)).Max() : 0);
-                    }), new EventTriggeredModifierFixer<int>.ModifierFixer<Pile.MoveCardEventArg>(
+                    }), new EventTriggeredModifierFixer<int>.ModifierFixer<THHPile.MoveCardEventArg>(
                     (game, card, buff, arg) => arg.from?.name == PILE.FIELD || arg.to?.name == PILE.FIELD,
                     (game, card, buff, arg) =>
                     {

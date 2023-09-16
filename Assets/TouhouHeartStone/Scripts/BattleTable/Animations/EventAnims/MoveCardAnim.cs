@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 using UDeck = Game.BattleTable.Deck;
 namespace Game.BattleTable
 {
-    using Arg = Pile.MoveCardEventArg;
+    using Arg = THHPile.MoveCardEventArg;
     class MoveCardAnim : EventAnimation<Arg>
     {
         CardSnapshot _card;
@@ -31,7 +31,7 @@ namespace Game.BattleTable
             _to = arg.to;
             _position = arg.position;
 
-            _card = table.getRecordCardSnapshot(record, Arg.VAR_CARD);
+            _card = table.getRecordCardSnapshot(record, EVENTVAR.CARD);
             string fromName = _from?.name;
             string toName = _to?.name;
 

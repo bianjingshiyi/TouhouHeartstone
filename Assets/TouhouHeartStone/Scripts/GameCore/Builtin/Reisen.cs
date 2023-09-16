@@ -707,7 +707,7 @@ namespace TouhouHeartstone.Builtin
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new THHEffectAfter<Pile.MoveCardEventArg>(PileFlag.item,
+            new THHEffectAfter<THHPile.MoveCardEventArg>(PileFlag.item,
                 (g, c, a) =>
                 {
                     return a.from.owner == c.getOwner() &&

@@ -2,7 +2,7 @@
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 
-namespace TouhouHeartStone
+namespace TouhouHeartstone
 {
     public class THHSnapshoter : ISnapshoter
     {

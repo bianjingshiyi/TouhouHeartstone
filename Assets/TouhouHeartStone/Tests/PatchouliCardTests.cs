@@ -606,7 +606,7 @@ namespace Tests
             you.cmdUse(game, you.getHand().getCard<BiteTentacle>());
             var handBeforeUse = you.getHand().ToArray();
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 5);
-            Pile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<Pile.MoveCardEventArg>().LastOrDefault(c => c.to == you.getGrave());
+            THHPile.MoveCardEventArg movecardevent = game.triggers.getRecordedEvents().OfType<THHPile.MoveCardEventArg>().LastOrDefault(c => c.to == you.getGrave());
             Card throwcard = movecardevent.card;
             Assert.True(handBeforeUse.Contains(throwcard));
 
