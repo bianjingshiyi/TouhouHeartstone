@@ -691,6 +691,7 @@ namespace Controllers
                 await createNodeUI4Node(node);
             }
 
+            disconnectAllInvalidConnections(graph);
             foreach (var connection in graph.connections)
             {
                 if (connection == null) continue;
@@ -1209,6 +1210,8 @@ namespace Controllers
         /// </summary>
         private bool IsInvalidConnection(NodeConnection connection)
         {
+            if (connection is InvalidNodeConnection)
+                return true;
             var src = connection.source;
             var dest = connection.destination;
             return IsInvalidConnection(src, dest);
@@ -1243,27 +1246,7 @@ namespace Controllers
             {
                 if (connection == null)
                     continue;
-                IPort src = connection.source;
-                IPort dest = connection.destination;
-                disconnectPorts(src, dest);
-            }
-        }
-        /// <summary>
-        /// 断开连接到该端口上的，所有不合法的连接。
-        /// </summary>
-        /// <param name="port"></param>
-        private void disconnectPortInvalidConnections(IPort port)
-        {
-            //更新ui
-            var connections = port.connections.Where(c => IsInvalidConnection(c));
-
-            foreach (var connection in connections.ToArray())
-            {
-                if (connection == null)
-                    continue;
-                IPort src = connection.source;
-                IPort dest = connection.destination;
-                disconnectPorts(src, dest);
+                disconnect(connection);
             }
         }
         /// <summary>
@@ -1277,26 +1260,47 @@ namespace Controllers
             {
                 if (connection == null)
                     continue;
-                IPort src = connection.source;
-                IPort dest = connection.destination;
-                disconnectPorts(src, dest);
+                disconnect(connection);
             }
         }
         private void disconnectPorts(IPort outputPort, IPort inputPort, bool addOperation = true)
         {
+            var connection = graph.getConnection(outputPort, inputPort);
+            if (connection == null)
+                return;
+            disconnect(connection, addOperation);
+        }
+        private void disconnect(NodeConnection connection, bool addOperation = true)
+        {
             //更新ui
-            var outputNodeItem = getActionNodeItem(outputPort.node);
-            var inputNodeItem = getActionNodeItem(inputPort.node);
-            _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
-            graph.disconnect(outputPort, inputPort);
-            updatePortMode(_connectingPort, outputPort);
-            updatePortMode(_connectingPort, inputPort);
-            //更新变长参数。
-            updateInputParamsPort(inputPort);
-            if (addOperation)
+            graph.disconnect(connection);
+            var outputPort = connection.source;
+            var inputPort = connection.destination;
+            ActionNodeItem outputNodeItem = null;
+            ActionNodeItem inputNodeItem = null;
+
+            if (outputPort != null)
             {
-                int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-                _recordList.addOperation(new DisconnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, paramIndex));
+                outputNodeItem = getActionNodeItem(outputPort.node);
+                updatePortMode(_connectingPort, outputPort);
+            }
+
+            if (inputPort != null)
+            {
+                inputNodeItem = getActionNodeItem(inputPort.node);
+                updatePortMode(_connectingPort, inputPort);
+                //更新变长参数。
+                updateInputParamsPort(inputPort);
+            }
+
+            if (outputPort != null && inputPort != null)
+            {
+                _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
+                if (addOperation)
+                {
+                    int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+                    _recordList.addOperation(new DisconnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, paramIndex));
+                }
             }
         }
         /// 断开：动作节点----所有节点
@@ -1307,7 +1311,7 @@ namespace Controllers
             var connections = graph.getNodeConnections(actionNode);
             foreach (var connection in connections)
             {
-                disconnectPorts(connection.source, connection.destination);
+                disconnect(connection);
             }
         }
         #endregion

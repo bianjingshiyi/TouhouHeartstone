@@ -1,11 +1,8 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Game;
-using MukioI18n;
 using TouhouCardEngine;
 using UI;
-using UnityEngine.UIElements;
 
 namespace Controllers
 {
@@ -76,49 +73,6 @@ namespace Controllers
             // 连接向上移动。
             movePortConnections(deletedPort, -1);
         }
-        /// <summary>
-        /// 改变自定义动作的一个输入值的类型时，检查连接到该值的线的合法性。
-        /// </summary>
-        /// <param name="name"></param>
-        public void onChangeActionDefineInputType(string name)
-        {
-            // 检查连接合法性。
-            var entryNode = _generatedActionDefine.getEntryNode();
-            var changedPort = entryNode?.getOutputPort(name);
-            if (changedPort == null)
-                return;
-            disconnectPortInvalidConnections(changedPort);
-            updateActionDefineEntryNode();
-        }
-        /// <summary>
-        /// 改变自定义动作的一个常量值的类型时，检查连接到该值的线的合法性。
-        /// </summary>
-        /// <param name="name"></param>
-        public void onChangeActionDefineConstType(string name)
-        {
-            // 检查连接合法性。
-            var entryNode = _generatedActionDefine.getEntryNode();
-            var changedPort = entryNode?.getOutputPort(name);
-            if (changedPort == null)
-                return;
-            disconnectPortInvalidConnections(changedPort);
-            updateActionDefineEntryNode();
-        }
-        /// <summary>
-        /// 改变自定义动作的一个返回值的类型时，检查连接到该值的线的合法性。
-        /// </summary>
-        /// <param name="name"></param>
-        public void onChangeActionDefineOutputType(string name)
-        {
-            // 检查连接合法性。
-            var returnNode = _generatedActionDefine.getReturnNode();
-            var changedPort = returnNode?.getInputPort(name);
-            if (changedPort == null)
-                return;
-            disconnectPortInvalidConnections(changedPort);
-            updateActionDefineEntryNode();
-        }
-
         #endregion
         #region 私有方法
         private async Task openGeneratedActionDefine(GeneratedActionDefine generatedActionDefine)
@@ -268,7 +222,7 @@ namespace Controllers
             if (parent == null)
                 parent = string.Empty;
             parent = parent.Replace('\\', '/').Trim('/');
-            return getAllActionDefines().Where(actionDefine => 
+            return getAllActionDefines().Where(actionDefine =>
             {
                 if (!CanActionDefineBeCreated(actionDefine))
                     return false;
