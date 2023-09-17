@@ -1,20 +1,9 @@
-﻿using System.Collections;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Game;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using TouhouCardEngine;
-using TouhouHeartstone;
-using System.Reflection;
-using Game;
-using TouhouHeartstone.Builtin;
-using System;
-using BJSYGameCore.UI;
-using System.IO.Compression;
-using System.IO;
-using MukioI18n;
-using NitoriNetwork.Common;
-using System.Threading.Tasks;
 using UnityEngine.UI;
 
 namespace UI
@@ -129,53 +118,19 @@ namespace UI
         {
             if (!_enableDrag)
                 return;
-
-            _dragStartPosition = eventData.position;
-            _isDraggingHorizontal = false;
-            // 开始拖动时，事件应当同时传递给下层列表，使其可以拖动
-            // eventData.Use();
+            onStartDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform), eventData);
         }
         private void onDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
         {
             if (!_enableDrag)
                 return;
-
-            var delta = _dragStartPosition - eventData.position;
-            if (Math.Abs(delta.x) > _dragThreshold && Math.Abs(delta.x) > Math.Abs(delta.y))
-            {
-                if (!_isDraggingHorizontal)
-                {
-                    _isDraggingHorizontal = true;
-                    showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
-                    onStartDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform));
-                    eventData.Use();
-                }
-            }
-            if (_isDraggingHorizontal)
-            {
-                _dragCard.rectTransform.position = eventData.position;
-                _dragDeckListItem.transform.position = eventData.position;
-                showDragCard(_deckListViewportRect.rect.Contains(_deckListViewportRect.InverseTransformPoint(eventData.position)));
-                eventData.Use();
-            }
+            onDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform), eventData);
         }
         private void onEndDragDeckCardListItemCallback(CardViewDeckCardListItem item, PointerEventData eventData)
         {
             if (!_enableDrag)
-            {
                 return;
-            }
-            if (_isDraggingHorizontal)
-            {
-                //结束拖拽
-                _isDraggingHorizontal = false;
-                hideDragCard();
-                Vector2 position = eventData.position;
-                onEndDragDeckCardListItem?.Invoke(isPositionOverDeckCardList(position));
-
-                // 由于上面已经给下方列表传递了事件，故这里也要传递，使列表的状态复位。
-                // eventData.Use();
-            }
+            onEndDragDeckCardListItem?.Invoke(deckCardItemList.IndexOf(item.transform as RectTransform), eventData);
         }
         private void onClickExportDeckButtonCallback()
         {
@@ -200,20 +155,12 @@ namespace UI
         #endregion
         #endregion
         #region 事件
-        public event Action<int> onStartDargCardListItem;
-        public event Action<int> onStartDragDeckCardListItem;
-        /// <summary>
-        /// 当拖拽卡牌列表中的项目结束时调用，参数为是否位于卡组卡牌列表区域当中
-        /// </summary>
-        public event Action<bool> onEndDragCardListItem;
+        public event Action<int, PointerEventData> onStartDragDeckCardListItem;
+        public event Action<int, PointerEventData> onDragDeckCardListItem;
         /// <summary>
         /// 当拖拽卡组卡牌列表中的项目结束时调用，参数为是否位于卡组卡牌列表区域当中
         /// </summary>
-        public event Action<bool> onEndDragDeckCardListItem;
-        public event Action<int> onSortTypeValueChanged;
-        public event Action<bool[]> onCharacterFilterValueChanged;
-        public event Action<bool[]> onCostFilterValueChanged;
-        public event Action<bool[]> onTypeFilterValueChanged;
+        public event Action<int, PointerEventData> onEndDragDeckCardListItem;
         public event Action<int> onClickMasterSelectPanelItem
         {
             add { _masterSelectionDeckViewPanel.onClickDeckListItem += value; }
@@ -289,8 +236,6 @@ namespace UI
         public Card dragCard => _dragCard;
         public CardViewDeckCardListItem dragDeckListItem => _dragDeckListItem;
         [SerializeField]
-        float _dragThreshold = 50f;
-        [SerializeField]
         RectTransform _deckListViewportRect;
         [SerializeField]
         Text _characterNameText;
@@ -306,10 +251,6 @@ namespace UI
         [SerializeField]
         CardViewDeckCardListItem _dragDeckListItem;
         [SerializeField]
-        Vector2 _dragStartPosition;
-        [SerializeField]
-        bool _isDraggingHorizontal = false;
-        [SerializeField]
         GameObject _editCardListRightPanel;
 
         [Header("Master Selection")]
@@ -317,7 +258,7 @@ namespace UI
         GameObject _masterSelectionPanel;
         [SerializeField]
         Button _masterSelectionCloseButton;
-        [SerializeField] 
+        [SerializeField]
         DeckViewPanel _masterSelectionDeckViewPanel;
 
         [Header("Buttons")]

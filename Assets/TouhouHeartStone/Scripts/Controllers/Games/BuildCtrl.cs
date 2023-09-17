@@ -38,7 +38,7 @@ namespace Controllers
                     }
                 }
                 return false;
-            }) ;
+            });
 
             //UI更新
             _ui.gameObject.SetActive(true);
@@ -89,6 +89,7 @@ namespace Controllers
             }
             _ui.onClickReturnButton += onReturnButtonClick;
             _ui.onStartDragDeckCardListItem += onStartDragDeckCardListItem;
+            _ui.onDragDeckCardListItem += onDragDeckCardListItem;
             _ui.onEndDragDeckCardListItem += onEndDragDeckCardListItem;
             _ui.onClickDeckListItem += onClickDeckListItem;
             _ui.onClickDeckListItemDeleteButton += onClickDeckListItemDeleteButton;
@@ -155,186 +156,37 @@ namespace Controllers
         }
         private Task<bool> onStartDragCard(CardDefine cardDefine, PointerEventData eventData)
         {
-            if (_deck == null)
-            {
-                //当前不在编辑卡组，禁用拖拽
+            if (cardDefine == null)
                 return Task.FromResult(false);
-            }
-            //记录拖拽信息
             _dragCard = cardDefine;
-            _dragStartPosition = eventData.position;
-            _isDraggingHorizontal = false;
-            _isDraggingVertical = false;
-            return Task.FromResult(false);
+            return Task.FromResult(startDragDeckItem(eventData));
         }
-        private async Task<bool> onDragCard(CardDefine cardDefine, PointerEventData eventData)
+        private Task<bool> onDragCard(CardDefine cardDefine, PointerEventData eventData)
         {
-            if (_deck == null)
-            {
-                //当前不在编辑卡组，禁用拖拽
-                return false;
-            }
-            if (_dragCard == null)
-            {
-                //判断是否在拖拽卡牌，避免事件错误发生
-                return false;
-            }
-            if (!_isDraggingHorizontal && !_isDraggingVertical)
-            {
-                //还没有进入拖拽状态
-                var delta = _dragStartPosition - eventData.position;
-                if (delta.magnitude > 0)
-                {
-                    if (Math.Abs(delta.x) > Math.Abs(delta.y))
-                    {
-                        //横向拖拽
-                        if (Math.Abs(delta.x) > _dragThreshold)
-                        {
-                            //横向拖拽并且大于阈值，设置卡牌显示
-                            _isDraggingHorizontal = true;
-                            _ui.showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
-                            //onStartDargCardListItem?.Invoke(getCardItemIndex(item.transform as RectTransform));
-                            //更新UI
-                            CardSkinData skin = game.card.getDefaultSkin(_dragCard);
-                            _ui.dragCard.setCardDefine(_dragCard, skin);
-                            var cardPoolRef = game.card.getLocalCardPoolReference(_dragCard.cardPoolId);
-                            Sprite image = await game.card.loadCardImage(cardPoolRef, _dragCard.id);
-                            _ui.dragCard.setImage(image);
-                            _ui.dragDeckListItem.updateView(skin.name, image);
-                        }
-                    }
-                    else
-                    {
-                        //纵向拖拽
-                        _isDraggingVertical = true;
-                        return false;
-                    }
-                }
-                return true;
-            }
-            else if (_isDraggingHorizontal)
-            {
-                _ui.showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
-                _ui.moveDragCard(eventData.position);
-                return true;
-            }
-            else if (_isDraggingVertical)
-            {
-                return false;
-            }
-            return false;
+            if (cardDefine == null)
+                return Task.FromResult(false);
+            return dragDeckItem(eventData);
         }
         private async Task<bool> onEndDragCard(CardDefine cardDefine, PointerEventData eventData)
         {
-            if (_deck == null)
-            {
-                //当前不在编辑卡组，禁用拖拽
+            if (cardDefine == null)
                 return false;
-            }
-            if (_isDraggingVertical)
-            {
-                //横向拖拽
-                //重置状态字段
-                _dragCard = null;
-                _dragStartPosition = Vector2.zero;
-                _isDraggingHorizontal = false;
-                _isDraggingVertical = false;
-                return false;
-            }
-            if (_dragCard == null)
-            {
-                //判断是否在拖拽卡牌，避免事件错误发生
-                return false;
-            }
-            bool needUpdateUI = false;
-            //执行操作
-            if (_ui.isPositionOverDeckCardList(eventData.position))
-            {
-                if (tryAddCardToDeck(_dragCard, out string errorTip))
-                {
-                    needUpdateUI = true;
-                }
-                else
-                    _ui.showErrorTip(errorTip);
-            }
-            //重置状态字段
-            _dragCard = null;
-            _dragStartPosition = Vector2.zero;
-            _isDraggingHorizontal = false;
-            _isDraggingVertical = false;
-            //隐藏拖拽卡牌
-            _ui.hideDragCard();
-            if (needUpdateUI)
-            {
-                //更新可用信息
-                _cardPoolViewPanelCtrl.updateContents();
-                //更新UI
-                await updateDeckCardListUI();
-            }
+            await endDragDeckItem(eventData);
             //不管做什么都必须return false以保证ScrollView的释放事件被触发
             //否则会导致ScrollView不能正确回弹
             return false;
         }
-        private async void onStartDragDeckCardListItem(int index)
+        private void onStartDragDeckCardListItem(int index, PointerEventData eventData)
         {
-            var deckList = _deck.cardList;
-            //获取拖拽卡牌
-            var cards = deckList.OrderBy(e =>
-            {
-                var define = game.card.getLocalCardDefine(e.cardRef);
-                if (define != null)
-                {
-                    return define.getCost();
-                }
-                return 0;
-            }).ToArray();
-
-            // 超出卡组上下限，刷新卡牌列表。
-            if (index < 0 || index >= cards.Length)
-            {
-                await updateDeckCardListUI();
-                return;
-            }
-            _dragCard = game.card.getLocalCardDefine(cards[index].cardRef);
-            index = deckList.IndexOf(cards[index]);
-            //从卡组中删除一张卡牌
-            var deckItem = deckList[index];
-            deckItem.count--;
-            if (deckItem.count <= 0)
-                deckList.RemoveAt(index);
-            //刷新卡池显示
-            _cardPoolViewPanelCtrl.updateContents();
-            //这里本来应该刷新卡组显示，但是因为列表物体销毁会导致拖拽事件不再触发，所以移动到停止拖拽
-            //await updateDeckCardListUI();
-            //刷新拖拽卡牌显示
-            if (_dragCard != null)
-            {
-                CardSkinData skin = game.card.getDefaultSkin(_dragCard);
-                var cardPoolRef = game.card.getLocalCardPoolReference(_dragCard.cardPoolId);
-                Sprite image = await game.card.loadCardImage(cardPoolRef, _dragCard.id);
-                _ui.dragCard.setCardDefine(_dragCard, skin, image);
-                _ui.dragDeckListItem.updateView(skin.name, image);
-            }
-            else
-            {
-                _ui.dragCard.setUnknownCard();
-                _ui.dragDeckListItem.updateView(StringTable.BUILD_UNKNOW_CARD_NAME, null);
-            }
+            startDragDeckItem(eventData);
         }
-        private async void onEndDragDeckCardListItem(bool isOverDeckCardList)
+        private async void onDragDeckCardListItem(int index, PointerEventData eventData)
         {
-            if (isOverDeckCardList)
-            {
-                if (tryAddCardToDeck(_dragCard, out string errorTip))
-                {
-                    // 更新可用信息
-                    _cardPoolViewPanelCtrl.updateContents();
-                }
-                else
-                    _ui.showErrorTip(errorTip);
-            }
-            // 更新UI
-            await updateDeckCardListUI();
+            await dragDeckItem(eventData, index);
+        }
+        private async void onEndDragDeckCardListItem(int index, PointerEventData eventData)
+        {
+            await endDragDeckItem(eventData);
         }
         private void onClickDeckListItem(int index)
         {
@@ -436,7 +288,7 @@ namespace Controllers
             // 解析数据
             string clipboardString = GUIUtility.systemCopyBuffer.Trim();
 
-            var lines = clipboardString.Split(new string[] {"\r", "\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+            var lines = clipboardString.Split(new string[] { "\r", "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             string deckName = "", deckContent = "";
             foreach (var line in lines)
@@ -760,18 +612,6 @@ namespace Controllers
             }
             game.deck.reloadDeckList();
         }
-        //private bool isDeckContainsExternalCard(int cardPoolId)
-        //{
-        //    if (_deck == null)
-        //        return false;
-        //    for (int i = 0; i < _deck.cardList.Count; i++)
-        //    {
-        //        int cardId = _deck.cardList[i].id;
-        //        if (CardDefineHelper.isExternalCard(cardId) && CardDefineHelper.getCardPoolId(cardId) == cardPoolId)
-        //            return true;
-        //    }
-        //    return false;
-        //}
         /// <summary>
         /// 更新卡组列表UI
         /// </summary>
@@ -796,13 +636,165 @@ namespace Controllers
             {
                 CardDefine cardDefine = game.card.getLocalCardDefine(cards[i].cardRef);
                 CardSkinData skin = cardDefine != null ? game.card.getDefaultSkin(cardDefine) : null;
-                deckCardsViewData[i].name = skin != null ? skin.name : game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
-                deckCardsViewData[i].image = skin != null ? skin.image != null ?
-                    skin.image :
-                    await game.card.loadImage(skin.imagePath, cardDefine != null && game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ? cardPoolInfo.cardPoolId : 0) : null;
+
+                string name;
+                Sprite image;
+                if (skin != null)
+                {
+                    var cardPoolId = cardDefine.cardPoolId;
+                    name = skin.name;
+                    image = skin.image ?? await game.card.loadImage(skin.imagePath, cardPoolId);
+                }
+                else
+                {
+                    name = game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
+                    image = game.card.getDefaultSprite();
+                }
+                deckCardsViewData[i].name = name;
+                deckCardsViewData[i].image = image;
                 deckCardsViewData[i].count = cards[i].count;
             }
             _ui.updateDeckCardList(deckCardsViewData);
+        }
+        private async Task showDragCard(bool isDeckListItem)
+        {
+            _ui.showDragCard(isDeckListItem);
+            if (_isDraggingDeckListItem != isDeckListItem)
+            {
+                _isDraggingDeckListItem = isDeckListItem;
+                //更新UI
+                if (_dragCard != null)
+                {
+                    CardSkinData skin = game.card.getDefaultSkin(_dragCard);
+                    var cardPoolRef = game.card.getLocalCardPoolReference(_dragCard.cardPoolId);
+                    Sprite image = await game.card.loadCardImage(cardPoolRef, _dragCard.id);
+                    if (isDeckListItem)
+                        _ui.dragDeckListItem.updateView(skin.name, image);
+                    else
+                        await _ui.dragCard.setCardDefine(_dragCard, game.card, true);
+                }
+                else
+                {
+                    var image = game.card.getDefaultSprite();
+                    if (isDeckListItem)
+                        _ui.dragDeckListItem.updateView(game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME), image);
+                    else
+                    {
+                        _ui.dragCard.setUnknownCard(true);
+                        _ui.dragCard.setImage(image);
+                    }
+                }
+            }
+        }
+        private bool startDragDeckItem(PointerEventData eventData)
+        {
+            if (_deck == null)
+                //当前不在编辑卡组，禁用拖拽
+                return false;
+            //记录拖拽信息
+            _dragStartPosition = eventData.position;
+            _isDraggingHorizontal = false;
+            _isDraggingVertical = false;
+
+            return false;
+        }
+        private async Task initDeckItemDrag(PointerEventData eventData, int deckListItemIndex)
+        {
+            var delta = _dragStartPosition - eventData.position;
+            if (delta.magnitude > 0)
+            {
+                if (Math.Abs(delta.x) > Math.Abs(delta.y))
+                {
+                    //横向拖拽
+                    if (Math.Abs(delta.x) > _dragThreshold)
+                    {
+                        //横向拖拽并且大于阈值，设置卡牌显示
+                        _isDraggingHorizontal = true;
+
+                        if (deckListItemIndex >= 0)
+                        {
+                            var deckItem = await removeDeckListItem(deckListItemIndex);
+                            var cardRef = deckItem?.cardRef;
+                            if (cardRef != null)
+                                _dragCard = game.card.getLocalCardDefine(cardRef);
+                        }
+                    }
+                }
+                else
+                {
+                    //纵向拖拽
+                    _isDraggingVertical = true;
+                }
+            }
+        }
+        private async Task<DeckItem> removeDeckListItem(int index)
+        {
+            var deckList = _deck.cardList;
+
+            // 超出卡组上下限，刷新卡牌列表。
+            if (index < 0 || index >= deckList.Count)
+            {
+                await updateDeckCardListUI();
+                return null;
+            }
+
+            //获取拖拽卡牌
+            var orderedCards = deckList.OrderBy(e => game.card.getLocalCardDefine(e.cardRef)?.getCost() ?? 0).ToArray();
+            var deckItem = orderedCards[index];
+            //从卡组中删除一张卡牌
+            deckItem.count--;
+            if (deckItem.count <= 0)
+                deckList.Remove(deckItem);
+            //刷新卡池显示
+            _cardPoolViewPanelCtrl.updateContents();
+            return deckItem;
+        }
+        private async Task<bool> dragDeckItem(PointerEventData eventData, int index = -1)
+        {
+            if (_deck == null)
+                //当前不在编辑卡组，禁用拖拽
+                return false;
+            if (!_isDraggingHorizontal && !_isDraggingVertical)
+                //还没有进入拖拽状态
+                await initDeckItemDrag(eventData, index);
+            if (_isDraggingHorizontal)
+            {
+                await showDragCard(_ui.isPositionOverDeckCardList(eventData.position));
+                _ui.moveDragCard(eventData.position);
+                eventData.Use();
+                return true;
+            }
+            return false;
+        }
+        private async Task endDragDeckItem(PointerEventData eventData)
+        {
+            if (_deck == null)
+                //当前不在编辑卡组，禁用拖拽
+                return;
+            if (_isDraggingHorizontal)
+            {
+                //横向拖拽
+                //执行操作
+                if (_dragCard != null && _ui.isPositionOverDeckCardList(eventData.position))
+                {
+                    if (tryAddCardToDeck(_dragCard, out string errorTip))
+                    {
+                        //更新可用信息
+                        _cardPoolViewPanelCtrl.updateContents();
+                    }
+                    else
+                        _ui.showErrorTip(errorTip);
+                }
+                //隐藏拖拽卡牌
+                _ui.hideDragCard();
+                //更新UI
+                await updateDeckCardListUI();
+            }
+            //重置状态字段
+            _dragCard = null;
+            _dragStartPosition = Vector2.zero;
+            _isDraggingHorizontal = false;
+            _isDraggingVertical = false;
         }
         #endregion
         #region 属性字段
@@ -825,6 +817,7 @@ namespace Controllers
         bool _isDraggingHorizontal = false;
         [SerializeField]
         bool _isDraggingVertical = false;
+        bool _isDraggingDeckListItem = false;
         CardDefine[] _selectableMasters;
         CardDefine _dragCard;
         //List<CardPoolRuntimeData> _cardPoolList = new List<CardPoolRuntimeData>();
