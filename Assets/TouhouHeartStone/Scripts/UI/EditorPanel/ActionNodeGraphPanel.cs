@@ -372,6 +372,11 @@ namespace UI
             _hintMessageText.gameObject.SetActive(true);
             _hintMessageText.gameObject.GetComponent<SEPlayer>()?.Play();
         }
+        public void hideErrorTip()
+        {
+            _hintMessageText.text = string.Empty;
+            _hintMessageText.gameObject.SetActive(false);
+        }
 
         #region 操作模式/节点选择
         public IEnumerable<ActionNodeItem> getSelectedNodes()

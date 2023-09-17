@@ -69,6 +69,7 @@ namespace Controllers
         public Task hide()
         {
             gameObject.SetActive(false);
+            _ui.hideErrorTip();
             return Task.CompletedTask;
         }
         public bool isActionDefineNameExist(string name)
