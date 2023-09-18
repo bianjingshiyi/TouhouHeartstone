@@ -2009,6 +2009,7 @@ namespace Game.BattleTable
         /// 是否进入法术目标选择模式
         /// </summary>
         public bool isCastingSpell { get; set; }
+        public float cardHeight => _cardHeight;
         private bool _requesting;
         public float servantAttackThreshold => _servantAttackThreshold;
         public float masterAttackThreshold => _masterAttackThreshold;

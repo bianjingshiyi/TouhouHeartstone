@@ -138,7 +138,7 @@ namespace Game.BattleTable
         {
             var player = arg.player;
 
-            float height = 100;
+            float height = table.TableToWorldDistance(table.cardHeight);
             var pile = _card.pile;
             if (pile != null)
             {
