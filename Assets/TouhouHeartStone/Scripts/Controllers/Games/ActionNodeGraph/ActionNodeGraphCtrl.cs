@@ -905,7 +905,8 @@ namespace Controllers
                 nodeName,
                 inputViewData,
                 Array.Empty<ActionNodeValueInfo>(), // 清空常量，不然在下面初始化牌堆的时候，因为已经创建了，所以对模板的常量项的修改不会应用到新的上面。
-                outputViewData);
+                outputViewData,
+                visualEffect: true);
             actionNodeItem.initEffectTags(_passiveEffectTagNames, _passiveEffectTags);
             actionNodeItem.switchToEventEntryNode();
 
