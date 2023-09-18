@@ -656,10 +656,10 @@ namespace Controllers
             }
             _ui.updateDeckCardList(deckCardsViewData);
         }
-        private async Task showDragCard(bool isDeckListItem)
+        private async Task showDragCard(bool isDeckListItem, bool force = false)
         {
             _ui.showDragCard(isDeckListItem);
-            if (_isDraggingDeckListItem != isDeckListItem)
+            if (_isDraggingDeckListItem != isDeckListItem || force)
             {
                 _isDraggingDeckListItem = isDeckListItem;
                 //更新UI
@@ -695,7 +695,7 @@ namespace Controllers
             _dragStartPosition = eventData.position;
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
-
+            _isDraggingDeckListItem = false;
             return false;
         }
         private async Task initDeckItemDrag(PointerEventData eventData, int deckListItemIndex)
@@ -718,6 +718,7 @@ namespace Controllers
                             if (cardRef != null)
                                 _dragCard = game.card.getLocalCardDefine(cardRef);
                         }
+                        await showDragCard(_ui.isPositionOverDeckCardList(eventData.position), true);
                     }
                 }
                 else
@@ -795,6 +796,7 @@ namespace Controllers
             _dragStartPosition = Vector2.zero;
             _isDraggingHorizontal = false;
             _isDraggingVertical = false;
+            _isDraggingDeckListItem = false;
         }
         #endregion
         #region 属性字段
