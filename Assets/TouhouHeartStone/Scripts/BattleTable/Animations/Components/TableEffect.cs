@@ -32,9 +32,9 @@ namespace Game.Animations
         }
         public void update(float deltaTime)
         {
-            if (!isPlayed)
+            if (!_isStarted)
             {
-                if (sourceTransform == null && needSourceToPlay)
+                if (sourceTransform == null)
                 {
                     rootObj?.SetActive(false);
                     return;
@@ -43,7 +43,7 @@ namespace Game.Animations
                 {
                     rootObj?.SetActive(true);
                 }
-                isPlayed = true;
+                _isStarted = true;
             }
             if (_animator)
             {
@@ -100,6 +100,7 @@ namespace Game.Animations
                 return _rootObj;
             }
         }
+        public bool isStarted => _isStarted;
         public BattleTableManager table => _table;
         public float time => _time;
         public float duration => _duration;
@@ -109,8 +110,6 @@ namespace Game.Animations
         private Transform _srcTransform;
         [SerializeField]
         private Transform _destTransform;
-        [SerializeField]
-        private bool needSourceToPlay = true;
 #if UNITY_EDITOR
         [SerializeField]
         protected bool _testMode;
@@ -121,7 +120,7 @@ namespace Game.Animations
         protected float _blockTime;
         protected GameObject _rootObj;
         protected BattleTableManager _table;
-        private bool isPlayed;
+        private bool _isStarted;
     }
     public class VisualEffectInfo
     {

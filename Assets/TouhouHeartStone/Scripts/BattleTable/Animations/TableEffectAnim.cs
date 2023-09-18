@@ -34,7 +34,7 @@ namespace Game.Animations
                 };
                 effect = table.createEffect(define, info);
             }
-            while (!effect.isFinished())
+            while (!effect.isFinished() && !(!effect.isStarted && _duration >= 10f)) // 十秒没播放算超时
             {
                 // 这里不用Unity.Object的boolean隐式转换，因为Transform被销毁后会返回false，但它不是null
                 // 防止类似飞刀的弹射物特效在击杀目标后又突然插在其他卡牌上之类的
@@ -56,6 +56,8 @@ namespace Game.Animations
         public override bool continueNextGroup(AnimationGroup nextGroup)
         {
             if (!effect)
+                return true;
+            if (!effect.isStarted)
                 return true;
             var blockTime = effect.blockTime;
             return _duration > blockTime && blockTime >= 0;
