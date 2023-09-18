@@ -24,7 +24,7 @@ namespace Game.BattleTable
                 if (AnimHelper.hasAnim(servant.animator, servant.onHeal.animName, out int layer))
                     servant.animator.Play(servant.onHeal.animName, layer);
                 //播放粒子特效
-                _healEffect = Object.Instantiate(servant.healEffectPrefab, servant.transform.position, Quaternion.identity);
+                _healEffect = Object.Instantiate(servant.healEffectPrefab, servant.transform.position, Quaternion.identity, table.table.EffectsParent);
             }
             else if (table.tryGetMaster(card, out Master master))
             {
@@ -33,7 +33,7 @@ namespace Game.BattleTable
                 if (AnimHelper.hasAnim(master.animator, master.onHeal.animName, out int layer))
                     master.animator.Play(master.onHeal.animName, layer);
                 //播放粒子特效
-                _healEffect = Object.Instantiate(master.healEffectPrefab, master.transform.position, Quaternion.identity);
+                _healEffect = Object.Instantiate(master.healEffectPrefab, master.transform.position, Quaternion.identity, table.table.EffectsParent);
             }
             yield return new WaitForSeconds(1.5f);
             Object.Destroy(_healEffect.gameObject);

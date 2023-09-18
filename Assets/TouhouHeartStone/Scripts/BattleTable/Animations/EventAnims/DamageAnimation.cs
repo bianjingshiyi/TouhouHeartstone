@@ -25,7 +25,7 @@ namespace Game.BattleTable
                 if (AnimHelper.hasAnim(servant.animator, servant.onDamage.animName, out int layer))
                     servant.animator.Play(servant.onDamage.animName, layer);
                 //创建打击特效
-                _damageEffect = UnityEngine.Object.Instantiate(servant.damageEffectPrefab, servant.transform.position, Quaternion.identity);
+                _damageEffect = Object.Instantiate(servant.damageEffectPrefab, servant.transform.position, Quaternion.identity, table.table.EffectsParent);
             }
             else if (table.tryGetMaster(target, out Master master))
             {
@@ -33,7 +33,7 @@ namespace Game.BattleTable
                 if (AnimHelper.hasAnim(master.animator, master.onDamage.animName, out int layer))
                     master.animator.Play(master.onDamage.animName, layer);
                 //创建打击特效
-                _damageEffect = UnityEngine.Object.Instantiate(master.damageEffectPrefab, master.transform.position, Quaternion.identity);
+                _damageEffect = Object.Instantiate(master.damageEffectPrefab, master.transform.position, Quaternion.identity, table.table.EffectsParent);
             }
             else if (table.tryGetItem(target, out var item))
             {
@@ -50,7 +50,7 @@ namespace Game.BattleTable
                 animItem.onLifeDown.invokeAfterAnim();
             }
             if (_damageEffect != null)
-                UnityEngine.Object.Destroy(_damageEffect.gameObject);
+                Object.Destroy(_damageEffect.gameObject);
         }
         public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
         {
