@@ -52,6 +52,8 @@ namespace Game
         public const string EDITOR_NODE_CARD_DEFINE_HAS_DEATHRATTLE = "卡牌定义具有遗言";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_CARD_DEFINE_IS_TRAP = "卡牌定义是否是陷阱";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_REVEAL_CARD_DEFINE = "展示卡牌定义";
         [TranslateMsg("编辑器-动作节点-触发法术或技能卡牌定义效果")]
         public const string EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE = "触发法术或技能卡牌定义效果";
         [TranslateMsg("编辑器-节点名称-获取卡牌定义的标签列表")]
@@ -62,6 +64,10 @@ namespace Game
         public const string EDITOR_PARAM_NAME_TAG_LIST = "标签列表";
         [TranslateMsg("编辑器-参数名称-源卡牌")]
         public const string EDITOR_PARAM_NAME_SOURCE_CARD = "源卡牌";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_INVISIBLE_FOR_SELF = "自己不可见";
+        [TranslateMsg("编辑器-参数名称")]
+        public const string EDITOR_PARAM_NAME_INVISIBLE_FOR_OPPONENT = "对手不可见";
 
 
         /// 获取全部卡牌定义
@@ -472,6 +478,20 @@ namespace Game
             if (cardDefine == null || source == null)
                 return Array.Empty<Card>();
             return cardDefine.getAvaliableTargets(game, source);
+        }
+        /// <summary>
+        /// 展示卡牌定义
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.RevealCardDefine, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_REVEAL_CARD_DEFINE)]
+        public static Task revealCardDefine(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
+            [ActionNodeParam(StringTable.EDITOR_TYPE_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_NAME_INVISIBLE_FOR_SELF)] bool invisibleForSelf,
+            [ActionNodeParam(EDITOR_PARAM_NAME_INVISIBLE_FOR_OPPONENT)] bool invisibleForOppo)
+        {
+            if (cardDefine == null)
+                return Task.CompletedTask;
+            return game.revealCardDefine(cardDefine, player, invisibleForSelf, invisibleForOppo);
         }
     }
     public enum CardDefineSelect

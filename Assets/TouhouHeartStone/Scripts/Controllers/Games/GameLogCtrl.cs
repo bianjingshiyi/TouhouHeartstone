@@ -84,6 +84,22 @@ namespace Controllers
                         }
                     }
                     break;
+                case RevealEventDefine reveal:
+                    if (obj.getVar<Card>(RevealEventDefine.VAR_CARD) != null)
+                    {
+                        addLogItem(obj);
+                    }
+                    break;
+                case RevealCardDefineEventDefine revealCardDefine:
+                    if (obj.getVar<CardDefine>(RevealCardDefineEventDefine.VAR_CARD_DEFINE) == null)
+                        break;
+                    bool isSelf = obj.getVar<Player>(RevealCardDefineEventDefine.VAR_PLAYER) == _localPlayer;
+                    if (isSelf && obj.getVar<bool>(RevealCardDefineEventDefine.VAR_INVISIBLE_FOR_SELF))
+                        break;
+                    if (!isSelf && obj.getVar<bool>(RevealCardDefineEventDefine.VAR_INVISIBLE_FOR_OPPO))
+                        break;
+                    addLogItem(obj);
+                    break;
                 default:
                     break;
             }

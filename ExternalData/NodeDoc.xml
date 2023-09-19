@@ -7047,6 +7047,49 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>203001</defineId>
+    <obsoleteNames />
+    <editorName>展示卡牌定义</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要展示的卡牌定义。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[进行展示的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>invisibleForSelf</name>
+        <displayName>自己不可见</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该次展示是否对展示的玩家自己不可见？]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>invisibleForOppo</name>
+        <displayName>对手不可见</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该次展示是否对展示的玩家的对手不可见？]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <summary><![CDATA[向双方玩家展示一张卡牌定义。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>104001</defineId>
     <obsoleteNames />
     <editorName>获取卡牌快照对应卡牌</editorName>

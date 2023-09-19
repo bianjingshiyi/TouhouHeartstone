@@ -287,6 +287,13 @@ namespace TouhouHeartstone
             return RevealEventDefine.doEvent(game, card.getOwner(), card, shouldAnimate);
         }
 
+        public static Task<EventArg> revealCardDefine(this CardEngine game, CardDefine cardDefine, Player player, bool invisibleForSelf = false, bool invisibleForOppo = false)
+        {
+            if (cardDefine == null)
+                return Task.FromResult<EventArg>(null);
+            return RevealCardDefineEventDefine.doEvent(game, cardDefine, player, invisibleForSelf, invisibleForOppo);
+        }
+
         #endregion
     }
 

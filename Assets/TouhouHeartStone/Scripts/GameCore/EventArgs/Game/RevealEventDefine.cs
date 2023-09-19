@@ -13,25 +13,25 @@ namespace TouhouHeartstone
             beforeVariableInfos = new EventVariableInfo[]
             {
                 new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
+                new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)}
             };
             afterVariableInfos = new EventVariableInfo[]
             {
                 new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
+                new EventVariableInfo(){name = VAR_CARD,type=typeof(Card)}
             };
         }
         [Obsolete]
         public override void Record(CardEngine game, EventArg arg, EventRecord record)
         {
             record.setVar(EVENTVAR.PLAYER, arg);
-            record.setCardState(EVENTVAR.CARD, arg);
+            record.setCardState(VAR_CARD, arg);
             record.setVar(VAR_ANIMATE, arg);
         }
         public override Task execute(IEventArg arg)
         {
             var game = arg.game;
-            var card = arg.getVar<Card>(EVENTVAR.CARD);
+            var card = arg.getVar<Card>(VAR_CARD);
             game.logger.logTrace(card != null ? $"揭示了{card.getFormatString()}" : "什么也没揭示");
             return Task.CompletedTask;
         }
@@ -44,7 +44,7 @@ namespace TouhouHeartstone
             var define = game.getEventDefine<RevealEventDefine>();
             var arg = new EventArg(game, define);
             arg.setVar(EVENTVAR.PLAYER, player);
-            arg.setVar(EVENTVAR.CARD, card);
+            arg.setVar(VAR_CARD, card);
             arg.setVar(VAR_ANIMATE, animate);
             return game.triggers.doEvent(arg);
         }
@@ -53,14 +53,14 @@ namespace TouhouHeartstone
         #region 接口实现
         DescribableCard IDescribableEventDefine.getCard(IGame game, EventArg eventArg, IPlayer viewer)
         {
-            return eventArg.getVar<Card>(EVENTVAR.CARD);
+            return eventArg.getVar<Card>(VAR_CARD);
         }
 
         DescribableCard[] IDescribableEventDefine.getTargets(IGame game, EventArg eventArg, IPlayer viewer)
         {
             return null;
         }
-        ICard ICardEventDefine.getCard(IEventArg eventArg) => eventArg.getVar<Card>(EVENTVAR.CARD);
+        ICard ICardEventDefine.getCard(IEventArg eventArg) => eventArg.getVar<Card>(VAR_CARD);
         string IDescribableEventDefine.toString(IGame game, EventArg eventArg, IPlayer viewer) => toString(eventArg);
         string IDescribableEventDefine.localizeTemplateString(IGame game, EventArg eventArg, IPlayer viewer) => localizeTemplateString(eventArg);
         object[] IDescribableEventDefine.localizeStringArgs(IGame game, EventArg eventArg, IPlayer viewer) => localizeStringArgs(eventArg);
@@ -70,14 +70,14 @@ namespace TouhouHeartstone
         #endregion
         private string localizeTemplateString(EventArg eventArg)
         {
-            var card = eventArg.getVar<Card>(EVENTVAR.CARD);
+            var card = eventArg.getVar<Card>(VAR_CARD);
             return card == null ? TEMPLATE_INVALID : TEMPLATE_VALID;
         }
 
         private object[] localizeStringArgs(EventArg eventArg)
         {
             var player = eventArg.getVar<Player>(EVENTVAR.PLAYER);
-            var card = eventArg.getVar<Card>(EVENTVAR.CARD);
+            var card = eventArg.getVar<Card>(VAR_CARD);
             return new object[] { player.name, card?.getFormatString() };
         }
         #endregion
@@ -89,5 +89,6 @@ namespace TouhouHeartstone
         [TranslateMsg("游戏事件日志项名称")]
         private const string LOG_ITEM_NAME = "揭示";
         public const string VAR_ANIMATE = "播放动画";
+        public static string VAR_CARD => EVENTVAR.CARD;
     }
 }

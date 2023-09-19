@@ -312,6 +312,9 @@ namespace Game
         public const int SetCardPropVisibility = Type_Action + Category_Buff + 48; // 设置卡牌属性可见性
         public const int SetCardVisibility = Type_Action + Category_Buff + 49; // 设置卡牌可见性
 
+        // 卡牌定义
+        public const int RevealCardDefine = Type_Action + Category_CardDefine + 1; // 展示卡牌定义
+
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益
         public const int RemoveBuff = Type_Action + Category_Buff + 2;    // 移除增益
