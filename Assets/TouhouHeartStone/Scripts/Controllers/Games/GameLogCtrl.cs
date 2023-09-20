@@ -321,12 +321,11 @@ namespace Controllers
             logItems.Add(item);
             _logScrollView.LogList.updateLogListCount(logItems.Count);
         }
-        private async Task setCardUIByEvent(UICard ui, ICard card, IEventArg arg)
+        private async Task setCardUIByEvent(UICard ui, DescribableCard card, IEventArg arg)
         {
             if (ui == null || card == null)
                 return;
-            var cardObj = card as Card;
-            if (cardObj != null)
+            if (card.card is Card cardObj)
             {
                 EventRecord record = _game.triggers.getEventRecord(arg);
                 if (record != null)
@@ -339,8 +338,12 @@ namespace Controllers
                         return;
                     }
                 }
+                await ui.setCardDefine(cardObj.define, _main.card);
             }
-            await ui.setCardDefine(card.define, _main.card);
+            else if (card.define is CardDefine cardDefine)
+            {
+                await ui.setCardDefine(cardDefine, _main.card);
+            }
         }
 
         public CardManager cards => _main.card;

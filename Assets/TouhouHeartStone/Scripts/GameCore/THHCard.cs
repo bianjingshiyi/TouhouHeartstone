@@ -178,11 +178,11 @@ namespace TouhouHeartstone
         }
         public class SetArmorEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -730,12 +730,12 @@ namespace TouhouHeartstone
             {
                 record.setCardState(EVENTVAR.CARD, card);
             }
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -1486,13 +1486,13 @@ namespace TouhouHeartstone
         }
         public class AttackEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return new ICard[] { target };
+                return new DescribableCard[] { target };
             }
             ICard ICardEventArg.getCard()
             {
@@ -1602,14 +1602,14 @@ namespace TouhouHeartstone
 
         public class DiscardEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return null;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return new ICard[] { card };
+                return new DescribableCard[] { card };
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
@@ -1872,13 +1872,13 @@ namespace TouhouHeartstone
                 damageValue = value;
                 damagedValue = 0;
             }
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return source;
             }
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return new ICard[] { target };
+                return new DescribableCard[] { target };
             }
             ICard ICardEventArg.getCard()
             {
@@ -2004,12 +2004,12 @@ namespace TouhouHeartstone
         public class HealEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
 
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -2185,14 +2185,14 @@ namespace TouhouHeartstone
                 player = card.getOwner();
                 position = card.pile.indexOf(card);
             }
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return card;
+                return new DescribableCard[] { card };
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
@@ -2473,11 +2473,11 @@ namespace TouhouHeartstone
         }
         public class SecretTriggerEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -2541,11 +2541,11 @@ namespace TouhouHeartstone
         public class MissionCompleteEventArg : EventArg, IDescribableEventArg
         {
             public Card card;
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -2608,12 +2608,12 @@ namespace TouhouHeartstone
             {
                 record.setCardState(EVENTVAR.CARD, card);
             }
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }

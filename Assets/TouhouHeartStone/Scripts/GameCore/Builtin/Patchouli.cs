@@ -111,13 +111,13 @@ namespace TouhouHeartstone.Builtin
                 record.setVar(VAR_DEFINE_2, define2);
                 record.setCardState(VAR_RESULT, results);
             }
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return viewer == player ? results : null;
             }
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return results;
+                return new DescribableCard[] { results };
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)

@@ -1031,12 +1031,12 @@ namespace TouhouHeartstone
 
         public class SetMaxGemEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return null;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -1099,12 +1099,12 @@ namespace TouhouHeartstone
 
         public class BurnEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -1172,12 +1172,12 @@ namespace TouhouHeartstone
             public CardDefine choose;
             public bool isShow = true;
 
-            public ICard getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return null;
             }
 
-            public ICard[] getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -1289,16 +1289,16 @@ namespace TouhouHeartstone
             public int cost => getVar<int>(EVENTVAR.COST);
             public Card[] targets => getVar<Card[]>(EVENTVAR.TARGETS);
 
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 if (card.isTrap(game))
                     return viewer == player ? card : null;
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return targets;
+                return targets.Cast<DescribableCard>().ToArray();
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
@@ -1342,12 +1342,12 @@ namespace TouhouHeartstone
 
         public class EnterFieldEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -1423,12 +1423,12 @@ namespace TouhouHeartstone
 
         public class EquipItemEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -1492,12 +1492,12 @@ namespace TouhouHeartstone
         }
         public class RebornEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            ICard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
@@ -1568,12 +1568,12 @@ namespace TouhouHeartstone
 
         public class RevealEventArg : EventArg, IDescribableEventArg
         {
-            ICard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
+            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return card;
             }
 
-            public ICard[] getTargets(IGame game, IPlayer viewer)
+            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
