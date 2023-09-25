@@ -22,6 +22,8 @@ namespace Game
         #region 事件记录
 
         [TranslateMsg("编辑器/事件记录_获取当前回合数_节点名称")]
+        public const string EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE = "获取当前回合数（过时）";
+        [TranslateMsg("编辑器/事件记录_获取当前回合数_节点名称")]
         public const string EDITOR_NODE_EVENT_GET_TURN_COUNT = "获取当前回合数";
         [TranslateMsg("编辑器/事件记录_获取变量_节点名称")]
         public const string EDITOR_NODE_EVENT_RECORD_GET_VARIABLE = "获取事件记录变量";
@@ -36,7 +38,14 @@ namespace Game
         [TranslateMsg("编辑器/事件记录_获取卡牌在某事件时的快照_节点名称")]
         public const string EDITOR_NODE_EVENT_GET_CARD_SNAPSHOT_OF_CARD_ON_EVENT = "获取卡牌在某事件时的快照";
 
-        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTurnCount, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_TURN_COUNT)]
+        [Obsolete]
+        [ObsoletedKeyMethod(BuiltinActionDefineID.GetTurnCount_Obsolete, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_TURN_COUNT_OBSOLETE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
+        public static int getTurnCountObsolete(CardEngine game)
+        {
+            return game.getTurnCount() - 1;
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetTurnCount, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_GET_TURN_COUNT)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
         public static int getTurnCount(CardEngine game)
         {

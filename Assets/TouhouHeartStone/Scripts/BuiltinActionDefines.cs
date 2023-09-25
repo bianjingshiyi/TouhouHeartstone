@@ -56,6 +56,8 @@ namespace Game
         public const int GetPlayerMaxGem = Type_Function + Category_Player + 15;    // 获取灵力上限
         public const int GetPlayerSpellDamage = Type_Function + Category_Player + 16;    // 获取玩家法术伤害
         public const int GetPile = Type_Function + Category_Player + 17;    // 获取牌堆
+        public const int GetPlayerTurnCount = Type_Function + Category_Player + 18;    // 获取玩家的回合数
+        public const int IsOffensivePlayer = Type_Function + Category_Player + 19;    // 玩家是否是先手
 
         // 卡牌
         public const int ThisCard = Type_Function + Category_Card + 1; // 这张卡牌
@@ -157,13 +159,14 @@ namespace Game
         public const int GetEventVariable = Type_Function + Category_Event + 2;    // 获取变量
 
         // 事件记录
-        public const int GetTurnCount = Type_Function + Category_EventRecord + 1;    // 获得当前回合数
+        public const int GetTurnCount_Obsolete = Type_Function + Category_EventRecord + 1;    // 获得当前回合数（过时）
         public const int GetEventRecordVariable = Type_Function + Category_EventRecord + 2;    // 获取事件记录变量
         public const int CheckEventRecordType = Type_Function + Category_EventRecord + 3;    // 事件记录类型判断
         public const int GetEventRecordsThisGame = Type_Function + Category_EventRecord + 4;    // 获取本局游戏事件记录
         public const int GetEventRecordsThisTurn = Type_Function + Category_EventRecord + 5;    // 获取本回合事件记录
         public const int GetEventRecordsInTurnsBefore = Type_Function + Category_EventRecord + 6;    // 获取前x-y回合内的事件记录
         public const int GetCardSnapshotOfEvent = Type_Function + Category_EventRecord + 7;    // 获取卡牌在某事件时的快照
+        public const int GetTurnCount = Type_Function + Category_EventRecord + 8;    // 获得当前回合数
 
         // 集合运算
         public const int CreateArray = Type_Function + Category_Collection + 1;    // 创建集合

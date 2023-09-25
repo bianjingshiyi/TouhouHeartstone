@@ -607,8 +607,14 @@ namespace TouhouHeartstone
             setCurrentPlayer(game, game.getSortedPlayers()[0]);
             for (int i = 0; i < 100; i++)
             {
-                game.setProp(GAME.TURNCOUNT, i);
-                updateSecrets(game);
+                var turnCount = game.getTurnCount();
+                game.setProp(GAME.TURNCOUNT, turnCount + 1);
+
+                var curPlayer = getCurrentPlayer(game);
+                var playerTurnCount = curPlayer.getTurnCount();
+                curPlayer.setProp(PLAYER.TURNCOUNT, playerTurnCount + 1);
+
+                await updateSecrets(game);
                 await turnStart(game, game.getCurrentPlayer());
                 await turnLoop(game, game.getCurrentPlayer());
                 await turnEnd(game, game.getCurrentPlayer());

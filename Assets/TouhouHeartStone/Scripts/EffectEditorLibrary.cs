@@ -224,6 +224,11 @@ namespace Game
         public const string EDITOR_NODE_FAITHDUEL_OPPONENT_CARD = "对方卡牌";
         [TranslateMsg("编辑器/卡牌-节点名称")]
         public const string EDITOR_NODE_NAME_GET_PILE_OBSOLETE = "获取牌堆（过时）";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_GET_PLAYER_TURN_COUNT = "获取玩家的当前回合数";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_IS_OFFENSIVE_PLAYER = "玩家是否是先手";
+
         [TranslateMsg("节点参数 TargetName")]
         const string EDITOR_PARAM_TARGET_NAME = "目标名";
 
@@ -625,6 +630,27 @@ namespace Game
                 return (Card)eventArg.targets[0];
             throw new NotImplementedException();
         }
+
+        [THHActionMethod(BuiltinActionDefineID.GetPlayerTurnCount, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_GET_PLAYER_TURN_COUNT)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_TURN_COUNT)]
+        public static int getPlayerTurnCount(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (player == null)
+                return 0;
+            return player.getTurnCount();
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.IsOffensivePlayer, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_IS_OFFENSIVE_PLAYER)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
+        public static bool isOffensivePlayer(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        {
+            if (game == null || player == null)
+                return false;
+            return game.getSortedPlayers().FirstOrDefault() == player;
+        }
+        
         #endregion
 
         //  有关牌堆的操作，比如说洗牌，获取特定牌等等

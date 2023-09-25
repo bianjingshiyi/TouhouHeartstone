@@ -633,6 +633,10 @@ namespace TouhouHeartstone
             return cardList.ToArray();
         }
 
+        public static int getTurnCount(this Player player)
+        {
+            return player.getProp<int>(PLAYER.TURNCOUNT);
+        }
 
         #region 信仰对决
         /// <summary>

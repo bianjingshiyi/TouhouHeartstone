@@ -1528,6 +1528,64 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>101018</defineId>
+    <obsoleteNames />
+    <editorName>获取玩家的当前回合数</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取回合数的玩家。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>回合数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[玩家的当前回合数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个玩家从游戏开始时到现在经历的，自己的回合数。<br>该玩家第一个自己的回合中，输出为1；第二个自己的回合中为2。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>101019</defineId>
+    <obsoleteNames />
+    <editorName>玩家是否是先手</editorName>
+    <category>玩家</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断是否是先手的玩家。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>真值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[玩家是否是先手。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一个玩家是否是先手。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>105002</defineId>
     <obsoleteNames />
     <editorName>获取牌堆中的牌</editorName>
@@ -1711,7 +1769,7 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
-    <defineId>105003</defineId>
+    <defineId>105005</defineId>
     <obsoleteNames />
     <editorName>卡牌所在牌堆判断</editorName>
     <category>牌堆</category>
@@ -1814,7 +1872,6 @@
     <consts />
     <summary><![CDATA[获取一个牌堆的名称。内置的牌堆名包括：
           <li>Master: 英雄牌堆</li>
-          <li>Init: 初始手牌牌堆</li>
           <li>Hand: 手牌牌堆</li>
           <li>Skill: 英雄技能牌堆</li>
           <li>Deck: 牌库牌堆</li>
@@ -4111,7 +4168,7 @@
         <name>return</name>
         <displayName>沉默事件</displayName>
         <isParams>false</isParams>
-        <isArray>false</isArray>
+        <isArray>true</isArray>
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </outputs>
@@ -7597,6 +7654,27 @@
   <ActionComment>
     <defineId>109001</defineId>
     <obsoleteNames />
+    <editorName>获取当前回合数（过时）</editorName>
+    <obsoleteMsg />
+    <category>事件记录</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>return</name>
+        <displayName>回合数</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的回合数。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取当前回合数。<br>第一回合为0，一方玩家的回合开始后，回合数+1。<br><b>该节点因为起始回合数为0而已过时，请使用新版节点。</b>]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>109008</defineId>
+    <obsoleteNames />
     <editorName>获取当前回合数</editorName>
     <category>事件记录</category>
     <inputs />
@@ -7611,7 +7689,7 @@
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[获取当前回合数。<br>第一回合为0，一方玩家的回合开始后，回合数+1。]]></summary>
+    <summary><![CDATA[获取当前回合数。<br>第一回合为1，一方玩家的回合开始后，回合数+1。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
