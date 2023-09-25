@@ -1153,46 +1153,7 @@ namespace TouhouHeartstone
             if (card.isSilenced(game))
                 return Array.Empty<Card>();
             List<Card> targetList = new List<Card>();
-            if (card.define.getActiveEffect() is ITargetEffect targetEffect)
-            {
-                foreach (Player player in game.players)
-                {
-                    if (card.isValidTarget(game, player.getMaster(), targetEffect, null, null))
-                        targetList.Add(player.getMaster());
-                    foreach (Card servant in player.getField())
-                    {
-                        if (card.isValidTarget(game, servant, targetEffect, null, null))
-                            targetList.Add(servant);
-                    }
-                }
-            }
-            else if (card.define.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault() is GeneratedActiveEffect generatedEffect)
-            {
-                var entryNode = generatedEffect.entryNode;
-                if (entryNode != null && entryNode.targetCheckerList != null && entryNode.targetCheckerList.Count > 0)
-                {
-                    foreach (TargetChecker targetChecker in entryNode.targetCheckerList)
-                    {
-                        foreach (Player player in game.players)
-                        {
-                            if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER)
-                            {
-                                if (card.isValidTarget(game, player.getMaster(), null, null, generatedEffect))
-                                    targetList.Add(player.getMaster());
-                            }
-                            if (targetChecker.targetType == DEFINE.TARGET_TYPE_CHARACTER ||
-                                targetChecker.targetType == DEFINE.TARGET_TYPE_SERVANT)
-                            {
-                                foreach (Card servant in player.getField())
-                                {
-                                    if (card.isValidTarget(game, servant, null, null, generatedEffect))
-                                        targetList.Add(servant);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            targetList.AddRange(card.define.getAvaliableTargets(game, card));
             return targetList.ToArray();
         }
         public static bool isValidTarget(this Card card, CardEngine game, Card target)
@@ -1209,12 +1170,12 @@ namespace TouhouHeartstone
             GeneratedActiveEffect generatedEffect = card.define.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault();
             return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect, out invalidMsg);
         }
-        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedActiveEffect generatedEffect)
+        public static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedActiveEffect generatedEffect)
         {
             return isValidTarget(card, game, target, targetEffect, triggerEffect, generatedEffect, out _);
         }
 
-        private static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedActiveEffect generatedEffect, out string invalidMsg)
+        public static bool isValidTarget(this Card card, CardEngine game, Card target, ITargetEffect targetEffect, ITriggerEffect triggerEffect, GeneratedActiveEffect generatedEffect, out string invalidMsg)
         {
             invalidMsg = null;
             //不能是自己

@@ -223,5 +223,26 @@ namespace TouhouHeartstone
         {
             return cardDefine.getGeneratedEffects().Any(e => e.isTrap()) || cardDefine.hasKeyword(KEYWORD.SECRET);
         }
+
+
+        /// <summary>
+        /// 这张卡牌定义的主动效果的可选目标
+        /// </summary>
+        /// <param name="cardDefine"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static Card[] getAvaliableTargets(this CardDefine cardDefine, CardEngine game, Card source)
+        {
+            List<Card> targetList = new List<Card>();
+            if (cardDefine.getActiveEffect() is ITargetEffect targetEffect)
+            {
+                targetList.AddRange(targetEffect.getAvaliableTargets(game, source));
+            }
+            else if (cardDefine.getEffects().OfType<GeneratedActiveEffect>().FirstOrDefault() is GeneratedActiveEffect generatedEffect)
+            {
+                targetList.AddRange(generatedEffect.getAvaliableTargets(game, source));
+            }
+            return targetList.ToArray();
+        }
     }
 }

@@ -31,6 +31,8 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_ALL_BUFF_EFFECTS = "获取增益的所有效果";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_NAME_GET_ALL_CARD_DEFINE_EFFECTS = "获取卡牌定义的所有效果";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_GET_EFFECT_TARGETS = "获取效果的合法使用目标"; 
         /// <summary>
         /// 该效果
         /// </summary>
@@ -114,6 +116,19 @@ namespace Game
             if (cardDefine == null)
                 return Array.Empty<IEffect>();
             return cardDefine.getEffects().ToArray();
+        }
+        /// <summary>
+        /// 获取效果合法目标集合
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetValidEffectTargets, EDITOR_CATEGORY_NAME_EFFECTS, EDITOR_NODE_GET_EFFECT_TARGETS)]
+        [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
+        public static Card[] getAllLegalEffectTargets(CardEngine game,
+            [ActionNodeParam(EDITOR_PARAM_NAME_EFFECT)] IEffect effect,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source)
+        {
+            if (effect == null || source == null)
+                return Array.Empty<Card>();
+            return effect.getAvaliableTargets(game, source);
         }
     }
     [Serializable]

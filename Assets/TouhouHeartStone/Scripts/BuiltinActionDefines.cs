@@ -112,6 +112,7 @@ namespace Game
         public const int GetCardDefineTagList = Type_Function + Category_CardDefine + 19;    // 获取卡牌定义标签列表
         public const int GetCardDefineProp = Type_Function + Category_CardDefine + 20;    // 获取卡牌定义属性
         public const int CardDefineIsTrap = Type_Function + Category_CardDefine + 21;    // 卡牌定义是否是陷阱
+        public const int GetValidCardDefineTargets = Type_Function + Category_CardDefine + 22;    // 获取卡牌定义的合法使用目标
 
 
         // 卡牌快照
@@ -153,6 +154,7 @@ namespace Game
         public const int GetAllCardEffects = Type_Function + Category_Effect + 4;    // 获取卡牌的所有效果
         public const int GetAllBuffEffects = Type_Function + Category_Effect + 5;    // 获取增益的所有效果
         public const int GetAllCardDefineEffects = Type_Function + Category_Effect + 6;    // 获取卡牌定义的所有效果
+        public const int GetValidEffectTargets = Type_Function + Category_Effect + 7;    // 获取效果的合法使用目标
 
         // 事件
         public const int ThisEvent = Type_Function + Category_Event + 1;    // 当前事件

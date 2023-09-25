@@ -56,8 +56,12 @@ namespace Game
         public const string EDITOR_NODE_TRIGGER_SPELL_CARD_DEFINE = "触发法术或技能卡牌定义效果";
         [TranslateMsg("编辑器-节点名称-获取卡牌定义的标签列表")]
         public const string EDITOR_NODE_NAME_GET_CARD_DEFINE_TAG_LIST = "获取卡牌定义的标签列表";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_GET_CARD_DEFINE_TARGETS = "获取卡牌定义的合法使用目标";
         [TranslateMsg("编辑器-参数名称-标签列表")]
         public const string EDITOR_PARAM_NAME_TAG_LIST = "标签列表";
+        [TranslateMsg("编辑器-参数名称-源卡牌")]
+        public const string EDITOR_PARAM_NAME_SOURCE_CARD = "源卡牌";
 
 
         /// 获取全部卡牌定义
@@ -443,7 +447,7 @@ namespace Game
         /// <summary>
         /// 卡牌定义是否是陷阱
         /// </summary>
-        [THHActionMethod(BuiltinActionDefineID.CardDefineIsTrap, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_CARD_DEFINE_IS_TRAP)]
+        [THHActionMethod(BuiltinActionDefineID.CardDefineIsTrap, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_DEFINE_IS_TRAP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool cardDefineIsTrap(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine)
@@ -451,6 +455,19 @@ namespace Game
             if (cardDefine == null)
                 return false;
             return cardDefine.isTrap();
+        }
+        /// <summary>
+        /// 获取卡牌定义合法目标集合
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetValidCardDefineTargets, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_GET_CARD_DEFINE_TARGETS)]
+        [return: ActionNodeParam(EDITOR_NODE_GET_CARD_TARGETS_TARGETS)]
+        public static Card[] getAllLegalCardDefineTargets(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SOURCE_CARD)] Card source)
+        {
+            if (cardDefine == null || source == null)
+                return Array.Empty<Card>();
+            return cardDefine.getAvaliableTargets(game, source);
         }
     }
     public enum CardDefineSelect

@@ -4558,7 +4558,7 @@
         <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要获取使用目标的卡牌。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
@@ -4568,11 +4568,11 @@
         <displayName>合法目标集合</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[获取到的卡牌的合法目标集合。]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[获取一张卡牌的所有合法的目标，即可以指向哪些卡牌并使用。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -5701,6 +5701,43 @@
     </outputs>
     <consts />
     <summary><![CDATA[判断一个卡牌定义是否是陷阱。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>103022</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌定义的合法使用目标</editorName>
+    <category>卡牌定义</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>CardDefine</type>
+        <name>cardDefine</name>
+        <displayName>卡牌定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取使用目标的卡牌定义。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>source</name>
+        <displayName>源卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[以哪张卡牌为源获取这张卡牌定义的合法目标。这会导致合法目标中不包括这张牌，并影响<b>隐匿</b>、<b>无敌</b>以及其他更复杂的检测。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>合法目标集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的卡牌定义的所有合法目标的集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌定义的所有合法的目标，即可以指向哪些卡牌并使用。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -7649,6 +7686,43 @@
     </outputs>
     <consts />
     <summary><![CDATA[获取一个卡牌定义所拥有的的所有效果。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>107007</defineId>
+    <obsoleteNames />
+    <editorName>获取效果的合法使用目标</editorName>
+    <category>效果</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>IEffect</type>
+        <name>effect</name>
+        <displayName>效果</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取使用目标的效果。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>source</name>
+        <displayName>源卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[以哪张卡牌为源获取这个效果的合法目标。这会导致合法目标中不包括这张牌，并影响<b>隐匿</b>、<b>无敌</b>以及其他更复杂的检测。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>return</name>
+        <displayName>合法目标集合</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获取到的效果的所有合法目标的集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个效果的所有合法的目标，即可以指向哪些卡牌并使用。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
