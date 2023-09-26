@@ -210,7 +210,7 @@ namespace Game.BattleTable
             // 播放使用动画。
             if (hand)
             {
-                table.setCard(hand.card, _card, !_card.hasKeyword(table.game, KEYWORD.SECRET));
+                table.setCard(hand.card, _card, !_card.isTrap(table.game));
                 hand.positionLerp.setStart();
                 hand.positionLerp.setTarget(table.table.SpellDisplayTransform);
                 AnimAnim useAnim = null;
