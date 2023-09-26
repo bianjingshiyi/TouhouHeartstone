@@ -339,6 +339,9 @@ namespace TouhouHeartstone
         [TranslateMsg]
         const string INFO_INVALID_TARGET = "无法攻击目标";
 
+        [TranslateMsg("目标选择的错误信息")]
+        const string INFO_TARGET_IS_ELUSIVE = "目标具有魔免";
+
         /// <summary>
         /// 这个角色能否对目标进行攻击？
         /// </summary>
@@ -1184,6 +1187,12 @@ namespace TouhouHeartstone
             //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
                 return false;
+            //目标是魔免
+            if (target.isElusive(game) && (card.isSpell() || card.isSkill()))
+            {
+                invalidMsg = INFO_TARGET_IS_ELUSIVE;
+                return false;
+            }
             //没有任何效果
             if (targetEffect == null && triggerEffect == null && generatedEffect == null)
                 return false;
