@@ -85,6 +85,7 @@ namespace Game.BattleTable
         {
             master.setLifeColor(PropertyNumberColor.White);
             master.setShackle(false);
+            master.setStealth(false);
             master.setHighlight(false);
             master.setAttackDisplay(false);
             master.setAttack(0);
@@ -165,7 +166,7 @@ namespace Game.BattleTable
             master.setArmor(armor);
 
             master.setShield(desc.hasShield);
-
+            master.setStealth(desc.isStealth);
             master.setShackle(desc.isFrozen);
             var cards = cardManager;
             var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
