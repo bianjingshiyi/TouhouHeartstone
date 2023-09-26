@@ -146,6 +146,8 @@ namespace Game
         public const int GetBuffDefine = Type_Function + Category_Buff + 2;    // 获取增益定义
         public const int HasBuff = Type_Function + Category_Buff + 3;    // 是否具有增益
         public const int GetBuffProp = Type_Function + Category_Buff + 4;    // 获取增益属性
+        public const int GetBuffDefineOfBuff = Type_Function + Category_Buff + 5;    // 获取单个增益的定义
+        public const int GetAllBuffsOnCard = Type_Function + Category_Buff + 6;    // 获取卡牌上的所有增益
 
         // 效果
         public const int ThisEffect = Type_Function + Category_Effect + 1; // 该效果

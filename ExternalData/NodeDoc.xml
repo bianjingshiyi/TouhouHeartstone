@@ -2130,6 +2130,64 @@
     </ul>]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>106005</defineId>
+    <obsoleteNames />
+    <editorName>获取单个增益的定义</editorName>
+    <category>增益</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Buff</type>
+        <name>buff</name>
+        <displayName>增益</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取增益定义的增益。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>BuffDefine</type>
+        <name>return</name>
+        <displayName>增益定义</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的增益定义。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取某个增益的增益定义。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>106006</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌上的所有增益</editorName>
+    <category>增益</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取所有增益的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Buff</type>
+        <name>return</name>
+        <displayName>增益</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[这张卡牌上的增益组成的集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一张卡牌拥有的所有增益。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>210001</defineId>
     <obsoleteNames />
     <editorName>简单抽牌</editorName>

@@ -817,6 +817,11 @@ namespace Game
         #region 增益
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_GET_BUFF_PROP = "获取增益属性";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_DEFINE_OF_BUFF = "获取单个增益的定义";
+        [TranslateMsg("编辑器-节点名称")]
+        private const string EDITOR_NODE_NAME_GET_ALL_BUFFS_ON_CARD = "获取卡牌上的所有增益";
+        
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_THIS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
@@ -901,6 +906,24 @@ namespace Game
                 return default;
             return buff.getProp(game, propName);
         }
+
+        [THHActionMethod(BuiltinActionDefineID.GetBuffDefineOfBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_GET_DEFINE_OF_BUFF)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)]
+        public static BuffDefine getDefineOfBuff(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
+        {
+            if (buff is GeneratedBuff genBuff)
+                return game.getBuffDefine(genBuff.defineRef);
+            return null;
+        }
+        [THHActionMethod(BuiltinActionDefineID.GetAllBuffsOnCard, StringTable.EDITOR_NODE_CATEGORY_BUFF, EDITOR_NODE_NAME_GET_ALL_BUFFS_ON_CARD)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
+        public static Buff[] getAllBuffsOnCard(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            return card.getBuffs();
+        }
+        
         #endregion
         //  玩家的行动，比如抽一张牌，获得一张牌
         #region 行动
