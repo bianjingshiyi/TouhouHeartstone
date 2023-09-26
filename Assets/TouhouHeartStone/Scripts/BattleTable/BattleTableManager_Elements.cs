@@ -906,16 +906,6 @@ namespace Game.BattleTable
             await card.setCardDefine(define, cards, this, isFaceUp);
         }
         /// <summary>
-        /// 取消攻击
-        /// </summary>
-        public void cancelAttack()
-        {
-            //缩小动画
-            //rectTransform.localScale = Vector3.one;
-            hideArrow();
-            removeHighlights();
-        }
-        /// <summary>
         /// 显示文本提示
         /// </summary>
         /// <param name="tip">翻译的**源文本**</param>
@@ -961,13 +951,6 @@ namespace Game.BattleTable
                 }
             }
         }
-        /// <summary>
-        /// 关闭所有目标的高亮（可选择）
-        /// </summary>
-        private void removeHighlights()
-        {
-            updateAllControlable();
-        }
 
         /// <summary>
         /// 判断鼠标是否在某张卡上，并返回卡
@@ -994,6 +977,22 @@ namespace Game.BattleTable
             return false;
         }
 
+        public void cancelTargetSelect()
+        {
+            if (isSelectingTargetForBattlecry())
+            {
+                cancelBattlecry(targetSelectingCard);
+            }
+            finishTargetSelect();
+        }
+        public void finishTargetSelect()
+        {
+            targetSelectingCard = null;
+            _servantUsingPosition = 0;
+            targetSelectMode = TargetSelectMode.None;
+            updateAllControlable();
+            hideArrow();
+        }
 
         public Projectile createProjectile(Projectile prefab, Transform from, Transform to)
         {
@@ -1009,10 +1008,10 @@ namespace Game.BattleTable
         #region 事件回调
         private void onTurnEndClickCallback(TurnEndButton turnEndButton)
         {
-            if (isPlayedSelecting)
+            if (isSelectingTarget())
                 return;
             sounds.PlaySE("Button");
-            resetUse(true, true);
+            resetUse();
             player.cmdTurnEnd(game);
         }
         private void onTurnEndPointerEnterCallback(TurnEndButton turnEndButton)
@@ -1025,7 +1024,7 @@ namespace Game.BattleTable
         }
         void onClickNoWhere(BattleTable table, PointerEventData pointer)
         {
-            cancelPlayedSelect(usingCard);
+            cancelTargetSelect();
         }
         #region 道具
         private void onItemPointerEnterCallback(Item item, PointerEventData pointer)
@@ -1055,8 +1054,8 @@ namespace Game.BattleTable
             if (list != table.SelfHandList)
                 return;
 
-            Card card = getCard(hand);
-            if (usingCard == card)
+            var card = getCard(hand);
+            if (usingCard == card) // 点击正在拖动的卡牌时不会缩进
                 return;
 
             if (list.isZoomIn)
@@ -1068,8 +1067,9 @@ namespace Game.BattleTable
         {
             if (!hand.isDraggable)
                 return;
-
             Card card = getCard(hand);
+            if (isSelectingTargetForOtherCards(card))//已经在用别的牌了
+                return;
             usingCard = card;
             list.ignoreAlignHand = hand;
         }
@@ -1078,10 +1078,11 @@ namespace Game.BattleTable
             if (!hand.isDraggable)
                 return;
             Card card = getCard(hand);
-            // 卡牌不可使用。
+            if (isSelectingTargetForOtherCards(card)) //不存在使用中的卡牌
+                return;
             if (usingCard != card)
             {
-                resetUse(true, true);
+                resetUse();
                 return;
             }
 
@@ -1093,7 +1094,7 @@ namespace Game.BattleTable
             if (table.SelfHandList.containsPosition(inverseTransPosition))
             {
                 //移除随从占位
-                if (usingCard.isServant())
+                if (card.isServant())
                     table.SelfField.setPreviewPosition(-1);
             }
             // 卡牌不可用
@@ -1101,23 +1102,23 @@ namespace Game.BattleTable
             {
                 //停止拖拽并提示
                 showTip(info);
-                resetUse(true, true);
+                resetUse();
                 return;
             }
             else
             {
                 //移动到手牌区以外的地方视作打算使用
                 // 仆从牌。
-                if (usingCard.define.isServant())
+                if (card.isServant())
                 {
                     //如果手牌是随从，那么在场上的时候会有一个占位符，预览这个随从放下去的位置。
                     table.SelfField.setPreviewPosition(calcIndexInField(pos.x));
                 }
-                else if (usingCard.define.isSpell())
+                else if (card.isSpell())
                 {
                     if (card.isNeedTarget(game))
                     {
-                        dragSpellCard(usingCard, pointer);
+                        startSelectingTargetForSpell(card);
                         setPosition = false;
                     }
                 }
@@ -1139,8 +1140,12 @@ namespace Game.BattleTable
         {
             if (list != table.SelfHandList)//你不能用别人的卡
                 return;
-            if (usingCard == null) //不存在使用中的卡牌
+            Card card = getCard(hand);
+            if (usingCard != card)
+            {
+                resetUse();
                 return;
+            }
             // 拖回手牌
             var worldPos = pointer.pointerCurrentRaycast.worldPosition;
             var pos = WorldToTablePosition(worldPos);
@@ -1148,57 +1153,60 @@ namespace Game.BattleTable
             if (table.SelfHandList.containsPosition(inverseTransPosition))
             {
                 //如果松开，取消使用
-                resetUse(true, true);
+                resetUse();
                 return;
             }
             //卡牌不可用
-            if (!canCardBeControlled(usingCard, out string info))
+            if (!canCardBeControlled(card, out string info))
             {
                 showTip(info);
-                resetUse(true, true);
+                resetUse();
                 return;
             }
 
             // 随从牌。
-            if (usingCard.isServant())
+            if (card.isServant())
             {
                 //松开鼠标，确认使用随从牌
                 int index = calcIndexInField(pos.x);
                 table.SelfField.setPreviewPosition(-1);
-                if (usingCard.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
+                if (card.getAvaliableTargets(game) is Card[] targets && targets.Length > 0)
                 {
-                    _usingPosition = index;
                     //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                    _servantPreviewAnim = new HandToFieldAnim(pos, getCardDescriptor(usingCard), index);
+                    enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
+                    _servantUsingPosition = index;
+                    _servantPreviewAnim = new HandToFieldAnim(pos, getCardDescriptor(card), index);
                     addAnim(_servantPreviewAnim);
-                    startPlayedSelect();
+                    table.SelfHandList.zoomOut();//手牌缩小
+                    removeHand(card);
                 }
                 else
                 {
                     //使用无目标随从牌
-                    player.cmdUse(game, usingCard, index);
-                    resetUse(false, false);
+                    player.cmdUse(game, card, index);
+                    resetUse(resetHandItem: false);
                 }
             }
             // 法术牌。
-            else if (usingCard.isSpell())
+            else if (card.isSpell())
             {
-                playSpellCard(usingCard, pointer);
+                playSpellCard(card, pointer);
             }
             // 道具牌。
-            else if (usingCard.isItem())
+            else if (card.isItem())
             {
-                if (usingCard.isNeedTarget(game))
+                if (card.isNeedTarget(game))
                 {
-                    _usingPosition = 0;
                     //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
-                    startPlayedSelect();
+                    enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
+                    table.SelfHandList.zoomOut();//手牌缩小
+                    removeHand(card);
                 }
                 else
                 {
                     //使用无目标道具牌
-                    player.cmdUse(game, usingCard, 0);
-                    resetUse(false, false);
+                    player.cmdUse(game, card, 0);
+                    resetUse(resetHandItem: false);
                 }
             }
         }
@@ -1240,7 +1248,7 @@ namespace Game.BattleTable
         private void onMasterPointerUpCallback(Master master, PointerEventData pointer)
         {
             // （目标选择模式）
-            tryPlayedSelect(usingCard, getCard(master));
+            trySelectTargetForBattlecry(getCard(master));
         }
 
 
@@ -1256,6 +1264,8 @@ namespace Game.BattleTable
         private void onMasterDragCallback(Master master, PointerEventData pointer)
         {
             Card card = getCard(master);
+            if (isSelectingTargetForOtherCards(card))//当前正在操作的卡牌不是这个英雄
+                return;
             if (!canCardBeControlled(card))
                 return;
             //拉动距离也应该有一个阈值
@@ -1263,16 +1273,12 @@ namespace Game.BattleTable
             var masterPos = WorldToTablePosition(master.transform.position);
             if (Vector3.Distance(masterPos, pos) > masterAttackThreshold)
             {
-                //播放一个变大的动画？
-                //servant.rectTransform.localScale = Vector3.one * 1.1f;
-                //显示指针
-                displayArrow(master.transform, masterPos, pos);
-                //高亮标记所有目标
-                highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
+                var targets = game.findAllCardsInField(c => card.isAttackable(game, player, c, out _));
+                enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
             }
             else
             {
-                cancelAttack();
+                cancelTargetSelect();
             }
         }
         /// <summary>
@@ -1283,18 +1289,24 @@ namespace Game.BattleTable
         private void onMasterEndDragCallback(Master master, PointerEventData pointer)
         {
             Card card = getCard(master);
+            if (!isSelectingTargetForCard(card))//当前正在操作的卡牌不是这个英雄，或者没有正在操作的卡牌
+                return;
             if (!canCardBeControlled(card))
                 return;
             //如果在随从上面
             if (isOnTarget(pointer, out var target))
             {
                 if (card.isAttackable(game, player, target, out var tip))
+                {
                     player.cmdAttack(game, card, target);
+                    resetUse(finishSelectTarget: true);
+                    return;
+                }
                 else
                     showTip(tip);
             }
             //取消选中和攻击
-            cancelAttack();
+            cancelTargetSelect();
         }
         #endregion
 
@@ -1306,12 +1318,9 @@ namespace Game.BattleTable
         {
             if (!canControl)
                 return;
-            if (usingCard != null)//已经在用别的牌了，不能点技能
-            {
-                cancelSkill();
-                return;
-            }
             var skillCard = player.getSkill();
+            if (isSelectingTargetForOtherCards(skillCard))//已经在用别的牌了，不能点技能
+                return;
             if (!canCardBeControlled(skillCard, out string info))
             {
                 showTip(info);
@@ -1336,21 +1345,7 @@ namespace Game.BattleTable
             if (!canControl)
                 return;
             var skillCard = player.getSkill();
-            // Stage2: 当前正在拖拽，判断距离以决定是否退出目标选择模式
-            var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
-            var skillPos = WorldToTablePosition(skill.transform.position);
-            if (usingCard == skillCard)
-            {
-                if (Vector3.Distance(skillPos, pos) < skillDragThreshold)
-                    cancelSkill();
-                else
-                    displayArrow(skill.transform, skillPos, pos);
-                return;
-            }
-            // Stage1: 当前没有拖拽，进入目标选择模式
-            if (usingCard != null)
-                return;//已经在用别的牌了
-            if (Vector3.Distance(skillPos, pos) < skillDragThreshold)
+            if (isSelectingTargetForOtherCards(skillCard)) //正在操作的卡牌不是当前技能
                 return;
             // 不可用。
             if (!canCardBeControlled(skillCard, out var info))
@@ -1358,12 +1353,17 @@ namespace Game.BattleTable
                 showTip(info);
                 return;
             }
-            if (skillCard.isNeedTarget(game))
+            var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
+            var skillPos = WorldToTablePosition(skill.transform.position);
+            if (Vector3.Distance(skillPos, pos) > skillDragThreshold)
             {
-                usingCard = skillCard;
-                highlightTargets(player.getSkill().getAvaliableTargets(game));
-                displayArrow(skill.transform, skillPos, pos);
+                if (skillCard.isNeedTarget(game))
+                {
+                    enterTargetSelectMode(TargetSelectMode.Use, skillCard, skillCard.getAvaliableTargets(game));
+                }
             }
+            else
+                cancelTargetSelect();
         }
         /// <summary>
         /// 技能结束拖拽
@@ -1374,17 +1374,12 @@ namespace Game.BattleTable
         {
             if (!canControl)
             {
-                cancelSkill();
+                cancelTargetSelect();
                 return;
             }
             var skillCard = player.getSkill();
-            if (usingCard != null && usingCard != skillCard)
+            if (!isSelectingTargetForCard(skillCard))
                 return;//在用其他卡片
-            if (usingCard != skillCard)
-            {
-                cancelSkill();
-                return;
-            }
             if (!canCardBeControlled(skillCard, out string info))
             {
                 showTip(info);
@@ -1392,11 +1387,15 @@ namespace Game.BattleTable
             else if (isOnTarget(pointer, out var target))
             {
                 if (skillCard.isValidTarget(game, target, out string invalidMsg))
+                {
                     player.cmdUse(game, player.getSkill(), 0, target);
+                    resetUse(resetHandItem: false, finishSelectTarget: true);
+                    return;
+                }
                 else
                     showTip(invalidMsg);
             }
-            cancelSkill();
+            cancelTargetSelect();
         }
         private void onSkillPointerExitCallback(Skill skill, PointerEventData pointer)
         {
@@ -1429,7 +1428,7 @@ namespace Game.BattleTable
         private void onServantPointerUpCallback(Servant master, Field field, PointerEventData pointer)
         {
             // （目标选择模式）
-            tryPlayedSelect(usingCard, getCard(master));
+            trySelectTargetForBattlecry(getCard(master));
         }
 
         private void onServantPointerEnterCallback(Servant servant, Field field, PointerEventData pointer)
@@ -1453,21 +1452,19 @@ namespace Game.BattleTable
             Card card = getCard(servant);
             if (!canCardBeControlled(card))
                 return;
+            if (isSelectingTargetForOtherCards(card))//正在操作的卡牌并非该仆从。
+                return;
             //拉动距离也应该有一个阈值
             var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
             var servantPos = WorldToTablePosition(servant.transform.position);
             if (Vector3.Distance(servantPos, pos) > servantAttackThreshold)
             {
-                //播放一个变大的动画？
-                //servant.rectTransform.localScale = Vector3.one * 1.1f;
-                //显示指针
-                displayArrow(table.SelfField.transform, servantPos, pos);
-                //高亮标记所有目标
-                highlightTargets(game.findAllCardsInField(c => card.isAttackable(game, player, c, out _)));
+                var targets = game.findAllCardsInField(c => card.isAttackable(game, player, c, out _));
+                enterTargetSelectMode(TargetSelectMode.Attack, card, targets);
             }
             else
             {
-                cancelAttack();
+                cancelTargetSelect();
             }
         }
         /// <summary>
@@ -1478,18 +1475,24 @@ namespace Game.BattleTable
         private void onServantEndDragCallback(Servant servant, Field field, PointerEventData pointer)
         {
             Card card = getCard(servant);
+            if (!isSelectingTargetForCard(card))//正在操作的卡牌并非该仆从，或者没有正在操作的卡牌。
+                return;
             if (!canCardBeControlled(card))
                 return;
             //如果在随从或英雄上面
             if (isOnTarget(pointer, out var target))
             {
                 if (card.isAttackable(game, player, target, out var tip))
+                {
                     player.cmdAttack(game, card, target);
+                    resetUse(finishSelectTarget: true);
+                    return;
+                }
                 else
                     showTip(tip);
             }
             //取消选中和攻击
-            cancelAttack();
+            cancelTargetSelect();
         }
         #endregion
 
@@ -1497,6 +1500,8 @@ namespace Game.BattleTable
 
         private void onDeckClickCallback(Deck deck, PointerEventData pointer)
         {
+            if (isSelectingTarget())
+                return;
             ui.PilePanel.setActive(true);
             ui.PilePanel.setTitleText(lang._(TAB_YOUR_BOX));
             ui.PilePanel.clearCards();
@@ -1535,6 +1540,8 @@ namespace Game.BattleTable
 
         private void onGraveClickCallback(Deck deck, PointerEventData pointer)
         {
+            if (isSelectingTarget())
+                return;
             ui.PilePanel.setActive(true);
             ui.PilePanel.setTitleText(lang._(TAB_YOUR_GRAVEYARD));
             ui.PilePanel.clearCards();
@@ -1562,15 +1569,6 @@ namespace Game.BattleTable
         #endregion
 
         #endregion
-        /// <summary>
-        /// 取消正在执行的技能UI
-        /// </summary>
-        private void cancelSkill()
-        {
-            usingCard = null;
-            removeHighlights();
-            hideArrow();
-        }
         /// <summary>
         /// 显示箭头
         /// </summary>
@@ -1612,11 +1610,12 @@ namespace Game.BattleTable
         /// <summary>
         /// 重置使用卡牌状态
         /// </summary>
-        /// <param name="resetItem">是否重置手牌</param>
-        /// <param name="resetPlaceHolder">是否重置随从占位</param>
-        private void resetUse(bool resetItem, bool resetPlaceHolder)
+        /// <param name="resetHandItem">是否重置手牌</param>
+        /// <param name="resetServantPreview">是否重置随从占位</param>
+        /// <param name="finishSelectTarget">是否要完成目标选择而非取消目标选择</param>
+        private void resetUse(bool resetHandItem = true, bool resetServantPreview = true, bool finishSelectTarget = false)
         {
-            if (usingCard != null && resetItem)
+            if (usingCard != null && resetHandItem)
             {
                 if (tryGetHand(usingCard, out var usingHand))
                 {
@@ -1634,55 +1633,99 @@ namespace Game.BattleTable
                     }
                 }
             }
-            _servantPreviewAnim = null;
             usingCard = null;
-            if (resetPlaceHolder)
+            _servantPreviewAnim = null;
+            if (resetServantPreview)
             {
                 table.SelfField.setPreviewPosition(-1);
             }
-            hideArrow();
-            isPlayedSelecting = false;
-            isCastingSpell = false;
-            removeHighlights();
+            if (finishSelectTarget)
+                finishTargetSelect();
+            else
+                cancelTargetSelect();
         }
         #region 目标选择
 
-        #region 宣言
-        /// <summary>
-        /// 开始仆从牌/道具牌的宣言目标选择。
-        /// </summary>
-        private void startPlayedSelect()
+
+        #region 法术
+        private void startSelectingTargetForSpell(Card card)
         {
-            var card = usingCard;
-            if (card == null || isPlayedSelecting)
+            if (isSelectingTarget())
                 return;
-            isPlayedSelecting = true;
-            highlightTargets(card.getAvaliableTargets(game));//高亮所有可选目标
+            if (tryGetHand(card, out var hand))
+            {
+                hand.setSpellReady(true);
+            }
+            enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
             table.SelfHandList.zoomOut();//手牌缩小
-            removeHand(usingCard);
         }
+        private void playSpellCard(Card card, PointerEventData pointer)
+        {
+            if (card.isNeedTarget(game))
+            {
+                //获取鼠标停留的那张卡，就是目标
+                if (isOnTarget(pointer, out var target))
+                {
+                    playSpellToTarget(card, target);
+                }
+                else
+                {
+                    resetUse();
+                }
+            }
+            else
+            {
+                //使用无目标法术牌
+                player.cmdUse(game, card, 0);
+                resetUse(resetHandItem: false);
+            }
+        }
+        private void playSpellToTarget(Card card, Card target)
+        {
+            if (card.isValidTarget(game, target, out string invalidMsg))
+            {
+                //合法目标，生效
+                player.cmdUse(game, card, 0, target);
+                resetUse(resetHandItem: false, finishSelectTarget: true);
+            }
+            else
+            {
+                //非法目标，跳出非法信息
+                showTip(invalidMsg);
+                resetUse();
+            }
+        }
+        #endregion
         /// <summary>
-        /// 在宣言目标选择期间，更新箭头。
+        /// 在目标选择期间，更新箭头。
         /// </summary>
         /// <param name="position"></param>
-        private void showArrowWhilePlaying(Vector3 position)
+        private void showArrowWhileUsing(Vector3 position)
         {
             var sourceTransform = table.SelfMaster.transform;
-            if (usingCard != null)
+            var source = targetSelectingCard;
+            if (source != null)
             {
-                if (tryGetServant(usingCard, out Servant servant))
+                if (source.isSpell())
+                {
+                    if (tryGetMaster(source, out Master master))
+                    {
+                        sourceTransform = master.transform;
+                    }
+                }
+                else if (tryGetServant(source, out Servant servant))
                 {
                     sourceTransform = servant.transform;
                 }
-                else if (tryGetMaster(usingCard, out Master master))
+                else if (tryGetMaster(source, out Master master))
                 {
                     sourceTransform = master.transform;
                 }
-                else if (tryGetSkill(usingCard, out Skill skill))
+                else if (tryGetSkill(source, out Skill skill))
                 {
                     sourceTransform = skill.transform;
                 }
-                else if (tryGetHand(usingCard, out HandItem hand))
+                else if (tryGetHand(source, out HandItem hand))
                 {
                     sourceTransform = hand.transform;
                 }
@@ -1696,11 +1739,10 @@ namespace Game.BattleTable
         /// </summary>
         /// <param name="card">触发宣言的卡牌。</param>
         /// <returns>是否成功取消。</returns>
-        private bool cancelPlayedSelect(Card card)
+        private bool cancelBattlecry(Card card)
         {
-            if (card == null || !isPlayedSelecting)
+            if (card == null)
                 return false;
-            isPlayedSelecting = false;
             // 如果没有手牌。
             if (!tryGetHand(card, out _))
             {
@@ -1725,29 +1767,26 @@ namespace Game.BattleTable
                     }
                 }
             }
-            resetUse(true, true);
             return true;
         }
         /// <summary>
-        /// 尝试确定宣言目标。
+        /// 尝试确定选择目标。
         /// </summary>
-        /// <param name="card">触发宣言的卡牌。</param>
         /// <param name="target">目标卡牌。</param>
         /// <returns>是否成功。</returns>
-        private bool tryPlayedSelect(Card card, Card target)
+        private bool trySelectTargetForBattlecry(Card target)
         {
-            if (!isPlayedSelecting)
+            if (!isSelectingTargetForBattlecry())
                 return false;
-
             //获取鼠标停留的那张卡，就是目标
             if (target != null)
             {
-                if (card.isValidTarget(game, target, out string invalidMsg))
+                var source = targetSelectingCard;
+                if (source.isValidTarget(game, target, out string invalidMsg))
                 {
                     //合法目标，生效
-                    player.cmdUse(game, card, _usingPosition, target);
-                    resetUse(true, false);
-                    isPlayedSelecting = false;
+                    player.cmdUse(game, source, _servantUsingPosition, target);
+                    resetUse(resetHandItem: false, finishSelectTarget: true);
                     return true;
                 }
                 else
@@ -1758,67 +1797,34 @@ namespace Game.BattleTable
             }
             return false;
         }
-        #endregion
 
-        #region 法术
-        private void dragSpellCard(Card card, PointerEventData pointer)
+        private void enterTargetSelectMode(TargetSelectMode mode, Card card, Card[] targets)
         {
-            if (!isCastingSpell)
-            {
-                if (tryGetHand(card, out var hand))
-                {
-                    hand.setSpellReady(true);
-                }
-                isCastingSpell = true;
-                highlightTargets(usingCard.getAvaliableTargets(game));//高亮所有可选目标
-                table.SelfHandList.zoomOut();//手牌缩小
-            }
-            if (tryGetMaster(card.getOwner().getMaster(), out var castMaster))
-            {
-                var masterPos = WorldToTablePosition(castMaster.transform.position);
-                var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
-                //拖出箭头
-                displayArrow(castMaster.transform, masterPos, pos);
-            }
+            targetSelectingCard = card;
+            targetSelectMode = mode;
+            //高亮标记所有目标
+            updateAllControlable();
+            highlightTargets(targets);
         }
-        private void playSpellCard(Card card, PointerEventData pointer)
+        private bool isSelectingTarget()
         {
-            if (card.isNeedTarget(game))
-            {
-                //获取鼠标停留的那张卡，就是目标
-                if (isOnTarget(pointer, out var target))
-                {
-                    playSpellToTarget(card, target);
-                }
-                else
-                {
-                    cancelAttack();
-                    resetUse(true, true);
-                }
-            }
-            else
-            {
-                //使用无目标法术牌
-                player.cmdUse(game, card, 0);
-                resetUse(false, false);
-            }
+            return targetSelectMode != TargetSelectMode.None;
         }
-        private void playSpellToTarget(Card card, Card target)
+        private bool isSelectingTargetForOtherCards(Card card)
         {
-            if (card.isValidTarget(game, target, out string invalidMsg))
-            {
-                //合法目标，生效
-                player.cmdUse(game, card, 0, target);
-                resetUse(true, false);
-            }
-            else
-            {
-                //非法目标，跳出非法信息
-                showTip(invalidMsg);
-                resetUse(true, true);
-            }
+            return targetSelectingCard != null && !isSelectingTargetForCard(card);
         }
-        #endregion
+        private bool isSelectingTargetForCard(Card card)
+        {
+            return targetSelectingCard == card;
+        }
+        private bool isSelectingTargetForBattlecry()
+        {
+            // TODO: 需要改为“是否正在使用点击来选择目标”
+            if (targetSelectMode != TargetSelectMode.Use)
+                return false;
+            return targetSelectingCard != null && (targetSelectingCard.isServant() || targetSelectingCard.isItem());
+        }
 
         #endregion
         private async Task<CardBuffListItemViewData[]> getCardBuffViewDatas(IEnumerable<Buff> buffs)
@@ -1923,7 +1929,7 @@ namespace Game.BattleTable
                 var usable = card.isUsable(game, player, out info);
                 return highlight && usable;//手牌/技能是可用的
             }
-            if ((pileName == PILE.FIELD && card.isServant()) || 
+            if ((pileName == PILE.FIELD && card.isServant()) ||
                 (pileName == PILE.MASTER && card.isMaster()))
             {
                 var canAttack = card.canAttack(game);
@@ -1939,7 +1945,7 @@ namespace Game.BattleTable
             if (desc == null)
                 return;
 
-            var highlight = canCardBeControlled(card) && !isPlayedSelecting && !isCastingSpell;
+            var highlight = canCardBeControlled(card) && !isSelectingTarget();
             if (tryGetMaster(desc.id, out Master master))
             {
                 master.setHighlight(highlight);
@@ -1998,17 +2004,17 @@ namespace Game.BattleTable
         /// </summary>
         public bool canControl { get; set; }
         /// <summary>
-        /// 当前正在使用的卡片的引用
+        /// 当前正在拖动的手牌卡牌。
         /// </summary>
         public Card usingCard { get; set; } = null;
         /// <summary>
-        /// 是否进入宣言目标选择模式
+        /// 当前正在使用/攻击的卡片的引用
         /// </summary>
-        public bool isPlayedSelecting { get; set; }
+        public Card targetSelectingCard { get; set; } = null;
         /// <summary>
-        /// 是否进入法术目标选择模式
+        /// 目标选择模式
         /// </summary>
-        public bool isCastingSpell { get; set; }
+        public TargetSelectMode targetSelectMode { get; set; }
         public float cardHeight => _cardHeight;
         private bool _requesting;
         public float servantAttackThreshold => _servantAttackThreshold;
@@ -2023,7 +2029,7 @@ namespace Game.BattleTable
         private CardDescriptor _selfItemDesc;
         private CardDescriptor _enemyItemDesc;
         [SerializeField]
-        int _usingPosition = -1;
+        int _servantUsingPosition = -1;
         [SerializeField]
         Vector3 _tipBoxOffset = new Vector3(20, 20, -20);
         [SerializeField]
@@ -2055,5 +2061,12 @@ namespace Game.BattleTable
         /// </summary>
         HashSet<int> _controlDirtyCards = new HashSet<int>();
         #endregion
+    }
+
+    public enum TargetSelectMode
+    {
+        None,
+        Use,
+        Attack
     }
 }

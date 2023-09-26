@@ -2266,35 +2266,6 @@ namespace TouhouHeartstone
             return new Card[] { card.pile[index - 1], card.pile[index + 1] };
         }
 
-        /// <summary>
-        /// 这个随从的可选攻击目标（法术应该不会在场上出现吧
-        /// 本来是写给恋恋的，现在只能弃用了
-        /// </summary>
-        /// <param name="card"></param>
-        /// <param name="game"></param>
-        /// <returns></returns>
-        public static List<Card> getAttackableTargets(this Card card, CardEngine game)
-        {
-            var targets = new List<Card>();
-            if (card.pile != card.getOwner().getField() && !card.isMaster())
-            {
-                return targets;
-            }
-
-            var oppo = game.getOpponent(card.getOwner());
-            var allEnem = oppo.getField().ToList().Append(oppo.getMaster()).Where(c => !c.isStealth(game)).ToList();
-            if (allEnem.Any(c => c.hasKeyword(game, KEYWORD.TAUNT)))
-            {
-                targets.AddRange(allEnem.Where(c => c.hasKeyword(game, KEYWORD.TAUNT)));
-            }
-            else
-            {
-                targets.AddRange(allEnem);
-            }
-
-            return targets;
-        }
-
         public static Task fieldToHand(this Card card, CardEngine game)
         {
             return fieldToHand(new Card[] { card }, game);

@@ -10,7 +10,7 @@ namespace Game.BattleTable
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
             table.canControl = false;
-            table.cancelAttack();
+            table.cancelTargetSelect();
             table.closeDiscoverDialog();
             yield break;
         }

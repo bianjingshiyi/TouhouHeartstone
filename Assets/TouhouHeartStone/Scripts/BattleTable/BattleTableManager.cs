@@ -277,9 +277,9 @@ namespace Game.BattleTable
                 ui.TipBox.hide();
             }
 
-            if (isPlayedSelecting)
+            if (isSelectingTarget())
             {
-                showArrowWhilePlaying(pointerPosition);
+                showArrowWhileUsing(pointerPosition);
             }
 
             //随从牌使用预览
