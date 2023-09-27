@@ -605,7 +605,7 @@ namespace Game
             }
             return cardDefineList.ToArray();
         }
-        public async Task<CardDefine[]> getOrLoadCardDefines(CardPoolReference cardPoolRef)
+        public async Task<CardDefine[]> getOrLoadCardDefines(ICardPoolReference cardPoolRef)
         {
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {

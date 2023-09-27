@@ -47,7 +47,7 @@ namespace Controllers
             //右侧栏
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
-            await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, cardFilter: cardFilter);
+            await _cardPoolViewPanelCtrl.display(cardFilter: cardFilter);
             await updateDeckListUI();
         }
         /// <summary>
@@ -60,7 +60,7 @@ namespace Controllers
             _isDeckChanged = false;
 
             //切换角色筛选
-            await _cardPoolViewPanelCtrl.display(hideBuiltinCards: false, characterRefs: new DefineReference[] { deck.masterCardRef }, cardFilter: cardFilter);
+            await _cardPoolViewPanelCtrl.display(characterRefs: new DefineReference[] { deck.masterCardRef }, cardFilter: cardFilter);
             var cardPoolRef = game.card.getLocalCardPoolReference(deck.masterCardRef.cardPoolId);
             CardSkinData masterSkin = game.card.getCardSkin(cardPoolRef, deck.masterCardRef.defineId);
 
@@ -460,19 +460,20 @@ namespace Controllers
         /// </summary>
         /// <param name="deck"></param>
         /// <returns></returns>
-        private Task<Sprite> loadDeckImage(Deck deck)
+        private async Task<Sprite> loadDeckImage(Deck deck)
         {
             var cardPoolRef = game.card.getLocalCardPoolReference(deck.masterCardRef.cardPoolId);
+            await game.card.getOrLoadCardPool(cardPoolRef, true);
             if (!game.card.tryGetCardSkin(cardPoolRef, deck.masterCardRef.defineId, out CardSkinData skin))
             {
                 Debug.LogError("不存在卡组角色" + deck.masterCardRef + "的对应皮肤");
-                return Task.FromResult<Sprite>(null);
+                return null;
             }
             if (skin.image != null)
-                return Task.FromResult(skin.image);
+                return skin.image;
             else
             {
-                return game.card.loadImage(skin.imagePath,
+                return await game.card.loadImage(skin.imagePath,
                     game.card.getLocalCardDefine(deck.masterCardRef) is CardDefine cardDefine &&
                     game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo ?
                     cardPoolInfo.cardPoolId : 0);

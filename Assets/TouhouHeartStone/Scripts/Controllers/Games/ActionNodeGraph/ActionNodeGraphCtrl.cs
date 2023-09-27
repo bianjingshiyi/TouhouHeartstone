@@ -526,24 +526,18 @@ namespace Controllers
                 return;
             if (constDefine.type == typeof(DefineReference))
             {
-                _ui.displayCardSelectPanel(true);
+                long cardPoolId = _curCardPoolId;
                 if (action.getConst(constDefine.name) is DefineReference value)
                 {
                     //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(value.defineId, cardPoolsId: new long[] { value.cardPoolId }, cardFilter: c =>
-                    {
-                        //所有卡都可以选
-                        return true;
-                    });
+                    cardPoolId = value.cardPoolId;
                 }
-                else
+                await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { cardPoolId }, cardFilter: c =>
                 {
-                    await _cardPoolViewPanelCtrl.display(cardPoolsId: new long[] { _curCardPoolId }, cardFilter: c =>
-                    {
-                        //所有卡都可以选
-                        return true;
-                    });
-                }
+                    //所有卡都可以选
+                    return true;
+                });
+                _ui.displayCardSelectPanel(true);
                 _curEditNode = action;
                 _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = -1;
@@ -560,19 +554,14 @@ namespace Controllers
                 return;
             if (constDefine.type == typeof(CardReferenceCollection) || constDefine.type == typeof(DefineReference[]))
             {
-                _ui.displayCardSelectPanel(true);
+                long cardPoolId = _curCardPoolId;
                 if (actionNode.getConst(constDefine.name) is CardReferenceCollection defRefCol)
                 {
                     if (defRefCol[itemIndex] == null)
                     {
                         defRefCol[itemIndex] = new DefineReference();
                     }
-                    //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(defRefCol[itemIndex].defineId, new long[] { defRefCol[itemIndex].cardPoolId }, cardFilter: c =>
-                    {
-                        //所有卡都可以选
-                        return true;
-                    });
+                    cardPoolId = defRefCol[itemIndex].cardPoolId;
                 }
                 else if (actionNode.getConst(constDefine.name) is DefineReference[] defRefs)
                 {
@@ -580,21 +569,15 @@ namespace Controllers
                     {
                         defRefs[itemIndex] = new DefineReference();
                     }
-                    //打开卡牌选择界面
-                    await _cardPoolViewPanelCtrl.display(defRefs[itemIndex].defineId, new long[] { defRefs[itemIndex].cardPoolId }, cardFilter: c =>
-                    {
-                        //所有卡都可以选
-                        return true;
-                    });
+                    cardPoolId = defRefs[itemIndex].cardPoolId;
                 }
-                else
+                //打开卡牌选择界面
+                await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { cardPoolId }, cardFilter: c =>
                 {
-                    await _cardPoolViewPanelCtrl.display(cardPoolsId: new long[] { _curCardPoolId }, cardFilter: c =>
-                    {
-                        //所有卡都可以选
-                        return true;
-                    });
-                }
+                    //所有卡都可以选，包括技能、英雄和衍生牌
+                    return true;
+                });
+                _ui.displayCardSelectPanel(true);
                 _curEditNode = action;
                 _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = itemIndex;
@@ -1865,8 +1848,6 @@ namespace Controllers
         public MainCtrl main { get; }
         [SerializeField]
         ActionNodeGraphPanel _ui;
-        [SerializeField]
-        EffectEditorCtrl _effectEditor = null;
         [SerializeField]
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]

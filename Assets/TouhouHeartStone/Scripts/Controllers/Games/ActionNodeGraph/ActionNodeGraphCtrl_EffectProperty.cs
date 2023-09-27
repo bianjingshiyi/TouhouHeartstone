@@ -60,17 +60,12 @@ namespace Controllers
                 return;
             //打开卡牌选择界面
             long poolId = _curCardPoolId;
-            bool hideBuiltinCards = true;
             var define = prop?[index];
             if (define != null && define.defineId != 0)
             {
                 poolId = define.cardPoolId;
             }
-            if (game.card.isBuiltinCardPool(poolId))
-            {
-                hideBuiltinCards = false;
-            }
-            await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: card => true);
+            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
             _ui.displayCardSelectPanel(true);
             _curCardSeekingEffectPropName = name;
             _curCardSeekingEffectPropIndex = index;
@@ -158,16 +153,11 @@ namespace Controllers
                 return;
             //打开卡牌选择界面
             long poolId = _curCardPoolId;
-            bool hideBuiltinCards = true;
             if (prop.defineId != 0)
             {
                 poolId = prop.cardPoolId;
             }
-            if (game.card.isBuiltinCardPool(poolId))
-            {
-                hideBuiltinCards = false;
-            }
-            await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: card => true);
+            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
             _ui.displayCardSelectPanel(true);
             _curCardSeekingEffectPropName = name;
             _curCardSeekingEffectPropIndex = -1;

@@ -800,8 +800,6 @@ namespace Controllers
 
         #region 属性字段
         [SerializeField]
-        CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
-        [SerializeField]
         Button _cancelCardPoolSelectButton;
         [SerializeField]
         GraphEditorPanelCtrl _graphEditorPanelCtrl;

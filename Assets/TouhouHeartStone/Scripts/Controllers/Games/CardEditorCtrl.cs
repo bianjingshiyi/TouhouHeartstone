@@ -575,17 +575,12 @@ namespace Controllers
         {
             //打开卡牌选择界面
             long poolId = _cardPoolId;
-            bool hideBuiltinCards = true;
             var skillRef = _cardDefine.getSkillRef();
             if (skillRef.defineId != 0)
             {
                 poolId = skillRef.cardPoolId;
             }
-            if (game.card.isBuiltinCardPool(poolId))
-            {
-                hideBuiltinCards = false;
-            }
-            await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: (card) =>
+            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: (card) =>
             {
                 return card.isSkill();
             });
@@ -697,17 +692,12 @@ namespace Controllers
                 return;
             //打开卡牌选择界面
             long poolId = _cardPoolId;
-            bool hideBuiltinCards = true;
             var define = prop?[index];
             if (define != null && define.defineId != 0)
             {
                 poolId = define.cardPoolId;
             }
-            if (game.card.isBuiltinCardPool(poolId))
-            {
-                hideBuiltinCards = false;
-            }
-            await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: card => true);
+            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
             _ui.displayCardSelectPanel(true);
             _cardSelectTarget = CardSelectTarget.Property;
             _curCardSeekingPropName = name;
@@ -779,16 +769,11 @@ namespace Controllers
                 return;
             //打开卡牌选择界面
             long poolId = _cardPoolId;
-            bool hideBuiltinCards = true;
             if (prop.defineId != 0)
             {
                 poolId = prop.cardPoolId;
             }
-            if (game.card.isBuiltinCardPool(poolId))
-            {
-                hideBuiltinCards = false;
-            }
-            await _cardPoolViewPanelCtrl.display(new long[] { poolId }, hideBuiltinCards: hideBuiltinCards, cardFilter: card => true);
+            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
             _ui.displayCardSelectPanel(true);
             _cardSelectTarget = CardSelectTarget.Property;
             _curCardSeekingPropName = name;

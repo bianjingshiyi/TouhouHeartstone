@@ -75,7 +75,7 @@ namespace Controllers
                 _ui.setEditDeckPanelActive(true);
                 _ui.updateCurCardPoolInfo(_curCardPoolInfo.cardPoolName, image);
                 await updateDeckCardListUI();
-                await _cardPoolViewPanelCtrl.display(_curCardPoolInfo, cardFilter: c =>
+                await _cardPoolViewPanelCtrl.display(cardPoolsRange: new long[] { _curCardPoolInfo.cardPoolId }, cardFilter: c =>
                 {
                     if (game.card.isBuiltinCard(c))
                     {
