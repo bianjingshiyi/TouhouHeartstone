@@ -458,7 +458,7 @@ namespace Controllers
                 var node = getActionNode(pair.Key);
                 addOperationRecord(new MoveNodeOperation(this, node.id, pair.Value, new Vector2(node.posX, node.posY)));
             }
-            if (_movingNodeDict.Count == 1)
+            if (_movingNodeDict.Count == 1 && isNodeSnapped())
             {
                 var nodeItem = _movingNodeDict.FirstOrDefault().Key;
                 var node = getActionNode(nodeItem);

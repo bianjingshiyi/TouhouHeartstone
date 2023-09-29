@@ -277,9 +277,11 @@ namespace UI
                 var pos = _actionGraphContent.InverseTransformPoint(data.position);
                 pos = _actionGraphCtrl.getNodeSnapPreviewPosition(pos);
                 var node = await _actionGraphCtrl.createNode(_dragNode, pos);
-                _actionGraphCtrl.connectSnapConnections(node);
-                if (node != null)
+                if (node != null && _actionGraphCtrl.isNodeSnapped())
+                {
+                    _actionGraphCtrl.connectSnapConnections(node);
                     _actionGraphCtrl.moveNodeToFreePosition(node);
+                }
                 _actionGraphCtrl.OnEdited();
             }
             _actionGraphCtrl.hidePreviewNode();

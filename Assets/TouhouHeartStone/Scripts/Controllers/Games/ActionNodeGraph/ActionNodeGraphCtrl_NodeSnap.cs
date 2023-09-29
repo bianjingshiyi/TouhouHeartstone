@@ -191,6 +191,10 @@ namespace Controllers
             }
             return input;
         }
+        public bool isNodeSnapped()
+        {
+            return _nodeSnapped;
+        }
         public void connectSnapConnections(Node node)
         {
             if (_nodeSnapped && _currentNodeSnapTarget != null)
