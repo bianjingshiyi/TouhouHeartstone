@@ -1,4 +1,4 @@
-= Native Gallery for Android & iOS =
+= Native Gallery for Android & iOS (v1.7.5) =
 
 Online documentation & example code available at: https://github.com/yasirkula/UnityNativeGallery
 E-mail: yasirkula@gmail.com
@@ -57,6 +57,7 @@ enum NativeGallery.Permission { Denied = 0, Granted = 1, ShouldAsk = 2 };
 enum NativeGallery.ImageOrientation { Unknown = -1, Normal = 0, Rotate90 = 1, Rotate180 = 2, Rotate270 = 3, FlipHorizontal = 4, Transpose = 5, FlipVertical = 6, Transverse = 7 }; // EXIF orientation: http://sylvana.net/jpegcrop/exif_orientation.html (indices are reordered)
 enum MediaType { Image = 1, Video = 2, Audio = 4 };
 
+delegate void PermissionCallback( NativeGallery.Permission permission );
 delegate void MediaSaveCallback( bool success, string path );
 delegate void NativeGallery.MediaPickCallback( string path );
 delegate void MediaPickMultipleCallback( string[] paths );
@@ -109,8 +110,13 @@ bool NativeGallery.IsMediaPickerBusy();
 //// Runtime Permissions ////
 
 // Interacting with Gallery/Photos is only possible when permission state is Permission.Granted. Most of the functions request permission internally (and return the result) but you can also check/request the permissions manually
-NativeGallery.Permission NativeGallery.CheckPermission( PermissionType permissionType );
-NativeGallery.Permission NativeGallery.RequestPermission( PermissionType permissionType );
+// mediaTypes: for which media type(s) we're checking the permission for. Has no effect on iOS
+NativeGallery.Permission NativeGallery.CheckPermission( PermissionType permissionType, MediaType mediaTypes );
+NativeGallery.Permission NativeGallery.RequestPermission( PermissionType permissionType, MediaType mediaTypes );
+
+// Asynchronous variants of RequestPermission. Unlike RequestPermission, these functions don't freeze the app unnecessarily before the permission dialog is displayed. So it's recommended to call these functions instead
+void NativeGallery.RequestPermissionAsync( PermissionCallback callback, PermissionType permissionType, MediaType mediaTypes );
+Task<NativeGallery.Permission> NativeGallery.RequestPermissionAsync( PermissionType permissionType, MediaType mediaTypes );
 
 // If permission state is Permission.Denied, user must grant the necessary permission (Storage on Android and Photos on iOS) manually from the Settings. These functions help you open the Settings directly from within the app
 void NativeGallery.OpenSettings();
@@ -125,12 +131,16 @@ bool NativeGallery.CanOpenSettings();
 // generateMipmaps: determines whether texture should have mipmaps or not
 // linearColorSpace: determines whether texture should be in linear color space or sRGB color space
 Texture2D NativeGallery.LoadImageAtPath( string imagePath, int maxSize = -1, bool markTextureNonReadable = true, bool generateMipmaps = true, bool linearColorSpace = false );
+async Task<Texture2D> NativeGallery.LoadImageAtPathAsync( string imagePath, int maxSize = -1, bool markTextureNonReadable = true, bool generateMipmaps = true, bool linearColorSpace = false );
 
 // Creates a Texture2D thumbnail from a video file and returns it. Returns null, if something goes wrong
 // maxSize: determines the maximum size of the returned Texture2D in pixels. Larger thumbnails will be down-scaled. If untouched, its value will be set to SystemInfo.maxTextureSize. It is recommended to set a proper maxSize for better performance
 // captureTimeInSeconds: determines the frame of the video that the thumbnail is captured from. If untouched, OS will decide this value
 // markTextureNonReadable: see LoadImageAtPath
-Texture2D NativeGallery.GetVideoThumbnail( string videoPath, int maxSize = -1, double captureTimeInSeconds = -1.0, bool markTextureNonReadable = true );
+// generateMipmaps: see LoadImageAtPath
+// linearColorSpace: see LoadImageAtPath
+Texture2D NativeGallery.GetVideoThumbnail( string videoPath, int maxSize = -1, double captureTimeInSeconds = -1.0, bool markTextureNonReadable = true, bool generateMipmaps = true, bool linearColorSpace = false );
+async Task<Texture2D> NativeGallery.GetVideoThumbnailAsync( string videoPath, int maxSize = -1, double captureTimeInSeconds = -1.0, bool markTextureNonReadable = true, bool generateMipmaps = true, bool linearColorSpace = false );
 
 // Returns an ImageProperties instance that holds the width, height and mime type information of an image file without creating a Texture2D object. Mime type will be null, if it can't be determined
 NativeGallery.ImageProperties NativeGallery.GetImageProperties( string imagePath );
