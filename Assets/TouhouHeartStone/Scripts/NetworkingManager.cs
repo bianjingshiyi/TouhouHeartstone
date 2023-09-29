@@ -157,6 +157,10 @@ namespace Game
                 mainUI.playerInfoPanel.SetPlayerInfo(null);
                 _ = logic.logout();
             };
+            mainUI.playerInfoPanel.onEditBtnClick += (p) =>
+            {
+                mainUI.playerInfoEditPanel.Show();
+            };
             mainUI.playerInfoPanel.SetPlayerInfo(null);
             mainUI.recoverPanel.onCommitButtonClick += onRecoverCommit;
             mainUI.recoverPanel.onCloseButtonClick += () =>
@@ -177,6 +181,10 @@ namespace Game
             mainUI.recoverPanel.onCaptchaButton2Click += async () =>
             {
                 mainUI.recoverPanel.captchaImage2.sprite = await getCaptchaImage();
+            };
+            mainUI.playerInfoEditPanel.onClickConfirmBtn += async () =>
+            {
+                await onChangeUserInfo(mainUI.playerInfoEditPanel.Nickname, mainUI.playerInfoEditPanel.OldPass, mainUI.playerInfoEditPanel.NewPass, mainUI.playerInfoEditPanel.RepeatPass);
             };
 
             gameManager.nwLogic = logic;
@@ -829,6 +837,30 @@ namespace Game
                 {
                     panel.ShowMessage(lang._(GUEST_LOGIN_FAILED));
                 }
+            }
+            catch (NetClientException e)
+            {
+                Debug.Log(e);
+                panel.ShowMessage(e.Message);
+            }
+        }
+
+        async Task onChangeUserInfo(string nickname, string oldPass, string newPass, string repeatNewPass)
+        {
+            var panel = getManager<UIManager>().getObject<MainMenu>().playerInfoEditPanel;
+            panel.HideMessage();
+
+            if (newPass != repeatNewPass)
+            {
+                panel.ShowMessage(lang._(NETMANAGER_PASSWORD_ERROR));
+                return;
+            }
+
+            try
+            {
+                await logic.ChangeUserInfo(nickname, oldPass, newPass);
+                updateAccountPanel();
+                panel.Hide();
             }
             catch (NetClientException e)
             {

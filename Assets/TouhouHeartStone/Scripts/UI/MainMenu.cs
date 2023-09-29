@@ -9,7 +9,12 @@ namespace UI
         [SerializeField]
         EULAPanel _eulaPanel;
 
+        [SerializeField]
+        PlayerInfoEditPanel _playerInfoEditPanel;
+
         public EULAPanel EULAPanel => _eulaPanel;
+
+        public PlayerInfoEditPanel playerInfoEditPanel => _playerInfoEditPanel;
 
         Main main => GetComponentInParent<Main>();
         #region 私有方法

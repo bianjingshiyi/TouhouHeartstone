@@ -394,6 +394,19 @@ namespace Game
 
             return success;
         }
+
+        /// <summary>
+        /// 修改玩家信息
+        /// </summary>
+        /// <param name="nick"></param>
+        /// <param name="oldPass">旧密码</param>
+        /// <param name="newPass">新密码</param>
+        /// <returns></returns>
+        public async Task ChangeUserInfo(string nick, string oldPass, string newPass)
+        {
+            await ServerClient.PatchUserInfoAsync(nick, oldPass, newPass);
+            userInfo = await ServerClient.GetUserInfoAsync();
+        }
         #endregion
 
     }
