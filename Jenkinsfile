@@ -34,6 +34,7 @@ pipeline {
                     }
                     if (env.BRANCH_NAME == 'snapshot') {
                         env.BUILD_RELEASE = 'true'
+                        env.SNAPSHOT_BUILD = 'true'
                         env.UPLOAD_FOLDER = 'nightly'
                     }
                     if (env.BUILD_RELEASE == 'false') {

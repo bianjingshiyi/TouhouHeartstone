@@ -44,6 +44,9 @@ namespace Game
         [Tooltip("正式服务器地址")]
         [SerializeField]
         string _accountServerBaseUri = "https://serv.igsk.fun";
+        [Tooltip("快照服务器地址")]
+        [SerializeField]
+        string _snapshotAccountServerBaseUri = "https://snap.serv.igsk.fun";
         [Tooltip("测试服务器地址")]
         [SerializeField]
         string _testAccountServerBaseUri = "https://test.serv.igsk.fun";
@@ -51,6 +54,9 @@ namespace Game
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         // 测试服务器
         string serverBaseUri => _testAccountServerBaseUri;
+#elif SNAPSHOT_BUILD
+        // 快照服务器
+        string serverBaseUri => _snapshotAccountServerBaseUri;
 #else
         string serverBaseUri => _accountServerBaseUri;
 #endif
