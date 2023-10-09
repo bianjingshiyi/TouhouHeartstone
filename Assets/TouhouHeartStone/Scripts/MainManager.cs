@@ -496,6 +496,7 @@ namespace Game
         public IResourceManager resourceManager => getManager<ResourceManager>();
         public CardManager card => getManager<CardManager>();
         public DeckManager deck => getManager<DeckManager>();
+        public BGMManager bgm => getManager<BGMManager>();
         public TriggerManager triggers => this.findInstance<TriggerManager>();
         public CacheManager cache => getManager<CacheManager>();
         public AnimationManager anims => getManager<AnimationManager>();

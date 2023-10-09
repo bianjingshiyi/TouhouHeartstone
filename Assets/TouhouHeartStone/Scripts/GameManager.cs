@@ -322,6 +322,7 @@ namespace Game
                 _battleTableManager = null;
                 _tableUI = null;
                 main.seManager.stopAllLoopingSE();
+                main.bgm.PlayList("Menu");
             };
         }
 
@@ -429,6 +430,7 @@ namespace Game
             _mainUI.setBackgroundVisible(false);
             _mainUI.hidePages();
             main.camera.gameObject.SetActive(false);
+            main.bgm.PlayList("Game");
             if (battleTableManager)
             {
                 battleTableManager.setGame(main, game, localPlayer);
