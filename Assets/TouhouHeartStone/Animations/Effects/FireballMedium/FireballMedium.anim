@@ -267,7 +267,7 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0
-    functionName: PlaySEClip
+    functionName: PlaySEClipLoop
     data: 
     objectReferenceParameter: {fileID: 8300000, guid: f70d58b90ea57304da855ec3405d0c4c,
       type: 3}
@@ -278,6 +278,14 @@ AnimationClip:
     functionName: PlaySEClip
     data: 
     objectReferenceParameter: {fileID: 8300000, guid: eed20e90a40b1624f9570ed3ba1f2f49,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1
+    functionName: fadeoutSEClip
+    data: 
+    objectReferenceParameter: {fileID: 8300000, guid: f70d58b90ea57304da855ec3405d0c4c,
       type: 3}
     floatParameter: 0
     intParameter: 0

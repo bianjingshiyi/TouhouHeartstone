@@ -321,6 +321,7 @@ namespace Game
                 main.camera.gameObject.SetActive(true);
                 _battleTableManager = null;
                 _tableUI = null;
+                main.seManager.stopAllLoopingSE();
             };
         }
 

@@ -366,6 +366,7 @@ namespace Game.BattleTable
                 }
                 positionLerp.setTarget(hand.transform);
                 AnimAnim anim = null;
+                table.sounds.playSE(table.table.playCardSound);
                 while (!SimpleAnimHelper.update(table, ref anim, hand.onDraw, hand.animator, _deltaTime))
                 {
                     yield return null;
