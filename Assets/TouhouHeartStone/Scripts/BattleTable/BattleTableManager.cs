@@ -243,7 +243,7 @@ namespace Game.BattleTable
             if (_tipTimer.isExpired())
             {
                 _tipTimer.reset();
-                ui.TipText.gameObject.SetActive(false);
+                ui.TipBox.hide();
             }
             else if (_tipTimer.isStarted)
             {
@@ -480,7 +480,6 @@ namespace Game.BattleTable
             table.Discover.setActive(false);
 
             // UI
-            ui.TipText.gameObject.SetActive(false);
             ui.PilePanel.setActive(false);
             ui.CardDisplayer.setVisible(false);
             ui.TipBox.hide();

@@ -1,5 +1,6 @@
 ﻿using System;
 using Controllers;
+using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,7 +40,7 @@ namespace Game.BattleTable.UI
         public TurnTipImage TurnTipImage => _turnTipImage;
         public GameResultDialog GameResultDialog => _gameResultDialog;
         public TipBox TipBox => _tipBox;
-        public Text TipText => _tipText;
+        public TextMeshProUGUI TipText => _tipText;
         public GameLogCtrl LogCtrl => _logCtrl;
         [SerializeField]
         private GameObject _cardDisplayerObj;
@@ -62,7 +63,7 @@ namespace Game.BattleTable.UI
         [SerializeField]
         private TipBox _tipBox;
         [SerializeField]
-        private Text _tipText;
+        private TextMeshProUGUI _tipText;
         [SerializeField]
         private GameLogCtrl _logCtrl;
         #endregion

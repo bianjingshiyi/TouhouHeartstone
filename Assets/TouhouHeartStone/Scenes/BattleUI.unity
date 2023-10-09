@@ -1874,7 +1874,7 @@ MonoBehaviour:
   _turnTipImage: {fileID: 1803899000}
   _gameResultDialog: {fileID: 1154403314}
   _tipBox: {fileID: 1952450713}
-  _tipText: {fileID: 432962491}
+  _tipText: {fileID: 1952450710}
   _logCtrl: {fileID: 6399993}
 --- !u!114 &702626785
 MonoBehaviour:
@@ -5578,7 +5578,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _usingPosition: -1
+  _servantUsingPosition: -1
   _tipBoxOffset: {x: 20, y: -40, z: -20}
   _servantAttackThreshold: 70
   _masterAttackThreshold: 70
@@ -5793,6 +5793,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2245084725624730229, guid: 08396eaf5537b534f86cb8a76d8bfce3,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245084725624730229, guid: 08396eaf5537b534f86cb8a76d8bfce3,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245084725624730229, guid: 08396eaf5537b534f86cb8a76d8bfce3,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245084725624730229, guid: 08396eaf5537b534f86cb8a76d8bfce3,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245084725624730229, guid: 08396eaf5537b534f86cb8a76d8bfce3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2245084725624730229, guid: 08396eaf5537b534f86cb8a76d8bfce3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2247579576201646841, guid: 08396eaf5537b534f86cb8a76d8bfce3,
         type: 3}
       propertyPath: m_Name
@@ -5813,7 +5843,7 @@ PrefabInstance:
         type: 3}
       propertyPath: _Text
       value: 
-      objectReference: {fileID: 1952450710}
+      objectReference: {fileID: 0}
     - target: {fileID: 7608859762810481655, guid: 08396eaf5537b534f86cb8a76d8bfce3,
         type: 3}
       propertyPath: _Image
@@ -5823,7 +5853,7 @@ PrefabInstance:
         type: 3}
       propertyPath: __Text
       value: 
-      objectReference: {fileID: 1952450710}
+      objectReference: {fileID: 0}
     - target: {fileID: 7608859762810481655, guid: 08396eaf5537b534f86cb8a76d8bfce3,
         type: 3}
       propertyPath: m_as_Image
@@ -5879,14 +5909,14 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1952450710 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3851297255301057185, guid: 08396eaf5537b534f86cb8a76d8bfce3,
+  m_CorrespondingSourceObject: {fileID: 3524692341982491312, guid: 08396eaf5537b534f86cb8a76d8bfce3,
     type: 3}
   m_PrefabInstance: {fileID: 1952450708}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1952450711 stripped
@@ -5922,7 +5952,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70bf9f5aa3c28bb47a18e3ed0b78b9e7, type: 3}
+  m_Script: {fileID: 11500000, guid: 756d10dbbe51741478a7eef97aed6a4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1980511461

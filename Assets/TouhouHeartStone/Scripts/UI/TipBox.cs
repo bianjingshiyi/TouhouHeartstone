@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using BJSYGameCore.UI;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 namespace UI
 {
-    partial class TipBox
+    public class TipBox : UIObject
     {
         public void display(string msg, Vector3 position)
         {
@@ -16,5 +18,8 @@ namespace UI
         {
             rectTransform.position = pos;
         }
+        [SerializeField]
+        private TextMeshProUGUI _text;
+        public TextMeshProUGUI Text => _text;
     }
 }

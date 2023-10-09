@@ -912,7 +912,7 @@ namespace Game.BattleTable
         /// <param name="tip">翻译的**源文本**</param>
         public void showTip(string tip)
         {
-            ui.TipText.gameObject.SetActive(true);
+            ui.TipBox.display();
             ui.TipText.text = lang._(tip);
             _tipTimer.start();
         }
