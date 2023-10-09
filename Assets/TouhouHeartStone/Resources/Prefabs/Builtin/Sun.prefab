@@ -28904,6 +28904,7 @@ GameObject:
   - component: {fileID: 2870937935937203681}
   - component: {fileID: 5768425862695132109}
   - component: {fileID: 2202774157301251145}
+  - component: {fileID: 5848198977864678274}
   m_Layer: 0
   m_Name: Sun
   m_TagString: Untagged
@@ -28960,7 +28961,6 @@ MonoBehaviour:
   _animator: {fileID: 65972746486911399}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  needSourceToPlay: 1
   _testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -29039,6 +29039,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetIntensity: 1
   _controllers: []
+--- !u!114 &5848198977864678274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4685578134015856719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 0}
+  playOnEnable: 0
 --- !u!1 &5689594550261584368
 GameObject:
   m_ObjectHideFlags: 0

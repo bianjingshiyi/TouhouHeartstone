@@ -5,15 +5,25 @@ namespace Game.BattleTable
 {
     public class TableSEPlayer : MonoBehaviour
     {
+        private void OnEnable()
+        {
+            if (playOnEnable)
+            {
+                Play();
+            }
+        }
         public void Play()
         {
-            PlaySE(se_name);
+            if (clip)
+                PlaySEClip(clip);
+            else
+                PlaySE(se_name);
         }
         public void PlaySE(string name)
         {
             manager?.sounds?.PlaySE(name);
         }
-        public void PlaySE(AudioClip clip)
+        public void PlaySEClip(AudioClip clip)
         {
             manager?.sounds?.playSE(clip);
         }
@@ -32,5 +42,9 @@ namespace Game.BattleTable
         private BattleTableManager _manager;
         [SerializeField]
         string se_name;
+        [SerializeField]
+        AudioClip clip;
+        [SerializeField]
+        bool playOnEnable;
     }
 }

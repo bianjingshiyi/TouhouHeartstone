@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9036407537124663388}
   - component: {fileID: 9036407537124663390}
   - component: {fileID: 9036407537124663389}
+  - component: {fileID: 5876030516301372623}
   m_Layer: 0
   m_Name: IcePillar
   m_TagString: Untagged
@@ -64,6 +65,22 @@ MonoBehaviour:
   defineName: IcePillar
   duration: 3
   blockTime: 0.5
+--- !u!114 &5876030516301372623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9036407537124663379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 8300000, guid: e26d65dc59c667841ac922f7ee221b16, type: 3}
+  playOnEnable: 1
 --- !u!1 &9036407538465952748
 GameObject:
   m_ObjectHideFlags: 0

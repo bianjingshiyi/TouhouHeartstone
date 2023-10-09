@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4101508808025387383}
   - component: {fileID: 3972456941824174780}
   - component: {fileID: 7469736703990675199}
+  - component: {fileID: 6278853467466339492}
   m_Layer: 0
   m_Name: WaterBubble
   m_TagString: Untagged
@@ -84,6 +85,20 @@ MonoBehaviour:
   defineName: WaterBubble
   duration: 2
   blockTime: 1.2
+--- !u!114 &6278853467466339492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543127354755271106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
 --- !u!1 &3251208211436822494
 GameObject:
   m_ObjectHideFlags: 0

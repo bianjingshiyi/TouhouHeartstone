@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 1824822448450497998}
   - component: {fileID: -8766098841063494062}
   - component: {fileID: 8312322311565465712}
+  - component: {fileID: 6586489816320512515}
   m_Layer: 0
   m_Name: LeafStorm
   m_TagString: Untagged
@@ -117,6 +118,22 @@ MonoBehaviour:
   defineName: LeafStorm
   duration: 2
   blockTime: 1
+--- !u!114 &6586489816320512515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6548975100610074673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 0}
+  playOnEnable: 0
 --- !u!1001 &8570138213661046783
 PrefabInstance:
   m_ObjectHideFlags: 0

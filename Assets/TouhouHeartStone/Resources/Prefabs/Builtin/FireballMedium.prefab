@@ -77026,6 +77026,7 @@ GameObject:
   - component: {fileID: 7527580489375798917}
   - component: {fileID: 8797299633640501442}
   - component: {fileID: 3842044945674065406}
+  - component: {fileID: 3117034599453312657}
   m_Layer: 5
   m_Name: FireballMedium
   m_TagString: Untagged
@@ -77082,7 +77083,6 @@ MonoBehaviour:
   _animator: {fileID: 7527580489375798917}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  needSourceToPlay: 1
   _testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -77147,3 +77147,19 @@ MonoBehaviour:
   defineName: FireballMedium
   duration: 1.6
   blockTime: 1
+--- !u!114 &3117034599453312657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7527580489375798939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 0}
+  playOnEnable: 0

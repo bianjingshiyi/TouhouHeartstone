@@ -293,4 +293,20 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0
+    functionName: PlaySEClip
+    data: 
+    objectReferenceParameter: {fileID: 8300000, guid: 7c09b9c46f9acb349b225dfd262ba303,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.16666667
+    functionName: PlaySEClip
+    data: 
+    objectReferenceParameter: {fileID: 8300000, guid: 03c990ea1fe1b784e91b8efa0e0518f1,
+      type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

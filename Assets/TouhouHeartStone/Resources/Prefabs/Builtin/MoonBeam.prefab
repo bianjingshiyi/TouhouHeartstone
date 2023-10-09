@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1425561409847800166}
   - component: {fileID: 1425561409847800161}
   - component: {fileID: 7498019034328864820}
+  - component: {fileID: 1549830330085634535}
   m_Layer: 0
   m_Name: MoonBeam
   m_TagString: Untagged
@@ -99,6 +100,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetIntensity: 1
   _controllers: []
+--- !u!114 &1549830330085634535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1425561409847800164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 0}
+  playOnEnable: 0
 --- !u!1 &8508497427401405857
 GameObject:
   m_ObjectHideFlags: 0

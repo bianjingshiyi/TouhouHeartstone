@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 82861533158081906}
   - component: {fileID: 6740868674548987551}
   - component: {fileID: 8829776408850064874}
+  - component: {fileID: 1245566683130408204}
   m_Layer: 0
   m_Name: FireBuff
   m_TagString: Untagged
@@ -95,6 +96,22 @@ MonoBehaviour:
   defineName: FireBuff
   duration: 2
   blockTime: 1
+--- !u!114 &1245566683130408204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4891182728945527022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 8300000, guid: 0326dbf4bdac04d4d924a016ef5d616f, type: 3}
+  playOnEnable: 1
 --- !u!1001 &5069001465107492689
 PrefabInstance:
   m_ObjectHideFlags: 0

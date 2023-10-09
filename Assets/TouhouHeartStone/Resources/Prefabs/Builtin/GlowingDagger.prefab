@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 662290119607227728}
   - component: {fileID: 662290119607227729}
   - component: {fileID: 662290119607227730}
+  - component: {fileID: 5877532380184042352}
   m_Layer: 0
   m_Name: GlowingDagger
   m_TagString: Untagged
@@ -68,7 +69,6 @@ MonoBehaviour:
   _animator: {fileID: 662290119607227728}
   _srcTransform: {fileID: 0}
   _destTransform: {fileID: 0}
-  needSourceToPlay: 1
   _testMode: 0
   _flyCurve:
     serializedVersion: 2
@@ -133,6 +133,22 @@ MonoBehaviour:
   defineName: GlowingDagger
   duration: 3
   blockTime: 0.1
+--- !u!114 &5877532380184042352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 662290119607227740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98973c954961bb8408d5c6a1e3815c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _manager: {fileID: 0}
+  se_name: 
+  clip: {fileID: 0}
+  playOnEnable: 0
 --- !u!1 &662290119911180032
 GameObject:
   m_ObjectHideFlags: 0
