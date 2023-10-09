@@ -1461,7 +1461,10 @@ namespace TouhouHeartstone
             var eventArg = await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
                 if (!card.canAttackTest(game))
+                {
                     game.logger.log(card + "无法进行攻击");
+                    arg.isCanceled = true;
+                }
                 else
                 {
                     card = arg.card;

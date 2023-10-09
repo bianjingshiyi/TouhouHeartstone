@@ -339,6 +339,16 @@ namespace Game.BattleTable
         {
             return _animationGroups.FirstOrDefault(g => g.Contains(anim));
         }
+        public AnimationGroup getNextGroupOfAnimGroup(AnimationGroup anim)
+        {
+            var index = _animationGroups.IndexOf(anim);
+            if (index < 0) 
+                return null;
+            var nextIndex = index + 1;
+            if (nextIndex >= _animationGroups.Count)
+                return null;
+            return _animationGroups[nextIndex];
+        }
         public void updateAnim()
         {
             while (_animationQueue.Count > 0)

@@ -11,12 +11,21 @@ namespace Game.BattleTable
     class AttackAnimation : EventAnimation<Arg>
     {
         bool _attacked = false;
+        bool _waitingOtherAnims = false;
         AnimAnim _attackAnim;
         AnimAnim _attackedAnim;
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
             yield return pauseWhileNotCompleted();
             yield return stopWhenCanceled();
+
+            while (waitingOtherAnim(table))
+            {
+                _waitingOtherAnims = true;
+                yield return null;
+            }
+            _waitingOtherAnims = false;
+
 
             var card = arg.card;
             var target = arg.target;
@@ -65,15 +74,23 @@ namespace Game.BattleTable
                     yield return null;
             }
         }
-        public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
+        private bool waitingOtherAnim(BattleTableManager table)
         {
-            yield return following.FirstOrDefault(a => a is DamageAnimation damageAnim && damageAnim.tEventArg.parent == tEventArg);
+            var group = table.getAnimGroupOfAnim(this);
+            var nextGroup = table.getNextGroupOfAnimGroup(group);
+            return nextGroup != null && !isAnimGroupDamageOfThis(nextGroup);
         }
-        public override bool blockAnimInGroup(TableAnimation other)
+        private bool isAnimGroupDamageOfThis(AnimationGroup nextGroup)
         {
-            if (!_attacked || !(other is DamageAnimation))
+            return nextGroup.Any(a => a is DamageAnimation damageAnim && damageAnim.tEventArg.parent == tEventArg);
+        }
+        public override bool continueNextGroup(AnimationGroup nextGroup)
+        {
+            if (_waitingOtherAnims && !isAnimGroupDamageOfThis(nextGroup))
                 return true;
-            return base.blockAnimInGroup(other);
+            if (_attacked)
+                return true;
+            return base.continueNextGroup(nextGroup);
         }
     }
 }
