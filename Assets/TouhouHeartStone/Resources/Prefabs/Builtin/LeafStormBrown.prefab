@@ -115,7 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: LeafStormBrown
+  defineName: "\u6811\u53F6\u98CE\u66B4_\u68D5\u8272"
   duration: 2
   blockTime: 1
 --- !u!114 &7618017130442664927

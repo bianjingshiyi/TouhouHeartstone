@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: IcePillar
+  defineName: "\u51B0\u51BB"
   duration: 3
   blockTime: 0.5
 --- !u!114 &5876030516301372623

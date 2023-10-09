@@ -29022,7 +29022,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: Sun
+  defineName: "\u7687\u5BB6\u70C8\u7130"
   duration: 6
   blockTime: 4
 --- !u!114 &2202774157301251145

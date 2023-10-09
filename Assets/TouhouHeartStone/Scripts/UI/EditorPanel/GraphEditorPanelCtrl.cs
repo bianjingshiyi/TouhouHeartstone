@@ -25,7 +25,7 @@ namespace UI
             updateNodeDefines();
             updateNodesList();
 
-            var animations = game.anims.getAllAnimationDefines().Select(d => d.name).Prepend(game.lang._(VISUAL_EFFECT_NAME_NONE)).ToArray();
+            var animations = game.anims.getAllAnimationDefines().Select(d => game.lang._(d.name)).Prepend(game.lang._(VISUAL_EFFECT_NAME_NONE)).ToArray();
             var positions = visualEffectPositions.Select(p => game.lang._(p)).ToArray();
             initNodeAnimationDialog(animations, positions);
         }

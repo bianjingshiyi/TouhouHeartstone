@@ -12,6 +12,10 @@ namespace Game
     /// </summary>
     public class AnimationManager : Manager
     {
+        public IEnumerable<string> getBuiltinEffectNames()
+        {
+            return builtinEffectList.Select(e => e.defineName).ToArray();
+        }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>

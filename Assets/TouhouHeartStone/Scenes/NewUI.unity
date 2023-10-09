@@ -1,5 +1,19 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &123776328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 123776325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc8356e3e03f751409b8e463bb27d520, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  comment: "\u7279\u6548\u540D\u79F0"
+  context: 
 --- !u!29 &1
 OcclusionCullingSettings:
   m_ObjectHideFlags: 0
@@ -2521,6 +2535,7 @@ GameObject:
   m_Component:
   - component: {fileID: 123776326}
   - component: {fileID: 123776327}
+  - component: {fileID: 123776328}
   m_Layer: 0
   m_Name: AnimationManager
   m_TagString: Untagged

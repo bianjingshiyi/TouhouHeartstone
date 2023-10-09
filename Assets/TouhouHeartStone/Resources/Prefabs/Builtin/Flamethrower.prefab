@@ -161,7 +161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: Flamethrower
+  defineName: "\u55B7\u706B"
   duration: 2
   blockTime: 0.5
 --- !u!114 &2882366054065771026

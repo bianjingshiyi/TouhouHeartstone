@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: WaterBubble
+  defineName: "\u6C34\u6CE1\u7206\u88C2"
   duration: 2
   blockTime: 1.2
 --- !u!114 &6278853467466339492

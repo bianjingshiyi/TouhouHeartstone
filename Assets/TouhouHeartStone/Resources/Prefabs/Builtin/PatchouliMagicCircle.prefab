@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: PatchouliMagicCircle
+  defineName: "\u5E15\u79CB\u8389\u6CD5\u672F"
   duration: 2
   blockTime: 2
 --- !u!114 &57655315720220865

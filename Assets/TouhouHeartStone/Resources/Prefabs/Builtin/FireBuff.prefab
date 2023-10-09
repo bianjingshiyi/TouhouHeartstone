@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: FireBuff
+  defineName: "\u706B\u7CFB\u589E\u76CA"
   duration: 2
   blockTime: 1
 --- !u!114 &1245566683130408204

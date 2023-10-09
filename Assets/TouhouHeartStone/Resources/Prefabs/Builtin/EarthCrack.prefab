@@ -93,7 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: EarthCrack
+  defineName: "\u5730\u88C2"
   duration: 3
   blockTime: 0
 --- !u!114 &6538996887639130000

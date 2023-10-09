@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd656a649e239d246b70718fa65d2d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defineName: GlowingDaggerGreen
+  defineName: "\u53D1\u5149\u5315\u9996_\u7EFF\u8272"
   duration: 3
   blockTime: 0.1
 --- !u!114 &1086891024196867769
