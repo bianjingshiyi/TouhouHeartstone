@@ -50,6 +50,22 @@ namespace TouhouHeartstone.Builtin
             CardDefine[] defines = Array.FindAll(game.getDefines(), c => getElements(c).Length == 1 && c.isSpell() && !c.isToken());
             return defines;
         }
+        public static string[][] getElementMixResultTags(string[] elementsA, string[] elementsB)
+        {
+            var intersection = elementsA.Intersect(elementsB);
+            var a = elementsA.Except(intersection);
+            var b = elementsB.Except(intersection);
+
+            List<string[]> resultTags = new List<string[]>();
+            foreach (var eleA in a)
+            {
+                foreach (var eleB in b)
+                {
+                    resultTags.Add(new string[] { eleA, eleB });
+                }
+            }
+            return resultTags.ToArray();
+        }
         /// <summary>
         /// 获取卡牌A与卡牌B可能的融合结果。
         /// </summary>
@@ -59,21 +75,21 @@ namespace TouhouHeartstone.Builtin
         /// <returns></returns>
         public static CardDefine[] getMixCards(CardEngine game, CardDefine a, CardDefine b)
         {
-            List<string> elementList = new List<string>(getElements(a));
+            string[] elementsA = getElements(a);
             string[] elementsB = getElements(b);
-            for (int i = 0; i < elementsB.Length; i++)
+            var results = getElementMixResultTags(elementsA, elementsB);
+            if (results.Length <= 0)
+                return Array.Empty<CardDefine>();
+            return Array.FindAll(game.getDefines(), c => isResult(c));
+
+            bool isResult(CardDefine c)
             {
-                if (elementList.Contains(elementsB[i]))
-                    continue;
-                elementList.Add(elementsB[i]);
+                if (c.id == a.id || c.id == b.id)
+                    return false;
+                var elements = getElements(c);
+                var elementCount = elements.Length;
+                return results.Any(result => elementCount == result.Length && elements.isSubset(result)); // 数量相同，并且其中一个是另一个的子集
             }
-            CardDefine[] defines = Array.FindAll(game.getDefines(),
-                c => getElements(c).Length > 1);
-            defines = Array.FindAll(defines,
-                c => Array.TrueForAll(getElements(c), e => elementList.Contains(e)) &&
-                c.id != a.id &&
-                c.id != b.id);
-            return defines;
         }
         public static async Task<ElementMixEventArg> tryMix(CardEngine game, Card card)
         {
