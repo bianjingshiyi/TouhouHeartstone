@@ -37,6 +37,7 @@ namespace Controllers
             _ui.setId(buffDefine.id);
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             updateModifiers();
+            updateExistLimits();
             await setCurSkinIndex(0);
 
             _effectEditorCtrl.hideActionGraph();
@@ -73,7 +74,10 @@ namespace Controllers
             {
                 _ui = GetComponentInChildren<BuffEditorPanel>();
             }
+            _eventTypeInfoList.Clear();
+            _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventDefines());
             _ui.init(getBuffDefinePropertyTypes(), CardEditorCtrl.getKeywords());
+            _ui.initExistLimits(_eventTypeInfoList.getEventTypeNamesForEditor(game.lang));
             _ui.onChangeSkin += onChangeSkin;
             _ui.onChangeSkinName += onChangeSkinName;
             _ui.onClickDeleteSkinButton += onDeleteSkin;
@@ -106,6 +110,11 @@ namespace Controllers
             _ui.OnChangeModifierCustomPropName += onChangeModifierCustomPropName;
             _ui.OnChangeModifierOperator += onChangeModifierOperator;
             _ui.OnChangeModifierValue += onChangeModifierValue;
+
+            _ui.onAddExistLimit += onAddExistLimitCallback;
+            _ui.onRemoveExistLimit += onRemoveExistLimitCallback;
+            _ui.onChangeExistLimitEvent += onChangeExistLimitEventCallback;
+            _ui.onChangeExistLimitCount += onChangeExistLimitCountCallback;
 
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
@@ -390,6 +399,37 @@ namespace Controllers
                 }
             }
             updateModifiers();
+            markBuffUnsaved();
+        }
+        #endregion
+
+        #region 持续限制
+        private void onAddExistLimitCallback()
+        {
+            BuffExistLimitDefine limit = new BuffExistLimitDefine();
+            limit.eventName = _eventTypeInfoList.FirstOrDefault()?.eventName;
+            _buffDefine.existLimitList.Add(limit);
+            updateExistLimits();
+            markBuffUnsaved();
+        }
+        private void onRemoveExistLimitCallback(int existLimitIndex)
+        {
+            _buffDefine.existLimitList.RemoveAt(existLimitIndex);
+            updateExistLimits();
+            markBuffUnsaved();
+        }
+        private void onChangeExistLimitEventCallback(int existLimitIndex, int eventIndex)
+        {
+            var limit = _buffDefine.existLimitList[existLimitIndex];
+            limit.eventName = _eventTypeInfoList[eventIndex].eventName;
+            updateExistLimits();
+            markBuffUnsaved();
+        }
+        private void onChangeExistLimitCountCallback(int existLimitIndex, int count)
+        {
+            var limit = _buffDefine.existLimitList[existLimitIndex];
+            limit.count = count;
+            updateExistLimits();
             markBuffUnsaved();
         }
         #endregion
@@ -767,6 +807,41 @@ namespace Controllers
             return string.Empty;
         }
         #endregion
+
+        #region 持续限制
+        private void updateExistLimits()
+        {
+            BuffExistLimitInfo[] infos = new BuffExistLimitInfo[_buffDefine.existLimitList.Count];
+            for (int i = 0; i < infos.Length; i++)
+            {
+                var existLimit = _buffDefine.existLimitList[i];
+                var header = game.lang._(BUFF_EXISTLIMIT_HEADER, i + 1);
+                var eventIndex = getExistLimitEventIndex(existLimit);
+                var count = getExistLimitCount(existLimit);
+                infos[i] = new BuffExistLimitInfo()
+                {
+                    header = header,
+                    eventIndex = eventIndex,
+                    count = count
+                };
+            }
+            _ui.updateExistLimits(infos);
+        }
+        private int getExistLimitEventIndex(BuffExistLimitDefine existLimit)
+        {
+            if (existLimit == null)
+                return -1;
+            var eventNames = _eventTypeInfoList.Select(e => e.eventName).ToArray();
+            return Array.IndexOf(eventNames, existLimit.eventName);
+        }
+
+        private int getExistLimitCount(BuffExistLimitDefine existLimit)
+        {
+            if (existLimit == null)
+                return 0;
+            return existLimit.count;
+        }
+        #endregion
         protected override void setUIEffects(string[] names, int activeIndex)
         {
             _ui.setEffects(names, activeIndex);
@@ -824,6 +899,9 @@ namespace Controllers
         [TranslateMsg("尝试添加空名称的特效引用的错误提示")]
         public const string ANIM_REF_KEY_EMPTY = "请输入特效引用名！";
 
+        [TranslateMsg("增益编辑器/持续限制/标题（{0}为序号）")]
+        public const string BUFF_EXISTLIMIT_HEADER = "限制{0}";
+
         public static string[] propertyTypes = new string[]
         {
             StringTable.GAME_CARD_PROP_NAME_COST,
@@ -865,6 +943,7 @@ namespace Controllers
         /// </summary>
         List<BuffSkin> _buffSkins = new List<BuffSkin>();
         string _curLanguage;
+        EventTypeInfoCollection _eventTypeInfoList = new EventTypeInfoCollection();
         #endregion
     }
 }

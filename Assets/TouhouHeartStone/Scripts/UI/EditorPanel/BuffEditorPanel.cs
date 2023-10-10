@@ -70,6 +70,38 @@ namespace UI
         }
         #endregion
 
+        #region 持续限制
+        public void updateExistLimits(BuffExistLimitInfo[] modifierInfos)
+        {
+            UIHelper.updateList(_existLimitRoot, _existLimitItemTemplate, _existLimitList, modifierInfos.Length, (i, rect) =>
+            {
+                var item = rect.GetComponent<ExistLimitListItem>();
+                var info = modifierInfos[i];
+                item.update(info.header, info.eventIndex, info.count);
+            },
+            rect =>
+            {
+                var item = rect.GetComponent<ExistLimitListItem>();
+                item.onClickRemoveButton += onClickRemoveExistLimitButton;
+                item.onEventDropdownValueChanged += onExistLimitEventChanged;
+                item.onCountValueChanged += onExistLimitCountChanged;
+            },
+            rect =>
+            {
+                var item = rect.GetComponent<ExistLimitListItem>();
+                item.onClickRemoveButton -= onClickRemoveExistLimitButton;
+                item.onEventDropdownValueChanged -= onExistLimitEventChanged;
+                item.onCountValueChanged -= onExistLimitCountChanged;
+            }
+            );
+        }
+        public void initExistLimits(string[] eventNames)
+        {
+            var item = _existLimitItemTemplate.GetComponent<ExistLimitListItem>();
+            item.initEvents(eventNames);
+        }
+        #endregion
+
         #region 皮肤
         /// <summary>
         /// 设置皮肤切换选项
@@ -182,6 +214,7 @@ namespace UI
             _closeCardButton.onClick.AddListener(onClickCloseCardButtonCallback);
 
             _addPropertyModifierButton.onClick.AddListener(onClickAddModifierButton);
+            _addExistLimitButton.onClick.AddListener(onClickAddExistLimitButton);
 
             // Skin
             _editBuffImageButton.onClick.AddListener(onEditImageButtonClicked);
@@ -307,6 +340,24 @@ namespace UI
             OnChangeModifierValue?.Invoke(_propertyModifierList.IndexOf(item.transform as RectTransform), value);
         }
         #endregion
+        #region 持续限制
+        private void onClickAddExistLimitButton()
+        {
+            onAddExistLimit?.Invoke();
+        }
+        private void onClickRemoveExistLimitButton(ExistLimitListItem item)
+        {
+            onRemoveExistLimit?.Invoke(_existLimitList.IndexOf(item.transform as RectTransform));
+        }
+        private void onExistLimitEventChanged(ExistLimitListItem item, int eventIndex)
+        {
+            onChangeExistLimitEvent?.Invoke(_existLimitList.IndexOf(item.transform as RectTransform), eventIndex);
+        }
+        private void onExistLimitCountChanged(ExistLimitListItem item, int count)
+        {
+            onChangeExistLimitCount?.Invoke(_existLimitList.IndexOf(item.transform as RectTransform), count);
+        }
+        #endregion
         private void onClickEffectListItemEditButton(int index)
         {
             onClickEditEffectButton?.Invoke(index);
@@ -419,6 +470,12 @@ namespace UI
         public event Action<int, int> OnChangeModifierOperator;
         public event Action<int, object> OnChangeModifierValue;
         #endregion
+        #region 持续限制
+        public event Action<int> onRemoveExistLimit;
+        public event Action onAddExistLimit;
+        public event Action<int, int> onChangeExistLimitEvent;
+        public event Action<int, int> onChangeExistLimitCount;
+        #endregion
         /// <summary>
         /// 当点击编辑效果按钮，参数为效果索引。
         /// </summary>
@@ -484,6 +541,16 @@ namespace UI
         [SerializeField]
         Button _addPropertyModifierButton;
 
+        [Header("Exist Limits")]
+        [SerializeField]
+        RectTransform _existLimitRoot;
+        [SerializeField]
+        RectTransform _existLimitItemTemplate;
+        [SerializeField]
+        List<RectTransform> _existLimitList;
+        [SerializeField]
+        Button _addExistLimitButton;
+
         [Header("Skin")]
         [SerializeField]
         Dropdown _skinDropdown;
@@ -538,5 +605,12 @@ namespace UI
         public int modifyTypeIndex;
         public ActionNodeValueType valueType;
         public object value;
+    }
+
+    public struct BuffExistLimitInfo
+    {
+        public string header;
+        public int eventIndex;
+        public int count;
     }
 }
