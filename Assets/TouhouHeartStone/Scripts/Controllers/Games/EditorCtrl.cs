@@ -1,14 +1,12 @@
-﻿using Game;
-using MukioI18n;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Game;
+using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
-using TouhouHeartstone;
 using UI;
 using UnityEngine;
 
@@ -31,10 +29,7 @@ namespace Controllers
                 }
                 gameObject.SetActive(true);
                 hasUnsavedChanges = false;
-                _ui.setDeckListActive(true);
-                _ui.setEditDeckPanelActive(false);
-                await _cardPoolViewPanelCtrl.hide();
-                await updateDeckListUI();
+                await displayView();
             }
             else
             {
@@ -384,6 +379,7 @@ namespace Controllers
         {
             hasUnsavedChanges = true;
             _curCardPoolInfo.cardPoolName = value;
+            _cardPoolViewPanelCtrl.updateCardPoolFilterNames();
         }
         #endregion
         /// <summary>
@@ -571,19 +567,32 @@ namespace Controllers
         /// </summary>
         private async Task returnToView()
         {
-            // 退出时重新加载牌库信息，防止出现临时卡牌变更。
-            if (hasUnsavedChanges)
+            if (game.card.isCreatingCardPool(_curCardPoolInfo.cardPoolId)) // 正在创建新卡池，退出时直接把创建的这个卡池删除
+            {
+                game.card.deleteCreatingCardPool();
+                //重新加载所有卡池信息
+                await getCardPoolsInfoAsync();
+            }
+            else if (hasUnsavedChanges) // 退出时重新加载牌库信息，防止出现临时卡牌变更。
             {
                 var cardPoolRef = game.card.getLocalCardPoolReference(_curCardPoolInfo.cardPoolId);
                 await game.card.reloadCardPoolsAndGetCardDefinesAsync(new ICardPoolReference[] { cardPoolRef });
-                hasUnsavedChanges = false;
             }
+            hasUnsavedChanges = false;
             _curCardPoolPath = null;
             _curCardPoolInfo = null;
+            await displayView();
+        }
+        /// <summary>
+        /// 显示卡池列表UI
+        /// </summary>
+        /// <returns></returns>
+        private async Task displayView()
+        {
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
-            await updateDeckListUI();
             await _cardPoolViewPanelCtrl.hide();
+            await updateDeckListUI();
         }
         /// <summary>
         /// 更新卡池列表UI

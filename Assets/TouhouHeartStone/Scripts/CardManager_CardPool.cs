@@ -128,7 +128,7 @@ namespace Game
             cardPool = new CardPool();
             CardPoolReference cardPoolRef = new CardPoolReference(cardPoolId, 0);
             _cardPoolDict[cardPoolRef] = cardPool;
-            _creatingCardPoolId = cardPoolId;
+            _creatingCardPoolInfo = cardPoolInfo;
         }
         /// <summary>
         /// 保存卡池，如果卡池没有被保存过那么会被分配一个新的地址，否则会覆盖已经保存的文件。
@@ -165,8 +165,8 @@ namespace Game
             // TODO: 在被引用的卡池有新版本后，卡池保存时会提示玩家需要将卡池引用修改到新版本。
             cardPoolInfo.dependencyRefs = evaluateCardPoolDependencies(cardPoolRef);
             // 如果该卡池正在被创建，将正在创建的卡池设为空。
-            if (_creatingCardPoolId == cardPoolInfo.cardPoolId)
-                _creatingCardPoolId = -1;
+            if (_creatingCardPoolInfo == cardPoolInfo)
+                finishCreatingCardPool();
 
             SerializableCardPool seriCardPool = new SerializableCardPool(cardPool);
             // 检查并修复老旧大卡图
@@ -733,6 +733,10 @@ namespace Game
                 if (cardPool.cardPoolId == cardPoolId)
                     return cardPool;
             }
+            if (_creatingCardPoolInfo != null && _creatingCardPoolInfo.cardPoolId == cardPoolId)
+            {
+                return _creatingCardPoolInfo;
+            }
             return null;
         }
         public CardPoolInfo getCardPoolInfo(ICardPoolReference cardPoolRef)
@@ -741,6 +745,10 @@ namespace Game
             {
                 if (cardPool.CompareCardPool(cardPoolRef))
                     return cardPool;
+            }
+            if (_creatingCardPoolInfo != null && _creatingCardPoolInfo.CompareCardPool(cardPoolRef))
+            {
+                return _creatingCardPoolInfo;
             }
             return null;
         }
@@ -1172,7 +1180,26 @@ namespace Game
         }
         public bool isCreatingCardPool(long cardPoolId)
         {
-            return _creatingCardPoolId == cardPoolId;
+            if (_creatingCardPoolInfo == null)
+                return false;
+            return _creatingCardPoolInfo.cardPoolId == cardPoolId;
+        }
+        public void finishCreatingCardPool()
+        {
+            if (_creatingCardPoolInfo == null)
+                return;
+            _creatingCardPoolInfo = null;
+        }
+        public void deleteCreatingCardPool()
+        {
+            if (_creatingCardPoolInfo == null)
+                return;
+            var cardPoolRefs = _cardPoolDict.Keys.Where(p => p.CompareCardPool(_creatingCardPoolInfo)).ToArray();
+            foreach (var cardPoolRef in cardPoolRefs)
+            {
+                _cardPoolDict.Remove(cardPoolRef);
+            }
+            _creatingCardPoolInfo = null;
         }
 
         public void showCardPoolLoadErrorDialog()
@@ -1743,7 +1770,7 @@ namespace Game
         /// 键为卡池Id，值为卡池
         /// </summary>
         Dictionary<ICardPoolReference, CardPool> _cardPoolDict = new Dictionary<ICardPoolReference, CardPool>();
-        private long _creatingCardPoolId = -1;
+        private CardPoolInfo _creatingCardPoolInfo = null;
         [Header("卡池")]
         [SerializeField]
         bool _enableStreamingAssetsInEditor = false;

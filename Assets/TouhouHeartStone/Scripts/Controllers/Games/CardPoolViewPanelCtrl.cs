@@ -64,7 +64,7 @@ namespace Controllers
             _filteredCardDefineList = cardDefines;
 
             //更新UI
-            _ui.setCardPoolOptions(getCardPoolNames());
+            updateCardPoolFilterNames();
             _ui.setCardPoolValues(_cardPoolFilterValue);
             _ui.setCharacterFilters(getCharacterNames());
             _ui.setCharacterFilter(_characterFiltersValue);
@@ -102,6 +102,10 @@ namespace Controllers
         public int getCardListItemIndex(EditorCardListItem item)
         {
             return _ui.getCardItemIndex(item.transform as RectTransform);
+        }
+        public void updateCardPoolFilterNames()
+        {
+            _ui.setCardPoolOptions(getCardPoolNames());
         }
         #endregion
         #region 私有方法
