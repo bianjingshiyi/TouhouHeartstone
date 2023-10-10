@@ -125,11 +125,12 @@ namespace Game.BattleTable
         }
         public int getMasterItemAttack(ICardData card) => getMasterItemAttack(card.id);
         public int getMasterItemAttack(int cardId) => getMasterItemAttack(getCardDescriptor(cardId));
-        public int getMasterItemAttack(CardDescriptor desc)
+        public int getMasterItemAttack(CardDescriptor masterDesc)
         {
-            if (currentAnimPlayer == player)
+            var masterOwner = masterDesc.getOwner();
+            if (currentAnimPlayer == masterOwner)
             {
-                var itemDesc = desc.getOwner() == player ? _selfItemDesc : _enemyItemDesc;
+                var itemDesc = masterOwner == player ? _selfItemDesc : _enemyItemDesc;
                 return itemDesc?.getAttack() ?? 0;
             }
             return 0;
