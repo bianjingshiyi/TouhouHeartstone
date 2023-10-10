@@ -86,6 +86,11 @@ namespace UI
             _editVisualEffectDialog.setAnimation(animIndex + 1);
             _editVisualEffectDialog.setVisualEffectInfo(info);
         }
+        public void displayNodeAnimationDialog(Node node)
+        {
+            _editVisualEffectDialogObj.SetActive(true);
+            _curEditingVisualEffectNode = node;
+        }
         #region 私有方法
         #region 生命周期
         void Awake()
@@ -174,8 +179,6 @@ namespace UI
         }
         private void OnNodeVisualEffectButtonClicked(Node node)
         {
-            _editVisualEffectDialogObj.SetActive(true);
-            _curEditingVisualEffectNode = node;
             onOpenNodeAnimationDialog?.Invoke(node);
         }
         public async void onCreateActionDefineCallback(string name, string category)

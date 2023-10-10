@@ -314,6 +314,7 @@ namespace Controllers
                 }
             }
             _graphEditorPanelCtrl.setNodeAnimationDialog(animIndex, new VisualEffectDialogInfo(animRef));
+            _graphEditorPanelCtrl.displayNodeAnimationDialog(node);
         }
         private void onNodeAnimationValueChangedCallback(Node node, int index)
         {
