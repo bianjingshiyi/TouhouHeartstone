@@ -269,7 +269,7 @@ namespace Controllers
             if (info.cardFilter != null)
                 _cardFilter = info.cardFilter;
             // 人物筛选
-            initCharacterFilters(info);
+            updateCharacterFilters(info.characterFilterRefs);
             // 验证筛选合法性。
             validateFilterValues();
         }
@@ -307,30 +307,40 @@ namespace Controllers
             }
         }
         /// <summary>
-        /// 根据显示信息，更新人物过滤器。
+        /// 更新角色过滤器。
         /// </summary>
-        private void initCharacterFilters(DisplayInfo info)
+        /// <param name="values">要选中的所有角色引用。如果为null，则保留之前的选择。</param>
+        private void updateCharacterFilters(DefineReference[] values = null)
         {
-            // 选项
+            // 没有指定要选中的角色引用，保留之前选择的角色。
+            if (values == null)
+            {
+                values = _characterFilters.Where((c, i) => {
+                    if (_characterFiltersValue == null)
+                        return false;
+                    if (i < 0 || i >= _characterFiltersValue.Length)
+                        return false;
+                    return _characterFiltersValue[i];
+                }).ToArray();
+            }
+            // 更新选项。
             HashSet<DefineReference> characterRefList = new HashSet<DefineReference>()
             {
                 new DefineReference(0, CATEGORY.CHARACTER_NEUTRAL)
             };
             foreach (var define in _cardDefineList)
             {
-                if (define.isMaster())
-                {
-                    characterRefList.Add(define.getDefineRef());
-                }
+                characterRefList.Add(define.getCharacterRef());
             }
+            // 修改选择的角色值数组，保证同步。
             _characterFilters = characterRefList.ToArray();
-
-            if (info.characterFilterRefs != null)
+            // 根据人物引用，设置人物过滤器的值。
+            if (values != null)
             {
                 _characterFiltersValue = new bool[_characterFilters.Length];
                 for (int i = 0; i < _characterFiltersValue.Length; i++)
                 {
-                    _characterFiltersValue[i] = Array.Exists(info.characterFilterRefs, c => c == _characterFilters[i]);
+                    _characterFiltersValue[i] = Array.Exists(values, c => c == _characterFilters[i]);
                 }
             }
         }
