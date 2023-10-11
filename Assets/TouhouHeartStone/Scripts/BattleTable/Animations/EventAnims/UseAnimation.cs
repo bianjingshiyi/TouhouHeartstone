@@ -84,14 +84,14 @@ namespace Game.BattleTable
             }
             else
             {
-                //table.tryGetHand(_card, out var hand);
+                if (isCanceled)
+                {
+                    table.tryGetHand(_card, out var hand);
 
-                //yield return playEnemyUseCardAnim(table, hand, record);
+                    yield return playEnemyUseCardAnim(table, hand, record);
 
-                //if (isCanceled)
-                //{
-                //    cancelEnemyUseCard(table, record);
-                //}
+                    cancelEnemyUseCard(table, record);
+                }
             }
         }
         #endregion
