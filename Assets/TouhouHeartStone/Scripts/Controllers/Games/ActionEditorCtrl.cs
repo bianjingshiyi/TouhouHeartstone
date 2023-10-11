@@ -25,6 +25,7 @@ namespace Controllers
             _ui.setName(actionDefine.editorName);
 
             _ui.setCategory(actionDefine.category);
+            _ui.setDefineType(getDefineTypeName(actionDefine.type));
 
             await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(
                         cardPoolId,
@@ -409,6 +410,20 @@ namespace Controllers
         {
             return index == _actionDefine.inputDefines.Count() - 1;
         }
+        private string getDefineTypeName(NodeDefineType type)
+        {
+            var defineTypeName = ACTION_DEFINE_TYPE_ACTION;
+            switch (type)
+            {
+                case NodeDefineType.Function:
+                    defineTypeName = ACTION_DEFINE_TYPE_FUNCTION;
+                    break;
+                case NodeDefineType.Event:
+                    defineTypeName = ACTION_DEFINE_TYPE_EVENT;
+                    break;
+            }
+            return game.lang._(defineTypeName);
+        }
         #endregion
 
 
@@ -453,6 +468,12 @@ namespace Controllers
         public const string ACTION_WARNING_OPTION_CANCEL = "取消";
         [TranslateMsg("没有分类的动作的分类")]
         public const string ACTION_CATEGORY_NAME_NONE = "无";
+        [TranslateMsg("节点动作类型/动作")]
+        public const string ACTION_DEFINE_TYPE_ACTION = "动作";
+        [TranslateMsg("节点动作类型/函数")]
+        public const string ACTION_DEFINE_TYPE_FUNCTION = "函数";
+        [TranslateMsg("节点动作类型/事件")]
+        public const string ACTION_DEFINE_TYPE_EVENT = "事件";
         public bool hasUnsavedChanges { get; private set; }
 
         long _cardPoolId;

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
+using Controllers;
+using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +23,10 @@ namespace UI
         public void setCategory(string category)
         {
             _categoryInputField.SetTextWithoutNotify(category);
+        }
+        public void setDefineType(string name)
+        {
+            _defineTypeText.text = name;
         }
         public void setActionPortTypes((Type type, string name)[] types)
         {
@@ -301,6 +307,8 @@ namespace UI
         Text _nameText;
         [SerializeField]
         InputField _categoryInputField;
+        [SerializeField]
+        Text _defineTypeText;
         [SerializeField]
         CreateActionPortDefineDialog _createPortDefineDialog;
 

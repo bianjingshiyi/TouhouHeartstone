@@ -19,6 +19,7 @@ namespace UI
             _nodesPanel.setCategoryFilter(categoryFilter);
             _nodesPanel.setOutputFilter(outputFilter);
             _nodesPanel.setSearchFilter(searchFilter);
+            _createActionDefineDialog.setDefineTypeOptions(defineTypeNames.Select(n => game.lang._(n)).ToArray());
             updatePasteButton();
             updateDeleteButton();
             updateUndoRedoButton();
@@ -181,7 +182,7 @@ namespace UI
         {
             onOpenNodeAnimationDialog?.Invoke(node);
         }
-        public async void onCreateActionDefineCallback(string name, string category)
+        public async void onCreateActionDefineCallback(string name, string category, int typeIndex)
         {
             //新建自定义动作
             if (string.IsNullOrEmpty(name))
@@ -198,7 +199,8 @@ namespace UI
             }
 
             //新建自定义动作
-            GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(_cardPoolId, name);
+            var type = defineTypes[typeIndex];
+            GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(_cardPoolId, name, type);
             generatedActionDefine.setCategory(category);
             var clone = game.card.cloneActionDefine(_cardPoolId, generatedActionDefine);
             displayCreateActionDefineDialog(false);
@@ -658,6 +660,16 @@ namespace UI
             StringTable.EDITOR_CATEGORY__ACTION__NAME, // 行动
             StringTable.EDITOR_NODE_CATEGORY_COLLECTION_OPERATION, // 集合运算
             EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER, // 其他
+        };
+        public static readonly NodeDefineType[] defineTypes = new NodeDefineType[]
+        {
+            NodeDefineType.Action,
+            NodeDefineType.Event
+        };
+        public static readonly string[] defineTypeNames = new string[]
+        {
+            ActionEditorCtrl.ACTION_DEFINE_TYPE_ACTION,
+            ActionEditorCtrl.ACTION_DEFINE_TYPE_EVENT,
         };
 
         public static readonly string[] visualEffectPositions = new string[]

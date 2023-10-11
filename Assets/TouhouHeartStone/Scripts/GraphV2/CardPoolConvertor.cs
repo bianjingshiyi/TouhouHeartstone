@@ -167,7 +167,7 @@ namespace Game
                 }
 
                 var graph = new ActionGraph();
-                GeneratedActionDefine action = new GeneratedActionDefine(graph, seri.id, seri.category, seri.name, inputs, consts, outputs);
+                GeneratedActionDefine action = new GeneratedActionDefine(graph, seri.id, NodeDefineType.Action, seri.category, seri.name, inputs, consts, outputs);
                 action.cardPoolId = poolId;
 
                 dict.Add(seri, action);

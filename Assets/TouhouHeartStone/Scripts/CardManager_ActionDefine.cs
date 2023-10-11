@@ -11,7 +11,7 @@ namespace Game
     partial class CardManager : IActionDefineGetter
     {
         #region 公有方法
-        public GeneratedActionDefine createActionDefine(long cardPoolId, string name)
+        public GeneratedActionDefine createActionDefine(long cardPoolId, string name, NodeDefineType type)
         {
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
@@ -28,7 +28,7 @@ namespace Game
                 }
                 id++;
                 var graph = new ActionGraph();
-                GeneratedActionDefine actionDefine = new GeneratedActionDefine(graph, id, null, name, null, null, null);
+                GeneratedActionDefine actionDefine = new GeneratedActionDefine(graph, id, type, null, name, null, null, null);
                 actionDefine.cardPoolId = cardPoolId;
                 actionDefine.InitNodes();
                 addActionDefine(cardPoolId, actionDefine);
