@@ -9,7 +9,6 @@ using UnityEngine;
 using Card = TouhouCardEngine.Card;
 using UI;
 using System.Linq;
-using Coffee.UIExtensions;
 
 namespace Game.BattleTable
 {

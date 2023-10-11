@@ -42,11 +42,9 @@ namespace Game.BattleTable
         {
             var player = arg.player;
             var isCanceled = record.isCanceled;
-            var position = arg.position;
             if (player == table.player)
             {
                 // 自己使用
-                var selfField = table.table.SelfField;
                 if (!isCanceled)
                 {
                     // 成功使用。
@@ -62,14 +60,26 @@ namespace Game.BattleTable
                 else
                 {
                     // 被取消。
-                    HandItem item = table.getHand(_card);
-                    selfField.setPreviewPosition(-1);
-                    item.card.setVisible(true);
-                    table.setCard(item.card, _card, true);
-                    var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
-
-                    while (!moveAnim.update(table, _deltaTime))
-                        yield return null;
+                    table.resetUse();
+                    if (table.tryGetHand(_card, out var item))
+                    {
+                        table.setCard(item.card, _card, true);
+                    }
+                    else
+                    {
+                        var handPosition = _card.position;
+                        // 如果有这个随从，播放回手动画。
+                        if (table.tryGetServant(_card, out _))
+                        {
+                            var moveAnim = new FieldToHandAnim(_card.id, handPosition);
+                            while (!moveAnim.update(table, _deltaTime))
+                                yield return null;
+                        }
+                        else //没有这个随从，直接创建手牌。
+                        {
+                            table.createHand(table.getCardDescriptor(_card.id), handPosition);
+                        }
+                    }
                 }
             }
             else
@@ -108,12 +118,11 @@ namespace Game.BattleTable
                 }
                 else
                 {
-                    HandItem item = table.getHand(_card);
-                    item.card.setVisible(true);
-                    table.setCard(item.card, _card, true);
-                    var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
-                    while (!moveAnim.update(table, _deltaTime))
-                        yield return null;
+                    if (table.tryGetHand(_card, out var item))
+                    {
+                        table.setCard(item.card, _card, true);
+                    }
+                    table.resetUse();
                 }
             }
             else
@@ -178,12 +187,11 @@ namespace Game.BattleTable
                 }
                 else
                 {
-                    HandItem item = table.getHand(_card);
-                    item.card.setVisible(true);
-                    table.setCard(item.card, _card, true);
-                    var moveAnim = new CardTransAnim(item.card, item.transform.position, table.handToFieldCurve);
-                    while (!moveAnim.update(table, _deltaTime))
-                        yield return null;
+                    if (table.tryGetHand(_card, out var item))
+                    {
+                        table.setCard(item.card, _card, true);
+                    }
+                    table.resetUse();
                 }
             }
             else

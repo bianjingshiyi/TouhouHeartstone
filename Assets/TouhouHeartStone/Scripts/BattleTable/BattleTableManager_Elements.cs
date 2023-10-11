@@ -74,6 +74,31 @@ namespace Game.BattleTable
                 setCard(hand.card, card, isHandVisible(hand));
             }
         }
+        /// <summary>
+        /// 重置使用卡牌状态
+        /// </summary>
+        /// <param name="resetHandItem">是否重置手牌</param>
+        /// <param name="resetServantPreview">是否重置随从占位</param>
+        /// <param name="finishSelectTarget">是否要完成目标选择而非取消目标选择</param>
+        public void resetUse(bool resetHandItem = true, bool resetServantPreview = true, bool finishSelectTarget = false)
+        {
+            if (resetHandItem)
+            {
+                resetHand(usingCard);
+                var handList = table.SelfHandList;
+                handList.ignoreAlignHand = null;
+            }
+            usingCard = null;
+            _servantPreviewAnim = null;
+            if (resetServantPreview)
+            {
+                table.SelfField.setPreviewPosition(-1);
+            }
+            if (finishSelectTarget)
+                finishTargetSelect();
+            else
+                cancelTargetSelect();
+        }
 
         #region 英雄
         /// <summary>
@@ -442,6 +467,22 @@ namespace Game.BattleTable
                 return selfRemoved || enemyRemoved;
             }
             return false;
+        }
+        /// <summary>
+        /// 重置手牌的各种属性，如拖拽等。
+        /// </summary>
+        /// <param name="handCard"></param>
+        public void resetHand(ICardData handCard)
+        {
+            if (tryGetHand(handCard, out var usingHand))
+            {
+                usingHand.card.setVisible(true);
+                usingHand.setSpellReady(false);
+                var desc = getCardDescriptor(handCard.id);
+                setCardDesc(usingHand.card, desc, true);
+                usingHand.card.transform.localScale = Vector3.one;
+                usingHand.card.transform.localPosition = Vector3.zero;
+            }
         }
         /// <summary>
         /// 从UI手牌引用获取对应的牌
@@ -1608,43 +1649,6 @@ namespace Game.BattleTable
                 }
             }
             return index;
-        }
-        /// <summary>
-        /// 重置使用卡牌状态
-        /// </summary>
-        /// <param name="resetHandItem">是否重置手牌</param>
-        /// <param name="resetServantPreview">是否重置随从占位</param>
-        /// <param name="finishSelectTarget">是否要完成目标选择而非取消目标选择</param>
-        private void resetUse(bool resetHandItem = true, bool resetServantPreview = true, bool finishSelectTarget = false)
-        {
-            if (usingCard != null && resetHandItem)
-            {
-                if (tryGetHand(usingCard, out var usingHand))
-                {
-                    usingHand.card.setVisible(true);
-                    usingHand.setSpellReady(false);
-                    var desc = getCardDescriptor(usingCard);
-                    setCardDesc(usingHand.card, desc, true);
-                    usingHand.card.transform.localScale = Vector3.one;
-                    usingHand.card.transform.localPosition = Vector3.zero;
-
-                    var handList = desc.getOwner() == player ? table.SelfHandList : table.EnemyHandList;
-                    if (handList.ignoreAlignHand == usingHand)
-                    {
-                        handList.ignoreAlignHand = null;
-                    }
-                }
-            }
-            usingCard = null;
-            _servantPreviewAnim = null;
-            if (resetServantPreview)
-            {
-                table.SelfField.setPreviewPosition(-1);
-            }
-            if (finishSelectTarget)
-                finishTargetSelect();
-            else
-                cancelTargetSelect();
         }
         #region 目标选择
 
