@@ -14,7 +14,7 @@ namespace Game
     {
         #region 公有方法
         /// <summary>
-        /// 获取所有事件定义（事件时/事件后），如果未加载则进行加载
+        /// 获取所有事件定义，如果未加载则进行加载
         /// </summary>
         public EventDefine[] getOrLoadBuiltinEventDefines()
         {
@@ -25,13 +25,17 @@ namespace Game
         }
         public string translateEventDefineNameForEditor(EventDefine define)
         {
+            return game.lang._(define.editorName);
+        }
+        public string translateEventTriggerTimeNameForEditor(EventTriggerTime time)
+        {
             var lang = game.lang;
-            var name = lang._(define.editorName);
-            if (define.defineType == EventDefineType.Before)
+            var name = lang._(time.define.editorName);
+            if (time.type == EventTriggerTimeType.Before)
             {
                 return lang._(StringTable.EDITOR_EVENT_NAME_BEFORE_TEMPLATE, name);
             }
-            else if (define.defineType == EventDefineType.After)
+            else if (time.type == EventTriggerTimeType.After)
             {
                 return lang._(StringTable.EDITOR_EVENT_NAME_AFTER_TEMPLATE, name);
             }
@@ -44,34 +48,22 @@ namespace Game
             List<EventDefine> results = new List<EventDefine>();
             foreach (var actionDefine in eventActionDefines)
             {
-                results.AddRange(generateEventDefinesForActionDefine(actionDefine));
+                results.Add(generateEventDefineForActionDefine(actionDefine));
             }
             return results.ToArray();
         }
-        public static EventDefine[] generateEventDefinesForActionDefine(GeneratedActionDefine actionDefine)
+        public static EventDefine generateEventDefineForActionDefine(GeneratedActionDefine actionDefine)
         {
-            //发生时事件
-            string beforeName = actionDefine.getBeforeEventName();
-            var beforeDefine = new EventDefine()
+            string eventName = actionDefine.getEventName();
+            var define = new EventDefine()
             {
                 cardPoolId = actionDefine.cardPoolId,
-                eventName = beforeName,
+                eventName = eventName,
                 editorName = actionDefine.editorName,
-                defineType = EventDefineType.Before,
-                variableInfos = actionDefine.getBeforeEventArgVarInfos()
+                beforeVariableInfos = actionDefine.getBeforeEventArgVarInfos(),
+                afterVariableInfos = actionDefine.getAfterEventArgVarInfos(),
             };
-
-            //发生后事件
-            string afterName = actionDefine.getAfterEventName();
-            var afterDefine = new EventDefine()
-            {
-                cardPoolId = actionDefine.cardPoolId,
-                eventName = afterName,
-                editorName = actionDefine.editorName,
-                defineType = EventDefineType.After,
-                variableInfos = actionDefine.getAfterEventArgVarInfos()
-            };
-            return new EventDefine[] { beforeDefine, afterDefine };
+            return define;
         }
         #endregion
         #region 私有方法
@@ -83,7 +75,6 @@ namespace Game
         private void loadEventTypes()
         {
             _builtinEventDefineList = new List<EventDefine>();
-            _eventNames = new List<string>();
             //通过反射加载硬编码的事件类型
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -107,40 +98,25 @@ namespace Game
                         if (_hiddenEvents.Contains(eventName)) //隐藏的事件忽略掉。
                             continue;
 
-                        _eventNames.Add(eventName);
 
                         string editorName;
                         if (!_eventNameTranslations.TryGetValue(eventName, out editorName))
                         {
                             editorName = eventName;
                         }
-
-                        //发生时事件
-                        string beforeName = EventHelper.getNameBefore(eventArg);
-                        _builtinEventDefineList.Add(new EventDefine()
+                        var eventDefine = new EventDefine()
                         {
                             cardPoolId = 0,
-                            eventName = beforeName,
+                            eventName = eventName,
                             editorName = editorName,
-                            defineType = EventDefineType.Before,
-                            variableInfos = eventArg.getBeforeEventVarInfos()
-                        });
-
-                        //发生后事件
-                        string afterName = EventHelper.getNameAfter(eventArg);
-                        _builtinEventDefineList.Add(new EventDefine()
-                        {
-                            cardPoolId = 0,
-                            eventName = afterName,
-                            editorName = editorName,
-                            defineType = EventDefineType.After,
-                            variableInfos = eventArg.getAfterEventVarInfos()
-                        });
+                            beforeVariableInfos = eventArg.getBeforeEventVarInfos(),
+                            afterVariableInfos = eventArg.getAfterEventVarInfos(),
+                        };
+                        _builtinEventDefineList.Add(eventDefine);
                     }
                 }
             }
             _builtinEventDefineList.Sort((a, b) => a.eventName.CompareTo(b.eventName));
-            _eventNames.Sort((a, b) => a.CompareTo(b));
             //以后可能有自定义的事件类型，不过先不管
         }
         #endregion
@@ -225,7 +201,6 @@ namespace Game
             //{ "ElementEvent", StringTable.EDITOR_EVENT_NAME_ELEMENT },
         };
         List<EventDefine> _builtinEventDefineList = null;
-        List<string> _eventNames = null;
         [SerializeField]
         MainManager _game;
     }

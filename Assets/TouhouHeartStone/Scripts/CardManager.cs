@@ -751,7 +751,7 @@ namespace Game
         {
             return new THHNodeDefiner(
                 (a, n) => getActionDefine(a),
-                getLocalEventDefine);
+                getLocalEventTriggerTime);
         }
         #region 属性字段
         public MainManager game

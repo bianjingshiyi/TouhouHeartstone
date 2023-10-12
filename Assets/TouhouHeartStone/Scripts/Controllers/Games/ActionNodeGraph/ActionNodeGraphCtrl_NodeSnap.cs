@@ -55,30 +55,31 @@ namespace Controllers
                         docKey,
                         visualEffect);
                 }
-                else if (define.eventDefine != null)
+                else if (define.eventTriggerTime != null)
                 {
                     // 事件输入
-                    var eventDefine = define.eventDefine;
+                    var eventDefine = define.eventTriggerTime;
                     var boolColor = game.editor.getColorByType(typeof(bool));
                     var inputInfos = new PortItemInfo[1]
                     {
                         new PortItemInfo(game.lang._(PassiveEntryNode.triggerConditionPortName), boolColor, false)
                     };
                     // 事件输出
-                    var outputCount = eventDefine.variableInfos.Count();
+                    var variableInfos = eventDefine.getVariableInfos();
+                    var outputCount = variableInfos.Length;
                     var outputInfos = new PortItemInfo[1 + outputCount];
                     var controlColor = game.editor.getColorByType(typeof(ActionNode));
                     outputInfos[0] = new PortItemInfo(string.Empty, controlColor, true);
                     for (int i = 0; i < outputCount; i++)
                     {
-                        var eventVar = eventDefine.variableInfos[i];
+                        var eventVar = variableInfos[i];
                         var color = game.editor.getColorByType(eventVar?.type);
                         string name = tryTranslateWithDict(eventVar?.name ?? string.Empty);
                         outputInfos[i + 1] = new PortItemInfo(name, color, false);
                     }
 
 
-                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventDefineNameForEditor(eventDefine)),
+                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(eventDefine)),
                         inputInfos,
                         outputInfos);
                 }
@@ -107,7 +108,7 @@ namespace Controllers
                 else if (node is EventEntryNode eventEntry)
                 {
                     var define = eventEntry.define;
-                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventDefineNameForEditor(define)),
+                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventTriggerTimeNameForEditor(define)),
                         getNodeInputViewData(node),
                         getNodeOutputViewData(node));
                 }
@@ -277,10 +278,10 @@ namespace Controllers
                 inputDefines = nodeDefine.actionDefine.inputDefines.ToArray();
                 outputDefines = nodeDefine.actionDefine.outputDefines.ToArray();
             }
-            else if (nodeDefine.eventDefine != null)
+            else if (nodeDefine.eventTriggerTime != null)
             {
                 inputDefines = new PortDefine[] { PassiveEntryNode.triggerConditionPortDefine };
-                outputDefines = nodeDefine.eventDefine.variableInfos.Select(v => PortDefine.Value(v.type, v.name)).Prepend(PassiveEntryNode.actionPortDefine).ToArray();
+                outputDefines = nodeDefine.eventTriggerTime.getVariableInfos().Select(v => PortDefine.Value(v.type, v.name)).Prepend(PassiveEntryNode.actionPortDefine).ToArray();
             }
             return findNodeSnapTargets(previewRect, inputDefines, outputDefines);
         }

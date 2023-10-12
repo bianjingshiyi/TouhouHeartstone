@@ -43,8 +43,8 @@ namespace Controllers
                 _curCardPoolId = info.cardPoolId;
                 _graphInfo = info.graphInfo;
                 // 获取事件定义列表
-                var mainEventDefines = game.card.getAllMainEventDefines(_curCardPoolId);
-                _eventDefines = game.card.getAllBeforeAfterEventDefines(_curCardPoolId);
+                var mainEventDefines = game.card.getAllEventDefines(_curCardPoolId);
+                _eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
                 _eventNames = mainEventDefines.Select(d => d.eventName).ToArray();
                 var _eventEditorNames = mainEventDefines.Select(d => game.lang._(d.editorName)).ToArray();
                 //更新UI
@@ -270,7 +270,7 @@ namespace Controllers
         {
             return createActionNode(actionDefine, pos.x, pos.y);
         }
-        public ActionNodeItem createEventEntryNode(EventDefine eventDefine, float x, float y, bool showErrorTip = true)
+        public ActionNodeItem createEventEntryNode(EventTriggerTime eventTriggerTime, float x, float y, bool showErrorTip = true)
         {
             // 尝试为非事件效果创建事件入口节点。
             if (!(_effect is GeneratedEventEffect eventEffect))
@@ -286,7 +286,7 @@ namespace Controllers
                     showEventEntryAlreadyExistsError();
                 return null;
             }
-            var actionNode = graph.createEventEntryNode(eventDefine, x, y);
+            var actionNode = graph.createEventEntryNode(eventTriggerTime, x, y);
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
             updateEffectProperties();
             updateContentSize();
@@ -295,9 +295,9 @@ namespace Controllers
             OnEdited();
             return actionNodeItem;
         }
-        public ActionNodeItem createEventEntryNode(EventDefine eventDefine, Vector2 pos)
+        public ActionNodeItem createEventEntryNode(EventTriggerTime eventTriggerTime, Vector2 pos)
         {
-            return createEventEntryNode(eventDefine, pos.x, pos.y);
+            return createEventEntryNode(eventTriggerTime, pos.x, pos.y);
         }
         public async Task<Node> createNode(NodeDefine define, Vector2 pos)
         {
@@ -306,9 +306,9 @@ namespace Controllers
             {
                 item = await createActionNode(define.actionDefine, pos);
             }
-            else if (define.eventDefine != null)
+            else if (define.eventTriggerTime != null)
             {
-                item = createEventEntryNode(define.eventDefine, pos);
+                item = createEventEntryNode(define.eventTriggerTime, pos);
             }
             if (item == null)
                 return null;
@@ -977,8 +977,8 @@ namespace Controllers
             var outputViewData = getNodeOutputViewData(passiveEntry);
             if (passiveEntry is EventEntryNode eventEntry)
             {
-                var typeIndex = _eventDefines.getEventTypeIndex(eventEntry.eventName);
-                var editorNames = _eventDefines.getEventTypeNamesForEditor(game);
+                var typeIndex = _eventTriggerTimes.getEventTriggerTimeIndex(eventEntry.eventName);
+                var editorNames = _eventTriggerTimes.getEventTriggerTimeNamesForEditor(game);
                 if (typeIndex >= 0)
                 {
                     nodeName = editorNames[typeIndex];
@@ -2016,7 +2016,7 @@ namespace Controllers
             DEFINE.TARGET_TYPE_CHARACTER,
             DEFINE.TARGET_TYPE_SERVANT
         };
-        EventDefine[] _eventDefines;
+        EventTriggerTime[] _eventTriggerTimes;
         string[] _eventNames;
 
         [TranslateMsg("内置节点名称，用于通用效果设置属性")]

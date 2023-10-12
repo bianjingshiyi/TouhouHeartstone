@@ -20,6 +20,7 @@ namespace UI
             _nodesPanel.setOutputFilter(outputFilter);
             _nodesPanel.setSearchFilter(searchFilter);
             _createActionDefineDialog.setDefineTypeOptions(defineTypeNames.Select(n => game.lang._(n)).ToArray());
+            _eventTriggerTimes = game.card.getAllEventDefines(_cardPoolId).getEventTriggerTimes();
             updatePasteButton();
             updateDeleteButton();
             updateUndoRedoButton();
@@ -32,10 +33,9 @@ namespace UI
         }
         public void updateNodeDefines()
         {
-            var actionDefines = game.card.getAllActionDefines(_cardPoolId);
-            var eventDefines = game.card.getAllBeforeAfterEventDefines(_cardPoolId);
+            var actionDefines = game.card.getAllActionDefines(_cardPoolId);;
             var nodeDefines = actionDefines.Select(a => new NodeDefine(a));
-            nodeDefines = nodeDefines.Union(eventDefines.Select(e => new NodeDefine(e)));
+            nodeDefines = nodeDefines.Union(_eventTriggerTimes.Select(e => new NodeDefine(e)));
 
             _nodeDefines = nodeDefines.ToArray();
         }
@@ -62,7 +62,7 @@ namespace UI
                     }
                     return new NodeViewData(name, spr, editable);
                 }
-                if (d.eventDefine != null)
+                if (d.eventTriggerTime != null)
                 {
                     Sprite spr = null;
                     return new NodeViewData(name, spr, false);
@@ -420,9 +420,9 @@ namespace UI
             {
                 return _actionGraphCtrl.tryTranslateWithDict(define.actionDefine.editorName);
             }
-            if (define.eventDefine != null)
+            if (define.eventTriggerTime != null)
             {
-                return game.eventManager.translateEventDefineNameForEditor(define.eventDefine);
+                return game.eventManager.translateEventTriggerTimeNameForEditor(define.eventTriggerTime);
             }
             return game.lang._(StringTable.EDITOR_NODE_NAME_UNKNOW);
         }
@@ -679,6 +679,7 @@ namespace UI
             VISUAL_EFFECT_POSITION_THIS_CARD,
             VISUAL_EFFECT_POSITION_TARGET_CARD
         };
+        private EventTriggerTime[] _eventTriggerTimes;
     }
     public static class VisualEffectPosition
     {

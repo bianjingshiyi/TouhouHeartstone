@@ -45,7 +45,7 @@ namespace Game
                 cardPool.actionDefineList.Add(actionDefine);
                 if (actionDefine.type == NodeDefineType.Event)
                 {
-                    cardPool.eventDefineList.AddRange(EventManager.generateEventDefinesForActionDefine(actionDefine));
+                    cardPool.eventDefineList.Add(EventManager.generateEventDefineForActionDefine(actionDefine));
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace Game
                 {
                     if (actionDefine.type == NodeDefineType.Event)
                     {
-                        cardPool.eventDefineList.RemoveAll(e => e.eventName == actionDefine.getBeforeEventName() || e.eventName == actionDefine.getAfterEventName());
+                        cardPool.eventDefineList.RemoveAll(e => e.eventName == actionDefine.getEventName());
                     }
                 }
             }

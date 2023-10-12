@@ -46,8 +46,8 @@ namespace Controllers
                 else
                     await _actionNodeGraphCtrl.hide();
 
-                _eventDefines = game.card.getAllBeforeAfterEventDefines(_cardPoolId);
-                _ui.setEventTypeNames(_eventDefines.getEventTypeNamesForEditor(game));
+                _eventTriggerTimes = game.card.getAllEventDefines(_cardPoolId).getEventTriggerTimes();
+                _ui.setEventTypeNames(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
             }
         }
         public UIDisplayInfo getCurrentDisplayInfo()
@@ -114,7 +114,7 @@ namespace Controllers
         private void onConfirmCreateEventEffectCallback(int index)
         {
             var effect = game.card.createEffectByIndex(_cardPoolId, CardManager.EVENT_EFFECT_IDX);
-            effect.graph.createEventEntryNode(_eventDefines[index]);
+            effect.graph.createEventEntryNode(_eventTriggerTimes[index]);
             onCreateEffect?.Invoke(effect);
             _ui.displayEventEffectDialog(false);
         }
@@ -144,7 +144,7 @@ namespace Controllers
         CardDefine _cardDefine;
         GeneratedBuffDefine _buffDefine;
         GeneratedEffect _effect;
-        EventDefine[] _eventDefines;
+        EventTriggerTime[] _eventTriggerTimes;
         #endregion
 
         #region 内部类

@@ -38,8 +38,8 @@ namespace Controllers
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             updateModifiers();
             // 持续限制
-            _eventDefines = game.card.getAllBeforeAfterEventDefines(_cardPoolId);
-            _ui.initExistLimits(_eventDefines.getEventTypeNamesForEditor(game));
+            _eventTriggerTimes = game.card.getAllEventDefines(_cardPoolId).getEventTriggerTimes();
+            _ui.initExistLimits(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
             updateExistLimits();
             // 皮肤
             await setCurSkinIndex(0);
@@ -409,7 +409,7 @@ namespace Controllers
         private void onAddExistLimitCallback()
         {
             BuffExistLimitDefine limit = new BuffExistLimitDefine();
-            limit.eventName = _eventDefines.FirstOrDefault()?.eventName;
+            limit.eventName = _eventTriggerTimes.FirstOrDefault()?.getTimeName();
             _buffDefine.existLimitList.Add(limit);
             updateExistLimits();
             markBuffUnsaved();
@@ -423,7 +423,7 @@ namespace Controllers
         private void onChangeExistLimitEventCallback(int existLimitIndex, int eventIndex)
         {
             var limit = _buffDefine.existLimitList[existLimitIndex];
-            limit.eventName = _eventDefines.getEventTypeNameByIndex(eventIndex);
+            limit.eventName = _eventTriggerTimes[eventIndex].getTimeName();
             updateExistLimits();
             markBuffUnsaved();
         }
@@ -834,9 +834,9 @@ namespace Controllers
         {
             foreach (var limit in _buffDefine.existLimitList)
             {
-                if (!_eventDefines.Any(e => limit.eventName == e.eventName))
+                if (!_eventTriggerTimes.Any(e => limit.eventName == e.getTimeName()))
                 {
-                    limit.eventName = _eventDefines.FirstOrDefault()?.eventName;
+                    limit.eventName = _eventTriggerTimes.FirstOrDefault()?.getTimeName();
                 }
             }
         }
@@ -844,7 +844,7 @@ namespace Controllers
         {
             if (existLimit == null)
                 return -1;
-            var eventNames = _eventDefines.getEventTypeNames();
+            var eventNames = _eventTriggerTimes.getEventTriggerTimeNames();
             return Array.IndexOf(eventNames, existLimit.eventName);
         }
 
@@ -956,7 +956,7 @@ namespace Controllers
         /// </summary>
         List<BuffSkin> _buffSkins = new List<BuffSkin>();
         string _curLanguage;
-        EventDefine[] _eventDefines;
+        EventTriggerTime[] _eventTriggerTimes;
         #endregion
     }
 }

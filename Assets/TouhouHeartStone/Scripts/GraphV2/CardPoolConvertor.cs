@@ -26,7 +26,7 @@ namespace Game
             _graphInfos = _cardPool.actionNodeGraphInfoList.ToArray();
             this.typeFinder = typeFinder;
             this.mainManager = mainManager;
-            definer = new THHNodeDefiner(getActionDefine, getEventDefine);
+            definer = new THHNodeDefiner(getActionDefine, getEventTriggerTime);
             convertedActionDefines = new List<GeneratedActionDefine>();
         }
         /// <summary>
@@ -77,9 +77,9 @@ namespace Game
             }
             return def;
         }
-        private EventDefine getEventDefine(long cardPoolId, string eventName)
+        private EventTriggerTime getEventTriggerTime(long cardPoolId, string eventName)
         {
-            return mainManager.card.getLocalEventDefine(cardPoolId, eventName);
+            return mainManager.card.getLocalEventTriggerTime(cardPoolId, eventName);
         }
         #region 转换定义
         /// <summary>
@@ -915,8 +915,8 @@ namespace Game
                 posY += posOffset.y;
                 if (seriTrigger.eventName != null && seriTrigger.eventName != "ActiveEvent")
                 {
-                    var eventTypeInfo = getEventDefine(0, seriTrigger.eventName);
-                    passiveEntry = graph.createEventEntryNode(eventTypeInfo, posX, posY);
+                    var triggerTime = getEventTriggerTime(0, seriTrigger.eventName);
+                    passiveEntry = graph.createEventEntryNode(triggerTime, posX, posY);
                 }
                 else
                 {

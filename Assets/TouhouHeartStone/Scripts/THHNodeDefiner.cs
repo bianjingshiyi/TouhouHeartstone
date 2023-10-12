@@ -4,10 +4,10 @@ using TouhouCardEngine;
 namespace Game
 {
     public delegate ActionDefine ActionDefineFinder(ActionReference actRef, string name);
-    public delegate EventDefine EventDefineFinder(long cardPoolId, string name);
+    public delegate EventTriggerTime EventTriggerTimeFinder(long cardPoolId, string name);
     public class THHNodeDefiner : INodeDefiner
     {
-        public THHNodeDefiner(ActionDefineFinder defineFinder, EventDefineFinder eventFinder)
+        public THHNodeDefiner(ActionDefineFinder defineFinder, EventTriggerTimeFinder eventFinder)
         {
             this.defineFinder = defineFinder;
             this.eventFinder = eventFinder;
@@ -42,6 +42,6 @@ namespace Game
             }
         }
         public ActionDefineFinder defineFinder { get; protected set; }
-        public EventDefineFinder eventFinder { get; protected set; }
+        public EventTriggerTimeFinder eventFinder { get; protected set; }
     }
 }

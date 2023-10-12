@@ -7,14 +7,14 @@ namespace Controllers
     public class NodeDefine
     {
         public ActionDefine actionDefine;
-        public EventDefine eventDefine;
+        public EventTriggerTime eventTriggerTime;
         public NodeDefine(ActionDefine actionDef)
         {
             actionDefine = actionDef;
         }
-        public NodeDefine(EventDefine eventDef)
+        public NodeDefine(EventTriggerTime triggerTime)
         {
-            eventDefine = eventDef;
+            eventTriggerTime = triggerTime;
         }
         public string getCategory()
         {
@@ -22,7 +22,7 @@ namespace Controllers
             {
                 return actionDefine.category ?? string.Empty;
             }
-            if (eventDefine != null)
+            if (eventTriggerTime != null)
             {
                 return ActionNodeGraphCtrl.EDITOR_CATEGORY_EVENT_ENTRY_NODE;
             }
@@ -34,9 +34,10 @@ namespace Controllers
             {
                 return actionDefine.outputDefines.Select(d => d.type).ToArray();
             }
-            if (eventDefine != null && eventDefine.variableInfos != null)
+            var eventVariableInfos = eventTriggerTime?.getVariableInfos();
+            if (eventVariableInfos != null)
             {
-                return eventDefine.variableInfos.Where(v => v != null).Select(v => v.type).ToArray();
+                return eventVariableInfos.Where(v => v != null).Select(v => v.type).ToArray();
             }
             return null;
         }

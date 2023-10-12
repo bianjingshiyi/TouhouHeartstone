@@ -64,14 +64,6 @@ namespace Game
             }
             return actionDefineList.ToArray();
         }
-        public EventDefine[] getAllBeforeAfterEventDefines(params long[] includedCardPools)
-        {
-            return getAllEventDefines(includedCardPools).filterBeforeAfterEventDefines().ToArray();
-        }
-        public EventDefine[] getAllMainEventDefines(params long[] includedCardPools)
-        {
-            return getAllEventDefines(includedCardPools).filterMainEventDefines().ToArray();
-        }
         private EventDefine getEventDefine(CardPool cardPool, string eventName)
         {
             return cardPool.eventDefineList.FindEventDefine(eventName);
@@ -79,6 +71,28 @@ namespace Game
         private EventDefine[] getEventDefines(CardPool cardPool)
         {
             return cardPool.eventDefineList.ToArray();
+        }
+        public EventTriggerTime getLocalEventTriggerTime(long cardPoolId, string name)
+        {
+            var localRef = getLocalCardPoolReference(cardPoolId);
+            return getEventTriggerTime(localRef, name);
+        }
+        public EventTriggerTime getEventTriggerTime(ICardPoolReference cardPoolRef, string name)
+        {
+            if (tryGetCardPool(cardPoolRef, out var cardPool))
+            {
+                var define = cardPool.eventDefineList.getEventTriggerTimeByName(name);
+                if (define != null)
+                {
+                    return define;
+                }
+            }
+            var eventDefine = game.eventManager.getOrLoadBuiltinEventDefines().getEventTriggerTimeByName(name);
+            if (eventDefine != null)
+            {
+                return eventDefine;
+            }
+            return null;
         }
     }
 }

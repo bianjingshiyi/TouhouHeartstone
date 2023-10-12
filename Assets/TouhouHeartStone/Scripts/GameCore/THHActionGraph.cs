@@ -41,12 +41,13 @@ namespace TouhouHeartstone
             graph.updateSize();
             return node;
         }
-        public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventDefine eventInfo, float posX = 0, float posY = 0)
+        public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventTriggerTime triggerTime, float posX = 0, float posY = 0)
         {
-            var node = graph.createEventEntryNode(eventInfo?.cardPoolId ?? 0, eventInfo?.eventName, posX, posY);
-            if (eventInfo != null)
+            var define = triggerTime?.define;
+            var node = graph.createEventEntryNode(define?.cardPoolId ?? 0, triggerTime.getTimeName(), posX, posY);
+            if (triggerTime != null)
             {
-                node.define = eventInfo;
+                node.define = triggerTime;
                 node.Define();
             }
             return node;

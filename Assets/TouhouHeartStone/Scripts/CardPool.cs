@@ -45,7 +45,7 @@ namespace Game
             _loadedEventDefines = new List<EventDefine>();
             _nodeDefiner = new THHNodeDefiner(
                 (actRef, name) => getLoadingActionDefine(cardPoolId, mainManager, actRef, name),
-                (poolId, eventName) => getLoadingEventDefine(cardPoolId, mainManager, poolId, eventName));
+                (poolId, eventName) => getLoadingEventTriggerTime(cardPoolId, mainManager, poolId, eventName));
             getGeneratedActionDefines(cardPoolId, typeFinder);
 
             var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(_nodeDefiner));
@@ -74,7 +74,7 @@ namespace Game
                 _genActionDefines.Add(define);
                 if (define.type == NodeDefineType.Event)
                 {
-                    _loadedEventDefines.AddRange(EventManager.generateEventDefinesForActionDefine(define));
+                    _loadedEventDefines.Add(EventManager.generateEventDefineForActionDefine(define));
                 }
             }
             // 定义所有节点。
@@ -120,16 +120,16 @@ namespace Game
             }
             return def;
         }
-        private EventDefine getLoadingEventDefine(long curCardPoolId, MainManager mainManager, long cardPoolId, string name)
+        private EventTriggerTime getLoadingEventTriggerTime(long curCardPoolId, MainManager mainManager, long cardPoolId, string name)
         {
             var cardManager = mainManager.card;
             if (cardPoolId == curCardPoolId)
             {
-                return _loadedEventDefines.FirstOrDefault(n => n.eventName == name);
+                return _loadedEventDefines.getEventTriggerTimeByName(name);
             }
             else
             {
-                return cardManager.getLocalEventDefine(cardPoolId, name);
+                return cardManager.getLocalEventTriggerTime(cardPoolId, name);
             }
         }
 

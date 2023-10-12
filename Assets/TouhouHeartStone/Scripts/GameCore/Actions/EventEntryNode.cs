@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TouhouCardEngine
 {
-    public class EventEntryNode : PassiveEntryNode, IDefineNode<EventDefine>
+    public class EventEntryNode : PassiveEntryNode, IDefineNode<EventTriggerTime>
     {
         #region 公有方法
         public EventEntryNode(long eventCardPoolId, string eventName) : base()
@@ -27,9 +27,12 @@ namespace TouhouCardEngine
         }
         protected override IEnumerable<PortDefine> GetValueOutputDefines()
         {
-            if (define?.variableInfos != null)
+            if (define == null)
+                yield break;
+            var variableInfos = define.getVariableInfos();
+            if (variableInfos != null)
             {
-                foreach (var info in define.variableInfos)
+                foreach (var info in variableInfos)
                 {
                     yield return PortDefine.Value(info.type, info.name);
                 }
@@ -43,7 +46,7 @@ namespace TouhouCardEngine
         }
 
         #endregion
-        public EventDefine define { get; set; }
+        public EventTriggerTime define { get; set; }
         public long eventCardPoolId;
         public string eventName;
     }
