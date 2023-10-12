@@ -747,6 +747,12 @@ namespace Game
             text = null;
             return false;
         }
+        public INodeDefiner getNodeDefiner()
+        {
+            return new THHNodeDefiner(
+                (a, n) => getActionDefine(a),
+                getLocalEventDefine);
+        }
         #region 属性字段
         public MainManager game
         {

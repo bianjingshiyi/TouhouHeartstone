@@ -15,17 +15,18 @@ namespace Game
         private long poolId;
         private SerializableActionNodeGraphInfo[] _graphInfos;
         private TypeFinder typeFinder;
-        private CardManager _cardManager;
+        private MainManager mainManager;
         private List<GeneratedActionDefine> convertedActionDefines;
         private INodeDefiner definer;
-        public CardPoolConvertor(long poolId, SerializableCardPool pool, CardManager cardManager, TypeFinder typeFinder)
+        private CardManager cardManager => mainManager.card;
+        public CardPoolConvertor(long poolId, SerializableCardPool pool, MainManager mainManager, TypeFinder typeFinder)
         {
             _cardPool = pool;
             this.poolId = poolId;
             _graphInfos = _cardPool.actionNodeGraphInfoList.ToArray();
             this.typeFinder = typeFinder;
-            _cardManager = cardManager;
-            definer = new THHNodeDefiner(cardManager, (actRef, name) => getActionDefine(poolId, actRef, name));
+            this.mainManager = mainManager;
+            definer = new THHNodeDefiner(getActionDefine, getEventDefine);
             convertedActionDefines = new List<GeneratedActionDefine>();
         }
         /// <summary>
@@ -48,26 +49,26 @@ namespace Game
             };
             return pool;
         }
-        private ActionDefine getActionDefine(long cardPoolId, ActionReference actRef, string name)
+        private ActionDefine getActionDefine(ActionReference actRef, string name)
         {
             ActionDefine def = null;
             if (actRef != null)
             {
-                if (actRef.cardPoolId == cardPoolId)
+                if (actRef.cardPoolId == poolId)
                 {
                     def = convertedActionDefines.FirstOrDefault(a => a.defineId == actRef.defineId);
                 }
                 else
                 {
-                    def = _cardManager.getActionDefine(actRef);
+                    def = cardManager.getActionDefine(actRef);
                 }
             }
             else
             {
-                actRef = _cardManager.getBuiltinActionReferenceFromName(name);
+                actRef = cardManager.getBuiltinActionReferenceFromName(name);
                 if (actRef != null)
                 {
-                    def = _cardManager.getActionDefine(actRef);
+                    def = cardManager.getActionDefine(actRef);
                 }
                 if (def == null)
                 {
@@ -76,9 +77,9 @@ namespace Game
             }
             return def;
         }
-        private EventDefine getEventDefine(string eventName)
+        private EventDefine getEventDefine(long cardPoolId, string eventName)
         {
-            return EventTypeInfoLoader.FindEventTypeInfo(eventName);
+            return mainManager.card.getLocalEventDefine(cardPoolId, eventName);
         }
         #region 转换定义
         /// <summary>
@@ -760,7 +761,7 @@ namespace Game
             }
 
 
-            var define = getActionDefine(poolId, seriActionNode.defineRef, seriActionNode.defineName);
+            var define = getActionDefine(seriActionNode.defineRef, seriActionNode.defineName);
             ActionNode actionNode = graph.createActionNode(define, posX + posOffset.x, posY + posOffset.y);
             actionNodeDict.Add(rootActionId, actionNode);
 
@@ -914,7 +915,7 @@ namespace Game
                 posY += posOffset.y;
                 if (seriTrigger.eventName != null && seriTrigger.eventName != "ActiveEvent")
                 {
-                    var eventTypeInfo = getEventDefine(seriTrigger.eventName);
+                    var eventTypeInfo = getEventDefine(0, seriTrigger.eventName);
                     passiveEntry = graph.createEventEntryNode(eventTypeInfo, posX, posY);
                 }
                 else
@@ -1013,7 +1014,7 @@ namespace Game
             if (seriNode == null)
                 return null;
 
-            var actionRef = getActionDefine(poolId, seriNode.defineRef, seriNode.defineName);
+            var actionRef = getActionDefine(seriNode.defineRef, seriNode.defineName);
             var freeNode = graph.createActionNode(actionRef, posX + param.posOffset.x, posY + param.posOffset.y);
             nodes.Add(nodeId, freeNode);
 
@@ -1100,7 +1101,7 @@ namespace Game
                 posY = nodeInfo.posY;
             }
 
-            var defineRef = getActionDefine(poolId, null, seriNode.defineName);
+            var defineRef = getActionDefine(null, seriNode.defineName);
             var freeNode = graph.createActionNode(defineRef, posX + param.posOffset.x, posY + param.posOffset.y);
             nodes.Add(nodeId, freeNode);
 
@@ -1160,7 +1161,7 @@ namespace Game
         {
             if (node == null)
                 return null;
-            var define = getActionDefine(poolId, node.defineRef, node.defineName);
+            var define = getActionDefine(node.defineRef, node.defineName);
             if (define == null)
                 return null;
             if (node.getEnterPort() != null)
@@ -1204,7 +1205,7 @@ namespace Game
                 return controlOutput;
             }
             // 0.15 加入了函数类型节点，没有入口和出口动作节点，做个兼容。
-            var define = getActionDefine(poolId, node.defineRef, node.defineName);
+            var define = getActionDefine(node.defineRef, node.defineName);
             if (define != null && define.type == NodeDefineType.Function && index >= 1)
             {
                 var functionOuput = node.getOutputPorts<ControlOutput>().ElementAtOrDefault(index - 1);

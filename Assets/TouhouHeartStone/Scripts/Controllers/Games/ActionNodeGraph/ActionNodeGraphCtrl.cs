@@ -42,10 +42,20 @@ namespace Controllers
                     _ui.setReturnButtonActive(false);
                 _curCardPoolId = info.cardPoolId;
                 _graphInfo = info.graphInfo;
+                // 获取事件定义列表
+                var mainEventDefines = game.card.getAllMainEventDefines(_curCardPoolId);
+                _eventDefines = game.card.getAllBeforeAfterEventDefines(_curCardPoolId);
+                _eventNames = mainEventDefines.Select(d => d.eventName).ToArray();
+                var _eventEditorNames = mainEventDefines.Select(d => game.lang._(d.editorName)).ToArray();
                 //更新UI
                 _ui.gameObject.SetActive(true);
                 _ui.displayCardSelectPanel(false);
+                _ui.initEventNames(
+                    _eventEditorNames,
+                    _eventNames);
                 _ui.resetView();
+
+
                 if (info.editObject is GeneratedActionDefine actionDefine)
                     return openGeneratedActionDefine(actionDefine);
                 else if (info.editObject is GeneratedEffect effect)
@@ -148,7 +158,7 @@ namespace Controllers
             var seri = JsonHelper.fromJson<SerializableActionNodeGraph>(clipboard);
 
 
-            var definer = new THHNodeDefiner(game.card);
+            var definer = game.card.getNodeDefiner();
             var clipGraph = seri.toActionGraph(definer);
             clipGraph.updateSize();
             Vector2 centerPos = new Vector2(clipGraph.centerX, clipGraph.centerY);
@@ -333,7 +343,6 @@ namespace Controllers
             {
                 _ui = GetComponent<ActionNodeGraphPanel>();
             }
-            loadEventTypes();
 
             _ui.onConnectNodes += onConnectNodes;
             _ui.onUnconnectNodes += onUnconnectNodes;
@@ -376,9 +385,6 @@ namespace Controllers
 
             _ui.initPiles(getAllPiles());
             _ui.initCardProperties(CardEditorCtrl.cardProps.ToArray());
-            _ui.initEventNames(
-                _eventTypeNames.Select(n => EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, n)).ToArray(),
-                _eventTypeNames.ToArray());
             var keywords = CardEditorCtrl.getKeywords();
             _ui.initKeywords(keywords.Select(k => k.name).ToArray(), keywords.Select(k => k.value).ToArray());
             var effectTagNames = _activeEffectTagNames.Union(_passiveEffectTagNames).ToArray();
@@ -966,20 +972,23 @@ namespace Controllers
         }
         private ActionNodeItem createNodeUI4PassiveEntryNode(PassiveEntryNode passiveEntry)
         {
-            string nodeName;
+            string nodeName = null;
             var inputViewData = getNodeInputViewData(passiveEntry);
             var outputViewData = getNodeOutputViewData(passiveEntry);
             if (passiveEntry is EventEntryNode eventEntry)
             {
-                var typeIndex = _eventTypeInfoList.getEventTypeIndex(eventEntry.eventName);
-                var editorNames = _eventTypeInfoList.getEventTypeNamesForEditor(game.lang);
-                nodeName = editorNames[typeIndex];
+                var typeIndex = _eventDefines.getEventTypeIndex(eventEntry.eventName);
+                var editorNames = _eventDefines.getEventTypeNamesForEditor(game);
+                if (typeIndex >= 0)
+                {
+                    nodeName = editorNames[typeIndex];
+                }
             }
             else
             {
                 nodeName = EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE;
             }
-            nodeName = game.lang._(nodeName);
+            nodeName = game.lang._(nodeName != null ? nodeName : EDITOR_NODE_NAME_UNKNOWN_EVENT);
 
             var actionNodeItem = _ui.createNode(passiveEntry.posX, passiveEntry.posY,
                 nodeName,
@@ -1898,7 +1907,7 @@ namespace Controllers
                 case ActionNodeValueType.effectTag:
                     return getAllEffectTagValues()[0];
                 case ActionNodeValueType.eventReference:
-                    return _eventTypeNames[0];
+                    return _eventNames[0];
                 case ActionNodeValueType.pileName:
                     return getAllPiles()[0].value;
             }
@@ -1936,6 +1945,8 @@ namespace Controllers
         public const string EDITOR_NODE_NAME_PASSIVE_ENTRY_NODE = "被动效果入口";
         [TranslateMsg("编辑器-节点名称-光环效果入口节点")]
         public const string EDITOR_NODE_NAME_AURA_ENTRY_NODE = "光环效果入口";
+        [TranslateMsg("编辑器-节点名称-未知事件入口节点")]
+        public const string EDITOR_NODE_NAME_UNKNOWN_EVENT = "未知事件入口节点";
 
         [TranslateMsg("编辑器-错误提示")]
         public const string EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT = "非事件效果不能添加事件入口节点。";
@@ -2005,6 +2016,8 @@ namespace Controllers
             DEFINE.TARGET_TYPE_CHARACTER,
             DEFINE.TARGET_TYPE_SERVANT
         };
+        EventDefine[] _eventDefines;
+        string[] _eventNames;
 
         [TranslateMsg("内置节点名称，用于通用效果设置属性")]
         const string EDITOR_NODE_NAME_GENERATED_EFFECT_DATA = "通用效果属性";

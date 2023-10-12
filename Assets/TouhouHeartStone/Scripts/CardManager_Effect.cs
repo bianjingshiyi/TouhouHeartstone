@@ -44,7 +44,7 @@ namespace Game
                 effect = new GeneratedActiveEffect(graph);
             effect.Init();
 
-            var nodeDefiner = new THHNodeDefiner(this);
+            var nodeDefiner = getNodeDefiner();
             graph.DefineNodes(nodeDefiner);
             return effect;
         }

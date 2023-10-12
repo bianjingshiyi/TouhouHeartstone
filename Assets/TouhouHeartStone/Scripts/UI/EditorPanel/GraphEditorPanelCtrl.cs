@@ -33,7 +33,7 @@ namespace UI
         public void updateNodeDefines()
         {
             var actionDefines = game.card.getAllActionDefines(_cardPoolId);
-            var eventDefines = EventTypeInfoLoader.getOrLoadEventDefines();
+            var eventDefines = game.card.getAllBeforeAfterEventDefines(_cardPoolId);
             var nodeDefines = actionDefines.Select(a => new NodeDefine(a));
             nodeDefines = nodeDefines.Union(eventDefines.Select(e => new NodeDefine(e)));
 
@@ -422,7 +422,7 @@ namespace UI
             }
             if (define.eventDefine != null)
             {
-                return EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, define.eventDefine.eventName);
+                return game.eventManager.translateEventDefineNameForEditor(define.eventDefine);
             }
             return game.lang._(StringTable.EDITOR_NODE_NAME_UNKNOW);
         }

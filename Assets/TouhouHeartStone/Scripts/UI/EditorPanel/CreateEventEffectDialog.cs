@@ -12,6 +12,10 @@ namespace UI
             _typeDropdown.ClearOptions();
             _typeDropdown.AddOptions(types.ToList());
         }
+        public void setEventValue(int index)
+        {
+            _typeDropdown.SetValueWithoutNotify(index);
+        }
         public void display()
         {
             gameObject.SetActive(true);

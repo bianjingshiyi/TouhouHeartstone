@@ -29,10 +29,10 @@ namespace TouhouHeartstone
             graph.updateSize();
             return node;
         }
-        public static EventEntryNode createEventEntryNode(this ActionGraph graph, string eventName, float posX = 0, float posY = 0)
+        public static EventEntryNode createEventEntryNode(this ActionGraph graph, long cardPoolId, string eventName, float posX = 0, float posY = 0)
         {
             int id = graph.getUniqueNodeId();
-            var node = new EventEntryNode(eventName);
+            var node = new EventEntryNode(cardPoolId, eventName);
             node.id = id;
             node.posX = posX;
             node.posY = posY;
@@ -43,7 +43,7 @@ namespace TouhouHeartstone
         }
         public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventDefine eventInfo, float posX = 0, float posY = 0)
         {
-            var node = graph.createEventEntryNode(eventInfo?.eventName, posX, posY);
+            var node = graph.createEventEntryNode(eventInfo?.cardPoolId ?? 0, eventInfo?.eventName, posX, posY);
             if (eventInfo != null)
             {
                 node.define = eventInfo;

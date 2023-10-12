@@ -479,6 +479,7 @@ namespace Game
         public UIManager ui => getManager<UIManager>();
         public NetworkingManager network => getManager<NetworkingManager>();
         public GameManager game => getManager<GameManager>();
+        public EventManager eventManager => getManager<EventManager>();
         public SEManager seManager => getManager<SEManager>();
         public FileManager fileManager => new FileManager();
         /// <summary>

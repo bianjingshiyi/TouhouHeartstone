@@ -300,7 +300,7 @@ namespace Controllers
         {
             if (game.card.getActionDefine(_actionDefine.cardPoolId, _actionDefine.id) is GeneratedActionDefine gen)
             {
-                game.card.removeActionDefine(_cardPoolId, gen);
+                game.card.removeActionDefine(gen);
             }
             game.card.addActionDefine(_cardPoolId, _actionDefine);
 

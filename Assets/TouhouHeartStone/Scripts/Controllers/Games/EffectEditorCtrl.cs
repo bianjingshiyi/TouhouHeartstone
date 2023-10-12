@@ -45,6 +45,9 @@ namespace Controllers
                     await _actionNodeGraphCtrl.display(info.actionNodeGraphDisplayInfo);
                 else
                     await _actionNodeGraphCtrl.hide();
+
+                _eventDefines = game.card.getAllBeforeAfterEventDefines(_cardPoolId);
+                _ui.setEventTypeNames(_eventDefines.getEventTypeNamesForEditor(game));
             }
         }
         public UIDisplayInfo getCurrentDisplayInfo()
@@ -84,6 +87,7 @@ namespace Controllers
             // 事件效果。
             if (index == CardManager.EVENT_EFFECT_IDX)
             {
+                _ui.setEventTypeValue(0);
                 _ui.displayEventEffectDialog(true);
                 return;
             }
@@ -96,9 +100,6 @@ namespace Controllers
         #region 生命周期
         public void Awake()
         {
-            _eventTypeInfoList.Clear();
-            _eventTypeInfoList.AddRange(EventTypeInfoLoader.getOrLoadEventDefines());
-            _ui.setEventTypeNames(_eventTypeInfoList.getEventTypeNamesForEditor(game.lang));
             _ui.onConfirmCreateEventEffect += onConfirmCreateEventEffectCallback;
             _actionNodeGraphCtrl.OnGraphEdited += OnGraphEditedCallback;
         }
@@ -113,7 +114,7 @@ namespace Controllers
         private void onConfirmCreateEventEffectCallback(int index)
         {
             var effect = game.card.createEffectByIndex(_cardPoolId, CardManager.EVENT_EFFECT_IDX);
-            effect.graph.createEventEntryNode(_eventTypeInfoList[index]);
+            effect.graph.createEventEntryNode(_eventDefines[index]);
             onCreateEffect?.Invoke(effect);
             _ui.displayEventEffectDialog(false);
         }
@@ -143,7 +144,7 @@ namespace Controllers
         CardDefine _cardDefine;
         GeneratedBuffDefine _buffDefine;
         GeneratedEffect _effect;
-        EventTypeInfoCollection _eventTypeInfoList = new EventTypeInfoCollection();
+        EventDefine[] _eventDefines;
         #endregion
 
         #region 内部类

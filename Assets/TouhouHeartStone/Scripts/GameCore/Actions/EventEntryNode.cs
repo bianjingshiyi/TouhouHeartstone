@@ -8,8 +8,9 @@ namespace TouhouCardEngine
     public class EventEntryNode : PassiveEntryNode, IDefineNode<EventDefine>
     {
         #region 公有方法
-        public EventEntryNode(string eventName) : base()
+        public EventEntryNode(long eventCardPoolId, string eventName) : base()
         {
+            this.eventCardPoolId = eventCardPoolId;
             this.eventName = eventName;
         }
         public override Task<ControlOutput> run(Flow flow)
@@ -43,6 +44,7 @@ namespace TouhouCardEngine
 
         #endregion
         public EventDefine define { get; set; }
+        public long eventCardPoolId;
         public string eventName;
     }
     [Serializable]
@@ -51,6 +53,7 @@ namespace TouhouCardEngine
         public SerializableEventEntryNode(EventEntryNode eventEntryNode)
         {
             id = eventEntryNode.id;
+            eventCardPoolId = eventEntryNode.eventCardPoolId;
             eventName = eventEntryNode.eventName;
             posX = eventEntryNode.posX;
             posY = eventEntryNode.posY;
@@ -58,7 +61,7 @@ namespace TouhouCardEngine
         }
         public PassiveEntryNode ToActionNode(ActionGraph graph)
         {
-            var entry = new EventEntryNode(eventName)
+            var entry = new EventEntryNode(eventCardPoolId, eventName)
             {
                 id = id,
                 posX = posX,
@@ -83,6 +86,7 @@ namespace TouhouCardEngine
         public int id;
         public float posX;
         public float posY;
+        public long eventCardPoolId;
         public string eventName;
         public Dictionary<string, object> consts;
         [Obsolete]

@@ -8,7 +8,7 @@ using TouhouHeartstone;
 
 namespace Game
 {
-    partial class CardManager : IActionDefineGetter
+    partial class CardManager
     {
         #region 公有方法
         public GeneratedActionDefine createActionDefine(long cardPoolId, string name, NodeDefineType type)
@@ -43,25 +43,32 @@ namespace Game
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
                 cardPool.actionDefineList.Add(actionDefine);
+                if (actionDefine.type == NodeDefineType.Event)
+                {
+                    cardPool.eventDefineList.AddRange(EventManager.generateEventDefinesForActionDefine(actionDefine));
+                }
             }
         }
-        public bool removeActionDefine(long cardPoolId, GeneratedActionDefine actionDefine)
+        public bool removeActionDefine(GeneratedActionDefine actionDefine)
         {
-            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
+            if (actionDefine == null)
+                return false;
+            var cardPoolRef = getLocalCardPoolReference(actionDefine.cardPoolId);
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                return cardPool.actionDefineList.Remove(actionDefine);
+                if (cardPool.actionDefineList.Remove(actionDefine))
+                {
+                    if (actionDefine.type == NodeDefineType.Event)
+                    {
+                        cardPool.eventDefineList.RemoveAll(e => e.eventName == actionDefine.getBeforeEventName() || e.eventName == actionDefine.getAfterEventName());
+                    }
+                }
             }
             return false;
         }
         public bool removeActionDefine(long cardPoolId, int id)
         {
-            var cardPoolRef = getLocalCardPoolReference(cardPoolId);
-            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
-            {
-                return cardPool.actionDefineList.RemoveAll(a => a.id == id) > 0;
-            }
-            return false;
+            return removeActionDefine(getActionDefine(cardPoolId, id) as GeneratedActionDefine);
         }
         public GeneratedActionDefine cloneActionDefine(long cardPoolId, GeneratedActionDefine define)
         {
@@ -69,7 +76,7 @@ namespace Game
             var cloneSeri = JsonHelper.fromJson<SerializableActionDefine>(json);
 
 
-            var nodeDefiner = new THHNodeDefiner(this);
+            var nodeDefiner = getNodeDefiner();
             // 铺设节点。
             var clone = cloneSeri.toGeneratedActionDefine(game.editor.getTypeByName);
             clone.cardPoolId = cardPoolId;

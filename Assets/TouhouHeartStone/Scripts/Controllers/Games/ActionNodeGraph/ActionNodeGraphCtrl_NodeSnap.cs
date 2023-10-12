@@ -78,7 +78,7 @@ namespace Controllers
                     }
 
 
-                    _ui.setPreviewEventNode(tryTranslateWithDict(EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, eventDefine.eventName)),
+                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventDefineNameForEditor(eventDefine)),
                         inputInfos,
                         outputInfos);
                 }
@@ -107,7 +107,7 @@ namespace Controllers
                 else if (node is EventEntryNode eventEntry)
                 {
                     var define = eventEntry.define;
-                    _ui.setPreviewEventNode(tryTranslateWithDict(EventTypeInfoLoader.translateEventTypeNameForEditor(game.lang, define.eventName)),
+                    _ui.setPreviewEventNode(tryTranslateWithDict(game.eventManager.translateEventDefineNameForEditor(define)),
                         getNodeInputViewData(node),
                         getNodeOutputViewData(node));
                 }

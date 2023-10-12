@@ -1,13 +1,11 @@
 ﻿using System;
-using UI;
-using Controllers;
-using MongoDB.Bson.Serialization.Attributes;
-using TouhouCardEngine;
-using TouhouHeartstone;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
+using Controllers;
 using Game.Animations;
+using MongoDB.Bson.Serialization.Attributes;
+using TouhouCardEngine;
+using UI;
 
 namespace Game
 {
@@ -19,6 +17,7 @@ namespace Game
         public List<BuffSkin> buffSkinList = new List<BuffSkin>();
         public List<GeneratedActionDefine> actionDefineList = new List<GeneratedActionDefine>();
         public List<GeneratedAnimationDefine> animationDefineList = new List<GeneratedAnimationDefine>();
+        public List<EventDefine> eventDefineList = new List<EventDefine>();
     }
     [Serializable]
     public class SerializableCardPool
@@ -40,10 +39,13 @@ namespace Game
             animationDefineList = cardPool.animationDefineList.ConvertAll(a => new SerializableAnimationDefine(a));
         }
         #endregion
-        public CardPool toCardPool(long cardPoolId, CardManager cardManager, TypeFinder typeFinder)
+        public CardPool toCardPool(long cardPoolId, MainManager mainManager, TypeFinder typeFinder)
         {
             _genActionDefines = new List<GeneratedActionDefine>();
-            _nodeDefiner = new THHNodeDefiner(cardManager, (actRef, name) => getLoadingActionDefine(cardPoolId, cardManager, actRef, name));
+            _loadedEventDefines = new List<EventDefine>();
+            _nodeDefiner = new THHNodeDefiner(
+                (actRef, name) => getLoadingActionDefine(cardPoolId, mainManager, actRef, name),
+                (poolId, eventName) => getLoadingEventDefine(cardPoolId, mainManager, poolId, eventName));
             getGeneratedActionDefines(cardPoolId, typeFinder);
 
             var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(_nodeDefiner));
@@ -58,6 +60,7 @@ namespace Game
                 animationDefineList = animationDefines,
                 cardSkinList = cardSkinList,
                 buffSkinList = buffSkinList,
+                eventDefineList = new List<EventDefine>(_loadedEventDefines)
             };
         }
         private void getGeneratedActionDefines(long cardPoolId, TypeFinder typeFinder)
@@ -69,6 +72,10 @@ namespace Game
                 var define = seri.toGeneratedActionDefine(typeFinder);
                 define.cardPoolId = cardPoolId;
                 _genActionDefines.Add(define);
+                if (define.type == NodeDefineType.Event)
+                {
+                    _loadedEventDefines.AddRange(EventManager.generateEventDefinesForActionDefine(define));
+                }
             }
             // 定义所有节点。
             foreach (var define in _genActionDefines)
@@ -84,8 +91,9 @@ namespace Game
                 graph.AddConnections(nodes);
             }
         }
-        private ActionDefine getLoadingActionDefine(long cardPoolId, CardManager cardManager, ActionReference actRef, string name)
+        private ActionDefine getLoadingActionDefine(long cardPoolId, MainManager mainManager, ActionReference actRef, string name)
         {
+            var cardManager = mainManager.card;
             ActionDefine def = null;
             if (actRef != null)
             {
@@ -112,6 +120,18 @@ namespace Game
             }
             return def;
         }
+        private EventDefine getLoadingEventDefine(long curCardPoolId, MainManager mainManager, long cardPoolId, string name)
+        {
+            var cardManager = mainManager.card;
+            if (cardPoolId == curCardPoolId)
+            {
+                return _loadedEventDefines.FirstOrDefault(n => n.eventName == name);
+            }
+            else
+            {
+                return cardManager.getLocalEventDefine(cardPoolId, name);
+            }
+        }
 
         #endregion
         #region 属性字段
@@ -119,6 +139,8 @@ namespace Game
         private INodeDefiner _nodeDefiner;
         [BsonIgnore]
         private List<GeneratedActionDefine> _genActionDefines;
+        [BsonIgnore]
+        private List<EventDefine> _loadedEventDefines;
 
         public List<SerializableCardDefine> cardDefineList = new List<SerializableCardDefine>();
         public List<CardSkinData> cardSkinList = new List<CardSkinData>();

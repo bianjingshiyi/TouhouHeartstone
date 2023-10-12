@@ -647,10 +647,7 @@ namespace Game
         {
             var json = new SerializableCardDefine(define).toJson();
             var cloneSeri = JsonHelper.fromJson<SerializableCardDefine>(json);
-
-            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
-
-            var nodeDefiner = new THHNodeDefiner(this);
+            var nodeDefiner = getNodeDefiner();
             var clone = cloneSeri.toCardDefine(nodeDefiner);
             clone.cardPoolId = define.cardPoolId;
             return clone;
@@ -1244,7 +1241,7 @@ namespace Game
 
             TypeFinder typeFinder = game.editor.getTypeByName;
 
-            CardPool cardPool = serializableCardPool.toCardPool(cardPoolID, this, typeFinder);
+            CardPool cardPool = serializableCardPool.toCardPool(cardPoolID, game, typeFinder);
             for (int i = 0; i < cardPool.cardDefineList.Count; i++)
             {
                 cardPool.cardDefineList[i].cardPoolId = cardPoolID;
@@ -1268,7 +1265,7 @@ namespace Game
 
             TypeFinder typeFinder = game.editor.getTypeByName;
 
-            var convertor = new CardPoolConvertor(cardPoolID, serializableCardPool, this, typeFinder);
+            var convertor = new CardPoolConvertor(cardPoolID, serializableCardPool, game, typeFinder);
             return convertor.Convert();
         }
 
@@ -1652,7 +1649,7 @@ namespace Game
 
                         // 更新节点的信息和端口。
                         actionNode.defineRef = new ActionReference(0, newId);
-                        var definer = new THHNodeDefiner(this);
+                        var definer = getNodeDefiner();
                         definer.Define(actionNode);
 
                         // 连接之前的条件节点的第一个输出端口和该节点的条件端口。

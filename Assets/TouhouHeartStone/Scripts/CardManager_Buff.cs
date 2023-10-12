@@ -59,10 +59,7 @@ namespace Game
         {
             var json = new SerializableBuffDefine(buffDefine).toJson();
             var cloneSeri = JsonHelper.fromJson<SerializableBuffDefine>(json);
-
-            EventTypeInfoFinder eventFinder = EventTypeInfoLoader.FindEventTypeInfo;
-
-            var nodeDefiner = new THHNodeDefiner(this);
+            var nodeDefiner = getNodeDefiner();
             var clone = cloneSeri.toGeneratedBuffDefine(nodeDefiner);
             clone.cardPoolId = buffDefine.cardPoolId;
             return clone;

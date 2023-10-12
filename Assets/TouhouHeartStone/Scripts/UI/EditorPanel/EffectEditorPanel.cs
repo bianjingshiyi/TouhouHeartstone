@@ -10,6 +10,10 @@ namespace UI
         {
             _createEventEffectDialog.setTypes(names);
         }
+        public void setEventTypeValue(int index)
+        {
+            _createEventEffectDialog.setEventValue(index);
+        }
         public void displayEventEffectDialog(bool display)
         {
             if (display)
