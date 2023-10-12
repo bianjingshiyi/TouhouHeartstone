@@ -162,6 +162,7 @@ namespace Controllers
             "ElementMixEvent",
             "LastwordEvent",
             "UpdateDeathEvent",
+            "GeneratedEvent",
         };
         static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
         {
