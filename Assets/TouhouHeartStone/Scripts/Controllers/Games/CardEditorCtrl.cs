@@ -81,8 +81,8 @@ namespace Controllers
 
             updateCustomProperties();
             updateKeywords();
+            _effectEditorCtrl.updateEventTriggerTimes(_cardPoolId);
             _effectEditorCtrl.hideActionGraph();
-
             if (effects.Length > 0)
             {
                 await _effectEditorCtrl.display(_cardPoolId, _cardDefine, effects[0]);

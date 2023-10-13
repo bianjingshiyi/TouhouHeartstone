@@ -45,10 +45,13 @@ namespace Controllers
                     await _actionNodeGraphCtrl.display(info.actionNodeGraphDisplayInfo);
                 else
                     await _actionNodeGraphCtrl.hide();
-
-                _eventTriggerTimes = game.card.getAllEventDefines(_cardPoolId).getEventTriggerTimes();
-                _ui.setEventTypeNames(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
+                updateEventTriggerTimes(_cardPoolId);
             }
+        }
+        public void updateEventTriggerTimes(long cardPoolId)
+        {
+            _eventTriggerTimes = game.card.getAllEventDefines(cardPoolId).getEventTriggerTimes();
+            _ui.setEventTypeNames(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
         }
         public UIDisplayInfo getCurrentDisplayInfo()
         {

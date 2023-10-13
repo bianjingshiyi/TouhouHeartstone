@@ -767,7 +767,7 @@ namespace Controllers
         {
             foreach (var node in graph.nodes)
             {
-                // 先更新自定义动作节点，因为自定义节点的输出输入值可能会变动。
+                // 先更新自定义动作节点和事件入口节点，因为自定义节点和自定义事件的输出输入值可能会变动。
                 if (node is ActionNode action)
                 {
                     var define = getActionDefine(action.defineRef);
@@ -776,6 +776,13 @@ namespace Controllers
                         action.define = gen;
                         action.Define();
                     }
+                }
+                else if (node is EventEntryNode eventEntryNode)
+                {
+                    var poolRef = game.card.getLocalCardPoolReference(eventEntryNode.eventCardPoolId);
+                    var triggerTime = game.card.getEventTriggerTime(poolRef, eventEntryNode.eventName);
+                    eventEntryNode.define = triggerTime;
+                    eventEntryNode.Define();
                 }
                 await createNodeUI4Node(node);
             }

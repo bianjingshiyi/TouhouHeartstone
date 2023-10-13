@@ -44,6 +44,7 @@ namespace Controllers
             // 皮肤
             await setCurSkinIndex(0);
 
+            _effectEditorCtrl.updateEventTriggerTimes(_cardPoolId);
             _effectEditorCtrl.hideActionGraph();
 
             if (effects.Length > 0)
