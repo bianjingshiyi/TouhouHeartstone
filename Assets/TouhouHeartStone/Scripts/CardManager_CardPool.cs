@@ -50,6 +50,8 @@ namespace Game
                         continue;
                     }
                     CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
+
+                    removeConflictCardPoolInfo(cardPool);
                     _cardPoolInfoDict.Add(path, cardPool);
                     onCardPoolInfoRead?.Invoke(path, cardPool);
                     Debug.Log("读取卡池信息" + path + "完毕");
@@ -259,23 +261,7 @@ namespace Game
         /// <exception cref="FormatException"></exception>
         public CardPoolInfo parseCardPoolInfo(string line)
         {
-            CardPoolInfo cardPool = JsonHelper.fromJson<CardPoolInfo>(line);
-
-            //去重，多份文件中可能包含相同的卡池
-            string conflictCardPoolPath = null;
-            foreach (var pair in _cardPoolInfoDict)
-            {
-                if (pair.Value.CompareCardPool(cardPool))
-                {
-                    conflictCardPoolPath = pair.Key;
-                    break;
-                }
-            }
-            if (conflictCardPoolPath != null)
-            {
-                _cardPoolInfoDict.Remove(conflictCardPoolPath);
-            }
-            return cardPool;
+            return JsonHelper.fromJson<CardPoolInfo>(line); 
         }
 
         /// <summary>
@@ -360,7 +346,7 @@ namespace Game
                 {
                     throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
                 }
-
+                removeConflictCardPoolInfo(cardPoolInfo);
                 addCardPool(cardPool, cardPoolInfo, path);
 
                 //错误信息修复
@@ -1751,6 +1737,23 @@ namespace Game
                 define.traverse(action);
             };
             traverseActionGraphs(cardPool, cardAction, buffAction, defineAction);
+        }
+        private void removeConflictCardPoolInfo(CardPoolInfo cardPoolInfo)
+        {
+            //去重，多份文件中可能包含相同的卡池
+            string conflictCardPoolPath = null;
+            foreach (var pair in _cardPoolInfoDict)
+            {
+                if (pair.Value.CompareCardPool(cardPoolInfo))
+                {
+                    conflictCardPoolPath = pair.Key;
+                    break;
+                }
+            }
+            if (conflictCardPoolPath != null)
+            {
+                _cardPoolInfoDict.Remove(conflictCardPoolPath);
+            }
         }
         #endregion
         #region 属性字段

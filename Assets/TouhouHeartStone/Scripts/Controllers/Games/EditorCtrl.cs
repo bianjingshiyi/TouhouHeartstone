@@ -34,27 +34,26 @@ namespace Controllers
             else
             {
                 //牌库编辑模式
-                //设置当前牌库
-                if (0 <= cardPoolIndex && cardPoolIndex < _cardPoolInfoList.Count)
+                string path = null;
+                CardPoolInfo poolInfo = null;
+                if (cardPoolIndex >= 0 && cardPoolIndex < _cardPoolInfoList.Count)
                 {
-                    _curCardPoolPath = _cardPoolPathList[cardPoolIndex];
-                    _curCardPoolInfo = _cardPoolInfoList[cardPoolIndex];
+                    path = _cardPoolPathList[cardPoolIndex];
+                    poolInfo = _cardPoolInfoList[cardPoolIndex];
                 }
-                //更新牌库信息
-                Sprite image = await game.card.loadImage(_curCardPoolInfo.imageResPath, _curCardPoolInfo.cardPoolId);
                 try
                 {
                     //显示卡牌列表
                     if (reloadCardPool)
                     {
                         //重新加载牌库中的所有卡牌和皮肤
-                        if (string.IsNullOrEmpty(_curCardPoolPath))
+                        if (string.IsNullOrEmpty(path))
                         {
-                            await readCardPoolByIdAsync(_curCardPoolInfo.ToReference());
+                            await readCardPoolByIdAsync(poolInfo.ToReference());
                         }
                         else
                         {
-                            await readCardPoolByPathAsync(_curCardPoolPath);
+                            await readCardPoolByPathAsync(path);
                         }
                     }
                 }
@@ -64,6 +63,11 @@ namespace Controllers
                     Debug.LogError(e);
                     return;
                 }
+                //设置当前卡池
+                _curCardPoolPath = path;
+                _curCardPoolInfo = poolInfo;
+                //更新牌库信息
+                Sprite image = await game.card.loadImage(_curCardPoolInfo.imageResPath, _curCardPoolInfo.cardPoolId);
                 //更新UI
                 gameObject.SetActive(true);
                 _ui.setDeckListActive(false);
