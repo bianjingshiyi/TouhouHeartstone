@@ -903,9 +903,9 @@ namespace Game
             }
             return sprite;
         }
-        public Task<Sprite> loadCardImage(ICardPoolReference cardPoolRef, int cardId)
+        public Task<Sprite> loadCardImage(CardDefine define)
         {
-            CardSkinData skin = getCardSkin(cardPoolRef, cardId);
+            CardSkinData skin = getCardSkin(define);
             if (skin == null)
             {
                 return Task.FromResult(getDefaultSprite());
@@ -915,6 +915,7 @@ namespace Game
             else
             {
                 string path = skin.imagePath;
+                var cardPoolRef = getCardPoolReferenceOfCard(define);
                 if (string.IsNullOrEmpty(path))
                 {
                     return Task.FromResult<Sprite>(null);
@@ -941,6 +942,10 @@ namespace Game
                     return loadExternalImage(path, game.card.textureDirName);
                 }
             }
+        }
+        public Task<Sprite> loadCardImage(ICardPoolReference cardPoolRef, int cardId)
+        {
+            return loadCardImage(getCardDefine(cardPoolRef, cardId));
         }
         public string getCardPoolPathRootDir(string path)
         {

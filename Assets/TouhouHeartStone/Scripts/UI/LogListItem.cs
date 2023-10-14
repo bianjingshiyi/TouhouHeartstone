@@ -36,6 +36,12 @@ namespace UI
             get { return _oppoColor; }
         }
         [SerializeField]
+        Sprite _defaultIcon;
+        public Sprite defaultIcon
+        {
+            get { return _defaultIcon; }
+        }
+        [SerializeField]
         Sprite _gemIcon;
         public Sprite gemIcon
         {

@@ -511,6 +511,7 @@ MonoBehaviour:
   _opposprite: {fileID: 21300000, guid: b80e6e4ab0c5b3a489cc5f0ee871bb4b, type: 3}
   _selfColor: {r: 0.2, g: 0.2, b: 0.8, a: 1}
   _oppoColor: {r: 0.8, g: 0.2, b: 0.2, a: 1}
+  _defaultIcon: {fileID: 21300000, guid: 0049058a54c2d6d4bbecb8e31ea1bf59, type: 3}
   _gemIcon: {fileID: 21300000, guid: be5129279b1dfca4ab4fa9ddc1c574f0, type: 3}
   _maxGemIcon: {fileID: 21300000, guid: 8ea3e46938e041f4a8abb8200dc90159, type: 3}
   _drawIcon: {fileID: 21300000, guid: de328077ad8c9594c9ec3cf1023b25fe, type: 3}
