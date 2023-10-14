@@ -40,7 +40,7 @@ namespace Game.BattleTable.UI
         public TurnTipImage TurnTipImage => _turnTipImage;
         public GameResultDialog GameResultDialog => _gameResultDialog;
         public TipBox TipBox => _tipBox;
-        public TextMeshProUGUI TipText => _tipText;
+        public Text ErrorTipText => _errorText;
         public GameLogCtrl LogCtrl => _logCtrl;
         [SerializeField]
         private GameObject _cardDisplayerObj;
@@ -63,7 +63,7 @@ namespace Game.BattleTable.UI
         [SerializeField]
         private TipBox _tipBox;
         [SerializeField]
-        private TextMeshProUGUI _tipText;
+        private Text _errorText;
         [SerializeField]
         private GameLogCtrl _logCtrl;
         #endregion

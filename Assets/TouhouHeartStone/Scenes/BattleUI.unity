@@ -1185,7 +1185,7 @@ GameObject:
   - component: {fileID: 432962493}
   - component: {fileID: 432962492}
   m_Layer: 5
-  m_Name: TipText
+  m_Name: ErrorTip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1874,7 +1874,7 @@ MonoBehaviour:
   _turnTipImage: {fileID: 1803899000}
   _gameResultDialog: {fileID: 1154403314}
   _tipBox: {fileID: 1952450713}
-  _tipText: {fileID: 1952450710}
+  _errorText: {fileID: 432962491}
   _logCtrl: {fileID: 6399993}
 --- !u!114 &702626785
 MonoBehaviour:
@@ -5907,18 +5907,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1952450708}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1952450710 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3524692341982491312, guid: 08396eaf5537b534f86cb8a76d8bfce3,
-    type: 3}
-  m_PrefabInstance: {fileID: 1952450708}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1952450711 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6239161301041676198, guid: 08396eaf5537b534f86cb8a76d8bfce3,

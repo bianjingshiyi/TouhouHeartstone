@@ -68,6 +68,14 @@ namespace Game.BattleTable
             ui.TipBox.display(tip, worldPos);
             _tipboxSource = source;
         }
+        public void hideTipBoxFromObject(GameObject source)
+        {
+            if (_tipboxSource == source)
+            {
+                _tipboxSource = null;
+                ui.TipBox.hide();
+            }
+        }
         public void showGameResult(bool result)
         {
             ui.GameResultDialog.ShowGameResult(result);
@@ -243,11 +251,7 @@ namespace Game.BattleTable
             if (_tipTimer.isExpired())
             {
                 _tipTimer.reset();
-                ui.TipBox.hide();
-            }
-            else if (_tipTimer.isStarted)
-            {
-                ui.TipText.color = new Color(1, 1, 1, 1/*_tipTimer.getRemainedTime() / _tipTimer.duration*/);
+                ui.ErrorTipText.gameObject.SetActive(false);
             }
 
 
@@ -482,6 +486,7 @@ namespace Game.BattleTable
             // UI
             ui.PilePanel.setActive(false);
             ui.CardDisplayer.setVisible(false);
+            ui.ErrorTipText.gameObject.SetActive(false);
             ui.TipBox.hide();
             ui.GameResultDialog.hide();
 

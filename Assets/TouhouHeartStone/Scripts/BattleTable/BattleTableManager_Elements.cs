@@ -951,11 +951,12 @@ namespace Game.BattleTable
         /// <summary>
         /// 显示文本提示
         /// </summary>
-        /// <param name="tip">翻译的**源文本**</param>
-        public void showTip(string tip)
+        /// <param name="tip">翻译的<b>源文本</b></param>
+        public void showErrorTip(string tip)
         {
-            ui.TipBox.display();
-            ui.TipText.text = lang._(tip);
+            ui.ErrorTipText.gameObject.SetActive(true);
+            ui.ErrorTipText.text = lang._(tip);
+            ui.ErrorTipText.color = Color.white;
             _tipTimer.start();
         }
         public async void showCardDisplayer(Vector3 targetPosition, CardDescriptor desc)
@@ -1144,7 +1145,7 @@ namespace Game.BattleTable
             else if (!canCardBeControlled(card, out string info))
             {
                 //停止拖拽并提示
-                showTip(info);
+                showErrorTip(info);
                 resetUse();
                 return;
             }
@@ -1202,7 +1203,7 @@ namespace Game.BattleTable
             //卡牌不可用
             if (!canCardBeControlled(card, out string info))
             {
-                showTip(info);
+                showErrorTip(info);
                 resetUse();
                 return;
             }
@@ -1275,7 +1276,7 @@ namespace Game.BattleTable
         private void onHandItemPointerExitCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
             hand.setHovered(false);
-            ui.TipBox.hide();
+            hideTipBoxFromObject(hand.gameObject);
         }
         #endregion
 
@@ -1346,7 +1347,7 @@ namespace Game.BattleTable
                     return;
                 }
                 else
-                    showTip(tip);
+                    showErrorTip(tip);
             }
             //取消选中和攻击
             cancelTargetSelect();
@@ -1366,7 +1367,7 @@ namespace Game.BattleTable
                 return;
             if (!canCardBeControlled(skillCard, out string info))
             {
-                showTip(info);
+                showErrorTip(info);
                 return;
             }
 
@@ -1393,7 +1394,7 @@ namespace Game.BattleTable
             // 不可用。
             if (!canCardBeControlled(skillCard, out var info))
             {
-                showTip(info);
+                showErrorTip(info);
                 return;
             }
             var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
@@ -1425,7 +1426,7 @@ namespace Game.BattleTable
                 return;//在用其他卡片
             if (!canCardBeControlled(skillCard, out string info))
             {
-                showTip(info);
+                showErrorTip(info);
             }
             else if (isOnTarget(pointer, out var target))
             {
@@ -1436,13 +1437,13 @@ namespace Game.BattleTable
                     return;
                 }
                 else
-                    showTip(invalidMsg);
+                    showErrorTip(invalidMsg);
             }
             cancelTargetSelect();
         }
         private void onSkillPointerExitCallback(Skill skill, PointerEventData pointer)
         {
-            ui.TipBox.hide();
+            hideTipBoxFromObject(skill.gameObject);
         }
 
         private void onSkillPointerEnterCallback(Skill skill, PointerEventData pointer)
@@ -1532,7 +1533,7 @@ namespace Game.BattleTable
                     return;
                 }
                 else
-                    showTip(tip);
+                    showErrorTip(tip);
             }
             //取消选中和攻击
             cancelTargetSelect();
@@ -1574,7 +1575,7 @@ namespace Game.BattleTable
         }
         private void onDeckPointerExitCallback(Deck deck, PointerEventData pointer)
         {
-            ui.TipBox.hide();
+            hideTipBoxFromObject(deck.gameObject);
         }
         #endregion
 
@@ -1607,7 +1608,7 @@ namespace Game.BattleTable
         }
         private void onGravePointerExitCallback(Deck deck, PointerEventData pointer)
         {
-            ui.TipBox.hide();
+            hideTipBoxFromObject(deck.gameObject);
         }
         #endregion
 
@@ -1697,7 +1698,7 @@ namespace Game.BattleTable
             else
             {
                 //非法目标，跳出非法信息
-                showTip(invalidMsg);
+                showErrorTip(invalidMsg);
                 resetUse();
             }
         }
@@ -1798,7 +1799,7 @@ namespace Game.BattleTable
                 else
                 {
                     //非法目标，跳出非法信息
-                    showTip(invalidMsg);
+                    showErrorTip(invalidMsg);
                 }
             }
             return false;
