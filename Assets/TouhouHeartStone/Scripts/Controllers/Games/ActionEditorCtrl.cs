@@ -143,6 +143,7 @@ namespace Controllers
                         _actionDefine.addInput(paramDefine);
                     }
                     updateInputs();
+                    _actionNodeGraphCtrl.onAddActionDefineInputPort();
                     break;
                 case ActionPortDefineType.Const:
                     _actionDefine.addConst(valueDefine);

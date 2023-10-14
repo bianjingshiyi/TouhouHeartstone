@@ -148,6 +148,7 @@ namespace Controllers
             item.updateTargetCheckerList(getTranslatedTargetCheckerTypes(), getActiveEntryTargetCheckerViewData(activeEntry));
             item.setInputs(getActiveEntryInputViewData(activeEntry));
             item.setOutputs(getNodeOutputViewData(activeEntry));
+            updateNodePortModes(activeEntry, _connectingPort);
         }
         private PortItemInfo[] getActiveEntryInputViewData(ActiveEntryNode node)
         {

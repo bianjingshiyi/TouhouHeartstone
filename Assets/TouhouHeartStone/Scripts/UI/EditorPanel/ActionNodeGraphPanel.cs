@@ -353,6 +353,20 @@ namespace UI
             var connections = _connectionList.FindAll(c => c.outputNode == item || c.inputNode == item);
             foreach (var connection in connections)
             {
+                ActionNodeItemInput inputPort = null;
+                ActionNodeItemOutput outputPort = null;
+                if (connection.inputNode)
+                {
+                    inputPort = connection.inputNode.getInput(connection.inputIndex);
+                }
+                if (connection.outputNode)
+                {
+                    outputPort = connection.outputNode.getOutput(connection.outputIndex);
+                }
+                if (inputPort && outputPort)
+                {
+                    connection.line.SetColor(outputPort.GetColor(), inputPort.GetColor());
+                }
                 connection.line.UpdatePoints();
             }
         }
@@ -370,7 +384,9 @@ namespace UI
             _hintMessageText.text = msg;
             _hintMessageText.gameObject.SetActive(false);
             _hintMessageText.gameObject.SetActive(true);
-            _hintMessageText.gameObject.GetComponent<SEPlayer>()?.Play();
+            var sePlayer = _hintMessageText.gameObject.GetComponent<SEPlayer>();
+            if (sePlayer)
+                sePlayer.Play();
         }
         public void hideErrorTip()
         {
@@ -885,7 +901,8 @@ namespace UI
             {
                 // 点击的输入点是本身。
                 // 取消选择。
-                input?.setSelected(false);
+                if (input)
+                    input.setSelected(false);
                 _currentSelectedKnob = default;
                 onEndConnection?.Invoke(item, inputIndex, false);
                 return;
@@ -907,7 +924,8 @@ namespace UI
                     // 连接输入点与输出点。
                     onConnectNodes?.Invoke(output, outputIndex, item, inputIndex);
                 }
-                _currentSelectedKnob.outputKnob?.setSelected(false);
+                if (_currentSelectedKnob.outputKnob)
+                    _currentSelectedKnob.outputKnob.setSelected(false);
                 _currentSelectedKnob = default;
                 onEndConnection?.Invoke(output, outputIndex, true);
                 return;
@@ -916,11 +934,13 @@ namespace UI
             {
                 // 点击的输入点不是本身，并且当前选择的输出点不存在。
                 // 选择新的输入点。
-                _currentSelectedKnob.inputKnob?.setSelected(false);
+                if (_currentSelectedKnob.inputKnob)
+                    _currentSelectedKnob.inputKnob.setSelected(false);
                 _currentSelectedKnob.inputNode = item;
                 _currentSelectedKnob.inputIndex = inputIndex;
                 _currentSelectedKnob.inputKnob = input;
-                _currentSelectedKnob.inputKnob?.setSelected(true);
+                if (_currentSelectedKnob.inputKnob)
+                    _currentSelectedKnob.inputKnob.setSelected(true);
                 onStartConnection?.Invoke(item, inputIndex, false);
             }
         }
@@ -1047,7 +1067,8 @@ namespace UI
             {
                 // 点击的输出点是本身。
                 // 取消选择。
-                output?.setSelected(false);
+                if (output)
+                    output.setSelected(false);
                 _currentSelectedKnob = default;
                 onEndConnection?.Invoke(item, outputIndex, true);
                 return;
@@ -1069,7 +1090,8 @@ namespace UI
                     // 连接输入点与输出点。
                     onConnectNodes?.Invoke(item, outputIndex, input, inputIndex);
                 }
-                _currentSelectedKnob.inputKnob?.setSelected(false);
+                if (_currentSelectedKnob.inputKnob)
+                    _currentSelectedKnob.inputKnob.setSelected(false);
                 _currentSelectedKnob = default;
                 onEndConnection?.Invoke(input, inputIndex, false);
                 return;
@@ -1078,11 +1100,13 @@ namespace UI
             {
                 // 没有选择输入点，并且输出点也不是本身。
                 // 选择新的输出点。
-                _currentSelectedKnob.outputKnob?.setSelected(false);
+                if (_currentSelectedKnob.outputKnob)
+                    _currentSelectedKnob.outputKnob.setSelected(false);
                 _currentSelectedKnob.outputNode = item;
                 _currentSelectedKnob.outputIndex = outputIndex;
                 _currentSelectedKnob.outputKnob = output;
-                _currentSelectedKnob.outputKnob?.setSelected(true);
+                if (_currentSelectedKnob.outputKnob)
+                    _currentSelectedKnob.outputKnob.setSelected(true);
                 onStartConnection?.Invoke(item, outputIndex, true);
             }
         }

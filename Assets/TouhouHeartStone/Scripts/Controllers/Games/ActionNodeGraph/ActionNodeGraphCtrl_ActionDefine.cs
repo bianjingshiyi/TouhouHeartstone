@@ -41,6 +41,8 @@ namespace Controllers
             if (deletedPort == null)
                 return;
             disconnectPortAll(deletedPort);
+            if (_connectingPort == deletedPort)
+                resetConnectingPort();
 
             // 连接向上移动。
             movePortConnections(deletedPort, -1);
@@ -56,6 +58,8 @@ namespace Controllers
             if (deletedPort == null)
                 return;
             disconnectPortAll(deletedPort);
+            if (_connectingPort == deletedPort)
+                resetConnectingPort();
             // 连接向上移动。
             movePortConnections(deletedPort, -1);
         }
@@ -70,6 +74,8 @@ namespace Controllers
             if (deletedPort == null)
                 return;
             disconnectPortAll(deletedPort);
+            if (_connectingPort == deletedPort)
+                resetConnectingPort();
             // 连接向上移动。
             movePortConnections(deletedPort, -1);
         }
@@ -84,9 +90,7 @@ namespace Controllers
             //创建动作节点
             await ApplyGraph(_generatedActionDefine.graph);
             //设置参数
-            updateActionDefineEntryNode();
-            //设置返回
-            updateActionDefineReturnNodes();
+            updateActionDefineEntryAndReturnNodes();
             updateContentSize();
         }
         private void updateActionDefineReturnNodes()
@@ -98,6 +102,7 @@ namespace Controllers
 
             var returnNodeItem = getActionNodeItem(returnNode);
             returnNodeItem.setInputs(viewData);
+            updateNodePortModes(returnNode, _connectingPort);
         }
 
         private void updateActionDefineEntryNode()
@@ -109,6 +114,7 @@ namespace Controllers
 
             var entryNodeItem = getActionNodeItem(entryNode);
             entryNodeItem.setOutputs(viewData);
+            updateNodePortModes(entryNode, _connectingPort);
         }
         private PortItemInfo[] getActionDefineEntryNodeOutputViewData(GeneratedActionEntryNode entryNode)
         {

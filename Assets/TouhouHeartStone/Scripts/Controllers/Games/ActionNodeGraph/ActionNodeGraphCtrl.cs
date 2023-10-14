@@ -482,8 +482,7 @@ namespace Controllers
         }
         private void onEndConnection(ActionNodeItem actionNodeItem, int index, bool isOutput)
         {
-            _connectingPort = null;
-            updatePortModes(null);
+            resetConnectingPort();
         }
         /// <summary>
         /// 当用户更改节点的常量值，设置对应的常量。
@@ -855,6 +854,7 @@ namespace Controllers
                     game.langManager.getString(StringTable.EDITOR_NODE_NAME_UNKNOW));
                 actionNodeItem.setInputs(new PortItemInfo[] { new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true) });
                 actionNodeItem.setOutputs(new PortItemInfo[] { new PortItemInfo(string.Empty, game.editor.getColorByType(typeof(ActionNode)), true) });
+                updateNodePortModes(actionNode, _connectingPort);
             }
             _actionNodeItemList.Add(actionNodeItem);
             if (!_actionNodeList.Contains(actionNode))
@@ -1185,6 +1185,11 @@ namespace Controllers
             }
             portItem.setMode(mode);
         }
+        private void resetConnectingPort()
+        {
+            _connectingPort = null;
+            updatePortModes(_connectingPort);
+        }
         #endregion
         #region 节点断开
         /// <summary>
@@ -1435,16 +1440,7 @@ namespace Controllers
             OnEdited();
         }
         #endregion
-        /// <summary>
-        /// 为动作节点分配id，
-        /// </summary>
-        /// <returns></returns>
         #region 节点信息
-        private void updateNode(ActionNodeItem item, Node node)
-        {
-            item.setInputs(getNodeInputViewData(node));
-            item.setOutputs(getNodeOutputViewData(node));
-        }
         private PortDefine[] getNodeConstDefines(Node node)
         {
             if (node is ActiveEntryNode)
@@ -1565,6 +1561,10 @@ namespace Controllers
         }
         private PortItemInfo[] getNodeInputViewData(Node node)
         {
+            if (node is ActiveEntryNode activeEntry)
+            {
+                return getActiveEntryInputViewData(activeEntry);
+            }
             List<PortItemInfo> viewDataList = new List<PortItemInfo>();
             //值输入
             foreach (var inputPort in node.inputPorts)
@@ -1753,7 +1753,15 @@ namespace Controllers
                 var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
                 if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
                 {
+                    if (_connectingPort != null && _connectingPort.define == lastInputDefine)
+                    {
+                        if (!actionNode.inputPorts.Contains(_connectingPort))
+                        {
+                            resetConnectingPort();
+                        }
+                    }
                     inputNodeItem.setInputs(getNodeInputViewData(actionNode));
+                    updateNodePortModes(actionNode, _connectingPort);
                 }
             }
         }
