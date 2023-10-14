@@ -69,7 +69,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 4938810825096147403}
-          m_MethodName: PlaySE
+          m_MethodName: PlaySEClip
           m_Mode: 2
           m_Arguments:
             m_ObjectArgument: {fileID: 8300000, guid: 050743a5f576d70409c269585fb863cb,
@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _time: 0
+  _isLocalMode: 0
   _targetTransform: {fileID: 0}
   _stopDistance: 0
   _startPosition: {x: 0, y: 0, z: 0}
@@ -161,6 +162,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manager: {fileID: 0}
   se_name: 
+  clip: {fileID: 0}
+  playOnEnable: 0
+  _fadeoutTime: 1
 --- !u!1001 &2284271156589612261
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -186,7 +190,7 @@ PrefabInstance:
     - target: {fileID: 1007521763703317052, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4281484870
+      value: 4279838790
       objectReference: {fileID: 0}
     - target: {fileID: 1348821094672071103, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
@@ -226,7 +230,7 @@ PrefabInstance:
     - target: {fileID: 5874181008418908739, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4281484870
+      value: 4279838790
       objectReference: {fileID: 0}
     - target: {fileID: 6291849249439595923, guid: 61200305fab94464b82979faf2e99f54,
         type: 3}
