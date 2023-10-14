@@ -337,6 +337,8 @@ namespace Controllers
 
             _ui.onConnectNodes += onConnectNodes;
             _ui.onUnconnectNodes += onUnconnectNodes;
+            _ui.onClickInputPort += onClickInputPort;
+            _ui.onClickOutputPort += onClickOutputPort;
             _ui.onMoveActionNode += onMoveActionNode;
             _ui.onEndDragActionNode += onEndMoveActionNode;
             _ui.onStartConnection += onStartConnection;
@@ -425,6 +427,102 @@ namespace Controllers
             disconnectPorts(outputPort, inputPort);
             _recordList.addBreakpoint();
             OnEdited();
+        }
+        private void onClickInputPort(ActionNodeItem item, int inputIndex)
+        {
+            var node = getActionNode(item);
+            var inputPort = node.getInputPortAt(inputIndex);
+            if (inputPort == null)
+                return;
+            if (_connectingPort == inputPort)
+            {
+                // 点击的输入点是本身。
+                // 取消选择。
+                _ui.selectPort(null);
+                resetConnectingPort();
+                return;
+            }
+            else if (_connectingPort != null && _connectingPort.isOutput)
+            {
+                // 选择的输出点存在。
+                var outputPort = _connectingPort;
+                bool connected = node.graph.isConnected(inputPort, _connectingPort);
+
+                if (connected)
+                {
+                    // 已经连接，断开连接。
+                    disconnectPorts(outputPort, inputPort);
+                }
+                else
+                {
+                    // 连接输入点与输出点。
+                    if (validatePortConnection(outputPort, inputPort, true))
+                    {
+                        connectPorts(outputPort, inputPort);
+                    }
+                }
+                _recordList.addBreakpoint();
+                OnEdited();
+                _ui.selectPort(null);
+                resetConnectingPort();
+                return;
+            }
+            else
+            {
+                // 点击的输入点不是本身，并且当前选择的输出点不存在。
+                // 选择新的输入点。
+                _ui.selectPort(item.getInput(inputIndex));
+                _connectingPort = inputPort;
+                updatePortModes(inputPort);
+            }
+        }
+        private void onClickOutputPort(ActionNodeItem item, int outputIndex)
+        {
+            var node = getActionNode(item);
+            var outputPort = node.getOutputPortAt(outputIndex);
+            if (outputPort == null)
+                return;
+            if (_connectingPort == outputPort)
+            {
+                // 点击的输入点是本身。
+                // 取消选择。
+                _ui.selectPort(null);
+                resetConnectingPort();
+                return;
+            }
+            else if (_connectingPort != null && !_connectingPort.isOutput)
+            {
+                // 选择的输出点存在。
+                var inputPort = _connectingPort;
+                bool connected = node.graph.isConnected(outputPort, _connectingPort);
+
+                if (connected)
+                {
+                    // 已经连接，断开连接。
+                    disconnectPorts(outputPort, inputPort);
+                }
+                else
+                {
+                    // 连接输入点与输出点。
+                    if (validatePortConnection(outputPort, inputPort, true))
+                    {
+                        connectPorts(outputPort, inputPort);
+                    }
+                }
+                _recordList.addBreakpoint();
+                OnEdited();
+                _ui.selectPort(null);
+                resetConnectingPort();
+                return;
+            }
+            else
+            {
+                // 点击的输入点不是本身，并且当前选择的输出点不存在。
+                // 选择新的输入点。
+                _ui.selectPort(item.getOutput(outputIndex));
+                _connectingPort = outputPort;
+                updatePortModes(outputPort);
+            }
         }
         private void onMoveActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
@@ -1260,9 +1358,11 @@ namespace Controllers
         private void disconnect(NodeConnection connection, bool addOperation = true)
         {
             //更新ui
-            graph.disconnect(connection);
-            var outputPort = connection.source;
             var inputPort = connection.destination;
+            var outputPort = connection.source;
+            var inputIndex = inputPort?.GetPortIndex() ?? -1;
+            var outputIndex = outputPort?.GetPortIndex() ?? -1;
+            graph.disconnect(connection);
             ActionNodeItem outputNodeItem = null;
             ActionNodeItem inputNodeItem = null;
 
@@ -1282,7 +1382,7 @@ namespace Controllers
 
             if (outputPort != null && inputPort != null)
             {
-                _ui.unconnectNode(outputNodeItem, outputPort.GetPortIndex(), inputNodeItem, inputPort.GetPortIndex());
+                _ui.unconnectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex);
                 if (addOperation)
                 {
                     int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;

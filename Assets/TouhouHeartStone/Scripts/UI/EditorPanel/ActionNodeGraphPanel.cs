@@ -341,7 +341,7 @@ namespace UI
         public void resetView()
         {
             _hintMessageText.gameObject.SetActive(false);
-            _currentSelectedKnob = default;
+            selectPort(null);
             _content.localPosition = Vector3.zero;
             _content.localScale = Vector3.one;
             _selectFrameTrans.gameObject.SetActive(false);
@@ -566,6 +566,14 @@ namespace UI
         public bool isFocused()
         {
             return EventSystem.current.currentSelectedGameObject == gameObject;
+        }
+        public void selectPort(ActionNodeItemKnob port)
+        {
+            if (_currentSelectedPort)
+                _currentSelectedPort.setSelected(false);
+            _currentSelectedPort = port;
+            if (_currentSelectedPort)
+                _currentSelectedPort.setSelected(true);
         }
         #endregion
         #region 私有方法
@@ -888,7 +896,7 @@ namespace UI
             onEndConnection?.Invoke(item, inputIndex, false);
         }
         /// <summary>
-        /// 点击输入接口，如果是原本的接口则取消选择，如果在另外一个接口上则触发事件
+        /// 点击输入接口
         /// </summary>
         /// <param name="item"></param>
         /// <param name="input"></param>
@@ -896,53 +904,8 @@ namespace UI
         private void onClickInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
             setFocused();
-            int inputIndex = item.indexOfInput(input);
-            if (_currentSelectedKnob.inputNode == item && _currentSelectedKnob.inputIndex == inputIndex)
-            {
-                // 点击的输入点是本身。
-                // 取消选择。
-                if (input)
-                    input.setSelected(false);
-                _currentSelectedKnob = default;
-                onEndConnection?.Invoke(item, inputIndex, false);
-                return;
-            }
-            else if (_currentSelectedKnob.outputNode != null && _currentSelectedKnob.outputIndex >= 0)
-            {
-                // 选择的输出点存在。
-                var output = _currentSelectedKnob.outputNode;
-                var outputIndex = _currentSelectedKnob.outputIndex;
-                bool connected = _connectionList.Any(c => c.inputNode == item && c.inputIndex == inputIndex && c.outputNode == output && c.outputIndex == outputIndex);
-
-                if (connected)
-                {
-                    // 已经连接，断开连接。
-                    onUnconnectNodes?.Invoke(output, outputIndex, item, inputIndex);
-                }
-                else
-                {
-                    // 连接输入点与输出点。
-                    onConnectNodes?.Invoke(output, outputIndex, item, inputIndex);
-                }
-                if (_currentSelectedKnob.outputKnob)
-                    _currentSelectedKnob.outputKnob.setSelected(false);
-                _currentSelectedKnob = default;
-                onEndConnection?.Invoke(output, outputIndex, true);
-                return;
-            }
-            else
-            {
-                // 点击的输入点不是本身，并且当前选择的输出点不存在。
-                // 选择新的输入点。
-                if (_currentSelectedKnob.inputKnob)
-                    _currentSelectedKnob.inputKnob.setSelected(false);
-                _currentSelectedKnob.inputNode = item;
-                _currentSelectedKnob.inputIndex = inputIndex;
-                _currentSelectedKnob.inputKnob = input;
-                if (_currentSelectedKnob.inputKnob)
-                    _currentSelectedKnob.inputKnob.setSelected(true);
-                onStartConnection?.Invoke(item, inputIndex, false);
-            }
+            var index = item.indexOfInput(input);
+            onClickInputPort?.Invoke(item, index);
         }
         /// <summary>
         /// 开始拖拽输入接口，创建一根跟着鼠标移动的连线
@@ -1054,61 +1017,16 @@ namespace UI
 
         }
         /// <summary>
-        /// 点击输出接口，如果是原本的接口则取消选择，如果在另外一个接口上则触发事件
+        /// 点击输出接口
         /// </summary>
         /// <param name="item"></param>
-        /// <param name="input"></param>
+        /// <param name="output"></param>
         /// <param name="eventData"></param>
         private void onClickOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
             setFocused();
-            int outputIndex = item.indexOfOutput(output);
-            if (_currentSelectedKnob.outputNode == item && _currentSelectedKnob.outputIndex == outputIndex)
-            {
-                // 点击的输出点是本身。
-                // 取消选择。
-                if (output)
-                    output.setSelected(false);
-                _currentSelectedKnob = default;
-                onEndConnection?.Invoke(item, outputIndex, true);
-                return;
-            }
-            else if (_currentSelectedKnob.inputNode != null && _currentSelectedKnob.inputIndex >= 0)
-            {
-                // 选择的输入点存在。
-                var input = _currentSelectedKnob.inputNode;
-                var inputIndex = _currentSelectedKnob.inputIndex;
-                bool connected = _connectionList.Any(c => c.inputNode == input && c.inputIndex == inputIndex && c.outputNode == item && c.outputIndex == item.indexOfOutput(output));
-
-                if (connected)
-                {
-                    // 已经连接，断开连接。
-                    onUnconnectNodes?.Invoke(item, outputIndex, input, inputIndex);
-                }
-                else
-                {
-                    // 连接输入点与输出点。
-                    onConnectNodes?.Invoke(item, outputIndex, input, inputIndex);
-                }
-                if (_currentSelectedKnob.inputKnob)
-                    _currentSelectedKnob.inputKnob.setSelected(false);
-                _currentSelectedKnob = default;
-                onEndConnection?.Invoke(input, inputIndex, false);
-                return;
-            }
-            else
-            {
-                // 没有选择输入点，并且输出点也不是本身。
-                // 选择新的输出点。
-                if (_currentSelectedKnob.outputKnob)
-                    _currentSelectedKnob.outputKnob.setSelected(false);
-                _currentSelectedKnob.outputNode = item;
-                _currentSelectedKnob.outputIndex = outputIndex;
-                _currentSelectedKnob.outputKnob = output;
-                if (_currentSelectedKnob.outputKnob)
-                    _currentSelectedKnob.outputKnob.setSelected(true);
-                onStartConnection?.Invoke(item, outputIndex, true);
-            }
+            var index = item.indexOfOutput(output);
+            onClickOutputPort?.Invoke(item, index);
         }
         private void onPointerDownActionNodeItem(ActionNodeItem item, PointerEventData eventData)
         {
@@ -1460,10 +1378,6 @@ namespace UI
         /// </summary>
         public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemEditButton;
         /// <summary>
-        /// 当触发器节点的事件名称改变，参数为更改后的事件名称的索引ID
-        /// </summary>
-        public event Action<ActionNodeItem, int> onTriggerEventTypeChanged;
-        /// <summary>
         /// 当点击触发器节点的添加目标按钮
         /// </summary>
         public event Action<ActionNodeItem> onClickAddTargetCheckerButton;
@@ -1497,6 +1411,14 @@ namespace UI
         public event Action<ActionNodeItem> onNodeDeselected;
         public event Action<ActionNodeItem> onNodeVisualEffectButtonClicked;
 
+        /// <summary>
+        /// 当点击一个节点的输入端口。
+        /// </summary>
+        public event Action<ActionNodeItem, int> onClickInputPort;
+        /// <summary>
+        /// 当点击一个节点的输出端口。
+        /// </summary>
+        public event Action<ActionNodeItem, int> onClickOutputPort;
 
         #region 效果属性
         /// <summary>
@@ -1609,7 +1531,7 @@ namespace UI
         private Touch _perviousTouch1;
         private Touch _perviousTouch2;
         private bool _isTouchZooming;
-        private ActionNodeSelectedKnob _currentSelectedKnob;
+        private ActionNodeItemKnob _currentSelectedPort;
         /// <summary>
         /// 因为拖拽而被隐藏的连接。
         /// </summary>
@@ -1687,15 +1609,6 @@ namespace UI
         public int inputIndex;
         public ActionNodeGraphLine line;
         //public ActionNodeGraphLine line;        
-    }
-    struct ActionNodeSelectedKnob
-    {
-        public ActionNodeItem outputNode;
-        public ActionNodeItemOutput outputKnob;
-        public int outputIndex;
-        public ActionNodeItem inputNode;
-        public ActionNodeItemInput inputKnob;
-        public int inputIndex;
     }
     public enum ActionNodeValueType
     {
