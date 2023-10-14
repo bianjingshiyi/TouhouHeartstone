@@ -134,6 +134,7 @@ MonoBehaviour:
   se_name: 
   clip: {fileID: 0}
   playOnEnable: 0
+  _fadeoutTime: 1
 --- !u!1001 &8570138213661046783
 PrefabInstance:
   m_ObjectHideFlags: 0

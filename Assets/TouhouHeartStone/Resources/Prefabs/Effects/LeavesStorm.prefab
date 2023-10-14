@@ -4684,7 +4684,7 @@ GameObject:
   - component: {fileID: 198970281552381866}
   - component: {fileID: 199700827953838332}
   m_Layer: 1
-  m_Name: Leaves shield
+  m_Name: LeavesStorm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18670,7 +18670,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_RenderMode: 0
   m_SortMode: 1
   m_MinParticleSize: 0
