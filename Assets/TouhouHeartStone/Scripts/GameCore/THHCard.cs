@@ -969,6 +969,15 @@ namespace TouhouHeartstone
                 await card.removeKeywords(game, removeKeywords.ToArray());
             }
         }
+        /// <summary>
+        /// 清除卡牌的可消耗关键字，如隐匿、护盾。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        public static async Task clearConsumableKeywords(this Card card, IGame game)
+        {
+            await card.removeKeywords(game, KEYWORD.HAS_SHIELD, KEYWORD.HAS_STEALTH, KEYWORD.IS_FROZEN);
+        }
         [TranslateMsg]
         const string NOT_YOUR_TURN = "这不是你的回合";
 
@@ -1208,6 +1217,23 @@ namespace TouhouHeartstone
         }
 
         /// <summary>
+        /// 重置“战场专用属性”。
+        /// </summary>
+        /// <param name="card"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public static async Task resetBattlefieldProps(this Card card, CardEngine game)
+        {
+            await card.setDead(game, false);
+            await card.setAttackTimes(game, 0);
+            await card.setReady(game, false);
+            await card.setCurrentLife(game, card.getLife(game));
+            await card.setArmor(game, 0);
+            await card.setUsed(game, false);
+            await card.setProp(game, CARD.SILENCE, false);
+            await card.clearConsumableKeywords(game);
+        }
+        /// <summary>
         /// 重置卡牌
         /// </summary>
         /// <param name="card"></param>
@@ -1219,22 +1245,13 @@ namespace TouhouHeartstone
             await card.removeBuff(game, card.getBuffs());
             await card.setSpellDamage(game, define.getSpellDamage());
             await card.setDamageReduce(game, define.getDamageReduce());
-            await card.setDead(game, false);
-            await card.setCurrentLife(game, define.getLife());
-            // await card.setCost(game, servant.cost);
             await card.setKeywords(game, define.getKeywords());
             await card.setTags(game, define.getTags());
-            await card.setReady(game, false);
-            await card.setAttackTimes(game, 0);
-            await card.setProp(game, CARD.SILENCE, false);
             await card.setChargeLevel(game, 0);
-            if (card.isServant() && card.pile.name == PILE.FIELD)
+            await card.resetBattlefieldProps(game);
+            if (card.pile.isGeneralizedBattlefield())
             {
                 await card.InitConsumableKeywords(game);
-            }
-            if (card.isSkill())
-            {
-                await card.setUsed(game, false);
             }
         }
         public static async Task resetCard(this IEnumerable<Card> cards, CardEngine game)

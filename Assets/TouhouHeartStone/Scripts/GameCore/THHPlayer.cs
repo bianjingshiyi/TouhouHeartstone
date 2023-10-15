@@ -272,13 +272,10 @@ namespace TouhouHeartstone
                 from = arg.from;
                 var card = arg.card;
 
-                await card.setDead(game, false);
-                await card.setCurrentLife(game, card.getLife(game));
                 if (from != null)
                     await from.moveTo(game, card, player[PILE.ITEM]);
                 else
                     await player[PILE.ITEM].insert(game, card, 0);
-				await item.InitConsumableKeywords(game);
                 if (from != null)
                     game.logger.logTrace(player + "从" + arg.from + "装备了" + arg.card);
                 else
@@ -467,14 +464,10 @@ namespace TouhouHeartstone
                 else
                     game.logger.logTrace(player + "将" + arg.card + "置入战场，位于" + arg.position);
                 //设置随从状态
-                await card.setDead(game, false);
-                await card.setCurrentLife(game, card.getLife(game));
-                await card.setReady(game, false);
                 if (from != null)
                     await from.moveTo(game, arg.card, player.getField(), arg.position);//从某pile召唤随从
                 else
                     await player.getField().insert(game, card, position);//虚空生成随从
-                await card.InitConsumableKeywords(game);
                 arg.attack = card.getAttack(game);
                 arg.life = card.getLife(game);
             }

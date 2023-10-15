@@ -56,12 +56,12 @@ namespace TouhouHeartstone
                 await moveTo(game, card, pile, targetPile, position);
             }
         }
-        public static Task moveTo(IGame game, Card card, Pile from, Pile to, int position)
+        public static async Task moveTo(IGame game, Card card, Pile from, Pile to, int position)
         {
             var eventArg = new MoveCardEventArg(from, to, card, position);
             if (game != null)
             {
-                Task func(MoveCardEventArg arg)
+                async Task func(MoveCardEventArg arg)
                 {
                     var argFrom = arg.from;
                     var argTo = arg.to;
@@ -70,23 +70,21 @@ namespace TouhouHeartstone
 
                     var success = Pile.moveCard(game, argCard, argFrom, argTo, argPosition, arg);
                     arg.success = success;
-                    if (success && arg.resetProps)
+                    if (success)
                     {
-                        resetCardMoveProps(game, card, from, to);
+                        await tryResetCardPropsAfterMove(game, arg.resetProps, card, from, to);
                     }
-                    return Task.CompletedTask;
                 }
-                return game.triggers.doEvent(eventArg, func);
+                await game.triggers.doEvent(eventArg, func);
             }
             else
             {
                 var success = Pile.moveCard(card, from, to, position, eventArg);
                 eventArg.success = success;
-                if (success && eventArg.resetProps)
+                if (success)
                 {
-                    resetCardMoveProps(game, card, from, to);
+                    await tryResetCardPropsAfterMove(game, eventArg.resetProps, card, from, to);
                 }
-                return Task.CompletedTask;
             }
         }
         public static async Task replace(this Pile pile, IGame game, Card origin, Card target)
@@ -112,6 +110,26 @@ namespace TouhouHeartstone
                 await pile.replace(engine, originalCards[i], replaced[i]);
             }
             return replaced;
+        }
+        /// <summary>
+        /// 牌堆是否是“广义战场”。
+        /// “广义战场”包括战场、英雄、延迟区、技能、道具和暂存区。
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        public static bool isGeneralizedBattlefield(this Pile pile)
+        {
+            switch (pile?.name)
+            {
+                case PILE.FIELD:
+                case PILE.MASTER:
+                case PILE.HEAD:
+                case PILE.SKILL:
+                case PILE.ITEM:
+                case PILE.WARP:
+                    return true;
+            }
+            return false;
         }
         private static int getPilePropResetPriority(this Pile pile)
         {
@@ -141,11 +159,61 @@ namespace TouhouHeartstone
                 return false;
             return fromPriority > toPriority;
         }
-        private static Task resetCardMoveProps(IGame game, Card card, Pile from, Pile to)
+        /// <summary>
+        /// 在卡牌从牌堆间移动成功后，尝试重置卡牌的属性。
+        /// </summary>
+        /// <param name="game">游戏实例。</param>
+        /// <param name="resetPropsForPriorities">是否会在牌堆逆向移动时重置所有属性？</param>
+        /// <param name="card">卡牌。</param>
+        /// <param name="from">移动源牌堆。</param>
+        /// <param name="to">移动目标牌堆。</param>
+        /// <returns></returns>
+        private static async Task tryResetCardPropsAfterMove(IGame game, bool resetPropsForPriorities, Card card, Pile from, Pile to)
+        {
+            bool shouldCheckBattlefieldProps = true;
+            if (resetPropsForPriorities)
+            {
+                bool reseted = await resetCardMoveProps(game, card, from, to);
+                if (reseted)
+                {
+                    shouldCheckBattlefieldProps = false;
+                }
+            }
+            if (shouldCheckBattlefieldProps)
+            {
+                await checkBattlefieldProps(game as CardEngine, card, from, to);
+            }
+        }
+        private static async Task<bool> resetCardMoveProps(IGame game, Card card, Pile from, Pile to)
         {
             if (!shouldCardMoveResetCardProp(from, to))
-                return Task.CompletedTask;
-            return card.resetCard(game as CardEngine);
+                return false;
+            await card.resetCard(game as CardEngine);
+            return true;
+        }
+        /// <summary>
+        /// 检查卡牌的“战场专有属性”是否需要被重置。
+        /// “战场专有属性”只会在“广义战场”内移动时不会被重置。
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="card"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        private static async Task checkBattlefieldProps(CardEngine game, Card card, Pile from, Pile to)
+        {
+            bool fromField = from.isGeneralizedBattlefield();
+            bool toField = to.isGeneralizedBattlefield();
+            if (fromField && toField) // 广义战场区域内移动。
+                return;
+            // 从广义战场移动到其他牌堆，或者从其他牌堆移动到广义战场。
+            // 重置战场属性。
+            await card.resetBattlefieldProps(game);
+            // 进入战场后才会初始化一次性关键词。
+            if (toField)
+            {
+                await card.InitConsumableKeywords(game);
+            }
         }
         public class MoveCardEventArg : EventArg
         {
