@@ -182,10 +182,14 @@ namespace Game.BattleTable
         public async void setMaster(Master master, CardDescriptor desc)
         {
             master.setLife(desc.getCurrentLife());
+            var lifeColor = desc.getCurrentLife() < desc.getLife() ? PropertyNumberColor.Red : desc.getLife() > desc.define.getLife() ? PropertyNumberColor.Green : PropertyNumberColor.White;
+            master.setAttackColor(lifeColor);
 
             var attack = getMasterAttack(desc);
             master.setAttackDisplay(attack > 0);
-            master.setAttack(attack);
+            master.setAttack(attack); 
+            var atkColor = desc.getAttack() > desc.define.getAttack() + getMasterItemAttack(desc) ? PropertyNumberColor.Green : PropertyNumberColor.White;
+            master.setAttackColor(atkColor);
 
             var armor = desc.getArmor();
             master.setArmorDisplay(armor > 0);
@@ -552,6 +556,11 @@ namespace Game.BattleTable
         {
             servant.setAttack(desc.getAttack());
             servant.setLife(desc.getCurrentLife());
+            var atkColor = desc.getAttack() > desc.define.getAttack() ? PropertyNumberColor.Green : PropertyNumberColor.White; 
+            var lifeColor = desc.getCurrentLife() < desc.getLife() ? PropertyNumberColor.Red : desc.getLife() > desc.define.getLife() ? PropertyNumberColor.Green : PropertyNumberColor.White;
+            servant.attackNumber.setTextColor(atkColor);
+            servant.lifeNumber.setTextColor(lifeColor);
+
             servant.setTaunt(desc.isTaunt);
             servant.setShield(desc.hasShield);
             servant.setStealth(desc.isStealth);
