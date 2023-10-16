@@ -16,6 +16,18 @@ namespace UI
         {
             gameObject.SetActive(false);
         }
+        public virtual void markUnsaved()
+        {
+            hasUnsavedChanges = true;
+            if (displayInfo != null)
+                displayInfo.unsaved = true;
+        }
+        public virtual void clearUnsaved()
+        {
+            hasUnsavedChanges = false;
+            if (displayInfo != null)
+                displayInfo.unsaved = false;
+        }
         #region 事件回调
         #endregion
         #region 效果
@@ -47,6 +59,8 @@ namespace UI
             return game.lang._(CARD_EFFECT_DEFAULT_NAME_TEMPLATE, names?[index] ?? CARD_EFFECT_DEFAULT_NAME, num);
         }
         #endregion
+        public bool hasUnsavedChanges { get; protected set; }
+        public CardPoolDisplayInfo displayInfo { get; protected set; }
         [TranslateMsg("效果默认名称")]
         public const string CARD_EFFECT_DEFAULT_NAME = "效果";
         [TranslateMsg("效果默认名称的模板（{0}为效果名，{1}为效果序号）")]
@@ -59,5 +73,6 @@ namespace UI
         public long cardPoolId;
         public object displayObj;
         public object[] skins;
+        public bool unsaved;
     }
 }

@@ -92,8 +92,9 @@ namespace Controllers
         /// <param name="displayInfo"></param>
         public async Task openEditorPanel(CardPoolDisplayInfo displayInfo)
         {
+            if (_currentEditor)
+                _currentEditor.hide();
             _ui.gameObject.SetActive(false);
-            _currentEditor?.hide();
             _currentEditor = await displayPanel(displayInfo);
             _stack.Push(displayInfo);
         }

@@ -91,16 +91,20 @@ namespace Controllers
 
             _graphEditorPanelCtrl.display(_cardPoolId);
         }
-        public override Task display(CardPoolDisplayInfo info)
+        public override async Task display(CardPoolDisplayInfo info)
         {
             if (info == null)
-                return Task.CompletedTask;
+                return;
+            displayInfo = info;
             if (info.displayObj is CardDefine cardDefine)
             {
                 var skins = info.skins as CardSkinData[] ?? Array.Empty<CardSkinData>();
-                return display(info.cardPoolId, cardDefine, skins);
+                await display(info.cardPoolId, cardDefine, skins);
+                if (info.unsaved)
+                    markUnsaved();
+                else
+                    clearUnsaved();
             }
-            return Task.CompletedTask;
         }
         public override void hide()
         {
@@ -234,11 +238,11 @@ namespace Controllers
         #region 事件回调
         private void onGraphEdited()
         {
-            MarkCardUnsaved();
+            markUnsaved();
         }
         private async void onChangeSkin(int skinIndex)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             if (skinIndex == getSkinCount())
             {
                 //新建皮肤
@@ -250,7 +254,7 @@ namespace Controllers
         }
         private async void onChangeSkinName(string skinName)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             var skinGroup = getCurrentCardSkins().GroupBy(c => c.skinId).ToList();
             int index = skinGroup.FindIndex(g => g.Key == _curCardSkin.skinId);
             var curSkinGroup = skinGroup[index];
@@ -263,7 +267,7 @@ namespace Controllers
         }
         private async void onDeleteSkin()
         {
-            MarkCardUnsaved();
+            markUnsaved();
             var skinGroup = getCurrentCardSkins().GroupBy(c => c.skinId).ToList();
             if (skinGroup.Count < 2)
             {
@@ -281,7 +285,7 @@ namespace Controllers
             var targetSkin = skinGroup.FirstOrDefault(s => s.language == language);
             if (targetSkin == null)
             {
-                MarkCardUnsaved();
+                markUnsaved();
                 //不存在对应语言的皮肤，新建一个
                 targetSkin = game.card.createSkinForDiffLanguage(_cardPoolId, _curCardSkin, language);
                 _cardSkins.Add(targetSkin);
@@ -301,19 +305,19 @@ namespace Controllers
         /// <param name="typeIndex"></param>
         private void onChangeType(int typeIndex)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             _cardDefine.type = _types[typeIndex];
             _ui.setType(typeIndex, _types[typeIndex]);
             _textChangedByType();
         }
         private void onIsTokenToggleValueChanged(bool value)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             _cardDefine.setIsToken(value);
         }
         private void onChangeCharacter(int characterIndex)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             if (characterIndex < 1)
             {
                 _cardDefine.setCharacterRef(DefineReference.Empty);
@@ -333,7 +337,7 @@ namespace Controllers
         {
             if (int.TryParse(cost, out int value))
             {
-                MarkCardUnsaved();
+                markUnsaved();
                 _cardDefine.setProp(DEFINE.COST, value);
                 _ui.setCost(cost);
             }
@@ -344,7 +348,7 @@ namespace Controllers
         /// <param name="name"></param>
         void onChangeName(string name)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             _curCardSkin.name = name;
             _ui.setName(name);
             _textChangedByType();
@@ -355,7 +359,7 @@ namespace Controllers
         /// <param name="subName"></param>
         void onChangeSubName(string subName)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             _curCardSkin.subname = subName;
             _ui.setSubName(subName);
 
@@ -368,7 +372,7 @@ namespace Controllers
             Sprite sprite = await game.card.selectExternalImage();
             if (sprite != null)
             {
-                MarkCardUnsaved();
+                markUnsaved();
                 _curCardSkin.imagePath = game.card.getSpritePath(sprite);
             }
             return sprite;
@@ -379,7 +383,7 @@ namespace Controllers
         /// <param name="desc"></param>
         void onChangeDesc(string desc)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             _curCardSkin.desc = desc;
             _ui.setDesc(desc);
         }
@@ -391,7 +395,7 @@ namespace Controllers
         {
             if (int.TryParse(attack, out int value))
             {
-                MarkCardUnsaved();
+                markUnsaved();
                 _cardDefine.setProp(DEFINE.ATTACK, value);
                 _ui.setAttack(attack);
             }
@@ -404,7 +408,7 @@ namespace Controllers
         {
             if (int.TryParse(life, out int value))
             {
-                MarkCardUnsaved();
+                markUnsaved();
                 _cardDefine.setProp(DEFINE.LIFE, value);
                 _ui.setLife(life);
             }
@@ -414,7 +418,7 @@ namespace Controllers
         /// </summary>
         private void onChangeRace(int index)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             string[] value = _cardDefine.getTags();
             if (value == null || value.Length < 1)
             {
@@ -437,7 +441,7 @@ namespace Controllers
 
         private void onChangeTag(string text)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             var tags = text.Split(',', ' ', '，');
             tags = tags.Where(s => !string.IsNullOrEmpty(s)).ToArray();
             _cardDefine.setTags(tags);
@@ -457,7 +461,7 @@ namespace Controllers
         #region Effects
         private void onCreateEffect(GeneratedEffect effect)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
             effect.name = getEffectDefaultName(effect, effects.Count() + 1);
             var effectArray = effects.Append(effect).ToArray();
@@ -491,7 +495,7 @@ namespace Controllers
         }
         private void onClickRemoveEffectButton(int index)
         {
-            MarkCardUnsaved();
+            markUnsaved();
             var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
             var removedEffect = effects.ElementAt(index);
             GeneratedEffect[] newEffects = effects.Where(e => e != removedEffect).ToArray();
@@ -537,7 +541,7 @@ namespace Controllers
                    //返回上个界面
                    await scene.editor.closeEditorPanel();
                    scene.editor.hasUnsavedChanges = true;
-                   ClearCardUnsaved();
+                   clearUnsaved();
                });
         }
         private void onClickSaveButton()
@@ -621,7 +625,7 @@ namespace Controllers
             switch (_cardSelectTarget)
             {
                 case CardSelectTarget.Skill:
-                    MarkCardUnsaved();
+                    markUnsaved();
                     await setSkillRef(cardDefine.getDefineRef());
                     break;
                 case CardSelectTarget.Property:
@@ -648,7 +652,7 @@ namespace Controllers
                     _curCardSeekingPropName = null;
                     _curCardSeekingPropIndex = -1;
                     _curCardSeekingPropIsCustom = false;
-                    MarkCardUnsaved();
+                    markUnsaved();
                     break;
             }
             _ui.displayCardSelectPanel(false);
@@ -675,7 +679,7 @@ namespace Controllers
             }
             setCardProp(true, item.propertyName, item.value);
 
-            MarkCardUnsaved();
+            markUnsaved();
             updateCustomProperties();
             _ui.displayCustomPropertyDialog(false);
         }
@@ -685,7 +689,7 @@ namespace Controllers
             if (prop is Array array)
             {
                 array.SetValue(value, index);
-                MarkCardUnsaved();
+                markUnsaved();
                 updatePropertyItem(isCustom, name);
             }
         }
@@ -723,7 +727,7 @@ namespace Controllers
             {
                 prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
                 _cardDefine.setProp(name, prop);
-                MarkCardUnsaved();
+                markUnsaved();
                 updatePropertyItem(isCustom, name);
             }
         }
@@ -745,7 +749,7 @@ namespace Controllers
                 newArray.SetValue(getDefaultValue(key, false), newArray.Length - 1);
             }
             setCardProp(isCustom, name, newArray);
-            MarkCardUnsaved();
+            markUnsaved();
             updatePropertyItem(isCustom, name);
         }
 
@@ -768,7 +772,7 @@ namespace Controllers
                 newIndex++;
             }
             setCardProp(isCustom, name, newArray);
-            MarkCardUnsaved();
+            markUnsaved();
             updatePropertyItem(isCustom, name);
         }
         private void onPropertyValueChangedCallback(bool isCustom, string name, object value)
@@ -782,7 +786,7 @@ namespace Controllers
             {
                 setCardProp(isCustom, name, value);
             }
-            MarkCardUnsaved();
+            markUnsaved();
             updatePropertyItem(isCustom, name);
         }
         private void onClickPropertyButtonCallback(bool isCustom, string name)
@@ -814,14 +818,14 @@ namespace Controllers
             void setPropAction(CardDefine cardDefine)
             {
                 _cardDefine.setProp(name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
-                MarkCardUnsaved();
+                markUnsaved();
                 updatePropertyItem(isCustom, name);
             }
         }
         private void onDeleteCustomPropertyCallback(string name)
         {
             _cardDefine.removeProp(name);
-            MarkCardUnsaved();
+            markUnsaved();
             updateCustomProperties();
         }
 
@@ -857,13 +861,13 @@ namespace Controllers
                 var define = defines[index];
                 animRef.animRef = new DefineReference(define.cardPoolId, define.id);
             }
-            MarkCardUnsaved();
+            markUnsaved();
         }
         private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
         {
             var animRef = getOrInitNodeAnimationRef(node);
             info.update(animRef);
-            MarkCardUnsaved();
+            markUnsaved();
         }
         #endregion
 
@@ -959,8 +963,8 @@ namespace Controllers
         /// </summary>
         private async void exit()
         {
+            clearUnsaved();
             await scene.editor.closeEditorPanel();
-            ClearCardUnsaved();
         }
         #endregion
 
@@ -1054,16 +1058,16 @@ namespace Controllers
             }
 
             scene.editor.hasUnsavedChanges = true;
-            ClearCardUnsaved();
+            clearUnsaved();
         }
-        public void MarkCardUnsaved()
+        public override void markUnsaved()
         {
-            hasUnsavedChanges = true;
+            base.markUnsaved();
             _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
         }
-        public void ClearCardUnsaved()
+        public override void clearUnsaved()
         {
-            hasUnsavedChanges = false;
+            base.clearUnsaved();
             _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(CARD_EDITOR_TITLE)));
         }
 
@@ -1284,7 +1288,6 @@ namespace Controllers
         public const string ANIM_REF_KEY_EMPTY = "请输入特效引用名！";
 
         private CardSelectTarget _cardSelectTarget;
-        public bool hasUnsavedChanges { get; private set; }
 
         private static readonly Dictionary<string, (string displayName, Type type)> keywordInfos = new Dictionary<string, (string displayName, Type type)>
         {

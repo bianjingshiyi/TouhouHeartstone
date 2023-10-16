@@ -35,22 +35,28 @@ namespace Controllers
             updateProperties();
             _graphEditorPanelCtrl.display(_cardPoolId);
         }
-        public override Task display(CardPoolDisplayInfo info)
+        public override async Task display(CardPoolDisplayInfo info)
         {
             if (info == null)
-                return Task.CompletedTask;
+                return;
+            displayInfo = info;
             if (info.displayObj is GeneratedActionDefine actionDefine)
-                return display(info.cardPoolId, actionDefine);
-            return Task.CompletedTask;
+            {
+                await display(info.cardPoolId, actionDefine);
+                if (info.unsaved)
+                    markUnsaved();
+                else
+                    clearUnsaved();
+            }
         }
-        public void markActionUnsaved()
+        public override void markUnsaved()
         {
-            hasUnsavedChanges = true;
+            base.markUnsaved();
             _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(ACTION_EDITOR_TITLE)));
         }
-        public void clearActionUnsaved()
+        public override void clearUnsaved()
         {
-            hasUnsavedChanges = false;
+            base.clearUnsaved();
             _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(ACTION_EDITOR_TITLE)));
         }
         #endregion
@@ -84,7 +90,7 @@ namespace Controllers
         #region 事件回调
         private void onGraphEdited()
         {
-            markActionUnsaved();
+            markUnsaved();
         }
         /// <summary>
         /// 当用户更改动作分类
@@ -94,7 +100,7 @@ namespace Controllers
         {
             _actionDefine.setCategory(category);
             _ui.setCategory(category);
-            markActionUnsaved();
+            markUnsaved();
         }
         private void onCreatePortDefine(ActionPortDefineItem item)
         {
@@ -156,7 +162,7 @@ namespace Controllers
                     break;
             }
             _ui.hideCreatePortDefineDialog();
-            markActionUnsaved();
+            markUnsaved();
         }
         private void onClickDeleteActionButton()
         {
@@ -171,7 +177,7 @@ namespace Controllers
                    //返回上个界面
                    await scene.editor.closeEditorPanel();
                    scene.editor.hasUnsavedChanges = true;
-                   clearActionUnsaved();
+                   clearUnsaved();
                });
         }
         private void onClickSaveButton()
@@ -245,7 +251,7 @@ namespace Controllers
             _actionNodeGraphCtrl.onDeleteActionDefineInputPort(portDefine.name);
             _actionDefine.removeInput(portDefine);
             updateInputs();
-            markActionUnsaved();
+            markUnsaved();
         }
         #endregion
 
@@ -262,7 +268,7 @@ namespace Controllers
             _actionNodeGraphCtrl.onDeleteActionDefineConstPort(constDefine.name);
             _actionDefine.removeConst(constDefine);
             updateConsts();
-            markActionUnsaved();
+            markUnsaved();
         }
         #endregion
 
@@ -280,7 +286,7 @@ namespace Controllers
             _actionNodeGraphCtrl.onDeleteActionDefineOutputPort(portDefine.name);
             _actionDefine.removeOutput(portDefine);
             updateOutputs();
-            markActionUnsaved();
+            markUnsaved();
         }
         #endregion
 
@@ -294,7 +300,7 @@ namespace Controllers
         private async void exit()
         {
             await scene.editor.closeEditorPanel();
-            clearActionUnsaved();
+            clearUnsaved();
         }
         private void saveAction()
         {
@@ -305,7 +311,7 @@ namespace Controllers
             game.card.addActionDefine(_cardPoolId, _actionDefine);
 
             scene.editor.hasUnsavedChanges = true;
-            clearActionUnsaved();
+            clearUnsaved();
         }
 
         private void updateProperties()
@@ -474,7 +480,6 @@ namespace Controllers
         public const string ACTION_DEFINE_TYPE_FUNCTION = "函数";
         [TranslateMsg("节点动作类型/事件")]
         public const string ACTION_DEFINE_TYPE_EVENT = "事件";
-        public bool hasUnsavedChanges { get; private set; }
 
         long _cardPoolId;
         /// <summary>

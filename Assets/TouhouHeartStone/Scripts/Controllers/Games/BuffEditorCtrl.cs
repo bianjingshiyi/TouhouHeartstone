@@ -54,16 +54,20 @@ namespace Controllers
             updateEffectList(effects);
             _graphEditorPanelCtrl.display(_cardPoolId);
         }
-        public override Task display(CardPoolDisplayInfo info)
+        public override async Task display(CardPoolDisplayInfo info)
         {
             if (info == null)
-                return Task.CompletedTask;
+                return;
+            displayInfo = info;
             if (info.displayObj is GeneratedBuffDefine buffDefine)
             {
                 var skins = info.skins as BuffSkin[] ?? new BuffSkin[0];
-                return display(info.cardPoolId, buffDefine, skins);
+                await display(info.cardPoolId, buffDefine, skins);
+                if (info.unsaved)
+                    markUnsaved();
+                else
+                    clearUnsaved();
             }
-            return Task.CompletedTask;
         }
         public override void hide()
         {
@@ -129,12 +133,12 @@ namespace Controllers
         #region 事件回调
         private void onGraphEdited()
         {
-            markBuffUnsaved();
+            markUnsaved();
         }
         #region 皮肤
         private async void onChangeSkin(int skinIndex)
         {
-            markBuffUnsaved();
+            markUnsaved();
             if (skinIndex == getSkinCount())
             {
                 //新建皮肤
@@ -146,7 +150,7 @@ namespace Controllers
         }
         private async void onChangeSkinName(string skinName)
         {
-            markBuffUnsaved();
+            markUnsaved();
             var skinGroup = getCurrentLangSkins();
             int index = skinGroup.indexOf(_curBuffSkin);
             _curBuffSkin.name = skinName;
@@ -155,7 +159,7 @@ namespace Controllers
         }
         private async void onDeleteSkin()
         {
-            markBuffUnsaved();
+            markUnsaved();
             var skinGroup = getCurrentLangSkins();
             if (skinGroup.Count() <= 1)
             {
@@ -173,7 +177,7 @@ namespace Controllers
         /// <param name="name"></param>
         void onChangeName(string name)
         {
-            markBuffUnsaved();
+            markUnsaved();
             _curBuffSkin.name = name;
             _ui.setName(name);
         }
@@ -191,7 +195,7 @@ namespace Controllers
         {
             if (sprite != null)
             {
-                markBuffUnsaved();
+                markUnsaved();
                 _curBuffSkin.imagePath = game.card.getSpritePath(sprite);
                 _ui.setImage(sprite);
             }
@@ -202,7 +206,7 @@ namespace Controllers
         /// <param name="desc"></param>
         void onChangeDesc(string desc)
         {
-            markBuffUnsaved();
+            markUnsaved();
             _curBuffSkin.desc = desc;
             _ui.setDesc(desc);
         }
@@ -217,7 +221,7 @@ namespace Controllers
             var targetSkin = skins.FirstOrDefault();
             if (targetSkin == null)
             {
-                markBuffUnsaved();
+                markUnsaved();
                 //不存在对应语言的皮肤，新建一个
                 targetSkin = game.card.createBuffSkin(_cardPoolId, _buffDefine.id, language);
                 _buffSkins.Add(targetSkin);
@@ -236,7 +240,7 @@ namespace Controllers
         #region 效果
         private void onCreateEffect(GeneratedEffect effect)
         {
-            markBuffUnsaved();
+            markUnsaved();
             _buffDefine.effectList.Add(effect);
 
             _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
@@ -266,7 +270,7 @@ namespace Controllers
         }
         private void onClickRemoveEffectButton(int index)
         {
-            markBuffUnsaved();
+            markUnsaved();
             if (index < 0 || index >= _buffDefine.effectList.Count)
                 return;
             var removedEffect = _buffDefine.effectList[index];
@@ -295,7 +299,7 @@ namespace Controllers
             effect.name = value;
             _ui.hideEffectListItemInputField(index);
             updateEffectList(effects.ToArray());
-            markBuffUnsaved();
+            markUnsaved();
         }
         #endregion
 
@@ -331,13 +335,13 @@ namespace Controllers
                 var define = defines[index];
                 animRef.animRef = new DefineReference(define.cardPoolId, define.id);
             }
-            markBuffUnsaved();
+            markUnsaved();
         }
         private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
         {
             var animRef = getOrInitNodeAnimationRef(node);
             info.update(animRef);
-            markBuffUnsaved();
+            markUnsaved();
         }
         #endregion
 
@@ -349,19 +353,19 @@ namespace Controllers
             PropModifier propModifier = new CostModifier(0);
             _buffDefine.propModifierList.Add(propModifier);
             updateModifiers();
-            markBuffUnsaved();
+            markUnsaved();
         }
         private void onRemoveModifier(int modifierIndex)
         {
             _buffDefine.propModifierList.RemoveAt(modifierIndex);
             updateModifiers();
-            markBuffUnsaved();
+            markUnsaved();
         }
         private void onChangeModifierProperty(int modifierIndex, int propertyIndex)
         {
             _buffDefine.propModifierList[modifierIndex] = createPropertyModifierByIndex(propertyIndex);
             updateModifiers();
-            markBuffUnsaved();
+            markUnsaved();
         }
         private void onChangeModifierCustomPropName(int modifierIndex, string name)
         {
@@ -370,14 +374,14 @@ namespace Controllers
             {
                 customPropModifier.propertyName = name;
                 updateModifiers();
-                markBuffUnsaved();
+                markUnsaved();
             }
         }
         private void onChangeModifierOperator(int modifierIndex, int operatorIndex)
         {
             setModifyTypeByIndex(_buffDefine.propModifierList[modifierIndex], operatorIndex);
             updateModifiers();
-            markBuffUnsaved();
+            markUnsaved();
         }
         private void onChangeModifierValue(int modifierIndex, object value)
         {
@@ -402,7 +406,7 @@ namespace Controllers
                 }
             }
             updateModifiers();
-            markBuffUnsaved();
+            markUnsaved();
         }
         #endregion
 
@@ -413,27 +417,27 @@ namespace Controllers
             limit.eventName = _eventTriggerTimes.FirstOrDefault()?.getTimeName();
             _buffDefine.existLimitList.Add(limit);
             updateExistLimits();
-            markBuffUnsaved();
+            markUnsaved();
         }
         private void onRemoveExistLimitCallback(int existLimitIndex)
         {
             _buffDefine.existLimitList.RemoveAt(existLimitIndex);
             updateExistLimits();
-            markBuffUnsaved();
+            markUnsaved();
         }
         private void onChangeExistLimitEventCallback(int existLimitIndex, int eventIndex)
         {
             var limit = _buffDefine.existLimitList[existLimitIndex];
             limit.eventName = _eventTriggerTimes[eventIndex].getTimeName();
             updateExistLimits();
-            markBuffUnsaved();
+            markUnsaved();
         }
         private void onChangeExistLimitCountCallback(int existLimitIndex, int count)
         {
             var limit = _buffDefine.existLimitList[existLimitIndex];
             limit.count = count;
             updateExistLimits();
-            markBuffUnsaved();
+            markUnsaved();
         }
         #endregion
         private void onClickDeleteCardButton()
@@ -450,7 +454,7 @@ namespace Controllers
                    //返回上个界面
                    await scene.editor.closeEditorPanel();
                    scene.editor.hasUnsavedChanges = true;
-                   clearBuffUnsaved();
+                   clearUnsaved();
                });
         }
         private void onClickSaveButton()
@@ -565,7 +569,7 @@ namespace Controllers
         {
             //返回上一个界面
             await scene.editor.closeEditorPanel();
-            clearBuffUnsaved();
+            clearUnsaved();
         }
         #region 修改器
         private void updateModifiers()
@@ -872,16 +876,16 @@ namespace Controllers
             }
 
             scene.editor.hasUnsavedChanges = true;
-            clearBuffUnsaved();
+            clearUnsaved();
         }
-        public void markBuffUnsaved()
+        public override void markUnsaved()
         {
-            hasUnsavedChanges = true;
+            base.markUnsaved();
             _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
         }
-        public void clearBuffUnsaved()
+        public override void clearUnsaved()
         {
-            hasUnsavedChanges = false;
+            base.clearUnsaved();
             _ui.setTitleText(scene.editor.getTitleText(hasUnsavedChanges, game.lang._(BUFF_EDITOR_TITLE)));
         }
 
@@ -942,7 +946,6 @@ namespace Controllers
             StringTable.GAME_CARD_PROP_MODIFY_SUB_PROP,
             StringTable.GAME_CARD_PROP_MODIFY_SETTO_PROP
         };
-        public bool hasUnsavedChanges { get; private set; }
         long _cardPoolId;
         /// <summary>
         /// 正在编辑的增益定义。
