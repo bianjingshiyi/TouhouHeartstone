@@ -4517,11 +4517,7 @@
                 "posX" : 964.78521728515625,
                 "posY" : 944.96868896484375,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "UseEvent",
-                    "eventName" : "UseEvent"
-                  }
+                  "argRef" : "UseEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -6726,11 +6722,7 @@
                 "posX" : 508.33673095703125,
                 "posY" : 351.52114868164063,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "UseEvent",
-                    "eventName" : "UseEvent"
-                  }
+                  "argRef" : "UseEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -7315,11 +7307,7 @@
                 "posX" : 172.03550720214844,
                 "posY" : 514.0379638671875,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "EnterFieldEvent",
-                    "eventName" : "EnterFieldEvent"
-                  }
+                  "argRef" : "EnterFieldEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -8462,11 +8450,7 @@
                 "posX" : -522.87646484375,
                 "posY" : 169.34483337402344,
                 "constDict" : {
-                  "tag" : {
-                    "_t" : "EffectTag",
-                    "<value>k__BackingField" : "寻觅",
-                    "effectTag" : "寻觅"
-                  }
+                  "tag" : "寻觅"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -11964,11 +11948,7 @@
                 "posX" : 502.34423828125,
                 "posY" : 268.0662841796875,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "DeathEvent",
-                    "eventName" : "DeathEvent"
-                  }
+                  "argRef" : "DeathEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -17519,11 +17499,7 @@
                 "posX" : 691.32080078125,
                 "posY" : 543.9212646484375,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "UseEvent",
-                    "eventName" : "UseEvent"
-                  }
+                  "argRef" : "UseEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -26156,11 +26132,7 @@
                 "posX" : -242.50210571289063,
                 "posY" : 976.727294921875,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "HealEvent",
-                    "eventName" : "HealEvent"
-                  }
+                  "argRef" : "HealEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -26510,11 +26482,7 @@
                 "posX" : -1188.2052001953125,
                 "posY" : 767.90869140625,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "RevealDuelEvent",
-                    "eventName" : "RevealDuelEvent"
-                  }
+                  "argRef" : "RevealDuelEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -26758,11 +26726,7 @@
                 "posX" : -558.71484375,
                 "posY" : 82.155441284179688,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "RevealDuelEvent",
-                    "eventName" : "RevealDuelEvent"
-                  }
+                  "argRef" : "RevealDuelEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -27113,11 +27077,7 @@
                 "posX" : -558.71484375,
                 "posY" : 82.155410766601563,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "RevealDuelEvent",
-                    "eventName" : "RevealDuelEvent"
-                  }
+                  "argRef" : "RevealDuelEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -27418,11 +27378,7 @@
                 "posX" : -528.13714599609375,
                 "posY" : 282.43853759765625,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "RevealDuelEvent",
-                    "eventName" : "RevealDuelEvent"
-                  }
+                  "argRef" : "RevealDuelEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -28015,11 +27971,7 @@
                 "posX" : -949.593994140625,
                 "posY" : 95.1529541015625,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "RevealDuelEvent",
-                    "eventName" : "RevealDuelEvent"
-                  }
+                  "argRef" : "RevealDuelEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -31183,11 +31135,7 @@
                 "posX" : -1009.9180908203125,
                 "posY" : 551.891357421875,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "RevealDuelEvent",
-                    "eventName" : "RevealDuelEvent"
-                  }
+                  "argRef" : "RevealDuelEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -31689,11 +31637,7 @@
                 "posX" : -830.8494873046875,
                 "posY" : 296.68603515625,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "RevealDuelEvent",
-                    "eventName" : "RevealDuelEvent"
-                  }
+                  "argRef" : "RevealDuelEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
@@ -32714,11 +32658,7 @@
                 "posX" : -655.64654541015625,
                 "posY" : 1361.2618408203125,
                 "constDict" : {
-                  "argRef" : {
-                    "_t" : "EventArgReference",
-                    "<value>k__BackingField" : "UseEvent",
-                    "eventName" : "UseEvent"
-                  }
+                  "argRef" : "UseEvent"
                 },
                 "defineName" : null,
                 "branches" : null,
