@@ -214,8 +214,12 @@ namespace Controllers
 
             _ui.onPropertyValueChanged += onPropertyValueChangedCallback;
             _ui.onClickPropertyButton += onClickPropertyButtonCallback;
+            _ui.onClickPropertyCardButton += onClickPropertyCardButtonCallback;
+            _ui.onClickPropertyCardEditButton += onClickPropertyCardEditButtonCallback;
             _ui.onPropertyItemValueChanged += onPropertyItemValueChangedCallback;
             _ui.onClickPropertyItemButton += onClickPropertyItemButtonCallback;
+            _ui.onClickPropertyItemCardButton += onClickPropertyItemCardButtonCallback;
+            _ui.onClickPropertyItemCardEditButton += onClickPropertyItemCardEditButtonCallback;
             _ui.onClickPropertyAddItemButton += onClickPropertyAddItemButtonCallback;
             _ui.onClickPropertyRemoveItemButton += onClickPropertyRemoveItemButtonCallback;
 
@@ -520,7 +524,7 @@ namespace Controllers
         #endregion Effects
 
 
-        private async void onClickDeleteCardButton()
+        private void onClickDeleteCardButton()
         {
             //询问玩家
             game.ui.dialog.ShowQuestion(
@@ -685,7 +689,10 @@ namespace Controllers
                 updatePropertyItem(isCustom, name);
             }
         }
-        private async void onClickPropertyItemButtonCallback(bool isCustom, string name, int index)
+        private void onClickPropertyItemButtonCallback(bool isCustom, string name, int index)
+        {
+        }
+        private async void onClickPropertyItemCardButtonCallback(bool isCustom, string name, int index)
         {
             var prop = _cardDefine.getProp<DefineReference[]>(name);
             if (prop == null)
@@ -703,6 +710,22 @@ namespace Controllers
             _curCardSeekingPropName = name;
             _curCardSeekingPropIndex = index;
             _curCardSeekingPropIsCustom = isCustom;
+        }
+        private async void onClickPropertyItemCardEditButtonCallback(bool isCustom, string name, int index)
+        {
+            var prop = _cardDefine.getProp<DefineReference[]>(name);
+            if (prop == null || index < 0 || index >= prop.Length)
+                return;
+            var define = prop[index];
+            await scene.editor.openReferedCard(define, setPropAction);
+
+            void setPropAction(CardDefine cardDefine)
+            {
+                prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                _cardDefine.setProp(name, prop);
+                MarkCardUnsaved();
+                updatePropertyItem(isCustom, name);
+            }
         }
         private void onClickPropertyAddItemButtonCallback(bool isCustom, string name)
         {
@@ -762,7 +785,10 @@ namespace Controllers
             MarkCardUnsaved();
             updatePropertyItem(isCustom, name);
         }
-        private async void onClickPropertyButtonCallback(bool isCustom, string name)
+        private void onClickPropertyButtonCallback(bool isCustom, string name)
+        {
+        }
+        private async void onClickPropertyCardButtonCallback(bool isCustom, string name)
         {
             var prop = _cardDefine.getProp<DefineReference>(name);
             if (prop == null)
@@ -780,7 +806,18 @@ namespace Controllers
             _curCardSeekingPropIndex = -1;
             _curCardSeekingPropIsCustom = isCustom;
         }
-        
+        private async void onClickPropertyCardEditButtonCallback(bool isCustom, string name)
+        {
+            var prop = _cardDefine.getProp<DefineReference>(name);
+            await scene.editor.openReferedCard(prop, setPropAction);
+
+            void setPropAction(CardDefine cardDefine)
+            {
+                _cardDefine.setProp(name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
+                MarkCardUnsaved();
+                updatePropertyItem(isCustom, name);
+            }
+        }
         private void onDeleteCustomPropertyCallback(string name)
         {
             _cardDefine.removeProp(name);
@@ -1004,7 +1041,10 @@ namespace Controllers
 
         private void saveCard()
         {
-            game.card.removeCard(_cardPoolId, _cardDefine.id);
+            if (game.card.getCardDefine(_cardPoolId, _cardDefine.id) != null)
+            {
+                game.card.removeCard(_cardPoolId, _cardDefine.id);
+            }
             game.card.addCard(_cardPoolId, _cardDefine);
 
             game.card.removeAllCardSkins(_cardPoolId, _cardDefine.id);

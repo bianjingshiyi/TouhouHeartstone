@@ -345,8 +345,12 @@ namespace Controllers
             _ui.onStartConnection += onStartConnection;
             _ui.onEndConnection += onEndConnection;
             _ui.onActionNodeValueChange += onActionNodeValueChange;
-            _ui.onClickActionNodeConstValueEditButton += onClickActionNodeConstValueEditButton;
-            _ui.onClickActionNodeConstValueItemEditButton += onClickActionNodeConstValueItemEditButton;
+            _ui.onClickActionNodeConstValueButton += onClickActionNodeConstValueButton;
+            _ui.onClickActionNodeConstValueCardButton += onClickActionNodeConstValueCardButton;
+            _ui.onClickActionNodeConstValueCardEditButton += onClickActionNodeConstValueCardEditButton;
+            _ui.onClickActionNodeConstValueItemButton += onClickActionNodeConstValueItemButton;
+            _ui.onClickActionNodeConstValueItemCardButton += onClickActionNodeConstValueItemCardButton;
+            _ui.onClickActionNodeConstValueItemCardEditButton += onClickActionNodeConstValueItemCardEditButton;
             _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
             _ui.onNodeSelected += onNodeSelected;
             _ui.onNodeDeselected += onNodeDeselected;
@@ -365,8 +369,12 @@ namespace Controllers
             _ui.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
             _ui.onConfirmCreateEffectProperty += onConfirmCreateEffectPropertyCallback;
             _ui.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
+            _ui.onClickEffectPropertyItemCardButton += onClickEffectPropertyItemCardButtonCallback;
+            _ui.onClickEffectPropertyItemCardEditButton += onClickEffectPropertyItemCardEditButtonCallback;
             _ui.onEffectPropertyItemValueChanged += onEffectPropertyItemValueChangedCallback;
             _ui.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
+            _ui.onClickEffectPropertyCardButton += onClickEffectPropertyCardButtonCallback;
+            _ui.onClickEffectPropertyCardEditButton += onClickEffectPropertyCardEditButtonCallback;
             _ui.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
             _ui.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
             _ui.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
@@ -607,7 +615,10 @@ namespace Controllers
                 }
             }
         }
-        private async void onClickActionNodeConstValueEditButton(ActionNodeItem actionNodeItem, int index)
+        private void onClickActionNodeConstValueButton(ActionNodeItem actionNodeItem, int index)
+        {
+        }
+        private async void onClickActionNodeConstValueCardButton(ActionNodeItem actionNodeItem, int index)
         {
             Node actionNode = getActionNode(actionNodeItem);
             if (!(actionNode is ActionNode action))
@@ -635,7 +646,32 @@ namespace Controllers
                 _curEditActionNodeConstItemIndex = -1;
             }
         }
-        private async void onClickActionNodeConstValueItemEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
+        private async void onClickActionNodeConstValueCardEditButton(ActionNodeItem actionNodeItem, int index)
+        {
+            Node node = getActionNode(actionNodeItem);
+            if (!(node is ActionNode action))
+                return;
+            ActionDefine actionDefine = getActionDefine(action.defineRef);
+            var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
+            if (constDefine == null)
+                return;
+            if (constDefine.type == typeof(DefineReference))
+            {
+                if (action.getConst(constDefine.name) is DefineReference value)
+                {
+                    await scene.editor.openReferedCard(value, setPropAction);
+
+                    void setPropAction(CardDefine cardDefine)
+                    {
+                        setNodeConst(node, constDefine.name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
+                    }
+                }
+            }
+        }
+        private void onClickActionNodeConstValueItemButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
+        {
+        }
+        private async void onClickActionNodeConstValueItemCardButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
             Node actionNode = getActionNode(actionNodeItem);
             if (!(actionNode is ActionNode action))
@@ -673,6 +709,40 @@ namespace Controllers
                 _curEditNode = action;
                 _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = itemIndex;
+            }
+        }
+        private async void onClickActionNodeConstValueItemCardEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
+        {
+            Node node = getActionNode(actionNodeItem);
+            if (!(node is ActionNode action))
+                return;
+            ActionDefine actionDefine = getActionDefine(action.defineRef);
+            var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
+            if (constDefine == null)
+                return;
+            if (constDefine.type == typeof(CardReferenceCollection) || constDefine.type == typeof(DefineReference[]))
+            {
+                Action<CardDefine> setPropAction = null;
+                DefineReference defRef = null;
+                if (node.getConst(constDefine.name) is CardReferenceCollection defRefCol)
+                {
+                    defRef = defRefCol[itemIndex];
+                    setPropAction = (cardDefine) =>
+                    {
+                        defRefCol[itemIndex] = defRef;
+                        setNodeConst(node, constDefine.name, defRefCol);
+                    };
+                }
+                else if (node.getConst(constDefine.name) is DefineReference[] defRefs)
+                {
+                    defRef = defRefs[itemIndex];
+                    setPropAction = (cardDefine) =>
+                    {
+                        defRefs[itemIndex] = defRef;
+                        setNodeConst(node, constDefine.name, defRefs);
+                    };
+                }
+                await scene.editor.openReferedCard(defRef, setPropAction);
             }
         }
         private void onClickCardSelectPanelCard(CardDefine cardDefine)

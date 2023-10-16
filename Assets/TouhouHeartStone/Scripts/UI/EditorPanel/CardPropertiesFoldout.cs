@@ -31,22 +31,30 @@ namespace UI
             {
                 var listItem = rect.GetComponent<CardPropertyListItem>();
                 listItem.onClickButton += onClickPropButtonCallback;
+                listItem.onClickCardButton += onClickPropCardButtonCallback;
+                listItem.onClickCardEditButton += onClickPropCardEditButtonCallback;
                 listItem.onValueChanged += onPropValueChangedCallback;
 
                 listItem.onClickAddItemButton += onClickPropAddChildButtonCallback;
                 listItem.onClickRemoveItemButton += onClickPropRemoveChildButtonCallback;
                 listItem.onClickItemButton += onClickPropChildButtonCallback;
+                listItem.onClickItemCardButton += onClickPropChildCardButtonCallback;
+                listItem.onClickItemCardEditButton += onClickPropChildCardEditButtonCallback;
                 listItem.onItemValueChanged += onPropChildValueChangedCallback;
             }, 
             rect =>
             {
                 var listItem = rect.GetComponent<CardPropertyListItem>();
                 listItem.onClickButton -= onClickPropButtonCallback;
+                listItem.onClickCardButton -= onClickPropCardButtonCallback;
+                listItem.onClickCardEditButton -= onClickPropCardEditButtonCallback;
                 listItem.onValueChanged -= onPropValueChangedCallback;
 
                 listItem.onClickAddItemButton -= onClickPropAddChildButtonCallback;
                 listItem.onClickRemoveItemButton -= onClickPropRemoveChildButtonCallback;
                 listItem.onClickItemButton -= onClickPropChildButtonCallback;
+                listItem.onClickItemCardButton -= onClickPropChildCardButtonCallback;
+                listItem.onClickItemCardEditButton -= onClickPropChildCardEditButtonCallback;
                 listItem.onItemValueChanged -= onPropChildValueChangedCallback;
             });
         }
@@ -83,6 +91,14 @@ namespace UI
         {
             onClickPropButton?.Invoke(name);
         }
+        private void onClickPropCardButtonCallback(string name)
+        {
+            onClickPropCardButton?.Invoke(name);
+        }
+        private void onClickPropCardEditButtonCallback(string name)
+        {
+            onClickPropCardEditButton?.Invoke(name);
+        }
         private void onPropValueChangedCallback(string name, object value)
         {
             onPropValueChanged?.Invoke(name, value);
@@ -99,16 +115,28 @@ namespace UI
         {
             onClickPropChildButton?.Invoke(name, index);
         }
+        private void onClickPropChildCardButtonCallback(string name, int index)
+        {
+            onClickPropChildCardButton?.Invoke(name, index);
+        }
+        private void onClickPropChildCardEditButtonCallback(string name, int index)
+        {
+            onClickPropChildCardEditButton?.Invoke(name, index);
+        }
         private void onPropChildValueChangedCallback(string name, int index, object value)
         {
             onPropChildValueChanged?.Invoke(name, index, value);
         }
 
         public event Action<string> onClickPropButton;
+        public event Action<string> onClickPropCardButton;
+        public event Action<string> onClickPropCardEditButton;
         public event Action<string, object> onPropValueChanged;
         public event Action<string> onClickPropAddChildButton;
         public event Action<string, int> onClickPropRemoveChildButton;
         public event Action<string, int> onClickPropChildButton;
+        public event Action<string, int> onClickPropChildCardButton;
+        public event Action<string, int> onClickPropChildCardEditButton;
         public event Action<string, int, object> onPropChildValueChanged;
 
         [SerializeField]

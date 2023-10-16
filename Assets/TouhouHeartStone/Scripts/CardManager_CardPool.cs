@@ -744,7 +744,11 @@ namespace Game
                 CardSkinData skin = new CardSkinData();
                 skin.id = cardDefineId;
                 skin.skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME;
-                skin.skinId = getAllLocalSkins(cardPoolId, cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key).Max() + 1;
+                var skinIds = getAllLocalSkins(cardPoolId, cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key);
+                if (skinIds.Count() > 0)
+                    skin.skinId = skinIds.Max() + 1;
+                else
+                    skin.skinId = 1;
                 return skin;
             }
             else

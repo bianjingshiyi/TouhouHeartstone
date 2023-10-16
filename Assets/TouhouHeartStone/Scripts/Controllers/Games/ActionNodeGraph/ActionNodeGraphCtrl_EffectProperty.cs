@@ -46,7 +46,10 @@ namespace Controllers
                 addRecordBreakpoint();
             }
         }
-        private async void onClickEffectPropertyItemButtonCallback(string name, int index)
+        private void onClickEffectPropertyItemButtonCallback(string name, int index)
+        {
+        }
+        private async void onClickEffectPropertyItemCardButtonCallback(string name, int index)
         {
             var prop = _effect.getProp<DefineReference[]>(name);
             if (prop == null)
@@ -62,6 +65,21 @@ namespace Controllers
             _ui.displayCardSelectPanel(true);
             _curCardSeekingEffectPropName = name;
             _curCardSeekingEffectPropIndex = index;
+        }
+        private async void onClickEffectPropertyItemCardEditButtonCallback(string name, int index)
+        {
+            var prop = _effect.getProp<DefineReference[]>(name);
+            if (prop == null || index < 0 || index >= prop.Length)
+                return;
+            var define = prop[index];
+            await scene.editor.openReferedCard(define, setPropAction);
+
+            void setPropAction(CardDefine cardDefine)
+            {
+                prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                setEffectProp(name, prop);
+                updatePropertyItem(name);
+            }
         }
         private void onClickEffectPropertyAddItemButtonCallback(string name)
         {
@@ -97,7 +115,10 @@ namespace Controllers
             setEffectProp(name, value);
             addRecordBreakpoint();
         }
-        private async void onClickEffectPropertyButtonCallback(string name)
+        private void onClickEffectPropertyButtonCallback(string name)
+        {
+        }
+        private async void onClickEffectPropertyCardButtonCallback(string name)
         {
             var prop = _effect.getProp<DefineReference>(name);
             if (prop == null)
@@ -112,6 +133,17 @@ namespace Controllers
             _ui.displayCardSelectPanel(true);
             _curCardSeekingEffectPropName = name;
             _curCardSeekingEffectPropIndex = -1;
+        }
+        private async void onClickEffectPropertyCardEditButtonCallback(string name)
+        {
+            var prop = _effect.getProp<DefineReference>(name);
+            await scene.editor.openReferedCard(prop, setPropAction);
+
+            void setPropAction(CardDefine cardDefine)
+            {
+                setEffectProp(name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
+                updatePropertyItem(name);
+            }
         }
 
         private void onDeleteEffectPropertyCallback(string name)

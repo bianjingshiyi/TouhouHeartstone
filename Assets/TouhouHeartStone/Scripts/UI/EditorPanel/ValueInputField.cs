@@ -84,6 +84,7 @@ namespace UI
             _addItemButton.onClick.AddListener(onClickAddItemButtonCallback);
             _removeItemButton.onClick.AddListener(onClickRemoveButtonCallback);
             _buildItem.onClick += onClickCardButtonCallback;
+            _buildItemEditButton.onClick.AddListener(onClickCardEditButtonCallback);
         }
         #region 事件回调
         private void onEndEditInputField(string text)
@@ -233,6 +234,14 @@ namespace UI
         {
             onClickItemButton?.Invoke(this, _list.IndexOf(item.transform as RectTransform));
         }
+        private void onClickItemCardButtonCallback(ValueInputField item)
+        {
+            onClickItemCardButton?.Invoke(this, _list.IndexOf(item.transform as RectTransform));
+        }
+        private void onClickItemCardEditButtonCallback(ValueInputField item)
+        {
+            onClickItemCardEditButton?.Invoke(this, _list.IndexOf(item.transform as RectTransform));
+        }
         private void onItemValueChangedCallback(ValueInputField item, object value)
         {
             onItemValueChanged?.Invoke(this, _list.IndexOf(item.transform as RectTransform), value);
@@ -301,7 +310,11 @@ namespace UI
         }
         private void onClickCardButtonCallback()
         {
-            onClickButton?.Invoke(this);
+            onClickCardButton?.Invoke(this);
+        }
+        private void onClickCardEditButtonCallback()
+        {
+            onClickCardEditButton?.Invoke(this);
         }
         #endregion
         private void update()
@@ -355,12 +368,16 @@ namespace UI
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged += onItemValueChangedCallback;
                     item.onClickButton += onClickItemButtonCallback;
+                    item.onClickCardButton += onClickItemCardButtonCallback;
+                    item.onClickCardEditButton += onClickItemCardEditButtonCallback;
                     item.onClickRemoveButton += onClickItemRemoveButtonCallback;
                 }, itemRect =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged -= onItemValueChangedCallback;
                     item.onClickButton -= onClickItemButtonCallback;
+                    item.onClickCardButton -= onClickItemCardButtonCallback;
+                    item.onClickCardEditButton -= onClickItemCardEditButtonCallback;
                     item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
                 });
             }
@@ -665,12 +682,16 @@ namespace UI
                         ValueInputField item = itemRect.GetComponent<ValueInputField>();
                         item.onValueChanged += onItemValueChangedCallback;
                         item.onClickButton += onClickItemButtonCallback;
+                        item.onClickCardButton += onClickItemCardButtonCallback;
+                        item.onClickCardEditButton += onClickItemCardEditButtonCallback;
                         item.onClickRemoveButton += onClickItemRemoveButtonCallback;
                     }, itemRect =>
                     {
                         ValueInputField item = itemRect.GetComponent<ValueInputField>();
                         item.onValueChanged -= onItemValueChangedCallback;
                         item.onClickButton -= onClickItemButtonCallback;
+                        item.onClickCardButton -= onClickItemCardButtonCallback;
+                        item.onClickCardEditButton -= onClickItemCardEditButtonCallback;
                         item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
                     });
                 }
@@ -700,12 +721,16 @@ namespace UI
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged += onItemValueChangedCallback;
                     item.onClickButton += onClickItemButtonCallback;
+                    item.onClickCardButton += onClickItemCardButtonCallback;
+                    item.onClickCardEditButton += onClickItemCardEditButtonCallback;
                     item.onClickRemoveButton += onClickItemRemoveButtonCallback;
                 }, itemRect =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.onValueChanged -= onItemValueChangedCallback;
                     item.onClickButton -= onClickItemButtonCallback;
+                    item.onClickCardButton -= onClickItemCardButtonCallback;
+                    item.onClickCardEditButton -= onClickItemCardEditButtonCallback;
                     item.onClickRemoveButton -= onClickItemRemoveButtonCallback;
                 });
             }
@@ -742,8 +767,12 @@ namespace UI
         #region 事件
         public event Action<ValueInputField, object> onValueChanged;
         public event Action<ValueInputField> onClickButton;
+        public event Action<ValueInputField> onClickCardButton;
+        public event Action<ValueInputField> onClickCardEditButton;
         public event Action<ValueInputField, int, object> onItemValueChanged;
         public event Action<ValueInputField, int> onClickItemButton;
+        public event Action<ValueInputField, int> onClickItemCardButton;
+        public event Action<ValueInputField, int> onClickItemCardEditButton;
         public event Action<ValueInputField> onClickAddItemButton;
         public event Action<ValueInputField> onClickRemoveButton;
         public event Action<ValueInputField, int> onClickItemRemoveButton;
@@ -763,6 +792,8 @@ namespace UI
         Dropdown _dropdown;
         [SerializeField]
         BuildDeckListItem _buildItem;
+        [SerializeField]
+        Button _buildItemEditButton;
         [SerializeField]
         InputDropdown _inputDropdown;
         [SerializeField]

@@ -30,7 +30,11 @@ namespace UI
             ActionNodeItem actionNodeItem = createNode(posX, posY);
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
+            actionNodeItem.onClickConstValueCardButton += onClickActionNodeItemConstValueCardButton;
+            actionNodeItem.onClickConstValueCardEditButton += onClickActionNodeItemConstValueCardEditButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
+            actionNodeItem.onClickConstValueItemCardButton += onClickActionNodeItemConstValueItemCardButton;
+            actionNodeItem.onClickConstValueItemCardEditButton += onClickActionNodeItemConstValueItemCardEditButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
@@ -40,8 +44,12 @@ namespace UI
 
             actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
             actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
+            actionNodeItem.onClickEffectPropertyItemCardButton += onClickEffectPropertyItemCardButtonCallback;
+            actionNodeItem.onClickEffectPropertyItemCardEditButton += onClickEffectPropertyItemCardEditButtonCallback;
             actionNodeItem.onEffectPropertyItemValueChanged += onEffectPropertyItemValueChangedCallback;
             actionNodeItem.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
+            actionNodeItem.onClickEffectPropertyCardButton += onClickEffectPropertyCardButtonCallback;
+            actionNodeItem.onClickEffectPropertyCardEditButton += onClickEffectPropertyCardEditButtonCallback;
             actionNodeItem.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
             actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
             actionNodeItem.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
@@ -92,7 +100,11 @@ namespace UI
             actionNodeItem.onEndDrag += onEndDragActionNodeItem;
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
+            actionNodeItem.onClickConstValueCardButton += onClickActionNodeItemConstValueCardButton;
+            actionNodeItem.onClickConstValueCardEditButton += onClickActionNodeItemConstValueCardEditButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
+            actionNodeItem.onClickConstValueItemCardButton += onClickActionNodeItemConstValueItemCardButton;
+            actionNodeItem.onClickConstValueItemCardEditButton += onClickActionNodeItemConstValueItemCardEditButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
@@ -101,8 +113,12 @@ namespace UI
 
             actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
             actionNodeItem.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
+            actionNodeItem.onClickEffectPropertyItemCardButton += onClickEffectPropertyItemCardButtonCallback;
+            actionNodeItem.onClickEffectPropertyItemCardEditButton += onClickEffectPropertyItemCardEditButtonCallback;
             actionNodeItem.onEffectPropertyItemValueChanged += onEffectPropertyItemValueChangedCallback;
             actionNodeItem.onClickEffectPropertyButton += onClickEffectPropertyButtonCallback;
+            actionNodeItem.onClickEffectPropertyCardButton += onClickEffectPropertyCardButtonCallback;
+            actionNodeItem.onClickEffectPropertyCardEditButton += onClickEffectPropertyCardEditButtonCallback;
             actionNodeItem.onEffectPropertyValueChanged += onEffectPropertyValueChangedCallback;
             actionNodeItem.onDeleteEffectProperty += onDeleteEffectPropertyCallback;
             actionNodeItem.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
@@ -123,7 +139,11 @@ namespace UI
             ActionNodeItem actionNodeItem = createNode(posX, posY);
             actionNodeItem.onConstValueChanged += onActionNodeItemConstValueChanged;
             actionNodeItem.onClickConstValueButton += onClickActionNodeItemConstValueButton;
+            actionNodeItem.onClickConstValueCardButton += onClickActionNodeItemConstValueCardButton;
+            actionNodeItem.onClickConstValueCardEditButton += onClickActionNodeItemConstValueCardEditButton;
             actionNodeItem.onClickConstValueItemButton += onClickActionNodeItemConstValueItemButton;
+            actionNodeItem.onClickConstValueItemCardButton += onClickActionNodeItemConstValueItemCardButton;
+            actionNodeItem.onClickConstValueItemCardEditButton += onClickActionNodeItemConstValueItemCardEditButton;
             actionNodeItem.onClickAddTargetCheckerButton += onClickTriggerNodeAddTargetCheckerButton;
             actionNodeItem.onClickRemoveTargetCheckerButton += onClickTriggerNodeRemoveTargetCheckerButton;
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
@@ -1085,12 +1105,32 @@ namespace UI
         private void onClickActionNodeItemConstValueButton(ActionNodeItem item, int constValueIndex)
         {
             setFocused();
-            onClickActionNodeConstValueEditButton?.Invoke(item, constValueIndex);
+            onClickActionNodeConstValueButton?.Invoke(item, constValueIndex);
+        }
+        private void onClickActionNodeItemConstValueCardButton(ActionNodeItem item, int constValueIndex)
+        {
+            setFocused();
+            onClickActionNodeConstValueCardButton?.Invoke(item, constValueIndex);
+        }
+        private void onClickActionNodeItemConstValueCardEditButton(ActionNodeItem item, int constValueIndex)
+        {
+            setFocused();
+            onClickActionNodeConstValueCardEditButton?.Invoke(item, constValueIndex);
         }
         private void onClickActionNodeItemConstValueItemButton(ActionNodeItem item, int constValueIndex, int itemIndex)
         {
             setFocused();
-            onClickActionNodeConstValueItemEditButton?.Invoke(item, constValueIndex, itemIndex);
+            onClickActionNodeConstValueItemButton?.Invoke(item, constValueIndex, itemIndex);
+        }
+        private void onClickActionNodeItemConstValueItemCardButton(ActionNodeItem item, int constValueIndex, int itemIndex)
+        {
+            setFocused();
+            onClickActionNodeConstValueItemCardButton?.Invoke(item, constValueIndex, itemIndex);
+        }
+        private void onClickActionNodeItemConstValueItemCardEditButton(ActionNodeItem item, int constValueIndex, int itemIndex)
+        {
+            setFocused();
+            onClickActionNodeConstValueItemCardEditButton?.Invoke(item, constValueIndex, itemIndex);
         }
         private void onClickTriggerNodeAddTargetCheckerButton(ActionNodeItem item)
         {
@@ -1154,6 +1194,16 @@ namespace UI
             setFocused();
             onClickEffectPropertyItemButton?.Invoke(name, index);
         }
+        private void onClickEffectPropertyItemCardButtonCallback(string name, int index)
+        {
+            setFocused();
+            onClickEffectPropertyItemCardButton?.Invoke(name, index);
+        }
+        private void onClickEffectPropertyItemCardEditButtonCallback(string name, int index)
+        {
+            setFocused();
+            onClickEffectPropertyItemCardEditButton?.Invoke(name, index);
+        }
         private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
         {
             setFocused();
@@ -1173,6 +1223,16 @@ namespace UI
         {
             setFocused();
             onClickEffectPropertyButton?.Invoke(name);
+        }
+        private void onClickEffectPropertyCardButtonCallback(string name)
+        {
+            setFocused();
+            onClickEffectPropertyCardButton?.Invoke(name);
+        }
+        private void onClickEffectPropertyCardEditButtonCallback(string name)
+        {
+            setFocused();
+            onClickEffectPropertyCardEditButton?.Invoke(name);
         }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
@@ -1372,11 +1432,27 @@ namespace UI
         /// <summary>
         /// 当节点的常量的编辑按钮被点击，参数为被点击的节点和常量索引
         /// </summary>
-        public event Action<ActionNodeItem, int> onClickActionNodeConstValueEditButton;
+        public event Action<ActionNodeItem, int> onClickActionNodeConstValueButton;
+        /// <summary>
+        /// 当节点的常量的卡牌选择按钮被点击，参数为被点击的节点和常量索引
+        /// </summary>
+        public event Action<ActionNodeItem, int> onClickActionNodeConstValueCardButton;
+        /// <summary>
+        /// 当节点的常量的卡牌编辑按钮被点击，参数为被点击的节点和常量索引
+        /// </summary>
+        public event Action<ActionNodeItem, int> onClickActionNodeConstValueCardEditButton;
         /// <summary>
         /// 当点击节点的常量的子项的编辑按钮，参数为点击的节点，常量索引和常量子项的索引
         /// </summary>
-        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemEditButton;
+        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemButton;
+        /// <summary>
+        /// 当点击节点的常量的子项的卡牌选择按钮，参数为点击的节点，常量索引和常量子项的索引
+        /// </summary>
+        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemCardButton;
+        /// <summary>
+        /// 当点击节点的常量的子项的卡牌编辑按钮，参数为点击的节点，常量索引和常量子项的索引
+        /// </summary>
+        public event Action<ActionNodeItem, int, int> onClickActionNodeConstValueItemCardEditButton;
         /// <summary>
         /// 当点击触发器节点的添加目标按钮
         /// </summary>
@@ -1427,8 +1503,12 @@ namespace UI
         public event Action onClickAddEffectPropertyButton;
         public event Action<EffectPropertyItem> onConfirmCreateEffectProperty;
         public event Action<string, int> onClickEffectPropertyItemButton;
+        public event Action<string, int> onClickEffectPropertyItemCardButton;
+        public event Action<string, int> onClickEffectPropertyItemCardEditButton;
         public event Action<string, int, object> onEffectPropertyItemValueChanged;
         public event Action<string> onClickEffectPropertyButton;
+        public event Action<string> onClickEffectPropertyCardButton;
+        public event Action<string> onClickEffectPropertyCardEditButton;
         public event Action<string, object> onEffectPropertyValueChanged;
         public event Action<string> onDeleteEffectProperty;
         public event Action<string> onClickEffectPropertyAddItemButton;

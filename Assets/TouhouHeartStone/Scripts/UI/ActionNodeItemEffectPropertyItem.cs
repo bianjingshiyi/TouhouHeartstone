@@ -15,8 +15,12 @@ namespace UI
         {
             _valueInputField.onValueChanged += (item, value) => onValueChanged?.Invoke(_name, value);
             _valueInputField.onClickButton += (item) => onClickButton?.Invoke(_name);
+            _valueInputField.onClickCardButton += (item) => onClickCardButton?.Invoke(_name);
+            _valueInputField.onClickCardEditButton += (item) => onClickCardEditButton?.Invoke(_name);
             _valueInputField.onItemValueChanged += (item, index, value) => onItemValueChanged?.Invoke(_name, index, value);
             _valueInputField.onClickItemButton += (item, index) => onClickItemButton?.Invoke(_name, index);
+            _valueInputField.onClickItemCardButton += (item, index) => onClickItemCardButton?.Invoke(_name, index);
+            _valueInputField.onClickItemCardEditButton += (item, index) => onClickItemCardEditButton?.Invoke(_name, index);
             _valueInputField.onClickAddItemButton += (item) => onClickAddItemButton?.Invoke(_name);
             _valueInputField.onClickItemRemoveButton += (item, index) => onClickRemoveItemButton?.Invoke(_name, index);
             _deleteButton.onClick.AddListener(() => onClickDelete?.Invoke(_name));
@@ -87,8 +91,12 @@ namespace UI
 
         public event Action<string, int, object> onItemValueChanged;
         public event Action<string, int> onClickItemButton;
+        public event Action<string, int> onClickItemCardButton;
+        public event Action<string, int> onClickItemCardEditButton;
         public event Action<string, object> onValueChanged;
         public event Action<string> onClickButton;
+        public event Action<string> onClickCardButton;
+        public event Action<string> onClickCardEditButton;
         public event Action<string> onClickDelete;
         public event Action<string> onClickAddItemButton;
         public event Action<string, int> onClickRemoveItemButton;

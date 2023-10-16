@@ -152,6 +152,39 @@ namespace Controllers
         {
             return game.lang._(EDITOR_TITLE_TEMPLATE, title, unsaved ? game.lang._(EDITOR_UNSAVED_MARK) : string.Empty);
         }
+        public async Task openReferedCard(DefineReference defRef, Action<CardDefine> setPropAction)
+        {
+            var cardPoolId = _curCardPoolInfo.cardPoolId;
+            if (defRef == null)
+            {
+                // 新建一个卡牌并打开
+                await createNewCardAndOpen(setPropAction);
+            }
+            else 
+            {
+                var cardDefine = game.card.getCardDefine(defRef);
+                if (cardDefine == null)
+                {
+                    // 如果卡牌定义不存在，改为新建一个卡牌并打开。
+                    await createNewCardAndOpen(setPropAction);
+                }
+                else
+                {
+                    // 卡牌定义存在
+                    if (defRef.cardPoolId == cardPoolId)
+                    {
+                        // 在同一个卡池内，打开
+                        await cloneCardAndOpen(cardDefine);
+                    }
+                    else
+                    {
+                        // 不在同一个卡池内，提醒
+                        var desc = game.lang._(EDITOR_TRY_TO_OPEN_CARD_FROM_OTHER_POOL);
+                        game.ui.dialog.ShowConfirm(StringTable.ERROR, desc);
+                    }
+                }
+            }
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -257,9 +290,7 @@ namespace Controllers
         /// <param name="index"></param>
         private async void onClickCard(CardDefine cardDefine)
         {
-            var define = game.card.cloneCardDefine(cardDefine);
-            var skins = game.card.cloneCardSkins(_curCardPoolInfo, cardDefine.id);
-            await openCardEditor(_curCardPoolInfo.cardPoolId, define, skins);
+            await cloneCardAndOpen(cardDefine);
         }
         /// <summary>
         /// 当点击新建卡牌按钮
@@ -651,6 +682,22 @@ namespace Controllers
             }
             return editor;
         }
+        private async Task cloneCardAndOpen(CardDefine cardDefine)
+        {
+            var define = game.card.cloneCardDefine(cardDefine);
+            var skins = game.card.cloneCardSkins(_curCardPoolInfo, cardDefine.id);
+            await openCardEditor(_curCardPoolInfo.cardPoolId, define, skins);
+        }
+        private async Task createNewCardAndOpen(Action<CardDefine> setPropAction)
+        {
+            var cardPoolId = _curCardPoolInfo.cardPoolId;
+            var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
+            var cardPoolInfo = game.card.getCardPoolInfo(cardPoolRef);
+            game.card.createCard(cardPoolInfo, out var newDefine, out var newSkin);
+            setPropAction?.Invoke(newDefine);
+
+            await cloneCardAndOpen(newDefine);
+        }
         #endregion
         #region 属性字段
         [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
@@ -665,6 +712,8 @@ namespace Controllers
         public const string EDITOR_UNSAVED_MARK = "*";
         [TranslateMsg("卡池编辑器/标题")]
         public const string EDITOR_TITLE = "卡牌编辑器";
+        [TranslateMsg("卡池编辑器/尝试跨卡池编辑卡牌的提醒")]
+        public const string EDITOR_TRY_TO_OPEN_CARD_FROM_OTHER_POOL = "该卡牌是另一个卡池的卡牌，无法直接跳转。";
 
 
         public bool hasUnsavedChanges
