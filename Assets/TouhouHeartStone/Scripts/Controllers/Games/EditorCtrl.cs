@@ -34,8 +34,8 @@ namespace Controllers
             else
             {
                 //牌库编辑模式
-                string path = null;
-                CardPoolInfo poolInfo = null;
+                string path = _curCardPoolPath;
+                CardPoolInfo poolInfo = _curCardPoolInfo;
                 if (cardPoolIndex >= 0 && cardPoolIndex < _cardPoolInfoList.Count)
                 {
                     path = _cardPoolPathList[cardPoolIndex];
