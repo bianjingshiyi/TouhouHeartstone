@@ -352,7 +352,7 @@ namespace TouhouHeartstone
             }
             DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return (game as CardEngine).createCards(defines).Cast<DescribableCard>().ToArray();
+                return (game as CardEngine).createCards(defines).Select(t => (DescribableCard)t).ToArray();
             }
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -1210,7 +1210,7 @@ namespace TouhouHeartstone
             }
             DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return targets.OfType<Card>().Cast<DescribableCard>().ToArray();
+                return targets.OfType<Card>().Select(t => (DescribableCard)t).ToArray();
             }
             ICard ICardEventArg.getCard()
             {

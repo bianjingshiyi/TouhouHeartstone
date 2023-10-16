@@ -1298,7 +1298,7 @@ namespace TouhouHeartstone
 
             DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
-                return targets.Cast<DescribableCard>().ToArray();
+                return targets.Select(t => (DescribableCard)t).ToArray();
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)

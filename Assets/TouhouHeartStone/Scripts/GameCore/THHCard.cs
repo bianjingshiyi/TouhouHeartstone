@@ -166,12 +166,14 @@ namespace TouhouHeartstone
         public static Task<SetArmorEventArg> setArmor(this Card card, CardEngine game, int value)
         {
             int beforeValue = card.getArmor(game);
+            if (value < 0)
+                value = 0;
+            if (beforeValue == value)
+                return Task.FromResult<SetArmorEventArg>(null);
             return game.triggers.doEvent(new SetArmorEventArg() { card = card, beforeValue = beforeValue, value = value }, arg =>
             {
                 card = arg.card;
                 value = arg.value;
-                if (value < 0)
-                    value = 0;
                 card.setProp(game, CARD.ARMOR, value);
                 return Task.CompletedTask;
             });
@@ -1228,7 +1230,7 @@ namespace TouhouHeartstone
             await card.setAttackTimes(game, 0);
             await card.setReady(game, false);
             await card.setCurrentLife(game, card.getLife(game));
-            await card.setArmor(game, 0);
+            await card.setProp(game, CARD.ARMOR, 0);
             await card.setUsed(game, false);
             await card.setProp(game, CARD.SILENCE, false);
             await card.clearConsumableKeywords(game);
