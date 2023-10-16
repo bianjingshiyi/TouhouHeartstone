@@ -20,16 +20,16 @@ namespace UI
         {
             return _contentsObj.activeSelf;
         }
-        public void updateItems(CardPropertyItem[] items, CardManager cardManager)
+        public void updateItems(PropertyItemInfo[] items, CardManager cardManager)
         {
             UIHelper.updateList(_propItemsRoot, _propItemTemplate, _itemList, items.Length, async (index, rect) =>
             {
-                CardPropertyListItem listItem = rect.GetComponent<CardPropertyListItem>();
+                PropertyItemField listItem = rect.GetComponent<PropertyItemField>();
                 await listItem.updateItem(items[index], cardManager);
             }, 
             rect =>
             {
-                var listItem = rect.GetComponent<CardPropertyListItem>();
+                var listItem = rect.GetComponent<PropertyItemField>();
                 listItem.onClickButton += onClickPropButtonCallback;
                 listItem.onClickCardButton += onClickPropCardButtonCallback;
                 listItem.onClickCardEditButton += onClickPropCardEditButtonCallback;
@@ -44,7 +44,7 @@ namespace UI
             }, 
             rect =>
             {
-                var listItem = rect.GetComponent<CardPropertyListItem>();
+                var listItem = rect.GetComponent<PropertyItemField>();
                 listItem.onClickButton -= onClickPropButtonCallback;
                 listItem.onClickCardButton -= onClickPropCardButtonCallback;
                 listItem.onClickCardEditButton -= onClickPropCardEditButtonCallback;
@@ -58,14 +58,14 @@ namespace UI
                 listItem.onItemValueChanged -= onPropChildValueChangedCallback;
             });
         }
-        public async Task updateItem(string name, CardPropertyItem item, CardManager cardManager)
+        public async Task updateItem(string name, PropertyItemInfo item, CardManager cardManager)
         {
-            CardPropertyListItem listItem = null;
+            PropertyItemField listItem = null;
             foreach (var rect in _itemList)
             {
                 if (rect == null)
                     continue;
-                var i = rect.GetComponent<CardPropertyListItem>();
+                var i = rect.GetComponent<PropertyItemField>();
                 if (i == null)
                     continue;
                 if (i.propertyName == name)

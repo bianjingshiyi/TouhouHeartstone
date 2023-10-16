@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Game;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Game;
+using System;
 using TouhouCardEngine;
 using UnityEngine;
+using System.Threading.Tasks;
+using System.Linq;
 using UnityEngine.UI;
 
 namespace UI
 {
-    public class ActionNodeItemEffectPropertyItem : MonoBehaviour
+    public class PropertyItemField : MonoBehaviour
     {
         private void Awake()
         {
@@ -25,27 +25,27 @@ namespace UI
             _valueInputField.onClickItemRemoveButton += (item, index) => onClickRemoveItemButton?.Invoke(_name, index);
             _deleteButton.onClick.AddListener(() => onClickDelete?.Invoke(_name));
         }
-        public async Task updateItem(EffectPropertyItem item, CardManager cardManager)
+        public async Task updateItem(PropertyItemInfo info, CardManager cardManager)
         {
-            _name = item.propertyName;
-            _nameText.text = item.propertyName;
+            _name = info.propertyName;
+            _nameText.text = info.getDisplayName();
 
-            var type = item.type;
-            var value = item.value;
+            var type = info.type;
+            var value = info.value;
             var valueInfo = new ActionNodeValueInfo(string.Empty, type, value)
             {
-                isArray = item.isArray
+                isArray = info.isArray
             };
             _valueInputField.setValueInfo(string.Empty, valueInfo);
 
 
-            if (item.type == ActionNodeValueType.cardReference)
+            if (info.type == ActionNodeValueType.cardReference)
             {
-                if (item.value is DefineReference defRef)
+                if (info.value is DefineReference defRef)
                 {
                     await setCard(_valueInputField, defRef, cardManager);
                 }
-                else if (item.isArray && item.value is DefineReference[] defRefs)
+                else if (info.isArray && info.value is DefineReference[] defRefs)
                 {
                     for (int i = 0; i < defRefs.Length; i++)
                     {
@@ -57,19 +57,6 @@ namespace UI
                     }
                 }
             }
-        }
-        private static async Task setCard(ValueInputField inputField, DefineReference defRef, CardManager cardManager)
-        {
-            var poolRef = cardManager.getLocalCardPoolReference(defRef.cardPoolId);
-            await cardManager.getOrLoadCardPool(poolRef);
-            var cardDefine = cardManager.getCardDefine(poolRef, defRef.defineId);
-            var skin = cardManager.getCardSkin(cardDefine);
-            Sprite image = null;
-            if (skin != null)
-            {
-                image = await cardManager.loadImage(skin.imagePath, defRef.cardPoolId);
-            }
-            inputField.setCard(cardDefine, skin, image);
         }
         public void setPiles(string[] pileNames, string[] pileValues)
         {
@@ -86,6 +73,19 @@ namespace UI
         public void setKeywords(IEnumerable<(string name, string value)> keywords)
         {
             setKeywords(keywords.Select(p => p.name).ToArray(), keywords.Select(p => p.value).ToArray());
+        }
+        private static async Task setCard(ValueInputField inputField, DefineReference defRef, CardManager cardManager)
+        {
+            var poolRef = cardManager.getLocalCardPoolReference(defRef.cardPoolId);
+            await cardManager.getOrLoadCardPool(poolRef);
+            var cardDefine = cardManager.getCardDefine(poolRef, defRef.defineId);
+            var skin = cardManager.getCardSkin(cardDefine);
+            Sprite image = null;
+            if (skin != null)
+            {
+                image = await cardManager.loadImage(skin.imagePath, defRef.cardPoolId);
+            }
+            inputField.setCard(cardDefine, skin, image);
         }
 
 
@@ -110,19 +110,34 @@ namespace UI
         [SerializeField]
         private Button _deleteButton;
     }
-
-    public class EffectPropertyItem
+    public class PropertyItemInfo
     {
         public string propertyName;
+        public string displayName;
         public ActionNodeValueType type;
         public bool isArray;
         public object value;
 
-        public EffectPropertyItem(string name, ActionNodeValueType type, bool isArray)
+        public PropertyItemInfo(string name, ActionNodeValueType type, bool isArray)
         {
             propertyName = name;
             this.type = type;
             this.isArray = isArray;
+        }
+        public PropertyItemInfo(string name, string displayName, ActionNodeValueType type, bool isArray)
+        {
+            propertyName = name;
+            this.displayName = displayName;
+            this.type = type;
+            this.isArray = isArray;
+        }
+        public string getDisplayName()
+        {
+            if (string.IsNullOrEmpty(displayName))
+            {
+                return propertyName;
+            }
+            return displayName;
         }
     }
 }

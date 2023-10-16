@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
-    public class CreateCustomPropertyDialog : MonoBehaviour
+    public class CreatePropertyItemDialog : MonoBehaviour
     {
         public void setTypes((ActionNodeValueType type, string name)[] types)
         {
@@ -41,7 +40,7 @@ namespace UI
         #region 事件回调
         private void onConfirmClicked()
         {
-            var propItem = ToCardPropertyItem();
+            var propItem = ToPropertyItemInfo();
             onConfirm?.Invoke(propItem);
         }
         private void onCancelClicked()
@@ -50,19 +49,19 @@ namespace UI
         }
         #endregion
 
-        private CardPropertyItem ToCardPropertyItem()
+        private PropertyItemInfo ToPropertyItemInfo()
         {
             ActionNodeValueType type = ActionNodeValueType.integer;
             var index = _typeDropdown.value;
             if (index >= 0 && index < _propTypes.Length)
                 type = _propTypes[index].type;
-            var item = new CardPropertyItem(_propertyName.text, type, _isArrayToggle.isOn);
+            var item = new PropertyItemInfo(_propertyName.text, type, _isArrayToggle.isOn);
             return item;
         }
         #endregion
 
         #region 事件
-        public event Action<CardPropertyItem> onConfirm;
+        public event Action<PropertyItemInfo> onConfirm;
         #endregion
 
         private (ActionNodeValueType type, string name)[] _propTypes;

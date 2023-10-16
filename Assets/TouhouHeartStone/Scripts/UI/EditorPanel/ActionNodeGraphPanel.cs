@@ -1184,7 +1184,7 @@ namespace UI
             setFocused();
             onClickAddEffectPropertyButton?.Invoke();
         }
-        private void onConfirmCreateEffectPropertyCallback(EffectPropertyItem item)
+        private void onConfirmCreateEffectPropertyCallback(PropertyItemInfo item)
         {
             setFocused();
             onConfirmCreateEffectProperty?.Invoke(item);
@@ -1501,7 +1501,7 @@ namespace UI
         /// 当确认创建自定义属性。
         /// </summary>
         public event Action onClickAddEffectPropertyButton;
-        public event Action<EffectPropertyItem> onConfirmCreateEffectProperty;
+        public event Action<PropertyItemInfo> onConfirmCreateEffectProperty;
         public event Action<string, int> onClickEffectPropertyItemButton;
         public event Action<string, int> onClickEffectPropertyItemCardButton;
         public event Action<string, int> onClickEffectPropertyItemCardEditButton;
@@ -1550,7 +1550,7 @@ namespace UI
         [SerializeField]
         RectTransform _viewPort;
         [SerializeField]
-        CreateEffectPropertyDialog _createEffectPropDialog;
+        CreatePropertyItemDialog _createEffectPropDialog;
 
         [Header("缩放")]
         [SerializeField]

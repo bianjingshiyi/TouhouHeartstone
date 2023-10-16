@@ -14,7 +14,7 @@ namespace Controllers
         {
             _ui.displayEffectPropertyDialog(true);
         }
-        private void onConfirmCreateEffectPropertyCallback(EffectPropertyItem item)
+        private void onConfirmCreateEffectPropertyCallback(PropertyItemInfo item)
         {
             if (string.IsNullOrEmpty(item.propertyName))
             {
@@ -227,10 +227,10 @@ namespace Controllers
                 nodeItem.updateEffectPropertyItem(name, item, game.card);
             }
         }
-        private EffectPropertyItem[] GetEffectPropItems()
+        private PropertyItemInfo[] GetEffectPropItems()
         {
             var names = _effect.getPropNames();
-            List<EffectPropertyItem> items = new List<EffectPropertyItem>();
+            List<PropertyItemInfo> items = new List<PropertyItemInfo>();
             foreach (string name in names)
             {
                 var item = GetEffectPropertyItem(name);
@@ -240,7 +240,7 @@ namespace Controllers
             }
             return items.ToArray();
         }
-        private EffectPropertyItem GetEffectPropertyItem(string name)
+        private PropertyItemInfo GetEffectPropertyItem(string name)
         {
             var value = _effect.getProp(name);
             if (value == null)
@@ -263,7 +263,7 @@ namespace Controllers
             if (!_effectPropTypeDict.TryGetValue(valueType, out ActionNodeValueType type))
                 return null;
 
-            var item = new EffectPropertyItem(name, type, isArray)
+            var item = new PropertyItemInfo(name, type, isArray)
             {
                 value = value
             };
@@ -344,7 +344,7 @@ namespace Controllers
         #region 内嵌类
         class AddEffectPropertyOperation : GraphOperation
         {
-            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, EffectPropertyItem propItem) : 
+            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, PropertyItemInfo propItem) : 
                 this(graphCtrl, propItem.propertyName, propItem.type, propItem.value, propItem.isArray)
             {
             }
@@ -372,7 +372,7 @@ namespace Controllers
         }
         class RemoveEffectPropertyOperation : GraphOperation
         {
-            public RemoveEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, EffectPropertyItem propItem) : base(graphCtrl)
+            public RemoveEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, PropertyItemInfo propItem) : base(graphCtrl)
             {
                 _propertyName = propItem.propertyName;
                 _type = propItem.type;

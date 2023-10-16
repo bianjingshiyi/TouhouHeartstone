@@ -263,12 +263,12 @@ namespace UI
         {
             _cardPoolViewPanelObj.SetActive(display);
         }
-        public void updateKeywords(CardPropertyItem[] items, CardManager cardManager)
+        public void updateKeywords(PropertyItemInfo[] items, CardManager cardManager)
         {
             _keywordsFoldout.updateItems(items, cardManager);
         }
 
-        public async void updateKeywordItem(string name, CardPropertyItem item, CardManager cardManager)
+        public async void updateKeywordItem(string name, PropertyItemInfo item, CardManager cardManager)
         {
             await _keywordsFoldout.updateItem(name, item, cardManager);
         }
@@ -296,17 +296,17 @@ namespace UI
                 _createCustomPropDialog.hide();
             }
         }
-        public void updateCustomProperties(CardPropertyItem[] items, CardManager cardManager)
+        public void updateCustomProperties(PropertyItemInfo[] items, CardManager cardManager)
         {
             int count = items.Length;
             BJSYGameCore.UI.UIHelper.updateList(_customPropertiesRoot, _customPropertyItemTemplate, _customPropertyItemList, count, async (i, rect) =>
             {
-                CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
+                PropertyItemField item = rect.GetComponent<PropertyItemField>();
                 await item.updateItem(items[i], cardManager);
             },
             rect =>
             {
-                CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
+                PropertyItemField item = rect.GetComponent<PropertyItemField>();
                 item.setPiles(CardEditorCtrl.piles.Select(p => (p.Value, p.Key)));
                 item.setKeywords(CardEditorCtrl.getKeywords());
                 item.onClickItemButton += onClickCustomPropertyItemButtonCallback;
@@ -323,7 +323,7 @@ namespace UI
             },
             rect =>
             {
-                CardPropertyListItem item = rect.GetComponent<CardPropertyListItem>();
+                PropertyItemField item = rect.GetComponent<PropertyItemField>();
                 item.onClickItemButton -= onClickCustomPropertyItemButtonCallback;
                 item.onClickItemCardButton -= onClickCustomPropertyItemCardButtonCallback;
                 item.onClickItemCardEditButton -= onClickCustomPropertyItemCardEditButtonCallback;
@@ -338,14 +338,14 @@ namespace UI
             });
         }
 
-        public async void updateCustomPropertyItem(string name, CardPropertyItem item, CardManager cardManager)
+        public async void updateCustomPropertyItem(string name, PropertyItemInfo item, CardManager cardManager)
         {
-            CardPropertyListItem listItem = null;
+            PropertyItemField listItem = null;
             foreach (var rect in _customPropertyItemList)
             {
                 if (rect == null)
                     continue;
-                var i = rect.GetComponent<CardPropertyListItem>();
+                var i = rect.GetComponent<PropertyItemField>();
                 if (i == null)
                     continue;
                 if (i.propertyName == name)
@@ -927,7 +927,7 @@ namespace UI
         /// <summary>
         /// 当确认创建自定义属性。
         /// </summary>
-        public event Action<CardPropertyItem> onConfirmCreateCustomProperty;
+        public event Action<PropertyItemInfo> onConfirmCreateCustomProperty;
         public event Action<bool, string, int> onClickPropertyItemButton;
         public event Action<bool, string, int> onClickPropertyItemCardButton;
         public event Action<bool, string, int> onClickPropertyItemCardEditButton;
@@ -1046,7 +1046,7 @@ namespace UI
         [SerializeField]
         Button _addCustomPropertyButton;
         [SerializeField]
-        CreateCustomPropertyDialog _createCustomPropDialog;
+        CreatePropertyItemDialog _createCustomPropDialog;
         [SerializeField]
         RectTransform _customPropertiesRoot;
         [SerializeField]

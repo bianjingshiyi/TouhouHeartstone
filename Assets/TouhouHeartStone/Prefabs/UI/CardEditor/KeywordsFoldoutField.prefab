@@ -855,11 +855,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3706262713970231920, guid: fb287dd0b58134346886a7d8af6d259b,
-        type: 3}
-      propertyPath: _valueInputField
-      value: 
-      objectReference: {fileID: 1897800649064930711}
     - target: {fileID: 4217212089698056073, guid: fb287dd0b58134346886a7d8af6d259b,
         type: 3}
       propertyPath: m_IsActive
@@ -1156,18 +1151,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 2062083123457239787}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1897800649064930711 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 489671962696251260, guid: fb287dd0b58134346886a7d8af6d259b,
-    type: 3}
-  m_PrefabInstance: {fileID: 2062083123457239787}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73266eb5f9dd843459b6870d8b09b94c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &3406702577270662155
 PrefabInstance:
   m_ObjectHideFlags: 0

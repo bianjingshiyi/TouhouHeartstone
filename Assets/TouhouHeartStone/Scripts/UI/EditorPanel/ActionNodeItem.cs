@@ -149,7 +149,7 @@ namespace UI
             ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
             item.initPileNames(pileNames, pileValues);
 
-            ActionNodeItemEffectPropertyItem propItem = _effectPropertyItemTemplate.GetComponent<ActionNodeItemEffectPropertyItem>();
+            PropertyItemField propItem = _effectPropertyItemTemplate.GetComponent<PropertyItemField>();
             propItem.setPiles(pileNames, pileValues);
         }
         /// <summary>
@@ -163,7 +163,7 @@ namespace UI
         }
         public void initKeywords(string[] keywordNames, string[] keywordValues)
         {
-            ActionNodeItemEffectPropertyItem propItem = _effectPropertyItemTemplate.GetComponent<ActionNodeItemEffectPropertyItem>();
+            PropertyItemField propItem = _effectPropertyItemTemplate.GetComponent<PropertyItemField>();
             propItem.setKeywords(keywordNames, keywordValues);
         }
         /// <summary>
@@ -393,15 +393,15 @@ namespace UI
             return _outputList.Select(r => r.GetComponent<ActionNodeItemOutput>()).ToArray();
         }
         #region 自定义属性
-        public void updateEffectProperties(EffectPropertyItem[] properties, CardManager cardManager)
+        public void updateEffectProperties(PropertyItemInfo[] properties, CardManager cardManager)
         {
             UIHelper.updateList(_effectPropertyRoot, _effectPropertyItemTemplate, _effectPropertyItems, properties.Length, async (i, itemRect) =>
             {
-                ActionNodeItemEffectPropertyItem item = itemRect.GetComponent<ActionNodeItemEffectPropertyItem>();
+                PropertyItemField item = itemRect.GetComponent<PropertyItemField>();
                 await item.updateItem(properties[i], cardManager);
             }, itemRect =>
             {
-                ActionNodeItemEffectPropertyItem item = itemRect.GetComponent<ActionNodeItemEffectPropertyItem>();
+                PropertyItemField item = itemRect.GetComponent<PropertyItemField>();
                 item.onValueChanged += onEffectPropertyValueChangedCallback;
                 item.onClickButton += onClickEffectPropertyButtonCallback;
                 item.onClickCardButton += onClickEffectPropertyCardButtonCallback;
@@ -416,7 +416,7 @@ namespace UI
                 item.onClickRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
             }, itemRect =>
             {
-                ActionNodeItemEffectPropertyItem item = itemRect.GetComponent<ActionNodeItemEffectPropertyItem>();
+                PropertyItemField item = itemRect.GetComponent<PropertyItemField>();
                 item.onValueChanged -= onEffectPropertyValueChangedCallback;
                 item.onClickButton -= onClickEffectPropertyButtonCallback;
                 item.onClickCardButton -= onClickEffectPropertyCardButtonCallback;
@@ -432,14 +432,14 @@ namespace UI
             }, rebuild: true);
             SetDirty();
         }
-        public async void updateEffectPropertyItem(string name, EffectPropertyItem item, CardManager cardManager)
+        public async void updateEffectPropertyItem(string name, PropertyItemInfo item, CardManager cardManager)
         {
-            ActionNodeItemEffectPropertyItem listItem = null;
+            PropertyItemField listItem = null;
             foreach (var rect in _effectPropertyItems)
             {
                 if (rect == null)
                     continue;
-                var i = rect.GetComponent<ActionNodeItemEffectPropertyItem>();
+                var i = rect.GetComponent<PropertyItemField>();
                 if (i == null)
                     continue;
                 if (i.propertyName == name)

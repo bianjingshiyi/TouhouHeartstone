@@ -654,7 +654,7 @@ namespace Controllers
             _ui.displayCardSelectPanel(false);
         }
 
-        private void onConfirmCreateCustomPropertyCallback(CardPropertyItem item)
+        private void onConfirmCreateCustomPropertyCallback(PropertyItemInfo item)
         {
             if (string.IsNullOrEmpty(item.propertyName))
             {
@@ -1106,10 +1106,10 @@ namespace Controllers
                 _ui.updateKeywordItem(name, item, game.card);
             }
         }
-        private CardPropertyItem[] GetCardDefineCustomProps()
+        private PropertyItemInfo[] GetCardDefineCustomProps()
         {
             var names = _cardDefine.getPropNames();
-            List<CardPropertyItem> items = new List<CardPropertyItem>();
+            List<PropertyItemInfo> items = new List<PropertyItemInfo>();
             foreach (string name in names)
             {
                 var item = GetCardDefineCustomProperty(name);
@@ -1119,7 +1119,7 @@ namespace Controllers
             }
             return items.ToArray();
         }
-        private CardPropertyItem GetCardDefineCustomProperty(string name)
+        private PropertyItemInfo GetCardDefineCustomProperty(string name)
         {
             if (isPropertyNameBuiltin(name))
             {
@@ -1143,16 +1143,16 @@ namespace Controllers
             if (!customPropTypeDict.TryGetValue(valueType, out ActionNodeValueType type))
                 return null;
 
-            var item = new CardPropertyItem(name, type, isArray)
+            var item = new PropertyItemInfo(name, type, isArray)
             {
                 value = value
             };
             return item;
         }
 
-        private CardPropertyItem[] GetCardDefineKeywordItems()
+        private PropertyItemInfo[] GetCardDefineKeywordItems()
         {
-            List<CardPropertyItem> items = new List<CardPropertyItem>();
+            List<PropertyItemInfo> items = new List<PropertyItemInfo>();
             foreach (var pair in keywordInfos)
             {
                 var item = GetCardDefineKeywordItem(pair.Key);
@@ -1162,7 +1162,7 @@ namespace Controllers
             }
             return items.ToArray();
         }
-        private CardPropertyItem GetCardDefineKeywordItem(string name)
+        private PropertyItemInfo GetCardDefineKeywordItem(string name)
         {
             if (!keywordInfos.TryGetValue(name, out var info))
                 return null;
@@ -1183,7 +1183,7 @@ namespace Controllers
                 valueAction.Item2(_cardDefine) :
                 _cardDefine.hasKeyword(name);
 
-            var item = new CardPropertyItem(name, game.lang._(info.displayName), valueType, isArray)
+            var item = new PropertyItemInfo(name, game.lang._(info.displayName), valueType, isArray)
             {
                 value = value
             };
