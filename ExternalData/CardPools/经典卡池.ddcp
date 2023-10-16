@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 332, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 333, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -4519,6 +4519,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "UseEvent",
                     "eventName" : "UseEvent"
                   }
                 },
@@ -6727,6 +6728,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "UseEvent",
                     "eventName" : "UseEvent"
                   }
                 },
@@ -7315,6 +7317,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "EnterFieldEvent",
                     "eventName" : "EnterFieldEvent"
                   }
                 },
@@ -8461,6 +8464,7 @@
                 "constDict" : {
                   "tag" : {
                     "_t" : "EffectTag",
+                    "<value>k__BackingField" : "寻觅",
                     "effectTag" : "寻觅"
                   }
                 },
@@ -11962,6 +11966,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "DeathEvent",
                     "eventName" : "DeathEvent"
                   }
                 },
@@ -15810,171 +15815,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : -2147418075,
-      "type" : "Servant",
-      "propDict" : {
-        "cost" : 3,
-        "attack" : 2,
-        "life" : 2,
-        "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Element"]
-        },
-        "isToken" : true,
-        "keywords" : {
-          "_t" : "System.String[]",
-          "_v" : ["taunt"]
-        },
-        "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 139
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableEventEffect",
-          "name" : "事件效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : 0.0,
-                "posY" : 0.0,
-                "eventName" : "BeforeTurnEndEvent",
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  },
-                  "pileList" : {
-                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                    "_v" : ["Field"]
-                  }
-                },
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112002
-                },
-                "posX" : 14.817138671875,
-                "posY" : -614.8465576171875,
-                "constDict" : {
-                  "operator" : 0
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102010
-                },
-                "posX" : -443.2783203125,
-                "posY" : -640.65643310546875,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "posX" : -724.1192626953125,
-                "posY" : -641.0301513671875,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102017
-                },
-                "posX" : 515.58319091796875,
-                "posY" : -149.60906982421875,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 202036
-                },
-                "posX" : 1133.20166015625,
-                "posY" : -70.2152099609375,
-                "constDict" : {
-                  "count2" : 1,
-                  "damage2" : 2
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "A",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "card",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "B",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 2,
-                "destName" : "condition",
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "targets",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "damageSource",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 5
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
       "_id" : -2147418077,
       "type" : "Servant",
       "propDict" : {
@@ -17681,6 +17521,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "UseEvent",
                     "eventName" : "UseEvent"
                   }
                 },
@@ -26317,6 +26158,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "HealEvent",
                     "eventName" : "HealEvent"
                   }
                 },
@@ -26670,6 +26512,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "RevealDuelEvent",
                     "eventName" : "RevealDuelEvent"
                   }
                 },
@@ -26917,6 +26760,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "RevealDuelEvent",
                     "eventName" : "RevealDuelEvent"
                   }
                 },
@@ -27271,6 +27115,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "RevealDuelEvent",
                     "eventName" : "RevealDuelEvent"
                   }
                 },
@@ -27575,6 +27420,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "RevealDuelEvent",
                     "eventName" : "RevealDuelEvent"
                   }
                 },
@@ -28171,6 +28017,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "RevealDuelEvent",
                     "eventName" : "RevealDuelEvent"
                   }
                 },
@@ -31338,6 +31185,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "RevealDuelEvent",
                     "eventName" : "RevealDuelEvent"
                   }
                 },
@@ -31843,6 +31691,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "RevealDuelEvent",
                     "eventName" : "RevealDuelEvent"
                   }
                 },
@@ -32867,6 +32716,7 @@
                 "constDict" : {
                   "argRef" : {
                     "_t" : "EventArgReference",
+                    "<value>k__BackingField" : "UseEvent",
                     "eventName" : "UseEvent"
                   }
                 },
@@ -38674,204 +38524,6 @@
         }],
       "effectList" : []
     }, {
-      "_id" : -2147418089,
-      "type" : "Spell",
-      "propDict" : {
-        "cost" : 4,
-        "tags" : {
-          "_t" : "System.String[]",
-          "_v" : [null, "Metal", "Fire"]
-        },
-        "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 139
-        },
-        "isToken" : true
-      },
-      "effects" : [{
-          "_t" : "SerializableActiveEffect",
-          "name" : "主动效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActiveEntryNode",
-                "tags" : null,
-                "_id" : 1,
-                "posX" : -122.31033325195313,
-                "posY" : -151.66482543945313,
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  }
-                },
-                "targetCheckerList" : [{
-                    "targetType" : "Character",
-                    "errorTip" : "需要以仆从为目标"
-                  }]
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102002
-                },
-                "posX" : -65.86175537109375,
-                "posY" : 480.35858154296875,
-                "constDict" : {
-                  "select" : 1
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 101004
-                },
-                "posX" : 992.0396728515625,
-                "posY" : -262.37628173828125,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 101003
-                },
-                "posX" : 670.8216552734375,
-                "posY" : -193.66192626953125,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 202034
-                },
-                "posX" : 874.45074462890625,
-                "posY" : 201.480712890625,
-                "constDict" : {
-                  "damagetype" : true,
-                  "damage2" : 4,
-                  "EDITOR_ANIMATION_REF" : "AnimRef0_3"
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 202034
-                },
-                "posX" : 2050.22998046875,
-                "posY" : 148.08201599121094,
-                "constDict" : {
-                  "damagetype" : true,
-                  "damage2" : 4,
-                  "EDITOR_ANIMATION_REF" : "AnimRef1_4"
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 7,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(1),
-                  "defineId" : 8
-                },
-                "posX" : 2625.30224609375,
-                "posY" : 213.08203125,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "card",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 2,
-                "destName" : "targetCondition",
-                "destParamIndex" : 1,
-                "destNodeId" : 1
-              }, {
-                "sourceName" : "玩家",
-                "sourceNodeId" : 1,
-                "destName" : "player",
-                "destNodeId" : 6
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "player",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "targets",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 5,
-                "destName" : "targets",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 3,
-                "destName" : "enter",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "damageSource",
-                "destNodeId" : 3
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 4,
-                "destName" : "enter",
-                "destNodeId" : 7
-              }, {
-                "sourceName" : "卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "卡牌",
-                "destNodeId" : 7
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
       "_id" : -2147418084,
       "type" : "Spell",
       "propDict" : {
@@ -42324,6 +41976,371 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : -2147418089,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 4,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : [null, "Metal", "Fire"]
+        },
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 139
+        },
+        "isToken" : true
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "tags" : null,
+                "_id" : 1,
+                "posX" : -122.31033325195313,
+                "posY" : -151.66482543945313,
+                "consts" : {
+                  "tags" : {
+                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                    "_v" : []
+                  }
+                },
+                "targetCheckerList" : [{
+                    "targetType" : "Character",
+                    "errorTip" : "需要以仆从为目标"
+                  }]
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102002
+                },
+                "posX" : -65.86175537109375,
+                "posY" : 480.35858154296875,
+                "constDict" : {
+                  "select" : 1
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 101004
+                },
+                "posX" : 992.0396728515625,
+                "posY" : -262.37628173828125,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 101003
+                },
+                "posX" : 670.8216552734375,
+                "posY" : -193.66192626953125,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202034
+                },
+                "posX" : 874.45074462890625,
+                "posY" : 201.480712890625,
+                "constDict" : {
+                  "damagetype" : true,
+                  "damage2" : 4,
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_3"
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202034
+                },
+                "posX" : 2050.22998046875,
+                "posY" : 148.08201599121094,
+                "constDict" : {
+                  "damagetype" : true,
+                  "damage2" : 4,
+                  "EDITOR_ANIMATION_REF" : "AnimRef1_4"
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(1),
+                  "defineId" : 8
+                },
+                "posX" : 2625.30224609375,
+                "posY" : 213.08203125,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "card",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 2,
+                "destName" : "targetCondition",
+                "destParamIndex" : 1,
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "player",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "targets",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "targets",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 3,
+                "destName" : "enter",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "damageSource",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 4,
+                "destName" : "enter",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "卡牌",
+                "destNodeId" : 7
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : -2147418075,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 3,
+        "attack" : 2,
+        "life" : 2,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Element"]
+        },
+        "isToken" : true,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["taunt"]
+        },
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 139
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableEventEffect",
+          "name" : "事件效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableEventEntryNode",
+                "_id" : 1,
+                "posX" : 0.0,
+                "posY" : 0.0,
+                "eventName" : "BeforeTurnEndEvent",
+                "consts" : {
+                  "tags" : {
+                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                    "_v" : []
+                  },
+                  "pileList" : {
+                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
+                    "_v" : ["Field"]
+                  }
+                },
+                "tags" : null,
+                "piles" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112002
+                },
+                "posX" : 14.817138671875,
+                "posY" : -614.8465576171875,
+                "constDict" : {
+                  "operator" : 0
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102010
+                },
+                "posX" : -443.2783203125,
+                "posY" : -640.65643310546875,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102001
+                },
+                "posX" : -724.1192626953125,
+                "posY" : -641.0301513671875,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102017
+                },
+                "posX" : 515.58319091796875,
+                "posY" : -149.60906982421875,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202036
+                },
+                "posX" : 1133.20166015625,
+                "posY" : -70.2152099609375,
+                "constDict" : {
+                  "count2" : 1,
+                  "damage2" : 2,
+                  "damagetype" : null,
+                  "EDITOR_ANIMATION_REF" : "AnimRef0_5"
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "A",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "card",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "B",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 2,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "targets",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "damageSource",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 5
+              }]
+          }
+        }],
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : -2147418073,
@@ -43004,13 +43021,6 @@
       "_subname" : "",
       "_imagePath" : "02400d836e81c70a22d22dadce042cd1d3568351e10a664b774557e9ecbbc5e7.jpg",
       "_desc" : "<b>守卫，宣言：</b>你的手牌中每有一张法术牌，便获得+1生命值。",
-      "_language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
-      "_id" : -2147418075,
-      "_name" : "熔岩元素*",
-      "_imagePath" : "8639d773a51752f8e4a8119c684f34308284010847168ad68355d82a728489ad.jpg",
-      "_desc" : "<b>守卫</b>\r\n每当你的回合结束时，随机对一个敌人造成2点伤害。",
       "_language" : "zh-Hans",
       "_animationRefs" : []
     }, {
@@ -43861,28 +43871,6 @@
           }
         }]
     }, {
-      "_id" : -2147418089,
-      "_name" : "火金符【圣爱尔摩火柱】*",
-      "_subname" : "",
-      "_imagePath" : "54866a8a4b8f2d88618d195c637c17982dba5be86ad720b09c0d2d079bf0abd3.jpg",
-      "_desc" : "<b>元素法术：金、火</b>\r\n对一个仆从和敌方英雄造成4点伤害。",
-      "_language" : "zh-Hans",
-      "_animationRefs" : [{
-          "sourcePosition" : 3,
-          "targetPosition" : 3,
-          "key" : "AnimRef0_3",
-          "animRef" : {
-            "cardPoolId" : NumberLong(0),
-            "defineId" : 9
-          }
-        }, {
-          "key" : "AnimRef1_4",
-          "animRef" : {
-            "cardPoolId" : NumberLong(0),
-            "defineId" : 9
-          }
-        }]
-    }, {
       "_id" : -2147418084,
       "_name" : "木土符【抽芽复行】*",
       "_subname" : "",
@@ -44210,6 +44198,43 @@
             "defineId" : 18
           }
         }]
+    }, {
+      "_id" : -2147418089,
+      "_name" : "火金符【圣爱尔摩火柱】*",
+      "_subname" : "",
+      "_imagePath" : "54866a8a4b8f2d88618d195c637c17982dba5be86ad720b09c0d2d079bf0abd3.jpg",
+      "_desc" : "<b>元素法术：金、火</b>\r\n对一个仆从和敌方英雄造成4点伤害。",
+      "_language" : "zh-Hans",
+      "_animationRefs" : [{
+          "targetPosition" : 3,
+          "key" : "AnimRef0_3",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 9
+          }
+        }, {
+          "targetPosition" : 3,
+          "key" : "AnimRef1_4",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 9
+          }
+        }]
+    }, {
+      "_id" : -2147418075,
+      "_name" : "熔岩元素*",
+      "_imagePath" : "8639d773a51752f8e4a8119c684f34308284010847168ad68355d82a728489ad.jpg",
+      "_desc" : "<b>守卫</b>\r\n每当你的回合结束时，随机对一个敌人造成2点伤害。",
+      "_language" : "zh-Hans",
+      "_animationRefs" : [{
+          "sourcePosition" : 2,
+          "targetPosition" : 3,
+          "key" : "AnimRef0_5",
+          "animRef" : {
+            "cardPoolId" : NumberLong(0),
+            "defineId" : 1
+          }
+        }]
     }],
   "buffDefineList" : [{
       "_id" : 2,
@@ -44222,6 +44247,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 4,
@@ -44240,6 +44266,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 5,
@@ -44251,6 +44278,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 6,
@@ -44263,6 +44291,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 7,
@@ -44274,6 +44303,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -44370,6 +44400,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -44534,6 +44565,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -44814,6 +44846,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -44978,6 +45011,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 12,
@@ -44996,6 +45030,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 13,
@@ -45014,6 +45049,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 14,
@@ -45037,6 +45073,7 @@
           "value" : ["taunt"],
           "modifyType" : 0
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 19,
@@ -45049,6 +45086,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 20,
@@ -45065,6 +45103,7 @@
           "value" : ["rush"],
           "modifyType" : 0
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 21,
@@ -45083,6 +45122,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 22,
@@ -45094,6 +45134,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -45202,6 +45243,7 @@
           "value" : ["rush"],
           "modifyType" : 0
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 24,
@@ -45213,6 +45255,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 25,
@@ -45224,10 +45267,12 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 26,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializablePassiveEffect",
           "propDict" : { },
@@ -45371,6 +45416,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 30,
@@ -45382,6 +45428,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -45476,6 +45523,7 @@
           "value" : ["charge"],
           "modifyType" : 0
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 34,
@@ -45494,6 +45542,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 35,
@@ -45505,6 +45554,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 36,
@@ -45514,6 +45564,7 @@
           "value" : ["immunity"],
           "modifyType" : 0
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -45610,6 +45661,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -45706,6 +45758,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -45809,6 +45862,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 40,
@@ -45820,6 +45874,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "propDict" : { },
@@ -45917,6 +45972,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 42,
@@ -45928,6 +45984,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 43,
@@ -45937,6 +45994,7 @@
           "value" : ["rush"],
           "modifyType" : 0
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -46039,6 +46097,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 47,
@@ -46050,6 +46109,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -46147,6 +46207,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -46237,6 +46298,7 @@
     }, {
       "_id" : 45,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -46438,6 +46500,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 49,
@@ -46456,6 +46519,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 52,
@@ -46474,6 +46538,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 53,
@@ -46488,6 +46553,7 @@
           "value" : ["taunt"],
           "modifyType" : 0
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 54,
@@ -46506,6 +46572,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 55,
@@ -46532,6 +46599,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 56,
@@ -46543,6 +46611,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 51,
@@ -46561,6 +46630,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializablePassiveEffect",
           "name" : "被动效果1",
@@ -46653,6 +46723,7 @@
           "value" : ["rush"],
           "modifyType" : 0
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializablePassiveEffect",
           "name" : "被动效果1",
@@ -46741,6 +46812,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 57,
@@ -46752,6 +46824,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 59,
@@ -46763,6 +46836,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 62,
@@ -46774,6 +46848,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -46908,6 +46983,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -47035,10 +47111,12 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 28,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -47636,6 +47714,7 @@
     }, {
       "_id" : 29,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializablePassiveEffect",
           "name" : "被动效果1",
@@ -47745,6 +47824,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 66,
@@ -47757,6 +47837,7 @@
           "maxValue" : 2147483647,
           "onCheckCondition" : null
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -47913,6 +47994,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 71,
@@ -47924,6 +48006,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -48073,6 +48156,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 73,
@@ -48091,10 +48175,12 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 68,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -48325,6 +48411,7 @@
           "minValue" : 0,
           "maxValue" : 2147483647
         }],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -48411,6 +48498,7 @@
     }, {
       "_id" : 61,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -48682,10 +48770,12 @@
           "value" : ["cantattack"],
           "modifyType" : 1
         }],
+      "existLimitList" : [],
       "effects" : []
     }, {
       "_id" : 31,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -49044,6 +49134,7 @@
     }, {
       "_id" : 64,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -49255,6 +49346,7 @@
     }, {
       "_id" : 1,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
@@ -49892,6 +49984,7 @@
     }, {
       "_id" : 32,
       "propModifierList" : [],
+      "existLimitList" : [],
       "effects" : [{
           "_t" : "SerializableEventEffect",
           "name" : "事件效果1",
