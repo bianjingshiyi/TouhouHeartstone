@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MongoDB.Bson.Serialization.Attributes;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -134,9 +135,12 @@ namespace Game
     [Serializable]
     public class EffectTag : NodeConstProxyString
     {
+        [Obsolete("请使用value。该属性仅用于序列化兼容，之后会移除该属性")]
+        [BsonElement]
+        [BsonIgnoreIfNull]
         public string effectTag
         {
-            get => value;
+            get => null;
             set => this.value = value;
         }
         public EffectTag(string value) : base(value)

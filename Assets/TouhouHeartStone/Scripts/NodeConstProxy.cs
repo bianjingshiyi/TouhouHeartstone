@@ -1,8 +1,26 @@
-﻿namespace Game
+﻿using System;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Game
 {
     public abstract class NodeConstProxy<T>
     {
-        public T value { get; set; }
+        [Obsolete("仅用于序列化兼容，之后会移除该属性")]
+        [BsonElement("<value>k__BackingField")]
+        [BsonIgnoreIfDefault]
+        private T valueBackingField
+        {
+            get => default;
+            set => _value = value;
+        }
+        [BsonElement]
+        private T _value;
+        [BsonIgnore]
+        public T value 
+        {
+            get => _value; 
+            set => _value = value; 
+        }
         public NodeConstProxy(T value)
         {
             this.value = value;
