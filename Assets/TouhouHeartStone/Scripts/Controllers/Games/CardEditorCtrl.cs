@@ -201,6 +201,7 @@ namespace Controllers
             _ui.onClickSaveButton += onClickSaveButton;
             _ui.onClickCloseButton += onClickCloseButton;
             _ui.onClickSkillRefButton += onClickSkillRefButton;
+            _ui.onSkillRefEditButtonClicked += onSkillRefEditButtonClicked;
             _ui.onChangeTag += onChangeTag;
 
             _ui.onClickCardPageButton += onClickCardPageButton;
@@ -594,6 +595,16 @@ namespace Controllers
             });
             _ui.displayCardSelectPanel(true);
             _cardSelectTarget = CardSelectTarget.Skill;
+        }
+        private async void onSkillRefEditButtonClicked()
+        {
+            //打开卡牌选择界面
+            var skillRef = _cardDefine.getSkillRef();
+            await scene.editor.openReferedCard(skillRef, async (cardDefine) =>
+            {
+                markUnsaved();
+                await setSkillRef(cardDefine.getDefineRef());
+            });
         }
         private void onClickCardPageButton()
         {

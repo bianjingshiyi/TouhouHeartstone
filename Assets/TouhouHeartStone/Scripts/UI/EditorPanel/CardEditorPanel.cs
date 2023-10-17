@@ -370,6 +370,7 @@ namespace UI
                 _typeDropdown = transform.Find("DetailPanel/TypeDropdownField/DropdownLight").GetComponent<Dropdown>();
             _typeDropdown.onValueChanged.AddListener(onTypeDropdownValueChanged);
             _skillRef.onClick += onSkillIDInputFieldEndEdit;
+            _skillRefEditButton.onClick.AddListener(onSkillRefEditButtonClickedCallback);
             _characterDropdown.onValueChanged.AddListener(onCharacterDropdownValueChanged);
             _isTokenToggle.onValueChanged.AddListener(onIsTokenToggleValueChangedCallback);
             _skinDropdown.gameObject.SetActive(true);
@@ -701,6 +702,10 @@ namespace UI
         {
             onClickSkillRefButton?.Invoke();
         }
+        private void onSkillRefEditButtonClickedCallback()
+        {
+            onSkillRefEditButtonClicked?.Invoke();
+        }
 
         #region 关键词
         private void onClickKeywordItemButtonCallback(string name, int index)
@@ -922,6 +927,10 @@ namespace UI
         /// 当点击选择技能按钮
         /// </summary>
         public event Action onClickSkillRefButton;
+        /// <summary>
+        /// 当点击编辑技能按钮
+        /// </summary>
+        public event Action onSkillRefEditButtonClicked;
 
         #region Properties
         /// <summary>
@@ -958,6 +967,8 @@ namespace UI
         GameObject _skillIdGameObject;
         [SerializeField]
         BuildDeckListItem _skillRef;
+        [SerializeField]
+        Button _skillRefEditButton;
         [SerializeField]
         CardPropertiesFoldout _keywordsFoldout;
         [SerializeField]
