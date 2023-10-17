@@ -241,12 +241,25 @@ namespace UI
         {
             if (_valueInfo.type == ActionNodeValueType.cardReferenceCollection)
             {
-                if (!(_valueInfo.value is CardReferenceCollection cardRefCollection))
+                if (_valueInfo.value is CardReferenceCollection cardRefCollection)
                 {
-                    cardRefCollection = new CardReferenceCollection();
+                    cardRefCollection.Add(null);
                     _valueInfo.value = cardRefCollection;
                 }
-                cardRefCollection.Add(null);
+                else if (_valueInfo.value is DefineReference[] cardRefs)
+                {
+                    var newCardRefs = new DefineReference[cardRefs.Length + 1];
+                    Array.Copy(cardRefs, newCardRefs, cardRefs.Length);
+                    _valueInfo.value = newCardRefs;
+                }
+                else
+                {
+                    cardRefCollection = new CardReferenceCollection() 
+                    {
+                        null
+                    };
+                    _valueInfo.value = cardRefCollection;
+                }
                 onValueChanged?.Invoke(this, _valueInfo.value);
                 update();
             }
@@ -265,9 +278,21 @@ namespace UI
                 if (_valueInfo.value is CardReferenceCollection cardRefCol)
                 {
                     cardRefCol.RemoveAt(index);
-                    onValueChanged?.Invoke(this, cardRefCol);
-                    update();
+                    _valueInfo.value = cardRefCol;
                 }
+                else if (_valueInfo.value is DefineReference[] cardRefs)
+                {
+                    var newCardRefs = new List<DefineReference>(cardRefs);
+                    newCardRefs.RemoveAt(index);
+                    _valueInfo.value = newCardRefs.ToArray();
+                }
+                else
+                {
+                    cardRefCol = new CardReferenceCollection();
+                    _valueInfo.value = cardRefCol;
+                }
+                onValueChanged?.Invoke(this, _valueInfo.value);
+                update();
             }
             else
             {

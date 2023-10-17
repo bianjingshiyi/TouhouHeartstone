@@ -596,6 +596,7 @@ namespace Controllers
                 var actionDefine = getActionDefine(action.defineRef);
                 var name = actionDefine.constDefines.ElementAt(constIndex).name;
                 setNodeConst(node, name, value);
+                updateNodeItemConsts(node);
                 OnEdited();
             }
             else
@@ -604,6 +605,7 @@ namespace Controllers
                 if (!string.IsNullOrEmpty(name))
                 {
                     setNodeConst(node, name, value);
+                    updateNodeItemConsts(node);
                     OnEdited();
                 }
                 else
@@ -1512,27 +1514,17 @@ namespace Controllers
             {
                 return;
             }
-            object beforeValue, afterValue;
+            var defineRef = cardDefine.getDefineRef();
             if (_curEditActionNodeConstItemIndex < 0)
             {
-                beforeValue = _curEditNode.getConst(_curEditActionNodeConstName);
-                var defRef = cardDefine.getDefineRef();
-                _curEditNode.setConst(_curEditActionNodeConstName, cardDefine.getDefineRef());
-                afterValue = defRef;
+                setNodeConst(_curEditNode, _curEditActionNodeConstName, defineRef);
             }
             else
             {
-                var collection = _curEditNode.getConst(_curEditActionNodeConstName) as CardReferenceCollection;
-                beforeValue = collection.Clone();
-                collection[_curEditActionNodeConstItemIndex] = cardDefine.getDefineRef();
-                afterValue = collection.Clone();
+                IList<DefineReference> collection = _curEditNode.getConst(_curEditActionNodeConstName) as IList<DefineReference>;
+                collection[_curEditActionNodeConstItemIndex] = defineRef;
+                setNodeConst(_curEditNode, _curEditActionNodeConstName, collection);
             }
-            ActionNodeItem actionNodeItem = getActionNodeItem(_curEditNode);
-
-
-            addOperationRecord(new ChangeNodeConstOperation(this, _curEditNode, _curEditActionNodeConstName, beforeValue, afterValue));
-            addRecordBreakpoint();
-
             // 更新UI.
             updateNodeItemConsts(_curEditNode);
 
@@ -1890,7 +1882,7 @@ namespace Controllers
             else
             {
                 var value = getNodeConstDefaultValue(constInfo.type);
-                node.setConst(constInfo.name, value);
+                setNodeConst(node, constInfo.name, value);
             }
         }
         private object getNodeConstDefaultValue(ActionNodeValueType valueType)
@@ -1974,9 +1966,6 @@ namespace Controllers
             }
         }
 
-        string _curCategroy = null;
-        float _curPosX;
-        float _curPosY;
         readonly List<Node> _actionNodeList = new List<Node>();
         readonly List<ActionNodeItem> _actionNodeItemList = new List<ActionNodeItem>();
         private Dictionary<ActionNodeItem, Vector2> _movingNodeDict = new Dictionary<ActionNodeItem, Vector2>();
