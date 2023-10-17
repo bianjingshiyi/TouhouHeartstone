@@ -86,43 +86,20 @@ namespace Controllers
                 });
             }
         }
-        /// <summary>
-        /// 打开一个卡牌/增益/自定义动作编辑器。
-        /// </summary>
-        /// <param name="displayInfo"></param>
-        public async Task openEditorPanel(CardPoolDisplayInfo displayInfo)
+        public Task openCardEditor(CardDefine cardDefine)
         {
-            if (_currentEditor)
-                _currentEditor.hide();
-            _ui.gameObject.SetActive(false);
-            _currentEditor = await displayPanel(displayInfo);
-            _stack.Push(displayInfo);
+            var infoData = new CardPoolDisplayObject(cardDefine);
+            return openEditorByObject(infoData);
         }
-        public Task openCardEditor(long cardPoolId, CardDefine cardDefine, CardSkinData[] skins)
+        public Task openActionEditor(GeneratedActionDefine actionDefine)
         {
-            return openEditorPanel(new CardPoolDisplayInfo()
-            {
-                cardPoolId = cardPoolId,
-                displayObj = cardDefine,
-                skins = skins
-            });
+            var infoData = new CardPoolDisplayObject(actionDefine);
+            return openEditorByObject(infoData);
         }
-        public Task openActionEditor(long cardPoolId, GeneratedActionDefine actionDefine)
+        public Task openBuffEditor(GeneratedBuffDefine buffDefine)
         {
-            return openEditorPanel(new CardPoolDisplayInfo()
-            {
-                cardPoolId = cardPoolId,
-                displayObj = actionDefine
-            });
-        }
-        public Task openBuffEditor(long cardPoolId, GeneratedBuffDefine buffDefine, BuffSkin[] skins)
-        {
-            return openEditorPanel(new CardPoolDisplayInfo()
-            {
-                cardPoolId = cardPoolId,
-                skins = skins,
-                displayObj = buffDefine
-            });
+            var infoData = new CardPoolDisplayObject(buffDefine);
+            return openEditorByObject(infoData);
         }
         /// <summary>
         /// 关闭当前的卡牌/增益/自定义动作编辑器。
@@ -131,23 +108,31 @@ namespace Controllers
         {
             _currentEditor.hide();
             _currentEditor = null;
-            if (_stack.Count > 1)
+            if (_displayObjectStack.Count > 1)
             {
-                _stack.Pop();
-                var displayInfo = _stack.Peek();
-                _currentEditor = await displayPanel(displayInfo);
+                var lastDisplayObj = _displayObjectStack.Pop();
+                // 如果所有打开的编辑器中都已经没有这个显示物体了，从显示信息池中移除这个显示物体。
+                if (!_displayObjectStack.Contains(lastDisplayObj))
+                {
+                    _displayPagePool.Remove(lastDisplayObj);
+                }
+                var infoObj = _displayObjectStack.Peek();
+                var displayInfo = getDisplayPage(infoObj);
+                _currentEditor = await openEditorByPage(displayInfo);
             }
             else
             {
-                _stack.Clear();
+                _displayObjectStack.Clear();
+                _displayPagePool.Clear();
                 display(false, false, -1, true);
             }
         }
-        public CardPoolDisplayInfo getCurrentDisplayInfo()
+        public CardPoolDisplayPage getCurrentDisplayPage()
         {
-            if (_stack.Count == 0)
+            if (_displayObjectStack.Count == 0)
                 return null;
-            return _stack.Peek();
+            var key = _displayObjectStack.Peek();
+            return _displayPagePool.FirstOrDefault(d => d.Key.compare(key)).Value;
         }
         public string getTitleText(bool unsaved, string title)
         {
@@ -174,8 +159,18 @@ namespace Controllers
                     // 卡牌定义存在
                     if (defRef.cardPoolId == cardPoolId)
                     {
-                        // 在同一个卡池内，打开
-                        await cloneCardAndOpen(cardDefine);
+                        // 在同一个卡池内
+                        var curDisplayPage = getCurrentDisplayPage();
+                        var curDisplayCardId = curDisplayPage?.displayObj?.cardDefine?.id ?? -1;
+                        if (defRef.defineId == curDisplayCardId)
+                        {
+                            // 是同一张卡，什么也不做
+                        }
+                        else
+                        {
+                            // 打开
+                            await openCardEditor(cardDefine);
+                        }
                     }
                     else
                     {
@@ -184,6 +179,14 @@ namespace Controllers
                         game.ui.dialog.ShowConfirm(StringTable.ERROR, desc);
                     }
                 }
+            }
+        }
+        public void removeDisplayPage(object obj)
+        {
+            var keys = _displayPagePool.Keys.Where(p => p.compareObj(obj)).ToArray();
+            foreach (var key in keys)
+            {
+                _displayPagePool.Remove(key);
             }
         }
         #endregion
@@ -291,7 +294,7 @@ namespace Controllers
         /// <param name="index"></param>
         private async void onClickCard(CardDefine cardDefine)
         {
-            await cloneCardAndOpen(cardDefine);
+            await openCardEditor(cardDefine);
         }
         /// <summary>
         /// 当点击新建卡牌按钮
@@ -302,10 +305,7 @@ namespace Controllers
             game.card.createCard(_curCardPoolInfo, out CardDefine newCardDefine, out var skin);
             game.card.addCard(_curCardPoolInfo, newCardDefine);
             game.card.addCardSkin(_curCardPoolInfo.cardPoolId, skin);
-
-            var define = game.card.cloneCardDefine(newCardDefine);
-            var skins = game.card.cloneCardSkins(_curCardPoolInfo, newCardDefine.id);
-            await openCardEditor(_curCardPoolInfo.cardPoolId, define, skins);
+            await openCardEditor(newCardDefine);
         }
         /// <summary>
         /// 当点击保存按钮，保存当前编辑的卡池
@@ -657,38 +657,6 @@ namespace Controllers
             }
             _ui.updateDeckCardList(viewData);
         }
-        /// <summary>
-        /// 根据卡池显示信息显示卡牌编辑器、增益编辑器等。
-        /// </summary>
-        /// <param name="displayInfo">卡池显示信息</param>
-        /// <returns>显示的编辑器。</returns>
-        private async Task<CardPoolEditor> displayPanel(CardPoolDisplayInfo displayInfo)
-        {
-            CardPoolEditor editor = null;
-            switch (displayInfo.displayObj)
-            {
-                case CardDefine _:
-                    editor = scene.cardEditor;
-                    break;
-                case GeneratedActionDefine _:
-                    editor = scene.actionEditor;
-                    break;
-                case GeneratedBuffDefine _:
-                    editor = scene.buffEditor;
-                    break;
-            }
-            if (editor != null)
-            {
-                await editor.display(displayInfo);
-            }
-            return editor;
-        }
-        private async Task cloneCardAndOpen(CardDefine cardDefine)
-        {
-            var define = game.card.cloneCardDefine(cardDefine);
-            var skins = game.card.cloneCardSkins(_curCardPoolInfo, cardDefine.id);
-            await openCardEditor(_curCardPoolInfo.cardPoolId, define, skins);
-        }
         private async Task createNewCardAndOpen(Action<CardDefine> setPropAction)
         {
             var cardPoolId = _curCardPoolInfo.cardPoolId;
@@ -697,7 +665,83 @@ namespace Controllers
             game.card.createCard(cardPoolInfo, out var newDefine, out var newSkin);
             setPropAction?.Invoke(newDefine);
 
-            await cloneCardAndOpen(newDefine);
+            await openCardEditor(newDefine);
+        }
+        private CardPoolDisplayPage getDisplayPage(CardPoolDisplayObject infoData)
+        {
+            CardPoolDisplayPage displayInfo = null;
+            displayInfo = _displayPagePool.FirstOrDefault(d => d.Key.compare(infoData)).Value;
+            if (displayInfo == null)
+            {
+                if (infoData.cardDefine is CardDefine cardDefine)
+                {
+                    var newCard = game.card.cloneCardDefine(cardDefine);
+                    var newCardSkins = game.card.cloneCardSkins(_curCardPoolInfo, infoData.cardDefine.id);
+                    var displayObj = new CardPoolDisplayObject(newCard);
+                    displayInfo = new CardPoolDisplayPage()
+                    {
+                        cardPoolId = newCard.cardPoolId,
+                        displayObj = displayObj,
+                        skins = newCardSkins
+                    };
+                    _displayPagePool.Add(displayObj, displayInfo);
+                }
+                else if (infoData.buffDefine is GeneratedBuffDefine buffDefine)
+                {
+                    var newBuff = game.card.cloneBuffDefine(buffDefine);
+                    var newBuffSkins = game.card.cloneBuffSkins(buffDefine.cardPoolId, buffDefine.id);
+                    var displayObj = new CardPoolDisplayObject(newBuff);
+                    displayInfo = new CardPoolDisplayPage()
+                    {
+                        cardPoolId = newBuff.cardPoolId,
+                        displayObj = displayObj,
+                        skins = newBuffSkins
+                    };
+                    _displayPagePool.Add(displayObj, displayInfo);
+                }
+                else if (infoData.actionDefine is GeneratedActionDefine actionDefine)
+                {
+                    var newAction = game.card.cloneActionDefine(actionDefine.cardPoolId, actionDefine);
+                    var displayObj = new CardPoolDisplayObject(newAction);
+                    displayInfo = new CardPoolDisplayPage()
+                    {
+                        cardPoolId = newAction.cardPoolId,
+                        displayObj = displayObj,
+                    };
+                    _displayPagePool.Add(displayObj, displayInfo);
+                }
+            }
+            return displayInfo;
+        }
+        private async Task openEditorByObject(CardPoolDisplayObject data)
+        {
+            var displayInfo = getDisplayPage(data);
+            _displayObjectStack.Push(data);
+            if (_currentEditor)
+                _currentEditor.hide();
+            _ui.gameObject.SetActive(false);
+            _currentEditor = await openEditorByPage(displayInfo);
+        }
+        /// <summary>
+        /// 根据卡池显示信息显示卡牌编辑器、增益编辑器等。
+        /// </summary>
+        /// <param name="displayInfo">卡池显示信息</param>
+        /// <returns>显示的编辑器。</returns>
+        private async Task<CardPoolEditor> openEditorByPage(CardPoolDisplayPage displayInfo)
+        {
+            CardPoolEditor editor = null;
+            var displayObj = displayInfo.displayObj;
+            if (displayObj.cardDefine != null)
+                editor = scene.cardEditor;
+            else if (displayObj.buffDefine != null)
+                editor = scene.buffEditor;
+            else if (displayObj.cardDefine != null)
+                editor = scene.actionEditor;
+            if (editor != null)
+            {
+                await editor.display(displayInfo);
+            }
+            return editor;
         }
         #endregion
         #region 属性字段
@@ -757,7 +801,14 @@ namespace Controllers
         CardPoolInfo _curCardPoolInfo;
         [SerializeField]
         bool _hasUnsavedChanges;
-        private Stack<CardPoolDisplayInfo> _stack = new Stack<CardPoolDisplayInfo>();
+        /// <summary>
+        /// 编辑器对于显示物体的引用栈，用于返回上一个编辑器。
+        /// </summary>
+        private Stack<CardPoolDisplayObject> _displayObjectStack = new Stack<CardPoolDisplayObject>();
+        /// <summary>
+        /// 显示物体和显示页面的对应，包含当前打开的所有显示物体和显示页面。
+        /// </summary>
+        private Dictionary<CardPoolDisplayObject, CardPoolDisplayPage> _displayPagePool = new Dictionary<CardPoolDisplayObject, CardPoolDisplayPage>();
         private CardPoolEditor _currentEditor;
         #endregion
     }

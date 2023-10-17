@@ -91,12 +91,12 @@ namespace Controllers
 
             _graphEditorPanelCtrl.display(_cardPoolId);
         }
-        public override async Task display(CardPoolDisplayInfo info)
+        public override async Task display(CardPoolDisplayPage info)
         {
             if (info == null)
                 return;
             displayInfo = info;
-            if (info.displayObj is CardDefine cardDefine)
+            if (info?.displayObj?.cardDefine is CardDefine cardDefine)
             {
                 var skins = info.skins as CardSkinData[] ?? Array.Empty<CardSkinData>();
                 await display(info.cardPoolId, cardDefine, skins);
@@ -571,6 +571,7 @@ namespace Controllers
                     }
                     else if(index == 1)
                     {
+                        scene.editor.removeDisplayPage(_cardDefine);
                         exit();
                     }
                 });
@@ -1059,10 +1060,9 @@ namespace Controllers
             if (game.card.getCardDefine(_cardPoolId, _cardDefine.id) != null)
             {
                 game.card.removeCard(_cardPoolId, _cardDefine.id);
+                game.card.removeAllCardSkins(_cardPoolId, _cardDefine.id);
             }
             game.card.addCard(_cardPoolId, _cardDefine);
-
-            game.card.removeAllCardSkins(_cardPoolId, _cardDefine.id);
             foreach (var skin in _cardSkins)
             {
                 game.card.addCardSkin(_cardPoolId, skin);

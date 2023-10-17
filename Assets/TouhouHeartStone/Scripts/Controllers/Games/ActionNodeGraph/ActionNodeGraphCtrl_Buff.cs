@@ -26,9 +26,7 @@ namespace Controllers
         {
             if (tryGetBuffDefine(getActionNode(item).getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
             {
-                var clone = game.card.cloneBuffDefine(buffDefine);
-                var skins = game.card.cloneBuffSkins(_curCardPoolId, buffDefine.id);
-                await scene.editor.openBuffEditor(_curCardPoolId, clone, skins);
+                await scene.editor.openBuffEditor(buffDefine);
             }
         }
         #endregion

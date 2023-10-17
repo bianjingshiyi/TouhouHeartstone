@@ -54,12 +54,12 @@ namespace Controllers
             updateEffectList(effects);
             _graphEditorPanelCtrl.display(_cardPoolId);
         }
-        public override async Task display(CardPoolDisplayInfo info)
+        public override async Task display(CardPoolDisplayPage info)
         {
             if (info == null)
                 return;
             displayInfo = info;
-            if (info.displayObj is GeneratedBuffDefine buffDefine)
+            if (info?.displayObj?.buffDefine is GeneratedBuffDefine buffDefine)
             {
                 var skins = info.skins as BuffSkin[] ?? new BuffSkin[0];
                 await display(info.cardPoolId, buffDefine, skins);
@@ -483,6 +483,7 @@ namespace Controllers
                     }
                     else if (index == 1)
                     {
+                        scene.editor.removeDisplayPage(_buffDefine);
                         exit();
                     }
                 });

@@ -53,9 +53,10 @@ namespace UI
                     // 如果是自定义动作
                     if (d.actionDefine is GeneratedActionDefine define)
                     {
-                        var displaying = scene.editor.getCurrentDisplayInfo();
+                        var displaying = scene.editor.getCurrentDisplayPage();
+                        var displayingDefine = displaying?.displayObj?.actionDefine;
                         // 如果当前正在编辑的自定义动作不是这个，则可以进行编辑。
-                        if (displaying == null || !(displaying.displayObj is GeneratedActionDefine displayingDefine && define.id == displayingDefine.id))
+                        if (displayingDefine == null || !(define.cardPoolId == displayingDefine.cardPoolId && define.defineId == displayingDefine.defineId))
                         {
                             editable = true;
                         }
@@ -203,9 +204,8 @@ namespace UI
             var type = defineTypes[typeIndex];
             GeneratedActionDefine generatedActionDefine = game.card.createActionDefine(_cardPoolId, name, type);
             generatedActionDefine.setCategory(category);
-            var clone = game.card.cloneActionDefine(_cardPoolId, generatedActionDefine);
             displayCreateActionDefineDialog(false);
-            await scene.editor.openActionEditor(_cardPoolId, clone);
+            await scene.editor.openActionEditor(generatedActionDefine);
         }
         private Task<bool> OnNodeItemBeginDrag(int index, PointerEventData data)
         {
@@ -306,12 +306,9 @@ namespace UI
         {
             if (index < 0 || index >= _filteredDefines.Length)
                 return;
-            var define = _filteredDefines[index].actionDefine as GeneratedActionDefine;
-            if (define != null)
+            if (_filteredDefines[index].actionDefine is GeneratedActionDefine define)
             {
-                GeneratedActionDefine generatedActionDefine = define;
-                var clone = game.card.cloneActionDefine(_cardPoolId, generatedActionDefine);
-                scene.editor.openActionEditor(_cardPoolId, clone);
+                scene.editor.openActionEditor(define);
             }
         }
         private async void OnNodeItemDoubleClicked(int index)

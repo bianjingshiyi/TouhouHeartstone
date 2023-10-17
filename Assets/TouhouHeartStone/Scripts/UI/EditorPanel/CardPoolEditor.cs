@@ -11,7 +11,7 @@ namespace UI
     /// </summary>
     abstract class CardPoolEditor : GameObjectCtrl<MainSceneCtrl>
     {
-        public abstract Task display(CardPoolDisplayInfo info);
+        public abstract Task display(CardPoolDisplayPage info);
         public virtual void hide()
         {
             gameObject.SetActive(false);
@@ -60,7 +60,7 @@ namespace UI
         }
         #endregion
         public bool hasUnsavedChanges { get; protected set; }
-        public CardPoolDisplayInfo displayInfo { get; protected set; }
+        public CardPoolDisplayPage displayInfo { get; protected set; }
         [TranslateMsg("效果默认名称")]
         public const string CARD_EFFECT_DEFAULT_NAME = "效果";
         [TranslateMsg("效果默认名称的模板（{0}为效果名，{1}为效果序号）")]
@@ -68,11 +68,61 @@ namespace UI
         [SerializeField]
         protected EffectEditorCtrl _effectEditorCtrl;
     }
-    public class CardPoolDisplayInfo
+    public class CardPoolDisplayPage
     {
         public long cardPoolId;
-        public object displayObj;
+        public CardPoolDisplayObject displayObj;
         public object[] skins;
         public bool unsaved;
+    }
+    public class CardPoolDisplayObject
+    {
+        public CardDefine cardDefine { get; private set; }
+        public GeneratedBuffDefine buffDefine { get; private set; }
+        public GeneratedActionDefine actionDefine { get; private set; }
+        public CardPoolDisplayObject(CardDefine card)
+        {
+            cardDefine = card;
+        }
+        public CardPoolDisplayObject(GeneratedBuffDefine buff)
+        {
+            buffDefine = buff;
+        }
+        public CardPoolDisplayObject(GeneratedActionDefine action)
+        {
+            actionDefine = action;
+        }
+        public bool compare(CardPoolDisplayObject obj)
+        {
+            if (cardDefine is CardDefine card1 && obj.cardDefine is CardDefine card2)
+            {
+                return card1.cardPoolId == card2.cardPoolId && card1.id == card2.id;
+            }
+            else if (buffDefine is GeneratedBuffDefine buff1 && obj.buffDefine is GeneratedBuffDefine buff2)
+            {
+                return buff1.cardPoolId == buff2.cardPoolId && buff1.id == buff2.id;
+            }
+            else if (actionDefine is GeneratedActionDefine action1 && obj.actionDefine is GeneratedActionDefine action2)
+            {
+                return action1.cardPoolId == action2.cardPoolId && action1.defineId == action2.defineId;
+            }
+            return false;
+        }
+        public bool compareObj(object obj)
+        {
+            if (cardDefine is CardDefine card1 && obj is CardDefine card2)
+            {
+                return card1.cardPoolId == card2.cardPoolId && card1.id == card2.id;
+            }
+            else if (buffDefine is GeneratedBuffDefine buff1 && obj is GeneratedBuffDefine buff2)
+            {
+                return buff1.cardPoolId == buff2.cardPoolId && buff1.id == buff2.id;
+            }
+            else if (actionDefine is GeneratedActionDefine action1 && obj is GeneratedActionDefine action2)
+            {
+                return action1.cardPoolId == action2.cardPoolId && action1.defineId == action2.defineId;
+            }
+            return false;
+        }
     }
 }

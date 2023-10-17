@@ -35,12 +35,12 @@ namespace Controllers
             updateProperties();
             _graphEditorPanelCtrl.display(_cardPoolId);
         }
-        public override async Task display(CardPoolDisplayInfo info)
+        public override async Task display(CardPoolDisplayPage info)
         {
             if (info == null)
                 return;
             displayInfo = info;
-            if (info.displayObj is GeneratedActionDefine actionDefine)
+            if (info?.displayObj?.actionDefine is GeneratedActionDefine actionDefine)
             {
                 await display(info.cardPoolId, actionDefine);
                 if (info.unsaved)
@@ -206,6 +206,7 @@ namespace Controllers
                     }
                     else if (index == 1)
                     {
+                        scene.editor.removeDisplayPage(_actionDefine);
                         exit();
                     }
                 });
