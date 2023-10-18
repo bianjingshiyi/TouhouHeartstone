@@ -483,7 +483,7 @@ namespace Controllers
                     }
                     else if (index == 1)
                     {
-                        scene.editor.removeDisplayPage(_buffDefine);
+                        scene.editor.removeDisplayPageOfObject(_buffDefine);
                         exit();
                     }
                 });

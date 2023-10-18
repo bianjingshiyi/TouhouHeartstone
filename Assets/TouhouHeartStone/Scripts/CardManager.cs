@@ -564,9 +564,9 @@ namespace Game
             }
             return true;
         }
-        public Dictionary<CardPoolReference, Dictionary<int, CardDefine>> getCardDefines(CardPoolReference[] cardPoolsId)
+        public Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> getCardDefines(ICardPoolReference[] cardPoolsId)
         {
-            Dictionary<CardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<CardPoolReference, Dictionary<int, CardDefine>>();
+            Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<ICardPoolReference, Dictionary<int, CardDefine>>();
             for (int i = 0; i < cardPoolsId.Length; i++)
             {
                 if (_cardPoolDict.TryGetValue(cardPoolsId[i], out var cardPool))
@@ -577,7 +577,7 @@ namespace Game
             }
             return cardPoolDict;
         }
-        public Dictionary<int, CardDefine> getCardDefines(CardPoolReference cardPoolRef)
+        public Dictionary<int, CardDefine> getCardDefines(ICardPoolReference cardPoolRef)
         {
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
                 return cardPool.cardDefineList.ToDictionary(c => c.id);

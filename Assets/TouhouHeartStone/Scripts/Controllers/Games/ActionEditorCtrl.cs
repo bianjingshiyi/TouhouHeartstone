@@ -206,7 +206,7 @@ namespace Controllers
                     }
                     else if (index == 1)
                     {
-                        scene.editor.removeDisplayPage(_actionDefine);
+                        scene.editor.removeDisplayPageOfObject(_actionDefine);
                         exit();
                     }
                 });

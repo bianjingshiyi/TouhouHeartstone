@@ -571,7 +571,7 @@ namespace Controllers
                     }
                     else if(index == 1)
                     {
-                        scene.editor.removeDisplayPage(_cardDefine);
+                        scene.editor.removeDisplayPageOfObject(_cardDefine);
                         exit();
                     }
                 });

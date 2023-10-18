@@ -515,7 +515,7 @@ namespace Game
                 return false;
             }
         }
-        public bool removeCardPool(CardPoolReference cardPoolRef)
+        public bool removeCardPool(ICardPoolReference cardPoolRef)
         {
             if (_cardPoolDict.ContainsKey(cardPoolRef))
             {
