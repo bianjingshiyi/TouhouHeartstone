@@ -28,7 +28,8 @@ namespace Controllers
                     await getCardPoolsInfoAsync();
                 }
                 gameObject.SetActive(true);
-                hasUnsavedChanges = false;
+                clearAllCardPoolsUnsaved();
+                _firstOpenedCardPoolId = -1;
                 await displayView();
             }
             else
@@ -66,7 +67,11 @@ namespace Controllers
                 }
                 //设置当前卡池
                 _curCardPoolId = poolId;
-                var poolInfo = getCurrentCardPoolInfo();
+                if (_firstOpenedCardPoolId < 0)
+                {
+                    _firstOpenedCardPoolId = poolId;
+                }
+                var poolInfo = getCardPoolInfo(poolId);
                 //更新牌库信息
                 Sprite image = await game.card.loadImage(poolInfo.imageResPath, poolId);
                 //更新UI
@@ -103,29 +108,19 @@ namespace Controllers
             return openEditorByObject(infoData);
         }
         /// <summary>
-        /// 关闭当前的卡牌/增益/自定义动作编辑器。
+        /// 关闭当前编辑器。如果正在进行跨卡池编辑，进行一次卡池保存检测。
         /// </summary>
-        public async Task closeEditorPanel()
+        /// <param name="forceSave">是否必须选择保存或者不保存卡池，用于删除编辑器内容的场合。</param>
+        /// <returns></returns>
+        public async Task closeEditor(bool forceSave = false)
         {
-            _currentEditor.hide();
-            _currentEditor = null;
-            if (_displayObjectStack.Count > 1)
+            if (needToSaveCurrentCardPoolOnEditorClose())
             {
-                var lastDisplayObj = _displayObjectStack.Pop();
-                // 如果所有打开的编辑器中都已经没有这个显示物体了，从显示信息池中移除这个显示物体。
-                if (!_displayObjectStack.Contains(lastDisplayObj))
-                {
-                    removeDisplayPageOfObject(lastDisplayObj);
-                }
-                var infoObj = _displayObjectStack.Peek();
-                var displayInfo = getDisplayPage(infoObj);
-                _currentEditor = await openEditorByPage(displayInfo);
+                showSaveCurrentCardPoolDialog(forceSave);
             }
             else
             {
-                _displayObjectStack.Clear();
-                _displayPagePool.Clear();
-                display(false, false, -1, true);
+                await closeCurrentEditor();
             }
         }
         public CardPoolDisplayPage getCurrentDisplayPage()
@@ -158,12 +153,12 @@ namespace Controllers
                 else
                 {
                     // 卡牌定义存在
-                    if (defRef.cardPoolId == cardPoolId)
+                    if (!game.card.isBuiltinCardPool(defRef.cardPoolId))
                     {
-                        // 在同一个卡池内
+                        // 不是内置卡池
                         var curDisplayPage = getCurrentDisplayPage();
                         var curDisplayCardId = curDisplayPage?.displayObj?.cardDefine?.id ?? -1;
-                        if (defRef.defineId == curDisplayCardId)
+                        if (defRef.cardPoolId == cardPoolId && defRef.defineId == curDisplayCardId)
                         {
                             // 是同一张卡，什么也不做
                         }
@@ -175,8 +170,8 @@ namespace Controllers
                     }
                     else
                     {
-                        // 不在同一个卡池内，提醒
-                        var desc = game.lang._(EDITOR_TRY_TO_OPEN_CARD_FROM_OTHER_POOL);
+                        // 是内置卡池，提醒
+                        var desc = game.lang._(EDITOR_TRY_TO_OPEN_CARD_FROM_BUILTIN);
                         game.ui.dialog.ShowConfirm(StringTable.ERROR, desc);
                     }
                 }
@@ -186,6 +181,35 @@ namespace Controllers
         {
             _displayPagePool.RemoveAll(p => p.displayObj.compareObj(obj));
         }
+        #region 保存状态
+        public void markCardPoolUnsaved(long cardPoolId)
+        {
+            _unsavedCardPools.Add(cardPoolId);
+            updateTitleText();
+        }
+        public void clearCardPoolUnsaved(long cardPoolId)
+        {
+            _unsavedCardPools.Remove(cardPoolId);
+            updateTitleText();
+        }
+        public void clearAllCardPoolsUnsaved()
+        {
+            _unsavedCardPools.Clear();
+            updateTitleText();
+        }
+        public bool isCardPoolUnsaved(long cardPoolId)
+        {
+            return _unsavedCardPools.Contains(cardPoolId);
+        }
+        public bool isCurrentCardPoolUnsaved()
+        {
+            return isCardPoolUnsaved(_curCardPoolId);
+        }
+        private void updateTitleText()
+        {
+            _ui.setTitleText(getTitleText(isCurrentCardPoolUnsaved(), game.lang._(EDITOR_TITLE)));
+        }
+        #endregion
         #endregion
         #region 私有方法
         #region 生命周期
@@ -219,7 +243,7 @@ namespace Controllers
         /// <param name="ui"></param>
         private async void onClickReturnButton()
         {
-            if (hasUnsavedChanges)
+            if (isCurrentCardPoolUnsaved())
             {
                 askSaveAndReturn();
             }
@@ -260,7 +284,7 @@ namespace Controllers
             {
                 game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.i18n._(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
-                    hasUnsavedChanges = false;
+                    clearAllCardPoolsUnsaved();
                     var poolRef = getCardPoolRef(cardPoolId);
                     game.card.removeCardPool(poolRef);
                     _cardPoolIdList.RemoveAt(index);
@@ -277,9 +301,9 @@ namespace Controllers
         /// </summary>
         private void onClickAddCardPoolButton()
         {
-            hasUnsavedChanges = true;
             game.card.createCardPool(out var cardPoolInfo, out _);
             _curCardPoolId = cardPoolInfo.cardPoolId;
+            markCardPoolUnsaved(_curCardPoolId);
             _cardPoolIdList.Add(_curCardPoolId);
 
             display(false, false, _cardPoolIdList.IndexOf(_curCardPoolId), true);
@@ -297,11 +321,13 @@ namespace Controllers
         /// </summary>
         private async void onClickNewCardButton()
         {
-            hasUnsavedChanges = true;
-            var poolInfo = getCurrentCardPoolInfo();
-            game.card.createCard(poolInfo, out CardDefine newCardDefine, out var skin);
-            game.card.addCard(poolInfo, newCardDefine);
-            game.card.addCardSkin(poolInfo.cardPoolId, skin);
+            var cardPoolId = _curCardPoolId;
+            markCardPoolUnsaved(cardPoolId);
+            var cardPoolInfo = getCardPoolInfo(cardPoolId);
+            game.card.createCard(cardPoolInfo, out CardDefine newCardDefine, out var skin);
+            game.card.addCard(cardPoolInfo, newCardDefine);
+            game.card.addCardSkin(cardPoolId, skin);
+
             await openCardEditor(newCardDefine);
         }
         /// <summary>
@@ -317,7 +343,7 @@ namespace Controllers
         /// <exception cref="NotImplementedException"></exception>
         private async void onClickExportCardPoolButton()
         {
-            if (hasUnsavedChanges)
+            if (isCurrentCardPoolUnsaved())
             {
                 game.ui.dialog.ShowConfirm(
                     game.i18n._(StringTable.HINT_TITLE),
@@ -381,7 +407,7 @@ namespace Controllers
             {
                 game.ui.dialog.ShowQuestion(game.i18n._(StringTable.WARNING), game.langManager.getString(StringTable.EDITOR_DIALOG_CONFIRM_DELETE_CARDPOOL), async () =>
                 {
-                    hasUnsavedChanges = false;
+                    clearAllCardPoolsUnsaved();
                     //删除当前卡池
                     var poolRef = getCardPoolRef(cardPoolId);
                     game.card.removeCardPool(poolRef);
@@ -394,7 +420,7 @@ namespace Controllers
         }
         private void onDeckNameInputFieldValueChanged(string value)
         {
-            hasUnsavedChanges = true;
+            markCardPoolUnsaved(_curCardPoolId);
             var poolInfo = getCurrentCardPoolInfo();
             poolInfo.cardPoolName = value;
             _cardPoolViewPanelCtrl.updateCardPoolFilterNames();
@@ -480,7 +506,7 @@ namespace Controllers
         /// <returns></returns>
         private async void trySaveCardPool(Action<bool> onEndAction = null)
         {
-            if (hasUnsavedChanges)
+            if (isCurrentCardPoolUnsaved())
             {
                 if (hasObsoleteNodes(out string desc))
                 {
@@ -510,7 +536,7 @@ namespace Controllers
             bool success = await game.card.saveCardPool(getCurrentCardPoolInfo());
             if (success)
             {
-                hasUnsavedChanges = false;//如果已经保存则不需要再提示保存
+                clearCardPoolUnsaved(_curCardPoolId);
             }
             return success;
         }
@@ -578,6 +604,18 @@ namespace Controllers
         /// </summary>
         private async Task returnToView()
         {
+            await reloadCurrentCardPool();
+            clearAllCardPoolsUnsaved();
+            _curCardPoolId = -1;
+            _firstOpenedCardPoolId = -1;
+            await displayView();
+        }
+        /// <summary>
+        /// 重新加载当前卡池。
+        /// </summary>
+        /// <returns></returns>
+        private async Task reloadCurrentCardPool()
+        {
             var cardPoolId = _curCardPoolId;
             if (game.card.isCreatingCardPool(cardPoolId)) // 正在创建新卡池，退出时直接把创建的这个卡池删除
             {
@@ -585,14 +623,14 @@ namespace Controllers
                 //重新加载所有卡池信息
                 await getCardPoolsInfoAsync();
             }
-            else if (hasUnsavedChanges) // 退出时重新加载牌库信息，防止出现临时卡牌变更。
+            else if (isCurrentCardPoolUnsaved()) // 退出时重新加载牌库信息，防止出现临时卡牌变更。
             {
                 var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
                 await game.card.reloadCardPoolsAndGetCardDefinesAsync(new ICardPoolReference[] { cardPoolRef });
             }
-            hasUnsavedChanges = false;
-            _curCardPoolId = -1;
-            await displayView();
+            // 删除所有属于该卡池的页面信息。
+            _displayPagePool.RemoveAll(p => p.cardPoolId == _curCardPoolId);
+            clearCardPoolUnsaved(_curCardPoolId);
         }
         /// <summary>
         /// 显示卡池列表UI
@@ -718,6 +756,7 @@ namespace Controllers
                 editor = scene.actionEditor;
             if (editor != null)
             {
+                _curCardPoolId = displayInfo.cardPoolId;
                 await editor.display(displayInfo);
             }
             return editor;
@@ -734,8 +773,140 @@ namespace Controllers
         {
             return getCardPoolInfo(_curCardPoolId);
         }
+        /// <summary>
+        /// 在跨卡池编辑中，显示是否保存当前卡池的对话框。
+        /// </summary>
+        /// <param name="forceSave">是否必须保存或者不保存。</param>
+        private void showSaveCurrentCardPoolDialog(bool forceSave)
+        {
+            string title = game.lang._(StringTable.WARNING);
+            CardPoolInfo cardPoolInfo = getCurrentCardPoolInfo();
+            string content = null;
+            string[] options = null;
+            Action<int> clickButtonAction = null;
+            if (!Application.isEditor && game.card.isStandardCardPool(_curCardPoolId))
+            {
+                // 尝试保存经典卡池
+                content = game.lang._(EDITOR_TRY_TO_SAVE_STANDARD_CARDPOOL);
+                options = new string[2]
+                {
+                        game.lang._(StringTable.CONFIRM),
+                        game.lang._(EDITOR_OPTION_CANCEL)
+                };
+                clickButtonAction = async (index) =>
+                {
+                    if (index == 0)
+                    {
+                        await reloadCurrentCardPool();
+                        await closeCurrentEditor();
+                    }
+                };
+            }
+            else
+            {
+                // 经典卡池以外的卡池
+                content = game.lang._(EDITOR_NEED_TO_SAVE_CARDPOOL, cardPoolInfo.cardPoolName);
+                if (forceSave)
+                {
+                    // 强制保存或不保存
+                    options = new string[2]
+                    {
+                            game.lang._(EDITOR_OPTION_SAVE),
+                            game.lang._(EDITOR_OPTION_DONT_SAVE)
+                    };
+                    clickButtonAction = async (index) =>
+                    {
+                        switch (index)
+                        {
+                            case 0:
+                                await saveCardPool();
+                                break;
+                            case 1:
+                                await reloadCurrentCardPool();
+                                break;
+                        }
+                        await closeCurrentEditor();
+                    };
+                }
+                else
+                {
+                    // 不强制保存
+                    options = new string[3]
+                    {
+                            game.lang._(EDITOR_OPTION_SAVE),
+                            game.lang._(EDITOR_OPTION_DONT_SAVE),
+                            game.lang._(EDITOR_OPTION_CANCEL)
+                    };
+                    clickButtonAction = async (index) =>
+                    {
+                        switch (index)
+                        {
+                            case 0:
+                                trySaveCardPool(async (success) =>
+                                {
+                                    if (success)
+                                        await closeCurrentEditor();
+                                });
+                                break;
+                            case 1:
+                                await reloadCurrentCardPool();
+                                await closeCurrentEditor();
+                                break;
+                        }
+                    };
+                }
+            }
+            game.ui.dialog.ShowOptions(title, content, options, clickButtonAction);
+        }
+        /// <summary>
+        /// 关闭当前的卡牌/增益/自定义动作编辑器。
+        /// </summary>
+        private async Task closeCurrentEditor()
+        {
+            _currentEditor.hide();
+            _currentEditor = null;
+            if (_displayObjectStack.Count > 1)
+            {
+                var lastDisplayObj = _displayObjectStack.Pop();
+                // 如果所有打开的编辑器中都已经没有这个显示物体了，从显示信息池中移除这个显示物体。
+                if (!_displayObjectStack.Contains(lastDisplayObj))
+                {
+                    removeDisplayPageOfObject(lastDisplayObj);
+                }
+                var infoObj = _displayObjectStack.Peek();
+                var displayInfo = getDisplayPage(infoObj);
+                _currentEditor = await openEditorByPage(displayInfo);
+            }
+            else
+            {
+                _displayObjectStack.Clear();
+                _displayPagePool.Clear();
+                display(false, false, -1, true);
+            }
+        }
+        /// <summary>
+        /// 在退出该编辑器时，是否要保存当前卡池。
+        /// </summary>
+        /// <returns>是否要保存当前卡池。</returns>
+        private bool needToSaveCurrentCardPoolOnEditorClose()
+        {
+            if (_curCardPoolId == _firstOpenedCardPoolId) // 编辑的卡池是一开始打开的卡池
+                return false;
+            if (!isCardPoolUnsaved(_curCardPoolId)) // 没有任何更改
+                return false;
+            if (_displayObjectStack.Count <= 0) // 当前没有正在打开的编辑器页面
+                return false;
+            if (_displayObjectStack.Count(obj => getDisplayPage(obj).cardPoolId == _curCardPoolId) > 1) // 目前的编辑器不是栈中最后一个属于目前卡池的编辑器
+                return false;
+            // 编辑的卡池不是一开始打开的卡池，并且目前的编辑器是栈中最后一个属于目前卡池的编辑器
+            return true;
+        }
         #endregion
         #region 属性字段
+        [TranslateMsg("卡池编辑器/退出跨卡池编辑器/提示经典卡池被修改")]
+        public const string EDITOR_TRY_TO_SAVE_STANDARD_CARDPOOL = "您对经典卡池进行了更改，但该卡池无法被修改。\n是否要离开该卡池？"; 
+        [TranslateMsg("卡池编辑器/退出跨卡池编辑器/提示要求保存卡池（{0}是卡池名）")]
+        public const string EDITOR_NEED_TO_SAVE_CARDPOOL = "您对卡池({0})进行了更改，是否要保存该卡池？";
         [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
         public const string EDITOR_OPTION_SAVE = "保存";
         [TranslateMsg("卡池编辑器/退出未保存卡池/选项名")]
@@ -748,8 +919,8 @@ namespace Controllers
         public const string EDITOR_UNSAVED_MARK = "*";
         [TranslateMsg("卡池编辑器/标题")]
         public const string EDITOR_TITLE = "卡牌编辑器";
-        [TranslateMsg("卡池编辑器/尝试跨卡池编辑卡牌的提醒")]
-        public const string EDITOR_TRY_TO_OPEN_CARD_FROM_OTHER_POOL = "该卡牌是另一个卡池的卡牌，无法直接跳转。";
+        [TranslateMsg("卡池编辑器/尝试编辑内置卡牌的提醒")]
+        public const string EDITOR_TRY_TO_OPEN_CARD_FROM_BUILTIN = "该卡牌是内置卡牌，无法编辑。";
         [TranslateMsg]
         const string EXPORT_BEFORE_SAVE = "当前卡池含有未保存的修改，请在导出前保存修改";
         [TranslateMsg]
@@ -767,19 +938,12 @@ namespace Controllers
 
 
 
-        public bool hasUnsavedChanges
-        {
-            get { return _hasUnsavedChanges; }
-            set 
-            {
-                _hasUnsavedChanges = value;
-                _ui.setTitleText(getTitleText(value, game.lang._(EDITOR_TITLE)));
-            }
-        }
         public string nodeClipboard { get; set; }
         private EditorPanel _ui;
         private List<long> _cardPoolIdList = new List<long>();
         private long _curCardPoolId = -1;
+        private List<long> _unsavedCardPools = new List<long>();
+        long _firstOpenedCardPoolId;
         /// <summary>
         /// 编辑器对于显示物体的引用栈，用于返回上一个编辑器。
         /// </summary>

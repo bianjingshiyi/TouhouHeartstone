@@ -31,7 +31,7 @@ namespace Controllers
                         cardPoolId,
                         actionDefine,
                         null,
-                        game.card.getOrCreateActionDefineActionNodeGraphInfo(cardPoolId, actionDefine.id)));
+                        game.card.getOrCreateActionDefineActionNodeGraphInfo(cardPoolId, actionDefine.defineId)));
             updateProperties();
             _graphEditorPanelCtrl.display(_cardPoolId);
         }
@@ -173,18 +173,17 @@ namespace Controllers
                async () =>
                {
                    //删除动作定义
-                   game.card.removeActionDefine(_cardPoolId, _actionDefine.id);
+                   game.card.removeActionDefine(_cardPoolId, _actionDefine.defineId);
+                   scene.editor.markCardPoolUnsaved(_cardPoolId);
                    //返回上个界面
-                   await scene.editor.closeEditorPanel();
-                   scene.editor.hasUnsavedChanges = true;
-                   clearUnsaved();
+                   await exit(true);
                });
         }
         private void onClickSaveButton()
         {
             saveAction();
         }
-        private void onClickCloseButton()
+        private async void onClickCloseButton()
         {
             if (hasUnsavedChanges)
             {
@@ -197,23 +196,23 @@ namespace Controllers
                     game.lang._(ACTION_WARNING_OPTION_DONT_SAVE),
                     game.lang._(ACTION_WARNING_OPTION_CANCEL)
                 };
-                game.ui.dialog.ShowOptions(title, desc, optNames, (index) =>
+                game.ui.dialog.ShowOptions(title, desc, optNames, async (index) =>
                 {
                     if (index == 0)
                     {
                         saveAction();
-                        exit();
+                        await exit();
                     }
                     else if (index == 1)
                     {
                         scene.editor.removeDisplayPageOfObject(_actionDefine);
-                        exit();
+                        await exit();
                     }
                 });
             }
             else
             {
-                exit();
+                await exit();
             }
         }
         private (Type type, string name)[] getEditorVarTypes()
@@ -298,20 +297,20 @@ namespace Controllers
         /// <summary>
         /// 返回上一个界面
         /// </summary>
-        private async void exit()
+        private async Task exit(bool forceSave = false)
         {
-            await scene.editor.closeEditorPanel();
             clearUnsaved();
+            await scene.editor.closeEditor(forceSave);
         }
         private void saveAction()
         {
-            if (game.card.getActionDefine(_actionDefine.cardPoolId, _actionDefine.id) is GeneratedActionDefine gen)
+            if (game.card.getActionDefine(_actionDefine.cardPoolId, _actionDefine.defineId) is GeneratedActionDefine gen)
             {
                 game.card.removeActionDefine(gen);
             }
             game.card.addActionDefine(_cardPoolId, _actionDefine);
 
-            scene.editor.hasUnsavedChanges = true;
+            scene.editor.markCardPoolUnsaved(_cardPoolId);
             clearUnsaved();
         }
 

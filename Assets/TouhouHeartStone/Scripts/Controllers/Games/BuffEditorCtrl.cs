@@ -451,17 +451,15 @@ namespace Controllers
                    //删除当前增益
                    game.card.removeBuffDefine(_cardPoolId, _buffDefine.id);
                    game.card.removeAllBuffSkins(_cardPoolId, _buffDefine.id);
-                   //返回上个界面
-                   await scene.editor.closeEditorPanel();
-                   scene.editor.hasUnsavedChanges = true;
-                   clearUnsaved();
+                   scene.editor.markCardPoolUnsaved(_cardPoolId);
+                   await exit(true);
                });
         }
         private void onClickSaveButton()
         {
             saveBuff();
         }
-        private void onClickCloseButton()
+        private async void onClickCloseButton()
         {
             if (hasUnsavedChanges)
             {
@@ -474,23 +472,23 @@ namespace Controllers
                     game.lang._(BUFF_WARNING_OPTION_DONT_SAVE),
                     game.lang._(BUFF_WARNING_OPTION_CANCEL)
                 };
-                game.ui.dialog.ShowOptions(title, desc, optNames, (index) =>
+                game.ui.dialog.ShowOptions(title, desc, optNames, async (index) =>
                 {
                     if (index == 0)
                     {
                         saveBuff();
-                        exit();
+                        await exit();
                     }
                     else if (index == 1)
                     {
                         scene.editor.removeDisplayPageOfObject(_buffDefine);
-                        exit();
+                        await exit();
                     }
                 });
             }
             else
             {
-                exit();
+                await exit();
             }
         }
         #endregion
@@ -566,11 +564,11 @@ namespace Controllers
         {
             return _buffSkins.ToArray();
         }
-        private async void exit()
+        private async Task exit(bool forceSave = false)
         {
             //返回上一个界面
-            await scene.editor.closeEditorPanel();
             clearUnsaved();
+            await scene.editor.closeEditor(forceSave);
         }
         #region 修改器
         private void updateModifiers()
@@ -876,7 +874,7 @@ namespace Controllers
                 game.card.addBuffSkin(_cardPoolId, skin);
             }
 
-            scene.editor.hasUnsavedChanges = true;
+            scene.editor.markCardPoolUnsaved(_cardPoolId);
             clearUnsaved();
         }
         public override void markUnsaved()

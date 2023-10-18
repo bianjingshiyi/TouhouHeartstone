@@ -539,17 +539,15 @@ namespace Controllers
                {
                    //删除当前卡牌
                    game.card.removeCard(_cardDefine);
-                   //返回上个界面
-                   await scene.editor.closeEditorPanel();
-                   scene.editor.hasUnsavedChanges = true;
-                   clearUnsaved();
+                   scene.editor.markCardPoolUnsaved(_cardPoolId);
+                   await exit(true);
                });
         }
         private void onClickSaveButton()
         {
             saveCard();
         }
-        private void onClickCloseButton()
+        private async void onClickCloseButton()
         {
             if (hasUnsavedChanges)
             {
@@ -562,23 +560,23 @@ namespace Controllers
                     game.lang._(CARD_WARNING_OPTION_DONT_SAVE),
                     game.lang._(CARD_WARNING_OPTION_CANCEL)
                 };
-                game.ui.dialog.ShowOptions(title, desc, optNames, (index) =>
+                game.ui.dialog.ShowOptions(title, desc, optNames, async (index) =>
                 {
                     if (index == 0)
                     {
                         saveCard();
-                        exit();
+                        await exit();
                     }
                     else if(index == 1)
                     {
                         scene.editor.removeDisplayPageOfObject(_cardDefine);
-                        exit();
+                        await exit();
                     }
                 });
             }
             else
             {
-                exit();
+                await exit();
             }
         }
         private async void onClickSkillRefButton()
@@ -973,10 +971,10 @@ namespace Controllers
         /// <summary>
         /// 返回上一个界面
         /// </summary>
-        private async void exit()
+        private async Task exit(bool forceSave = false)
         {
             clearUnsaved();
-            await scene.editor.closeEditorPanel();
+            await scene.editor.closeEditor(forceSave);
         }
         #endregion
 
@@ -1068,7 +1066,7 @@ namespace Controllers
                 game.card.addCardSkin(_cardPoolId, skin);
             }
 
-            scene.editor.hasUnsavedChanges = true;
+            scene.editor.markCardPoolUnsaved(_cardPoolId);
             clearUnsaved();
         }
         public override void markUnsaved()
