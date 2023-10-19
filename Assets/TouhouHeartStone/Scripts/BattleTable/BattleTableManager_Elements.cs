@@ -245,8 +245,12 @@ namespace Game.BattleTable
         /// <param name="desc"></param>
         public async void setSkill(Skill skill, CardDescriptor desc)
         {
-            skill.setCost(desc.getCost());
             skill.setOpen(!desc.isUsed);
+            var cost = desc.getCost();
+            var defineCost = desc.define.getCost();
+            var skillColor = cost > defineCost ? PropertyNumberColor.Red : cost < defineCost ? PropertyNumberColor.Green : PropertyNumberColor.White;
+            skill.setCost(cost);
+            skill.costNumber.setTextColor(skillColor);
 
             var cards = cardManager;
             var poolRef = cards.getCardPoolReferenceOfCard(desc.define);
