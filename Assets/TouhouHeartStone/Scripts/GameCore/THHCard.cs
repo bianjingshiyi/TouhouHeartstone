@@ -1493,13 +1493,20 @@ namespace TouhouHeartstone
                     int cardAttack = card.getAttack(game);
                     await card.damage(game, target, targetAttack);
                     await target.damage(game, card, cardAttack);
-                    //消耗耐久
-                    foreach (var p in game.players)
+
+                    // 取消隐匿
+                    if (card.isStealth(game))
                     {
-                        if (p.getMaster() == card && p.getItem() != null)
+                        await card.setStealth(game, false);
+                    }
+                    // 消耗耐久
+                    var owner = card.getOwner();
+                    if (owner != null && owner.getMaster() == card)
+                    {
+                        var item = owner.getItem();
+                        if (item != null)
                         {
-                            await p.getItem().damageItem(game, 1);
-                            break;
+                            await item.damageItem(game, 1);
                         }
                     }
                 }
@@ -1696,10 +1703,6 @@ namespace TouhouHeartstone
                 Card target = arg.target;
                 Card src = arg.source;
                 int dmgValue = arg.damageValue;
-                if (src != null && src.isStealth(game))
-                {
-                    await src.setStealth(game, false);
-                }
                 if (dmgValue < 1)
                 {
                     arg.isCanceled = true;
