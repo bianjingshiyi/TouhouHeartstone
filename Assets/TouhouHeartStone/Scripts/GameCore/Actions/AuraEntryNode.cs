@@ -128,7 +128,7 @@ namespace TouhouCardEngine
             if (piles != null)
                 entry.setPiles(piles);
             if (ranges != null)
-                entry.setPiles(ranges);
+                entry.setRanges(ranges);
             entry.graph = graph;
             return entry;
         }
