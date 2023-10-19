@@ -637,6 +637,12 @@ namespace TouhouHeartstone
             return player.getProp<int>(PLAYER.TURNCOUNT);
         }
 
+        public static bool removePile(this Player player, Pile pile)
+        {
+            if (pile?.name == null || THHPile.vanillaPileNames.Contains(pile?.name))
+                return false;
+            return player.pileList.Remove(pile);
+        }
         #region 信仰对决
         /// <summary>
         /// 揭示对决

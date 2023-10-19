@@ -172,6 +172,94 @@ namespace Game
         }
         #endregion
 
+        #region 游戏
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_MAKE_PLAYERS_WIN = "使玩家获胜";
+        [TranslateMsg("节点名称")]
+        private const string EDITOR_NODE_MAKE_PLAYERS_LOSE = "使玩家失败";
+        [TranslateMsg("节点名称")]
+        private const string EDITOR_NODE_MAKE_PLAYERS_DRAW = "使玩家平局";
+        [TranslateMsg("节点名称")]
+        private const string EDITOR_NODE_CREATE_PILE = "创建牌堆";
+        [TranslateMsg("节点名称")]
+        private const string EDITOR_NODE_REMOVE_PILE = "删除牌堆";
+        [TranslateMsg("节点名称")]
+        private const string EDITOR_NODE_MOVE_CARD_FROM_PILE_TO_PILE = "从牌堆将卡牌移动到目标牌堆";
+
+        [TranslateMsg("节点参数-创建牌堆/容量")]
+        private const string EDITOR_PARAM_CAPACITY = "容量";
+        [TranslateMsg("节点参数-删除牌堆/成功删除")]
+        private const string EDITOR_PARAM_NAME_PILE_REMOVED = "成功删除";
+        [TranslateMsg("节点参数-删除牌堆/从牌堆将卡牌移动到目标牌堆")]
+        private const string EDITOR_PARAM_NAME_TO_PILE = "目标牌堆";
+        [TranslateMsg("节点参数-删除牌堆/从牌堆将卡牌移动到目标牌堆")]
+        private const string EDITOR_PARAM_NAME_FROM_PILE = "源牌堆";
+        [TranslateMsg("节点参数-删除牌堆/成功移动")]
+        private const string EDITOR_PARAM_NAME_CARD_MOVED = "成功移动";
+        /// <summary>
+        /// 使玩家获胜
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.MakePlayersWin, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MAKE_PLAYERS_WIN)]
+        public static Task makePlayersWin(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player[] players)
+        {
+            return game.gameEnd(players ?? Array.Empty<Player>());
+        }
+        /// <summary>
+        /// 使玩家失败
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.MakePlayersLose, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MAKE_PLAYERS_LOSE)]
+        public static Task makePlayersLose(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player[] losers)
+        {
+            var winners = losers == null ? game.getSortedPlayers() : game.getSortedPlayers().Except(losers).ToArray();
+            return game.gameEnd(winners);
+        }
+        /// <summary>
+        /// 创建牌堆
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.CreatePile, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_CREATE_PILE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]
+        public static Pile createPile(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_PILE_NAME, isConst: true)] string pileName,
+            [ActionNodeParam(EDITOR_PARAM_CAPACITY, isConst: true)] int capacity)
+        {
+            if (player == null || pileName == null)
+                return null;
+            var pile = new Pile(game, pileName, capacity);
+            player.addPile(pile);
+            return pile;
+        }
+        /// <summary>
+        /// 删除牌堆
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.RemovePile, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_REMOVE_PILE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_PILE_REMOVED)]
+        public static bool removePile(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)] Pile pile)
+        {
+            if (player == null || pile == null)
+                return false;
+            return player.removePile(pile);
+        }
+        /// <summary>
+        /// 从牌堆将卡牌移动到目标牌堆
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.MoveCardFromPileToPile, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MOVE_CARD_FROM_PILE_TO_PILE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_CARD_MOVED)]
+        public static async Task<bool> moveCardFromPileToPile(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FROM_PILE)] Pile fromPile,
+            [ActionNodeParam(EDITOR_PARAM_NAME_TO_PILE)] Pile toPile)
+        {
+            if (card == null)
+                return false;
+            var arg = await fromPile.moveTo(game, card, toPile);
+            return arg.success;
+        }
+        #endregion
 
         #region 玩家
         [TranslateMsg("编辑器-节点名称")]
@@ -228,6 +316,9 @@ namespace Game
         public const string EDITOR_NODE_GET_PLAYER_TURN_COUNT = "获取玩家的当前回合数";
         [TranslateMsg("节点名称")]
         public const string EDITOR_NODE_IS_OFFENSIVE_PLAYER = "玩家是否是先手";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_GET_ALL_PLAYERS = "获取所有玩家";
+        
 
         [TranslateMsg("节点参数 TargetName")]
         const string EDITOR_PARAM_TARGET_NAME = "目标名";
@@ -591,6 +682,15 @@ namespace Game
             flow.setValue(node.getOutputPort<ValueOutput>(nameof(selfCard)), arg.youCard);
             flow.setValue(node.getOutputPort<ValueOutput>(nameof(opponentCard)), arg.oppoCard);
             return arg.result;
+        }
+        /// <summary>
+        /// 获取所有玩家
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetAllPlayers, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_GET_ALL_PLAYERS)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)]
+        public static Player[] getAllPlayers(CardEngine game)
+        {
+            return game.getSortedPlayers();
         }
 
         /// <summary>

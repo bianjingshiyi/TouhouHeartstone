@@ -519,6 +519,174 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>200001</defineId>
+    <obsoleteNames />
+    <editorName>使玩家获胜</editorName>
+    <category>游戏</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>players</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[获得胜利的玩家。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[使一些玩家获得对局胜利。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>200002</defineId>
+    <obsoleteNames />
+    <editorName>使玩家失败</editorName>
+    <category>游戏</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>losers</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[失败的玩家。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs />
+    <consts />
+    <summary><![CDATA[使一些玩家在对局中失败。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>200004</defineId>
+    <obsoleteNames />
+    <editorName>创建牌堆</editorName>
+    <category>游戏</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[牌堆的拥有者。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>return</name>
+        <displayName>牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[创建的牌堆。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>String</type>
+        <name>pileName</name>
+        <displayName>牌堆名</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[牌堆的名称。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>capacity</name>
+        <displayName>容量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该牌堆可以容纳多少卡牌。-1为无限制。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[为一位玩家创建新的牌堆。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>200005</defineId>
+    <obsoleteNames />
+    <editorName>删除牌堆</editorName>
+    <category>游戏</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>player</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要删除牌堆的玩家。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>pile</name>
+        <displayName>牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要删除的牌堆。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>成功删除</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否成功删除？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[删除玩家的一个牌堆。<b>不能删除原版的牌堆。</b>]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>200006</defineId>
+    <obsoleteNames />
+    <editorName>从牌堆将卡牌移动到目标牌堆</editorName>
+    <category>游戏</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要移动的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>fromPile</name>
+        <displayName>源牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[源牌堆。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>toPile</name>
+        <displayName>目标牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[目标牌堆。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>成功移动</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[是否成功移动？]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[将一张卡牌从一个牌堆移动到另一个牌堆中。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>101002</defineId>
     <obsoleteNames />
     <editorName>获取玩家属性</editorName>
@@ -1425,6 +1593,26 @@
     </outputs>
     <consts />
     <summary><![CDATA[使双方玩家各从牌库中选择并揭示一张符合条件的牌进行信仰对决，揭示的牌灵力值消耗较大的一方获胜。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>101020</defineId>
+    <obsoleteNames />
+    <editorName>获取所有玩家</editorName>
+    <category>玩家</category>
+    <inputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>Player</type>
+        <name>return</name>
+        <displayName>玩家</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[玩家集合。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取对战中的所有玩家。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>

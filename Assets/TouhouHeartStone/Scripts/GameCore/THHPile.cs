@@ -9,22 +9,24 @@ namespace TouhouHeartstone
 {
     public static class THHPile
     {
-        public static Task add(this Pile pile, IGame game, Card card)
+        public static Task<MoveCardEventArg> add(this Pile pile, IGame game, Card card)
         {
             return pile.insert(game, card, pile.count);
         }
-        public static async Task add(this Pile pile, IGame game, IEnumerable<Card> cards)
+        public static async Task<MoveCardEventArg[]> add(this Pile pile, IGame game, IEnumerable<Card> cards)
         {
+            var eventArgs = new List<MoveCardEventArg>();
             foreach (var card in cards)
             {
-                await pile.add(game, card);
+                eventArgs.Add(await pile.add(game, card));
             }
+            return eventArgs.ToArray();
         }
-        public static Task remove(this Pile pile, IGame game, Card card)
+        public static Task<MoveCardEventArg> remove(this Pile pile, IGame game, Card card)
         {
             return moveTo(game, card, pile, null, 0);
         }
-        public static Task insert(this Pile pile, IGame game, Card card, int position)
+        public static Task<MoveCardEventArg> insert(this Pile pile, IGame game, Card card, int position)
         {
             return moveTo(game, card, null, pile, position);
         }
@@ -34,29 +36,33 @@ namespace TouhouHeartstone
         /// <param name="card"></param>
         /// <param name="to"></param>
         /// <param name="position"></param>
-        public static Task moveTo(this Pile pile, IGame game, Card card, Pile to, int position)
+        public static Task<MoveCardEventArg> moveTo(this Pile pile, IGame game, Card card, Pile to, int position)
         {
             return moveTo(game, card, pile, to, position);
         }
-        public static Task moveTo(this Pile pile, IGame game, Card card, Pile targetPile)
+        public static Task<MoveCardEventArg> moveTo(this Pile pile, IGame game, Card card, Pile targetPile)
         {
             return moveTo(game, card, pile, targetPile, targetPile.count);
         }
-        public static async Task moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile)
+        public static async Task<MoveCardEventArg[]> moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile)
         {
+            var eventArgs = new List<MoveCardEventArg>();
             foreach (var card in cards.Reverse())
             {
-                await pile.moveTo(game, card, targetPile);
+                eventArgs.Add(await pile.moveTo(game, card, targetPile));
             }
+            return eventArgs.ToArray();
         }
-        public static async Task moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile, int position)
+        public static async Task<MoveCardEventArg[]> moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile, int position)
         {
+            var eventArgs = new List<MoveCardEventArg>();
             foreach (var card in cards.Reverse())
             {
-                await moveTo(game, card, pile, targetPile, position);
+                eventArgs.Add(await moveTo(game, card, pile, targetPile, position));
             }
+            return eventArgs.ToArray();
         }
-        public static async Task moveTo(IGame game, Card card, Pile from, Pile to, int position)
+        public static async Task<MoveCardEventArg> moveTo(IGame game, Card card, Pile from, Pile to, int position)
         {
             var eventArg = new MoveCardEventArg(from, to, card, position);
             if (game != null)
@@ -86,6 +92,7 @@ namespace TouhouHeartstone
                     await tryResetCardPropsAfterMove(game, eventArg.resetProps, card, from, to);
                 }
             }
+            return eventArg;
         }
         public static async Task replace(this Pile pile, IGame game, Card origin, Card target)
         {
@@ -215,6 +222,19 @@ namespace TouhouHeartstone
                 await card.InitConsumableKeywords(game);
             }
         }
+        public static string[] vanillaPileNames = new string[]
+        {
+            PILE.MASTER,
+            PILE.INIT,
+            PILE.HAND,
+            PILE.SKILL,
+            PILE.DECK,
+            PILE.FIELD,
+            PILE.GRAVE,
+            PILE.WARP,
+            PILE.ITEM,
+            PILE.HEAD
+        };
         public class MoveCardEventArg : EventArg
         {
             public MoveCardEventArg()

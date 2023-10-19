@@ -194,6 +194,10 @@ namespace TouhouHeartstone
             onPlayerResponse?.Invoke(playerID, response);
         }
 
+        public static Task gameEnd(this CardEngine game, Player[] winners)
+        {
+            return game.getRule().gameEnd(game, winners);
+        }
         #endregion
         /// <summary>
         /// 向玩家发出一个选择请求，玩家从提供的卡牌中选择一张，返回玩家选择的结果

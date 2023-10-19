@@ -2195,9 +2195,9 @@ namespace TouhouHeartstone
             if (remainPlayerList.Count != game.players.Length)
             {
                 if (remainPlayerList.Count > 0)
-                    await game.getRule().gameEnd(game, remainPlayerList.ToArray()); //TODO: 把这个方法移动到HearthStoneRule之后记得把getRule删了
+                    await game.gameEnd(remainPlayerList.ToArray()); //TODO: 把这个方法移动到HearthStoneRule之后记得把getRule删了
                 else
-                    await game.getRule().gameEnd(game, new Player[0]);//TODO: 把这个方法移动到HearthStoneRule之后记得把getRule删了
+                    await game.gameEnd(new Player[0]);//TODO: 把这个方法移动到HearthStoneRule之后记得把getRule删了
             }
             return eventArgs.ToArray();
         }
@@ -2359,11 +2359,11 @@ namespace TouhouHeartstone
             foreach (var g in cards.GroupBy(c => c.getOwner()))
             {
                 // 场上随从没死 = 没重置，所以这里手动重置
-                g.resetCard(game);
+                await g.resetCard(game);
                 foreach (var card in g)
                 {
                     int position = random ? game.randomInt(0, g.Key.getDeck().count) : g.Key.getDeck().count;
-                    g.Key.getField().moveTo(game, card, g.Key.getDeck(), position);
+                    await g.Key.getField().moveTo(game, card, g.Key.getDeck(), position);
                 }
             }
             //foreach(Card c in cards)
@@ -2449,7 +2449,7 @@ namespace TouhouHeartstone
                 foreach (var card in g)
                 {
                     int position = random ? game.randomInt(0, g.Key.getDeck().count) : g.Key.getDeck().count;
-                    g.Key.getGrave().moveTo(game, g.Take(g.Count()), g.Key.getDeck(), position);
+                    await g.Key.getGrave().moveTo(game, g.Take(g.Count()), g.Key.getDeck(), position);
                 }
             }
         }

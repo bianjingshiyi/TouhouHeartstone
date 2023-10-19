@@ -24,6 +24,7 @@ namespace Game
     {
         public const int Type_Function = 100000;
         public const int Type_Action = 200000;
+        public const int Category_Game = 0;
         public const int Category_Player = 1000;
         public const int Category_Card = 2000;
         public const int Category_CardDefine = 3000;
@@ -58,6 +59,7 @@ namespace Game
         public const int GetPile = Type_Function + Category_Player + 17;    // 获取牌堆
         public const int GetPlayerTurnCount = Type_Function + Category_Player + 18;    // 获取玩家的回合数
         public const int IsOffensivePlayer = Type_Function + Category_Player + 19;    // 玩家是否是先手
+        public const int GetAllPlayers = Type_Function + Category_Player + 20;    // 获取所有玩家
 
         // 卡牌
         public const int ThisCard = Type_Function + Category_Card + 1; // 这张卡牌
@@ -220,6 +222,14 @@ namespace Game
         #endregion 函数
 
         #region 动作
+        // 游戏
+        public const int MakePlayersWin = Type_Action + Category_Game + 1;      // 使玩家获胜
+        public const int MakePlayersLose = Type_Action + Category_Game + 2;      // 使玩家失败
+        public const int MakePlayersDraw = Type_Action + Category_Game + 3;      // 使玩家平局
+        public const int CreatePile = Type_Action + Category_Game + 4;      // 创建牌堆
+        public const int RemovePile = Type_Action + Category_Game + 5;      // 删除牌堆
+        public const int MoveCardFromPileToPile = Type_Action + Category_Game + 6;      // 从牌堆将卡牌移动到目标牌堆
+
         // 玩家
         public const int SetPlayerGem = Type_Action + Category_Player + 1;    // 设置当前灵力值
         public const int SetPlayerProp = Type_Action + Category_Player + 2;    // 设置玩家属性
@@ -231,8 +241,8 @@ namespace Game
         public const int AddPlayerGem = Type_Action + Category_Player + 8;    // 增加当前灵力值
         public const int SetPlayerMaxGem = Type_Action + Category_Player + 9;    // 设置灵力上限
         public const int AddPlayerMaxGem = Type_Action + Category_Player + 10;    // 增加灵力上限
-        public const int FaithDuel_Obsolete = Type_Action + Category_Player + 11;    // 信仰对决
-        public const int FaithDuel = Type_Action + Category_Player + 12;    // 信仰对决（过时）
+        public const int FaithDuel_Obsolete = Type_Action + Category_Player + 11;    // 信仰对决（过时）
+        public const int FaithDuel = Type_Action + Category_Player + 12;    // 信仰对决
 
         // 卡牌
         public const int Damage = Type_Action + Category_Card + 1;    // 造成伤害
@@ -243,7 +253,7 @@ namespace Game
         public const int CreateTokenToItem = Type_Action + Category_Card + 6;    // 创建衍生卡兵装备到道具栏
         public const int SetCardProp_Obsolete = Type_Action + Category_Card + 7;    // 设置属性（过时）
         public const int DealDamageOrSpellDamage_Obsolete = Type_Action + Category_Card + 8;    // 造成伤害或法伤（过时）
-        public const int DealDamageSplitAmong_Obsolete = Type_Action + Category_Card + 9;    // 造成伤害或法伤兵分配给目标（过时）
+        public const int DealDamageSplitAmong_Obsolete = Type_Action + Category_Card + 9;    // 造成伤害或法伤并分配给目标（过时）
         public const int DealDamageToRandomTargets_Obsolete = Type_Action + Category_Card + 10;    // 对固定数量的随机目标造成伤害或法伤（过时）
         public const int DealSpellDamageToTargets = Type_Action + Category_Card + 11;    // 造成法术伤害
         public const int DealSpecificSpellDamageToRandomTargets = Type_Action + Category_Card + 12;    // 造成固定法术伤害并分配给随机目标
