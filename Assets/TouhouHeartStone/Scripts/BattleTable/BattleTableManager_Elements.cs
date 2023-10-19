@@ -794,7 +794,8 @@ namespace Game.BattleTable
         }
         public void setSecret(Secret secret, ICardData card)
         {
-            secret.setSecretOpen(currentAnimPlayer != player);
+            var owner = card.getOwner();
+            secret.setSecretOpen(currentAnimPlayer != owner);
             secret.setMission(card.define.hasKeyword(KEYWORD.MISSION));
         }
         public bool removeSecret(ICardData card) => removeSecret(card.id);
