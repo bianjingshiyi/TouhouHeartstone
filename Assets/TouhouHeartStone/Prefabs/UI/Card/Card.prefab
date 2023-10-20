@@ -863,11 +863,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3639996476798694622}
     m_Modifications:
-    - target: {fileID: 1542234213264789463, guid: 7fb81f92397b95e41a542f45fadb70f3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4785167558392883592, guid: 7fb81f92397b95e41a542f45fadb70f3,
         type: 3}
       propertyPath: m_Name
@@ -998,11 +993,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7623718363222291936, guid: 7fb81f92397b95e41a542f45fadb70f3,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7830518830372230367, guid: 7fb81f92397b95e41a542f45fadb70f3,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -1048,42 +1038,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1364081687959062794, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
-        type: 3}
-      propertyPath: m_text
-      value: "\u5361\u724C\u526F\u540D"
-      objectReference: {fileID: 0}
-    - target: {fileID: 3065482826224795074, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
-        type: 3}
-      propertyPath: m_text
-      value: "\u5361\u724C\u63CF\u8FF0"
-      objectReference: {fileID: 0}
     - target: {fileID: 3065482826224795074, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
         type: 3}
       propertyPath: m_fontSize
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 3065482826224795074, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
-        type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 58c5552297fbadd43bdcd4fe57c3063b,
-        type: 2}
-    - target: {fileID: 3065482826224795074, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 1519292458744236911, guid: 58c5552297fbadd43bdcd4fe57c3063b,
-        type: 2}
-    - target: {fileID: 4539823722233294992, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
-        type: 3}
-      propertyPath: m_text
-      value: "\u5361\u724C\u540D\u79F0"
-      objectReference: {fileID: 0}
-    - target: {fileID: 4539823722233294992, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
-        type: 3}
-      propertyPath: m_fontSize
-      value: 56.2
+      value: 41.85
       objectReference: {fileID: 0}
     - target: {fileID: 4574603629638151253, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
         type: 3}
@@ -1194,11 +1152,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ServantCardFace
-      objectReference: {fileID: 0}
-    - target: {fileID: 6713078729178785058, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bbd135490d7a22f4fb7b9bc7c3d9902f, type: 3}
