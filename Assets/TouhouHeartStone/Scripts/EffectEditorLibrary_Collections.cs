@@ -133,17 +133,11 @@ namespace Game
                 return Array.Empty<object>();
 
             List<object> objList = new List<object>();
-            List<object> negList = new List<object>();
-
             var elementPort = node.getOutputPort<ValueOutput>(nameof(element));
 
-            for (int i = 0; i < array.Length; i++)
+            foreach (var obj in array)
             {
-                object obj = array.GetValue(i);
-
                 flow.setValue(elementPort, obj);
-
-
                 bool result = true;
                 if (condition.outputPort != null)
                 {
@@ -155,10 +149,6 @@ namespace Game
                 if (result)
                 {
                     objList.Add(obj);
-                }
-                else
-                {
-                    negList.Add(obj);
                 }
             }
             return objList.ToArray();

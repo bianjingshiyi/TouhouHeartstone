@@ -22,7 +22,6 @@ namespace Game.BattleTable
             if (textMesh)
             {
                 textMesh.color = col;
-                textMesh.ForceMeshUpdate();
             }
             else
             {

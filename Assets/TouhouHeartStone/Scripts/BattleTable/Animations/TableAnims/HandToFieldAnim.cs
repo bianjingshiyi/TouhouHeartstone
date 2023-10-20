@@ -28,7 +28,7 @@ namespace Game.BattleTable
             var field = _servantDesc.getOwner() == table.player ? table.table.SelfField : table.table.EnemyField;
             // 手牌移动到目标位置。
             var servant = table.createServant(_servantDesc, _position);
-            servant.setHidden(true);
+            servant.gameObject.SetActive(false);
             AnimAnim anim = null;
             _tableCard.positionLerp.setStart(table.TableToWorldPosition(_startPosition));
             _tableCard.positionLerp.setTarget(servant.transform);
@@ -43,6 +43,7 @@ namespace Game.BattleTable
             _tableCard = null;
 
             // 召唤仆从。
+            servant.gameObject.SetActive(true);
             servant.setHidden(false);
             while (!SimpleAnimHelper.update(table, ref anim, servant.onSummon, servant.animator, _deltaTime))
             {
@@ -62,6 +63,7 @@ namespace Game.BattleTable
             }
             if (table.tryGetServant(_servantDesc.id, out var servant))
             {
+                servant.gameObject.SetActive(true);
                 servant.setHidden(false);
             }
             else

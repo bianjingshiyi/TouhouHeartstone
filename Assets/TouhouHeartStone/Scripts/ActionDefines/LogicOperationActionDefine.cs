@@ -40,14 +40,14 @@ namespace TouhouCardEngine
             else
                 op = LogicOperator.and;
 
-            var argPorts = node.getParamInputPorts("value").Select(port => port.getConnectedOutputPort()).Where(p => p != null).ToArray();
+            var argPorts = node.getParamInputPorts("value").Select(port => port.getConnectedOutputPort()).Where(p => p != null);
             bool result = false;
-            if (argPorts != null && argPorts.Length > 0)
+            if (argPorts != null && argPorts.Count() > 0)
             {
                 switch (op)
                 {
                     case LogicOperator.not:
-                        result = !await flow.getValue<bool>(argPorts[0]);
+                        result = !await flow.getValue<bool>(argPorts.FirstOrDefault());
                         break;
                     case LogicOperator.and:
                         result = true;
