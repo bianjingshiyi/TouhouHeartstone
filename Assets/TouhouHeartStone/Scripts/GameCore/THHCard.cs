@@ -384,6 +384,8 @@ namespace TouhouHeartstone
         }
         public static bool isForceAttackable(this Card card, CardEngine game, Player player, Card target)
         {
+            if (card == target)//是自己
+                return false;
             if (!(target.pile.name == PILE.FIELD || target.pile.name == PILE.MASTER))//不在战场上
                 return false;
             if (target.isDead(game))//已经死了
@@ -1479,15 +1481,20 @@ namespace TouhouHeartstone
         {
             var eventArg = await game.triggers.doEvent(new AttackEventArg() { card = card, target = target }, async arg =>
             {
+                card = arg.card;
+                target = arg.target;
                 if (!card.canAttackTest(game))
                 {
                     game.logger.log(card + "无法进行攻击");
                     arg.isCanceled = true;
                 }
+                else if (card == target)
+                {
+                    game.logger.log(card + "尝试攻击自己");
+                    arg.isCanceled = true;
+                }
                 else
                 {
-                    card = arg.card;
-                    target = arg.target;
                     game.logger.log(card + "攻击" + target);
                     int targetAttack = target.getAttack(game);
                     int cardAttack = card.getAttack(game);
