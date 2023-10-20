@@ -235,6 +235,16 @@ namespace Game.BattleTable
                     targetPosition = WorldToTablePosition(_hoveredItem.transform.position);
                     targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
                 }
+                else if (_hoveredHeadItem != null)
+                {
+                    var headCard = getCard(_hoveredHeadItem);
+                    if (!headCard.isTrap(game) || headCard.getOwner() == player)
+                    {
+                        hoveringCard = headCard;
+                        targetPosition = WorldToTablePosition(_hoveredHeadItem.transform.position);
+                        targetPosition.z = targetPosition.z < centerPosition.z ? 250 : -250;
+                    }
+                }
 
                 if (hoveringCard != null)
                 {

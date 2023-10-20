@@ -778,6 +778,8 @@ namespace Game.BattleTable
             var master = desc.getOwner() == player ? table.SelfMaster : table.EnemyMaster;
             var headSlots = master.HeadSlots;
             Secret secret = headSlots.createItem();
+            secret.onPointerEnter += onHeadItemPointerEnterCallback;
+            secret.onPointerExit += onHeadItemPointerExitCallback;
             headSlots.addItem(secret);
             cardSecretDic.Add(desc.id, secret);
             return secret;
@@ -816,10 +818,26 @@ namespace Game.BattleTable
                 var master = desc.getOwner() == player ? table.SelfMaster : table.EnemyMaster;
                 var headSlots = master.HeadSlots;
                 headSlots.removeItem(secret);
+                secret.onPointerEnter -= onHeadItemPointerEnterCallback;
+                secret.onPointerExit -= onHeadItemPointerExitCallback;
                 secret.destroy();
                 return true;
             }
             return false;
+        }
+        /// <summary>
+        /// 从Secret获取对应的牌
+        /// </summary>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        public Card getCard(Secret secret)
+        {
+            foreach (var pair in cardSecretDic)
+            {
+                if (pair.Value == secret)
+                    return game.getCard(pair.Key);
+            }
+            return null;
         }
         #endregion
 
@@ -1626,6 +1644,21 @@ namespace Game.BattleTable
         }
         #endregion
 
+        #region 陷阱
+        private void onHeadItemPointerEnterCallback(Secret headItem)
+        {
+            _showCardTimer.start();
+            _hoveredHeadItem = headItem;
+        }
+
+        private void onHeadItemPointerExitCallback(Secret headItem)
+        {
+            _showCardTimer.reset();
+            _hoveredHeadItem = null;
+            hideCardDisplayer();
+        }
+        #endregion 道具
+
         #endregion
         /// <summary>
         /// 显示箭头
@@ -2073,6 +2106,7 @@ namespace Game.BattleTable
         BJSYGameCore.Timer _showCardTimer = new BJSYGameCore.Timer() { duration = 0.25f };
         Servant _hoveredServant;
         Item _hoveredItem;
+        Secret _hoveredHeadItem;
         /// <summary>
         /// 需要更新所有卡牌的可控绿光。
         /// </summary>
