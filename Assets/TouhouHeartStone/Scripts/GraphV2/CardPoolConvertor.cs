@@ -801,10 +801,13 @@ namespace Game
                     {
                         targetNode = ConvertActionNodeChain(param, actionId);
                     }
-                    var input = targetNode?.getEnterPort();
                     var output = getActionNodeControlOutput(actionNode, i);
+                    var input = targetNode?.getEnterPort();
                     if (input == null || output == null)
+                    {
+                        graph.addConnection(new InvalidNodeConnection(output, output?.name, actionNode.id, input, ActionNode.enterControlName, targetNode.id, -1));
                         continue;
+                    }
                     graph.connect(output, input);
                 }
             }
@@ -1033,7 +1036,10 @@ namespace Game
                 var output = getActionNodeValueOutput(targetNode, seriInput.index);
                 var input = getActionNodeValueInput(freeNode, i);
                 if (output == null || input == null)
+                {
+                    graph.addConnection(new InvalidNodeConnection(output, output?.name, targetNode.id, input, input?.name, freeNode.id, input?.paramIndex ?? -1));
                     continue;
+                }
                 graph.connect(output, input);
             }
 
@@ -1054,7 +1060,10 @@ namespace Game
                 var output = getActionNodeControlOutput(freeNode, i);
                 var input = targetNode.getEnterPort();
                 if (output == null || input == null)
+                {
+                    graph.addConnection(new InvalidNodeConnection(output, output?.name, freeNode.id, input, ActionNode.enterControlName, targetNode.id, -1));
                     continue;
+                }
                 graph.connect(output, input);
             }
 
@@ -1098,21 +1107,24 @@ namespace Game
             // 创建并连接输入的节点。
             for (int i = 0; i < seriNode.inputs.Length; i++)
             {
-                var input = seriNode.inputs[i];
-                if (input.action == null)
+                var inputRef = seriNode.inputs[i];
+                if (inputRef.action == null)
                     continue;
                 // 如果该节点未被加入，创建一个。
-                if (!nodes.TryGetValue(input.action._id, out ActionNode targetNode))
+                if (!nodes.TryGetValue(inputRef.action._id, out ActionNode targetNode))
                 {
-                    targetNode = CreateFreeNodeToGraphOld(input.action, graphInfo, param);
+                    targetNode = CreateFreeNodeToGraphOld(inputRef.action, graphInfo, param);
                 }
 
                 // 连接节点。
-                var outputPort = getActionNodeValueOutput(targetNode, input.index);
-                var inputPort = getActionNodeValueInput(freeNode, i);
-                if (outputPort == null || inputPort == null)
+                var output = getActionNodeValueOutput(targetNode, inputRef.index);
+                var input = getActionNodeValueInput(freeNode, i);
+                if (output == null || input == null)
+                {
+                    graph.addConnection(new InvalidNodeConnection(output, output?.name, targetNode.id, input, input?.name, freeNode.id, input?.paramIndex ?? -1));
                     continue;
-                graph.connect(outputPort, inputPort);
+                }
+                graph.connect(output, input);
             }
 
 
@@ -1132,7 +1144,10 @@ namespace Game
                 var output = getActionNodeControlOutput(freeNode, i);
                 var input = targetNode.getEnterPort();
                 if (output == null || input == null)
+                {
+                    graph.addConnection(new InvalidNodeConnection(output, output?.name, freeNode.id, input, ActionNode.enterControlName, targetNode.id, -1));
                     continue;
+                }
                 graph.connect(output, input);
             }
 
@@ -1187,6 +1202,16 @@ namespace Game
             if (output is ControlOutput controlOutput)
             {
                 return controlOutput;
+            }
+            // 0.15 加入了函数类型节点，没有入口和出口动作节点，做个兼容。
+            var define = getActionDefine(poolId, node.defineRef, node.defineName);
+            if (define != null && define.type == NodeDefineType.Function && index >= 1)
+            {
+                var functionOuput = node.getOutputPorts<ControlOutput>().ElementAtOrDefault(index - 1);
+                if (functionOuput is ControlOutput funcControl)
+                {
+                    return funcControl;
+                }
             }
             return null;
         }
@@ -1249,7 +1274,10 @@ namespace Game
         {
             var output = GetValueRefOutputPort(valueRef, param);
             if (input == null || output == null)
+            {
+                param.graph.addConnection(new InvalidNodeConnection(output, output?.name, output?.node?.id ?? 0, input, input?.name, input?.node?.id ?? 0, (input as ValueInput)?.paramIndex ?? -1));
                 return;
+            }
             param.graph.connect(output, input);
         }
         /// <summary>
