@@ -180,7 +180,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
                 int damage = card.getOwner().getMaster().getArmor(game);
-                damage = card.getOwner().getSpellDamage(game, damage);
+                damage = card.getOwner().getSpellDamage(game, damage, card);
                 await target.damage(game,card,damage);
             },PileFlag.both | PileFlag.field)
         };

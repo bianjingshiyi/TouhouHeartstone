@@ -409,7 +409,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            int damage = card.getOwner().getSpellDamage(game, 5);
+            int damage = card.getOwner().getSpellDamage(game, 5,card);
             await game.getOpponent(card.getOwner()).getMaster().damage(game, card, damage);
         }
     }

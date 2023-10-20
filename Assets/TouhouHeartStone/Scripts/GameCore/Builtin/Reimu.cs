@@ -189,9 +189,9 @@ namespace TouhouHeartstone.Builtin
             {
                 Player opponent = game.getOpponent(arg.player);
                 if(opponent.getField().count<4)
-                    await opponent.getField().damage(game,card, arg.player.getSpellDamage(game,2));
+                    await opponent.getField().damage(game,card, arg.player.getSpellDamage(game,2,card));
                 else
-                    await opponent.getField().randomTake(game,3).damage(game,card, arg.player.getSpellDamage(game,2));
+                    await opponent.getField().randomTake(game,3).damage(game,card, arg.player.getSpellDamage(game,2, card));
             })
         };
 

@@ -924,6 +924,14 @@
         <isArray>false</isArray>
         <summary><![CDATA[最终法术伤害结果会加上该基础值，默认为0。]]></summary>
       </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>spellCard</name>
+        <displayName>法术牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取法术伤害的法术牌，这张牌本身的法术伤害也会被加入到结果中。可以不连接。]]></summary>
+      </ActionParameterComment>
     </inputs>
     <outputs>
       <ActionParameterComment>
@@ -5736,7 +5744,7 @@
     <defineId>103021</defineId>
     <obsoleteNames />
     <editorName>卡牌定义是否是陷阱</editorName>
-    <category>卡牌</category>
+    <category>卡牌定义</category>
     <inputs>
       <ActionParameterComment>
         <type>CardDefine</type>

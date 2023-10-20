@@ -121,7 +121,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game, card, target) =>
                 {
-                    await target.damage(game, card, card.getOwner().getSpellDamage(game, 2));
+                    await target.damage(game, card, card.getOwner().getSpellDamage(game, 2, card));
                     await card.addBuff(game, new CodeBuff(ID,
                         new THHEffectAfter<HearthStoneRule.TurnEndEventArg>(PileFlag.hand,
                             (g, c,b, a) => { return a.player == c.getOwner(); },
@@ -309,7 +309,7 @@ namespace TouhouHeartstone.Builtin
                 .Count() + 1;
 
             await game.getOpponent(card.getOwner()).getField()
-                .damageByRandomCount(game, card, card.getOwner().getSpellDamage(game, dam), 3);
+                .damageByRandomCount(game, card, card.getOwner().getSpellDamage(game, dam, card), 3);
         }
     }
 
@@ -335,11 +335,11 @@ namespace TouhouHeartstone.Builtin
                                                                     u.card != card);
                 if (x)
                 {
-                    await target.damage(game, card, card.getOwner().getSpellDamage(game, 4));
+                    await target.damage(game, card, card.getOwner().getSpellDamage(game, 4, card));
                 }
                 else
                 {
-                    await target.damage(game, card, card.getOwner().getSpellDamage(game, 2));
+                    await target.damage(game, card, card.getOwner().getSpellDamage(game, 2, card));
                 }
             }, PileFlag.both | PileFlag.character)
         };
@@ -667,7 +667,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            int damage = card.getOwner().getSpellDamage(game, 4);
+            int damage = card.getOwner().getSpellDamage(game, 4, card);
             await card.getOwner().getMaster().damage(game, card, damage);
             await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, damage);
             await card.getOwner().draw(game);

@@ -462,7 +462,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype)
             {
-                dmg = source.owner.getSpellDamage(game, dmg);
+                dmg = source.owner.getSpellDamage(game, dmg, damageSource);
             }
             return targets.damage(game, source, dmg);
         }
@@ -486,7 +486,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype)
             {
-                dmg = source.owner.getSpellDamage(game, dmg);
+                dmg = source.owner.getSpellDamage(game, dmg, damageSource);
             }
             return targets.damageByRandom(game, source, dmg);
         }
@@ -512,7 +512,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype)
             {
-                dmg = source.owner.getSpellDamage(game, dmg);
+                dmg = source.owner.getSpellDamage(game, dmg, damageSource);
             }
             return targets.damageByRandomCount(game, card, dmg, count + count2);
         }
@@ -534,7 +534,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype && damageSource != null)
             {
-                dmg = damageSource.owner.getSpellDamage(game, dmg);
+                dmg = damageSource.owner.getSpellDamage(game, dmg, damageSource);
             }
             return targets.damage(game, damageSource, dmg);
         }
@@ -556,7 +556,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype && damageSource != null)
             {
-                dmg = damageSource.owner.getSpellDamage(game, dmg);
+                dmg = damageSource.owner.getSpellDamage(game, dmg, damageSource);
             }
             return targets.damageByRandom(game, damageSource, dmg);
         }
@@ -580,7 +580,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype && damageSource != null)
             {
-                dmg = damageSource.owner.getSpellDamage(game, dmg);
+                dmg = damageSource.owner.getSpellDamage(game, dmg, damageSource);
             }
             return targets.damageByRandomCount(game, damageSource, dmg, count + count2);
         }
@@ -640,7 +640,7 @@ namespace Game
         {
             if (targets == null)
                 return default;
-            return targets.damageByRandom(game, card, getSpellDamage(game, card.owner, damage));
+            return targets.damageByRandom(game, card, card.owner.getSpellDamage(game, damage));
         }
         /// <summary>
         /// 对固定数量的随机敌人造成固定伤害

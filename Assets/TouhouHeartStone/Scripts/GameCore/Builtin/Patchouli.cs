@@ -434,7 +434,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await target.damage(game, card, card.getOwner().getSpellDamage(game, 7));
+                await target.damage(game, card, card.getOwner().getSpellDamage(game, 7, card));
                 await Patchouli.tryMix(game,card);
             },PileFlag.both | PileFlag.character)
         };
@@ -592,7 +592,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await game.getOpponent(card.getOwner()).getField().damage(game, card, card.getOwner().getSpellDamage(game, 3));
+            await game.getOpponent(card.getOwner()).getField().damage(game, card, card.getOwner().getSpellDamage(game, 3, card));
             await Patchouli.tryMix(game, card);
         }
     }
@@ -664,7 +664,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await game.getOpponent(card.owner as Player).getMaster().damage(game, card, card.owner.getSpellDamage(game, 15));
+            await game.getOpponent(card.owner as Player).getMaster().damage(game, card, card.owner.getSpellDamage(game, 15, card));
         }
     }
     /// <summary>
@@ -971,7 +971,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            int damage = card.getOwner().getSpellDamage(game, 2);
+            int damage = card.getOwner().getSpellDamage(game, 2, card);
             await game.getOpponent(card.getOwner()).getField().random(game).damage(game, card, damage);
             await Patchouli.tryMix(game, card);
         }
@@ -1061,7 +1061,7 @@ namespace TouhouHeartstone.Builtin
         {
             Player player = card.getOwner();
             Player opponent = game.getOpponent(player);
-            await opponent.getField().damage(game, card, player.getSpellDamage(game, 2));
+            await opponent.getField().damage(game, card, player.getSpellDamage(game, 2, card));
             foreach (Card target in opponent.getField())
             {
                 if (target.isDead(game))
@@ -1130,7 +1130,7 @@ namespace TouhouHeartstone.Builtin
                 {
                     await buffcard.addBuff(game,new CodeBuff(ID,new AttackModifier(2),new LifeModifier(2)));
                 }
-                int damage = card.getOwner().getSpellDamage(game, card.getOwner().getField().count);
+                int damage = card.getOwner().getSpellDamage(game, card.getOwner().getField().count, card);
                 await target.damage(game, card, damage);
                 await Patchouli.tryMix(game, card);
             },PileFlag.oppo | PileFlag.field)
@@ -1241,7 +1241,7 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            await game.getAllEnemies(card.getOwner()).damageByRandom(game, card, card.getOwner().getSpellDamage(game, 7));
+            await game.getAllEnemies(card.getOwner()).damageByRandom(game, card, card.getOwner().getSpellDamage(game, 7, card));
             await Patchouli.tryMix(game, card);
         }
     }
@@ -1260,7 +1260,7 @@ namespace TouhouHeartstone.Builtin
         {
             new LambdaSingleTargetEffect(async (game,card,target)=>
             {
-                await new Card[] { target, game.getOpponent(card.getOwner()).getMaster() }.damage(game,card,card.getOwner().getSpellDamage(game,4));
+                await new Card[] { target, game.getOpponent(card.getOwner()).getMaster() }.damage(game,card,card.getOwner().getSpellDamage(game, 4, card));
                 await Patchouli.tryMix(game, card);
             }, PileFlag.both | PileFlag.field)
         };
@@ -1536,7 +1536,7 @@ namespace TouhouHeartstone.Builtin
             new NoTargetEffect((g1,c1)=>
             {
                 int damage = c1.getProp<int>(g1,"damage");
-                damage = c1.getOwner().getSpellDamage(g1, damage);
+                damage = c1.getOwner().getSpellDamage(g1, damage, c1);
                 return c1.getOwner().getMaster().damage(g1,c1,damage);
             })
         };

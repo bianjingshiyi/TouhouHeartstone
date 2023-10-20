@@ -552,13 +552,20 @@ namespace TouhouHeartstone
             return eventArg;
         }
         public static Card getMaster(this Player player) => player.getPile(PILE.MASTER)[0];
+        public static int getSpellDamage(this Player player, CardEngine game, int baseDamage, Card spell)
+        {
+            return player.getSpellDamage(game, baseDamage) + spell?.getSpellDamage(game) ?? 0;
+        }
         public static int getSpellDamage(this Player player, CardEngine game, int baseDamage)
         {
             int result = baseDamage;
-            foreach (var card in player.getField())
+            foreach (var servant in player.getField())
             {
-                result += card.getSpellDamage(game);
+                result += servant.getSpellDamage(game);
             }
+            result += player.getItem()?.getSpellDamage(game) ?? 0;
+            result += player.getSkill()?.getSpellDamage(game) ?? 0;
+            result += player.getMaster()?.getSpellDamage(game) ?? 0;
             return result;
         }
         public static async Task<Card> shuffleCardToDeck(this Player player, CardEngine game, CardDefine define)

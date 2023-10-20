@@ -180,7 +180,7 @@ namespace TouhouHeartstone.Builtin
             {
                 Player you = card.getOwner();
                 var duel = await you.revealDuel(game, 2);
-                await target.damage(game, card, you.getSpellDamage(game, 3));
+                await target.damage(game, card, you.getSpellDamage(game, 3, card));
                 if (duel.result)
                     await card.getOwner().getMaster().heal(game, card, 4);
             }, PileFlag.both | PileFlag.field)
@@ -261,7 +261,7 @@ namespace TouhouHeartstone.Builtin
         {
             Player you = card.getOwner();
             var duel = await you.revealDuel(game);
-            await game.getOpponent(you).getField().damage(game, card, 2);
+            await game.getOpponent(you).getField().damage(game, card, you.getSpellDamage(game, 2, card));
             if (duel.result)
             {
                 await you.draw(game);
@@ -286,9 +286,9 @@ namespace TouhouHeartstone.Builtin
             {
                 Player you = card.getOwner();
                 var duel = await you.revealDuel(game, 2);
-                await target.getNearbyCards().damage(game, card, you.getSpellDamage(game, 4));
+                await target.getNearbyCards().damage(game, card, you.getSpellDamage(game, 4, card));
                 if (duel.result)
-                    await target.damage(game, card, you.getSpellDamage(game, 2));
+                    await target.damage(game, card, you.getSpellDamage(game, 2, card));
             }, PileFlag.both | PileFlag.field)
         };
 
@@ -789,7 +789,7 @@ namespace TouhouHeartstone.Builtin
             {
                 await target.setDead(game, true);
                 await card.getOwner().getMaster().damage(game, card,
-                    card.getOwner().getSpellDamage(game, target.getCurrentLife(game)));
+                    card.getOwner().getSpellDamage(game, target.getCurrentLife(game), card));
             }, PileFlag.oppo | PileFlag.field)
         };
 
@@ -1105,7 +1105,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(
-                async (g, c, t) => { await t.damage(g, c, c.getOwner().getSpellDamage(g, 6)); },
+                async (g, c, t) => { await t.damage(g, c, c.getOwner().getSpellDamage(g, 6, c)); },
                 PileFlag.both | PileFlag.field)
         };
 
@@ -1130,7 +1130,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[]
         {
             new LambdaSingleTargetEffect(
-                async (g, c, t) => { await t.damage(g, c, c.getOwner().getSpellDamage(g, 4)); },
+                async (g, c, t) => { await t.damage(g, c, c.getOwner().getSpellDamage(g, 4, c)); },
                 PileFlag.both | PileFlag.field)
         };
 
@@ -1170,7 +1170,7 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             await game.getOpponent(card.getOwner()).getField().random(game)
-                .damage(game, card, card.getOwner().getSpellDamage(game, 4));
+                .damage(game, card, card.getOwner().getSpellDamage(game, 4, card));
         }
     }
 

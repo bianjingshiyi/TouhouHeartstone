@@ -467,7 +467,7 @@ namespace Tests
             },async (game,card,arg,targets)=>
             {
                 if(targets[0] is Card target)
-                    await target.damage(game, card, arg.player.getSpellDamage(game,1));
+                    await target.damage(game, card, arg.player.getSpellDamage(game,1,card));
             })
         };
 

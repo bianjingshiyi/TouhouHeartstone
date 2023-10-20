@@ -231,6 +231,9 @@ namespace Game
 
         [TranslateMsg("节点参数 TargetName")]
         const string EDITOR_PARAM_TARGET_NAME = "目标名";
+        [TranslateMsg("节点参数-获取法术伤害/输入")]
+        const string EDITOR_PARAM_NAME_SPELL_CARD = "法术牌";
+        
 
 
         /// <summary>
@@ -359,11 +362,12 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE)]
         public static int getSpellDamage(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BASE_DAMAGE)] int baseDamage)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BASE_DAMAGE)] int baseDamage,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SPELL_CARD)] Card spellCard)
         {
             if (player == null)
                 return 0;
-            return player.getSpellDamage(game, baseDamage);
+            return player.getSpellDamage(game, baseDamage, spellCard);
         }
         /// <summary>
         /// 获取延迟区
