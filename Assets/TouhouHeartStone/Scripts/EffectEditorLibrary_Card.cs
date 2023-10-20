@@ -868,6 +868,8 @@ namespace Game
         public const string EDITOR_NODE_TRIGGER_SPELL_CARD_EFFECT = "触发法术或技能卡牌效果";
         [TranslateMsg("编辑器-节点名称")]
         public const string EDITOR_NODE_CARD_IS_TRAP = "卡牌是否是陷阱";
+        [TranslateMsg("编辑器-节点名称")]
+        public const string EDITOR_NODE_GET_CARD_PILE = "获取卡牌所在牌堆";
         /// <summary>
         /// 卡牌具有宣言
         /// </summary>
@@ -955,6 +957,18 @@ namespace Game
             if (card == null)
                 return false;
             return card.isTrap(game);
+        }
+        /// <summary>
+        /// 获取卡牌所在牌堆
+        /// </summary>
+        [THHActionMethod(BuiltinActionDefineID.GetCardPile, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_GET_CARD_PILE)]
+        [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PILE)]
+        public static Pile getCardPile(CardEngine game,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
+        {
+            if (card == null)
+                return null;
+            return card.pile;
         }
         #endregion
 

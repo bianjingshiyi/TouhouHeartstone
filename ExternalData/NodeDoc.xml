@@ -519,6 +519,35 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>112009</defineId>
+    <obsoleteNames />
+    <editorName>是否不存在</editorName>
+    <category>其他</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Object</type>
+        <name>value</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要判断是否不存在的值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>return</name>
+        <displayName>不存在</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该值是否不存在。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[判断一个值是否不存在。<br>不存在的值仍可以参加节点运算，但大多数时候只会使节点产生默认值。<br><b>如果该值是一个整数，则其不会被认定为不存在。</b>]]></summary>
+    <example><![CDATA[使用<b>简单抽牌</b>节点，判断抽到的牌是否存在，以确定是否真正抽到了牌。]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>200001</defineId>
     <obsoleteNames />
     <editorName>使玩家获胜</editorName>
@@ -601,7 +630,7 @@
         <summary><![CDATA[该牌堆可以容纳多少卡牌。-1为无限制。]]></summary>
       </ActionParameterComment>
     </consts>
-    <summary><![CDATA[为一位玩家创建新的牌堆。]]></summary>
+    <summary><![CDATA[为一位玩家创建新的牌堆。如果该名称的牌堆已经存在，不会新建一个牌堆，改为输出已经存在的牌堆。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -4726,6 +4755,35 @@
     </outputs>
     <consts />
     <summary><![CDATA[判断一张卡牌是否是陷阱。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>102029</defineId>
+    <obsoleteNames />
+    <editorName>获取卡牌所在牌堆</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>card</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要获取牌堆的卡牌。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>Pile</type>
+        <name>return</name>
+        <displayName>牌堆</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[获取到的所在牌堆。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[获取一个卡牌所在的牌堆。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>

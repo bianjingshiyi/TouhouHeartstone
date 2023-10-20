@@ -17,10 +17,15 @@ namespace Game
         public const string EDITOR_NODE_NAME_GET_RANDOM_INT = "X到Y之间的随机整数";
         [TranslateMsg("动作图编辑器中动作节点名称之重复动作直到动作")]
         private const string EDIOTR_NODE_NAME_DO_UNTIL_ACTION = "重复动作直到";
+        [TranslateMsg("节点名称")]
+        public const string EDITOR_NODE_NAME_IS_NOT_EXISTS = "是否不存在";
+
         [TranslateMsg("动作图编辑器中动作节点参数名称之最多重复次数参数")]
         private const string EDIOTR_PARAM_NAME_MAX_REPEAT_TIME = "最多重复次数";
         [TranslateMsg("动作图编辑器中动作节点参数名称之结束条件参数")]
         private const string EDIOTR_PARAM_NAME_STOP_CONDITION = "结束条件";
+        [TranslateMsg("节点参数-是否不存在/输出值")]
+        public const string EDITOR_PARAM_NAME_NOT_EXISTS = "不存在";
 
         [TranslateMsg("编辑器-节点分类名")]
         public const string EDITOR_CATEGORY_NAME_OTHER = "其他";
@@ -170,6 +175,18 @@ namespace Game
         {
             return game.randomInt(countX, countY);
         }
+        /// <summary>
+        /// 是否不存在
+        /// </summary>
+        /// <param name="pile"></param>
+        /// <returns></returns>
+        [THHActionMethod(BuiltinActionDefineID.IsNotExists, EDITOR_CATEGORY_NAME_OTHER, EDITOR_NODE_NAME_IS_NOT_EXISTS)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_NOT_EXISTS)]
+        public static bool isNotExists(
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
+        {
+            return value == null;
+        }
         #endregion
 
         #region 游戏
@@ -227,6 +244,11 @@ namespace Game
         {
             if (player == null || pileName == null)
                 return null;
+            var existedPile = player.getPile(pileName);
+            if (existedPile != null)
+            {
+                return existedPile;
+            }
             var pile = new Pile(game, pileName, capacity);
             player.addPile(pile);
             return pile;

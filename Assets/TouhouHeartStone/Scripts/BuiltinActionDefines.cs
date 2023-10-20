@@ -40,7 +40,7 @@ namespace Game
 
         #region 函数
         // 玩家
-        public const int GetPile_Obsolete = Type_Function + Category_Player + 1;    // 获取牌堆
+        public const int GetPile_Obsolete = Type_Function + Category_Player + 1;    // 获取牌堆（过时）
         public const int GetPlayerProp = Type_Function + Category_Player + 2;    // 获取玩家属性
         public const int GetPlayerOpponent = Type_Function + Category_Player + 3;    // 获取玩家对手
         public const int GetPlayerMaster = Type_Function + Category_Player + 4;    // 获取玩家英雄
@@ -90,6 +90,7 @@ namespace Game
         public const int GetChargedLevel = Type_Function + Category_Card + 26;    // 获取蓄力层数
         public const int GetCardProp = Type_Function + Category_Card + 27;    // 获取卡牌属性
         public const int CardIsTrap = Type_Function + Category_Card + 28;    // 卡牌是否是陷阱
+        public const int GetCardPile = Type_Function + Category_Card + 29;    // 获取卡牌所在牌堆
 
 
         // 卡牌定义
@@ -218,6 +219,7 @@ namespace Game
         public const int StringConst = Type_Function + Category_Other + 6;    // 固定字符串
         public const int GetTempVar = Type_Function + Category_Other + 7;    // 获取临时变量
         public const int RandomInt = Type_Function + Category_Other + 8;    // x到y之间的随机整数
+        public const int IsNotExists = Type_Function + Category_Other + 9;    // 是否不存在
 
         #endregion 函数
 
