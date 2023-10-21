@@ -24,7 +24,7 @@ namespace Controllers
             //清理字段
             _deck = null;
             _isDeckChanged = false;
-
+            await _cardPoolViewPanelCtrl.display(cardFilter: cardFilter);
             _selectableMasters = game.card.findCardDefines(c => {
                 if (c.isMaster())
                 {
@@ -44,10 +44,8 @@ namespace Controllers
             _ui.gameObject.SetActive(true);
             _ui.showErrorTip(false);
             _ui.setEnableDrag(false);
-            //右侧栏
             _ui.setDeckListActive(true);
             _ui.setEditDeckPanelActive(false);
-            await _cardPoolViewPanelCtrl.display(cardFilter: cardFilter);
             await updateDeckListUI();
         }
         /// <summary>
