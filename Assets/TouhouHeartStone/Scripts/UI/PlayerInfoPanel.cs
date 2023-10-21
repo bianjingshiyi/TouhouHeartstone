@@ -53,7 +53,7 @@ namespace UI
                // todo: 本地化游客名称
             }
             nickNameText.text = info.Name;
-            emailText.text = "UID: " + info.UID;
+            emailText.text = $"UID: {info.UID}";
             // todo: 加载头像
             toggleLoginStatus(LoginState.Logined, isGuest);
         }

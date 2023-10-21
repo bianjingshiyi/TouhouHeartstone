@@ -154,7 +154,7 @@ namespace Controllers
                     targetChecker.targetType = DEFINE.TARGET_TYPE_SERVANT;
                     viewData.typeIndex = Array.IndexOf(_targetCheckerTypes, DEFINE.TARGET_TYPE_SERVANT);
                 }
-                viewData.name = "目标" + (i + 1);
+                viewData.name = $"目标{i + 1}";
                 viewData.errorTip = targetList[i].errorTip;
                 viewDatas[i] = viewData;
             }

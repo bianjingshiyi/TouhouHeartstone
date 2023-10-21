@@ -34,18 +34,18 @@ namespace Game.BattleTable
                 return true;
             if (!animator.isActiveAndEnabled)
             {
-                UberDebug.LogWarningChannel(animator, "Animation", animator + "被禁用，无法播放动画" + animName);
+                UberDebug.LogWarningChannel(animator, "Animation", $"{animator}被禁用，无法播放动画{animName}");
             }
             if (!animator.gameObject.activeInHierarchy)
             {
-                UberDebug.LogWarningChannel(animator, "Animation", animator + "的GameObject被禁用，无法播放动画" + animName);
+                UberDebug.LogWarningChannel(animator, "Animation", $"{animator}的GameObject被禁用，无法播放动画{animName}");
                 return true;
             }
             if (isFinished)
                 return true;
             if (!hasAnim(animator, animName, out var layer))
             {
-                UberDebug.LogWarningChannel(animator, "Animation", animator + "中不存在动画状态" + animName);
+                UberDebug.LogWarningChannel(animator, "Animation", $"{animator}中不存在动画状态{animName}");
                 return true;
             }
             if (!isPlayed)

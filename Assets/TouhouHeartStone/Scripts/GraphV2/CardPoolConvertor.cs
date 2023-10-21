@@ -750,7 +750,7 @@ namespace Game
             // 寻找ID匹配的序列化动作节点。
             SerializableActionNode seriActionNode = actionNodeList.Find(s => s.id == rootActionId);
             if (seriActionNode == null)
-                throw new KeyNotFoundException("不存在id为" + rootActionId + "的动作节点");
+                throw new KeyNotFoundException($"不存在id为{rootActionId}的动作节点");
 
             // 创建节点。
             float posX = 0, posY = 0;
@@ -870,7 +870,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    throw new FormatException("反序列化触发器目标条件" + i + "失败", e);
+                    throw new FormatException($"反序列化触发器目标条件{i}失败", e);
                 }
             }
 

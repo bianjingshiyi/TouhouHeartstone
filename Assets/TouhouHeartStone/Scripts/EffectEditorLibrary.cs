@@ -991,18 +991,18 @@ namespace Game
                 {
                     if (player.getField().isFull)
                     {
-                        game.logger.logTrace(player + "的战场已满，无法将" + string.Join(",", card) + "置入战场");
+                        game.logger.logTrace($"{player}的战场已满，无法将{string.Join(",", card)}置入战场");
                     }
                     else
                     {
-                        game.logger.logTrace("将" + string.Join("，", card) + "置入" + player + "的战场");
+                        game.logger.logTrace($"将{string.Join("，", card)}置入{player}的战场");
                         await player.tryEnterField(game, card.pile, card, player.getField().count);
                         MoveList.Add(card);
                     }
                 }
                 else
                 {
-                    game.logger.logTrace("卡牌类型非法，无法将" + string.Join(",", card) + "置入战场");
+                    game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入战场");
                 }
             }
             return MoveList.ToArray();
@@ -1052,7 +1052,7 @@ namespace Game
                 if (card == null)
                     continue;
                 int position = top ? player.getDeck().count : game.randomInt(0, player.getDeck().count);
-                game.logger.logTrace("将" + string.Join("，", card) + "洗入" + player + "的牌库");
+                game.logger.logTrace($"将{string.Join("，", card)}洗入{player}的牌库");
                 await card.pile.moveTo(game, card, player.getDeck(), position);
                 MoveList.Add(card);
             }
@@ -1077,7 +1077,7 @@ namespace Game
             {
                 if (card == null)
                     continue;
-                game.logger.logTrace("将" + string.Join("，", card) + "置入" + player + "的墓地");
+                game.logger.logTrace($"将{string.Join("，", card)}置入{player}的墓地");
                 await card.pile.moveTo(game, card, player.getGrave());
                 MoveList.Add(card);
             }
@@ -1106,18 +1106,18 @@ namespace Game
                 {
                     if (player.getHead().isFull)
                     {
-                        game.logger.logTrace(player + "的延迟区已满，无法将" + string.Join(",", card) + "置入延迟区");
+                        game.logger.logTrace($"{player}的延迟区已满，无法将{string.Join(",", card)}置入延迟区");
                     }
                     else
                     {
-                        game.logger.logTrace("将" + string.Join("，", card) + "置入" + player + "的延迟区");
+                        game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
                         await card.pile.moveTo(game, card, player.getHead());
                         MoveList.Add(card);
                     }
                 }
                 else
                 {
-                    game.logger.logTrace("卡牌类型非法，无法将" + string.Join(",", card) + "置入延迟区");
+                    game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入延迟区");
                 }
             }
             return MoveList.ToArray();
@@ -1156,7 +1156,7 @@ namespace Game
             {
                 if (card == null)
                     continue;
-                game.logger.logTrace("将" + string.Join("，", card) + "置入" + player + "的暂存区");
+                game.logger.logTrace($"将{string.Join("，", card)}置入{player}的暂存区");
                 //await card.resetCard(game);
                 await card.pile.moveTo(game, card, player.getWarp());
                 MoveList.Add(card);

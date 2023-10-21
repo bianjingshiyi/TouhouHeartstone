@@ -31,7 +31,7 @@ namespace Game
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             int newBuffDefineId = 0;
             for (int i = 0; i < cardPool.buffDefineList.Count; i++)
@@ -51,7 +51,7 @@ namespace Game
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             cardPool.buffDefineList.Add(define);
         }
@@ -78,7 +78,7 @@ namespace Game
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             return cardPool.buffDefineList.Remove(buffDefine);
         }
@@ -86,7 +86,7 @@ namespace Game
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolRef);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
             }
             buffDefine = cardPool.buffDefineList.Find(b => b.id == buffDefineId);
             return buffDefine != null;
@@ -95,7 +95,7 @@ namespace Game
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolRef);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
             }
             return cardPool.buffDefineList.ToDictionary(b => b.id, b => b as BuffDefine);
         }
@@ -123,7 +123,7 @@ namespace Game
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             BuffSkin buffSkin = new BuffSkin()
             {
@@ -132,7 +132,7 @@ namespace Game
             };
             if (cardPool.buffSkinList.Find(s => s.buffId == buffId && s.language == language) != null)
             {
-                Debug.LogWarning("已经存在增益" + buffId + "的语言为" + language + "的皮肤");
+                Debug.LogWarning($"已经存在增益{buffId}的语言为{language}的皮肤");
             }
             return buffSkin;
         }
@@ -141,7 +141,7 @@ namespace Game
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             cardPool.buffSkinList.Add(buffSkin);
         }
@@ -190,7 +190,7 @@ namespace Game
             long cardPoolId = buffDefine.cardPoolId;
             if (!tryGetCardPool(getCardPoolReferenceOfBuff(buffDefine), out CardPool cardPool))
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             var buffSkinList = cardPool.buffSkinList.FindAll(s => s.buffId == buffDefine.id);
             BuffSkin buffSkin = buffSkinList.Find(s => s.language == game.langManager.getLanguage());
@@ -202,7 +202,7 @@ namespace Game
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolRef);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
             }
             List<BuffSkin> buffSkinList = new List<BuffSkin>();
             for (int i = 0; i < cardPool.buffSkinList.Count; i++)
@@ -218,7 +218,7 @@ namespace Game
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolRef);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolRef}");
             }
             return cardPool.buffSkinList.ToArray();
         }

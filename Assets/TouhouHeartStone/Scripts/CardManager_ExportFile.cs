@@ -21,7 +21,7 @@ namespace Game
     {
         const string CardPoolPackExt = "dcpp";
         const string CardPoolPackManifest = "manifest.json";
-        string CardPoolPackDefine => "cardpool." + _cardPoolFilePostfix;
+        string CardPoolPackDefine => $"cardpool.{_cardPoolFilePostfix}";
 
         /// <summary>
         /// 导出卡池
@@ -53,7 +53,7 @@ namespace Game
             if (cardPoolDefineFile == null)
                 return null;
 
-            var defaultFileName = cardPoolInfo.cardPoolName + "." + CardPoolPackExt;
+            var defaultFileName = $"{cardPoolInfo.cardPoolName}.{CardPoolPackExt}";
 
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX 
             var exportPath = StandaloneFileBrowser.SaveFilePanel("", "", defaultFileName, CardPoolPackExt);
@@ -105,7 +105,7 @@ namespace Game
                     // 写出卡池图片文件
                     foreach (var file in imageFiles)
                     {
-                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, textureDirName, file), textureDirName + "/" + file);
+                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, textureDirName, file), $"{textureDirName}/{file}");
                     }
                 }
 
@@ -116,7 +116,7 @@ namespace Game
                 }
             }
 
-            Debug.Log("卡池文件已打包至" + exportPath);
+            Debug.Log($"卡池文件已打包至{exportPath}");
         }
 
         private static ICollection<string> getCardPoolImages(CardPool cardPool)
@@ -267,7 +267,7 @@ namespace Game
                         HashSet<ZipArchiveEntry> imageEntries = new HashSet<ZipArchiveEntry>();
                         foreach (var image in images)
                         {
-                            var fileName = textureDirName + "/" + image;
+                            var fileName = $"{textureDirName}/{image}";
                             var imgEntry = archive.GetEntry(fileName);
 
                             if (imgEntry == null)

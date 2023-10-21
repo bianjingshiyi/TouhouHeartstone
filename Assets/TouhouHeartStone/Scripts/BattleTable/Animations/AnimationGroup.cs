@@ -42,7 +42,7 @@ namespace Game.BattleTable
                 {
                     RemoveAt(i);
                     i--;
-                    Debug.LogError("动画" + anim + "播放异常被跳过：" + e);
+                    Debug.LogError($"动画{anim}播放异常被跳过：{e}");
                 }
             }
         }

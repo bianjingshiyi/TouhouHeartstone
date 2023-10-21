@@ -223,7 +223,7 @@ namespace IGensoukyo
                         currentSectionText += text;
                     break;
                 default:
-                    Debug.Log("Unhandle node: " + node.Name);
+                    Debug.Log($"Unhandle node: {node.Name}");
                     break;
             }
             return false;

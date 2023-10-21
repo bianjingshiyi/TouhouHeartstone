@@ -71,7 +71,7 @@ namespace Game
                     return;
                 }
             }
-            Debug.LogWarning("Unable to find audio: " + name);
+            Debug.LogWarning($"Unable to find audio: {name}");
         }
 
         private void playList(BGMList item)

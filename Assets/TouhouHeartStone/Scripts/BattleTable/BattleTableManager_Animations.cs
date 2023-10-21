@@ -54,7 +54,7 @@ namespace Game.BattleTable
                 {
                     if (animConstructorDic.ContainsKey(eventType))
                     {
-                        UberDebug.LogWarningChannel("UI", "存在冲突的动画" + animType);
+                        UberDebug.LogWarningChannel("UI", $"存在冲突的动画{animType}");
                         break;
                     }
                     animConstructorDic.Add(eventType, constructor);

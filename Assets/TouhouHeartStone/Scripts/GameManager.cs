@@ -90,7 +90,7 @@ namespace Game
                 if (gameTask.IsCanceled || gameTask.IsFaulted)
                 {
                     if (gameTask.Exception != null)
-                        UberDebug.LogErrorChannel("Game", "游戏因异常退出：" + gameTask.Exception);
+                        UberDebug.LogErrorChannel("Game", $"游戏因异常退出：{gameTask.Exception}");
                     else
                         UberDebug.LogErrorChannel("Game", "游戏因未知异常退出");
                     quitGame();
@@ -399,14 +399,14 @@ namespace Game
                 return;
             if (game.getDefine(deck[0].cardPoolId, deck[0].defineId) == null)
             {
-                UberDebug.LogError("非法角色ID" + deck[0] + "被替换为灵梦");
+                UberDebug.LogError($"非法角色ID{deck[0]}被替换为灵梦");
                 deck[0] = new DefineReference(0, Reimu.ID);
             }
             for (int i = 1; i < deck.Length; i++)
             {
                 if (game.getDefine(deck[i].cardPoolId, deck[i].defineId) == null)
                 {
-                    UberDebug.LogError("非法随从ID" + deck[i] + "被替换为小野菊");
+                    UberDebug.LogError($"非法随从ID{deck[i]}被替换为小野菊");
                     deck[i] = new DefineReference(0, RashFairy.ID);
                 }
             }

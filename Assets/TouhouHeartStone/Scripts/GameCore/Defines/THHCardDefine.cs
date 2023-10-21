@@ -26,7 +26,7 @@ namespace TouhouHeartstone
         public override void merge(CardDefine newVersion)
         {
             if (newVersion.type != type)
-                UberDebug.LogWarning(newVersion + "的类型与" + this + "不同，可能是一次非法的数据合并！");
+                UberDebug.LogWarning($"{newVersion}的类型与{this}不同，可能是一次非法的数据合并！");
             foreach (var propName in getPropNames())
             {
                 setProp(propName, newVersion.getProp<object>(propName));

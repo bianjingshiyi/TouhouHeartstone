@@ -45,7 +45,7 @@ namespace TouhouHeartstone
         {
             int index = Array.IndexOf(game.getSortedPlayers(), lastPlayer);
             if (index < 0)
-                throw new IndexOutOfRangeException(lastPlayer + "不在玩家行动队列中");
+                throw new IndexOutOfRangeException($"{lastPlayer}不在玩家行动队列中");
             index++;
             if (index >= game.getSortedPlayers().Length)
                 index = 0;
@@ -177,7 +177,7 @@ namespace TouhouHeartstone
 
         internal static Task surrender(this CardEngine game, Player player)
         {
-            game.logger.logTrace(player + "投降");
+            game.logger.logTrace($"{player}投降");
             return player.getMaster().kill(game);
         }
 
@@ -212,7 +212,7 @@ namespace TouhouHeartstone
                 return null;
             if (count > 0)
                 cards = cards.randomTake(game, count).ToArray();
-            game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
+            game.logger.logTrace($"{player}要从卡牌{string.Join("，", cards)}中选择一个");
             DefineReference[] cardArray = cards.Select(c => c.define.getDefineRef()).ToArray();
             var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
             Card selectedCard = cards.First(c => 
@@ -220,7 +220,7 @@ namespace TouhouHeartstone
                 var defRef = (res as DiscoverResponse).cardDefRef;
                 return c.define.cardPoolId == defRef.cardPoolId && c.define.id == defRef.defineId;
             });
-            game.logger.logTrace(player + "选择" + selectedCard);
+            game.logger.logTrace($"{player}选择{selectedCard}");
             return selectedCard;
         }
         /// <summary>
@@ -240,7 +240,7 @@ namespace TouhouHeartstone
                 return null;
             if (count > 0)
                 cards = cards.randomTake(game, count).ToArray();
-            game.logger.logTrace(player + "要从卡牌" + string.Join("，", cards) + "中选择一个");
+            game.logger.logTrace($"{player}要从卡牌{string.Join("，", cards)}中选择一个");
             DefineReference[] cardArray = cards.Select(c => c.getDefineRef()).ToArray();
             var res = await game.answers.ask(player.id, new DiscoverRequest(cardArray, title), float.MaxValue);
             CardDefine selectedCard = cards.First(c =>
@@ -248,7 +248,7 @@ namespace TouhouHeartstone
                 var defRef = (res as DiscoverResponse).cardDefRef;
                 return c.cardPoolId == defRef.cardPoolId && c.id == defRef.defineId;
             });
-            game.logger.logTrace(player + "选择" + selectedCard);
+            game.logger.logTrace($"{player}选择{selectedCard}");
             return selectedCard;
         }
 
@@ -332,7 +332,7 @@ namespace TouhouHeartstone
         {
         }
 
-        public NotYourTurnException(TouhouCardEngine.Player player) : base("当前回合不是" + player + "的回合")
+        public NotYourTurnException(TouhouCardEngine.Player player) : base($"当前回合不是{player}的回合")
         {
         }
 
@@ -358,7 +358,7 @@ namespace TouhouHeartstone
         {
         }
 
-        public AlreadyPreparedException(TouhouCardEngine.Player player) : base(player + "已经准备过了")
+        public AlreadyPreparedException(TouhouCardEngine.Player player) : base($"{player}已经准备过了")
         {
         }
 
@@ -471,7 +471,7 @@ namespace TouhouHeartstone
                 var define = deck[i];
                 if (define == null)
                 {
-                    game.logger.logError("非法卡牌ID" + deck[i] + "被替换为幸运币");
+                    game.logger.logError($"非法卡牌ID{deck[i]}被替换为幸运币");
                     deck[i] = luckyCoinDefine;
                 }
 
@@ -483,7 +483,7 @@ namespace TouhouHeartstone
             }
 
             if (game.players.Any(p => p.id == id))
-                throw new ArgumentException("已经存在ID为" + id + "的玩家");
+                throw new ArgumentException($"已经存在ID为{id}的玩家");
             Player player = new Player(id, name);
 
             game.initPlayer(player);
@@ -680,14 +680,10 @@ namespace TouhouHeartstone
                     await deck.moveTo(game, initCards, player.getInit());
                 }
 
-                game.logger.logTrace("游戏初始化，玩家行动顺序："
-                                     + string.Join("、", sortPlayers.Select(p => p.ToString())) + "，"
-                                     + "玩家英雄：" + string.Join("，",
-                                         sortPlayers.Select(p => p.getMaster() + "(" + p.getSkill() + ")")) +
-                                     "，"
-                                     + "初始卡牌：" + string.Join("；",
-                                         sortPlayers.Select(p =>
-                                             string.Join("、", p.getInit().Select(c => c.ToString())))));
+                var orderLog = string.Join("、", sortPlayers.Select(p => p.ToString()));
+                var masterLog = string.Join("，", sortPlayers.Select(p => $"{p.getMaster()}({ p.getSkill()})"));
+                var cardsLog = string.Join("；", sortPlayers.Select(p => string.Join("、", p.getInit().Select(c => c.ToString()))));
+                game.logger.logTrace($"游戏初始化，玩家行动顺序：{orderLog}，玩家英雄：{masterLog}，初始卡牌：{cardsLog}");
             });
         }
 
@@ -706,7 +702,7 @@ namespace TouhouHeartstone
                     if (player != getSortedPlayers(game)[0])
                     {
                         await player.getHand().add(game, game.createCard(game.getDefine<LuckyCoin>()));
-                        game.logger.logTrace("由于后手行动" + player + "获得一张幸运币");
+                        game.logger.logTrace($"由于后手行动{player}获得一张幸运币");
                     }
 
                     arg.startHandDic.Add(player, new HearthStoneRule.StartEventArg.StartInfo()
@@ -748,7 +744,7 @@ namespace TouhouHeartstone
 
             await game.triggers.doEvent(new TurnStartEventArg() { player = player }, async arg =>
             {
-                game.logger.logTrace(arg.player + "的回合开始");
+                game.logger.logTrace($"{arg.player}的回合开始");
                 //玩家的最大能量加1但是不超过10，充满玩家的能量。
                 await arg.player.setMaxGem(game, arg.player.getMaxGem() + 1);
                 await arg.player.setGem(game, arg.player.getMaxGem());
@@ -765,7 +761,7 @@ namespace TouhouHeartstone
 
         private void onTurnTimeout(CardEngine game)
         {
-            game.logger.logTrace(game.getCurrentPlayer() + "回合超时");
+            game.logger.logTrace($"{game.getCurrentPlayer()}回合超时");
             setTurnTimer(game, null);
             game.answers.cancel(game.answers.getRequests(game.getCurrentPlayer().id));
         }
@@ -795,7 +791,7 @@ namespace TouhouHeartstone
                         Card card = game.getCard(use.cardId);
                         Card[] targets = game.getCards(use.targetsId);
                         if (!await player.tryUse(game, card, use.position, targets))
-                            game.logger.log("Warning", "使用" + card + "失败");
+                            game.logger.log("Warning", $"使用{card}失败");
                         break;
                     case AttackResponse attack:
                         card = game.getCard(attack.cardId);
@@ -819,7 +815,7 @@ namespace TouhouHeartstone
                 return;
             await game.triggers.doEvent(new TurnEndEventArg() { player = player }, async arg =>
             {
-                game.logger.logTrace("Debug", getCurrentPlayer(game) + "回合结束");
+                game.logger.logTrace("Debug", $"{getCurrentPlayer(game)}回合结束");
 
                 List<Card> AllCharactor = new List<Card>();
                 AllCharactor.Add(player.getMaster());
@@ -863,7 +859,7 @@ namespace TouhouHeartstone
         {
             if (!game.isRunning)
                 return;
-            game.logger.logTrace("Debug", "游戏结束，" + string.Join("，", winners.Select(p => p.ToString())) + "获得游戏胜利");
+            game.logger.logTrace("Debug", $"游戏结束，{string.Join("，", winners.Select(p => p.ToString()))}获得游戏胜利");
             game.close();
             await game.triggers.doEvent(new GameEndEventArg() { winners = winners });
         }
@@ -880,7 +876,7 @@ namespace TouhouHeartstone
                     Card card = game.getCard(use.cardId);
                     Card[] targets = game.getCards(use.targetsId);
                     if (!await player.tryUse(game, card, use.position, targets))
-                        game.logger.log("Warning", "使用" + card + "失败");
+                        game.logger.log("Warning", $"使用{card}失败");
                     break;
                 case AttackResponse attack:
                     card = game.getCard(attack.cardId);

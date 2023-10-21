@@ -436,7 +436,7 @@ namespace UI
                     string category = _actionGraphCtrl.tryTranslateWithDict(define.getCategory());
                     if (string.IsNullOrEmpty(category))
                         return false;
-                    if (!(category + '/').Contains(categoryFilter + '/'))
+                    if (!($"{category}/").Contains($"{categoryFilter}/"))
                     {
                         return false;
                     }

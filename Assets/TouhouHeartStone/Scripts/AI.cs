@@ -75,7 +75,7 @@ namespace Game
                     _ = game.answers.answer(player.id, resp);
                     break;
                 default:
-                    UberDebug.LogChannel("AI", "AI未处理的询问：" + request);
+                    UberDebug.LogChannel("AI", $"AI未处理的询问：{request}");
                     break;
             }
         }
@@ -111,7 +111,7 @@ namespace Game
                     _ = game.answers.answer(player.id, resp);
                     break;
                 default:
-                    UberDebug.LogChannel("AI", "AI未处理的询问：" + request);
+                    UberDebug.LogChannel("AI", $"AI未处理的询问：{request}");
                     break;
             }
         }
@@ -128,7 +128,7 @@ namespace Game
             }
             catch (Exception e)
             {
-                game.logger.logError("AI", "AI只能空过了，因为它触发了异常：" + e);
+                game.logger.logError("AI", $"AI只能空过了，因为它触发了异常：{e}");
                 return new TurnEndResponse();
             }
         }

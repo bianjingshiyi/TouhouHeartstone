@@ -24,7 +24,7 @@ namespace UI
         }
         public void setDeckCardCount(int count, int max)
         {
-            _deckCardCountText.text = count + "/" + max;
+            _deckCardCountText.text = $"{count}/{max}";
         }
         public void setEditCardListActive(bool value)
         {

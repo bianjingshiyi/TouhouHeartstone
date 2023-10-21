@@ -15,7 +15,7 @@ namespace Game
             if (clip != null)
                 playSE(clip);
             else
-                Debug.LogWarning("Unable to find audio: " + name);
+                Debug.LogWarning($"Unable to find audio: {name}");
         }
         public void playSE(AudioClip clip, bool loop = false)
         {

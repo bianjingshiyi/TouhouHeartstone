@@ -137,7 +137,7 @@ namespace BJSYGameCore
                     res = (T)(object)await loadTexture(path, dir);
                 }
                 else
-                    throw new InvalidOperationException("无法加载资源" + path);
+                    throw new InvalidOperationException($"无法加载资源{path}");
             }
             saveToCache(path, res);
             return res;
@@ -380,7 +380,7 @@ namespace BJSYGameCore
                 if (File.Exists(filePath))
                     return new FileStream(filePath, FileMode.Open);
             }
-            throw new FileNotFoundException("File not found " + path + " at " + curDir, path);
+            throw new FileNotFoundException($"File not found {path} at {curDir}", path);
         }
         private async Task<byte[]> loadBytesByWebRequest(string path, string currDir)
         {

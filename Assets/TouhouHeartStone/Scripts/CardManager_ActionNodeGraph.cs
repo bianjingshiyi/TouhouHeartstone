@@ -19,7 +19,7 @@ namespace Game
                 return info;
             }
             else
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
         }
         public ActionNodeGraphInfo getOrCreateBuffEffectActionNodeGraphInfo(long cardPoolId, int buffDefineId, int effectIndex)
         {
@@ -34,7 +34,7 @@ namespace Game
                 return info;
             }
             else
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
         }
         public ActionNodeGraphInfo getOrCreateActionDefineActionNodeGraphInfo(long cardPoolId, int actionDefineId)
         {
@@ -48,7 +48,7 @@ namespace Game
                 return info;
             }
             else
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
         }
     }
 }

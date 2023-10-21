@@ -383,10 +383,10 @@ namespace Game.BattleTable
         {
             if (tryGetHand(desc.id, out var hand))
             {
-                UberDebug.LogErrorChannel("UI", "手牌中已经存在" + desc + "对应UI" + hand);
+                UberDebug.LogErrorChannel("UI", $"手牌中已经存在{desc}对应UI{hand}");
                 return hand;
             }
-            UberDebug.LogTraceChannel("UI", "创建手牌UI：" + desc);
+            UberDebug.LogTraceChannel("UI", $"创建手牌UI：{desc}");
             HandItem item;
             bool selfHand = desc.getOwner() == player;
             HandList handList = selfHand ? table.SelfHandList : table.EnemyHandList;
@@ -535,7 +535,7 @@ namespace Game.BattleTable
             {
                 servant = field.insertServant(position);
             }
-            UberDebug.LogChannel(servant, "UI", "为" + desc + "创建" + servant);
+            UberDebug.LogChannel(servant, "UI", $"为{desc}创建{servant}");
             var skin = cardManager.getCardSkin(desc.define);
             servant.gameObject.name = skin?.name ?? $"Card<{desc.id}>";
             setServant(servant, desc);

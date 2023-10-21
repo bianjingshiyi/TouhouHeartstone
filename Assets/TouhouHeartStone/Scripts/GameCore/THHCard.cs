@@ -695,7 +695,7 @@ namespace TouhouHeartstone
             {
                 card = arg.card;
                 value = arg.value;
-                game.logger.logTrace(card + "改变蓄力层数 => " + value);
+                game.logger.logTrace($"{card}改变蓄力层数 => {value}");
                 return card.setProp(game, CARD.CHARGED_LEVEL, value);
             });
         }
@@ -1440,12 +1440,12 @@ namespace TouhouHeartstone
         {
             if (!card.canAttack(game))
             {
-                game.logger.logTrace(card + "无法进行攻击");
+                game.logger.logTrace($"{card}无法进行攻击");
                 return null;
             }
             if (!card.isAttackable(game, player, target, out var reason))
             {
-                game.logger.logTrace(card + "无法攻击" + target + "，因为" + reason);
+                game.logger.logTrace($"{card}无法攻击{target}，因为{reason}");
                 return null;
             }
             await card.setAttackTimes(game, card.getAttackTimes(game) + 1);
@@ -1455,12 +1455,12 @@ namespace TouhouHeartstone
         {
             if (!card.canForceAttack(game))
             {
-                game.logger.logTrace(card + "无法进行强制攻击");
+                game.logger.logTrace($"{card}无法进行强制攻击");
                 return Task.FromResult<AttackEventArg>(null);
             }
             if (!card.isForceAttackable(game, player, target))
             {
-                game.logger.logTrace(card + "无法对" + target + "进行强制攻击");
+                game.logger.logTrace($"{card}无法对{target}进行强制攻击");
                 return Task.FromResult<AttackEventArg>(null);
             }
             return card.attack(game, target);
@@ -1481,7 +1481,7 @@ namespace TouhouHeartstone
                 target = arg.target;
                 if (!card.canAttackTest(game))
                 {
-                    game.logger.logTrace(card + "无法进行攻击");
+                    game.logger.logTrace($"{card}无法进行攻击");
                     arg.isCanceled = true;
                 }
                 else if (card == target)
@@ -1491,7 +1491,7 @@ namespace TouhouHeartstone
                 }
                 else
                 {
-                    game.logger.logTrace(card + "攻击" + target);
+                    game.logger.logTrace($"{card}攻击{target}");
                     int targetAttack = target.getAttack(game);
                     int cardAttack = card.getAttack(game);
                     await card.damage(game, target, targetAttack);
@@ -1713,12 +1713,12 @@ namespace TouhouHeartstone
                 else if (target.isImmunity(game))
                 {
                     arg.isCanceled = true;
-                    game.logger.logTrace(target + "免疫，不受伤害");
+                    game.logger.logTrace($"{target}免疫，不受伤害");
                 }
                 else if (target.isShield(game))
                 {
                     arg.isCanceled = true;
-                    game.logger.logTrace(target + "受到伤害，失去圣盾");
+                    game.logger.logTrace($"{target}受到伤害，失去圣盾");
                     await target.setShield(game, false);
                 }
                 else
@@ -1728,7 +1728,7 @@ namespace TouhouHeartstone
                     if (damageReduce > 0)
                     {
                         damage = dmgValue - damageReduce;
-                        game.logger.logTrace(target + "的伤害抵消" + damageReduce + "使伤害" + dmgValue + "=>" + damage);
+                        game.logger.logTrace($"{target}的伤害抵消{damageReduce}使伤害{dmgValue}=>{damage}");
                     }
                     else
                         damage = dmgValue;
@@ -1740,7 +1740,7 @@ namespace TouhouHeartstone
                             if (armor >= damage)
                             {
                                 await target.loseArmor(game, damage);
-                                game.logger.logTrace(target + "受到" + damage + "点伤害，护甲=>" + target.getArmor(game));
+                                game.logger.logTrace($"{target}受到{damage}点伤害，护甲=>{target.getArmor(game)}");
                                 await onDealKeywords(game, src, target, damage);
                                 arg.damagedValue = damage;
                             }
@@ -1749,7 +1749,7 @@ namespace TouhouHeartstone
                                 int leakDamage = damage - armor;
                                 await target.loseArmor(game, armor);
                                 await target.setCurrentLife(game, target.getCurrentLife(game) - leakDamage);
-                                game.logger.logTrace(target + "受到" + damage + "点伤害，护甲=>" + target.getArmor(game) + "，生命值=>" + target.getCurrentLife(game));
+                                game.logger.logTrace($"{target}受到{damage}点伤害，护甲=>{target.getArmor(game)}，生命值=>{target.getCurrentLife(game)}");
                                 await onDealKeywords(game, src, target, damage);
                                 arg.damagedValue = damage;
                             }
@@ -1757,7 +1757,7 @@ namespace TouhouHeartstone
                         else
                         {
                             await target.setCurrentLife(game, target.getCurrentLife(game) - damage);
-                            game.logger.logTrace(target + "受到" + damage + "点伤害，生命值=>" + target.getCurrentLife(game));
+                            game.logger.logTrace($"{target}受到{damage}点伤害，生命值=>{target.getCurrentLife(game)}");
                             await onDealKeywords(game, src, target, damage);
                             arg.damagedValue = damage;
                         }
@@ -1765,7 +1765,7 @@ namespace TouhouHeartstone
                     else
                     {
                         arg.isCanceled = true;
-                        game.logger.logTrace(target + "的伤害" + dmgValue + "被减伤" + damageReduce + "抵消");
+                        game.logger.logTrace($"{target}的伤害{dmgValue}被减伤{damageReduce}抵消");
                     }
                 }
             });
@@ -1809,7 +1809,7 @@ namespace TouhouHeartstone
             if (!to.isFull) // 手牌未满
             {
                 await from.moveTo(game, card, to, to.count);
-                game.logger.logTrace("将" + card + "置入" + player + "的手牌");
+                game.logger.logTrace($"将{card}置入{player}的手牌");
             }
             else // 手牌已满
             {
@@ -1825,7 +1825,7 @@ namespace TouhouHeartstone
                         await from.moveTo(game, card, grave, grave.count);
                     }
                 }
-                game.logger.logTrace(player + "的手牌已满，无法将" + card + "置入手牌");
+                game.logger.logTrace($"{player}的手牌已满，无法将{card}置入手牌");
             }
         }
         #endregion
@@ -1915,8 +1915,8 @@ namespace TouhouHeartstone
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 return source != null ?
-                    source.getFormatString() + "对" + target.getFormatString() + "造成" + damagedValue + "点伤害" :
-                    target.getFormatString() + "受到" + damagedValue + "点伤害";
+                    $"{source.getFormatString()}对{target.getFormatString()}造成{damagedValue}点伤害" :
+                    $"{target.getFormatString()}受到{damagedValue}点伤害";
             }
 
             [MukioI18n.TranslateMsg("{0}是卡，{1}是伤害值")]
@@ -2019,12 +2019,12 @@ namespace TouhouHeartstone
                 {
                     await card.setCurrentLife(game, card.getCurrentLife(game) + healedValue);
                     arg.healedValue = healedValue;
-                    game.logger.logTrace(card + "恢复" + healedValue + "点生命值，生命值=>" + card.getCurrentLife(game));
+                    game.logger.logTrace($"{card}恢复{healedValue}点生命值，生命值=>{card.getCurrentLife(game)}");
                 }
                 else
                 {
                     arg.healedValue = 0;
-                    game.logger.logTrace(card + "没有恢复生命值，生命值=>" + card.getCurrentLife(game));
+                    game.logger.logTrace($"{card}没有恢复生命值，生命值=>{card.getCurrentLife(game)}");
                 }
             });
 
@@ -2163,17 +2163,17 @@ namespace TouhouHeartstone
                     if (death.pile.name == PILE.MASTER)//英雄阵亡
                     {
                         remainPlayerList.Remove(death.getOwner());
-                        game.logger.logTrace(death.getOwner() + "失败");
+                        game.logger.logTrace($"{death.getOwner()}失败");
                     }
                     else if (death.pile.name == PILE.FIELD)//随从阵亡
                     {
                         await death.pile.moveTo(game, death, death.getOwner().getGrave());
-                        game.logger.logTrace(death + "阵亡");
+                        game.logger.logTrace($"{death}阵亡");
                     }
                     else if (death.pile.name == PILE.ITEM)//装备摧毁
                     {
                         await death.pile.moveTo(game, death, death.getOwner().getGrave());
-                        game.logger.logTrace(death + "摧毁");
+                        game.logger.logTrace($"{death}摧毁");
                     }
                 }
                 eventArgs.Add(eventArg);
@@ -2190,7 +2190,7 @@ namespace TouhouHeartstone
             }
             catch (Exception e)
             {
-                game.logger?.logError("Effect", "触发遗言时引发异常：" + e);
+                game.logger?.logError("Effect", $"触发遗言时引发异常：{e}");
             }
             if (remainPlayerList.Count != game.players.Length)
             {
@@ -2476,7 +2476,7 @@ namespace TouhouHeartstone
         {
             return game.triggers.doEvent(new SecretTriggerEventArg() { card = card }, async arg =>
             {
-                game.logger.logTrace("触发陷阱" + card);
+                game.logger.logTrace($"触发陷阱{card}");
                 Player player = arg.card.getOwner();
                 await player.getHead().moveTo(game, arg.card, player.getGrave());
             });
@@ -2561,7 +2561,7 @@ namespace TouhouHeartstone
         {
             return game.triggers.doEvent(new MissionCompleteEventArg() { card = card }, async arg =>
             {
-                game.logger.logTrace("任务完成 : " + card);
+                game.logger.logTrace($"任务完成 : {card}");
                 Player player = arg.card.getOwner();
                 await player.getHead().moveTo(game, arg.card, player.getGrave());
             });

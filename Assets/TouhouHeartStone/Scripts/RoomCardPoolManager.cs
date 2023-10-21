@@ -679,7 +679,7 @@ namespace Game
             }
             catch (Exception e)
             {
-                logger.logError($"上传资源{plan}时遇到异常：" + e.ToString());
+                logger.logError($"上传资源{plan}时遇到异常：{e.ToString()}");
             }
         }
         /// <summary>
@@ -701,7 +701,7 @@ namespace Game
             }
             catch (Exception e)
             {
-                logger.logError($"下载资源{plan}时遇到异常：" + e.ToString());
+                logger.logError($"下载资源{plan}时遇到异常：{e.ToString()}");
             }
             return null;
         }

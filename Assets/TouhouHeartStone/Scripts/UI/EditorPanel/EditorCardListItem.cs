@@ -32,7 +32,7 @@ namespace UI
             if (_countText == null)
                 return;
             _countGameObject.SetActive(true);
-            _countText.text = count + "/" + max;
+            _countText.text = $"{count}/{max}";
         }
         public void hideCount()
         {

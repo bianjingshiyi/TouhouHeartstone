@@ -69,9 +69,7 @@ namespace UI
             }
             _clearCacheButton.onClick.AddListener(() =>
             {
-                string desc = main.lang._(SETTING_CLEAR_CACHE_WARNING) + "\n" +
-                main.lang._(SETTING_CLEAR_CACHE_SIZE, (double)main.cache.GetCacheSize() / 1024 / 1024) + "\n" +
-                main.lang._(SETTING_CLEAR_CACHE_WARNING_2);
+                string desc = $"{main.lang._(SETTING_CLEAR_CACHE_WARNING)}\n{main.lang._(SETTING_CLEAR_CACHE_SIZE, (double)main.cache.GetCacheSize() / 1024 / 1024)}\n{main.lang._(SETTING_CLEAR_CACHE_WARNING_2)}";
 
                 main.ui.dialog.ShowQuestion(main.lang._(StringTable.WARNING), desc, () =>
                 {

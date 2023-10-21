@@ -21,8 +21,8 @@ namespace UI
             LicenseText.text = "";
             foreach (var item in license.Licenses)
             {
-                LicenseText.text += item.Title + "\n";
-                LicenseText.text += item.Content + "\n\n";
+                LicenseText.text += $"{item.Title}\n";
+                LicenseText.text += $"{item.Content}\n\n";
             }
 
             StaffText.text = staff.text;

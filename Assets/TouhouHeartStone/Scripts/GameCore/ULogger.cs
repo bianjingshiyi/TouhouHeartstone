@@ -32,13 +32,13 @@ namespace TouhouHeartstone
             if (blackList.Contains(channel))
                 return;
             if (channel == "Debug")
-                UberDebug.Log((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.Log($"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
             else if (channel == "Warning")
-                UberDebug.LogWarning((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogWarning($"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
             else if (channel == "Error")
-                UberDebug.LogError((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogError($"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
             else
-                UberDebug.LogChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogChannel(channel, $"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
         }
 
         [StackTraceIgnore]
@@ -55,9 +55,9 @@ namespace TouhouHeartstone
             if (blackList.Contains(channel))
                 return;
             if (string.IsNullOrEmpty(channel))
-                UberDebug.LogWarning((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogWarning($"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
             else
-                UberDebug.LogWarningChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogWarningChannel(channel, $"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
         }
 
         [StackTraceIgnore]
@@ -74,9 +74,9 @@ namespace TouhouHeartstone
             if (blackList.Contains(channel))
                 return;
             if (string.IsNullOrEmpty(channel))
-                UberDebug.LogError((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogError($"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
             else
-                UberDebug.LogErrorChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogErrorChannel(channel, $"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
         }
 
         [StackTraceIgnore]
@@ -93,9 +93,9 @@ namespace TouhouHeartstone
             if (blackList.Contains(channel))
                 return;
             if (string.IsNullOrEmpty(channel))
-                UberDebug.LogTrace((string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogTrace($"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
             else
-                UberDebug.LogTraceChannel(channel, (string.IsNullOrEmpty(name) ? null : (name + ":")) + msg);
+                UberDebug.LogTraceChannel(channel, $"{(string.IsNullOrEmpty(name) ? null : $"{name}:")}{msg}");
         }
     }
 }

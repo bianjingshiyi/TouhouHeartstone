@@ -26,7 +26,7 @@ namespace TouhouHeartstone
                 {
                     if (namespaces != null && !namespaces.Contains(type.Namespace))
                     {
-                        UberDebug.LogChannel("Card", type.Namespace + "不包含在[" + string.Join(",", namespaces) + "]中，被忽略");
+                        UberDebug.LogChannel("Card", $"{type.Namespace}不包含在[{string.Join(",", namespaces)}]中，被忽略");
                         continue;
                     }
                     ConstructorInfo constructor = type.GetConstructor(new Type[0]);
@@ -43,9 +43,9 @@ namespace TouhouHeartstone
                                 if (e.InnerException is NotImplementedException)
                                 {
                                     if (logger == null)
-                                        UberDebug.LogWarningChannel("Load", "忽略尚未完成的卡片" + define);
+                                        UberDebug.LogWarningChannel("Load", $"忽略尚未完成的卡片{define}");
                                     else
-                                        logger.logWarn("Load", "忽略尚未完成的卡片" + define);
+                                        logger.logWarn("Load", $"忽略尚未完成的卡片{define}");
                                 }
                                 else
                                     throw e;

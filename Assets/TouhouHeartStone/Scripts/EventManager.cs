@@ -91,7 +91,7 @@ namespace Game
                         }
                         catch (Exception e)
                         {
-                            Debug.LogWarning("无法加载事件类型" + type.FullName + "：" + e);
+                            Debug.LogWarning($"无法加载事件类型{type.FullName}：{e}");
                             continue;
                         }
                         var eventName = EventHelper.getName(eventArg);

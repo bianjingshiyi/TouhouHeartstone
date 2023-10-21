@@ -189,7 +189,7 @@ namespace UI
             var input = targetNode.getInput(inputIndex);
             if (!output || !input)
             {
-                Debug.LogWarning("不存在" + node + ":" + outputIndex + "与" + targetNode + ":" + inputIndex + "之间的连接");
+                Debug.LogWarning($"不存在{node}:{outputIndex}与{targetNode}:{inputIndex}之间的连接");
                 return;
             }
             ActionNodeGraphLine line = createLine(output.gameObject, input.gameObject, output.GetColor(), input.GetColor());
@@ -219,7 +219,7 @@ namespace UI
                 c.inputIndex == inputIndex);
             if (index < 0)
             {
-                Debug.LogWarning("不存在" + node + ":" + ouputIndex + "与" + targetNode + ":" + inputIndex + "之间的连接");
+                Debug.LogWarning($"不存在{node}:{ouputIndex}与{targetNode}:{inputIndex}之间的连接");
                 return;
             }
             removeConnection(index);

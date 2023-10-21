@@ -5,7 +5,7 @@ namespace UI
     public class ActorNotFoundException : Exception
     {
         public ActorNotFoundException() { }
-        public ActorNotFoundException(TouhouCardEngine.Card card) : base("没有找到与" + card + "对应的Actor") { }
+        public ActorNotFoundException(TouhouCardEngine.Card card) : base($"没有找到与{card}对应的Actor") { }
         public ActorNotFoundException(string message) : base(message) { }
         public ActorNotFoundException(string message, Exception inner) : base(message, inner) { }
         protected ActorNotFoundException(

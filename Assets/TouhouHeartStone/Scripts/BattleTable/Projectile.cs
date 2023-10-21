@@ -36,7 +36,7 @@ namespace Game.BattleTable
                     }
                     catch (Exception e)
                     {
-                        UberDebug.LogError("UI", this + "播放onHit动画引发异常：" + e);
+                        UberDebug.LogError("UI", $"{this}播放onHit动画引发异常：{e}");
                         Destroy(gameObject);
                     }
                 }
@@ -50,7 +50,7 @@ namespace Game.BattleTable
             }
             catch (Exception e)
             {
-                UberDebug.LogError("UI", this + "播放onHit动画引发异常：" + e);
+                UberDebug.LogError("UI", $"{this}播放onHit动画引发异常：{e}");
                 Destroy(gameObject);
             }
             Destroy(gameObject);

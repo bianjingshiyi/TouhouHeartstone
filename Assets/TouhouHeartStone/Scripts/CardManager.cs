@@ -78,7 +78,7 @@ namespace Game
             {
                 if (defineDic.ContainsKey(card.id))
                 {
-                    Debug.LogWarning("存在重复ID的卡片" + defineDic[card.id] + "和" + card);
+                    Debug.LogWarning($"存在重复ID的卡片{defineDic[card.id]}和{card}");
                     continue;
                 }
                 defineDic.Add(card.id, card);
@@ -127,7 +127,7 @@ namespace Game
             {
                 try
                 {
-                    screenLogger?.NextSub("加载卡片集：" + Path.GetFileNameWithoutExtension(path));
+                    screenLogger?.NextSub($"加载卡片集：{Path.GetFileNameWithoutExtension(path)}");
 
                     CardDefine[] cards = await loadCards(path);
                     foreach (var card in cards)
@@ -136,7 +136,7 @@ namespace Game
                         if (older != null)
                         {
                             older.merge(card);
-                            UberDebug.LogDebugChannel("Load", "数据覆盖：" + card.ToJson());
+                            UberDebug.LogDebugChannel("Load", $"数据覆盖：{card.ToJson()}");
                         }
                         else
                             cardList.Add(card);
@@ -145,14 +145,14 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    UberDebug.LogError("读取外部卡牌文件" + path + "失败，发生异常：" + e);
+                    UberDebug.LogError($"读取外部卡牌文件{path}失败，发生异常：{e}");
                 }
             }
             foreach (CardDefine card in cardList)
             {
                 if (defineDic.ContainsKey(card.id))
                 {
-                    Debug.LogWarning("存在重复ID的卡片" + defineDic[card.id] + "和" + card);
+                    Debug.LogWarning($"存在重复ID的卡片{defineDic[card.id]}和{card}");
                     continue;
                 }
                 defineDic.Add(card.id, card);
@@ -176,13 +176,13 @@ namespace Game
                     foreach (var skin in skins)
                     {
                         if (skinDic.ContainsKey(skin.id))
-                            Debug.LogWarning("存在重复ID的皮肤" + skinDic[skin.id] + "和" + skin);
+                            Debug.LogWarning($"存在重复ID的皮肤{skinDic[skin.id]}和{skin}");
                         skinDic[skin.id] = skin;
                     }
                 }
                 catch (Exception e)
                 {
-                    UberDebug.LogError("读取外部皮肤文件" + path + "失败，发生异常：" + e);
+                    UberDebug.LogError($"读取外部皮肤文件{path}失败，发生异常：{e}");
                 }
             }
         }
@@ -204,7 +204,7 @@ namespace Game
             }
             catch (Exception e)
             {
-                UberDebug.LogErrorChannel("Card", "读取" + path + "发生异常：" + e);
+                UberDebug.LogErrorChannel("Card", $"读取{path}发生异常：{e}");
                 return new CardDefine[0];
             }
 
@@ -223,7 +223,7 @@ namespace Game
                         int id = datarow.ReadCol<int>("ID");
                         if (defineDic.ContainsKey(id))
                         {
-                            Debug.Log("忽略卡牌" + defineDic[id]);
+                            Debug.Log($"忽略卡牌{defineDic[id]}");
                             defineDic.Remove(id);
                         }
                         continue;
@@ -242,7 +242,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
+                    Debug.LogWarning($"Error when loading {path} (row {i}): {e}");
                 }
             }
 
@@ -286,7 +286,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
+                    Debug.LogWarning($"Error when loading {path} (row {i}): {e}");
                 }
             }
             for (int i = 1; i < skinTable.Rows.Count; i++)
@@ -304,7 +304,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning($"Error when loading {path} (row {i}): " + e);
+                    Debug.LogWarning($"Error when loading {path} (row {i}): {e}");
                 }
             }
             return skins.ToArray();
@@ -319,7 +319,7 @@ namespace Game
                 name = datarow.ReadCol<string>("Name"),
                 desc = datarow.ReadCol("Desc", "")
             };
-            logger?.NextSub("加载卡片资源: " + skin.name);
+            logger?.NextSub($"加载卡片资源: {skin.name}");
             //加载图片
             string imagePath = datarow.ReadCol("Image", "");
 
@@ -347,7 +347,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                    Debug.LogWarning($"加载贴图 {imagePath} 失败：{e}");
                     skin.image = getDefaultSprite();
                 }
             }
@@ -360,7 +360,7 @@ namespace Game
                 else
                 {
                     //标记贴图路径为流文件
-                    imagePath = "sa:" + Path.GetDirectoryName(path) + "/" + imagePath;
+                    imagePath = $"sa:{Path.GetDirectoryName(path)}/{imagePath}";
                 }
                 skin.imagePath = imagePath;
             }
@@ -395,7 +395,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning("加载贴图 " + imagePath + " 失败：" + e);
+                    Debug.LogWarning($"加载贴图 {imagePath} 失败：{e}");
                     skin.image = getDefaultSprite();
                 }
             }
@@ -408,7 +408,7 @@ namespace Game
                 else
                 {
                     //标记为流文件
-                    imagePath = "sa:" + Path.GetDirectoryName(path) + "/" + imagePath;
+                    imagePath = $"sa:{Path.GetDirectoryName(path)}/{imagePath}";
                 }
                 skin.imagePath = imagePath;
             }
@@ -641,7 +641,7 @@ namespace Game
             if (skinGroup == null)
             {
                 //卡牌没有任何皮肤
-                throw new InvalidOperationException("卡牌" + id + "没有任何皮肤");
+                throw new InvalidOperationException($"卡牌{id}没有任何皮肤");
             }
             //获取对应语言的皮肤
             CardSkinData skin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
@@ -681,12 +681,12 @@ namespace Game
         {
             if (skinDic.ContainsKey(skin.id))
             {
-                Debug.LogError("已存在相同的皮肤" + skinDic[skin.id]);
+                Debug.LogError($"已存在相同的皮肤{skinDic[skin.id]}");
                 return;
             }
             if (tempSkinDic.ContainsKey(skin.id))
             {
-                Debug.LogError("已存在相同的皮肤" + tempSkinDic[skin.id]);
+                Debug.LogError($"已存在相同的皮肤{tempSkinDic[skin.id]}");
                 return;
             }
             tempSkinDic.Add(skin.id, skin);

@@ -156,7 +156,7 @@ namespace Game
                 case DiscoverRequest disc:
                     if (!(currentLog.response is DiscoverResponse))
                     {
-                        UberDebug.LogChannel("Replay", "请求Discover，但即将播放的是" + currentLog.response.GetType().ToString());
+                        UberDebug.LogChannel("Replay", $"请求Discover，但即将播放的是{currentLog.response.GetType().ToString()}");
                         break;
                     }
                     _ = answerCurrentLog();

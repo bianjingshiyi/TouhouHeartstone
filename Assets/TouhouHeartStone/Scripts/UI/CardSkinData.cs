@@ -201,8 +201,8 @@ namespace UI
         {
             string name = this.name;
             if (!string.IsNullOrEmpty(subname))
-                name += "-" + subname;
-            name += "<" + id + ">";
+                name += $"-{subname}";
+            name += $"<{id}>";
             return name;
         }
     }

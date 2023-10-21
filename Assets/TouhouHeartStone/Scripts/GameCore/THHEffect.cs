@@ -91,7 +91,7 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger trigger = new Trigger(action: args => triggerAction(game, card, buff, args), name: effectName);
                 await card.setProp(null, effectName, trigger);
-                game.logger.logTrace("Effect", card + "注册效果" + effectName);
+                game.logger.logTrace("Effect", $"{card}注册效果{effectName}");
                 onRegisterTrigger?.Invoke(game, card, buff);
                 game.triggers.registerDelayed(time.getEventName(game.triggers), trigger);
             }
@@ -105,7 +105,7 @@ namespace TouhouHeartstone
             {
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger trigger = card.getProp<Trigger>(game, effectName);
-                game.logger.logTrace("Effect", card + "注销效果" + effectName);
+                game.logger.logTrace("Effect", $"{card}注销效果{effectName}");
                 onUnRegisterTrigger?.Invoke(game, card, buff);
                 game.triggers.remove(time.getEventName(game.triggers), trigger);
                 card.setProp(null, effectName, null);
@@ -124,11 +124,9 @@ namespace TouhouHeartstone
 
         protected virtual string getEffectName(IGame game, ICard card, IBuff buff, TriggerTime time)
         {
-            return string.IsNullOrEmpty(_name)
-                ? (buff != null ? buff.instanceID.ToString() : string.Empty) +
-                  "Effect" + Array.IndexOf(card.define.getEffects(), this) +
-                  time.getEventName(game.triggers)
-                : _name;
+            return string.IsNullOrEmpty(_name) 
+               ? $"{(buff != null ? buff.instanceID.ToString() : string.Empty)}Effect{Array.IndexOf(card.define.getEffects(), this)}{time.getEventName(game.triggers)}" 
+               : _name;
         }
 
         public override string ToString()
@@ -594,7 +592,7 @@ namespace TouhouHeartstone
 
         private string getPropName(Buff buff, string propName)
         {
-            propName = this.buff.id + nameof(Halo) + '.' + propName;
+            propName = $"{this.buff.id}{nameof(Halo)}.{propName}";
             if (buff != null)
                 propName += buff.ToString();
             return propName;
@@ -884,7 +882,7 @@ namespace TouhouHeartstone
         public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
             string propName = getPropName(buff);
-            game.logger.logTrace("Effect", card + "启用亡语" + propName);
+            game.logger.logTrace("Effect", $"{card}启用亡语{propName}");
             await card.setProp(game, propName, false);
         }
 
@@ -911,7 +909,7 @@ namespace TouhouHeartstone
         public override Task onDisable(CardEngine game, Card card, Buff buff)
         {
             string propName = getPropName(buff);
-            game.logger.logTrace("Effect", card + "禁用亡语" + propName);
+            game.logger.logTrace("Effect", $"{card}禁用亡语{propName}");
             return card.setProp(game, propName, true);
         }
         public bool isDisabled(IGame game, ICard card, IBuff buff)
@@ -1213,12 +1211,12 @@ namespace TouhouHeartstone
 
         protected override string getEffectName(IGame game, ICard card, IBuff buff, TriggerTime time)
         {
-            return card + "_Mission";
+            return $"{card}_Mission";
         }
 
         private static string getCounterName(IGame game, ICard card, IBuff buff)
         {
-            return card + "_Mission_Counter";
+            return $"{card}_Mission_Counter";
         }
     }
 

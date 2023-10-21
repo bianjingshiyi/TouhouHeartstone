@@ -197,7 +197,7 @@ namespace Controllers
                 // 去掉父类别。
                 if (!string.IsNullOrEmpty(parent))
                 {
-                    string parentPath = parent + "/";
+                    string parentPath = $"{parent}/";
                     int parentIndex = nodeCategory.IndexOf(parentPath);
                     if (parentIndex == 0)
                     {

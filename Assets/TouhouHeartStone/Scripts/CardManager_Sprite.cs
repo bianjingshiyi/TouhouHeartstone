@@ -129,7 +129,7 @@ namespace Game
                 }
                 else
                 {
-                    Debug.LogWarning("图片" + pair.Key + "为空");
+                    Debug.LogWarning($"图片{pair.Key}为空");
                     continue;
                 }
                 path = await saveImage(cardPoolId, sprite.texture);
@@ -229,7 +229,7 @@ namespace Game
                 if (!game.fileManager.isFileExist(filePath))
                 {
                     await game.fileManager.saveFile(filePath, bytes);
-                    Debug.Log("另存为图片" + path + "成功");
+                    Debug.Log($"另存为图片{path}成功");
                 }
             }
             else
@@ -238,7 +238,7 @@ namespace Game
                 if (!game.fileManager.isPersistentFileExist(filePath))
                 {
                     await game.fileManager.savePersistentFile(filePath, bytes);
-                    Debug.Log("另存为图片" + path + "成功");
+                    Debug.Log($"另存为图片{path}成功");
                 }
             }
             return path;
@@ -287,7 +287,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("加载图片" + path + "失败：" + e);
+                    Debug.LogError($"加载图片{path}失败：{e}");
                 }
             }
             else if (path.StartsWith("res:"))
@@ -296,7 +296,7 @@ namespace Game
                 sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
                 if (sprite == null)
                 {
-                    Debug.LogError("加载图片" + path + "为空");
+                    Debug.LogError($"加载图片{path}为空");
                 }
             }
             else
@@ -347,7 +347,7 @@ namespace Game
                 }
                 else
                 {
-                    throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                    throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
                 }
                 // 如果是空数组，返回默认Sprite.
                 if (bytes.Length <= 0)

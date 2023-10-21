@@ -75,11 +75,11 @@ namespace TouhouHeartstone
             switch (modifyType)
             {
                 case ModifyType.set:
-                    return "keywords = " + (value.Length > 0 ? string.Join(",", value) : "empty");
+                    return $"keywords = {(value.Length > 0 ? string.Join(",", value) : "empty")}";
                 case ModifyType.remove:
-                    return "keywords - " + (value.Length > 0 ? string.Join(",", value) : "empty");
+                    return $"keywords - {(value.Length > 0 ? string.Join(",", value) : "empty")}";
                 default:
-                    return "keywords + " + (value.Length > 0 ? string.Join(",", value) : "empty");
+                    return $"keywords + {(value.Length > 0 ? string.Join(",", value) : "empty")}";
             }
         }
         public ModifyType modifyType;

@@ -230,7 +230,7 @@ namespace TouhouHeartstone
             }
             public override string ToString()
             {
-                return "将" + card + "从" + from + "移动到" + to + "的" + position;
+                return $"将{card}从{from}移动到{to}的{position}";
             }
             public override void Record(IGame game, EventRecord record)
             {

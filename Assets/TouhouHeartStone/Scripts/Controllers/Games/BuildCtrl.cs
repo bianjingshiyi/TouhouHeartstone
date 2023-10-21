@@ -464,7 +464,7 @@ namespace Controllers
             await game.card.getOrLoadCardPool(cardPoolRef, true);
             if (!game.card.tryGetCardSkin(cardPoolRef, deck.masterCardRef.defineId, out CardSkinData skin))
             {
-                Debug.LogError("不存在卡组角色" + deck.masterCardRef + "的对应皮肤");
+                Debug.LogError($"不存在卡组角色{deck.masterCardRef}的对应皮肤");
                 return null;
             }
             if (skin.image != null)
@@ -549,7 +549,7 @@ namespace Controllers
         /// </summary>
         private void exportDeck()
         {
-            string outputString = exportStringHeader + " " + _deck.name + "\n";
+            string outputString = $"{exportStringHeader} {_deck.name}\n";
 
             outputString += game.deck.DeckToString(_deck.toDefRefArray());
             GUIUtility.systemCopyBuffer = outputString;

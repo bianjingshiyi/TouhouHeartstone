@@ -291,7 +291,7 @@ namespace UI
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException("设置增益图像失败：" + e, e);
+                throw new InvalidOperationException($"设置增益图像失败：{e}", e);
             }
             finally
             {

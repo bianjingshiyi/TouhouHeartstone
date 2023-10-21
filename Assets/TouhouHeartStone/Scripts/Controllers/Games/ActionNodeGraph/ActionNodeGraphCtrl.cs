@@ -1488,7 +1488,7 @@ namespace Controllers
             var define = getActionDefine(actionNode.defineRef);
             if (define == null)
             {
-                Debug.LogWarning("没有找到动作" + actionNode.defineRef + "对应的名称");
+                Debug.LogWarning($"没有找到动作{actionNode.defineRef}对应的名称");
                 return tryTranslateWithDict(StringTable.EDITOR_NODE_NAME_UNKNOW);
             }
             else
@@ -1594,7 +1594,7 @@ namespace Controllers
                 for (int j = 0; j < optionalNames.Length; j++)
                 {
                     var optName = Enum.GetName(type, optionalValues[j]);
-                    var indexName = type.FullName + "." + optName;
+                    var indexName = $"{type.FullName}.{optName}";
                     if (_nameTextDict.TryGetValue(indexName, out string nameText))
                     {
                         optionalNames[j] = game.i18n._(nameText);
@@ -1632,7 +1632,7 @@ namespace Controllers
             else if (type == typeof(PileName))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileName, value);
             else
-                throw new NotImplementedException("没有" + type + "对应的常数类型");
+                throw new NotImplementedException($"没有{type}对应的常数类型");
         }
         private string[] getNodeInputNames(Node node)
         {

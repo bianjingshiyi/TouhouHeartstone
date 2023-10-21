@@ -66,12 +66,12 @@ namespace Game.BattleTable
         }
         public void showDamageText(int damage)
         {
-            _damageText.text = "-" + damage;
+            _damageText.text = $"-{damage}";
             onDamage.invokeBeforeAnim();
         }
         public void showHealText(int heal)
         {
-            _healText.text = "+" + heal;
+            _healText.text = $"+{heal}";
             onHeal.invokeBeforeAnim();
         }
         public void setImageSprite(Sprite sprite)

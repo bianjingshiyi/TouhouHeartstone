@@ -72,7 +72,7 @@ namespace TouhouCardEngine
                         }
                         break;
                     default:
-                        throw new InvalidOperationException("未知的操作符" + op);
+                        throw new InvalidOperationException($"未知的操作符{op}");
                 }
             }
             flow.setValue(node.getOutputPort<ValueOutput>("result"), result);

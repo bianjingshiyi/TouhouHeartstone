@@ -35,7 +35,7 @@ namespace UI
                         fullText = string.Empty;
                         break;
                     }
-                    fullText = shownText + "...";
+                    fullText = $"{shownText}...";
                     generator.Populate(fullText, settings);
                     if (fullText.Length <= generator.characterCountVisible)
                     {

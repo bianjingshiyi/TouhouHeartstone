@@ -475,7 +475,7 @@ namespace Controllers
                 {
                     string poolsString = PoolsToString(packs);
                     string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
-                    desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_OWNER);
+                    desc += $"\n{game.lang._(ROOM_CARD_POOL_WARNING_FOR_OWNER)}";
 
                     List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
                     List<CardPoolInfoPack> addPools;
@@ -512,7 +512,7 @@ namespace Controllers
                 {
                     string poolsString = PoolsToString(packs);
                     string desc = game.lang._(ROOM_DECK_HAS_NOT_SHARED_POOL, poolsString);
-                    desc += "\n" + game.lang._(ROOM_CARD_POOL_WARNING_FOR_CUSTOMER);
+                    desc += $"\n{game.lang._(ROOM_CARD_POOL_WARNING_FOR_CUSTOMER)}";
 
                     game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
                     {

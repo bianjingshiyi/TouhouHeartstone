@@ -34,7 +34,7 @@ namespace Game
                 string path = fileList[i];
                 try
                 {
-                    Debug.Log("开始读取卡池信息" + path);
+                    Debug.Log($"开始读取卡池信息{path}");
                     string[] lines;
                     if (path.StartsWith("sa:"))
                     {
@@ -46,7 +46,7 @@ namespace Game
                     }
                     if (lines == null || lines.Length < 1)
                     {
-                        Debug.LogWarning("读取卡池信息" + path + "为空");
+                        Debug.LogWarning($"读取卡池信息{path}为空");
                         continue;
                     }
                     CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
@@ -54,11 +54,11 @@ namespace Game
                     removeConflictCardPoolInfo(cardPool);
                     _cardPoolInfoDict.Add(path, cardPool);
                     onCardPoolInfoRead?.Invoke(path, cardPool);
-                    Debug.Log("读取卡池信息" + path + "完毕");
+                    Debug.Log($"读取卡池信息{path}完毕");
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("读取卡池信息" + path + "失败：" + e);
+                    Debug.LogError($"读取卡池信息{path}失败：{e}");
                 }
             }
 
@@ -77,7 +77,7 @@ namespace Game
                 }
             }
 
-            Debug.Log("卡池信息读取完毕，共" + fileList.Length + "个卡池");
+            Debug.Log($"卡池信息读取完毕，共{fileList.Length}个卡池");
             return new Dictionary<string, CardPoolInfo>(_cardPoolInfoDict);
         }
         /// <summary>
@@ -87,21 +87,21 @@ namespace Game
         public string[] getCardPoolsPath()
         {
             //自定义卡池，C盘的完整地址或者是Android的Data地址
-            string searchPattern = string.Intern("*." + _cardPoolFilePostfix);
+            string searchPattern = string.Intern($"*.{_cardPoolFilePostfix}");
             List<string> fileList = new List<string>(game.fileManager.getPersistentFiles(_cardPoolDirName, searchPattern, true));
             if (Application.isEditor)
             {
                 //编辑器下的官方卡池，位于项目文件夹下的ExternalData中
                 string[] files = game.fileManager.getFiles(Path.GetFullPath(_editorCardPoolDirName), searchPattern);
                 fileList.AddRange(files);
-                Debug.Log("获取编辑器卡池：\r\n" + string.Join(",\r\n", files));
+                Debug.Log($"获取编辑器卡池：\r\n{string.Join(",\r\n", files)}");
             }
             if (!Application.isEditor || _enableStreamingAssetsInEditor)
             {
                 //官方卡池，以sa:开头的StreamingAssets
                 string[] files = game.fileManager.getStreamingFiles(_cardPoolDirName, searchPattern);
                 fileList.AddRange(files);
-                Debug.Log("获取官方卡池：\r\n" + string.Join(",\r\n", files));
+                Debug.Log($"获取官方卡池：\r\n{string.Join(",\r\n", files)}");
             }
             return fileList.ToArray();
         }
@@ -180,7 +180,7 @@ namespace Game
             if (isStandardCardPool(cardPoolInfo))
             {
                 //官方卡池只能保存到指定路径下面，也就是工程文件
-                path = Path.Combine(editorCardPoolDirName, cardPoolInfo.cardPoolName + '.' + cardPoolFilePostfix);
+                path = Path.Combine(editorCardPoolDirName, $"{cardPoolInfo.cardPoolName}.{cardPoolFilePostfix}");
             }
             else if (path.StartsWith("sa:"))
             {
@@ -212,7 +212,7 @@ namespace Game
                 cardPoolInfo.toJson(),//文件头信息
                 seriCardPool.toJson(readFriendly)//内容对象
             });
-            Debug.Log("保存卡池" + path + "成功");
+            Debug.Log($"保存卡池{path}成功");
             return true;
         }
 
@@ -334,7 +334,7 @@ namespace Game
                 }
                 if (lines == null || lines.Length < 1)
                 {
-                    throw new FileLoadException("卡池文件" + path + "为空");
+                    throw new FileLoadException($"卡池文件{path}为空");
                 }
                 CardPoolInfo cardPoolInfo;
                 CardPool cardPool;
@@ -344,7 +344,7 @@ namespace Game
                 }
                 catch (Exception e)
                 {
-                    throw new FormatException("反序列化卡池" + path + "失败：" + e, e);
+                    throw new FormatException($"反序列化卡池{path}失败：{e}", e);
                 }
                 removeConflictCardPoolInfo(cardPoolInfo);
                 addCardPool(cardPool, cardPoolInfo, path);
@@ -600,7 +600,7 @@ namespace Game
         {
             if (!tryGetCardPool(cardPoolInfo.ToReference(), out CardPool cardPool))
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolInfo.cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolInfo.cardPoolId}");
             }
             int cardId = 0;
             for (int i = 1; i < 0xFFFF; i++)
@@ -624,7 +624,7 @@ namespace Game
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             cardPool.cardDefineList.Add(cardDefine);
         }
@@ -748,7 +748,7 @@ namespace Game
                 return skin;
             }
             else
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
         }
         public CardSkinData createSkinForDiffLanguage(long cardPoolId, CardSkinData skin, string language)
         {
@@ -760,14 +760,14 @@ namespace Game
                 return newSkin;
             }
             else
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
         }
         public void addCardSkin(long cardPoolId, CardSkinData cardSkin)
         {
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             cardPool.cardSkinList.Add(cardSkin);
         }
@@ -776,7 +776,7 @@ namespace Game
             var cardPool = getLocalCardPool(cardPoolId);
             if (cardPool == null)
             {
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
             }
             cardPool.cardSkinList.RemoveAll(s => s.id == cardDefineId);
         }
@@ -788,7 +788,7 @@ namespace Game
                 cardPool.cardSkinList.RemoveAll(s => s.id == cardDefineId && s.skinId == skinId);
             }
             else
-                throw new KeyNotFoundException("不存在卡池" + cardPoolId);
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
         }
         #endregion
         public async Task<Sprite> loadExternalImage(string path, string dirName)
@@ -809,7 +809,7 @@ namespace Game
                 sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
                 if (sprite == null)
                 {
-                    Debug.LogError("加载图片" + path + "为空");
+                    Debug.LogError($"加载图片{path}为空");
                 }
             }
             else if (path.StartsWith("sa:"))
@@ -840,7 +840,7 @@ namespace Game
                 }
                 catch (IOException e)
                 {
-                    Debug.LogError("加载图片" + path + "失败：" + e);
+                    Debug.LogError($"加载图片{path}失败：{e}");
                     sprite = null;
                 }
             }
@@ -925,7 +925,7 @@ namespace Game
                         !path.StartsWith("res:"))
                     {
                         //流文件
-                        return loadExternalImage("sa:" + Path.Combine(textureDirName, path), null);
+                        return loadExternalImage($"sa:{Path.Combine(textureDirName, path)}", null);
                     }
                     else
                     {
@@ -1304,7 +1304,7 @@ namespace Game
                     }
                     catch (Exception e)
                     {
-                        throw new FormatException("反序列化卡池卡牌失败：" + e, e);
+                        throw new FormatException($"反序列化卡池卡牌失败：{e}", e);
                     }
                 }
             }
@@ -1320,7 +1320,7 @@ namespace Game
                     }
                     catch (Exception e)
                     {
-                        throw new FormatException("反序列化卡池卡牌皮肤失败：" + e, e);
+                        throw new FormatException($"反序列化卡池卡牌皮肤失败：{e}", e);
                     }
                 }
             }
@@ -1336,7 +1336,7 @@ namespace Game
                     }
                     catch (Exception e)
                     {
-                        throw new FormatException("反序列化卡池增益失败：" + e, e);
+                        throw new FormatException($"反序列化卡池增益失败：{e}", e);
                     }
                 }
             }
@@ -1352,7 +1352,7 @@ namespace Game
                     }
                     catch (Exception e)
                     {
-                        throw new FormatException("反序列化卡池增益皮肤失败：" + e, e);
+                        throw new FormatException($"反序列化卡池增益皮肤失败：{e}", e);
                     }
                 }
             }
@@ -1371,7 +1371,7 @@ namespace Game
             }
             catch (Exception e)
             {
-                throw new FormatException("反序列化卡池" + path + "失败", e);
+                throw new FormatException($"反序列化卡池{path}失败", e);
             }
             addCardPool(cardPool, cardPoolInfo, path);
             return cardPool;
@@ -1533,12 +1533,12 @@ namespace Game
                     }
                     if (newDefineRef != null)
                     {
-                        Debug.LogWarning("将动作节点" + actionNode.id + "过期的动作名称" + actionNode.defineName + "替换为" + newDefineRef);
+                        Debug.LogWarning($"将动作节点{actionNode.id}过期的动作名称{actionNode.defineName}替换为{newDefineRef}");
                         actionNode.defineRef = newDefineRef;
                     }
                     else
                     {
-                        Debug.LogError("动作节点" + actionNode.id + "的名称未知：" + actionNode.defineName);
+                        Debug.LogError($"动作节点{actionNode.id}的名称未知：{actionNode.defineName}");
                     }
                 }
                 foreach (var constPair in actionNode.consts)
@@ -1666,18 +1666,18 @@ namespace Game
 
         private string allocCardPoolPath(CardPoolInfo cardPool)
         {
-            string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, cardPool.cardPoolName + "." + cardPoolFilePostfix);
+            string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, $"{cardPool.cardPoolName}.{cardPoolFilePostfix}");
             for (int i = 0; i < 100 && File.Exists(path); i++)
             {
                 if (i == 99)
                 {
                     throw new IOException("达到最大文件存储上限");
                 }
-                Match match = Regex.Match(path, @"(?<path>.+)\s\((?<num>\d+)\)\." + cardPoolFilePostfix);
+                Match match = Regex.Match(path, $@"(?<path>.+)\s\((?<num>\d+)\)\.{cardPoolFilePostfix}");
                 if (match.Success)
                 {
                     int num = int.Parse(match.Groups["num"].Value);
-                    path = path.Replace("(" + num + ")", "(" + (num + 1) + ")");
+                    path = path.Replace($"({num})", $"({num + 1})");
                 }
                 else
                 {

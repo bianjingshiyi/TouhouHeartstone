@@ -114,11 +114,11 @@ namespace Game.BattleTable
                 return skin;
             else
             {
-                game.logger.logError("没有找到" + define + "对应的皮肤");
+                game.logger.logError($"没有找到{define}对应的皮肤");
                 return new CardSkinData()
                 {
                     id = define.id,
-                    desc = define.ToString() + "（这张卡随时可能爆炸！）",
+                    desc = $"{define.ToString()}（这张卡随时可能爆炸！）",
                     image = cardManager.getDefaultSprite(),
                     name = define.GetType().Name
                 };
@@ -422,7 +422,7 @@ namespace Game.BattleTable
             if (anim != null)
                 addAnim(anim);
             else if (!(obj is FreeActRequest))
-                UberDebug.LogWarningChannel("UI", "没有与" + obj + "相应的动画");
+                UberDebug.LogWarningChannel("UI", $"没有与{obj}相应的动画");
             _allControlDirty = true;
         }
         void onResponse(IResponse response)

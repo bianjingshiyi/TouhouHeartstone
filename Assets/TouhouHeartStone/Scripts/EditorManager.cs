@@ -48,7 +48,7 @@ namespace Game
                         count++;
                 }
             }
-            throw new IndexOutOfRangeException("无法找到索引" + index + "对应变量类型");
+            throw new IndexOutOfRangeException($"无法找到索引{index}对应变量类型");
         }
         public Type getEditorConstTypeAt(int index)
         {
@@ -63,7 +63,7 @@ namespace Game
                         count++;
                 }
             }
-            throw new IndexOutOfRangeException("无法找到索引" + index + "对应常量类型");
+            throw new IndexOutOfRangeException($"无法找到索引{index}对应常量类型");
         }
         public string[] getEditorVarTypeNames()
         {
@@ -117,7 +117,7 @@ namespace Game
                     return arrayType;
                 }
             }
-            throw new ArgumentException("不存在名为" + name + "的类型");
+            throw new ArgumentException($"不存在名为{name}的类型");
         }
         #endregion
         #region 私有方法

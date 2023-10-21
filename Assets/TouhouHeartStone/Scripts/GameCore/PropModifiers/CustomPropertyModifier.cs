@@ -60,12 +60,12 @@ namespace TouhouHeartstone
         {
             if (!string.IsNullOrEmpty(relatedPropName))
             {
-                return getPropName() + "=<" + relatedPropName + ">";
+                return $"{getPropName()}=<{relatedPropName}>";
             }
             else if (isSet)
-                return getPropName() + "=" + value;
+                return $"{getPropName()}={value}";
             else
-                return getPropName() + "+" + value;
+                return $"{getPropName()}+{value}";
         }
         #endregion
         #region 属性字段

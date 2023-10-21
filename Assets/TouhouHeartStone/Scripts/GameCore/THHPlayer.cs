@@ -44,8 +44,9 @@ namespace TouhouHeartstone
             async Task onInitReplace(HearthStoneRule.InitReplaceEventArg arg)
             {
                 arg.replacedCards = await arg.player.getInit().replaceByRandom(game, arg.cards, arg.player.getDeck());
-                game.logger.logTrace(arg.player + "替换卡牌：" + string.Join("，", arg.cards.Select(c => c.ToString())) + "=>"
-                    + string.Join("，", arg.replacedCards.Select(c => c.ToString())));
+                var cardStrings = string.Join("，", arg.cards.Select(c => c.ToString()));
+                var newCardStrings = string.Join("，", arg.replacedCards.Select(c => c.ToString()));
+                game.logger.logTrace($"{arg.player}替换卡牌：{cardStrings}=>{newCardStrings}");
             }
         }
 
@@ -58,7 +59,7 @@ namespace TouhouHeartstone
                     arg.player.setProp(PLAYER.GEM, 0);
                 if (arg.player.getGem() > 10)
                     arg.player.setProp(PLAYER.GEM, 10);
-                game.logger.logTrace(arg.player + "的法力水晶变为" + arg.player.getGem());
+                game.logger.logTrace($"{arg.player}的法力水晶变为{arg.player.getGem()}");
                 return Task.CompletedTask;
             });
         }
@@ -72,7 +73,7 @@ namespace TouhouHeartstone
                     arg.player.setProp(PLAYER.MAXGEM, 0);
                 if (arg.player.getMaxGem() > 10)
                     arg.player.setProp(PLAYER.MAXGEM, 10);
-                game.logger.logTrace(arg.player + "的法力水晶上限变为" + arg.player.getMaxGem());
+                game.logger.logTrace($"{arg.player}的法力水晶上限变为{arg.player.getMaxGem()}");
                 return Task.CompletedTask;
             });
         }
@@ -90,7 +91,7 @@ namespace TouhouHeartstone
                     Player p = arg.player;
                     var damage = p.getFatigue() + 1;
                     p.setFatigue(damage);
-                    game.logger.logTrace(p + "已经没有卡牌了，当前疲劳值：" + damage);
+                    game.logger.logTrace($"{p}已经没有卡牌了，当前疲劳值：{damage}");
                     arg.damage = damage;
                     await p.getMaster().damage(game, null, damage);
                 }
@@ -129,7 +130,7 @@ namespace TouhouHeartstone
                 {
                     card = arg.card;
                     arg.player.getDeck().moveTo(game, card, arg.player.getGrave(), arg.player.getGrave().count);
-                    game.logger.logTrace(arg.player + "的手牌已经满了，" + card + "被送入墓地");
+                    game.logger.logTrace($"{arg.player}的手牌已经满了，{card}被送入墓地");
                     return Task.CompletedTask;
                 });
             }
@@ -153,7 +154,7 @@ namespace TouhouHeartstone
                     else
                     {
                         await p.getDeck().moveTo(game, card, p.getHand(), p.getHand().count);
-                        game.logger.logTrace(p + "抽" + card);
+                        game.logger.logTrace($"{p}抽{card}");
                     }
                 });
             }
@@ -218,7 +219,8 @@ namespace TouhouHeartstone
                 Player p = arg.player;
                 card = arg.card;
                 targets = arg.targets;
-                game.logger.logTrace(p + "使用" + arg.card + (targets.Length > 0 ? "，目标：" + string.Join<Card>("，", targets) : null));
+                var targetLog = targets.Length > 0 ? $"，目标：{string.Join<Card>("，", targets)}" : null;
+                game.logger.logTrace($"{p}使用{arg.card}{targetLog}");
                 if (arg.card.isServant())
                 {
                     await player.tryEnterField(game, p.getHand(), arg.card, arg.position);//随从卡，将卡置入战场
@@ -264,7 +266,7 @@ namespace TouhouHeartstone
             {
                 if (player[PILE.ITEM].isFull)
                 {
-                    game.logger.logTrace("由于" + player + "的道具栏已满，摧毁当前道具");
+                    game.logger.logTrace("由于{player}的道具栏已满，摧毁当前道具");
                     await player.destroyItem(game);
                 }
 
@@ -277,9 +279,9 @@ namespace TouhouHeartstone
                 else
                     await player[PILE.ITEM].insert(game, card, 0);
                 if (from != null)
-                    game.logger.logTrace(player + "从" + arg.from + "装备了" + arg.card);
+                    game.logger.logTrace($"{player}从{arg.from}装备了{arg.card}");
                 else
-                    game.logger.logTrace(player + "装备了" + arg.card);
+                    game.logger.logTrace($"{player}装备了{arg.card}");
             }
         }
         public static Task destroyItem(this Player player, CardEngine game)
@@ -419,7 +421,7 @@ namespace TouhouHeartstone
             {
                 return null;
             }
-            game.logger.logTrace(player + "从" + string.Join("，", options) + "中选择一项");
+            game.logger.logTrace($"{player}从{string.Join("，", options)}中选择一项");
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
 
             var eventArg = await game.triggers.doEvent(new HearthStoneRule.ChooseOneEventArg() { player = player, options = options, choose = null, isShow = isShow }, async arg =>
@@ -432,7 +434,7 @@ namespace TouhouHeartstone
 
         public static async Task<HearthStoneRule.SearchPileEventArg> searchPile(this Player player, CardEngine game, IEnumerable<Card> cards, bool isShow = false, int count = 3, string title = "选择一项")
         {
-            game.logger.logTrace(player + "从" + string.Join("，", cards) + "中选择一张");
+            game.logger.logTrace($"{player}从{string.Join("，", cards)}中选择一张");
             if (cards.Count() < 1)
                 return null;
             if (count > 0)
@@ -460,9 +462,9 @@ namespace TouhouHeartstone
                 card = arg.card;
                 position = arg.position;
                 if (from != null)
-                    game.logger.logTrace(player + "将" + arg.card + "从" + arg.from + "置入战场，位于" + arg.position);
+                    game.logger.logTrace($"{player}将{arg.card}从{arg.from}置入战场，位于{arg.position}");
                 else
-                    game.logger.logTrace(player + "将" + arg.card + "置入战场，位于" + arg.position);
+                    game.logger.logTrace($"{player}将{arg.card}置入战场，位于{arg.position}");
                 //设置随从状态
                 if (from != null)
                     await from.moveTo(game, arg.card, player.getField(), arg.position);//从某pile召唤随从
@@ -498,7 +500,7 @@ namespace TouhouHeartstone
                 position = arg.position;
                 if (player.getField().count >= player.getField().maxCount)
                     return;
-                game.logger.logTrace(player + "召唤" + define.GetType().Name + "位于" + position);
+                game.logger.logTrace($"{player}召唤{define.GetType().Name}位于{position}");
                 arg.card = game.createCard(define);
                 await player.tryEnterField(game, null, arg.card, position);
             });
@@ -537,7 +539,7 @@ namespace TouhouHeartstone
             HearthStoneRule.RebornEventArg eventArg = new HearthStoneRule.RebornEventArg() { player = player, card = card, position = position };
             eventArg = await game.triggers.doEvent(eventArg, async arg =>
             {
-                game.logger.logTrace(arg.player + "复活" + arg.card.define.GetType().Name + "位于" + position);
+                game.logger.logTrace($"{arg.player}复活{arg.card.define.GetType().Name}位于{position}");
                 await arg.player.tryEnterField(game, arg.player.getGrave(), arg.card, arg.position);
                 //亡语随从在墓地与场上移动时不会进行效果的激活与禁用
                 //foreach (IEffect effect in arg.card.define.getDeathRattles())
@@ -670,10 +672,9 @@ namespace TouhouHeartstone
                 else if (arg.youCard != null && arg.youCard.getCost(game) > arg.oppoCard.getCost(game))
                     arg.result = true;
                 if (arg.youCard != null)
-                    game.logger.log(duelPlayer + "发动了对决，她揭示了：" + arg.youCard + "。她的对手揭示了：" + arg.oppoCard + "。结果是" +
-                                    arg.result);
+                    game.logger.log($"{duelPlayer}发动了对决，她揭示了：{arg.youCard}。她的对手揭示了：{arg.oppoCard}。结果是{arg.result}");
                 else
-                    game.logger.log(duelPlayer + "揭示了个寂寞，输掉了对决。");
+                    game.logger.log($"{duelPlayer}揭示了个寂寞，输掉了对决。");
             });
         }
         private static Predicate<Card> getRevealFilterByDefine(int define)
