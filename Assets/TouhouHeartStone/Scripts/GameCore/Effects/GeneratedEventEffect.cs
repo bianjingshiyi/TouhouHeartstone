@@ -27,7 +27,7 @@ namespace TouhouHeartstone
             if (eventEntry != null)
             {
                 string triggerName = getEffectName(card, buff, eventEntry.eventName);
-                game.logger.log("Effect", card + "注册触发器" + triggerName);
+                game.logger.logTrace("Effect", card + "注册触发器" + triggerName);
                 Trigger trigger = new Trigger(
                     args =>
                     {
@@ -50,7 +50,7 @@ namespace TouhouHeartstone
             if (eventEntry != null)
             {
                 string triggerName = getEffectName(card, buff, eventEntry.eventName);
-                game.logger.log("Effect", card + "注销触发器" + triggerName);
+                game.logger.logTrace("Effect", card + "注销触发器" + triggerName);
                 Trigger trigger = card.getProp<Trigger>(game, triggerName);
                 await card.setProp(game, triggerName, null);
                 game.triggers.remove(eventEntry.eventName, trigger);
@@ -70,7 +70,7 @@ namespace TouhouHeartstone
                 await game.triggers.doEvent(new THHCard.SecretTriggerEventArg() { card = gameCard }, async arg =>
                 {
                     var argCard = arg.card;
-                    game.logger.log("触发陷阱" + argCard);
+                    game.logger.logTrace("触发陷阱" + argCard);
                     var entry = passiveEntry;
                     if (entry != null)
                     {

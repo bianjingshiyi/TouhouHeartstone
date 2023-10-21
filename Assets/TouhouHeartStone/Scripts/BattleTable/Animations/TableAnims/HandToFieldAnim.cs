@@ -50,7 +50,7 @@ namespace Game.BattleTable
                 servant.animator.Update(0);
                 yield return null;
             }
-            table.game.logger.log("Animation", table.getCard(servant) + "移动动画结束");
+            table.game.logger.logTrace("Animation", table.getCard(servant) + "移动动画结束");
             yield break;
         }
 

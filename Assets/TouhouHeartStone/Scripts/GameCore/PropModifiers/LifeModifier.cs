@@ -32,24 +32,24 @@ namespace TouhouHeartstone
                 int life = card.getLife(game);
                 if (resetCurrentLife)
                 {
-                    game?.logger?.log("由于" + card + "没有受伤，修正值变为" + value + "后重置生命值为" + life);
+                    game?.logger?.logTrace("由于" + card + "没有受伤，修正值变为" + value + "后重置生命值为" + life);
                     return await card.setCurrentLife(game, life);
                 }
                 else if (card.getCurrentLife(game) > life)
                 {
-                    game?.logger?.log("由于" + card + "当前生命值" + card.getCurrentLife(game) + "大于生命最大值" + card.getLife(game) + "，重置生命值为" + life);
+                    game?.logger?.logTrace("由于" + card + "当前生命值" + card.getCurrentLife(game) + "大于生命最大值" + card.getLife(game) + "，重置生命值为" + life);
                     return await card.setCurrentLife(game, life);
                 }
                 else
                 {
                     if (changedValue > 0)
                     {
-                        game?.logger?.log("由于" + card + "受伤了，修正值变为" + value + "之后生命值变为" + (card.getCurrentLife(game) + changedValue));
+                        game?.logger?.logTrace("由于" + card + "受伤了，修正值变为" + value + "之后生命值变为" + (card.getCurrentLife(game) + changedValue));
                         return await card.setCurrentLife(game, card.getCurrentLife(game) + changedValue);
                     }
                     else
                     {
-                        game?.logger?.log("由于" + card + "受伤了，修正值变为" + value + "之后生命值保持不变");
+                        game?.logger?.logTrace("由于" + card + "受伤了，修正值变为" + value + "之后生命值保持不变");
                         return null;
                     }
                 }
@@ -72,7 +72,7 @@ namespace TouhouHeartstone
             int life = card.getLife(game);
             if (resetCurrentLife)
             {
-                game?.logger?.log("由于" + card + "没有受伤，在移除" + this + "之后重置生命值为" + life);
+                game?.logger?.logTrace("由于" + card + "没有受伤，在移除" + this + "之后重置生命值为" + life);
                 return card.setCurrentLife(game, life);
             }
             else if (card.getCurrentLife(game) > life)
@@ -81,7 +81,7 @@ namespace TouhouHeartstone
             }
             else
             {
-                game?.logger?.log("由于" + card + "受伤了，在移除" + this + "之后生命值仍为" + card.getCurrentLife(game));
+                game?.logger?.logTrace("由于" + card + "受伤了，在移除" + this + "之后生命值仍为" + card.getCurrentLife(game));
                 return Task.CompletedTask;
             }
         }

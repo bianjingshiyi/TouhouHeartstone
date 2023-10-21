@@ -45,7 +45,7 @@ namespace TouhouHeartstone
                                     if (logger == null)
                                         UberDebug.LogWarningChannel("Load", "忽略尚未完成的卡片" + define);
                                     else
-                                        logger.log("Load", "忽略尚未完成的卡片" + define);
+                                        logger.logWarn("Load", "忽略尚未完成的卡片" + define);
                                 }
                                 else
                                     throw e;

@@ -91,7 +91,7 @@ namespace TouhouHeartstone
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger trigger = new Trigger(action: args => triggerAction(game, card, buff, args), name: effectName);
                 await card.setProp(null, effectName, trigger);
-                game.logger.log("Effect", card + "注册效果" + effectName);
+                game.logger.logTrace("Effect", card + "注册效果" + effectName);
                 onRegisterTrigger?.Invoke(game, card, buff);
                 game.triggers.registerDelayed(time.getEventName(game.triggers), trigger);
             }
@@ -105,7 +105,7 @@ namespace TouhouHeartstone
             {
                 string effectName = getEffectName(game, card, buff, time);
                 Trigger trigger = card.getProp<Trigger>(game, effectName);
-                game.logger.log("Effect", card + "注销效果" + effectName);
+                game.logger.logTrace("Effect", card + "注销效果" + effectName);
                 onUnRegisterTrigger?.Invoke(game, card, buff);
                 game.triggers.remove(time.getEventName(game.triggers), trigger);
                 card.setProp(null, effectName, null);
@@ -884,7 +884,7 @@ namespace TouhouHeartstone
         public override async Task onEnable(CardEngine game, Card card, Buff buff)
         {
             string propName = getPropName(buff);
-            game.logger.log("Effect", card + "启用亡语" + propName);
+            game.logger.logTrace("Effect", card + "启用亡语" + propName);
             await card.setProp(game, propName, false);
         }
 
@@ -911,7 +911,7 @@ namespace TouhouHeartstone
         public override Task onDisable(CardEngine game, Card card, Buff buff)
         {
             string propName = getPropName(buff);
-            game.logger.log("Effect", card + "禁用亡语" + propName);
+            game.logger.logTrace("Effect", card + "禁用亡语" + propName);
             return card.setProp(game, propName, true);
         }
         public bool isDisabled(IGame game, ICard card, IBuff buff)
