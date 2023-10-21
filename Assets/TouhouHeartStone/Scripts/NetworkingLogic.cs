@@ -201,7 +201,7 @@ namespace Game
         /// </summary>
         public void ClearRoom()
         {
-            localLanLogic.quitRoom();
+            QuitRoom();
 
             // 局域网的主机要销毁（关闭）对应的房间
             if (localLanLogic.curNetwork is LANNetworking lan && isInitialRoomOwner)
@@ -212,6 +212,7 @@ namespace Game
 
         public void QuitRoom()
         {
+            localPlayer.propDict.Clear();
             localLanLogic.quitRoom();
         }
 
