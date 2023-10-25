@@ -1,92 +1,39 @@
-﻿using BJSYGameCore;
-using Game;
-using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Game;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
+using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
 using Deck = TouhouHeartstone.Deck;
-using System.Linq;
-using System.Collections.Generic;
-using BJSYGameCore.UI;
 
 namespace Controllers
 {
     class PVERoomCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法
-        public void display()
+        public async void display()
         {
+            _ui.hidePlayerInfoPanel();
+            loadCharacterList();
+            await updatePlayerList();
             _ui.gameObject.SetActive(true);
-            _isDisplay = true;
-            updatePVEModeUI();
         }
         #endregion
 
         #region 私有方法
-
-
         #region 生命周期
         protected void Awake()
         {
-            if (_ui == null)
-            {
-                _ui = GetComponentInChildren<PVERoomPanel>();
-            }
-            //TODO:添加监听UI控件事件 & 游戏逻辑事件
-            // //_ui.onQuitClick += onQuitButtonClick;
-            // //_ui.onRoomPropUpdate += onRoomPropUpdate;
-            // _ui.onRandomSeedInputFieldValueChanged += onRandomSeedInputFieldValueChanged;
-            // _ui.onShuffleToggleValueChanged += onShuffleToggleValueChanged;
-            // _ui.onInitReplaceTimeInputFieldValueChanged += onInitReplaceTimeInputFieldValueChanged;
-            // _ui.onTurnTimeInputFieldValueChanged += onTurnTimeInputFieldValueChanged;
-            // _ui.onDisableRandomPlayerActOrderToggleValueChanged += onDisableRandomPlayerActOrderToggleValueChanged;
-            // _ui.onClickPlayerItemViewDeckButton += onClickPlayerListItemViewDeckButton;
-            // _ui.onClickPlayerItemSetDeckButton += onClickPlayerListItemSetDeckButton;
-            // _ui.onClickPlayerItemRemoveButton += onClickPlayerListItemRemoveButton;
-            // _ui.onClickAddAIPlayerButton += onClickAddAIPlayerButton;
-            // _ui.onClickSelectDeckButton += onClickSelectDeckButton;
-            // _ui.onClickDeckSelectPanelItem += onClickDeckSelectPanelItem;
-            // _ui.onClickStartButton += onClickStartButton;
-            // _ui.onClickReadyButton += onClickReadyButton;
-            // _ui.onClickCancleReadyButton += onClickCancleReadyButton;
-            _ui.onClickQuitButton += onClickQuitButton;
+            _ui.onQuitButtonClicked += onClickQuitButton;
+            _ui.onPlayerSelectItemClicked += onPlayerItemSelected;
+            _ui.onCancelSelectPlayer += onCancelSelectPlayerCallback;
         }
         #endregion
         #region 事件回调
-        // private void onRandomSeedInputFieldValueChanged(int value)
-        // {
-        //     _currentRoomData.getOption().randomSeed = value;
-        // }
-        // private void onShuffleToggleValueChanged(bool value)
-        // {
-        //     _currentRoomData.getOption().shuffle = value;
-        // }
-        // private void onInitReplaceTimeInputFieldValueChanged(float value)
-        // {
-        //     _currentRoomData.getOption().timeoutForInitReplace = value;
-        // }
-        // private void onTurnTimeInputFieldValueChanged(float value)
-        // {
-        //     _currentRoomData.getOption().timeoutForTurn = value;
-        // }
-
-        /// <summary>
-        /// 当用户选中了第index个卡组
-        /// </summary>
-        /// <param name="index"></param>
-        private async void onClickDeckSelectItem(int index)
-        {
-            //选择卡组
-            var deck = game.deck.getOrLoadDeckList()[index];
-            _selectedDeck = deck;
-            updateGameReadyButton();
-        }
-
-        #endregion
-        #region 实现方法
-
         /// <summary>
         /// 返回主界面
         /// </summary>
@@ -95,123 +42,138 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             scene.menu.display();
         }
-
         /// <summary>
-        /// 是否已经选择卡组
+        /// 当用户选中了第index个人物
         /// </summary>
-        private bool isSelectedDeck()
+        /// <param name="index"></param>
+        private async void onPlayerItemSelected(int index)
         {
-            //TODO:这里判断是否选择卡组了
-            if (_selectedDeck == null) return false;
-
-            displayPlayerDeckList(_selectedDeck);
-            // Deck deck = player.getDeck();
-            // if (deck == null || game.deck.isValidDeck(deck))
-            //     return false;
-            return true;
+            //选择人物
+            _selectedCharacter = _characterList[index];
+            await displayPlayerInfoPanel(_selectedCharacter);
         }
-
-
-        private bool isGameReady()
+        private void onCancelSelectPlayerCallback()
         {
-            //TODO:这里判断是否准备下一步了
-            return false;
+            _ui.hidePlayerInfoPanel();
         }
-
-        /// <summary>
-        /// 更新游戏准备按钮，是否允许用户进入下一步。
-        /// 第一步：选择玩家卡组。
-        /// 第二步：查看并确认是否要挑战关卡内容。
-        /// </summary>
-        private void updateGameReadyButton()
+        #endregion
+        #region 实现方法
+        private void loadCharacterList()
         {
-            if (isSelectedDeck())
+            var deck = new Deck();
+            deck.addCard(new DefineReference(0, ElementSprite.ID));
+            deck.addCard(new DefineReference(0, MultiCast.ID));
+            deck.addCard(new DefineReference(0, TheGreatLibrary.ID));
+            deck.addCard(new DefineReference(0, LibraryProtector.ID));
+            deck.addCard(new DefineReference(0, BestMagic.ID));
+            deck.addCard(new DefineReference(0, AgniShine.ID));
+            deck.addCard(new DefineReference(0, MetalFatigue.ID));
+            deck.addCard(new DefineReference(0, SylphyHorn.ID));
+            deck.addCard(new DefineReference(0, PhilosopherStone.ID));
+            deck.addCard(new DefineReference(0, MegaReaver.ID));
+            _characterList.Clear();
+            _characterList.Add(new PVECharacter()
             {
-                if (isGameReady())
+                characterRef = new DefineReference(0, Patchouli.ID),
+                starterDeck = deck,
+                description = PVE_PATCHOULI_DESC
+            });
+        }
+        private async Task displayPlayerInfoPanel(PVECharacter character)
+        {
+            var (name, image) = await getCharacterViewData(character);
+            var desc = game.lang._(character.description);
+            _ui.updatePlayerInfoPanel(name, image, desc);
+            await updatePlayerStarterDeck();
+            _ui.displayPlayerInfoPanel();
+        }
+        /// <summary>
+        /// 更新可选择的当前的卡组列表
+        /// </summary>
+        private async Task updatePlayerList()
+        {
+            CharacterViewData[] viewData = new CharacterViewData[_characterList.Count];
+            for (int i = 0; i < viewData.Length; i++)
+            {
+                var character = _characterList[i];
+                var (name, image) = await getCharacterViewData(character);
+                viewData[i].name = name;
+                viewData[i].image = image;
+            }
+            _ui.updatePlayerSelectPanel(viewData);
+        }
+        private async Task updatePlayerStarterDeck()
+        {
+            (string name, Sprite image, int count)[] deckCardsViewData;
+            var character = _selectedCharacter;
+            var deck = character?.starterDeck;
+            if (deck != null)
+            {
+                var cards = deck.cardList.OrderBy(e => game.card.getLocalCardDefine(e.cardRef) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
+                deckCardsViewData = new (string name, Sprite image, int count)[cards.Length];
+                for (int i = 0; i < cards.Length; i++)
                 {
+                    CardDefine cardDefine = game.card.getLocalCardDefine(cards[i].cardRef);
+                    CardSkinData skin = cardDefine != null ? game.card.getDefaultSkin(cardDefine) : null;
 
+                    string name;
+                    Sprite image;
+                    if (skin != null)
+                    {
+                        name = skin.name;
+                        image = await game.card.loadCardImage(cardDefine);
+                    }
+                    else
+                    {
+                        name = game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
+                        image = game.card.getDefaultSprite();
+                    }
+                    deckCardsViewData[i].name = name;
+                    deckCardsViewData[i].image = image;
+                    deckCardsViewData[i].count = cards[i].count;
                 }
             }
             else
             {
-                // 未选中卡组，不可以下一步
+                deckCardsViewData = new (string name, Sprite image, int count)[0];
             }
+            _ui.updatePlayerInfoPanelDeck(deckCardsViewData);
         }
-
-        /// <summary>
-        /// 更新当前PVE模式的UI内容
-        /// </summary>
-        private void updatePVEModeUI()
+        private async Task<(string name, Sprite image)> getCharacterViewData(PVECharacter character)
         {
-            updateCanSelectedDeckList();
-            // (string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[] viewData =
-            //     new (string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[_currentRoomData.playerDataList.Count];
-            // for (int i = 0; i < viewData.Length; i++)
-            // {
-            //     RoomPlayerData player = _currentRoomData.playerDataList[i];
-            //     viewData[i].playerName = player.name;
-            //     Deck deck = player.getDeck();
-            //     if (deck == null)
-            //     {
-            //         viewData[i].characterName = string.Empty;
-            //     }
-            //     else if (game.card.tryGetSkin(deck.masterId, out CardSkinData skin))
-            //     {
-            //         viewData[i].characterName = skin.name;
-            //     }
-            //     else
-            //     {
-            //         viewData[i].characterName = game.langManager.getString(StringTable.BUILD_UNKNOW_CARD_NAME);
-            //     }
-            //     viewData[i].canViewDeck = player.type == RoomPlayerType.human && deck != null;
-            //     viewData[i].canSetDeck = player.type == RoomPlayerType.ai;
-            //     viewData[i].canRemove = game.network.logic.localPlayer.id == _currentRoomData.ownerId && player.id != _currentRoomData.ownerId;
-            // }
-            // _ui.updatePlayerList(viewData);
-            // _ui.displayAddAIButton(_currentRoomData.playerDataList.Count < _currentRoomData.maxPlayerCount);
-        }
-        private void displayPlayerDeckList(Deck deck)
-        {
-            //TODO:当用户选择卡组之后，要展示卡组的内容，把编辑器界面里面右边那个挪过来
-        }
-
-        /// <summary>
-        /// 更新可选择的当前的卡组列表
-        /// </summary>
-        private async Task updateCanSelectedDeckList()
-        {
-            List<Deck> deckList = game.deck.getOrLoadDeckList();
-            (string name, Sprite image, bool isWarning)[] viewData = new (string name, Sprite image, bool isWarning)[deckList.Count];
-            for (int i = 0; i < viewData.Length; i++)
+            var charRef = character.characterRef;
+            if (charRef != null)
             {
-                var masterRef = deckList[i].masterCardRef;
-                var cardPoolRef = game.card.getLocalCardPoolReference(masterRef.cardPoolId);
-                viewData[i].name = deckList[i].name;
-                viewData[i].image = await game.card.loadCardImage(cardPoolRef, masterRef.defineId);
-                viewData[i].isWarning = !game.deck.isValidDeck(deckList[i]);
+                var poolRef = game.card.getLocalCardPoolReference(charRef.cardPoolId);
+                await game.card.getOrLoadCardPool(poolRef);
+                var cardDefine = game.card.getCardDefine(charRef);
+                var skin = game.card.getCardSkin(cardDefine);
+                return (skin.name, await game.card.loadCardImage(cardDefine));
             }
-
-            // TODO:这里需要一个控件来传入deck数据，并且展示出来
-            _ui.displayDeckSelectPanel(viewData);
+            return (string.Empty, null);
         }
         #endregion
 
         #endregion
 
         #region 属性字段
-        public bool isDisplay => _isDisplay;
+        [TranslateMsg("PVE模式人物描述-帕秋莉")]
+        private const string PVE_PATCHOULI_DESC = "操纵元素之力的魔法使，使用大量的法术向敌人倾泻火力或进行防御。\n通过元素融合还可将法术进行升级，产生更加强大的力量。";
         [SerializeField]
         PVERoomPanel _ui;
-        [SerializeField]
-        bool _isDisplay = false;
         /// <summary>
         /// 用户当前选择的卡组
         /// </summary>
         [SerializeField]
-        Deck _selectedDeck = null;
-        #endregion
-        #region 内部类
+        PVECharacter _selectedCharacter = null;
 
+        List<PVECharacter> _characterList = new List<PVECharacter>();
         #endregion
+    }
+    public class PVECharacter
+    {
+        public DefineReference characterRef;
+        public Deck starterDeck;
+        public string description;
     }
 }
