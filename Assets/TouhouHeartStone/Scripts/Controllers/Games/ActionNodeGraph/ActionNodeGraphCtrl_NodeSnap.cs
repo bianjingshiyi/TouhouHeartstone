@@ -218,7 +218,6 @@ namespace Controllers
                         input = targetNode.getInputPortAt(connection.targetIndex);
                     }
                     connectPorts(output, input);
-                    _recordList.addBreakpoint();
                 }
             }
         }

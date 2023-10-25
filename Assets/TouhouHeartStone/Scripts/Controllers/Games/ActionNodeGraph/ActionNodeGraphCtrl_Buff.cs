@@ -19,11 +19,8 @@ namespace Controllers
             GeneratedBuffDefine buffDefine = getOrCreateBuffDefineByIndex(index);
             var node = getActionNode(item);
             string name = GetBuffDefineAction.constName;
-            var beforeValue = node.getConst(name);
             updateBuffActionNode(item, buffDefine);
-            _recordList.addOperation(new ChangeNodeConstOperation(this, node, name, beforeValue, node.getConst(GetBuffDefineAction.constName)));
-            _recordList.addBreakpoint();
-            OnEdited();
+            addRecordBreakpoint();
         }
         private async void onItemEditBuffCallback(ActionNodeItem item)
         {
@@ -103,7 +100,7 @@ namespace Controllers
             var action = getActionNode(item) as ActionNode;
             if (action == null)
                 return;
-            action.setConst(GetBuffDefineAction.constName, new DefineReference(buffDefine.cardPoolId, buffDefine.id));
+            setNodeConst(action, GetBuffDefineAction.constName, new DefineReference(buffDefine.cardPoolId, buffDefine.id));
             BuffDefine[] buffDefines = game.card.getBuffDefines(cardPoolRef)
                 .OrderBy(p => p.Value.cardPoolId)
                 .ThenBy(p => p.Value.id)

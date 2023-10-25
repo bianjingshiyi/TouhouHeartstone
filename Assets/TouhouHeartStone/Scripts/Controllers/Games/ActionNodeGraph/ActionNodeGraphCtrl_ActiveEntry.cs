@@ -23,6 +23,7 @@ namespace Controllers
             if (actionNode is ActiveEntryNode activeEntry)
             {
                 addTargetChecker(activeEntry);
+                addRecordBreakpoint();
             }
         }
         /// <summary>
@@ -35,6 +36,7 @@ namespace Controllers
             if (actionNode is ActiveEntryNode activeEntry)
             {
                 removeTargetChecker(activeEntry, index);
+                addRecordBreakpoint();
             }
         }
         private void onTargetCheckerTypeValueChanged(ActionNodeItem item, int index, int value)
@@ -43,6 +45,7 @@ namespace Controllers
             if (actionNode is ActiveEntryNode activeEntry)
             {
                 changeTargetCheckerType(activeEntry, index, value);
+                addRecordBreakpoint();
             }
         }
         private void onTargetCheckerErrorTipValueChanged(ActionNodeItem item, int index, string value)
@@ -51,23 +54,18 @@ namespace Controllers
             if (actionNode is ActiveEntryNode activeEntry)
             {
                 changeTargetCheckerErrorTip(activeEntry, index, value);
+                addRecordBreakpoint();
             }
         }
         #endregion
         #endregion
-        private void addTargetChecker(ActiveEntryNode entry, bool addOperation = true)
+        private void addTargetChecker(ActiveEntryNode entry)
         {
             entry.AddTargetChecker(new TargetChecker(_targetCheckerTypes.FirstOrDefault() ?? string.Empty, string.Empty));
+            addOperationRecord(new AddTargetCheckerOperation(this, entry));
             updateActiveEntryNode(getActionNodeItem(entry), entry);
-
-            if (addOperation)
-            {
-                _recordList.addOperation(new AddTargetCheckerOperation(this, entry));
-                _recordList.addBreakpoint();
-            }
-            OnEdited();
         }
-        private void removeTargetChecker(ActiveEntryNode entry, int index, bool addOperation = true)
+        private void removeTargetChecker(ActiveEntryNode entry, int index)
         {
 
             // 重新连接端口。
@@ -83,7 +81,7 @@ namespace Controllers
                 if (connectedOutput == null)
                     continue;
 
-                disconnectPorts(connectedOutput, input, addOperation);
+                disconnectPorts(connectedOutput, input);
 
                 if (i > index)
                 {
@@ -92,11 +90,8 @@ namespace Controllers
             }
             var removedTargetChecker = entry.targetCheckerList[index];
             entry.RemoveTargetChecker(index);
+            addOperationRecord(new RemoveTargetCheckerOperation(this, entry, index, removedTargetChecker));
             updateActiveEntryNode(getActionNodeItem(entry), entry);
-            if (addOperation)
-            {
-                _recordList.addOperation(new RemoveTargetCheckerOperation(this, entry, index, removedTargetChecker));
-            }
 
             targetPorts = entry.getTargetConditionPorts();
             foreach (var (output, inputindex) in delayedConnections)
@@ -104,44 +99,26 @@ namespace Controllers
                 var newInput = targetPorts[inputindex];
                 if (newInput == null)
                     continue;
-                connectPorts(output, newInput, addOperation);
+                connectPorts(output, newInput);
             }
-            if (addOperation)
-            {
-                _recordList.addBreakpoint();
-            }
-
-            OnEdited();
         }
-        private void changeTargetCheckerType(ActiveEntryNode entry, int index, int value, bool addOperation = true)
+        private void changeTargetCheckerType(ActiveEntryNode entry, int index, int value)
         {
             var targetChecker = entry.targetCheckerList[index];
             var beforeValue = targetChecker.targetType;
 
             targetChecker.targetType = _targetCheckerTypes[value];
+            addOperationRecord(new ChangeTargetCheckerTypeOperation(this, entry, index, beforeValue, targetChecker.targetType));
             updateActiveEntryNode(getActionNodeItem(entry), entry);
-
-            if (addOperation)
-            {
-                _recordList.addOperation(new ChangeTargetCheckerTypeOperation(this, entry, index, beforeValue, targetChecker.targetType));
-                _recordList.addBreakpoint();
-            }
-            OnEdited();
         }
-        private void changeTargetCheckerErrorTip(ActiveEntryNode entry, int index, string value, bool addOperation = true)
+        private void changeTargetCheckerErrorTip(ActiveEntryNode entry, int index, string value)
         {
             var targetChecker = entry.targetCheckerList[index];
             var beforeValue = targetChecker.errorTip;
 
             targetChecker.errorTip = value;
+            addOperationRecord(new ChangeTargetCheckerErrorTipOperation(this, entry, index, beforeValue, targetChecker.errorTip));
             updateActiveEntryNode(getActionNodeItem(entry), entry);
-
-            if (addOperation)
-            {
-                _recordList.addOperation(new ChangeTargetCheckerErrorTipOperation(this, entry, index, beforeValue, targetChecker.errorTip));
-                _recordList.addBreakpoint();
-            }
-            OnEdited();
         }
         private void updateActiveEntryNode(ActionNodeItem item, ActiveEntryNode activeEntry)
         {
@@ -196,7 +173,7 @@ namespace Controllers
                 var node = _graphCtrl.getActionNode(_nodeId);
                 if (node is ActiveEntryNode activeEntry)
                 {
-                    _graphCtrl.removeTargetChecker(activeEntry, activeEntry.targetCheckerList.Count - 1, false);
+                    _graphCtrl.removeTargetChecker(activeEntry, activeEntry.targetCheckerList.Count - 1);
                 }
             }
             public override void redo()
@@ -204,7 +181,7 @@ namespace Controllers
                 var node = _graphCtrl.getActionNode(_nodeId);
                 if (node is ActiveEntryNode activeEntry)
                 {
-                    _graphCtrl.addTargetChecker(activeEntry, false);
+                    _graphCtrl.addTargetChecker(activeEntry);
                 }
             }
             private int _nodeId;
@@ -233,7 +210,7 @@ namespace Controllers
                 var node = _graphCtrl.getActionNode(_nodeId);
                 if (node is ActiveEntryNode activeEntry)
                 {
-                    _graphCtrl.removeTargetChecker(activeEntry, _removeIndex, false);
+                    _graphCtrl.removeTargetChecker(activeEntry, _removeIndex);
                 }
             }
             private int _nodeId;

@@ -116,7 +116,7 @@ namespace Controllers
         /// <summary>
         /// 进行效果修改后将编辑器的未保存状态设置为true。
         /// </summary>
-        public void OnEdited()
+        public void callOnEdited()
         {
             OnGraphEdited?.Invoke();
         }
@@ -189,7 +189,6 @@ namespace Controllers
 
             _ui.clearSelection();
             updateContentSize();
-            OnEdited();
         }
         public void deleteSelection()
         {
@@ -199,11 +198,8 @@ namespace Controllers
             foreach (var node in selectedNodes.ToArray())
             {
                 removeActionNode(node);
-                _recordList.addOperation(new DeleteNodeOperation(this, node));
             }
-            _recordList.addBreakpoint();
             _curEditNode = null;
-            OnEdited();
         }
         public Node[] getSelectedNodes()
         {
@@ -259,11 +255,9 @@ namespace Controllers
         {
             var actionNode = graph.createActionNode(actionDefine, x, y);
             _actionNodeList.Add(actionNode);
+            addOperationRecord(new CreateNodeOperation(this, actionNode));
             ActionNodeItem actionNodeItem = await createNodeUI4ActionNode(actionNode);
             updateContentSize();
-            _recordList.addOperation(new CreateNodeOperation(this, actionNode));
-            _recordList.addBreakpoint();
-            OnEdited();
             return actionNodeItem;
         }
         public Task<ActionNodeItem> createActionNode(ActionDefine actionDefine, Vector2 pos)
@@ -287,12 +281,10 @@ namespace Controllers
                 return null;
             }
             var actionNode = graph.createEventEntryNode(eventTriggerTime, x, y);
+            addOperationRecord(new CreateNodeOperation(this, actionNode));
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
             updateEffectProperties();
             updateContentSize();
-            _recordList.addOperation(new CreateNodeOperation(this, actionNode));
-            _recordList.addBreakpoint();
-            OnEdited();
             return actionNodeItem;
         }
         public ActionNodeItem createEventEntryNode(EventTriggerTime eventTriggerTime, Vector2 pos)
@@ -330,7 +322,7 @@ namespace Controllers
             node.posX = pos.x;
             node.posY = pos.y;
             _ui.moveActionNodeTo(item, pos);
-            OnEdited();
+            callOnEdited();
         }
         #endregion
 
@@ -414,8 +406,7 @@ namespace Controllers
             {
                 connectPorts(outputPort, inputPort);
             }
-            _recordList.addBreakpoint();
-            OnEdited();
+            addRecordBreakpoint();
         }
         /// <summary>
         /// 当用户断开节点连接
@@ -431,8 +422,7 @@ namespace Controllers
             IPort outputPort = outputActionNode.getOutputPortAt(outputIndex);
             IPort inputPort = inputActionNode.getInputPortAt(inputIndex);
             disconnectPorts(outputPort, inputPort);
-            _recordList.addBreakpoint();
-            OnEdited();
+            addRecordBreakpoint();
         }
         private void onClickInputPort(ActionNodeItem item, int inputIndex)
         {
@@ -467,10 +457,9 @@ namespace Controllers
                         connectPorts(outputPort, inputPort);
                     }
                 }
-                _recordList.addBreakpoint();
-                OnEdited();
                 _ui.selectPort(null);
                 resetConnectingPort();
+                addRecordBreakpoint();
                 return;
             }
             else
@@ -515,10 +504,9 @@ namespace Controllers
                         connectPorts(outputPort, inputPort);
                     }
                 }
-                _recordList.addBreakpoint();
-                OnEdited();
                 _ui.selectPort(null);
                 resetConnectingPort();
+                addRecordBreakpoint();
                 return;
             }
             else
@@ -553,7 +541,7 @@ namespace Controllers
             {
                 moveExistingNodeItem(selectedNodes.FirstOrDefault());
             }
-            OnEdited();
+            callOnEdited();
         }
         private void onEndMoveActionNode(ActionNodeItem actionNodeItem)
         {
@@ -573,9 +561,8 @@ namespace Controllers
                 moveNodeToFreePosition(node);
             }
             hidePreviewNode();
-            addRecordBreakpoint();
             _movingNodeDict.Clear();
-            OnEdited();
+            addRecordBreakpoint();
         }
         private void onStartConnection(ActionNodeItem actionNodeItem, int index, bool isOutput)
         {
@@ -603,7 +590,7 @@ namespace Controllers
                 var name = actionDefine.constDefines.ElementAt(constIndex).name;
                 setNodeConst(node, name, value);
                 updateNodeItemConsts(node);
-                OnEdited();
+                addRecordBreakpoint();
             }
             else
             {
@@ -612,7 +599,7 @@ namespace Controllers
                 {
                     setNodeConst(node, name, value);
                     updateNodeItemConsts(node);
-                    OnEdited();
+                    addRecordBreakpoint();
                 }
                 else
                 {
@@ -687,9 +674,8 @@ namespace Controllers
                 _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = itemIndex;
             }
-            OnEdited();
         }
-        private async void onClickCardSelectPanelCard(CardDefine cardDefine)
+        private void onClickCardSelectPanelCard(CardDefine cardDefine)
         {
             if (!string.IsNullOrEmpty(_curCardSeekingEffectPropName))
             {
@@ -697,7 +683,7 @@ namespace Controllers
             }
             else
             {
-                await selectCardForNodeConst(cardDefine);
+                selectCardForNodeConst(cardDefine);
             }
             //重置字段
             _curEditNode = null;
@@ -1043,10 +1029,10 @@ namespace Controllers
             _actionNodeList.RemoveAt(actionNodeIndex);
             _actionNodeItemList.RemoveAt(actionNodeIndex);
             graph.removeNode(node);
+            addOperationRecord(new DeleteNodeOperation(this, node));
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
             updateContentSize();
-            OnEdited();
         }
         private ActionNodeItem getActionNodeItem(Node actionNode)
         {
@@ -1095,6 +1081,7 @@ namespace Controllers
 
             //建立新的连接
             graph.connect(outputPort, inputPort);
+            addOperationRecord(new ConnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, inputPort.paramIndex));
             //更新ui
             _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.value);
             updatePortMode(_connectingPort, outputPort);
@@ -1129,6 +1116,7 @@ namespace Controllers
 
             //建立新的连接
             graph.connect(outputPort, inputPort);
+            addOperationRecord(new ConnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, -1));
             //更新ui
             _ui.connectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex, ActionNodeConnectionType.action);
             updatePortMode(_connectingPort, outputPort);
@@ -1162,7 +1150,7 @@ namespace Controllers
             updatePortMode(_connectingPort, outputPort);
             updatePortMode(_connectingPort, inputPort);
         }
-        private void connectPorts(IPort outputPort, IPort inputPort, bool addOperation = true)
+        private void connectPorts(IPort outputPort, IPort inputPort)
         {
             if (outputPort is ControlOutput co && inputPort is ControlInput ci)
             {
@@ -1171,11 +1159,6 @@ namespace Controllers
             else if (outputPort is ValueOutput vo && inputPort is ValueInput vi)
             {
                 connectValuePorts(vo, vi);
-            }
-            if (addOperation)
-            {
-                int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-                _recordList.addOperation(new ConnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, paramIndex));
             }
         }
         /// <summary>
@@ -1366,14 +1349,14 @@ namespace Controllers
                 disconnect(connection);
             }
         }
-        private void disconnectPorts(IPort outputPort, IPort inputPort, bool addOperation = true)
+        private void disconnectPorts(IPort outputPort, IPort inputPort)
         {
             var connection = graph.getConnection(outputPort, inputPort);
             if (connection == null)
                 return;
-            disconnect(connection, addOperation);
+            disconnect(connection);
         }
-        private void disconnect(NodeConnection connection, bool addOperation = true)
+        private void disconnect(NodeConnection connection)
         {
             //更新ui
             var inputPort = connection.destination;
@@ -1401,11 +1384,8 @@ namespace Controllers
             if (outputPort != null && inputPort != null)
             {
                 _ui.unconnectNode(outputNodeItem, outputIndex, inputNodeItem, inputIndex);
-                if (addOperation)
-                {
-                    int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
-                    _recordList.addOperation(new DisconnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, paramIndex));
-                }
+                int paramIndex = inputPort is ValueInput vi ? vi.paramIndex : -1;
+                addOperationRecord(new DisconnectOperation(this, outputPort.node, outputPort.name, inputPort.node, inputPort.name, paramIndex));
             }
         }
         /// 断开：动作节点----所有节点
@@ -1524,7 +1504,7 @@ namespace Controllers
             if (actionDefine.obsoleteMsg == "") return "";
             return game.lang._(actionDefine.obsoleteMsg);
         }
-        private async Task selectCardForNodeConst(CardDefine cardDefine)
+        private void selectCardForNodeConst(CardDefine cardDefine)
         {
             if (_curEditNode == null)
             {
@@ -1543,9 +1523,7 @@ namespace Controllers
             }
             // 更新UI.
             updateNodeItemConsts(_curEditNode);
-
-
-            OnEdited();
+            addRecordBreakpoint();
         }
         #endregion
         #region 节点信息
@@ -1885,8 +1863,7 @@ namespace Controllers
                 beforeValue = beforeClonable.Clone();
             }
             node.setConst(name, value);
-            _recordList.addOperation(new ChangeNodeConstOperation(this, node, name, beforeValue, value));
-            _recordList.addBreakpoint();
+            addOperationRecord(new ChangeNodeConstOperation(this, node, name, beforeValue, value));
         }
         private async Task initNodeConstDefaultValue(ActionNodeItem item, Node node, int constIndex, ActionNodeValueInfo constInfo)
         {

@@ -28,11 +28,10 @@ namespace Controllers
         {
             return _recordList.canRedo();
         }
-        #endregion
-        #region 私有方法
         public void addOperationRecord(OperationRecord record)
         {
             _recordList.addOperation(record);
+            callOnEdited();
         }
         public void addRecordBreakpoint()
         {
@@ -121,7 +120,7 @@ namespace Controllers
                 IPort inputPort = _destParamIndex < 0 ?
                     inputActionNode.getInputPort(_destName) :
                     inputActionNode.getParamInputPort(_destName, _destParamIndex);
-                _graphCtrl.disconnectPorts(outputPort, inputPort, false);
+                _graphCtrl.disconnectPorts(outputPort, inputPort);
             }
             public override void redo()
             {
@@ -143,7 +142,7 @@ namespace Controllers
                     inputPort = inputActionNode.getParamInputPort(_destName, _destParamIndex);
                     _graphCtrl.updateInputParamsPort(inputPort);
                 }
-                _graphCtrl.connectPorts(outputPort, inputPort, false);
+                _graphCtrl.connectPorts(outputPort, inputPort);
             }
             private int _srcNodeId;
             private string _srcName;
@@ -182,7 +181,7 @@ namespace Controllers
                     inputPort = inputActionNode.getParamInputPort(_destName, _destParamIndex);
                     _graphCtrl.updateInputParamsPort(inputPort);
                 }
-                _graphCtrl.connectPorts(outputPort, inputPort, false);
+                _graphCtrl.connectPorts(outputPort, inputPort);
             }
             public override void redo()
             {
@@ -192,7 +191,7 @@ namespace Controllers
                 IPort inputPort = _destParamIndex < 0 ?
                     inputActionNode.getInputPort(_destName) :
                     inputActionNode.getParamInputPort(_destName, _destParamIndex);
-                _graphCtrl.disconnectPorts(outputPort, inputPort, false);
+                _graphCtrl.disconnectPorts(outputPort, inputPort);
             }
             private int _srcNodeId;
             private string _srcName;

@@ -6,10 +6,14 @@ namespace Game.UndoRedo
     {
         public void addBreakpoint()
         {
+            if (isUndoRedoing)
+                return;
             _breakpoints.Add(index);
         }
         public void addOperation(OperationRecord record)
         {
+            if (isUndoRedoing)
+                return;
             _breakpoints.RemoveWhere(i => i > index);
             _records.RemoveRange(index, _records.Count - index);
             _records.Add(record);
@@ -20,6 +24,7 @@ namespace Game.UndoRedo
             if (!canUndo())
                 return;
 
+            isUndoRedoing = true;
             while (index > 0)
             {
                 index--;
@@ -30,12 +35,14 @@ namespace Game.UndoRedo
                     break;
                 }
             }
+            isUndoRedoing = false;
         }
         public void redo()
         {
             if (!canRedo())
                 return;
 
+            isUndoRedoing = true;
             while (index < _records.Count)
             {
                 var record = _records[index];
@@ -46,6 +53,7 @@ namespace Game.UndoRedo
                     break;
                 }
             }
+            isUndoRedoing = false;
         }
         public bool canUndo()
         {
@@ -57,12 +65,15 @@ namespace Game.UndoRedo
         }
         public void clear()
         {
+            _breakpoints.Clear();
             _records.Clear();
             index = 0;
+            isUndoRedoing = false;
         }
         private int index = 0;
         private HashSet<int> _breakpoints = new HashSet<int>();
         private List<OperationRecord> _records = new List<OperationRecord>();
+        private bool isUndoRedoing;
     }
     public abstract class OperationRecord
     {

@@ -31,26 +31,19 @@ namespace Controllers
 
             createEffectProperty(item.propertyName, item.type, item.value, item.isArray);
 
-            addOperationRecord(new AddEffectPropertyOperation(this, item));
-            addRecordBreakpoint();
-
-            OnEdited();
             updateEffectProperties();
             _ui.displayEffectPropertyDialog(false);
+            addRecordBreakpoint();
         }
         private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
         {
             var prop = _effect.getProp(name);
-            if (prop is Array array)
+            if (prop is object[] array)
             {
-                var beforeValue = array.Clone();
-                array.SetValue(value, index);
-
-                addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, array.Clone()));
+                var list = new List<object>(array);
+                list[index] = value;
+                setEffectProp(name, list.ToArray());
                 addRecordBreakpoint();
-
-                OnEdited();
-                updatePropertyItem(name);
             }
         }
         private async void onClickEffectPropertyItemButtonCallback(string name, int index)
@@ -72,79 +65,37 @@ namespace Controllers
         }
         private void onClickEffectPropertyAddItemButtonCallback(string name)
         {
-            var array = _effect.getProp<Array>(name);
+            var array = _effect.getProp<object[]>(name);
             if (array == null)
                 return;
-            var beforeValue = array.Clone();
-            var arrayType = array.GetType();
-            var elementType = arrayType.GetElementType();
-            if (elementType == null)
-                return;
-            var newArray = Array.CreateInstance(elementType, array.Length + 1);
-            array.CopyTo(newArray, 0);
-
-
-            if (_effectPropTypeDict.TryGetValue(elementType, out var key))
+            var propItem = GetEffectPropertyItem(name);
+            var list = new List<object>(array)
             {
-                newArray.SetValue(getDefaultValue(key, false), newArray.Length - 1);
-            }
-            _effect.setProp(name, newArray);
-
-            addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, newArray.Clone()));
+                getDefaultValue(propItem.type, false)
+            };
+            setEffectProp(name, list.ToArray());
             addRecordBreakpoint();
-
-            OnEdited();
-            updatePropertyItem(name);
         }
 
         private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
         {
-            var array = _effect.getProp<Array>(name);
+            var array = _effect.getProp<object[]>(name);
             if (array == null)
                 return;
-            var beforeValue = array.Clone();
-            var arrayType = array.GetType();
-            var elementType = arrayType.GetElementType();
-            if (elementType == null)
-                return;
-            var newArray = Array.CreateInstance(elementType, array.Length - 1);
-            int newIndex = 0;
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (i == index)
-                    continue;
-                newArray.SetValue(array.GetValue(i), newIndex);
-                newIndex++;
-            }
-            _effect.setProp(name, newArray);
-
-            addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, newArray.Clone()));
+            var list = new List<object>(array);
+            list.RemoveAt(index);
+            setEffectProp(name, list.ToArray());
             addRecordBreakpoint();
-
-            OnEdited();
-            updatePropertyItem(name);
         }
         private void onEffectPropertyValueChangedCallback(string name, object value)
         {
-            var beforeValue = _effect.getProp(name);
-            if (beforeValue is ICloneable beforeCloneable)
+            // 从UI传递到的效果属性要复制一份，免得UI的数据修改时，效果的属性也会同时更改。
+            if (value is ICloneable valueCloneable)
             {
-                beforeValue = beforeCloneable.Clone();
+                value = valueCloneable.Clone();
             }
-            if (value is ICloneable cloneable)
-            {
-                value = cloneable.Clone();
-            }
-            _effect.setProp(name, value);
-
-            if (beforeValue != value)
-            {
-                addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, beforeValue, value));
-                addRecordBreakpoint();
-            }
-
-            OnEdited();
-            updatePropertyItem(name);
+            setEffectProp(name, value);
+            addRecordBreakpoint();
         }
         private async void onClickEffectPropertyButtonCallback(string name)
         {
@@ -165,18 +116,35 @@ namespace Controllers
 
         private void onDeleteEffectPropertyCallback(string name)
         {
-            var value = GetEffectPropertyItem(name);
+            var item = GetEffectPropertyItem(name);
             _effect.removeProp(name);
+            addOperationRecord(new RemoveEffectPropertyOperation(this, item));
 
-            addOperationRecord(new RemoveEffectPropertyOperation(this, value));
-            addRecordBreakpoint();
-
-            OnEdited();
             updateEffectProperties();
+            addRecordBreakpoint();
         }
         #endregion
 
         #region 私有方法
+        private void setEffectProp(string name, object value)
+        {
+            var beforeValue = _effect.getProp(name);
+            _effect.setProp(name, value);
+
+            // 复制一份之前的值和新的值，存储在记录中，用以随时回退。
+            var recordBeforeValue = beforeValue;
+            var recordValue = value;
+            if (beforeValue is ICloneable beforeCloneable)
+            {
+                recordBeforeValue = beforeCloneable.Clone();
+            }
+            if (value is ICloneable valueCloneable)
+            {
+                recordValue = valueCloneable.Clone();
+            }
+            addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, recordBeforeValue, recordValue));
+            updatePropertyItem(name);
+        }
         private ActionNodeItem getEffectEntryNodeItem()
         {
             Node entryNode = null;
@@ -314,52 +282,46 @@ namespace Controllers
                 value = getDefaultValue(type, isArray);
             }
             _effect.setProp(name, value);
+            addOperationRecord(new AddEffectPropertyOperation(this, name, type, value, isArray));
         }
         private void selectCardForEffectProperty(CardDefine cardDefine)
         {
-            object beforeValue;
             object value;
+            var defRef = cardDefine.getDefineRef();
             if (_curCardSeekingEffectPropIndex >= 0)
             {
                 var array = _effect.getProp<DefineReference[]>(_curCardSeekingEffectPropName);
-                var defRef = cardDefine.getDefineRef();
                 if (array == null || _curCardSeekingEffectPropIndex >= array.Length)
                 {
                     var newArray = new DefineReference[_curCardSeekingEffectPropIndex + 1];
                     array.CopyTo(newArray, 0);
                     array = newArray;
-                    _effect.setProp(_curCardSeekingEffectPropName, array);
                 }
-                beforeValue = array.Clone();
                 array[_curCardSeekingEffectPropIndex] = defRef;
                 value = array.Clone();
             }
             else
             {
-                beforeValue = _effect.getProp(_curCardSeekingEffectPropName);
-                var defRef = cardDefine.getDefineRef();
-                _effect.setProp(_curCardSeekingEffectPropName, defRef);
                 value = defRef;
             }
-            if (beforeValue != value)
-            {
-                addOperationRecord(new ChangeEffectPropertyValueOperation(this, _curCardSeekingEffectPropName, beforeValue, value));
-                addRecordBreakpoint();
-            }
-            updatePropertyItem(_curCardSeekingEffectPropName);
-            OnEdited();
+            setEffectProp(_curCardSeekingEffectPropName, value);
+            addRecordBreakpoint();
         }
         #endregion
 
         #region 内嵌类
         class AddEffectPropertyOperation : GraphOperation
         {
-            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, EffectPropertyItem propItem) : base(graphCtrl)
+            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, EffectPropertyItem propItem) : 
+                this(graphCtrl, propItem.propertyName, propItem.type, propItem.value, propItem.isArray)
             {
-                _propertyName = propItem.propertyName;
-                _type = propItem.type;
-                _value = propItem.value;
-                _isArray = propItem.isArray;
+            }
+            public AddEffectPropertyOperation(ActionNodeGraphCtrl graphCtrl, string propertyName, ActionNodeValueType type, object value, bool isArray) : base(graphCtrl)
+            {
+                _propertyName = propertyName;
+                _type = type;
+                _value = value;
+                _isArray = isArray;
             }
             public override void undo()
             {

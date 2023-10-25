@@ -165,6 +165,7 @@ namespace UI
         private void OnClickDeleteButton()
         {
             _actionGraphCtrl.deleteSelection();
+            _actionGraphCtrl.addRecordBreakpoint();
         }
         private void OnNodeSelected(Node node)
         {
@@ -287,7 +288,7 @@ namespace UI
                     _actionGraphCtrl.connectSnapConnections(node);
                     _actionGraphCtrl.moveNodeToFreePosition(node);
                 }
-                _actionGraphCtrl.OnEdited();
+                _actionGraphCtrl.addRecordBreakpoint();
             }
             _actionGraphCtrl.hidePreviewNode();
             //重置状态字段
@@ -322,7 +323,7 @@ namespace UI
             var node = await _actionGraphCtrl.createNode(define, pos);
             if (node != null)
                 _actionGraphCtrl.moveNodeToFreePosition(node);
-            _actionGraphCtrl.OnEdited();
+            _actionGraphCtrl.addRecordBreakpoint();
         }
         private void onCategoryFilterEndEdit(string value)
         {
@@ -528,6 +529,7 @@ namespace UI
                     scene.editor.nodeClipboard = clipboard;
                     updatePasteButton();
                     _actionGraphCtrl.deleteSelection();
+                    _actionGraphCtrl.addRecordBreakpoint();
                 }
                 if (Input.GetKeyDown(KeyCode.Z))
                 {
@@ -552,6 +554,7 @@ namespace UI
             {
                 // Delete：删除
                 _actionGraphCtrl.deleteSelection();
+                _actionGraphCtrl.addRecordBreakpoint();
             }
         }
         #endregion
