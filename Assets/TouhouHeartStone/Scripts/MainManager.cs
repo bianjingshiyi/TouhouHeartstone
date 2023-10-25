@@ -18,6 +18,7 @@ using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using Game.PVE;
 
 namespace Game
 {
@@ -503,6 +504,7 @@ namespace Game
         public CacheManager cache => getManager<CacheManager>();
         public AnimationManager anims => getManager<AnimationManager>();
         public EditorManager editor => _editor;
+        public PVEManager pve => getManager<PVEManager>();
         public Camera camera => _camera;
         public int playerKey => _playerKey;
         [SerializeField]
