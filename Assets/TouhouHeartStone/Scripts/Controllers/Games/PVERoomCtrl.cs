@@ -9,6 +9,7 @@ using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
 using Deck = TouhouHeartstone.Deck;
+using SaveData = Game.PVE.SaveData;
 
 namespace Controllers
 {
@@ -17,9 +18,20 @@ namespace Controllers
         #region 公有方法
         public async void display()
         {
-            _ui.hidePlayerInfoPanel();
             loadCharacterList();
-            await updatePlayerList();
+            if (game.pve.hasData())
+            {
+                _saveData = await game.pve.loadData();
+            }
+            if (_saveData == null)
+            {
+                await displaySelectPlayerPanel();
+            }
+            else
+            {
+                generateRunData();
+                await enterGame();
+            }
             _ui.gameObject.SetActive(true);
         }
         #endregion
@@ -28,25 +40,31 @@ namespace Controllers
         #region 生命周期
         protected void Awake()
         {
-            _ui.onQuitButtonClicked += onClickQuitButton;
-            _ui.onPlayerSelectItemClicked += onPlayerItemSelected;
+            _ui.onQuitButtonClicked += onClickQuitButtonCallback;
+            _ui.onPlayerSelectItemClicked += onPlayerItemSelectedCallback;
             _ui.onCancelSelectPlayer += onCancelSelectPlayerCallback;
+            _ui.onGameStartClicked += onGameStartClickedCallback;
+            _ui.onFightClicked += onFightClickedCallback;
+            _ui.onGiveUpClicked += onGiveUpClickedCallback;
+            _ui.onEnemyQuitButtonClicked += onEnemyQuitClickedCallback;
+            gameManager.onGameStart += onGameStartCallback;
+            gameManager.onGameFinished += onGameFinishedCallback;
+            gameManager.onGameQuit += onGameQuitCallback;
         }
         #endregion
         #region 事件回调
         /// <summary>
         /// 返回主界面
         /// </summary>
-        private void onClickQuitButton()
+        private void onClickQuitButtonCallback()
         {
-            _ui.gameObject.SetActive(false);
-            scene.menu.display();
+            quit();
         }
         /// <summary>
         /// 当用户选中了第index个人物
         /// </summary>
         /// <param name="index"></param>
-        private async void onPlayerItemSelected(int index)
+        private async void onPlayerItemSelectedCallback(int index)
         {
             //选择人物
             _selectedCharacter = _characterList[index];
@@ -54,7 +72,88 @@ namespace Controllers
         }
         private void onCancelSelectPlayerCallback()
         {
-            _ui.hidePlayerInfoPanel();
+            _ui.setSelectPlayerPanelVisible(true);
+            _ui.setPlayerInfoPanelVisible(false);
+        }
+        private async void onGameStartClickedCallback()
+        {
+            await createSaveFile();
+            await enterGame();
+        }
+        private async void onFightClickedCallback()
+        {
+            await startFight();
+        }
+        private void onGiveUpClickedCallback()
+        {
+            showGiveUpDialog();
+        }
+        private void onEnemyQuitClickedCallback()
+        {
+            quit();
+        }
+        private async void onGameStartCallback()
+        {
+            if (!gameManager.isPVE)
+                return;
+            var game = gameManager.game;
+            foreach (var player in game.getSortedPlayers())
+            {
+                var master = player.getMaster();
+                if (player != gameManager.localPlayer)
+                {
+                    await master.addModifier(game, new LifeModifier(10 * (_saveData.currentStage + 1), true));
+                }
+                else
+                {
+                    await master.setCurrentLife(game, _saveData.currentHealth);
+                }
+            }
+        }
+        private async void onGameFinishedCallback(Player[] winners)
+        {
+            if (!gameManager.isPVE)
+                return;
+            var localPlayer = gameManager.localPlayer;
+            var pve = this.game.pve;
+            var game = gameManager.game;
+            if (winners.Contains(localPlayer))
+            {
+                // 获胜
+                _saveData.advanceStage();
+                _saveData.currentHealth = localPlayer.getMaster().getCurrentLife(game);
+                await pve.saveData(_saveData);
+                gameResult = PVEGameResult.Win;
+            }
+            else if (winners.Length <= 0)
+            {
+                // 平局
+                gameResult = PVEGameResult.Draw;
+            }
+            else
+            {
+                // 输掉
+                _saveData = null;
+                pve.deleteData();
+                gameResult = PVEGameResult.Defeat;
+            }
+        }
+        private void onGameQuitCallback()
+        {
+            if (!gameManager.isPVE)
+                return;
+            switch (gameResult)
+            {
+                case PVEGameResult.Win:
+                case PVEGameResult.Draw:
+                    scene.menu.hide();
+                    display();
+                    break;
+                case PVEGameResult.Defeat:
+                    reset();
+                    break;
+            }
+            gameResult = PVEGameResult.None;
         }
         #endregion
         #region 实现方法
@@ -79,13 +178,107 @@ namespace Controllers
                 description = PVE_PATCHOULI_DESC
             });
         }
+        #region 游戏内容
+        private async Task createSaveFile()
+        {
+            _saveData = await game.pve.generateNewSaveData(_selectedCharacter);
+            generateRunData();
+            await game.pve.saveData(_saveData);
+        }
+        private async Task enterGame()
+        {
+            var character = getNextEnemyCharacter();
+            var (name, image) = await getCharacterViewData(character);
+            var desc = game.lang._(character.description);
+            var deckCardsViewData = await getCharacterDeckCardViewData(character);
+            _ui.updateEnemyInfoPanel(name, image, desc);
+            _ui.updateEnemyInfoPanelDeck(deckCardsViewData);
+            _ui.setSelectPlayerPanelVisible(false);
+            _ui.setPlayerInfoPanelVisible(false);
+            _ui.setEnemyInfoPanelVisible(true);
+        }
+        private void showGiveUpDialog()
+        {
+            var title = game.lang._(StringTable.HINT_TITLE);
+            var content = game.lang._(PVE_CONFIRM_GIVE_UP);
+            game.ui.dialog.ShowQuestion(title, content, () =>
+            {
+                giveUp();
+            });
+        }
+        private async Task startFight()
+        {
+            await scene.game.network.logic.CreateLocalRoom();
+            await scene.game.network.logic.AddAIPlayer();
+            RoomData currentRoomData = scene.game.network.logic.CurrentRoom;
+            currentRoomData.maxPlayerCount = 2;
+            var localPlayer = scene.game.network.logic.localPlayer;
+
+            foreach (var player in currentRoomData.playerDataList)
+            {
+                Deck deck;
+                if (player == localPlayer)
+                {
+                    deck = new Deck(_saveData.character, _saveData.deck);
+                }
+                else
+                {
+                    deck = new Deck(_nextBoss.characterRef, _nextBoss.starterDeck.toDefRefArray(false));
+                }
+                player.setDeck(deck);
+            }
+            var cardPools = new CardPoolInfoPack[]
+            {
+                new CardPoolInfoPack(0, string.Empty, 0)
+            };
+            var seed = _saveData.stageSeed;
+            HearthstoneOption option = new HearthstoneOption()
+            {
+                randomSeed = seed,
+                sortedPlayers = currentRoomData.playerDataList.Select(p => p.id).ToArray(),
+                cardPools = cardPools
+            };
+            currentRoomData.setOption(option);
+
+            _ui.gameObject.SetActive(false);
+            await gameManager.startPVEGame(currentRoomData);
+        }
+        private void giveUp()
+        {
+            game.pve.deleteData();
+            quit();
+        }
+        private PVECharacter getNextEnemyCharacter()
+        {
+            return _nextBoss;
+        }
+        private void generateRunData()
+        {
+            _nextBoss = game.pve.generateNextBoss(_saveData);
+        }
+        private void reset()
+        {
+            _saveData = null;
+            gameResult = PVEGameResult.None;
+        }
+        #endregion
+        #region UI
+        private async Task displaySelectPlayerPanel()
+        {
+            _ui.setEnemyInfoPanelVisible(false);
+            _ui.setPlayerInfoPanelVisible(false);
+            _ui.setSelectPlayerPanelVisible(true);
+            await updatePlayerList();
+        }
         private async Task displayPlayerInfoPanel(PVECharacter character)
         {
             var (name, image) = await getCharacterViewData(character);
             var desc = game.lang._(character.description);
+            var deckCardsViewData = await getCharacterDeckCardViewData(character);
             _ui.updatePlayerInfoPanel(name, image, desc);
-            await updatePlayerStarterDeck();
-            _ui.displayPlayerInfoPanel();
+            _ui.updatePlayerInfoPanelDeck(deckCardsViewData);
+            _ui.setPlayerInfoPanelVisible(true);
+            _ui.setEnemyInfoPanelVisible(false);
         }
         /// <summary>
         /// 更新可选择的当前的卡组列表
@@ -102,10 +295,9 @@ namespace Controllers
             }
             _ui.updatePlayerSelectPanel(viewData);
         }
-        private async Task updatePlayerStarterDeck()
+        private async Task<(string name, Sprite image, int count)[]> getCharacterDeckCardViewData(PVECharacter character)
         {
             (string name, Sprite image, int count)[] deckCardsViewData;
-            var character = _selectedCharacter;
             var deck = character?.starterDeck;
             if (deck != null)
             {
@@ -137,7 +329,7 @@ namespace Controllers
             {
                 deckCardsViewData = new (string name, Sprite image, int count)[0];
             }
-            _ui.updatePlayerInfoPanelDeck(deckCardsViewData);
+            return deckCardsViewData;
         }
         private async Task<(string name, Sprite image)> getCharacterViewData(PVECharacter character)
         {
@@ -152,6 +344,13 @@ namespace Controllers
             }
             return (string.Empty, null);
         }
+        private void quit()
+        {
+            _ui.gameObject.SetActive(false);
+            scene.menu.display();
+            reset();
+        }
+        #endregion
         #endregion
 
         #endregion
@@ -159,6 +358,8 @@ namespace Controllers
         #region 属性字段
         [TranslateMsg("PVE模式人物描述-帕秋莉")]
         private const string PVE_PATCHOULI_DESC = "操纵元素之力的魔法使，使用大量的法术向敌人倾泻火力或进行防御。\n通过元素融合还可将法术进行升级，产生更加强大的力量。";
+        [TranslateMsg("PVE模式-放弃一局游戏的提示")]
+        private const string PVE_CONFIRM_GIVE_UP = "确认要放弃本局游戏？";
         [SerializeField]
         PVERoomPanel _ui;
         /// <summary>
@@ -168,6 +369,10 @@ namespace Controllers
         PVECharacter _selectedCharacter = null;
 
         List<PVECharacter> _characterList = new List<PVECharacter>();
+        private SaveData _saveData;
+        private PVECharacter _nextBoss;
+        private PVEGameResult gameResult;
+        private GameManager gameManager => game.game;
         #endregion
     }
     public class PVECharacter
@@ -175,5 +380,12 @@ namespace Controllers
         public DefineReference characterRef;
         public Deck starterDeck;
         public string description;
+    }
+    public enum PVEGameResult
+    {
+        None,
+        Win,
+        Draw,
+        Defeat
     }
 }

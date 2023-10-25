@@ -1,45 +1,47 @@
-﻿using BJSYGameCore.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.Events;
-using TouhouHeartstone;
-using Game;
+﻿using System;
 using BJSYGameCore;
+using BJSYGameCore.UI;
+using Game;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
     public partial class GameResultDialog : UIObject
     {
-        protected override void Awake()
-        {
-            base.Awake();
-            autoInit();
-        }
-        public UnityEvent onGameSuccess;
-        public UnityEvent onGameFail;
         public void ShowGameResult(bool success)
         {
             gameObject.SetActive(true);
-            this.findInstance<GameManager>()?.endGame();
-
-            if (success)
-            {
-                onGameSuccess?.Invoke();
-            }
-            else
-            {
-                onGameFail?.Invoke();
-            }
+            _winImageObj.SetActive(success);
+            _failImageObj.SetActive(!success);
+            onGameEnd?.Invoke();
         }
-
-        public void WindowClose()
+        protected override void Awake()
         {
-            gameObject.SetActive(false);
-            this.findInstance<GameManager>()?.closeGameUI();
+            base.Awake();
+            _saveReplayButton.onClick.AddListener(onSaveReplayButtonClickedCallback);
+            _quitButton.onClick.AddListener(onQuitButtonClickedCallback);
+
         }
+        private void onSaveReplayButtonClickedCallback()
+        {
+            onSaveReplayButtonClicked?.Invoke();
+        }
+        private void onQuitButtonClickedCallback()
+        {
+            onQuitButtonClicked?.Invoke();
+        }
+        public event Action onQuitButtonClicked;
+        public event Action onSaveReplayButtonClicked;
+        public event Action onGameEnd;
+
+        [SerializeField]
+        private GameObject _winImageObj;
+        [SerializeField]
+        private GameObject _failImageObj;
+        [SerializeField]
+        private Button _saveReplayButton;
+        [SerializeField]
+        private Button _quitButton;
     }
 }

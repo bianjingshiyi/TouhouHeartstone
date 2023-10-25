@@ -25,17 +25,45 @@ namespace Game
 {
     public partial class GameManager : Manager
     {
-        [SerializeField]
-        bool _useTimeAsRandomSeed = true;
-        [SerializeField]
-        HearthstoneOption _option = new HearthstoneOption();
-        [SerializeField]
-        Main _mainUI;
-        public CardEngine game { get; private set; } = null;
-        public Player localPlayer { get; private set; } = null;
-        Task gameTask { get; set; } = null;
-        LangManager lang => getManager<LangManager>();
-
+        #region 公有方法
+        public async Task startLocalGame(RoomData room)
+        {
+            //创建游戏
+            CardEngine game = await createGame(room);
+            await startGame(game, GameMode.local, room.playerDataList[0].id, true);
+        }
+        public Task startPVEGame(RoomData room)
+        {
+            isPVE = true;
+            return startLocalGame(room);
+        }
+        /// <summary>
+        /// [RPC] 开始远程游戏
+        /// </summary>
+        /// <param name="room"></param>
+        public Task startRemoteGame(RoomData room)
+        {
+            return startRemoteGame(nwLogic, room);
+        }
+        public async Task startRemoteGame(IClient client, RoomData room)
+        {
+            //创建游戏
+            CardEngine game = await createGame(room);
+            //将游戏与网络连接
+            game.answers.client = client;
+            //初始化本地玩家与UI
+            var localId = client.id;
+            await startGame(game, GameMode.remote, localId);
+        }
+        public async Task startReplayGame(Replay rep)
+        {
+            CardEngine game = await createGame(rep.option, rep.players);
+            new ReplayPlayer(rep, game);
+            await startGame(game, GameMode.replay, game.players.First().id);
+        }
+        #endregion
+        #region 私有方法
+        #region 生命周期
         protected override void onAwake()
         {
             base.onAwake();
@@ -45,42 +73,6 @@ namespace Game
             {
                 _mainUI.game = this;
             }
-        }
-        [SerializeField]
-        bool _useDefaultDeck = false;
-        [SerializeField]
-        Deck _defaultDeck;
-        [SerializeField]
-        bool _useTestDeck = false;
-        [SerializeField]
-        Deck _testDeck;
-        [CardDefineID]
-        [SerializeField]
-        DefineReference[] _deck = new DefineReference[31];
-
-        [SerializeField] bool _dummyAI = false;
-        public DefineReference[] deck
-        {
-            get { return _deck; }
-            set { _deck = value; }
-        }
-        public CardManager cards
-        {
-            get { return getManager<CardManager>(); }
-        }
-        [SerializeField]
-        GameMode _mode = GameMode.none;
-        public GameMode mode
-        {
-            get { return _mode; }
-            private set { _mode = value; }
-        }
-        private void Start()
-        {
-            if (_useDefaultDeck && _defaultDeck != null)
-                _deck = _defaultDeck.toDefRefArray();
-            if (_useTestDeck && _testDeck != null)
-                _deck = _testDeck.toDefRefArray();
         }
         private void Update()
         {
@@ -105,111 +97,50 @@ namespace Game
                 tableUI?.LogCtrl?.pollEvents();
             }
         }
-        #region 外部接口
-        public async Task startLocalGame(RoomData room)
+        private void OnGUI()
         {
-            //创建游戏
-            CardEngine game = await createGame(room);
-            mode = GameMode.local;
-            //初始化本地玩家，AI，UI
-            foreach (var player in game.players)
-            {
-                if (player.id == room.playerDataList[0].id) // 暂时的
-                {
-                    localPlayer = player;
-                    await displayGameUI(game, localPlayer);
-                }
-                else
-                {
 #if UNITY_EDITOR
-                    new AI(game, player, dummy: _dummyAI); //AI玩家用AI
-#else
-                    new AI(game, player);
+            Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 3, GUILayout.Width(300));
 #endif
-                }
-            }
-
-            if (tableUI != null)
-            {
-                tableUI.showSurrenderButton(false);
-                tableUI.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
-                tableUI.GameResultDialog.onSaveReplayButtonClick += quitGame; // 保存并退出
-            }
-            //tableUI.GameResultDialog.onSaveReplayButtonClick += onSaveReplayButtonClick;
-            //开始游戏
-            await runGame(game);
         }
-
-        [SerializeField]
-        NetworkingLogic _nwLogic;
-
-        public NetworkingLogic nwLogic
-        {
-            get { return _nwLogic; }
-            set { _nwLogic = value; }
-        }
-
-        /// <summary>
-        /// [RPC] 开始远程游戏
-        /// </summary>
-        /// <param name="room"></param>
-        public void startRemoteGame(RoomData room)
-        {
-            bool headless = _mainUI == null;
-            startRemoteGame(room, headless);
-        }
-        public Task startRemoteGame(RoomData room, bool headless)
-        {
-            return startRemoteGame(nwLogic, room, headless);
-        }
-        public async Task startRemoteGame(IClient client, RoomData room, bool headless = false)
-        {
-            //创建游戏
-            CardEngine game = await createGame(room);
-            mode = GameMode.remote;
-            //将游戏与网络连接
-            game.answers.client = client;
-            //初始化本地玩家与UI
-            foreach (var player in game.players)
-            {
-                if (client.id == player.id)
-                {
-                    localPlayer = player;
-                    if (!headless)
-                        await displayGameUI(game, localPlayer);
-                }
-            }
-            if (tableUI != null)
-            {
-                tableUI.showSurrenderButton(true);
-                tableUI.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
-                tableUI.GameResultDialog.onSaveReplayButtonClick += quitGame; // 保存并退出
-            }
-            await runGame(game);
-        }
-        public async Task startReplayGame(Replay rep)
-        {
-            CardEngine game = await createGame(rep.option, rep.players);
-            mode = GameMode.replay;
-            new ReplayPlayer(rep, game);
-            localPlayer = game.players.First();
-            await displayGameUI(game, localPlayer);
-            if (tableUI != null)
-            {
-                tableUI.showSurrenderButton(false);
-                tableUI.GameResultDialog._ButtonGlassButtonBlack.asButton.onClick.set(quitGame);
-                tableUI.GameResultDialog.onSaveReplayButtonClick += quitGame; // 保存并退出
-            }
-            await runGame(game);
-        }
-
-        public void surrender()
-        {
-            game.answers.answer(localPlayer.id, new SurrenderResponse());
-        }
-        public event Action onGameStart;
         #endregion
-        #region 内部功能
+        #region 事件回调
+        private void onGameEndCallback()
+        {
+            endGame();
+        }
+        private void onGameQuitButtonCallback()
+        {
+            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () =>
+            {
+                quitGame();
+            });
+        }
+        private void onGameResultQuitGameButtonClicked()
+        {
+            quitGame();
+        }
+        private void onSurrenderCallback()
+        {
+            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, SURRENDER_QUESTION, () => {
+                localPlayer.cmdSurrender(game);
+            });
+        }
+        private void onEventAfter(IEventArg eventArg)
+        {
+            if (eventArg is HearthStoneRule.GameEndEventArg gameEnd)
+            {
+                onGameFinished?.Invoke(gameEnd.winners);
+            }
+        }
+        private async void onSaveReplayButtonClick()
+        {
+            await getManager<MainManager>().fileManager.savePersistentFile(
+                _replaySystem.getSaveDir() + "/" + _replaySystem.getSaveFileName(_replaySystem.replay) + "." + _replaySystem.getSaveFileExtension(),
+                _replaySystem.replay.players.Select(p => p.getDeck().masterCardRef).ToArray().ToJson() + "\r\n" +
+                _replaySystem.replay.ToJson());
+        }
+        #endregion
         private Task<CardEngine> createGame(RoomData room)
         {
             return createGame(room.getOption(), room.playerDataList);
@@ -224,10 +155,10 @@ namespace Game
             {
                 await LoadExternalCardsAndBuffs(option, cardDict, buffDict, actionDefines);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var title = main.lang._(StringTable.ERROR);
-                var desc = main.lang._(GAME_CREATE_ERROR_LOAD_CARDS_FAILED);
+                var title = lang._(StringTable.ERROR);
+                var desc = lang._(GAME_CREATE_ERROR_LOAD_CARDS_FAILED);
                 main.ui.dialog.ShowConfirm(title, desc);
                 throw;
             }
@@ -271,10 +202,8 @@ namespace Game
                 playerList.ToArray());
             return game;
         }
-
-        Task runGame(CardEngine game, bool recordReplay = true)
+        private Task runGame(CardEngine game, bool recordReplay = true)
         {
-            this.game = game;
             if (recordReplay)
                 _replaySystem.startRecord(game, game.players.Select(p =>
                 {
@@ -285,72 +214,9 @@ namespace Game
                     return playerData;
                 }).ToArray());
             onGameStart?.Invoke();
-            // gameTask = THHGame.runGame(game);
             gameTask = game.run();
             return gameTask;
         }
-        /// <summary>
-        /// 关闭游戏
-        /// </summary>
-        public void endGame()
-        {
-            if (_replayPlayer != null)
-                _replayPlayer = null;
-            if (_replaySystem.isRecording)
-                _replaySystem.stopRecord();
-            if (game != null)
-            {
-                game.Dispose();
-                game = null;
-                gameTask = null;
-                mode = GameMode.none;
-                onGameEnd?.Invoke();
-            }
-        }
-
-        /// <summary>
-        /// 关闭游戏UI并回到主页面
-        /// </summary>
-        public void closeGameUI()
-        {
-            var op = SceneManager.UnloadSceneAsync("BattleUI");
-            op.completed += (o) =>
-            {
-                _mainUI.setBackgroundVisible(true);
-                _mainUI.display(_mainUI.MainMenu);
-                main.camera.gameObject.SetActive(true);
-                _battleTableManager = null;
-                _tableUI = null;
-                main.seManager.stopAllLoopingSE();
-                main.bgm.PlayList("Menu");
-            };
-        }
-
-        /// <summary>
-        /// 关闭游戏和UI
-        /// </summary>
-        public void quitGame()
-        {
-            endGame();
-            closeGameUI();
-        }
-        public event Action onGameEnd;
-        #endregion
-        #region 事件回调
-        private void onQuitCallback()
-        {
-            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, QUIT_GAME_QUESTION, () =>
-            {
-                quitGame();
-            });
-        }
-        private void onSurrenderCallback()
-        {
-            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, SURRENDER_QUESTION, () => {
-                localPlayer.cmdSurrender(game);
-            });
-        }
-        #endregion
         private async Task LoadExternalCardsAndBuffs(HearthstoneOption option,
             Dictionary<long, Dictionary<int, CardDefine>> cardDict,
             Dictionary<long, Dictionary<int, BuffDefine>> buffDict,
@@ -393,24 +259,6 @@ namespace Game
                 }
             }
         }
-        private void checkDeckValid(CardEngine game, DefineReference[] deck)
-        {
-            if (deck == null)
-                return;
-            if (game.getDefine(deck[0].cardPoolId, deck[0].defineId) == null)
-            {
-                UberDebug.LogError($"非法角色ID{deck[0]}被替换为灵梦");
-                deck[0] = new DefineReference(0, Reimu.ID);
-            }
-            for (int i = 1; i < deck.Length; i++)
-            {
-                if (game.getDefine(deck[i].cardPoolId, deck[i].defineId) == null)
-                {
-                    UberDebug.LogError($"非法随从ID{deck[i]}被替换为小野菊");
-                    deck[i] = new DefineReference(0, RashFairy.ID);
-                }
-            }
-        }
         /// <summary>
         /// 显示游戏UI，并指定本地玩家
         /// </summary>
@@ -435,53 +283,174 @@ namespace Game
             {
                 battleTableManager.setGame(main, game, localPlayer);
             }
-
+            initTableUI();
+        }
+        /// <summary>
+        /// 开始游戏
+        /// </summary>
+        /// <returns></returns>
+        private async Task startGame(CardEngine game, GameMode mode, int localId, bool hasAI = false)
+        {
+            this.game = game;
+            this.mode = mode;
+            localPlayer = game.players.FirstOrDefault(p => p.id == localId);
+            //初始化本地玩家，AI，UI
+            if (hasAI)
+            {
+                foreach (var player in game.players.Where(p => p != localPlayer))
+                {
+#if UNITY_EDITOR
+                    new AI(game, player, dummy: _dummyAI); //AI玩家用AI
+#else
+                    new AI(game, player);
+#endif
+                }
+            }
+            initGameEvents();
+            await displayGameUI(game, localPlayer);
+            await runGame(game);
+        }
+        /// <summary>
+        /// 关闭游戏
+        /// </summary>
+        private void endGame()
+        {
+            if (_replayPlayer != null)
+                _replayPlayer = null;
+            if (_replaySystem.isRecording)
+                _replaySystem.stopRecord();
+            if (game != null)
+            {
+                game.Dispose();
+                game = null;
+                gameTask = null;
+                onGameEnd?.Invoke();
+            }
+        }
+        /// <summary>
+        /// 关闭游戏UI并回到主页面
+        /// </summary>
+        private void closeGameUI()
+        {
+            disposeTableUI();
+            var op = SceneManager.UnloadSceneAsync("BattleUI");
+            op.completed += (o) =>
+            {
+                _mainUI.setBackgroundVisible(true);
+                _mainUI.display(_mainUI.MainMenu);
+                main.camera.gameObject.SetActive(true);
+                main.seManager.stopAllLoopingSE();
+                main.bgm.PlayList("Menu");
+                onGameQuit?.Invoke();
+                reset();
+            };
+        }
+        /// <summary>
+        /// 关闭游戏和UI
+        /// </summary>
+        private void quitGame()
+        {
+            endGame();
+            closeGameUI();
+        }
+        private void initGameEvents()
+        {
+            game.triggers.onEventAfter += onEventAfter;
+        }
+        private void initTableUI()
+        {
             if (tableUI)
             {
-                tableUI.onQuit += onQuitCallback;
-                tableUI.onSurrender += onSurrenderCallback;
+                tableUI.showSurrenderButton(mode == GameMode.remote || isPVE);
                 tableUI.LogCtrl.setGame(game, main, battleTableManager, localPlayer);
                 tableUI.LogCtrl.reset();
+                tableUI.onQuit += onGameQuitButtonCallback;
+                tableUI.onSurrender += onSurrenderCallback;
+                tableUI.GameResultDialog.onGameEnd += onGameEndCallback;
+                tableUI.GameResultDialog.onQuitButtonClicked += onGameResultQuitGameButtonClicked;
+                tableUI.GameResultDialog.onSaveReplayButtonClicked += onGameResultQuitGameButtonClicked; // 保存并退出
             }
         }
-        private async void onSaveReplayButtonClick()
+        private void disposeTableUI()
         {
-            await getManager<MainManager>().fileManager.savePersistentFile(
-                _replaySystem.getSaveDir() + "/" + _replaySystem.getSaveFileName(_replaySystem.replay) + "." + _replaySystem.getSaveFileExtension(),
-                _replaySystem.replay.players.Select(p => p.getDeck().masterCardRef).ToArray().ToJson() + "\r\n" +
-                _replaySystem.replay.ToJson());
+            if (tableUI)
+            {
+                tableUI.onQuit -= onGameQuitButtonCallback;
+                tableUI.onSurrender -= onSurrenderCallback;
+                tableUI.GameResultDialog.onGameEnd -= onGameEndCallback;
+                tableUI.GameResultDialog.onQuitButtonClicked -= onGameResultQuitGameButtonClicked;
+                tableUI.GameResultDialog.onSaveReplayButtonClicked -= onGameResultQuitGameButtonClicked;
+            }
         }
-        protected void OnGUI()
+        private void reset()
         {
-#if UNITY_EDITOR
-            Time.timeScale = GUILayout.HorizontalSlider(Time.timeScale, 0, 3, GUILayout.Width(300));
-#endif
+            mode = GameMode.none;
+            localPlayer = null;
+            _battleTableManager = null;
+            _tableUI = null;
+            isPVE = false;
         }
+        #endregion
+        #region 事件
+        /// <summary>
+        /// 游戏开始后被调用
+        /// </summary>
+        public event Action onGameStart;
+        /// <summary>
+        /// 游戏结束事件出现后被调用，参数为：获胜的玩家
+        /// </summary>
+        public event Action<Player[]> onGameFinished;
+        /// <summary>
+        /// 游戏结束对话框出现后被调用
+        /// </summary>
+        public event Action onGameEnd;
+        /// <summary>
+        /// 退出游戏UI后被调用
+        /// </summary>
+        public event Action onGameQuit;
+        #endregion
         #region 属性字段
-        [TranslateMsg]
-        const string QUIT_GAME_QUESTION = "是否要结束本场游戏？";
-        [TranslateMsg("尝试认输时的提醒")]
-        const string SURRENDER_QUESTION = "确定要向对手认输吗？";
         [TranslateMsg("开始游戏时，读取卡池失败时的报错")]
         public const string GAME_CREATE_ERROR_LOAD_CARDS_FAILED = "开始游戏失败，无法读取游戏所需的卡池。";
-        public MainManager main => getManager<MainManager>();
-        private BattleTableManager _battleTableManager;
-        private BattleTableManager battleTableManager 
-        { 
-            get
-            {
-                return _battleTableManager;
-            }
-        }
-        private TableUI _tableUI;
-        private TableUI tableUI
+        [TranslateMsg]
+        public const string QUIT_GAME_QUESTION = "是否要结束本场游戏？";
+        [TranslateMsg("尝试认输时的提醒")]
+        public const string SURRENDER_QUESTION = "确定要向对手认输吗？";
+        public CardEngine game { get; private set; } = null;
+        public Player localPlayer { get; private set; } = null;
+        public bool isPVE;
+        public GameMode mode
         {
-            get
-            {
-                return _tableUI;
-            }
+            get { return _mode; }
+            private set { _mode = value; }
         }
-
+        public NetworkingLogic nwLogic
+        {
+            get { return _nwLogic; }
+            set { _nwLogic = value; }
+        }
+        public MainManager main => getManager<MainManager>();
+        public CardManager cards => main.card;
+        public LangManager lang => main.lang;
+        Task gameTask { get; set; } = null;
+        private BattleTableManager battleTableManager => _battleTableManager;
+        private TableUI tableUI => _tableUI;
+        private BattleTableManager _battleTableManager;
+        private TableUI _tableUI;
+        [SerializeField]
+        GameMode _mode = GameMode.none;
+        [SerializeField]
+        HearthstoneOption _option = new HearthstoneOption();
+        [SerializeField]
+        Main _mainUI;
+        [SerializeField]
+        bool _useTestDeck = false;
+        [SerializeField]
+        Deck _testDeck;
+        [SerializeField]
+        bool _dummyAI = false;
+        [SerializeField]
+        NetworkingLogic _nwLogic;
         #endregion
     }
     public class LogItem

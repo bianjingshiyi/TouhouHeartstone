@@ -13,7 +13,6 @@ namespace Game
     {
         public async Task startReplayGame(ReplayData replay)
         {
-            mode = GameMode.replay;
             CardEngine game = await createGame(replay.option, replay.players.Select(p =>
             {
                 RoomPlayerInfo player = new RoomPlayerInfo();
@@ -23,10 +22,7 @@ namespace Game
                 return player;
             }));
             _replayPlayer = new ReplayDataPlayer(game, replay);
-            localPlayer = game.players.First();
-            displayGameUI(game, localPlayer);
-            //game.answers.onRequest += onReplayGameRequest;
-            await runGame(game, false);
+            await startGame(game, GameMode.replay, game.players.First().id);
         }
         void onReplayGameUpdate()
         {
