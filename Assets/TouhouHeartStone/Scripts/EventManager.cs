@@ -131,8 +131,6 @@ namespace Game
         public const string EDITOR_EVENT_NAME_MOVE_CARD = "卡牌移动";
         static string[] _hiddenEvents =
         {
-            "AddBuffEvent",
-            "RemoveBuffEvent",
             "SecretTriggerEvent",
             "MissionCompleteEvent",
             "ComeOnStageEvent",
