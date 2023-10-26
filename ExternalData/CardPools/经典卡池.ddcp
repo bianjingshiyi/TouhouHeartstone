@@ -1,23 +1,7 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 340, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 343, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
-      "_id" : -2147418072,
-      "type" : "Servant",
-      "propDict" : {
-        "cost" : 1,
-        "attack" : 1,
-        "life" : 1,
-        "tags" : {
-          "_t" : "System.String[]",
-          "_v" : ["Beast", "Bug"]
-        },
-        "characterId" : 0,
-        "isToken" : true
-      },
-      "effects" : [],
-      "effectList" : []
-    }, {
       "_id" : -2147418066,
       "type" : "Servant",
       "propDict" : {
@@ -231,6 +215,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -572,6 +557,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -1284,6 +1270,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -1622,6 +1609,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -2217,6 +2205,7 @@
                 "_id" : 1,
                 "posX" : -69.520927429199219,
                 "posY" : -0.14696502685546875,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterDamageEvent",
                 "consts" : {
                   "tags" : {
@@ -2287,6 +2276,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -2465,6 +2455,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -3640,6 +3631,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
@@ -6810,6 +6802,7 @@
                 "_id" : 1,
                 "posX" : -19.217758178710938,
                 "posY" : -822.425048828125,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -7756,6 +7749,7 @@
                 "_id" : 1,
                 "posX" : -999.11041259765625,
                 "posY" : -207.83096313476563,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterDrawEvent",
                 "consts" : {
                   "tags" : {
@@ -9514,6 +9508,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterDamageEvent",
                 "consts" : {
                   "tags" : {
@@ -10229,6 +10224,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -12265,6 +12261,7 @@
                 "_id" : 1,
                 "posX" : -153.59494018554688,
                 "posY" : -3.1096649169921875,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -12566,6 +12563,7 @@
                 "_id" : 1,
                 "posX" : -1018.29443359375,
                 "posY" : -71.214309692382813,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -13384,6 +13382,7 @@
                 "_id" : 1,
                 "posX" : -557.09600830078125,
                 "posY" : -348.09918212890625,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
@@ -14161,6 +14160,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -14646,6 +14646,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
@@ -15958,6 +15959,7 @@
                 "_id" : 1,
                 "posX" : -366.6251220703125,
                 "posY" : -295.68515014648438,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -16180,6 +16182,7 @@
                 "_id" : 1,
                 "posX" : 88.493804931640625,
                 "posY" : -273.14834594726563,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -16501,6 +16504,7 @@
                 "_id" : 1,
                 "posX" : -218.9354248046875,
                 "posY" : -116.19476318359375,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
@@ -16861,6 +16865,7 @@
                 "_id" : 1,
                 "posX" : -107.02151489257813,
                 "posY" : -174.29217529296875,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
@@ -17062,6 +17067,7 @@
                 "_id" : 1,
                 "posX" : -751.623291015625,
                 "posY" : -583.25677490234375,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -17493,6 +17499,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
@@ -17813,6 +17820,7 @@
                 "_id" : 1,
                 "posX" : -987.63702392578125,
                 "posY" : -186.30224609375,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
@@ -19027,6 +19035,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterDeathEvent",
                 "consts" : {
                   "tags" : {
@@ -19899,6 +19908,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -21601,6 +21611,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -22386,6 +22397,7 @@
                 "_id" : 1,
                 "posX" : -370.0111083984375,
                 "posY" : 19.221359252929688,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterHealEvent",
                 "consts" : {
                   "tags" : {
@@ -23302,141 +23314,6 @@
                 "sourceNodeId" : 10,
                 "destName" : "buffDefine",
                 "destNodeId" : 9
-              }]
-          }
-        }],
-      "effectList" : []
-    }, {
-      "_id" : 118,
-      "type" : "Spell",
-      "propDict" : {
-        "cost" : 3,
-        "characterId" : {
-          "_t" : "DefineReference",
-          "cardPoolId" : NumberLong(1),
-          "defineId" : 142
-        }
-      },
-      "effects" : [{
-          "_t" : "SerializableActiveEffect",
-          "name" : "主动效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableActiveEntryNode",
-                "tags" : null,
-                "_id" : 1,
-                "posX" : -231.16650390625,
-                "posY" : -4.892425537109375,
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  }
-                },
-                "targetCheckerList" : [{
-                    "targetType" : "Character",
-                    "errorTip" : ""
-                  }]
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 202013
-                },
-                "posX" : 396.40997314453125,
-                "posY" : 27.607574462890625,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112003
-                },
-                "posX" : -67.180068969726563,
-                "posY" : -360.2208251953125,
-                "constDict" : {
-                  "value" : 8
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206001
-                },
-                "posX" : 851.89129638671875,
-                "posY" : 27.607574462890625,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106002
-                },
-                "posX" : 447.23678588867188,
-                "posY" : -294.66305541992188,
-                "constDict" : {
-                  "buffDefine" : {
-                    "_t" : "DefineReference",
-                    "cardPoolId" : NumberLong(1),
-                    "defineId" : 68
-                  }
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "targets",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 3,
-                "destName" : "value",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 2,
-                "destName" : "enter",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "目标卡牌",
-                "sourceNodeId" : 1,
-                "destName" : "cards",
-                "destNodeId" : 4
-              }, {
-                "sourceName" : "value",
-                "sourceNodeId" : 5,
-                "destName" : "buffDefine",
-                "destNodeId" : 4
               }]
           }
         }],
@@ -24404,6 +24281,7 @@
                 "_id" : 1,
                 "posX" : -941.4793701171875,
                 "posY" : -113.02853393554688,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -27172,6 +27050,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -27547,6 +27426,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -27750,6 +27630,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -31138,6 +31019,7 @@
                 "_id" : 1,
                 "posX" : -276.30697631835938,
                 "posY" : 39.64404296875,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeDamageEvent",
                 "consts" : {
                   "tags" : {
@@ -31340,6 +31222,7 @@
                 "_id" : 1,
                 "posX" : 66.073455810546875,
                 "posY" : -192.213623046875,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeHealEvent",
                 "consts" : {
                   "tags" : {
@@ -32207,6 +32090,7 @@
                 "_id" : 1,
                 "posX" : -177.79754638671875,
                 "posY" : -16.818695068359375,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
@@ -32796,6 +32680,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -33845,6 +33730,7 @@
                 "_id" : 1,
                 "posX" : -1120.8453369140625,
                 "posY" : -108.12018585205078,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeEquipItemEvent",
                 "consts" : {
                   "tags" : {
@@ -34863,6 +34749,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -41335,6 +41222,7 @@
                 "_id" : 1,
                 "posX" : -114.9716796875,
                 "posY" : -81.947891235351563,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -41507,6 +41395,7 @@
                 "_id" : 1,
                 "posX" : -170.07467651367188,
                 "posY" : -269.55224609375,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "pileList" : {
@@ -41955,6 +41844,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -42440,15 +42330,195 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : -2147418072,
+      "type" : "Servant",
+      "propDict" : {
+        "cost" : 1,
+        "attack" : 1,
+        "life" : 1,
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : ["Beast", "Bug"]
+        },
+        "characterId" : 0,
+        "isToken" : true,
+        "keywords" : {
+          "_t" : "System.String[]",
+          "_v" : ["taunt"]
+        }
+      },
+      "effects" : [],
+      "effectList" : []
+    }, {
+      "_id" : 118,
+      "type" : "Spell",
+      "propDict" : {
+        "cost" : 3,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(1),
+          "defineId" : 142
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "tags" : null,
+                "_id" : 1,
+                "posX" : -231.16650390625,
+                "posY" : -4.892425537109375,
+                "consts" : {
+                  "tags" : {
+                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                    "_v" : []
+                  }
+                },
+                "targetCheckerList" : [{
+                    "targetType" : "Character",
+                    "errorTip" : ""
+                  }]
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202013
+                },
+                "posX" : 396.40997314453125,
+                "posY" : 27.607574462890625,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112003
+                },
+                "posX" : -67.180068969726563,
+                "posY" : -360.2208251953125,
+                "constDict" : {
+                  "value" : 8
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206001
+                },
+                "posX" : 851.89129638671875,
+                "posY" : 27.607574462890625,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106002
+                },
+                "posX" : 447.23678588867188,
+                "posY" : -294.66305541992188,
+                "constDict" : {
+                  "buffDefine" : {
+                    "_t" : "DefineReference",
+                    "cardPoolId" : NumberLong(1),
+                    "defineId" : 68
+                  }
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206003
+                },
+                "posX" : 1025.0418701171875,
+                "posY" : -301.16796875,
+                "constDict" : {
+                  "propName" : "施放者"
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "targets",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 3,
+                "destName" : "value",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 2,
+                "destName" : "enter",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "目标卡牌",
+                "sourceNodeId" : 1,
+                "destName" : "cards",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "value",
+                "sourceNodeId" : 5,
+                "destName" : "buffDefine",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "buffs",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 4,
+                "destName" : "enter",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "value",
+                "destNodeId" : 6
+              }]
+          }
+        }],
+      "effectList" : []
     }],
   "cardSkinList" : [{
-      "_id" : -2147418072,
-      "_name" : "甲虫*",
-      "_imagePath" : "c106c51bc2010643f45b11f23579f84d6646ed6c6f46047745f7cc0fe65d6eec.jpg",
-      "_desc" : "<b>守卫</b>",
-      "_language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
       "_id" : -2147418066,
       "_name" : "人偶*",
       "_imagePath" : "0f4d2f1f9c3d9f75a4d873b7cd3101041899935764c959acb1eb0079f910d5bd.jpg",
@@ -43418,13 +43488,6 @@
       "_language" : "zh-Hans",
       "_animationRefs" : []
     }, {
-      "_id" : 118,
-      "_name" : "灰色秘术*",
-      "_imagePath" : "35f24c0753d4f31a06c86db92d0414eff0e8c998d8bf4ee4e528dc11d6b2b25d.jpg",
-      "_desc" : "恢复8点生命值，在本回合中你下一次<b>信仰对决</b>后，再恢复4点生命值。",
-      "_language" : "zh-Hans",
-      "_animationRefs" : []
-    }, {
       "_id" : -2147418040,
       "_name" : "御柱*",
       "_imagePath" : "f19a423ea4056d6d1eee63652e2b34fb897c8ff700a4a21e60379ce5e9d499b6.jpg",
@@ -44340,6 +44403,20 @@
       "_desc" : "复原你的技能，然后使你的技能在下一次使用时能以仆从为目标。",
       "_language" : "zh-Hans",
       "_animationRefs" : []
+    }, {
+      "_id" : -2147418072,
+      "_name" : "甲虫*",
+      "_imagePath" : "c106c51bc2010643f45b11f23579f84d6646ed6c6f46047745f7cc0fe65d6eec.jpg",
+      "_desc" : "<b>守卫</b>",
+      "_language" : "zh-Hans",
+      "_animationRefs" : []
+    }, {
+      "_id" : 118,
+      "_name" : "灰色秘术*",
+      "_imagePath" : "35f24c0753d4f31a06c86db92d0414eff0e8c998d8bf4ee4e528dc11d6b2b25d.jpg",
+      "_desc" : "恢复8点生命值，在本回合中你下一次<b>信仰对决</b>后，再恢复4点生命值。",
+      "_language" : "zh-Hans",
+      "_animationRefs" : []
     }],
   "buffDefineList" : [{
       "_id" : 2,
@@ -44418,6 +44495,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -44515,6 +44593,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -44680,6 +44759,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -44832,6 +44912,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterEnterFieldEvent",
                 "consts" : {
                   "tags" : {
@@ -44961,6 +45042,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -45249,6 +45331,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -45543,6 +45626,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -45679,6 +45763,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -45776,6 +45861,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -45873,6 +45959,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -45989,6 +46076,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -46110,6 +46198,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -46225,6 +46314,7 @@
                 "_id" : 1,
                 "posX" : -462.513916015625,
                 "posY" : 49.254730224609375,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -46323,6 +46413,7 @@
                 "_id" : 1,
                 "posX" : -394.037841796875,
                 "posY" : 37.241386413574219,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -46414,6 +46505,7 @@
                 "_id" : 1,
                 "posX" : -265.87451171875,
                 "posY" : -71.231498718261719,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -46964,6 +47056,7 @@
                 "_id" : 1,
                 "posX" : -245.07229614257813,
                 "posY" : -169.68853759765625,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
@@ -47099,6 +47192,7 @@
                 "_id" : 1,
                 "posX" : -275.40597534179688,
                 "posY" : -66.373779296875,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -47232,6 +47326,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeDrawEvent",
                 "consts" : {
                   "tags" : {
@@ -47365,6 +47460,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -47692,6 +47788,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeFatigueEvent",
                 "consts" : {
                   "tags" : {
@@ -47953,6 +48050,7 @@
                 "_id" : 1,
                 "posX" : -170.01132202148438,
                 "posY" : -73.386184692382813,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -48122,6 +48220,7 @@
                 "_id" : 1,
                 "posX" : -208.5390625,
                 "posY" : -90.5096435546875,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -48283,230 +48382,6 @@
       "existLimitList" : [],
       "effects" : []
     }, {
-      "_id" : 68,
-      "propModifierList" : [],
-      "existLimitList" : [],
-      "effects" : [{
-          "_t" : "SerializableEventEffect",
-          "name" : "事件效果1",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : -488.448486328125,
-                "posY" : -131.17779541015625,
-                "eventName" : "AfterTurnEndEvent",
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  },
-                  "pileList" : {
-                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                    "_v" : ["Field", "Master"]
-                  }
-                },
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "posX" : -287.25363159179688,
-                "posY" : -396.52325439453125,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206002
-                },
-                "posX" : 408.6409912109375,
-                "posY" : -94.07135009765625,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106001
-                },
-                "posX" : 36.223098754882813,
-                "posY" : -329.07135009765625,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 3,
-                "destName" : "card",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "buff",
-                "destNodeId" : 5
-              }]
-          }
-        }, {
-          "_t" : "SerializableEventEffect",
-          "name" : "事件效果2",
-          "propDict" : { },
-          "graph" : {
-            "nodes" : [{
-                "_t" : "SerializableEventEntryNode",
-                "_id" : 1,
-                "posX" : -833.151611328125,
-                "posY" : 59.364227294921875,
-                "eventName" : "AfterRevealDuelEvent",
-                "consts" : {
-                  "tags" : {
-                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
-                    "_v" : []
-                  },
-                  "pileList" : {
-                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
-                    "_v" : ["Field", "Master"]
-                  }
-                },
-                "tags" : null,
-                "piles" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 4,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 102001
-                },
-                "posX" : -477.36190795898438,
-                "posY" : -296.70932006835938,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 2,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 202013
-                },
-                "posX" : -109.25581359863281,
-                "posY" : 118.24871826171875,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 3,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 112003
-                },
-                "posX" : -525.45062255859375,
-                "posY" : 415.10604858398438,
-                "constDict" : {
-                  "value" : 4
-                },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 5,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 206002
-                },
-                "posX" : 375.5799560546875,
-                "posY" : 118.24871826171875,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }, {
-                "_t" : "SerializableActionNode",
-                "_id" : 6,
-                "defineRef" : {
-                  "cardPoolId" : NumberLong(0),
-                  "defineId" : 106001
-                },
-                "posX" : 53.082855224609375,
-                "posY" : -147.11367797851563,
-                "constDict" : { },
-                "defineName" : null,
-                "branches" : null,
-                "inputs" : null,
-                "regVar" : null,
-                "consts" : null
-              }],
-            "connections" : [{
-                "sourceName" : "action",
-                "sourceNodeId" : 1,
-                "destName" : "enter",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "targets",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "result",
-                "sourceNodeId" : 3,
-                "destName" : "value",
-                "destNodeId" : 2
-              }, {
-                "sourceName" : "exit",
-                "sourceNodeId" : 2,
-                "destName" : "enter",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 4,
-                "destName" : "card",
-                "destNodeId" : 5
-              }, {
-                "sourceName" : "return",
-                "sourceNodeId" : 6,
-                "destName" : "buff",
-                "destNodeId" : 5
-              }]
-          }
-        }]
-    }, {
       "_id" : 74,
       "propModifierList" : [{
           "_t" : "AttackModifier",
@@ -48527,6 +48402,7 @@
                 "_id" : 1,
                 "posX" : -102.11343383789063,
                 "posY" : -2.4026641845703125,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnEndEvent",
                 "consts" : {
                   "pileList" : {
@@ -48624,6 +48500,7 @@
                 "_id" : 1,
                 "posX" : -280.31149291992188,
                 "posY" : 6.0066680908203125,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterAttackEvent",
                 "consts" : {
                   "tags" : {
@@ -48892,6 +48769,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -48983,6 +48861,7 @@
                 "_id" : 1,
                 "posX" : -249.51300048828125,
                 "posY" : 8.5617218017578125,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeDamageEvent",
                 "consts" : {
                   "tags" : {
@@ -49195,6 +49074,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeTurnEndEvent",
                 "consts" : {
                   "tags" : {
@@ -49281,6 +49161,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "BeforeUseEvent",
                 "consts" : {
                   "tags" : {
@@ -49833,6 +49714,7 @@
                 "_id" : 1,
                 "posX" : 0.0,
                 "posY" : 0.0,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterTurnStartEvent",
                 "consts" : {
                   "tags" : {
@@ -49956,6 +49838,7 @@
                 "_id" : 1,
                 "posX" : -266.86801147460938,
                 "posY" : -378.24884033203125,
+                "eventCardPoolId" : NumberLong(0),
                 "eventName" : "AfterUseEvent",
                 "consts" : {
                   "tags" : {
@@ -50212,6 +50095,281 @@
                 "sourceNodeId" : 13,
                 "destName" : "card",
                 "destNodeId" : 8
+              }]
+          }
+        }]
+    }, {
+      "_id" : 68,
+      "propModifierList" : [],
+      "existLimitList" : [],
+      "effects" : [{
+          "_t" : "SerializableEventEffect",
+          "name" : "事件效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableEventEntryNode",
+                "_id" : 1,
+                "posX" : -488.448486328125,
+                "posY" : -131.17779541015625,
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : "AfterTurnEndEvent",
+                "consts" : {
+                  "tags" : {
+                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                    "_v" : []
+                  },
+                  "pileList" : {
+                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
+                    "_v" : ["Field", "Master"]
+                  }
+                },
+                "tags" : null,
+                "piles" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102001
+                },
+                "posX" : -84.528350830078125,
+                "posY" : 216.15756225585938,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206002
+                },
+                "posX" : 408.6409912109375,
+                "posY" : -94.07135009765625,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106001
+                },
+                "posX" : -74.900375366210938,
+                "posY" : -402.65310668945313,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "card",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "buff",
+                "destNodeId" : 5
+              }]
+          }
+        }, {
+          "_t" : "SerializableEventEffect",
+          "name" : "事件效果2",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableEventEntryNode",
+                "_id" : 1,
+                "posX" : -833.151611328125,
+                "posY" : 59.364227294921875,
+                "eventCardPoolId" : NumberLong(0),
+                "eventName" : "AfterRevealDuelEvent",
+                "consts" : {
+                  "tags" : {
+                    "_t" : "TouhouCardEngine.EffectTagCollection, TouhouCardEngine",
+                    "_v" : []
+                  },
+                  "pileList" : {
+                    "_t" : "TouhouCardEngine.PileNameCollection, TouhouCardEngine",
+                    "_v" : ["Field", "Master"]
+                  }
+                },
+                "tags" : null,
+                "piles" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 102001
+                },
+                "posX" : -477.36190795898438,
+                "posY" : -296.70932006835938,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 202013
+                },
+                "posX" : -109.25581359863281,
+                "posY" : 118.24871826171875,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112003
+                },
+                "posX" : -525.45062255859375,
+                "posY" : 415.10604858398438,
+                "constDict" : {
+                  "value" : 4
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206002
+                },
+                "posX" : 375.5799560546875,
+                "posY" : 118.24871826171875,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106001
+                },
+                "posX" : 53.082855224609375,
+                "posY" : -147.11367797851563,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112002
+                },
+                "posX" : -1014.0827026367188,
+                "posY" : 552.88104248046875,
+                "constDict" : {
+                  "operator" : null
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 8,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106004
+                },
+                "posX" : -1607.2862548828125,
+                "posY" : 552.88104248046875,
+                "constDict" : {
+                  "propName" : "施放者"
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "targets",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 3,
+                "destName" : "value",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "exit",
+                "sourceNodeId" : 2,
+                "destName" : "enter",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "card",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "buff",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "result",
+                "sourceNodeId" : 7,
+                "destName" : "condition",
+                "destNodeId" : 1
+              }, {
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "B",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 8,
+                "destName" : "A",
+                "destNodeId" : 7
               }]
           }
         }]
@@ -50699,13 +50857,6 @@
       "imagePath" : "678ff9de8276c5bf1a84ebc24a3fed46135bcc238dce33865df7672f74c305d6.jpg",
       "_animationRefs" : []
     }, {
-      "buffId" : 68,
-      "language" : "zh-Hans",
-      "name" : "灰色秘术",
-      "desc" : "在本回合，如果使用了一张信仰对决牌，还会再恢复4点生命值。",
-      "imagePath" : "35f24c0753d4f31a06c86db92d0414eff0e8c998d8bf4ee4e528dc11d6b2b25d.jpg",
-      "_animationRefs" : []
-    }, {
       "buffId" : 74,
       "language" : "zh-Hans",
       "name" : "猫又形态",
@@ -50757,6 +50908,13 @@
       "name" : "精神投弹",
       "desc" : "在你使用技能后，如果这个技能是可以瞄准敌人的狂月射击，则变形为普通的狂月射击。",
       "imagePath" : "8373d30a19306c56a024092c2874034b2347ff3f96b138b9c54f62684d7ed941.jpg",
+      "_animationRefs" : []
+    }, {
+      "buffId" : 68,
+      "language" : "zh-Hans",
+      "name" : "灰色秘术",
+      "desc" : "在本回合，如果该玩家进行了信仰对决，还会再恢复4点生命值。",
+      "imagePath" : "35f24c0753d4f31a06c86db92d0414eff0e8c998d8bf4ee4e528dc11d6b2b25d.jpg",
       "_animationRefs" : []
     }],
   "actionDefineList" : [{
