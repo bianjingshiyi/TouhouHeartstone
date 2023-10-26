@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 343, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(1), "cardPoolName" : "经典卡池", "versionNumber" : 2, "editTime" : 344, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -42457,8 +42457,8 @@
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 206003
                 },
-                "posX" : 1025.0418701171875,
-                "posY" : -301.16796875,
+                "posX" : 1530.5911865234375,
+                "posY" : 41.300933837890625,
                 "constDict" : {
                   "propName" : "施放者"
                 },
@@ -50314,8 +50314,8 @@
                   "cardPoolId" : NumberLong(0),
                   "defineId" : 106004
                 },
-                "posX" : -1607.2862548828125,
-                "posY" : 552.88104248046875,
+                "posX" : -1864.1380615234375,
+                "posY" : 624.228759765625,
                 "constDict" : {
                   "propName" : "施放者"
                 },
@@ -50370,6 +50370,11 @@
                 "sourceNodeId" : 8,
                 "destName" : "A",
                 "destNodeId" : 7
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 6,
+                "destName" : "buff",
+                "destNodeId" : 8
               }]
           }
         }]
