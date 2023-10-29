@@ -181,14 +181,16 @@ namespace Game.BattleTable
         /// <param name="isSelectable"></param>
         public async void setMaster(Master master, CardDescriptor desc)
         {
-            master.setLife(desc.getCurrentLife());
-            var lifeColor = desc.getCurrentLife() < desc.getLife() ? PropertyNumberColor.Red : desc.getLife() > desc.define.getLife() ? PropertyNumberColor.Green : PropertyNumberColor.White;
-            master.setAttackColor(lifeColor);
+            var curLife = desc.getCurrentLife();
+            var life = desc.getLife();
+            master.setLife(curLife);
+            var lifeColor = curLife < life ? PropertyNumberColor.Red : life > desc.define.getLife() ? PropertyNumberColor.Green : PropertyNumberColor.White;
+            master.setLifeColor(lifeColor);
 
             var attack = getMasterAttack(desc);
             master.setAttackDisplay(attack > 0);
             master.setAttack(attack); 
-            var atkColor = desc.getAttack() > desc.define.getAttack() + getMasterItemAttack(desc) ? PropertyNumberColor.Green : PropertyNumberColor.White;
+            var atkColor = attack > desc.define.getAttack() + getMasterItemAttack(desc) ? PropertyNumberColor.Green : PropertyNumberColor.White;
             master.setAttackColor(atkColor);
 
             var armor = desc.getArmor();
