@@ -656,13 +656,14 @@ namespace TouhouHeartstone
                     await deck.moveTo(game, initCards, player.getInit());
                 }
 
+                initRuleTriggers(game);
+
                 var orderLog = string.Join("、", sortPlayers.Select(p => p.ToString()));
                 var masterLog = string.Join("，", sortPlayers.Select(p => $"{p.getMaster()}({ p.getSkill()})"));
                 var cardsLog = string.Join("；", sortPlayers.Select(p => string.Join("、", p.getInit().Select(c => c.ToString()))));
                 game.logger.logTrace($"游戏初始化，玩家行动顺序：{orderLog}，玩家英雄：{masterLog}，初始卡牌：{cardsLog}");
             });
         }
-
         private async Task start(CardEngine game)
         {
             if (!game.isRunning)
@@ -708,6 +709,7 @@ namespace TouhouHeartstone
             // 同时要更新所有角色的攻击次数，防止转移控制权的先攻仆从无法攻击。
             foreach (Player p in game.getSortedPlayers())
             {
+                await updateMasterItemAttack(game, p);
                 //使随从可以攻击
                 foreach (var card in p.getField())
                 {
@@ -830,7 +832,6 @@ namespace TouhouHeartstone
             game.time.cancel(getTurnTimer(game));
             setTurnTimer(game, null);
         }
-
         internal async Task gameEnd(CardEngine game, Player[] winners)
         {
             if (!game.isRunning)
@@ -869,6 +870,47 @@ namespace TouhouHeartstone
         }
 
         #endregion
+        private void initRuleTriggers(CardEngine game)
+        {
+            foreach (var player in game.getSortedPlayers())
+            {
+                var propChangeTrigger = new Trigger<Card.PropChangeEventArg>(
+                    condition: a => a.card == player.getItem() && a.propName == DEFINE.ATTACK,
+                    action: async a => await updateMasterItemAttack(game, player));
+                game.triggers.registerAfter(propChangeTrigger);
+
+                var setDefineTrigger = new Trigger<Card.SetDefineEventArg>(
+                    condition: a => a.card == player.getItem(),
+                    action: async a => await updateMasterItemAttack(game, player));
+                game.triggers.registerAfter(setDefineTrigger);
+
+                var moveTrigger = new Trigger<THHPile.MoveCardEventArg>(
+                    condition: a => a.from == player.getPile(PILE.ITEM) || a.to == player.getPile(PILE.ITEM),
+                    action: async a => await updateMasterItemAttack(game, player));
+                game.triggers.registerAfter(moveTrigger);
+            }
+        }
+        private async Task updateMasterItemAttack(CardEngine game, Player player)
+        {
+            const string modifierPropName = "MASTER_ITEM_ATK_MODI";
+            var master = player.getMaster();
+            var modi = player.getProp<PropModifier>(modifierPropName);
+            if (modi == null)
+            {
+                modi = new AttackModifier(0);
+                player.setProp(modifierPropName, modi);
+            }
+            if (!master.getModifiers().Contains(modi))
+            {
+                await master.addModifier(game, modi);
+            }
+            var attack = 0;
+            if (game.getCurrentPlayer() == player)
+            {
+                attack = player.getItem()?.getAttack(game) ?? 0;
+            }
+            await modi.setValue(game, master, attack);
+        }
 
         public class InitEventArg : EventArg
         {

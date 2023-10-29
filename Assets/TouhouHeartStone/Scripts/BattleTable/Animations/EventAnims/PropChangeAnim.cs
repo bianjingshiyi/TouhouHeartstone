@@ -113,7 +113,7 @@ namespace Game.BattleTable
                     {
                         int attack = value is int intValue ? intValue : _card.getAttack(table.game);
                         animator = master.attackNumber.animator;
-                        simpleAnim = attack > _card.define.getAttack() ? master.attackNumber.textGreenAnim : master.attackNumber.textWhiteAnim;
+                        simpleAnim = attack > table.getMasterItemAttack(_card) + _card.define.getAttack() ? master.attackNumber.textGreenAnim : master.attackNumber.textWhiteAnim;
                         break;
                     }
             }

@@ -54,11 +54,6 @@ namespace TouhouHeartstone
         public static int getAttack(this Card card, IGame game)
         {
             int result = card.getProp<int>(game, DEFINE.ATTACK);
-            if (game is CardEngine engine && card == engine.getCurrentPlayer()?.getMaster())
-            {
-                if (card.getOwner().getItem() != null)
-                    result += card.getOwner().getItem().getAttack(game);
-            }
             if (result < 0)
                 return 0;
             return result;

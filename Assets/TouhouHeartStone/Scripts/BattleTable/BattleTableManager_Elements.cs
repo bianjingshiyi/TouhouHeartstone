@@ -158,12 +158,6 @@ namespace Game.BattleTable
             }
             return 0;
         }
-        public int getMasterAttack(ICardData card) => getMasterAttack(card.id);
-        public int getMasterAttack(int cardId) => getMasterAttack(getCardDescriptor(cardId));
-        public int getMasterAttack(CardDescriptor desc)
-        {
-            return desc.getAttack() + getMasterItemAttack(desc);
-        }
         /// <summary>
         /// 设置Master的UI
         /// </summary>
@@ -185,7 +179,7 @@ namespace Game.BattleTable
             var lifeColor = curLife < life ? PropertyNumberColor.Red : life > desc.define.getLife() ? PropertyNumberColor.Green : PropertyNumberColor.White;
             master.setLifeColor(lifeColor);
 
-            var attack = getMasterAttack(desc);
+            var attack = desc.getAttack();
             master.setAttackDisplay(attack > 0);
             master.setAttack(attack); 
             var atkColor = attack > desc.define.getAttack() + getMasterItemAttack(desc) ? PropertyNumberColor.Green : PropertyNumberColor.White;
