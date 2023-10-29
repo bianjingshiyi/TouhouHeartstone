@@ -325,6 +325,8 @@ namespace Game
     {
         public static bool isBuiltinReference(this ActionReference actRef, int id)
         {
+            if (actRef == null)
+                return false;
             return actRef.cardPoolId == 0 && actRef.defineId == id;
         }
     }
