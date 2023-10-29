@@ -1,15 +1,14 @@
-﻿using UI;
-using TouhouHeartstone;
-using TouhouCardEngine;
-using System;
-using UnityEngine;
-using UICard = UI.Card;
-using Card = TouhouCardEngine.Card;
+﻿using System;
 using System.Linq;
-using UnityEngine.UI;
 using System.Threading.Tasks;
-using TouhouCardEngine.Interfaces;
 using Game.BattleTable;
+using TouhouCardEngine;
+using TouhouHeartstone;
+using UI;
+using UnityEngine;
+using UnityEngine.UI;
+using Card = TouhouCardEngine.Card;
+using UICard = UI.Card;
 
 namespace Game
 {
@@ -17,22 +16,35 @@ namespace Game
     {
         public static void setUnknownCard(this UICard ui, bool isFaceUp = true)
         {
-            setImage(ui, null);
-            setName(ui, StringTable.BUILD_UNKNOW_CARD_NAME);
-            setSubname(ui, string.Empty);
-            setDesc(ui, string.Empty);
-            ui.isFaceup = isFaceUp;
-            setCost(ui, "0");
             ui.type = CATEGORY.SERVANT;
-            setAttack(ui, "0");
-            setLife(ui, "0");
-            setCostColor(ui, PropertyNumberColor.White);
-            setAttackColor(ui, PropertyNumberColor.White);
-            setLifeColor(ui, PropertyNumberColor.White);
+            ui.isFaceup = isFaceUp;
+            ui.setImage(null);
+            ui.setName(StringTable.BUILD_UNKNOW_CARD_NAME);
+            ui.setSubname(string.Empty);
+            ui.setDesc(string.Empty);
+            ui.setCost("0");
+            ui.setAttack("0");
+            ui.setLife("0");
+            ui.setCostColor(PropertyNumberColor.White);
+            ui.setAttackColor(PropertyNumberColor.White);
+            ui.setLifeColor(PropertyNumberColor.White);
             ui.setTag(string.Empty);
         }
         public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
         {
+            if (card.type == DEFINE.MASTER)
+                ui.type = CATEGORY.MASTER;
+            else if (card.type == DEFINE.SERVANT)
+                ui.type = CATEGORY.SERVANT;
+            else if (card.type == DEFINE.SPELL)
+                ui.type = CATEGORY.SPELL;
+            else if (card.type == DEFINE.SKILL)
+                ui.type = CATEGORY.SKILL;
+            else if (card.type == DEFINE.ITEM)
+                ui.type = CATEGORY.ITEM;
+            else
+                throw new NotImplementedException();
+
             string name = StringTable.BUILD_UNKNOW_CARD_NAME;
             string subName = string.Empty;
             string desc = string.Empty;
@@ -43,34 +55,13 @@ namespace Game
                 desc = skin.desc;
             }
             ui.isFaceup = isFaceUp;
-            setName(ui, name);
-            setSubname(ui, subName);
-            setDesc(ui, desc);
-
-            setCost(ui, card.getCost().ToString());
-            if (card.type == DEFINE.MASTER)
-            {
-                ui.type = CATEGORY.MASTER;
-            }
-            else if (card.type == DEFINE.SERVANT)
-            {
-                ui.type = CATEGORY.SERVANT;
-                ui.servantCardFace.attackPropNumber.text.text = card.getAttack().ToString();
-                ui.servantCardFace.lifePropNumber.text.text = card.getLife().ToString();
-            }
-            else if (card.type == DEFINE.SPELL)
-                ui.type = CATEGORY.SPELL;
-            else if (card.type == DEFINE.SKILL)
-                ui.type = CATEGORY.SKILL;
-            else if (card.type == DEFINE.ITEM)
-            {
-                ui.type = CATEGORY.ITEM;
-                ui.itemCardFace.attackPropNumber.text.text = card.getAttack().ToString();
-                ui.itemCardFace.lifePropNumber.text.text = card.getLife().ToString();
-            }
-            else
-                throw new NotImplementedException();
-            setTag(ui, card.getTags().FirstOrDefault());
+            ui.setName(name);
+            ui.setSubname(subName);
+            ui.setDesc(desc);
+            ui.setCost(card.getCost().ToString());
+            ui.setAttack(card.getAttack().ToString());
+            ui.setLife(card.getLife().ToString());
+            ui.setTag(card.getTags().FirstOrDefault());
         }
         public static async Task setCardDefine(this UICard ui, CardDefine card, CardManager cardManager, bool isFaceUp = true)
         {
@@ -88,21 +79,6 @@ namespace Game
         }
         public static void setCard(this UICard ui, CardEngine game, Card card, CardSkinData skin, bool isFaceUp = true)
         {
-            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
-            string subName = string.Empty;
-            string desc = string.Empty;
-            if (skin != null)
-            {
-                name = skin.name;
-                subName = skin.subname;
-                desc = skin.desc;
-            }
-            ui.isFaceup = isFaceUp;
-            setName(ui, name);
-            setSubname(ui, subName);
-            setDesc(ui, desc);
-
-            setCost(ui, card.getCost(game).ToString());
             if (card.define.type == DEFINE.MASTER)
                 ui.type = CATEGORY.MASTER;
             else if (card.define.type == DEFINE.SERVANT)
@@ -116,10 +92,24 @@ namespace Game
             else
                 throw new NotImplementedException();
 
+            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string subName = string.Empty;
+            string desc = string.Empty;
+            if (skin != null)
+            {
+                name = skin.name;
+                subName = skin.subname;
+                desc = skin.desc;
+            }
+            ui.isFaceup = isFaceUp;
+            ui.setName(name);
+            ui.setSubname(subName);
+            ui.setDesc(desc);
             var attack = card.getAttack(game);
             var curLife = card.getCurrentLife(game);
             var life = card.getLife(game);
             var cost = card.getCost(game);
+            ui.setCost(cost.ToString());
             ui.setAttack(attack.ToString());
             ui.setLife(curLife.ToString());
 
@@ -137,7 +127,7 @@ namespace Game
             ui.setCostColor(costColor);
             ui.setAttackColor(attackColor);
             ui.setLifeColor(lifeColor);
-            setTag(ui, card.getTags(game).FirstOrDefault());
+            ui. setTag(card.getTags(game).FirstOrDefault());
         }
         public static async Task setCard(this UICard ui, CardEngine game, Card card, CardManager cardManager, bool isFaceUp = true)
         {
@@ -156,21 +146,6 @@ namespace Game
 
         public static void setCard(this UICard ui, CardDescriptor card, CardSkinData skin, bool isFaceUp = true)
         {
-            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
-            string subName = string.Empty;
-            string description = string.Empty;
-            if (skin != null)
-            {
-                name = skin.name;
-                subName = skin.subname;
-                description = skin.desc;
-            }
-            ui.isFaceup = isFaceUp;
-            setName(ui, name);
-            setSubname(ui, subName);
-            setDesc(ui, description);
-
-            setCost(ui, card.getCost().ToString());
             if (card.define.type == DEFINE.MASTER)
                 ui.type = CATEGORY.MASTER;
             else if (card.define.type == DEFINE.SERVANT)
@@ -183,11 +158,24 @@ namespace Game
                 ui.type = CATEGORY.ITEM;
             else
                 throw new NotImplementedException();
-
+            string name = StringTable.BUILD_UNKNOW_CARD_NAME;
+            string subName = string.Empty;
+            string description = string.Empty;
+            if (skin != null)
+            {
+                name = skin.name;
+                subName = skin.subname;
+                description = skin.desc;
+            }
+            ui.isFaceup = isFaceUp;
+            ui.setName(name);
+            ui.setSubname(subName);
+            ui.setDesc(description);
             var attack = card.getAttack();
             var curLife = card.getCurrentLife();
             var life = card.getLife();
             var cost = card.getCost();
+            ui.setCost(cost.ToString());
             ui.setAttack(attack.ToString());
             ui.setLife(curLife.ToString());
 
@@ -263,7 +251,7 @@ namespace Game
         public static void setTag(this UICard ui, string tag)
         {
             CardManager card = ui.ui.getManager<CardManager>();
-            
+
             if (card.tryGetTranslatedTag(tag, out string text))
             {
                 ui.servantCardFace.raceNameText.text = text;
@@ -314,61 +302,6 @@ namespace Game
             ui.servantCardFace.costPropNumber.setTextColor(color);
             ui.spellCardFace.costPropNumber.setTextColor(color);
             ui.itemCardFace.costPropNumber.setTextColor(color);
-        }
-        public static string getCost(this UICard ui)
-        {
-            return ui.servantCardFace.costPropNumber.text.text;
-        }
-        public static PropNumber getCostPropNum(this UICard ui, string cardType)
-        {
-            switch (cardType)
-            {
-                case DEFINE.SERVANT:
-                    return ui.servantCardFace.costPropNumber;
-                case DEFINE.SPELL:
-                    return ui.spellCardFace.costPropNumber;
-                case DEFINE.ITEM:
-                    return ui.itemCardFace.costPropNumber;
-                default:
-                    return null;
-            }
-        }
-        public static PropNumber getAttackPropNum(this UICard ui, string cardType)
-        {
-            switch (cardType)
-            {
-                case DEFINE.SERVANT:
-                    return ui.servantCardFace.attackPropNumber;
-                case DEFINE.ITEM:
-                    return ui.itemCardFace.attackPropNumber;
-                default:
-                    return null;
-            }
-        }
-        public static PropNumber getLifePropNum(this UICard ui, string cardType)
-        {
-            switch (cardType)
-            {
-                case DEFINE.SERVANT:
-                    return ui.servantCardFace.lifePropNumber;
-                case DEFINE.ITEM:
-                    return ui.itemCardFace.lifePropNumber;
-                default:
-                    return null;
-            }
-        }
-
-        public static PropNumber getCostPropNum(this UICard ui, Card card)
-        {
-            return ui.getCostPropNum(card.define.type);
-        }
-        public static PropNumber getAttackPropNum(this UICard ui, Card card)
-        {
-            return ui.getAttackPropNum(card.define.type);
-        }
-        public static PropNumber getLifePropNum(this UICard ui, Card card)
-        {
-            return ui.getLifePropNum(card.define.type);
         }
     }
 }
