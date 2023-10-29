@@ -1851,6 +1851,12 @@ namespace Controllers
                 }
             }
         }
+        /// <summary>
+        /// 设置一个节点的一个常量的值，并将这次修改加入到撤销列表记录中。
+        /// </summary>
+        /// <param name="node">节点。</param>
+        /// <param name="name">常量名。</param>
+        /// <param name="value">常量值。</param>
         private void setNodeConst(Node node, string name, object value)
         {
             var beforeValue = node.getConst(name);
@@ -1874,8 +1880,9 @@ namespace Controllers
             }
             else
             {
+                // 这里不用setNodeConst，因为setNodeConst会调用addOperationRecord，将节点图变为未保存状态
                 var value = getNodeConstDefaultValue(constInfo.type);
-                setNodeConst(node, constInfo.name, value);
+                node.setConst(constInfo.name, value);
             }
         }
         private object getNodeConstDefaultValue(ActionNodeValueType valueType)
