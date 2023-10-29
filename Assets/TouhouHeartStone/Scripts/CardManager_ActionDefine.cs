@@ -92,6 +92,8 @@ namespace Game
         }
         public ActionDefine getActionDefine(ActionReference actRef)
         {
+            if (actRef == null)
+                return null;
             return getActionDefine(actRef.cardPoolId, actRef.defineId);
         }
         public ActionDefine getActionDefine(long cardPoolId, int id)

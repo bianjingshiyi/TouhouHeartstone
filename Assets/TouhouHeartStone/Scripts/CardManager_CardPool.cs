@@ -1483,28 +1483,54 @@ namespace Game
             // 修复动作节点的错误。
             async void fixActionNodeIncorrectData(ActionNode actionNode)
             {
-                var defineRef = actionNode.defineRef;
-                bool actionExists = false;
-                CardPool definePool = null;
-                // 获取目标卡池的动作引用。
-                var localPoolRef = getLocalCardPoolReference(defineRef.cardPoolId, false);
-                if (!tryGetCardPool(localPoolRef, out definePool))
+                await fixUnknownOrObsoleteNode(actionNode);
+                foreach (var constPair in actionNode.consts)
                 {
-                    var path = getCardPoolPath(localPoolRef);
-                    if (!string.IsNullOrEmpty(path))
+                    if (constPair.Value is CardReference cardRef)
                     {
-                        var result = await loadCardPool(path, true);
-                        definePool = result.cardPool;
+                        //CardReference过期，使用DefineReference替代
+                        actionNode.setConst(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
                     }
                 }
-                // 检查动作是否存在。
-                if (defineRef.cardPoolId == 0)
+                // 将旧版的“获取增益定义”的ID从int变为DefineReference。
+                if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
                 {
-                    actionExists = builtinActions.ContainsKey(defineRef.defineId);
+                    var constValue = actionNode.getConst(GetBuffDefineAction.constName);
+                    if (constValue is int buffId)
+                    {
+                        actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
+                    }
                 }
-                else if (definePool != null)
+                fixConditionalNode(actionNode);
+            }
+            // 修复未知或过时的节点。
+            async Task fixUnknownOrObsoleteNode(ActionNode actionNode)
+            {
+                var defineRef = actionNode.defineRef;
+                bool actionExists = false;
+                if (defineRef != null)
                 {
-                    actionExists = definePool.actionDefineList.Exists(a => a.id == defineRef.defineId);
+                    CardPool definePool = null;
+                    // 获取目标卡池的动作引用。
+                    var localPoolRef = getLocalCardPoolReference(defineRef.cardPoolId, false);
+                    if (!tryGetCardPool(localPoolRef, out definePool))
+                    {
+                        var path = getCardPoolPath(localPoolRef);
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            var result = await loadCardPool(path, true);
+                            definePool = result.cardPool;
+                        }
+                    }
+                    // 检查动作是否存在。
+                    if (defineRef.cardPoolId == 0)
+                    {
+                        actionExists = builtinActions.ContainsKey(defineRef.defineId);
+                    }
+                    else if (definePool != null)
+                    {
+                        actionExists = definePool.actionDefineList.Exists(a => a.id == defineRef.defineId);
+                    }
                 }
                 if (!actionExists)
                 {
@@ -1541,24 +1567,6 @@ namespace Game
                         Debug.LogError($"动作节点{actionNode.id}的名称未知：{actionNode.defineName}");
                     }
                 }
-                foreach (var constPair in actionNode.consts)
-                {
-                    if (constPair.Value is CardReference cardRef)
-                    {
-                        //CardReference过期，使用DefineReference替代
-                        actionNode.setConst(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
-                    }
-                }
-                // 将旧版的“获取增益定义”的ID从int变为DefineReference。
-                if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
-                {
-                    var constValue = actionNode.getConst(GetBuffDefineAction.constName);
-                    if (constValue is int buffId)
-                    {
-                        actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
-                    }
-                }
-                fixConditionalNode(actionNode);
             }
             // 修复主动效果入口节点的错误。
             void fixActiveEntryIncorrectData(ActiveEntryNode activeEntry)
@@ -1594,6 +1602,8 @@ namespace Game
             // 将旧版的“筛选”、“排序”、“重复动作直到”和“信仰对决”换为新的节点。
             void fixConditionalNode(ActionNode actionNode)
             {
+                if (actionNode.defineRef == null)
+                    return;
                 // 内置动作
                 if (actionNode.defineRef.cardPoolId == 0)
                 {
