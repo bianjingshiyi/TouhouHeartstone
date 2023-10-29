@@ -102,6 +102,7 @@ namespace Game.BattleTable
         }
         public void setAttack(int value)
         {
+            value = Math.Max(0, value);
             _servantCardFace.attackPropNumber.text = value.ToString();
             _itemCardFace.attackPropNumber.text = value.ToString();
         }
