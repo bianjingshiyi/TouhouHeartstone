@@ -65,19 +65,8 @@ namespace Controllers
             else
                 _ui.setRace(0, _races[0]);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
-            if (cardDefine.isSpell())
-                _ui.switchToSpell();
-            else if (cardDefine.isItem())
-                _ui.switchToItem();
-            else if (cardDefine.isMaster())
-            {
-                _ui.switchToMaster();
-                await setSkillRef(cardDefine.getSkillRef());
-            }
-            else
-                _ui.switchToServant();
+            await updateCardType();
             await setCurSkinIndex(0);
-            _textChangedByType();
 
             updateCustomProperties();
             updateKeywords();
@@ -295,12 +284,12 @@ namespace Controllers
         /// 当用户更改类型
         /// </summary>
         /// <param name="typeIndex"></param>
-        private void onChangeType(int typeIndex)
+        private async void onChangeType(int typeIndex)
         {
             MarkCardUnsaved();
             _cardDefine.type = _types[typeIndex];
             _ui.setType(typeIndex, _types[typeIndex]);
-            _textChangedByType();
+            await updateCardType();
         }
         private void onIsTokenToggleValueChanged(bool value)
         {
@@ -338,12 +327,12 @@ namespace Controllers
         /// 当用户更改卡名
         /// </summary>
         /// <param name="name"></param>
-        void onChangeName(string name)
+        async void onChangeName(string name)
         {
             MarkCardUnsaved();
             _curCardSkin.name = name;
             _ui.setName(name);
-            _textChangedByType();
+            await updateCardType();
         }
         /// <summary>
         /// 当用户更改卡副名
@@ -857,21 +846,19 @@ namespace Controllers
             cardList.AddRange(game.card.GetCardDefines(c => c.isMaster(), true));
             return cardList.ToArray();
         }
-        private void _textChangedByType()
+        private async Task updateCardType()
         {
-            if (_cardDefine.type == DEFINE.SPELL || _cardDefine.type == DEFINE.ITEM || _cardDefine.type == DEFINE.SKILL)
-            {
-                _ui.EditNameButton.transform.position = _ui.card.spellCardFace.nameText.transform.position;
-                _ui.NameInputField.transform.position = _ui.card.spellCardFace.nameText.transform.position;
-                _ui.NameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
-            }
+            var cardDefine = _cardDefine;
+            _ui.setSkillRefVisible(cardDefine.isMaster()); 
+            if (cardDefine.isMaster())
+                await setSkillRef(cardDefine.getSkillRef());
 
-            else if (_cardDefine.type == DEFINE.SERVANT || _cardDefine.type == DEFINE.MASTER)
-            {
-                _ui.EditNameButton.transform.position = _ui.card.servantCardFace.nameText.transform.position;
-                _ui.NameInputField.transform.position = _ui.card.servantCardFace.nameText.transform.position;
-                _ui.NameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
-            }
+            var cardFaceType = CardFaceType.Servant;
+            if (cardDefine.isSpell() || cardDefine.isSkill())
+                cardFaceType = CardFaceType.Spell;
+            else if (cardDefine.isItem())
+                cardFaceType = CardFaceType.Item;
+            _ui.switchCardFace(cardFaceType);
         }
 
         private void setCardProp(bool isCustom, string name, object value)
