@@ -235,7 +235,7 @@ namespace TouhouHeartstone
             PILE.ITEM,
             PILE.HEAD
         };
-        public class MoveCardEventArg : EventArg
+        public class MoveCardEventArg : EventArg, ICardEventArg
         {
             public MoveCardEventArg()
             {
@@ -281,6 +281,7 @@ namespace TouhouHeartstone
                     new EventVariableInfo() { name = VAR_SUCCESS, type = typeof(bool) },
                 };
             }
+            ICard ICardEventArg.getCard() => card;
             public Pile from
             {
                 get => getVar<Pile>(VAR_FROM_PILE);

@@ -961,7 +961,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public class DrawEventArg : EventArg, IDescribableEventArg
+        public class DrawEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -970,6 +970,10 @@ namespace TouhouHeartstone
             DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
+            }
+            ICard ICardEventArg.getCard()
+            {
+                return card;
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
