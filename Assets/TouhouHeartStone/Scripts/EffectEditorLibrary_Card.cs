@@ -462,7 +462,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype)
             {
-                dmg = source.owner.getSpellDamage(game, dmg, damageSource);
+                dmg = source.owner.getSpellDamage(game, dmg, source);
             }
             return targets.damage(game, source, dmg);
         }
@@ -486,7 +486,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype)
             {
-                dmg = source.owner.getSpellDamage(game, dmg, damageSource);
+                dmg = source.owner.getSpellDamage(game, dmg, source);
             }
             return targets.damageByRandom(game, source, dmg);
         }
@@ -512,7 +512,7 @@ namespace Game
             var dmg = damage + damage2;
             if (damagetype)
             {
-                dmg = source.owner.getSpellDamage(game, dmg, damageSource);
+                dmg = source.owner.getSpellDamage(game, dmg, source);
             }
             return targets.damageByRandomCount(game, card, dmg, count + count2);
         }
