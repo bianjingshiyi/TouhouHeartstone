@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using UnityEngine;
 
 namespace TouhouHeartstone
 {
@@ -54,12 +55,11 @@ namespace TouhouHeartstone
         {
             return game.triggers.doEvent(new HearthStoneRule.SetGemEventArg() { player = player, value = value }, arg =>
             {
-                arg.player.setProp(PLAYER.GEM, arg.value);
-                if (arg.player.getGem() < 0)
-                    arg.player.setProp(PLAYER.GEM, 0);
-                if (arg.player.getGem() > 10)
-                    arg.player.setProp(PLAYER.GEM, 10);
-                game.logger.logTrace($"{arg.player}的法力水晶变为{arg.player.getGem()}");
+                arg.value = Mathf.Clamp(arg.value, 0, 10);
+                var argPlayer = arg.player;
+                var argValue = arg.value;
+                argPlayer.setProp(PLAYER.GEM, argValue);
+                game.logger.logTrace($"{argPlayer}的灵力值变为{argValue}");
                 return Task.CompletedTask;
             });
         }
