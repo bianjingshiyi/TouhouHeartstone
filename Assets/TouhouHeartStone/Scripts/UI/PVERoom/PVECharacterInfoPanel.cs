@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace UI
 {
-    public class PVEInfoPanel : MonoBehaviour
+    public class PVECharacterInfoPanel : MonoBehaviour
     {
         public void update(string name, Sprite sprite, string desc)
         {
@@ -17,13 +17,7 @@ namespace UI
         }
         public void updateDeck((string name, Sprite image, int count)[] viewDatas)
         {
-            UIHelper.updateList(_deckCardListRoot, _deckCardItemTemplate, _deckCardList, viewDatas.Length,
-                (i, item) =>
-                {
-                    var listItem = item.GetComponent<CardViewDeckCardListItem>();
-                    var viewData = viewDatas[i];
-                    listItem.updateView(viewData.name, viewData.image, viewData.count);
-                });
+            _deckView.update(viewDatas);
         }
         private void Awake()
         {
@@ -33,8 +27,6 @@ namespace UI
                 _giveUpButton.onClick.AddListener(onGiveUpButtonClickedCallback);
             if (_quitButton)
                 _quitButton.onClick.AddListener(onQuitButtonClickedCallback);
-            if (_backgroundButton)
-                _backgroundButton.onClick.AddListener(onBackgroundClickedCallback);
         }
         private void onConfirmButtonClickedCallback()
         {
@@ -48,14 +40,9 @@ namespace UI
         {
             onQuitClicked?.Invoke();
         }
-        private void onBackgroundClickedCallback()
-        {
-            onBackgroundClicked?.Invoke();
-        }
         public event Action onConfirmClicked;
         public event Action onGiveUpClicked;
         public event Action onQuitClicked;
-        public event Action onBackgroundClicked;
         [SerializeField]
         TextMeshProUGUI _masterName;
         [SerializeField]
@@ -69,14 +56,6 @@ namespace UI
         [SerializeField]
         Button _quitButton;
         [SerializeField]
-        Button _backgroundButton;
-
-        [Header("卡组显示")]
-        [SerializeField]
-        RectTransform _deckCardListRoot;
-        [SerializeField]
-        RectTransform _deckCardItemTemplate;
-        [SerializeField]
-        List<RectTransform> _deckCardList;
+        DeckCardList _deckView;
     }
 }

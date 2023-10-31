@@ -1,4 +1,6 @@
 ﻿using System;
+using Game;
+using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,9 +10,9 @@ namespace UI
     {
         #region 公有方法
         #region 玩家选择界面
-        public void setSelectPlayerPanelVisible(bool visible)
+        public void setPreStartPanelVisible(bool visible)
         {
-            _selectPlayerPanelObj.SetActive(visible);
+            _preStartPanelObj.SetActive(visible);
         }
         public void updatePlayerSelectPanel(CharacterViewData[] viewDatas)
         {
@@ -31,10 +33,15 @@ namespace UI
             _playerInfoPanel.updateDeck(viewDatas);
         }
         #endregion
-        #region 敌人信息页面
-        public void setEnemyInfoPanelVisible(bool visible)
+        #region 游戏内容页面
+        public void setInRunPanelVisible(bool visible)
         {
-            _enemyInfoPanelObj.SetActive(visible);
+            _inRunPanelObj.SetActive(visible);
+        }
+        #region 敌人信息面板
+        public void switchToEnemyInfoPanel()
+        {
+            switchInRunPanelPage(_enemyInfoPanelObj);
         }
         public void updateEnemyInfoPanel(string name, Sprite sprite, string desc)
         {
@@ -45,6 +52,21 @@ namespace UI
             _enemyInfoPanel.updateDeck(viewDatas);
         }
         #endregion
+        #region 选择卡牌面板
+        public void switchToSelectCardPanel()
+        {
+            switchInRunPanelPage(_selectCardPanelObj);
+        }
+        public void updateSelectCardPanel(CardDefine[] defines, CardManager cardManager)
+        {
+            _cardSelectPanel.updateCards(defines, cardManager);
+        }
+        #endregion
+        public void updateYourDeck((string name, Sprite image, int count)[] viewDatas)
+        {
+            _yourDeckView.update(viewDatas);
+        }
+        #endregion
         #endregion
         #region 私有方法
         #region 生命周期
@@ -52,14 +74,19 @@ namespace UI
         {
             _playerSelectPanel.onItemClicked += onPlayerSelectedCallback;
             _playerInfoPanel.onConfirmClicked += onGameStartClickedCallback;
-            _playerInfoPanel.onBackgroundClicked += onCancelSelectPlayerCallback;
+            _cancelPlayerSelectButton.onClick.AddListener(onCancelSelectPlayerCallback);
             _enemyInfoPanel.onConfirmClicked += onFightClickedCallback;
             _enemyInfoPanel.onGiveUpClicked += onGiveUpClickedCallback;
-            _enemyInfoPanel.onQuitClicked += onEnemyQuitButtonClickedCallback;
+            _enemyInfoPanel.onQuitClicked += onInRunQuitButtonClickedCallback;
+            _cardSelectPanel.onChoiceClicked += onSelectCardChoiceClickedCallback;
+            _cardSelectPanel.onConfirmClicked += onConfirmSelectCardClickedCallback;
+            _cardSelectPanel.onSkipClicked += onSkipSelectCardClickedCallback;
+            _cardSelectPanel.onQuitClicked += onInRunQuitButtonClickedCallback;
             _quitButton.onClick.AddListener(onClickQuitButtonCallback);
         }
         #endregion
         #region 事件回调
+        #region 进入游戏前界面
         private void onPlayerSelectedCallback(int index)
         {
             onPlayerSelectItemClicked?.Invoke(index);
@@ -72,6 +99,12 @@ namespace UI
         {
             onGameStartClicked?.Invoke();
         }
+        private void onClickQuitButtonCallback()
+        {
+            onQuitButtonClicked?.Invoke();
+        }
+        #endregion
+        #region 游戏内界面
         private void onFightClickedCallback()
         {
             onFightClicked?.Invoke();
@@ -80,22 +113,47 @@ namespace UI
         {
             onGiveUpClicked?.Invoke();
         }
-        private void onEnemyQuitButtonClickedCallback()
+        private void onInRunQuitButtonClickedCallback()
         {
-            onEnemyQuitButtonClicked?.Invoke();
+            onInRunQuitButtonClicked?.Invoke();
         }
-        private void onClickQuitButtonCallback()
+        private void onSelectCardChoiceClickedCallback(int index)
         {
-            onQuitButtonClicked?.Invoke();
+            onSelectCardChoiceClicked?.Invoke(index);
+        }
+        private void onConfirmSelectCardClickedCallback()
+        {
+            onConfirmSelectCardClicked?.Invoke();
+        }
+        private void onSkipSelectCardClickedCallback()
+        {
+            onSkipSelectCardClicked?.Invoke();
         }
         #endregion
-
+        #endregion
+        private void switchInRunPanelPage(GameObject switchTo)
+        {
+            setInRunPage(_enemyInfoPanelObj, switchTo);
+            setInRunPage(_selectCardPanelObj, switchTo);
+        }
+        private void setInRunPage(GameObject page, GameObject switchTo)
+        {
+            page.SetActive(page == switchTo);
+        }
         #endregion
         #region 事件
         /// <summary>
         /// 选择人物后触发
         /// </summary>
         public event Action<int> onPlayerSelectItemClicked;
+        /// <summary>
+        /// 取消选择人物后触发
+        /// </summary>
+        public event Action onCancelSelectPlayer;
+        /// <summary>
+        /// 点击退出房间后触发
+        /// </summary>
+        public event Action onQuitButtonClicked;
         /// <summary>
         /// 选择人物且游戏开始后触发
         /// </summary>
@@ -109,34 +167,50 @@ namespace UI
         /// </summary>
         public event Action onGiveUpClicked;
         /// <summary>
-        /// 从敌人界面退出时触发
+        /// 从游戏内退出时触发
         /// </summary>
-        public event Action onEnemyQuitButtonClicked;
+        public event Action onInRunQuitButtonClicked;
         /// <summary>
-        /// 取消选择人物后触发
+        /// 选择一个选卡选项后触发
         /// </summary>
-        public event Action onCancelSelectPlayer;
+        public event Action<int> onSelectCardChoiceClicked;
         /// <summary>
-        /// 点击退出房间后触发
+        /// 确认选择选卡选项后触发
         /// </summary>
-        public event Action onQuitButtonClicked;
+        public event Action onConfirmSelectCardClicked;
+        /// <summary>
+        /// 跳过选择选卡选项后触发
+        /// </summary>
+        public event Action onSkipSelectCardClicked;
         #endregion
         #region 属性字段
         [Header("选择玩家页面")]
         [SerializeField]
-        Button _quitButton;
+        GameObject _preStartPanelObj;
         [SerializeField]
-        GameObject _selectPlayerPanelObj;
+        Button _quitButton;
         [SerializeField]
         CharacterSelectPanel _playerSelectPanel;
         [SerializeField]
         GameObject _playerInfoPanelObj;
         [SerializeField]
-        PVEInfoPanel _playerInfoPanel;
+        PVECharacterInfoPanel _playerInfoPanel;
+        [SerializeField]
+        Button _cancelPlayerSelectButton;
+
+        [Header("游戏内页面")]
+        [SerializeField]
+        GameObject _inRunPanelObj;
         [SerializeField]
         GameObject _enemyInfoPanelObj;
         [SerializeField]
-        PVEInfoPanel _enemyInfoPanel;
+        GameObject _selectCardPanelObj;
+        [SerializeField]
+        PVECharacterInfoPanel _enemyInfoPanel;
+        [SerializeField]
+        PVESelectCardPanel _cardSelectPanel;
+        [SerializeField]
+        DeckCardList _yourDeckView;
         #endregion
     }
 }

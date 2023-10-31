@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using TouhouCardEngine;
+using TouhouHeartstone;
 
 namespace Game.PVE
 {
@@ -19,9 +22,9 @@ namespace Game.PVE
         /// </summary>
         public int stageSeed;
         public int currentStage;
+        public PVEStageState stageState;
         public int currentHealth;
-        public DefineReference character;
-        public DefineReference[] deck;
+        public Deck deck;
         public void init()
         {
             var rng = new Random(initSeed);
@@ -32,6 +35,10 @@ namespace Game.PVE
         {
             currentStage++;
             generateStageSeed();
+        }
+        public DefineReference getCharacter()
+        {
+            return deck.masterCardRef;
         }
         private void generateStageSeed()
         {
@@ -50,9 +57,9 @@ namespace Game.PVE
             runSeed = data.runSeed;
             stageSeed = data.stageSeed;
             currentStage = data.currentStage;
+            stageState = (int)data.stageState;
             currentHealth = data.currentHealth;
-            character = data.character;
-            deck = data.deck;
+            deck = data.deck.toDefRefArray(true);
         }
         public SaveData ToSaveData()
         {
@@ -63,9 +70,9 @@ namespace Game.PVE
                 runSeed = runSeed,
                 stageSeed = stageSeed,
                 currentStage = currentStage,
+                stageState = (PVEStageState)stageState,
                 currentHealth = currentHealth,
-                character = character,
-                deck = deck
+                deck = new Deck(deck)
             };
         }
         public int version;
@@ -73,8 +80,8 @@ namespace Game.PVE
         public int runSeed;
         public int stageSeed;
         public int currentStage;
+        public int stageState;
         public int currentHealth;
-        public DefineReference character;
         public DefineReference[] deck;
     }
 
@@ -85,5 +92,25 @@ namespace Game.PVE
             var rng = new Random(seed);
             return rng.Next();
         }
+        public static IEnumerable<T> randomTake<T>(this IEnumerable<T> enumrable, int seed, int count)
+        {
+            List<T> list = enumrable.ToList();
+            if (list.Count <= count)
+                return list;
+            T[] results = new T[count];
+            var rng = new Random(seed);
+            for (int i = 0; i < results.Length; i++)
+            {
+                int index = rng.Next(0, list.Count - 1);
+                results[i] = list[index];
+                list.RemoveAt(index);
+            }
+            return results;
+        }
+    }
+    public enum PVEStageState
+    {
+        Main,
+        SelectCard
     }
 }

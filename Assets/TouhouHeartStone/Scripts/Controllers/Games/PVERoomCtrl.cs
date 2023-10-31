@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Game;
+using Game.PVE;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -25,12 +26,11 @@ namespace Controllers
             }
             if (_saveData == null)
             {
-                await displaySelectPlayerPanel();
+                await displayPreRunPanel();
             }
             else
             {
-                generateRunData();
-                await enterGame();
+                await displayInRunPanel();
             }
             _ui.gameObject.SetActive(true);
         }
@@ -46,7 +46,10 @@ namespace Controllers
             _ui.onGameStartClicked += onGameStartClickedCallback;
             _ui.onFightClicked += onFightClickedCallback;
             _ui.onGiveUpClicked += onGiveUpClickedCallback;
-            _ui.onEnemyQuitButtonClicked += onEnemyQuitClickedCallback;
+            _ui.onInRunQuitButtonClicked += onInRunQuitClickedCallback;
+            _ui.onSelectCardChoiceClicked += onSelectCardChoiceClickedCallback;
+            _ui.onConfirmSelectCardClicked += onConfirmSelectCardClickedCallback;
+            _ui.onSkipSelectCardClicked += onSkipSelectCardClickedCallback;
             gameManager.onGameStart += onGameStartCallback;
             gameManager.onGameFinished += onGameFinishedCallback;
             gameManager.onGameQuit += onGameQuitCallback;
@@ -72,13 +75,12 @@ namespace Controllers
         }
         private void onCancelSelectPlayerCallback()
         {
-            _ui.setSelectPlayerPanelVisible(true);
             _ui.setPlayerInfoPanelVisible(false);
         }
         private async void onGameStartClickedCallback()
         {
             await createSaveFile();
-            await enterGame();
+            await displayInRunPanel();
         }
         private async void onFightClickedCallback()
         {
@@ -88,9 +90,22 @@ namespace Controllers
         {
             showGiveUpDialog();
         }
-        private void onEnemyQuitClickedCallback()
+        private void onInRunQuitClickedCallback()
         {
             quit();
+        }
+        private async void onSelectCardChoiceClickedCallback(int index)
+        {
+            var selectedDefRef = _nextSelectingCards[index];
+            _saveData.deck.addCard(selectedDefRef);
+            await nextStage();
+        }
+        private void onConfirmSelectCardClickedCallback()
+        {
+        }
+        private async void onSkipSelectCardClickedCallback()
+        {
+            await nextStage();
         }
         private async void onGameStartCallback()
         {
@@ -120,7 +135,7 @@ namespace Controllers
             if (winners.Contains(localPlayer))
             {
                 // 获胜
-                _saveData.advanceStage();
+                _saveData.stageState = PVEStageState.SelectCard;
                 _saveData.currentHealth = localPlayer.getMaster().getCurrentLife(game);
                 await pve.saveData(_saveData);
                 gameResult = PVEGameResult.Win;
@@ -160,6 +175,8 @@ namespace Controllers
         private void loadCharacterList()
         {
             var deck = new Deck();
+            deck.masterCardRef = new DefineReference(0, Patchouli.ID);
+
             deck.addCard(new DefineReference(0, ElementSprite.ID));
             deck.addCard(new DefineReference(0, MultiCast.ID));
             deck.addCard(new DefineReference(0, TheGreatLibrary.ID));
@@ -173,8 +190,7 @@ namespace Controllers
             _characterList.Clear();
             _characterList.Add(new PVECharacter()
             {
-                characterRef = new DefineReference(0, Patchouli.ID),
-                starterDeck = deck,
+                deck = deck,
                 description = PVE_PATCHOULI_DESC
             });
         }
@@ -182,20 +198,38 @@ namespace Controllers
         private async Task createSaveFile()
         {
             _saveData = await game.pve.generateNewSaveData(_selectedCharacter);
-            generateRunData();
+            _selectedCharacter = null;
             await game.pve.saveData(_saveData);
         }
-        private async Task enterGame()
+        private async Task displayInRunPanel()
         {
-            var character = getNextEnemyCharacter();
-            var (name, image) = await getCharacterViewData(character);
-            var desc = game.lang._(character.description);
-            var deckCardsViewData = await getCharacterDeckCardViewData(character);
-            _ui.updateEnemyInfoPanel(name, image, desc);
-            _ui.updateEnemyInfoPanelDeck(deckCardsViewData);
-            _ui.setSelectPlayerPanelVisible(false);
-            _ui.setPlayerInfoPanelVisible(false);
-            _ui.setEnemyInfoPanelVisible(true);
+            _ui.setPreStartPanelVisible(false);
+            _ui.setInRunPanelVisible(true);
+
+            var deck = _saveData.deck;
+            var yourDeckCardsViewData = await getDeckCardViewData(deck);
+            _ui.updateYourDeck(yourDeckCardsViewData);
+
+            if (_saveData.stageState == PVEStageState.SelectCard)
+            {
+                generateSelectingCards();
+                var defRefs = getNextSelectingCards();
+                var cardManager = game.card;
+                var cardDefines = defRefs.Select(d => cardManager.getLocalCardDefine(d)).ToArray();
+                _ui.updateSelectCardPanel(cardDefines, cardManager);
+                _ui.switchToSelectCardPanel();
+            }
+            else
+            {
+                generateNextBoss();
+                var character = getNextEnemyCharacter();
+                var (name, image) = await getCharacterViewData(character);
+                var desc = game.lang._(character.description);
+                var deckCardsViewData = await getCharacterDeckCardViewData(character);
+                _ui.updateEnemyInfoPanel(name, image, desc);
+                _ui.updateEnemyInfoPanelDeck(deckCardsViewData);
+                _ui.switchToEnemyInfoPanel();
+            }
         }
         private void showGiveUpDialog()
         {
@@ -219,11 +253,11 @@ namespace Controllers
                 Deck deck;
                 if (player == localPlayer)
                 {
-                    deck = new Deck(_saveData.character, _saveData.deck);
+                    deck = _saveData.deck;
                 }
                 else
                 {
-                    deck = new Deck(_nextBoss.characterRef, _nextBoss.starterDeck.toDefRefArray(false));
+                    deck = _nextBoss.deck;
                 }
                 player.setDeck(deck);
             }
@@ -248,13 +282,28 @@ namespace Controllers
             game.pve.deleteData();
             quit();
         }
+        private async Task nextStage()
+        {
+            _saveData.advanceStage();
+            _saveData.stageState = PVEStageState.Main;
+            await game.pve.saveData(_saveData);
+            await displayInRunPanel();
+        }
         private PVECharacter getNextEnemyCharacter()
         {
             return _nextBoss;
         }
-        private void generateRunData()
+        private DefineReference[] getNextSelectingCards()
         {
-            _nextBoss = game.pve.generateNextBoss(_saveData);
+            return _nextSelectingCards;
+        }
+        private void generateNextBoss()
+        {
+            _nextBoss = game.pve.generateNextBoss(_saveData.stageSeed);
+        }
+        private void generateSelectingCards()
+        {
+            _nextSelectingCards = game.pve.generateNextSelectingCards(_saveData.stageSeed);
         }
         private void reset()
         {
@@ -263,11 +312,11 @@ namespace Controllers
         }
         #endregion
         #region UI
-        private async Task displaySelectPlayerPanel()
+        private async Task displayPreRunPanel()
         {
-            _ui.setEnemyInfoPanelVisible(false);
+            _ui.setPreStartPanelVisible(true);
+            _ui.setInRunPanelVisible(false);
             _ui.setPlayerInfoPanelVisible(false);
-            _ui.setSelectPlayerPanelVisible(true);
             await updatePlayerList();
         }
         private async Task displayPlayerInfoPanel(PVECharacter character)
@@ -278,7 +327,6 @@ namespace Controllers
             _ui.updatePlayerInfoPanel(name, image, desc);
             _ui.updatePlayerInfoPanelDeck(deckCardsViewData);
             _ui.setPlayerInfoPanelVisible(true);
-            _ui.setEnemyInfoPanelVisible(false);
         }
         /// <summary>
         /// 更新可选择的当前的卡组列表
@@ -295,10 +343,14 @@ namespace Controllers
             }
             _ui.updatePlayerSelectPanel(viewData);
         }
-        private async Task<(string name, Sprite image, int count)[]> getCharacterDeckCardViewData(PVECharacter character)
+        private Task<(string name, Sprite image, int count)[]> getCharacterDeckCardViewData(PVECharacter character)
+        {
+            var deck = character?.deck;
+            return getDeckCardViewData(deck);
+        }
+        private async Task<(string name, Sprite image, int count)[]> getDeckCardViewData(Deck deck)
         {
             (string name, Sprite image, int count)[] deckCardsViewData;
-            var deck = character?.starterDeck;
             if (deck != null)
             {
                 var cards = deck.cardList.OrderBy(e => game.card.getLocalCardDefine(e.cardRef) is CardDefine cardDefine ? cardDefine.getCost() : 0).ToArray();
@@ -333,7 +385,7 @@ namespace Controllers
         }
         private async Task<(string name, Sprite image)> getCharacterViewData(PVECharacter character)
         {
-            var charRef = character.characterRef;
+            var charRef = character.getCharacter();
             if (charRef != null)
             {
                 var poolRef = game.card.getLocalCardPoolReference(charRef.cardPoolId);
@@ -371,15 +423,19 @@ namespace Controllers
         List<PVECharacter> _characterList = new List<PVECharacter>();
         private SaveData _saveData;
         private PVECharacter _nextBoss;
+        private DefineReference[] _nextSelectingCards;
         private PVEGameResult gameResult;
         private GameManager gameManager => game.game;
         #endregion
     }
     public class PVECharacter
     {
-        public DefineReference characterRef;
-        public Deck starterDeck;
+        public Deck deck;
         public string description;
+        public DefineReference getCharacter()
+        {
+            return deck.masterCardRef;
+        }
     }
     public enum PVEGameResult
     {

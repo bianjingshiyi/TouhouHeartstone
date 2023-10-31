@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using BJSYGameCore;
@@ -20,16 +22,15 @@ namespace Game.PVE
             RandomNumberGenerator.Create().GetBytes(rand);
             var seed = BitConverter.ToInt32(rand, 0);
 
-            var masterRef = character.characterRef;
+            var masterRef = character.getCharacter();
             var poolRef = main.card.getLocalCardPoolReference(masterRef.cardPoolId);
             await main.card.getOrLoadCardPool(poolRef);
             var masterDefine = main.card.getCardDefine(poolRef, masterRef.defineId);
 
-            var deck = character.starterDeck.toDefRefArray(false);
+            var deck = character.deck;
             var saveData = new SaveData()
             {
                 initSeed = seed,
-                character = masterRef,
                 deck = deck,
                 currentHealth = masterDefine.getLife(),
                 currentStage = 0,
@@ -38,9 +39,11 @@ namespace Game.PVE
             saveData.init();
             return saveData;
         }
-        public PVECharacter generateNextBoss(SaveData data)
+        public PVECharacter generateNextBoss(int seed)
         {
             var deck = new Deck();
+            deck.masterCardRef = new DefineReference(0, Sanae.ID);
+
             deck.addCard(new DefineReference(0, LittleShrine.ID));
             deck.addCard(new DefineReference(0, BumperCrop.ID));
             deck.addCard(new DefineReference(0, GuestStarsMiracle.ID));
@@ -53,10 +56,26 @@ namespace Game.PVE
             deck.addCard(new DefineReference(0, YasakaKanako.ID));
             return new PVECharacter()
             {
-                characterRef = new DefineReference(0, Sanae.ID),
                 description = "占位符",
-                starterDeck = deck
+                deck = deck
             };
+        }
+        public DefineReference[] generateNextSelectingCards(int seed)
+        {
+            List<DefineReference> list = new List<DefineReference>()
+            {
+                new DefineReference(0, LittleShrine.ID),
+                new DefineReference(0, BumperCrop.ID),
+                new DefineReference(0, GuestStarsMiracle.ID),
+                new DefineReference(0, OpenSeaMiracle.ID),
+                new DefineReference(0, FlyingSnake.ID),
+                new DefineReference(0, GodSummon.ID),
+                new DefineReference(0, ManipulatedGaintFrog.ID),
+                new DefineReference(0, OrochiOfAncientTimes.ID),
+                new DefineReference(0, MoriyaSuwako.ID),
+                new DefineReference(0, YasakaKanako.ID)
+            };
+            return list.randomTake(seed, 3).ToArray();
         }
         public async Task saveData(SaveData data)
         {
