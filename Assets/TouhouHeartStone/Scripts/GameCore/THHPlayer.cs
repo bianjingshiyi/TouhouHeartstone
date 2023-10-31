@@ -556,7 +556,7 @@ namespace TouhouHeartstone
         public static Card getMaster(this Player player) => player.getPile(PILE.MASTER)[0];
         public static int getSpellDamage(this Player player, CardEngine game, int baseDamage, Card spell)
         {
-            return player.getSpellDamage(game, baseDamage) + spell?.getSpellDamage(game) ?? 0;
+            return player.getSpellDamage(game, baseDamage) + (spell?.getSpellDamage(game) ?? 0);
         }
         public static int getSpellDamage(this Player player, CardEngine game, int baseDamage)
         {
