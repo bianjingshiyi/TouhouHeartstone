@@ -81,7 +81,6 @@ namespace UI
         {
             _typeDropdown.SetValueWithoutNotify(typeIndex);
             _card.setTypeByName(typeName);
-            _skillIdGameObject.SetActive(typeName == DEFINE.MASTER);
         }
         public void setIsToken(bool value)
         {
@@ -196,36 +195,33 @@ namespace UI
         {
             _effectList.updateList(effectNames, activeIndex);
         }
-        public void switchToServant()
+        public void setSkillRefVisible(bool visible)
         {
-            _editSubnameButton.gameObject.SetActive(true);
-            _editTagButton.gameObject.SetActive(true);
-            _editAttackButton.gameObject.SetActive(true);
-            _editLifeButton.gameObject.SetActive(true);
-            _skillIdGameObject.SetActive(false);
-            _nameInputField.transform.position = _card.servantCardFace.nameText.transform.position;
+            _skillIdGameObject.SetActive(visible);
         }
-        public void switchToSpell()
+        public void switchCardFace(CardFaceType type)
         {
-            _editSubnameButton.gameObject.SetActive(false);
-            _editTagButton.gameObject.SetActive(false);
-            _editAttackButton.gameObject.SetActive(false);
-            _editLifeButton.gameObject.SetActive(false);
-            _skillIdGameObject.SetActive(false);
-            _nameInputField.transform.position = _card.spellCardFace.nameText.transform.position;
-        }
-        public void switchToItem()
-        {
-            _editSubnameButton.gameObject.SetActive(false);
-            _editTagButton.gameObject.SetActive(false);
-            _editAttackButton.gameObject.SetActive(true);
-            _editLifeButton.gameObject.SetActive(true);
-            _skillIdGameObject.SetActive(false);
-            _nameInputField.transform.position = _card.itemCardFace.nameText.transform.position;
-        }
-        public void switchToMaster()
-        {
-            _skillIdGameObject.SetActive(true);
+            _editSubnameButton.gameObject.SetActive(type != CardFaceType.Spell && type != CardFaceType.Item);
+            _editTagButton.gameObject.SetActive(type == CardFaceType.Servant);
+            _editAttackButton.gameObject.SetActive(type != CardFaceType.Spell);
+            _editLifeButton.gameObject.SetActive(type != CardFaceType.Spell);
+
+            Vector3 namePosition;
+            switch (type)
+            {
+                case CardFaceType.Spell:
+                    namePosition = _card.spellCardFace.nameText.transform.position;
+                    break;
+                case CardFaceType.Item:
+                    namePosition = _card.itemCardFace.nameText.transform.position;
+                    break;
+                default:
+                    namePosition = _card.servantCardFace.nameText.transform.position;
+                    break;
+            }
+            _editNameButton.transform.position = namePosition;
+            _nameInputField.transform.position = namePosition;
+            _nameInputField.textComponent.alignment = TextAnchor.MiddleCenter;
         }
         public void reset()
         {
@@ -1074,5 +1070,11 @@ namespace UI
             get { return _nameInputField; }
             set { _nameInputField = value; }
         }
+    }
+    public enum CardFaceType
+    {
+        Servant,
+        Spell,
+        Item
     }
 }
