@@ -1336,7 +1336,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public class EnterFieldEventArg : EventArg, IDescribableEventArg
+        public class EnterFieldEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -1347,6 +1347,7 @@ namespace TouhouHeartstone
             {
                 return null;
             }
+            ICard ICardEventArg.getCard() => card;
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -1562,7 +1563,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public class RevealEventArg : EventArg, IDescribableEventArg
+        public class RevealEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -1573,6 +1574,7 @@ namespace TouhouHeartstone
             {
                 return null;
             }
+            ICard ICardEventArg.getCard() => card;
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {

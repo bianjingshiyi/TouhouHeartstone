@@ -178,7 +178,7 @@ namespace TouhouHeartstone
                 return Task.CompletedTask;
             });
         }
-        public class SetArmorEventArg : EventArg, IDescribableEventArg
+        public class SetArmorEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -188,6 +188,7 @@ namespace TouhouHeartstone
             {
                 return null;
             }
+            ICard ICardEventArg.getCard() => card;
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
@@ -1632,7 +1633,7 @@ namespace TouhouHeartstone
             return eventArgs.ToArray();
         }
 
-        public class DiscardEventArg : EventArg, IDescribableEventArg
+        public class DiscardEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
@@ -1643,6 +1644,7 @@ namespace TouhouHeartstone
             {
                 return new DescribableCard[] { card };
             }
+            ICard ICardEventArg.getCard() => card;
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {

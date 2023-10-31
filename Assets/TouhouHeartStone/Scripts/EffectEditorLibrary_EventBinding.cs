@@ -46,7 +46,7 @@ namespace Game
 
             // 行动
             { BuiltinActionDefineID.SimpleDraw, typeof(HearthStoneRule.DrawEventArg) },    // 简单抽牌
-            { BuiltinActionDefineID.MoveToField, typeof(THHPile.MoveCardEventArg) },    // 卡牌置入战场
+            { BuiltinActionDefineID.MoveToField, typeof(HearthStoneRule.EnterFieldEventArg) },    // 卡牌置入战场
             { BuiltinActionDefineID.MoveToHand, typeof(THHPile.MoveCardEventArg) },    // 卡牌移回手牌
             { BuiltinActionDefineID.MoveToDeck, typeof(THHPile.MoveCardEventArg) },    // 卡牌洗入牌库
             { BuiltinActionDefineID.MoveToGrave, typeof(THHPile.MoveCardEventArg) },    // 卡牌置入墓地
