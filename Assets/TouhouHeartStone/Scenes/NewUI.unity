@@ -4814,7 +4814,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3028409ca897ee4bad099e0f77ecf1a, type: 3}
+  m_Script: {fileID: 11500000, guid: bb69a3069ec6ef448bb61d7e056dbc15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &650704464 stripped
@@ -6354,7 +6354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -6454,7 +6454,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -6482,7 +6482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_Material: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
@@ -8640,7 +8640,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1067ca03454152642b4d1b20dc87cf88, type: 3}
+  m_Script: {fileID: 11500000, guid: b3d26618fc4f3764dbed59a51b6ac2e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1714584204
@@ -8982,7 +8982,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -9427,7 +9427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
     type: 2}
   m_EffectFactor: 1
   m_ColorFactor: 1
@@ -14703,7 +14703,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+      objectReference: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
         type: 2}
     - target: {fileID: 6095950798539291792, guid: 3274ef919aad371409aa5b1167dc71b9,
         type: 3}

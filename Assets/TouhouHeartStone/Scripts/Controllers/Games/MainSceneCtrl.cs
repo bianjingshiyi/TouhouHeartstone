@@ -43,6 +43,10 @@ namespace Controllers
             {
                 _chatCtrl = TransformHelper.findComponentInScene<ChatCtrl>(gameObject.scene);
             }
+            if (_lanCtrl == null)
+            {
+                _lanCtrl = TransformHelper.findComponentInScene<LANPanelCtrl>(gameObject.scene);
+            }
             if (_replayCtrl == null)
             {
                 _replayCtrl = TransformHelper.findComponentInScene<ReplaySelectPanelCtrl>(gameObject.scene);
@@ -56,6 +60,7 @@ namespace Controllers
             _buffEditor.gameObject.SetActive(false);
             _actionEditor.gameObject.SetActive(false);
             _chatCtrl.gameObject.SetActive(false);
+            _lanCtrl.gameObject.SetActive(false);
             _replayCtrl.gameObject.SetActive(false);
         }
         public MainMenuCtrl menu => _menu;
@@ -67,6 +72,7 @@ namespace Controllers
         public BuffEditorCtrl buffEditor => _buffEditor;
         public ActionEditorCtrl actionEditor => _actionEditor;
         public ChatCtrl chatCtrl => _chatCtrl;
+        public LANPanelCtrl lan => _lanCtrl;
         public ReplaySelectPanelCtrl replay => _replayCtrl;
         [SerializeField]
         MainMenuCtrl _menu;
@@ -86,6 +92,8 @@ namespace Controllers
         BuffEditorCtrl _buffEditor;
         [SerializeField]
         ChatCtrl _chatCtrl;
+        [SerializeField]
+        LANPanelCtrl _lanCtrl;
         [SerializeField]
         ReplaySelectPanelCtrl _replayCtrl;
     }

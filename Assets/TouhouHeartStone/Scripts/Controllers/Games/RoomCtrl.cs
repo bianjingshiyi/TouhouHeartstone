@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BJSYGameCore.UI;
+using ExcelDataReader.Log;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
@@ -84,19 +85,6 @@ namespace Controllers
 
         #endregion
         #region 公有方法
-        public void SetRoomData(RoomData room)
-        {
-             _ui.UpdateRoomData(room, _currentMode, GetSelfID());
-            // 局域网中，如果本地玩家是房主，玩家状态更新后，读取缓存中的卡池。
-            // 局域网的房主不会下载卡池，也就不会在下载完毕后读取缓存中的卡池，需要手动更新。
-            if (game.network.logic.isLanHost)
-            {
-                if (room.playerDataList.All(p => p.getLoadState() == PlayerLoadState.None))
-                {
-                    UpdateCardPoolsByFromCache(room.getCardPools());
-                }
-            }
-        }
         public void SetMode(RoomMode mode)
         {
             _currentMode = mode;
@@ -107,57 +95,6 @@ namespace Controllers
             _ui.SetIPText(text);
         }
 
-        public void ReceiveCardPoolsSuggested(int playerId, CardPoolSuggestion suggestion)
-        {
-            string poolsString = PoolsToString(suggestion.cardPools);
-            var suggester = _currentRoomData.getPlayer(playerId);
-            string playerName = game.lang._(ROOM_UNKNOWN_PLAYER);
-            if (suggester != null)
-            {
-                playerName = suggester.name;
-            }
-            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED, playerName, poolsString);
-
-            List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
-            List<CardPoolInfoPack> addPools;
-
-            game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
-            {
-                conflictPools = GetConflictCardPools(suggestion.cardPools, out addPools);
-                ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion, CancelSuggestion);
-            },
-            CancelSuggestion);
-
-
-            async void ConfirmSuggestion()
-            {
-                if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
-                {
-                    AddCardPools(addPools);
-                    ApplyCardPools();
-                    await game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, true);
-                }
-                else
-                {
-                    ShowDependencyMissingDialog(missingDeps);
-                }
-            }
-
-            void CancelSuggestion()
-            {
-                game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, false);
-            }
-        }
-        public async void ReceiveCardPoolsSuggestionAnwsered(CardPoolSuggestion suggestion, bool agree)
-        {
-            string desc = game.lang._(agree ? ROOM_CARD_POOLS_SUGGESTION_AGREED : ROOM_CARD_POOLS_SUGGESTION_REFUSED);
-            game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
-
-            if (agree)
-            {
-                await CheckCardPoolsUpdate(suggestion.cardPools);
-            }
-        }
         public Task display(UIDisplayInfo displayInfo)
         {
             if (displayInfo is DisplayInfo info)
@@ -200,7 +137,7 @@ namespace Controllers
                 }
                 cardPoolManager.Reset();
 
-                SetRoomData(_currentRoomData);
+                UpdateRoomData(_currentRoomData);
                 updateUIStateForRoomOwner();
 
                 if (needCheckCardPools)
@@ -235,33 +172,28 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             return Task.CompletedTask;
         }
-        public async void ReceiveRoomPropChanged(string key, object value)
-        {
-            if (key == Option.CardPools.ToString())
-            {
-                if (!_isLocalGame && value is CardPoolInfoPack[] pools)
-                {
-                    _cardPoolPanelDirty = true;
-                    await CheckCardPoolsUpdate(pools);
-                }
-            }
-        }
         public void UpdateRoomData(RoomData roomData)
         {
             _currentRoomData = roomData;
             if (_currentRoomData == null)
-            {
                 return;
+            _ui.UpdateRoomData(roomData, _currentMode, GetSelfID());
+            // 局域网中，如果本地玩家是房主，玩家状态更新后，读取缓存中的卡池。
+            // 局域网的房主不会下载卡池，也就不会在下载完毕后读取缓存中的卡池，需要手动更新。
+            if (game.network.logic.isLanHost)
+            {
+                if (roomData.playerDataList.All(p => p.getLoadState() == PlayerLoadState.None))
+                {
+                    UpdateCardPoolsByFromCache(roomData.getCardPools());
+                }
             }
+            updateUIStateForRoomOwner();
             updateStartAndReadyButton();
             updatePlayerListUI();
         }
         public void ResetEvents()
         {
             onQuitClick = null;
-            onPlayerRemove = null;
-            onRoomPropChanged = null;
-            onLocalPlayerPropChanged = null;
         }
         #endregion
         #region 私有方法
@@ -302,8 +234,12 @@ namespace Controllers
             _ui.onClickCancleReadyButton += onClickCancleReadyButton;
             _ui.onClickQuitButton += onClickQuitButton;
 
-            _ui.onUpdateButtons += onUpdateButtons;
-            _ui.onPlayerRemove += onPlayerRemove;
+            _ui.onPlayerRemove += onPlayerRemoveCallback;
+
+            game.network.onReceiveCardPoolSuggestion += onReceiveCardPoolsSuggestionCallback;
+            game.network.onRoomDataChanged += onReceiveRoomDataChangedCallback;
+            game.network.onRoomPropChanged += onReceiveRoomPropChangedCallback;
+            game.network.onReceiveCardPoolSuggestionAnwser += onReceiveCardPoolsSuggestionAnwserCallback;
         }
 
         private async void Update()
@@ -702,22 +638,20 @@ namespace Controllers
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(true);
-            onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, true);
+            setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, true);
             updateStartAndReadyButton();
-            //TODO:多人再说
         }
         private void onClickCancleReadyButton()
         {
             var localPlayer = getLocalPlayerData();
             localPlayer.setReady(false);
-            onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
+            setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
             updateStartAndReadyButton();
-            //TODO:多人再说
         }
         private void onClickQuitButton()
         {
             _currentRoomData = null;
-            game.network.quitRoom();
+            game.network.logic.QuitRoom();
 
             _ui.gameObject.SetActive(false);
             scene.menu.display();
@@ -730,10 +664,13 @@ namespace Controllers
 
             onQuitClick?.Invoke();
         }
-        private void onUpdateButtons()
+        private void onPlayerRemoveCallback(int id)
         {
-            updateUIStateForRoomOwner();
-            updateStartAndReadyButton();
+            var logic = game.network.logic;
+            if (isRoomOwner)
+            {
+                logic.RemovePlayer(id);
+            }
         }
         private void onCardPoolProgressChanged(float value)
         {
@@ -749,12 +686,12 @@ namespace Controllers
             if (state != localPlayer.getLoadState())
             {
                 localPlayer.setLoadState(state);
-                onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
+                setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_LOAD_STATE, (int)state);
             }
             if (localPlayer.getReady())
             {
                 localPlayer.setReady(false);
-                onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_READY, false);
+                setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_READY, false);
             }
             updateStartAndReadyButton();
             updatePlayerListUI();
@@ -764,6 +701,72 @@ namespace Controllers
             string title = game.lang._(StringTable.ERROR);
 
             game.ui.dialog.ShowConfirm(title, e.Message);
+        }
+        private void onReceiveRoomDataChangedCallback(RoomData roomData)
+        {
+            UpdateRoomData(roomData);
+        }
+        private void onReceiveCardPoolsSuggestionCallback(int playerId, CardPoolSuggestion suggestion)
+        {
+            string poolsString = PoolsToString(suggestion.cardPools);
+            var suggester = _currentRoomData.getPlayer(playerId);
+            string playerName = game.lang._(ROOM_UNKNOWN_PLAYER);
+            if (suggester != null)
+            {
+                playerName = suggester.name;
+            }
+            string desc = game.lang._(ROOM_CARD_POOLS_SUGGESTED, playerName, poolsString);
+
+            List<(CardPoolInfoPack roomPool, CardPoolInfoPack comingPool)> conflictPools;
+            List<CardPoolInfoPack> addPools;
+
+            game.ui.dialog.ShowQuestion(game.lang._(StringTable.HINT_TITLE), desc, () =>
+            {
+                conflictPools = GetConflictCardPools(suggestion.cardPools, out addPools);
+                ShowRoomConflictDialogs(conflictPools, addPools, ConfirmSuggestion, CancelSuggestion);
+            },
+            CancelSuggestion);
+
+
+            async void ConfirmSuggestion()
+            {
+                if (CheckRoomPoolsValidation(addPools, null, out var missingDeps))
+                {
+                    AddCardPools(addPools);
+                    ApplyCardPools();
+                    await game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, true);
+                }
+                else
+                {
+                    ShowDependencyMissingDialog(missingDeps);
+                }
+            }
+
+            void CancelSuggestion()
+            {
+                game.network.roomClient.AnwserCardPoolsSuggestion(playerId, suggestion, false);
+            }
+        }
+        private async void onReceiveRoomPropChangedCallback(string key, object value)
+        {
+            if (key == Option.CardPools.ToString())
+            {
+                if (!_isLocalGame && value is CardPoolInfoPack[] pools)
+                {
+                    _cardPoolPanelDirty = true;
+                    await CheckCardPoolsUpdate(pools);
+                }
+            }
+        }
+        private async void onReceiveCardPoolsSuggestionAnwserCallback(CardPoolSuggestion suggestion, bool agree)
+        {
+            string desc = game.lang._(agree ? ROOM_CARD_POOLS_SUGGESTION_AGREED : ROOM_CARD_POOLS_SUGGESTION_REFUSED);
+            game.ui.dialog.ShowConfirm(game.lang._(StringTable.HINT_TITLE), desc);
+
+            if (agree)
+            {
+                await CheckCardPoolsUpdate(suggestion.cardPools);
+            }
         }
         #endregion
 
@@ -775,7 +778,8 @@ namespace Controllers
         void setNotifyRoomSetting(Option prop, object value)
         {
             _currentRoomData?.setOption(prop, value);
-            onRoomPropChanged?.Invoke(prop.ToString(), value);
+            var roomClient = game.network.logic.roomClient;
+            roomClient.SetRoomProp(prop.ToString(), value);
         }
         private async void SetPlayerDeck(int playerId, Deck deck)
         {
@@ -790,7 +794,7 @@ namespace Controllers
                 }
                 if (playerId == game.network.logic.localPlayer.id)
                 {
-                    onLocalPlayerPropChanged?.Invoke(THHRoomPlayerDataHelper.PROP_DECK, deck.toDefRefArray(true));
+                    setLocalPlayerProp(THHRoomPlayerDataHelper.PROP_DECK, deck.toDefRefArray(true));
                     var cardPoolRef = game.card.getCardPoolReferenceInSet(deck.masterCardRef.cardPoolId, _currentRoomData.getCardPools());
                     _ui.updateLocalPlayerDeck(deck.name, await game.card.loadCardImage(cardPoolRef, deck.masterCardRef.defineId));
                 }
@@ -1373,24 +1377,22 @@ namespace Controllers
                 await game.card.loadCachedCardDefinesAsync(cardPool.cardPoolId, cardPool.version);
             }
         }
+        /// <summary>
+        /// 设置本地玩家的属性，并将其发送到远端服务器
+        /// </summary>
+        /// <param name="name">属性名</param>
+        /// <param name="value">属性</param>
+        private void setLocalPlayerProp(string name, object value)
+        {
+            var roomClient = game.network.logic.roomClient;
+            roomClient.SetPlayerProp(name, value);
+        }
         #endregion
         #region 事件
         /// <summary>
         /// 点击退出房间后触发
         /// </summary>
         public event Action onQuitClick;
-        /// <summary>
-        /// 房间信息更新（主要是设置）更新后触发
-        /// </summary>
-        public event Action<string, object> onRoomPropChanged;
-        /// <summary>
-        /// 本地玩家属性发生改变后触发
-        /// </summary>
-        public event Action<string, object> onLocalPlayerPropChanged;
-        /// <summary>
-        /// 删除玩家后触发
-        /// </summary>
-        public event Action<int> onPlayerRemove;
         #endregion
         #region 属性字段
         RoomMode _currentMode;

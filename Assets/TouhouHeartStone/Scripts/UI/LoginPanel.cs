@@ -1,0 +1,129 @@
+﻿using System;
+using BJSYGameCore.UI;
+using UberLogger;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace UI
+{
+    public class LoginPanel : UIObject
+    {
+        [Obsolete("Use Display + SetContent instead")]
+        public void display(bool rememberUserName, string userName, bool rememberPassword, string password, Sprite captcha)
+        {
+            HideMessage();
+            SetContent(rememberUserName, userName, rememberPassword, password, captcha);
+            display();
+        }
+        public void Display()
+        {
+            HideMessage();
+            display();
+        }
+        public void SetContent(bool rememberUserName, string userName, bool rememberPassword, string password, Sprite captcha = null)
+        {
+            if (captcha != null)
+                _captchaImage.sprite = captcha;
+
+            _rememberAccountToggle.isOn = rememberUserName;
+            _rememberPasswordToggle.isOn = rememberPassword;
+            _usernameInputField.text = userName;
+            _passwordInputField.text = password;
+        }
+        public void ShowMessage(string msg)
+        {
+            _hintText.text = msg;
+            _hintImage.gameObject.SetActive(true);
+        }
+        public void HideMessage()
+        {
+            _hintImage.gameObject.SetActive(false);
+        }
+        public void setCaptcha(Sprite sprite)
+        {
+            _captchaButton.image.sprite = sprite;
+        }
+        public LoginInfo getLoginInfo()
+        {
+            return new LoginInfo()
+            {
+                username = _usernameInputField.text,
+                password = _passwordInputField.text,
+                captcha = _captchaInputField.text,
+                rememberUsername = _rememberAccountToggle.isOn,
+                rememberPassword = _rememberPasswordToggle.isOn
+            };
+        }
+        protected override void Awake()
+        {
+            base.Awake();
+            _registerButton.onClick.AddListener(() =>
+            {
+                onRegisterClick?.Invoke();
+            });
+            _guestLoginBtn.onClick.AddListener(() =>
+            {
+                onGuestLoginClick?.Invoke();
+            });
+            _loginButton.onClick.AddListener(() =>
+            {
+                onLoginClick?.Invoke();
+            });
+            _recoverButton.onClick.AddListener(() =>
+            {
+                onRecoverClick?.Invoke();
+            });
+            _captchaButton.onClick.AddListener(() =>
+            {
+                onCaptchaClick?.Invoke();
+            });
+            _closeButton.onClick.AddListener(() =>
+            {
+                hide();
+            });
+        }
+
+        public event Action onRegisterClick;
+        public event Action onGuestLoginClick;
+        public event Action onCaptchaClick;
+        public event Action onLoginClick;
+        public event Action onRecoverClick;
+
+        [SerializeField]
+        private Button _guestLoginBtn;
+        [SerializeField]
+        private Button _closeButton;
+        [SerializeField]
+        private Image _hintImage;
+        [SerializeField]
+        private Text _hintText;
+        [SerializeField]
+        private InputField _usernameInputField;
+        [SerializeField]
+        private InputField _passwordInputField;
+        [SerializeField]
+        private Image _captchaImage;
+        [SerializeField]
+        private InputField _captchaInputField;
+        [SerializeField]
+        private Button _captchaButton;
+        [SerializeField]
+        private Toggle _rememberAccountToggle;
+        [SerializeField]
+        private Toggle _rememberPasswordToggle;
+        [SerializeField]
+        private Button _recoverButton;
+        [SerializeField]
+        private Button _registerButton;
+        [SerializeField]
+        private Button _loginButton;
+    }
+    public struct LoginInfo
+    {
+        public string username;
+        public string password;
+        public string captcha;
+        public bool rememberUsername;
+        public bool rememberPassword;
+    }
+}

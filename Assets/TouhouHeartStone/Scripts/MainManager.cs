@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BJSYGameCore;
-using BJSYGameCore.UI;
 using Controllers;
 using CustomBuilder;
 using Game.PVE;
@@ -32,28 +31,8 @@ namespace Game
             if (ui != null)
             {
                 Main main = ui.getObject<Main>();
-                main.MainMenu.lANButton.onClick.set(() =>
-                {
-                    main.display(main.NetworkingPage);
-                    network.displayPanelForLAN();
-                });
-                main.MainMenu.serverButton.onClick.set(() =>
-                {
-                    if (network.logic.Logined)
-                    {
-                        main.display(main.NetworkingPage);
-                        network.displayPanelForLobby();
-                    }
-                    else
-                    {
-                        main.MainMenu.registerPanel.hide();
-                        main.MainMenu.loginPanel.display();
-                    }
-                });
                 main.display(main.Loading);
             }
-            //_mainCtrl = new MainCtrl(this);
-            //_mainCtrl.onAwake();
 
             // 初始化玩家Key.
             InitPlayerKey();

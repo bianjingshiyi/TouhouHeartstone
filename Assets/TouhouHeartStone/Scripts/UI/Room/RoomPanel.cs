@@ -126,8 +126,6 @@ namespace UI
                 Debug.LogException(e);
             }
 
-            updateButtonStates();
-
         }
         /// <summary>
         /// 设置房间模式，是本地、客户端还是远程
@@ -136,7 +134,6 @@ namespace UI
         public void SetMode(RoomMode mode)
         {
             IPText.gameObject.SetActive(mode == RoomMode.NetworkingHost);
-            updateButtonStates();
         }
         /// <summary>
         /// 设置右上角的（IP地址）文本
@@ -152,8 +149,6 @@ namespace UI
             aiPlayerData = null;
 
             onPlayerRemove = null;
-            onAIPlayerAdd = null;
-            onUpdateButtons = null;
         }
         public void updatePlayerList((string playerName, string characterName, bool canViewDeck, bool canSetDeck, bool canRemove)[] viewData)
         {
@@ -558,10 +553,6 @@ namespace UI
             _titleObj.SetActive(true);
             _editRoomNameObj.SetActive(false);
         }
-        void updateButtonStates()
-        {
-            onUpdateButtons?.Invoke();
-        }
         #endregion
         #region 事件
         /// <summary>
@@ -613,14 +604,6 @@ namespace UI
         /// 点击删除玩家按钮后触发
         /// </summary>
         public event Action<int> onPlayerRemove;
-        /// <summary>
-        /// 添加了AI玩家
-        /// </summary>
-        public event Action onAIPlayerAdd;
-        /// <summary>
-        /// 更新按钮状态
-        /// </summary>
-        public event Action onUpdateButtons;
         #endregion
         #region 属性字段
         RoomPlayerData aiPlayerData;

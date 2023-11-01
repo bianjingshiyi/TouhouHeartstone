@@ -248,22 +248,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 7871270485528993339}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1067ca03454152642b4d1b20dc87cf88, type: 3}
+  m_Script: {fileID: 11500000, guid: b3d26618fc4f3764dbed59a51b6ac2e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  _buttonPanel: {fileID: 7871270487088672147}
-  _lANButton: {fileID: 6588916294860092879}
+  _lanButton: {fileID: 6588916294860092879}
   _serverButton: {fileID: 7055642798281741891}
   _newsButton: {fileID: 7551969578880638540}
   _aboutButton: {fileID: 4154513143762689046}
-  _LogoImage: {fileID: 7871270487260421509}
-  _RegisterPanel: {fileID: 2520806415830137503}
-  _LoginPanel: {fileID: 2432918322644402924}
-  _RecoverPanel: {fileID: 473044912990662278}
-  _PlayerInfoPanel: {fileID: 8174166712726022085}
+  _registerPanel: {fileID: 2520806415830137503}
+  _loginPanel: {fileID: 2432918322644402924}
+  _recoverPanel: {fileID: 473044912990662278}
+  _playerInfoPanel: {fileID: 8174166712726022085}
   _settingButton: {fileID: 2102894658213041838}
   _newsPanel: {fileID: 4838976148317692446}
   _quitButton: {fileID: 507570498406234179}
@@ -2495,7 +2493,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9eba0e16981804045bb962986300cf5e, type: 3}
+  m_Script: {fileID: 11500000, guid: 7610f91373695b244aaccc78cdc04372, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2824902090964749064 stripped
@@ -3456,7 +3454,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8c57c7083930bc49b3cf9a18731c69b, type: 3}
+  m_Script: {fileID: 11500000, guid: 653d4a95f74d487429fd63bdbfa0cf3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &7655814167157217655 stripped
@@ -3784,7 +3782,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8613a8779d9e80f42b4246ca55170f61, type: 3}
+  m_Script: {fileID: 11500000, guid: 93e8fba3a609bca429bd6ec606d6149c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6428069492949019852 stripped

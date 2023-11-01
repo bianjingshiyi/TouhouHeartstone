@@ -88,16 +88,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 5421060708397287127}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50766369c66232e4cbe98a779ce55da1, type: 3}
+  m_Script: {fileID: 11500000, guid: 956484aa7961c1e4bbf455b6c5ab90bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
   _useController: 0
   _initStates: []
-  m_as_Button: {fileID: 0}
-  m_as_Image: {fileID: 5421060708397287125}
-  _RoomNameText: {fileID: 5421060708794400084}
-  _ButtonButtonBlack: {fileID: 0}
+  _itemButton: {fileID: 3914515208771778358}
+  _joinButton: {fileID: 4432803247481371567}
+  _roomNameText: {fileID: 5421060708794400084}
   _lockedIcon: {fileID: 7273025979562537877}
 --- !u!114 &3914515208771778358
 MonoBehaviour:
@@ -900,3 +899,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3197337423133400484}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4432803247481371567 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1286695113556157963, guid: 8f87f95af032014448691606aece594a,
+    type: 3}
+  m_PrefabInstance: {fileID: 3197337423133400484}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

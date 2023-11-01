@@ -30,14 +30,6 @@ namespace UI
         [SerializeField]
         Button _confirmBtn;
 
-        public string Nickname => _nicknameField?.text;
-
-        public string OldPass => _oldPassField?.text;
-
-        public string NewPass => _newPassField?.text;
-
-        public string RepeatPass => _repeatPassField?.text;
-
         public void Show()
         {
             HideMessage();
@@ -53,7 +45,16 @@ namespace UI
         {
             gameObject.SetActive(false);
         }
-
+        public PlayerInfoEditInfo getPlayerInfoEditInfo()
+        {
+            return new PlayerInfoEditInfo()
+            {
+                nickname = _nicknameField.text,
+                oldPassword = _oldPassField.text,
+                newPassword = _newPassField.text,
+                repeatPassword = _repeatPassField.text
+            };
+        }
         private void Awake()
         {
             _closeBtn?.onClick.AddListener(() => Hide());
@@ -77,5 +78,13 @@ namespace UI
         {
             onClickConfirmBtn?.Invoke();
         }
+    }
+    public struct PlayerInfoEditInfo
+    {
+        public string nickname;
+        public string oldPassword;
+        public string newPassword;
+        public string repeatPassword;
+
     }
 }
