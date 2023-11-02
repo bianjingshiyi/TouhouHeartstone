@@ -26,6 +26,11 @@ namespace Controllers
         #region 生命周期
         protected void Awake()
         {
+            //登录与注册界面初始化
+            _ui.setRegisterPanelVisible(false);
+            _ui.setLoginPanelVisible(false);
+            _ui.setPlayerInfo(null);
+
             _ui.onPVEButtonClick += onEntryPVEMode;
             _ui.onVsBotButtonClick += onClickVsBotButton;
             _ui.onBuildCardButtonClick += onBuildButtonClick;

@@ -4,14 +4,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using BJSYGameCore;
-using BJSYGameCore.UI;
-using Controllers;
 using MukioI18n;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
-using TouhouHeartstone;
 using UI;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Game
@@ -131,13 +127,6 @@ namespace Game
         protected override void onAwake()
         {
             base.onAwake();
-
-            var mainUI = getManager<UIManager>().getObject<MainMenu>();
-            //登录与注册界面初始化
-            mainUI.setRegisterPanelVisible(false);
-            mainUI.setLoginPanelVisible(false);
-            mainUI.setPlayerInfo(null);
-
             gameManager.nwLogic = logic;
 
             logic.onRoomListChange += NetworkingLogic_onRoomListChange;
@@ -271,15 +260,7 @@ namespace Game
 
         public CacheManager cacheManager => getManager<CacheManager>();
 
-        public GameManager gameManager
-        {
-            get
-            {
-                if (_gameManager == null)
-                    _gameManager = getManager<GameManager>();
-                return _gameManager;
-            }
-        }
+        public GameManager gameManager => getManager<GameManager>();
 
         public NetworkingLogic logic
         {
@@ -292,11 +273,6 @@ namespace Game
         }
 
         public IRoomClient roomClient => logic.roomClient;
-
-        public NetworkingPage ui => getManager<UIManager>().getObject<NetworkingPage>();
-
-        private LangManager lang => getManager<LangManager>();
-
         private int LANPort => logic.Port;
 
         // 测试服务器
@@ -317,17 +293,6 @@ namespace Game
 
         private string version => CustomBuilder.BuildInformation.Instance.Version;
 
-
-
-
-        [TranslateMsg("参数为玩家ID")]
-        private const string LOCAL_PLAYER_NAME = "玩家{0}";
-
-        [Tooltip("正式服务器地址")]
-        [SerializeField]
-        private string _accountServerBaseUri = "https://serv.igsk.fun";
-
-        private GameManager _gameManager;
         private NetworkingLogic _logic;
 
         [Header("配置")]
@@ -336,16 +301,15 @@ namespace Game
         /// </summary>
         [SerializeField]
         private int[] _ports = { 32900, 32901, 32902 };
-
+        [Tooltip("正式服务器地址")]
+        [SerializeField]
+        private string _accountServerBaseUri = "https://serv.igsk.fun";
         [Tooltip("快照服务器地址")]
         [SerializeField]
         private string _snapshotAccountServerBaseUri = "https://snap.serv.igsk.fun";
-
         [Tooltip("测试服务器地址")]
         [SerializeField]
         private string _testAccountServerBaseUri = "https://test.serv.igsk.fun";
-
-
         #endregion 属性字段
 
     }

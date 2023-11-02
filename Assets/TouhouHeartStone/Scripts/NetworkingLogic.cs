@@ -19,17 +19,17 @@ namespace Game
             Debug.Log("Init server uri: " + serverUri);
 
             ServerClient = new ServerClient(serverUri, version, System.IO.Path.Combine(Application.persistentDataPath, "token"), new ULogger("ServerAPI"));
-            localLanLogic = new ClientLogic("Player.", ports, ServerClient, new ULogger("LAN"), resProvider);
+            clientLogic = new ClientLogic("Player.", ports, ServerClient, new ULogger("LAN"), resProvider);
 
-            localLanLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
-            localLanLogic.onGameStart += onGameStartEvtHandler;
-            localLanLogic.OnRoomPlayerDataChanged += roomPlayerDataChangeEvtHandler;
-            localLanLogic.OnRoomDataChange += roomDataChangeEvtHandler;
-            localLanLogic.PostRoomPropChange += roomPropChangeEvtHandler;
-            localLanLogic.OnReceiveData += roomReceiveEvtHandler;
-            localLanLogic.OnRecvChat += roomReceiveChatEvtHandler;
-            localLanLogic.OnSuggestCardPools += roomReceiveCardPoolSuggestionHandler;
-            localLanLogic.OnCardPoolsSuggestionAnwsered += roomReceiveCardPoolSuggestionAnwserHandler;
+            clientLogic.onRoomListChange += LocalLanLogic_onRoomListChange;
+            clientLogic.onGameStart += onGameStartEvtHandler;
+            clientLogic.OnRoomPlayerDataListChanged += roomPlayerDataChangeEvtHandler;
+            clientLogic.OnRoomDataChange += roomDataChangeEvtHandler;
+            clientLogic.PostRoomPropChange += roomPropChangeEvtHandler;
+            clientLogic.OnReceiveData += roomReceiveEvtHandler;
+            clientLogic.OnRecvChat += roomReceiveChatEvtHandler;
+            clientLogic.OnSuggestCardPools += roomReceiveCardPoolSuggestionHandler;
+            clientLogic.OnCardPoolsSuggestionAnwsered += roomReceiveCardPoolSuggestionAnwserHandler;
         }
         #endregion
 
@@ -164,19 +164,19 @@ namespace Game
 
         public RoomPlayerData GetSelfInfo()
         {
-            return localLanLogic.getLocalPlayerData();
+            return clientLogic.getLocalPlayerData();
         }
         #endregion 用户登录
 
         #region 房间相关
         public void SwitchMode(bool isLAN)
         {
-            localLanLogic.SwitchMode(isLAN);
+            clientLogic.SwitchMode(isLAN);
         }
 
         public Task AddAIPlayer()
         {
-            return localLanLogic.addAIPlayer();
+            return clientLogic.addAIPlayer();
         }
 
         public void RemovePlayer(int uid)
@@ -191,7 +191,7 @@ namespace Game
         /// <returns></returns>
         public async Task JoinRoom(string roomID, string password = "")
         {
-            await localLanLogic.joinRoom(roomID, password);
+            await clientLogic.joinRoom(roomID, password);
             isInitialRoomOwner = false;
         }
 
@@ -203,7 +203,7 @@ namespace Game
         /// <returns></returns>
         public async Task JoinRoom(string addr, int port, string password = "")
         {
-            await localLanLogic.joinRoom(addr, port, password);
+            await clientLogic.joinRoom(addr, port, password);
             isInitialRoomOwner = false;
         }
 
@@ -213,7 +213,7 @@ namespace Game
         /// <returns></returns>
         public async Task CreateRoom(string name = "", string password = "")
         {
-            await localLanLogic.createOnlineRoom(name, password);
+            await clientLogic.createOnlineRoom(name, password);
 
             // 初始化房间设置
             var option = new HearthstoneOption();
@@ -234,7 +234,7 @@ namespace Game
         /// <returns></returns>
         public async Task CreateLocalRoom()
         {
-            await localLanLogic.createLocalRoom();
+            await clientLogic.createLocalRoom();
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Game
             QuitRoom();
 
             // 局域网的主机要销毁（关闭）对应的房间
-            if (localLanLogic.curNetwork is LANNetworking lan && isInitialRoomOwner)
+            if (clientLogic.curNetwork is LANNetworking lan && isInitialRoomOwner)
             {
                 lan.DestroyRoom();
             }
@@ -254,7 +254,7 @@ namespace Game
         public void QuitRoom()
         {
             localPlayer.propDict.Clear();
-            localLanLogic.quitRoom();
+            clientLogic.quitRoom();
         }
         /// <summary>
         /// 开始游戏
@@ -262,7 +262,7 @@ namespace Game
         /// <returns></returns>
         public Task StartGame()
         {
-            return localLanLogic.curNetwork.GameStart();
+            return clientLogic.curNetwork.GameStart();
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace Game
         /// </summary>
         public void ReloadRoomList()
         {
-            localLanLogic.refreshRoomList();
+            clientLogic.refreshRoomList();
         }
         #endregion
         /// <summary>
@@ -278,7 +278,7 @@ namespace Game
         /// </summary>
         public void update()
         {
-            localLanLogic.update();
+            clientLogic.update();
         }
         #endregion
         #region 私有方法
@@ -335,7 +335,7 @@ namespace Game
             if (obj is INetworkData data)
             {
                 var bytes = MessagePack.MessagePackSerializer.Serialize(data);
-                var recv = await localLanLogic.curNetwork.Send(bytes);
+                var recv = await clientLogic.curNetwork.Send(bytes);
 
                 return (T)MessagePack.MessagePackSerializer.Deserialize<INetworkData>(recv);
             }
@@ -346,82 +346,65 @@ namespace Game
         #endregion
         #region 事件
         public event Action<RoomPlayerData[]> OnPlayerDataChange;
-
         public event Action<RoomData> OnRoomDataChange;
-
         public event Action<string, object> PostRoomPropChange;
-
         public event Action onGameStart;
-
         public event Action<ChatMsg> OnRecvChat;
-
         public event Action<int, CardPoolSuggestion> OnSuggestCardPools;
-
         public event Action<CardPoolSuggestion, bool> OnCardPoolsSuggestionAnwsered;
-
         public event Func<int, object, Task> onReceive;
-
         public event Action<LobbyRoomDataList> onRoomListChange;
         #endregion
         #region 属性字段
         /// <summary>
         /// 当前房间
         /// </summary>
-        public RoomData CurrentRoom => localLanLogic.room;
-
+        public RoomData CurrentRoom => clientLogic.room;
         /// <summary>
         /// 是局域网的房主吗
         /// </summary>
-        public bool isLanHost => localLanLogic.curNetwork is LANNetworking && isRoomOwner;
-
+        public bool isLanHost => clientLogic.curNetwork is LANNetworking && isRoomOwner;
         /// <summary>
         /// 是否为初始的房主
         /// </summary>
         public bool isInitialRoomOwner { get; private set; }
-
         /// <summary>
         /// 是否为房主
         /// </summary>
-        public bool isRoomOwner => localLanLogic.isRoomOwner;
-
+        public bool isRoomOwner => clientLogic.isRoomOwner;
         /// <summary>
         /// 当前是否在一个房间里面
         /// </summary>
         public bool RoomIsValid => CurrentRoom != null;
-
         /// <summary>
         /// 网络端口
         /// </summary>
-        public int Port => localLanLogic.port;
-
-        public RoomPlayerData localPlayer => localLanLogic.localPlayer;
+        public int Port => clientLogic.port;
+        public RoomPlayerData localPlayer => clientLogic.localPlayer;
         /// <summary>
         /// 当前登录的用户信息
         /// </summary>
         public PublicBasicUserInfo UserInfo => userInfo;
-
-        PublicBasicUserInfo userInfo;
-        /// <summary>
-        /// 是否为游客状态
-        /// </summary>
-        bool isGuest { get; set; }
-
         /// <summary>
         /// 判断是否登录（非游客）
         /// </summary>
         public bool AccountIsValid => userInfo != null && !isGuest;
-
         public bool Logined => userInfo != null;
         /// <summary>
         /// 服务器的客户端
         /// </summary>
         public ServerClient ServerClient { get; private set; }
-        public IRoomClient roomClient => localLanLogic;
-        int IClient.id => localLanLogic.localPlayer.id;
+        public IRoomClient roomClient => clientLogic;
+        PublicBasicUserInfo userInfo;
+        /// <summary>
+        /// 是否为游客状态
+        /// </summary>
+        bool isGuest { get; set; }
+        int IClient.id => localPlayer.id;
         /// <summary>
         /// 本地联网游戏逻辑
         /// </summary>
-        ClientLogic localLanLogic;
+        ClientLogic clientLogic;
         #endregion
 
     }
