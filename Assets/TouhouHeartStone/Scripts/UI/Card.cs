@@ -1,19 +1,12 @@
-﻿using TouhouHeartstone;
-using System;
-using TouhouCardEngine;
+﻿using BJSYGameCore.UI;
+using TouhouHeartstone;
 using UnityEngine;
 using UnityEngine.Events;
+
 namespace UI
 {
-    partial class Card
+    public class Card : UIObject
     {
-        protected override void Awake()
-        {
-            base.Awake();
-            init();
-        }
-        [Obsolete("Use table.getCard instead")]
-        public TouhouCardEngine.Card card { get; set; }
         //[Obsolete]
         //public void update(TouhouCardEngine.Card card, CardSkinData skin)
         //{
@@ -103,101 +96,44 @@ namespace UI
         {
             set
             {
-                if (value)
-                {
-                    _onFaceupControllerTrue.Invoke();
-                }
-                else
-                {
-                    _onFaceupControllerFalse.Invoke();
-                }
-                animator.SetBool("isFaceUp", value);
+                _cardFaceObj.SetActive(value);
+                _cardBackObj.SetActive(!value);
             }
         }
         public int type
         {
             get
             {
-                if (asAnimator.GetBool(ANIM_PARAM_ISSERVANT))
-                    return CATEGORY.SERVANT;
-                else if (asAnimator.GetBool(ANIM_PARAM_ISSPELL))
-                    return CATEGORY.SPELL;
-                else if (asAnimator.GetBool(ANIM_PARAM_ISITEM))
-                    return CATEGORY.ITEM;
-                else if (asAnimator.GetBool(ANIM_PARAM_ISMASTER))
-                    return CATEGORY.MASTER;
-                else if (asAnimator.GetBool(ANIM_PARAM_ISSKILL))
-                    return CATEGORY.SKILL;
-                return CATEGORY.NONE;
+                return _type;
             }
             set
             {
-               switch (value)
-               {
-                    case CATEGORY.MASTER:
-                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, true);
-                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, true);
-                        asAnimator.SetBool(ANIM_PARAM_ISSKILL,false);
-                        _is_MASTER = asAnimator.GetBool(ANIM_PARAM_ISMASTER);
-                        _onTypeControllerMaster.Invoke();
-                        break;
-                    case CATEGORY.SPELL:
-                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, true);
-                        asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISSKILL, false);
-                        _onTypeControllerSpell.Invoke();
-                        break;
-                    case CATEGORY.ITEM:
-                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISITEM, true);
-                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISSKILL, false);
-                        _onTypeControllerItem.Invoke();
-                        break;
-                    case CATEGORY.SKILL:
-                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, true);
-                        asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISSKILL, true);
-                        _onTypeControllerSkill.Invoke();
-                        break;
-                    default://SERVANT
-                        asAnimator.SetBool(ANIM_PARAM_ISSERVANT, true);
-                        asAnimator.SetBool(ANIM_PARAM_ISSPELL, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISITEM, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISMASTER, false);
-                        asAnimator.SetBool(ANIM_PARAM_ISSKILL, false);
-                        _onTypeControllerServant.Invoke();
-                        break;
-                }
+                bool isItem = value == CATEGORY.ITEM;
+                bool isSpell = value == CATEGORY.SPELL || value == CATEGORY.SKILL;
+                bool isServant = !isItem && !isSpell;
+                servantCardFace.gameObject.SetActive(isServant);
+                spellCardFace.gameObject.SetActive(isSpell);
+                itemCardFace.gameObject.SetActive(isItem);
             }
         }
-        [SerializeField]
-        private UnityEvent _onTypeControllerMaster;
-        [SerializeField]
-        private UnityEvent _onTypeControllerSpell;
-        [SerializeField]
-        private UnityEvent _onTypeControllerItem;
-        [SerializeField]
-        private UnityEvent _onTypeControllerSkill;
-        [SerializeField]
-        private UnityEvent _onTypeControllerServant;
-        [SerializeField]
-        private UnityEvent _onFaceupControllerFalse;
-        [SerializeField]
-        private UnityEvent _onFaceupControllerTrue;
         public string _flipToFaceAnimName;
         public string _flipToBackAnimName;
         public string _notifyAnimName;
         public SimpleAnim onCast;
         public SimpleAnim ShowAnim;
-        public bool _is_MASTER;
-        
+        public ServantCardFace servantCardFace => _servantCardFace;
+        public SpellCardFace spellCardFace => _spellCardFace;
+        public ItemCardFace itemCardFace => _itemCardFace;
+        private int _type;
+        [SerializeField]
+        private ServantCardFace _servantCardFace;
+        [SerializeField]
+        private SpellCardFace _spellCardFace;
+        [SerializeField]
+        private ItemCardFace _itemCardFace;
+        [SerializeField]
+        private GameObject _cardFaceObj;
+        [SerializeField]
+        private GameObject _cardBackObj;
     }
 }

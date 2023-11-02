@@ -32,18 +32,7 @@ namespace Game
         }
         public static void setCardDefine(this UICard ui, CardDefine card, CardSkinData skin, bool isFaceUp = true)
         {
-            if (card.type == DEFINE.MASTER)
-                ui.type = CATEGORY.MASTER;
-            else if (card.type == DEFINE.SERVANT)
-                ui.type = CATEGORY.SERVANT;
-            else if (card.type == DEFINE.SPELL)
-                ui.type = CATEGORY.SPELL;
-            else if (card.type == DEFINE.SKILL)
-                ui.type = CATEGORY.SKILL;
-            else if (card.type == DEFINE.ITEM)
-                ui.type = CATEGORY.ITEM;
-            else
-                throw new NotImplementedException();
+            ui.setTypeByName(card.type);
 
             string name = StringTable.BUILD_UNKNOW_CARD_NAME;
             string subName = string.Empty;

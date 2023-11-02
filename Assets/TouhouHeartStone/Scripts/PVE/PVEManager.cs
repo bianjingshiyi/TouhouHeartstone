@@ -64,16 +64,23 @@ namespace Game.PVE
         {
             List<DefineReference> list = new List<DefineReference>()
             {
-                new DefineReference(0, LittleShrine.ID),
-                new DefineReference(0, BumperCrop.ID),
-                new DefineReference(0, GuestStarsMiracle.ID),
-                new DefineReference(0, OpenSeaMiracle.ID),
-                new DefineReference(0, FlyingSnake.ID),
-                new DefineReference(0, GodSummon.ID),
-                new DefineReference(0, ManipulatedGaintFrog.ID),
-                new DefineReference(0, OrochiOfAncientTimes.ID),
-                new DefineReference(0, MoriyaSuwako.ID),
-                new DefineReference(0, YasakaKanako.ID)
+                new DefineReference(0, ElementSprite.ID),
+                new DefineReference(0, MultiCast.ID),
+                new DefineReference(0, TheGreatLibrary.ID),
+                new DefineReference(0, LibraryProtector.ID),
+                new DefineReference(0, BestMagic.ID),
+                new DefineReference(0, PhilosopherStone.ID),
+                new DefineReference(0, BiteTentacle.ID),
+                new DefineReference(0, ArcaneKnowledge.ID),
+                new DefineReference(0, AgniShine.ID),
+                new DefineReference(0, PrincessUndine.ID),
+                new DefineReference(0, SylphyHorn.ID),
+                new DefineReference(0, MetalFatigue.ID),
+                new DefineReference(0, TrilithonShake.ID),
+                new DefineReference(0, Koakuma.ID),
+                new DefineReference(0, MegaReaver.ID),
+                new DefineReference(0, RoyalFlare.ID),
+                new DefineReference(0, SilentSelene.ID),
             };
             return list.randomTake(seed, 3).ToArray();
         }

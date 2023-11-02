@@ -483,7 +483,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5953344439004416449}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06d38b045a3394a49a33a117a4378554, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b50b83b6a9e2b14183135314dd1c606, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ui: {fileID: 0}
@@ -491,14 +491,6 @@ MonoBehaviour:
   _initStates:
   - IsFaceup/IsFaceup_True
   - Type/Type_Servant
-  _asAnimator: {fileID: 0}
-  _highlight: {fileID: 0}
-  _cardBackEffectImage: {fileID: 0}
-  _itemCardFace: {fileID: 0}
-  _spellCardFace: {fileID: 0}
-  _servantCardFace: {fileID: 0}
-  _cardFaceEffectImage: {fileID: 0}
-  _crossImage: {fileID: 0}
   _useCurve:
     serializedVersion: 2
     m_Curve:
@@ -547,104 +539,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _onTypeControllerMaster:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 613913946243370178}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Type_Master
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onTypeControllerSpell:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 613913946243370178}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Type_Spell
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onTypeControllerItem:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 613913946243370178}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Type_Item
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onTypeControllerSkill:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 613913946243370178}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Type_Skill
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onTypeControllerServant:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 613913946243370178}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Type_Servant
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onFaceupControllerFalse:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 613913946243370178}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: IsFaceup_False
-          m_BoolArgument: 0
-        m_CallState: 2
-  _onFaceupControllerTrue:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 613913946243370178}
-        m_MethodName: Play
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: IsFaceup_True
-          m_BoolArgument: 0
-        m_CallState: 2
   _flipToFaceAnimName: Card_FlipToFace
   _flipToBackAnimName: Card_FlipToBack
   _notifyAnimName: Card_Notice
@@ -694,7 +588,11 @@ MonoBehaviour:
             m_StringArgument: isShow
             m_BoolArgument: 0
           m_CallState: 2
-  _is_MASTER: 0
+  _servantCardFace: {fileID: 4481527198265274879}
+  _spellCardFace: {fileID: 5081877866888625424}
+  _itemCardFace: {fileID: 425855481427461983}
+  _cardFaceObj: {fileID: 4885038940789645393}
+  _cardBackObj: {fileID: 3994837325509303611}
 --- !u!95 &613913946243370178
 Animator:
   serializedVersion: 3
@@ -850,6 +748,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8be6eed5753f4f447b420b3a7029356d, type: 3}
+--- !u!114 &5081877866888625424 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7613216156232604091, guid: 8be6eed5753f4f447b420b3a7029356d,
+    type: 3}
+  m_PrefabInstance: {fileID: 3396249853281608875}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ab0adcbe5705824db7c144d9b9cf239, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &745932211680973304 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2701018877123802451, guid: 8be6eed5753f4f447b420b3a7029356d,
@@ -1016,6 +926,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7181368199438977955}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &425855481427461983 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7368356394102934780, guid: 7fb81f92397b95e41a542f45fadb70f3,
+    type: 3}
+  m_PrefabInstance: {fileID: 7181368199438977955}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87602baa06afbf24195dc7c9e7eae3d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8243374628033225823
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1161,3 +1083,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8243374628033225823}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4481527198265274879 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -3722281499543136864, guid: bbd135490d7a22f4fb7b9bc7c3d9902f,
+    type: 3}
+  m_PrefabInstance: {fileID: 8243374628033225823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba0cbcf8afee1f449e7f7e8adf8ab18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
