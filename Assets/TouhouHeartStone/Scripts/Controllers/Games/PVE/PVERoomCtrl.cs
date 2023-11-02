@@ -19,6 +19,11 @@ namespace Controllers
         #region 公有方法
         public async void display()
         {
+            var cardDefine = game.card.getCardDefine(new DefineReference(0, MegaReaver.ID));
+            var skin = game.card.getCardSkin(cardDefine);
+            _cardEditor.display(cardDefine, skin);
+            _ui.gameObject.SetActive(true);
+            return;
             loadCharacterList();
             if (game.pve.hasData())
             {
@@ -414,12 +419,12 @@ namespace Controllers
         private const string PVE_CONFIRM_GIVE_UP = "确认要放弃本局游戏？";
         [SerializeField]
         PVERoomPanel _ui;
+        [SerializeField]
+        PVECardEditorCtrl _cardEditor;
         /// <summary>
         /// 用户当前选择的卡组
         /// </summary>
-        [SerializeField]
         PVECharacter _selectedCharacter = null;
-
         List<PVECharacter> _characterList = new List<PVECharacter>();
         private SaveData _saveData;
         private PVECharacter _nextBoss;

@@ -380,8 +380,11 @@ namespace Controllers
             _ui.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
             _ui.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
 
-            _cardPoolViewPanelCtrl.enableCount(false);
-            _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
+            if (_cardPoolViewPanelCtrl)
+            {
+                _cardPoolViewPanelCtrl.enableCount(false);
+                _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
+            }
 
             _ui.initPiles(getAllPiles());
             _ui.initCardProperties(CardEditorCtrl.cardProps.ToArray());

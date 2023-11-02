@@ -616,7 +616,7 @@ namespace UI
             }
 
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
-            _cancelSelectButton.onClick.AddListener(onClickCancelSelectButtonCallback);
+            _cancelSelectButton?.onClick.AddListener(onClickCancelSelectButtonCallback);
 
             displayCardSelectPanel(false);
 
