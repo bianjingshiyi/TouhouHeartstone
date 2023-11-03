@@ -1393,6 +1393,11 @@ MonoBehaviour:
   _dragNodeItemObj: {fileID: 7351634420966730126}
   _dragNodeItem: {fileID: 3055912385438735850}
   _dragThreshold: 50
+  _cancelSelectCardButton: {fileID: 218575620658938332}
+  _cardSelectPanelObj: {fileID: 11768102114419643}
+  _cardSelectPanel: {fileID: 5564887323529923047}
+  _hintMessageText: {fileID: 5235003410850773046}
+  _createEffectPropDialog: {fileID: 5859185564371503018}
 --- !u!1 &5179292407337136034
 GameObject:
   m_ObjectHideFlags: 0
@@ -9397,7 +9402,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06d38b045a3394a49a33a117a4378554, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b50b83b6a9e2b14183135314dd1c606, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &5183100415210055797

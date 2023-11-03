@@ -9,31 +9,27 @@ namespace Controllers
 {
     partial class ActionNodeGraphCtrl
     {
+        public void addEffectProperty(PropertyItemInfo item)
+        {
+            createEffectProperty(item.propertyName, item.type, item.value, item.isArray);
+            updateEffectProperties();
+            addRecordBreakpoint();
+        }
+        /// <summary>
+        /// 属性名是否已经被使用。
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool isPropertyNameTaken(string name)
+        {
+            if (_effect.hasProp(name) && _effect.getProp(name) != null)
+                return true;
+            return false;
+        }
         #region 事件回调
         private void onClickAddEffectPropertyButtonCallback()
         {
-            _ui.displayEffectPropertyDialog(true);
-        }
-        private void onConfirmCreateEffectPropertyCallback(PropertyItemInfo item)
-        {
-            if (string.IsNullOrEmpty(item.propertyName))
-            {
-                string errorMessage = game.lang._(NODE_EFFECT_PROP_NAME_EMPTY);
-                _ui.showEffectPropertyDialogError(errorMessage);
-                return;
-            }
-            if (isPropertyNameTaken(item.propertyName))
-            {
-                string errorMessage = game.lang._(NODE_EFFECT_PROP_NAME_TAKEN);
-                _ui.showEffectPropertyDialogError(errorMessage);
-                return;
-            }
-
-            createEffectProperty(item.propertyName, item.type, item.value, item.isArray);
-
-            updateEffectProperties();
-            _ui.displayEffectPropertyDialog(false);
-            addRecordBreakpoint();
+            onAddEffectPropertyButtonClicked?.Invoke();
         }
         private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
         {
@@ -61,8 +57,7 @@ namespace Controllers
             {
                 poolId = define.cardPoolId;
             }
-            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
-            _ui.displayCardSelectPanel(true);
+            await displayCardSelectPanel(poolId );
             _curCardSeekingEffectPropName = name;
             _curCardSeekingEffectPropIndex = index;
         }
@@ -129,8 +124,7 @@ namespace Controllers
             {
                 poolId = prop.cardPoolId;
             }
-            await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { poolId }, cardFilter: card => true);
-            _ui.displayCardSelectPanel(true);
+            await displayCardSelectPanel(poolId);
             _curCardSeekingEffectPropName = name;
             _curCardSeekingEffectPropIndex = -1;
         }
@@ -296,17 +290,6 @@ namespace Controllers
             array.SetValue(value, 0);
             return array;
         }
-        /// <summary>
-        /// 属性名是否已经被使用。
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private bool isPropertyNameTaken(string name)
-        {
-            if (_effect.hasProp(name) && _effect.getProp(name) != null)
-                return true;
-            return false;
-        }
         private void createEffectProperty(string name, ActionNodeValueType type, object value, bool isArray)
         {
             if (value == null)
@@ -425,11 +408,11 @@ namespace Controllers
         }
         #endregion
 
+        #region 事件
+        public event Action onAddEffectPropertyButtonClicked;
+        #endregion
+
         #region 属性字段
-        [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
-        public const string NODE_EFFECT_PROP_NAME_TAKEN = "该属性名已被使用！";
-        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
-        public const string NODE_EFFECT_PROP_NAME_EMPTY = "请输入属性名！";
         /// <summary>
         /// 当前正在选择的卡牌引用属性的属性名称。
         /// </summary>

@@ -30,6 +30,9 @@ namespace UI
             var animations = game.anims.getAllAnimationDefines().Select(d => game.lang._(d.name)).Prepend(game.lang._(VISUAL_EFFECT_NAME_NONE)).ToArray();
             var positions = visualEffectPositions.Select(p => game.lang._(p)).ToArray();
             initNodeAnimationDialog(animations, positions);
+
+            hideErrorTip();
+            hideCardSelectPanel();
         }
         public void updateNodeDefines()
         {
@@ -108,6 +111,9 @@ namespace UI
             _actionGraphCtrl.OnNodeDeselected += OnNodeDeselected;
             _actionGraphCtrl.OnGraphEdited += OnGraphEdited;
             _actionGraphCtrl.OnNodeVisualEffectButtonClicked += OnNodeVisualEffectButtonClicked;
+            _actionGraphCtrl.onStartSelectCard += onStartSelectCardForGraphCallback;
+            _actionGraphCtrl.onShowErrorTip += onShowErrorTipCallback;
+            _actionGraphCtrl.onAddEffectPropertyButtonClicked += onAddEffectPropertyButtonClickedCallback;
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
@@ -125,6 +131,19 @@ namespace UI
             _editVisualEffectDialog.onEffectDropdownValueChanged += onAnimationValueChangedCallback;
             _editVisualEffectDialog.onPropValueChanged += onAnimationPropChangedCallback;
             _editVisualEffectDialog.onConfirm += onAnimationConfirmButtonClickedCallback;
+
+            _createEffectPropDialog.onConfirm += onConfirmCreateEffectPropertyCallback;
+
+            _cancelSelectCardButton?.onClick.AddListener(onClickCancelSelectButtonCallback);
+
+            _cardSelectPanel.enableCount(false);
+            _cardSelectPanel.onClickCard += onClickCardSelectPanelCardCallback;
+
+            var customPropTypes = CardEditorCtrl.customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
+            setEffectPropertyTypes(customPropTypes);
+
+            hideCardSelectPanel();
+
         }
         private void Update()
         {
@@ -356,6 +375,57 @@ namespace UI
             _curEditingVisualEffectNode = null;
         }
         #endregion
+
+        #region 效果属性
+        private void onAddEffectPropertyButtonClickedCallback()
+        {
+            displayEffectPropertyDialog(true);
+        }
+        private void onConfirmCreateEffectPropertyCallback(PropertyItemInfo item)
+        {
+            if (string.IsNullOrEmpty(item.propertyName))
+            {
+                string errorMessage = game.lang._(NODE_EFFECT_PROP_NAME_EMPTY);
+                showEffectPropertyDialogError(errorMessage);
+                return;
+            }
+            if (_actionGraphCtrl.isPropertyNameTaken(item.propertyName))
+            {
+                string errorMessage = game.lang._(NODE_EFFECT_PROP_NAME_TAKEN);
+                showEffectPropertyDialogError(errorMessage);
+                return;
+            }
+            _actionGraphCtrl.addEffectProperty(item);
+            displayEffectPropertyDialog(false);
+        }
+        #endregion
+
+        #region 卡牌选择
+        private Task onStartSelectCardForGraphCallback(long cardPoolId)
+        {
+            return displayCardSelectPanel(cardPoolFiltersId: new long[] { cardPoolId }, cardFilter: c => true);
+        }
+        private void onClickCancelSelectButtonCallback()
+        {
+            _actionGraphCtrl.resetCardSelectInfo();
+            //隐藏UI
+            hideCardSelectPanel();
+        }
+        private void onClickCardSelectPanelCardCallback(CardDefine define)
+        {
+            _actionGraphCtrl.setSelectedCardFromPanel(define);
+            //隐藏UI
+            hideCardSelectPanel();
+        }
+        #endregion
+
+        #region 错误信息
+        private void onShowErrorTipCallback(string msg)
+        {
+            showErrorTip(msg);
+        }
+        #endregion
+
         #endregion
         #region 节点拖拽
         /// <summary>
@@ -402,6 +472,55 @@ namespace UI
             _createActionDefineDialog.showErrorTip(message);
         }
         #endregion
+
+        #region 效果属性
+        private void setEffectPropertyTypes((ActionNodeValueType type, string name)[] types)
+        {
+            _createEffectPropDialog.setTypes(types);
+        }
+        private void showEffectPropertyDialogError(string message)
+        {
+            _createEffectPropDialog.showErrorTip(message);
+        }
+        private void displayEffectPropertyDialog(bool display)
+        {
+            if (display)
+            {
+                _createEffectPropDialog.display();
+            }
+            else
+            {
+                _createEffectPropDialog.hide();
+            }
+        }
+        #endregion
+
+        #region 错误信息
+        private void showErrorTip(string msg)
+        {
+            _hintMessageText.text = msg;
+            _hintMessageText.gameObject.SetActive(false);
+            _hintMessageText.gameObject.SetActive(true);
+            var sePlayer = _hintMessageText.gameObject.GetComponent<SEPlayer>();
+            if (sePlayer)
+                sePlayer.Play();
+        }
+        private void hideErrorTip()
+        {
+            _hintMessageText.text = string.Empty;
+            _hintMessageText.gameObject.SetActive(false);
+        }
+        #endregion
+        private async Task displayCardSelectPanel(long[] cardPoolsRange = null, long[] cardPoolFiltersId = null, DefineReference[] characterRefs = null, Predicate<CardDefine> cardFilter = null)
+        {
+            await _cardSelectPanel.display(cardPoolsRange, cardPoolFiltersId, characterRefs, cardFilter);
+            _cardSelectPanelObj.SetActive(true);
+        }
+        private void hideCardSelectPanel()
+        {
+            _cardSelectPanelObj.SetActive(false);
+        }
+
         private void updatePasteButton()
         {
             _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard);
@@ -604,6 +723,20 @@ namespace UI
         NodesPanelItem _dragNodeItem;
         [SerializeField]
         float _dragThreshold = 50f;
+
+        [Header("全屏UI引用")]
+        [SerializeField]
+        private Button _cancelSelectCardButton;
+        [SerializeField]
+        private GameObject _cardSelectPanelObj;
+        [SerializeField]
+        private CardPoolViewPanelCtrl _cardSelectPanel;
+        [SerializeField]
+        private Text _hintMessageText;
+        [SerializeField]
+        private CreatePropertyItemDialog _createEffectPropDialog;
+
+
         Vector2 _dragStartPosition;
         bool _isDraggingHorizontal = false;
         bool _isDraggingVertical = false;
@@ -626,6 +759,11 @@ namespace UI
         }
         private NodeDefine[] _nodeDefines;
         private NodeDefine[] _filteredDefines;
+
+        [TranslateMsg("尝试添加重复名称的自定义属性的错误提示")]
+        public const string NODE_EFFECT_PROP_NAME_TAKEN = "该属性名已被使用！";
+        [TranslateMsg("尝试添加空名称的自定义属性的错误提示")]
+        public const string NODE_EFFECT_PROP_NAME_EMPTY = "请输入属性名！";
 
         [TranslateMsg("没有分类的动作的分类")]
         public const string ACTION_CATEGORY_NAME_NONE = "无";

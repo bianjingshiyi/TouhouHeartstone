@@ -330,10 +330,6 @@ namespace UI
             return _actionNodesRoot.InverseTransformPoint(worldPosition);
         }
 
-        public void displayCardSelectPanel(bool value)
-        {
-            _cardSelectPanel.SetActive(value);
-        }
         public void initPiles((string name, string value)[] piles)
         {
             initPiles(piles.Select(i => i.name).ToArray(), piles.Select(i => i.value).ToArray());
@@ -360,7 +356,6 @@ namespace UI
         }
         public void resetView()
         {
-            _hintMessageText.gameObject.SetActive(false);
             selectPort(null);
             _content.localPosition = Vector3.zero;
             _content.localScale = Vector3.one;
@@ -399,20 +394,6 @@ namespace UI
             return -new Vector2(_content.anchoredPosition.x / _content.localScale.y, _content.anchoredPosition.y / _content.localScale.y);
         }
 
-        public void showErrorTip(string msg)
-        {
-            _hintMessageText.text = msg;
-            _hintMessageText.gameObject.SetActive(false);
-            _hintMessageText.gameObject.SetActive(true);
-            var sePlayer = _hintMessageText.gameObject.GetComponent<SEPlayer>();
-            if (sePlayer)
-                sePlayer.Play();
-        }
-        public void hideErrorTip()
-        {
-            _hintMessageText.text = string.Empty;
-            _hintMessageText.gameObject.SetActive(false);
-        }
 
         #region 操作模式/节点选择
         public IEnumerable<ActionNodeItem> getSelectedNodes()
@@ -458,27 +439,6 @@ namespace UI
         #endregion
 
 
-        #region 效果属性
-        public void setEffectPropertyTypes((ActionNodeValueType type, string name)[] types)
-        {
-            _createEffectPropDialog.setTypes(types);
-        }
-        public void showEffectPropertyDialogError(string message)
-        {
-            _createEffectPropDialog.showErrorTip(message);
-        }
-        public void displayEffectPropertyDialog(bool display)
-        {
-            if (display)
-            {
-                _createEffectPropDialog.display();
-            }
-            else
-            {
-                _createEffectPropDialog.hide();
-            }
-        }
-        #endregion
         public bool isNodePositionFree(Vector2 pos, Vector2 size)
         {
             return isNodePositionFree(new Rect(pos, size));
@@ -616,12 +576,8 @@ namespace UI
             }
 
             _returnButton.onClick.AddListener(onClickReturnButtonCallback);
-            _cancelSelectButton?.onClick.AddListener(onClickCancelSelectButtonCallback);
-
-            displayCardSelectPanel(false);
 
             // 效果属性。
-            _createEffectPropDialog.onConfirm += onConfirmCreateEffectPropertyCallback;
             #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
             _backgroundOriginScale = _content.localScale;//读取目前的缩放比例 
 
@@ -1156,11 +1112,6 @@ namespace UI
         {
             onClickReturnButton?.Invoke();
         }
-        private void onClickCancelSelectButtonCallback()
-        {
-            setFocused();
-            onClickCancelSelectButton?.Invoke();
-        }
         private void onActionNodeItemUpdateTransform(ActionNodeItem item)
         {
             updateNodeLines(item);
@@ -1183,11 +1134,6 @@ namespace UI
         {
             setFocused();
             onClickAddEffectPropertyButton?.Invoke();
-        }
-        private void onConfirmCreateEffectPropertyCallback(PropertyItemInfo item)
-        {
-            setFocused();
-            onConfirmCreateEffectProperty?.Invoke(item);
         }
         private void onClickEffectPropertyItemButtonCallback(string name, int index)
         {
@@ -1474,10 +1420,6 @@ namespace UI
         /// </summary>
         public event Action onClickReturnButton;
         /// <summary>
-        /// 当点击取消选择卡牌按钮
-        /// </summary>
-        public event Action onClickCancelSelectButton;
-        /// <summary>
         /// 当选择节点
         /// </summary>
         public event Action<ActionNodeItem> onNodeSelected;
@@ -1501,7 +1443,6 @@ namespace UI
         /// 当确认创建自定义属性。
         /// </summary>
         public event Action onClickAddEffectPropertyButton;
-        public event Action<PropertyItemInfo> onConfirmCreateEffectProperty;
         public event Action<string, int> onClickEffectPropertyItemButton;
         public event Action<string, int> onClickEffectPropertyItemCardButton;
         public event Action<string, int> onClickEffectPropertyItemCardEditButton;
@@ -1549,8 +1490,6 @@ namespace UI
         RectTransform _selectFrameTrans;
         [SerializeField]
         RectTransform _viewPort;
-        [SerializeField]
-        CreatePropertyItemDialog _createEffectPropDialog;
 
         [Header("缩放")]
         [SerializeField]
@@ -1561,16 +1500,6 @@ namespace UI
         float _maxScale = 1.7f;
         [SerializeField]
         float _minScale = 0.3f;
-
-        [Header("外部引用")]
-        [SerializeField]
-        CreateActionDefineDialog _createActionDefineDialog;
-        [SerializeField]
-        Text _hintMessageText;
-        [SerializeField]
-        GameObject _cardSelectPanel;
-        [SerializeField]
-        Button _cancelSelectButton;
 
         [Header("节点")]
         [SerializeField]

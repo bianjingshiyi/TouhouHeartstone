@@ -49,7 +49,6 @@ namespace Controllers
                 var _eventEditorNames = mainEventDefines.Select(d => game.lang._(d.editorName)).ToArray();
                 //更新UI
                 _ui.gameObject.SetActive(true);
-                _ui.displayCardSelectPanel(false);
                 _ui.initEventNames(
                     _eventEditorNames,
                     _eventNames);
@@ -79,7 +78,6 @@ namespace Controllers
         public Task hide()
         {
             gameObject.SetActive(false);
-            _ui.hideErrorTip();
             return Task.CompletedTask;
         }
         public bool isActionDefineNameExist(string name)
@@ -326,6 +324,28 @@ namespace Controllers
         }
         #endregion
 
+        public void setSelectedCardFromPanel(CardDefine cardDefine)
+        {
+            if (!string.IsNullOrEmpty(_curCardSeekingEffectPropName))
+            {
+                selectCardForEffectProperty(cardDefine);
+            }
+            else
+            {
+                selectCardForNodeConst(cardDefine);
+            }
+            //重置字段
+            resetCardSelectInfo();
+        }
+        public void resetCardSelectInfo()
+        {
+            //重置字段
+            _curEditNode = null;
+            _curEditActionNodeConstName = string.Empty;
+            _curEditActionNodeConstItemIndex = -1;
+            _curCardSeekingEffectPropName = string.Empty;
+            _curCardSeekingEffectPropIndex = -1;
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -351,7 +371,6 @@ namespace Controllers
             _ui.onClickActionNodeConstValueItemButton += onClickActionNodeConstValueItemButton;
             _ui.onClickActionNodeConstValueItemCardButton += onClickActionNodeConstValueItemCardButton;
             _ui.onClickActionNodeConstValueItemCardEditButton += onClickActionNodeConstValueItemCardEditButton;
-            _ui.onClickCancelSelectButton += onClickCancelSelectCardButton;
             _ui.onNodeSelected += onNodeSelected;
             _ui.onNodeDeselected += onNodeDeselected;
             _ui.onNodeVisualEffectButtonClicked += onNodeVisualEffectButtonClickedCallback;
@@ -367,7 +386,6 @@ namespace Controllers
 
             // 效果属性
             _ui.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
-            _ui.onConfirmCreateEffectProperty += onConfirmCreateEffectPropertyCallback;
             _ui.onClickEffectPropertyItemButton += onClickEffectPropertyItemButtonCallback;
             _ui.onClickEffectPropertyItemCardButton += onClickEffectPropertyItemCardButtonCallback;
             _ui.onClickEffectPropertyItemCardEditButton += onClickEffectPropertyItemCardEditButtonCallback;
@@ -380,12 +398,6 @@ namespace Controllers
             _ui.onClickEffectPropertyAddItemButton += onClickEffectPropertyAddItemButtonCallback;
             _ui.onClickEffectPropertyRemoveItemButton += onClickEffectPropertyRemoveItemButtonCallback;
 
-            if (_cardPoolViewPanelCtrl)
-            {
-                _cardPoolViewPanelCtrl.enableCount(false);
-                _cardPoolViewPanelCtrl.onClickCard += onClickCardSelectPanelCard;
-            }
-
             _ui.initPiles(getAllPiles());
             _ui.initCardProperties(CardEditorCtrl.cardProps.ToArray());
             var keywords = CardEditorCtrl.getKeywords();
@@ -393,9 +405,6 @@ namespace Controllers
             var effectTagNames = _activeEffectTagNames.Union(_passiveEffectTagNames).ToArray();
             var effectTagValues = getAllEffectTagValues();
             _ui.initEffectTags(effectTagNames, effectTagValues);
-
-            var customPropTypes = CardEditorCtrl.customPropTypes.Select(a => (a.type, game.lang._(a.name))).ToArray();
-            _ui.setEffectPropertyTypes(customPropTypes);
         }
         #endregion
         #region 事件回调
@@ -638,12 +647,7 @@ namespace Controllers
                     //打开卡牌选择界面
                     cardPoolId = value.cardPoolId;
                 }
-                await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { cardPoolId }, cardFilter: c =>
-                {
-                    //所有卡都可以选
-                    return true;
-                });
-                _ui.displayCardSelectPanel(true);
+                await displayCardSelectPanel(cardPoolId);
                 _curEditNode = action;
                 _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = -1;
@@ -703,12 +707,7 @@ namespace Controllers
                     cardPoolId = defRefs[itemIndex].cardPoolId;
                 }
                 //打开卡牌选择界面
-                await _cardPoolViewPanelCtrl.display(cardPoolFiltersId: new long[] { cardPoolId }, cardFilter: c =>
-                {
-                    //所有卡都可以选，包括技能、英雄和衍生牌
-                    return true;
-                });
-                _ui.displayCardSelectPanel(true);
+                await displayCardSelectPanel(cardPoolId);
                 _curEditNode = action;
                 _curEditActionNodeConstName = constDefine.name;
                 _curEditActionNodeConstItemIndex = itemIndex;
@@ -747,36 +746,6 @@ namespace Controllers
                 }
                 await scene.editor.openReferedCard(defRef, setPropAction);
             }
-        }
-        private void onClickCardSelectPanelCard(CardDefine cardDefine)
-        {
-            if (!string.IsNullOrEmpty(_curCardSeekingEffectPropName))
-            {
-                selectCardForEffectProperty(cardDefine);
-            }
-            else
-            {
-                selectCardForNodeConst(cardDefine);
-            }
-            //重置字段
-            _curEditNode = null;
-            _curEditActionNodeConstName = string.Empty;
-            _curEditActionNodeConstItemIndex = -1;
-            _curCardSeekingEffectPropName = string.Empty;
-            _curCardSeekingEffectPropIndex = -1;
-            //隐藏UI
-            _ui.displayCardSelectPanel(false);
-        }
-        private void onClickCancelSelectCardButton()
-        {
-            //重置字段
-            _curEditNode = null;
-            _curEditActionNodeConstName = string.Empty;
-            _curEditActionNodeConstItemIndex = -1;
-            _curCardSeekingEffectPropName = string.Empty;
-            _curCardSeekingEffectPropIndex = -1;
-            //隐藏UI
-            _ui.displayCardSelectPanel(false);
         }
         private void onNodeSelected(ActionNodeItem actionNodeItem)
         {
@@ -1493,7 +1462,7 @@ namespace Controllers
         }
         private void showErrorTip(string msg)
         {
-            _ui.showErrorTip(msg);
+            onShowErrorTip?.Invoke(msg);
         }
         private void showOutputConnectError()
         {
@@ -1985,12 +1954,22 @@ namespace Controllers
         {
             return _activeEffectTags.Union(_passiveEffectTags).ToArray();
         }
+        private Task displayCardSelectPanel(long cardPoolId)
+        {
+            if (onStartSelectCard != null)
+            {
+                return onStartSelectCard.Invoke(cardPoolId);
+            }
+            return Task.CompletedTask;
+        }
         #endregion
         #region 事件
         public event Action OnGraphEdited;
         public event Action<Node> OnNodeSelected;
         public event Action<Node> OnNodeDeselected;
         public event Action<Node> OnNodeVisualEffectButtonClicked;
+        public event Func<long, Task> onStartSelectCard;
+        public event Action<string> onShowErrorTip;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]
@@ -2023,8 +2002,6 @@ namespace Controllers
         public MainCtrl main { get; }
         [SerializeField]
         ActionNodeGraphPanel _ui;
-        [SerializeField]
-        CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
         ConfigManager _config;
 
