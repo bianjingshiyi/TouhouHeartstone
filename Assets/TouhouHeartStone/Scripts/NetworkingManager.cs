@@ -20,6 +20,10 @@ namespace Game
     public class NetworkingManager : Manager
     {
         #region 公共成员
+        public void start()
+        {
+            _ = startSequence();
+        }
         public Task<ClientUpdateInfo> getLatestVersion()
         {
             return logic.ServerClient.GetLatestUpdateAsync();
@@ -260,7 +264,6 @@ namespace Game
 
         protected void Start()
         {
-            _ = startSequence();
             // 初始化_sceneCtrl.
             if (_sceneCtrl == null)
             {

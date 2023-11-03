@@ -215,6 +215,7 @@ namespace Game
             // 初始化玩家Key.
             InitPlayerKey();
 
+            network.start();
         }
         protected async void Start()
         {
