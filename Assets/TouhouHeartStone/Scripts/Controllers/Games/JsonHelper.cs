@@ -4,6 +4,7 @@ using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson.Serialization.Conventions;
+using NitoriNetwork.Common;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -16,49 +17,42 @@ namespace Controllers
     {
         public static void init()
         {
-            if (!BsonClassMap.IsClassMapRegistered(typeof(DefineReference)))
-                BsonClassMap.RegisterClassMap<DefineReference>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(CardReference)))
-                BsonClassMap.RegisterClassMap<CardReference>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(EffectTag)))
-                BsonClassMap.RegisterClassMap<EffectTag>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(EventArgReference)))
-                BsonClassMap.RegisterClassMap<EventArgReference>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(ObjectProxy)))
-                BsonClassMap.RegisterClassMap<ObjectProxy>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(ActionValueRef)))
-                BsonClassMap.RegisterClassMap<ActionValueRef>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActionValueRef)))
-                BsonClassMap.RegisterClassMap<SerializableActionValueRef>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableFunctionNode)))
-                BsonClassMap.RegisterClassMap<SerializableFunctionNode>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedEffect)))
-                BsonClassMap.RegisterClassMap<GeneratedEffect>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(GeneratedAura)))
-                BsonClassMap.RegisterClassMap<GeneratedAura>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(CompareOperator)))
-                BsonClassMap.RegisterClassMap<CompareOperator>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(IntegerOperator)))
-                BsonClassMap.RegisterClassMap<IntegerOperator>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(LogicOperator)))
-                BsonClassMap.RegisterClassMap<LogicOperator>();
+            registerClass<ExecuteResult<string>>();
+            registerClass<ExecuteResult<LobbyRoomData>>();
+            registerClass<ExecuteResult<LobbyRoomData[]>>();
+            registerClass<ExecuteResult<DeckDataItem[]>>(); 
+            registerClass<ExecuteResult<ClientUpdateInfo>>();
+            registerClass<ExecuteResult<PublicBasicUserInfo>>();
+            registerClass<DefineReference>();
+            registerClass<CardReference>();
+            registerClass<EffectTag>();
+            registerClass<EventArgReference>();
+            registerClass<ObjectProxy>();
+            registerClass<ActionValueRef>();
+            registerClass<SerializableActionValueRef>();
+            registerClass<SerializableFunctionNode>();
+            registerClass<GeneratedEffect>();
+            registerClass<GeneratedAura>();
+            registerClass<CompareOperator>();
+            registerClass<IntegerOperator>();
+            registerClass<LogicOperator>();
 
             // Nodes.
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActionNode))) BsonClassMap.RegisterClassMap<SerializableActionNode>();
+            registerClass<SerializableActionNode>();
 
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActiveEntryNode))) BsonClassMap.RegisterClassMap<SerializableActiveEntryNode>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializablePassiveEntryNode))) BsonClassMap.RegisterClassMap<SerializablePassiveEntryNode>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableEventEntryNode))) BsonClassMap.RegisterClassMap<SerializableEventEntryNode>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableAuraEntryNode))) BsonClassMap.RegisterClassMap<SerializableAuraEntryNode>();
+            registerClass<SerializableActiveEntryNode>();
+            registerClass<SerializablePassiveEntryNode>();
+            registerClass<SerializableEventEntryNode>();
+            registerClass<SerializableAuraEntryNode>();
 
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedEntryNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedEntryNode>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableGeneratedReturnNode))) BsonClassMap.RegisterClassMap<SerializableGeneratedReturnNode>();
+            registerClass<SerializableGeneratedEntryNode>();
+            registerClass<SerializableGeneratedReturnNode>();
 
             // Effects.
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableActiveEffect))) BsonClassMap.RegisterClassMap<SerializableActiveEffect>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializablePassiveEffect))) BsonClassMap.RegisterClassMap<SerializablePassiveEffect>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableEventEffect))) BsonClassMap.RegisterClassMap<SerializableEventEffect>();
-            if (!BsonClassMap.IsClassMapRegistered(typeof(SerializableAuraEffect))) BsonClassMap.RegisterClassMap<SerializableAuraEffect>();
+            registerClass<SerializableActiveEffect>();
+            registerClass<SerializablePassiveEffect>();
+            registerClass<SerializableEventEffect>();
+            registerClass<SerializableAuraEffect>();
             isInited = true;
         }
         public static string toJson(this object obj, bool readFriendly = false)
@@ -75,6 +69,10 @@ namespace Controllers
             T obj = BsonSerializer.Deserialize<T>(json);
             ConventionRegistry.Remove(nameof(CustomClassMapConvention));
             return obj;
+        }
+        private static void registerClass<T>()
+        {
+            if (!BsonClassMap.IsClassMapRegistered(typeof(T))) BsonClassMap.RegisterClassMap<T>();
         }
         static ConventionPack conventions = new ConventionPack()
         {
