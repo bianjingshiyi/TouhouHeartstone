@@ -67,6 +67,8 @@ namespace UI
         public const string CARD_EFFECT_DEFAULT_NAME_TEMPLATE = "{0}{1}";
         [SerializeField]
         protected EffectEditorCtrl _effectEditorCtrl;
+        [SerializeField]
+        protected GraphEditorPanelCtrl _graphEditor;
     }
     public class CardPoolDisplayPage
     {

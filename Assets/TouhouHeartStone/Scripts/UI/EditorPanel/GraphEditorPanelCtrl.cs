@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Controllers;
@@ -36,7 +37,7 @@ namespace UI
         }
         public void updateNodeDefines()
         {
-            var actionDefines = game.card.getAllActionDefines(_cardPoolId);;
+            var actionDefines = game.card.getAllActionDefines(_cardPoolId); ;
             var nodeDefines = actionDefines.Select(a => new NodeDefine(a));
             nodeDefines = nodeDefines.Union(_eventTriggerTimes.Select(e => new NodeDefine(e)));
 
@@ -109,11 +110,16 @@ namespace UI
 
             _actionGraphCtrl.OnNodeSelected += OnNodeSelected;
             _actionGraphCtrl.OnNodeDeselected += OnNodeDeselected;
-            _actionGraphCtrl.OnGraphEdited += OnGraphEdited;
+            _actionGraphCtrl.OnGraphEdited += OnGraphEditedCallback;
             _actionGraphCtrl.OnNodeVisualEffectButtonClicked += OnNodeVisualEffectButtonClicked;
             _actionGraphCtrl.onStartSelectCard += onStartSelectCardForGraphCallback;
             _actionGraphCtrl.onShowErrorTip += onShowErrorTipCallback;
             _actionGraphCtrl.onAddEffectPropertyButtonClicked += onAddEffectPropertyButtonClickedCallback;
+
+            _actionGraphCtrl.onOpenActionNodeConstCardDefine += onOpenActionNodeConstCardDefineCallback;
+            _actionGraphCtrl.onOpenActionNodeConstItemCardDefine += onOpenActionNodeConstItemCardDefineCallback;
+            _actionGraphCtrl.onOpenEffectPropertyCardDefine += onOpenEffectPropertyCardDefineCallback;
+            _actionGraphCtrl.onOpenEffectPropertyItemCardDefine += onOpenEffectPropertyItemCardDefineCallback;
 
             var categoryNames = categories.Select(c => _actionGraphCtrl.tryTranslateWithDict(c)).ToArray();
             _nodesPanel.initCategories(categoryNames, categories);
@@ -176,6 +182,8 @@ namespace UI
         }
         private async void OnClickPasteButton()
         {
+            if (_actionGraphCtrl.isReadonly)
+                return;
             var clipboard = scene.editor.nodeClipboard;
             if (string.IsNullOrEmpty(clipboard))
                 return;
@@ -184,6 +192,8 @@ namespace UI
         }
         private void OnClickDeleteButton()
         {
+            if (_actionGraphCtrl.isReadonly)
+                return;
             _actionGraphCtrl.deleteSelection();
             _actionGraphCtrl.addRecordBreakpoint();
         }
@@ -195,12 +205,14 @@ namespace UI
         {
             _deleteButtonDirty = true;
         }
-        private void OnGraphEdited()
+        private void OnGraphEditedCallback()
         {
             updateUndoRedoButton();
         }
         private void OnNodeVisualEffectButtonClicked(Node node)
         {
+            if (_actionGraphCtrl.isReadonly)
+                return;
             onOpenNodeAnimationDialog?.Invoke(node);
         }
         public async void onCreateActionDefineCallback(string name, string category, int typeIndex)
@@ -297,7 +309,7 @@ namespace UI
                 return false;
             }
             //执行操作
-            if (isPositionOverActionGraph(data.position))
+            if (isPositionOverActionGraph(data.position) && !_actionGraphCtrl.isReadonly)
             {
                 var pos = _actionGraphContent.InverseTransformPoint(data.position);
                 pos = _actionGraphCtrl.getNodeSnapPreviewPosition(pos);
@@ -332,6 +344,8 @@ namespace UI
         }
         private async void OnNodeItemDoubleClicked(int index)
         {
+            if (_actionGraphCtrl.isReadonly)
+                return;
             if (index < 0 || index >= _filteredDefines.Length)
                 return;
             var define = _filteredDefines[index];
@@ -379,10 +393,14 @@ namespace UI
         #region 效果属性
         private void onAddEffectPropertyButtonClickedCallback()
         {
+            if (_actionGraphCtrl.isReadonly)
+                return;
             displayEffectPropertyDialog(true);
         }
         private void onConfirmCreateEffectPropertyCallback(PropertyItemInfo item)
         {
+            if (_actionGraphCtrl.isReadonly)
+                return;
             if (string.IsNullOrEmpty(item.propertyName))
             {
                 string errorMessage = game.lang._(NODE_EFFECT_PROP_NAME_EMPTY);
@@ -416,6 +434,58 @@ namespace UI
             _actionGraphCtrl.setSelectedCardFromPanel(define);
             //隐藏UI
             hideCardSelectPanel();
+        }
+        #endregion
+
+        #region 卡牌跳转
+        private async void onOpenActionNodeConstCardDefineCallback(ActionNode action, string name)
+        {
+            var value = action.getConst(name) as DefineReference;
+            await scene.editor.openReferedCard(value, setPropAction);
+            void setPropAction(CardDefine cardDefine)
+            {
+                _actionGraphCtrl.setNodeConst(action, name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
+            }
+        }
+        private async void onOpenActionNodeConstItemCardDefineCallback(ActionNode action, string name, int index)
+        {
+            IList<DefineReference> list = null;
+            if (action.getConst(name) is IList<DefineReference> defList)
+            {
+                list = defList;
+            }
+            await scene.editor.openReferedCard(list[index], setPropAction);
+            void setPropAction(CardDefine cardDefine)
+            {
+                list[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                _actionGraphCtrl.setNodeConst(action, name, list);
+            };
+        }
+        private async void onOpenEffectPropertyCardDefineCallback(GeneratedEffect effect, string name)
+        {
+            var prop = effect.getProp<DefineReference>(name);
+            await scene.editor.openReferedCard(prop, setPropAction);
+
+            void setPropAction(CardDefine cardDefine)
+            {
+                _actionGraphCtrl.setEffectProp(name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
+                _actionGraphCtrl.updatePropertyItem(name);
+            }
+        }
+        private async void onOpenEffectPropertyItemCardDefineCallback(GeneratedEffect effect, string name, int index)
+        {
+            var prop = effect.getProp<IList<DefineReference>>(name);
+            if (prop == null || index < 0 || index >= prop.Count)
+                return;
+            var define = prop[index];
+            await scene.editor.openReferedCard(define, setPropAction);
+
+            void setPropAction(CardDefine cardDefine)
+            {
+                prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
+                _actionGraphCtrl.setEffectProp(name, prop);
+                _actionGraphCtrl.updatePropertyItem(name);
+            }
         }
         #endregion
 
@@ -523,12 +593,12 @@ namespace UI
 
         private void updatePasteButton()
         {
-            _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard);
+            _pasteButton.interactable = !string.IsNullOrEmpty(scene.editor.nodeClipboard) && !_actionGraphCtrl.isReadonly;
         }
         private void updateDeleteButton()
         {
             var selectedNodes = _actionGraphCtrl.getSelectedNodes();
-            _deleteButton.interactable = selectedNodes != null && selectedNodes.Length > 0 && selectedNodes.Any(n => _actionGraphCtrl.CanNodeBeDeleted(n));
+            _deleteButton.interactable = selectedNodes != null && selectedNodes.Length > 0 && selectedNodes.Any(n => _actionGraphCtrl.CanNodeBeDeleted(n)) && !_actionGraphCtrl.isReadonly;
             _deleteButtonDirty = false;
         }
         private string getNodeDefineName(NodeDefine define)
@@ -617,7 +687,7 @@ namespace UI
                     scene.editor.nodeClipboard = clipboard;
                     updatePasteButton();
                 }
-                if (Input.GetKeyDown(KeyCode.V))
+                if (Input.GetKeyDown(KeyCode.V) && !_actionGraphCtrl.isReadonly)
                 {
                     // Ctrl + V：粘贴
                     var clipboard = scene.editor.nodeClipboard;
@@ -627,7 +697,7 @@ namespace UI
                         updatePasteButton();
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.D))
+                if (Input.GetKeyDown(KeyCode.D) && !_actionGraphCtrl.isReadonly)
                 {
                     // Ctrl + D：复制并粘贴
                     var clipboard = _actionGraphCtrl.copySelection();
@@ -638,7 +708,7 @@ namespace UI
                     }
                     updatePasteButton();
                 }
-                if (Input.GetKeyDown(KeyCode.X))
+                if (Input.GetKeyDown(KeyCode.X) && !_actionGraphCtrl.isReadonly)
                 {
                     // Ctrl + X：复制并删除
                     var clipboard = _actionGraphCtrl.copySelection();
@@ -647,7 +717,7 @@ namespace UI
                     _actionGraphCtrl.deleteSelection();
                     _actionGraphCtrl.addRecordBreakpoint();
                 }
-                if (Input.GetKeyDown(KeyCode.Z))
+                if (Input.GetKeyDown(KeyCode.Z) && !_actionGraphCtrl.isReadonly)
                 {
                     // Ctrl + Z：撤销
                     if (_actionGraphCtrl.canUndo())
@@ -656,7 +726,7 @@ namespace UI
                         updateUndoRedoButton();
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.Y))
+                if (Input.GetKeyDown(KeyCode.Y) && !_actionGraphCtrl.isReadonly)
                 {
                     // Ctrl + Y：重做
                     if (_actionGraphCtrl.canRedo())
@@ -666,7 +736,7 @@ namespace UI
                     }
                 }
             }
-            if (Input.GetKeyDown(KeyCode.Delete))
+            if (Input.GetKeyDown(KeyCode.Delete) && !_actionGraphCtrl.isReadonly)
             {
                 // Delete：删除
                 _actionGraphCtrl.deleteSelection();
@@ -674,7 +744,7 @@ namespace UI
             }
         }
         #endregion
-        #region 
+        #region 事件
         public event Action<Node> onOpenNodeAnimationDialog;
         public event Action<Node, int> onAnimationValueChanged;
         public event Action<Node, VisualEffectDialogInfo> onAnimationPropChanged;

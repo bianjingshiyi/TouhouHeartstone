@@ -29,19 +29,7 @@ namespace Controllers
             if (uiDisplayInfo is DisplayInfo info)
             {
                 quitGraph();
-
-                _editObjectStack.Clear();
-                if (info.editObjectStack != null)
-                {
-                    for (int i = 0; i < info.editObjectStack.Length; i++)
-                    {
-                        _editObjectStack.Push(info.editObjectStack[i]);
-                    }
-                }
-                if (_editObjectStack.Count < 1)
-                    _ui.setReturnButtonActive(false);
                 _curCardPoolId = info.cardPoolId;
-                _graphInfo = info.graphInfo;
                 // 获取事件定义列表
                 var mainEventDefines = game.card.getAllEventDefines(_curCardPoolId);
                 _eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
@@ -73,7 +61,7 @@ namespace Controllers
                 editObject = _generatedActionDefine;
             else
                 editObject = null;
-            return new DisplayInfo(_curCardPoolId, editObject, _editObjectStack.Count > 0 ? _editObjectStack.ToArray() : null, _graphInfo);
+            return new DisplayInfo(_curCardPoolId, editObject);
         }
         public Task hide()
         {
@@ -346,6 +334,27 @@ namespace Controllers
             _curCardSeekingEffectPropName = string.Empty;
             _curCardSeekingEffectPropIndex = -1;
         }
+
+        /// <summary>
+        /// 设置一个节点的一个常量的值，并将这次修改加入到撤销列表记录中。
+        /// </summary>
+        /// <param name="node">节点。</param>
+        /// <param name="name">常量名。</param>
+        /// <param name="value">常量值。</param>
+        public void setNodeConst(Node node, string name, object value)
+        {
+            var beforeValue = node.getConst(name);
+            if (value is ICloneable clonable)
+            {
+                value = clonable.Clone();
+            }
+            if (beforeValue is ICloneable beforeClonable)
+            {
+                beforeValue = beforeClonable.Clone();
+            }
+            node.setConst(name, value);
+            addOperationRecord(new ChangeNodeConstOperation(this, node, name, beforeValue, value));
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -374,12 +383,12 @@ namespace Controllers
             _ui.onNodeSelected += onNodeSelected;
             _ui.onNodeDeselected += onNodeDeselected;
             _ui.onNodeVisualEffectButtonClicked += onNodeVisualEffectButtonClickedCallback;
+            _ui.onClickActionNodeObsoleteButton += onClickActionNodeObsoleteButtonCallback;
             //触发
             _ui.onClickAddTargetCheckerButton += onClickAddTargetCheckerButton;
             _ui.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChanged;
             _ui.onClickRemoveTargetCheckerButton += onClickRemoveTargetCheckerButton;
             _ui.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChanged;
-            _ui.onClickReturnButton += onClickReturnButton;
             //增益
             _ui.onItemBuffChanged += onItemBuffChangedCallback;
             _ui.onClickItemEditBuffButton += onItemEditBuffCallback;
@@ -417,6 +426,8 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onConnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
+            if (isReadonly)
+                return;
             Node outputActionNode = getActionNode(outputActionNodeItem);
             Node inputActionNode = getActionNode(inputActionNodeItem);
             IPort outputPort = outputActionNode.getOutputPortAt(outputIndex);
@@ -437,6 +448,8 @@ namespace Controllers
         /// <param name="inputIndex"></param>
         private void onUnconnectNodes(ActionNodeItem outputActionNodeItem, int outputIndex, ActionNodeItem inputActionNodeItem, int inputIndex)
         {
+            if (isReadonly)
+                return;
             Node outputActionNode = getActionNode(outputActionNodeItem);
             Node inputActionNode = getActionNode(inputActionNodeItem);
             IPort outputPort = outputActionNode.getOutputPortAt(outputIndex);
@@ -446,6 +459,8 @@ namespace Controllers
         }
         private void onClickInputPort(ActionNodeItem item, int inputIndex)
         {
+            if (isReadonly)
+                return;
             var node = getActionNode(item);
             var inputPort = node.getInputPortAt(inputIndex);
             if (inputPort == null)
@@ -493,6 +508,8 @@ namespace Controllers
         }
         private void onClickOutputPort(ActionNodeItem item, int outputIndex)
         {
+            if (isReadonly)
+                return;
             var node = getActionNode(item);
             var outputPort = node.getOutputPortAt(outputIndex);
             if (outputPort == null)
@@ -540,6 +557,8 @@ namespace Controllers
         }
         private void onMoveActionNode(ActionNodeItem actionNodeItem, Vector2 graphPosition)
         {
+            if (isReadonly)
+                return;
             // 同时拖动所有被选中的节点
             Vector2 rootPosition = _ui.getNodesRootPosition();
             float movedX = graphPosition.x - rootPosition.x - actionNodeItem.posX;
@@ -565,6 +584,8 @@ namespace Controllers
         }
         private void onEndMoveActionNode(ActionNodeItem actionNodeItem)
         {
+            if (isReadonly)
+                return;
             foreach (var pair in _movingNodeDict)
             {
                 var node = getActionNode(pair.Key);
@@ -586,6 +607,8 @@ namespace Controllers
         }
         private void onStartConnection(ActionNodeItem actionNodeItem, int index, bool isOutput)
         {
+            if (isReadonly)
+                return;
             var node = getActionNode(actionNodeItem);
             var port = isOutput ? node.getOutputPortAt(index) : node.getInputPortAt(index);
             _connectingPort = port;
@@ -593,6 +616,8 @@ namespace Controllers
         }
         private void onEndConnection(ActionNodeItem actionNodeItem, int index, bool isOutput)
         {
+            if (isReadonly)
+                return;
             resetConnectingPort();
         }
         /// <summary>
@@ -603,6 +628,8 @@ namespace Controllers
         /// <param name="value"></param>
         private void onActionNodeValueChange(ActionNodeItem actionNodeItem, int constIndex, object value)
         {
+            if (isReadonly)
+                return;
             var node = getActionNode(actionNodeItem);
             if (node is ActionNode action)
             {
@@ -632,6 +659,8 @@ namespace Controllers
         }
         private async void onClickActionNodeConstValueCardButton(ActionNodeItem actionNodeItem, int index)
         {
+            if (isReadonly)
+                return;
             Node actionNode = getActionNode(actionNodeItem);
             if (!(actionNode is ActionNode action))
                 return;
@@ -653,7 +682,7 @@ namespace Controllers
                 _curEditActionNodeConstItemIndex = -1;
             }
         }
-        private async void onClickActionNodeConstValueCardEditButton(ActionNodeItem actionNodeItem, int index)
+        private void onClickActionNodeConstValueCardEditButton(ActionNodeItem actionNodeItem, int index)
         {
             Node node = getActionNode(actionNodeItem);
             if (!(node is ActionNode action))
@@ -662,24 +691,15 @@ namespace Controllers
             var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
             if (constDefine == null)
                 return;
-            if (constDefine.type == typeof(DefineReference))
-            {
-                if (action.getConst(constDefine.name) is DefineReference value)
-                {
-                    await scene.editor.openReferedCard(value, setPropAction);
-
-                    void setPropAction(CardDefine cardDefine)
-                    {
-                        setNodeConst(node, constDefine.name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
-                    }
-                }
-            }
+            onOpenActionNodeConstCardDefine?.Invoke(action, constDefine.name);
         }
         private void onClickActionNodeConstValueItemButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
         }
         private async void onClickActionNodeConstValueItemCardButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
+            if (isReadonly)
+                return;
             Node actionNode = getActionNode(actionNodeItem);
             if (!(actionNode is ActionNode action))
                 return;
@@ -713,7 +733,7 @@ namespace Controllers
                 _curEditActionNodeConstItemIndex = itemIndex;
             }
         }
-        private async void onClickActionNodeConstValueItemCardEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
+        private void onClickActionNodeConstValueItemCardEditButton(ActionNodeItem actionNodeItem, int index, int itemIndex)
         {
             Node node = getActionNode(actionNodeItem);
             if (!(node is ActionNode action))
@@ -722,30 +742,7 @@ namespace Controllers
             var constDefine = actionDefine.constDefines.ElementAtOrDefault(index);
             if (constDefine == null)
                 return;
-            if (constDefine.type == typeof(CardReferenceCollection) || constDefine.type == typeof(DefineReference[]))
-            {
-                Action<CardDefine> setPropAction = null;
-                DefineReference defRef = null;
-                if (node.getConst(constDefine.name) is CardReferenceCollection defRefCol)
-                {
-                    defRef = defRefCol[itemIndex];
-                    setPropAction = (cardDefine) =>
-                    {
-                        defRefCol[itemIndex] = defRef;
-                        setNodeConst(node, constDefine.name, defRefCol);
-                    };
-                }
-                else if (node.getConst(constDefine.name) is DefineReference[] defRefs)
-                {
-                    defRef = defRefs[itemIndex];
-                    setPropAction = (cardDefine) =>
-                    {
-                        defRefs[itemIndex] = defRef;
-                        setNodeConst(node, constDefine.name, defRefs);
-                    };
-                }
-                await scene.editor.openReferedCard(defRef, setPropAction);
-            }
+            onOpenActionNodeConstItemCardDefine?.Invoke(action, constDefine.name, itemIndex);
         }
         private void onNodeSelected(ActionNodeItem actionNodeItem)
         {
@@ -759,12 +756,9 @@ namespace Controllers
         {
             OnNodeVisualEffectButtonClicked?.Invoke(getActionNode(actionNodeItem));
         }
-        /// <summary>
-        /// 当用户点击返回按钮，出栈之前的显示信息并重新打开之前的编辑界面
-        /// </summary>
-        private void onClickReturnButton()
+        private void onClickActionNodeObsoleteButtonCallback(string msg)
         {
-            popPrevEditObjectFromStackAndOpen();
+            game.ui.dialog?.ShowConfirm(game.lang._(TITLE_NODE_OBSOLETE), game.lang._(MESSAGE_NODE_OBSOLETE, msg));
         }
         #endregion
         #region 打开节点图界面
@@ -1740,21 +1734,6 @@ namespace Controllers
             _effect = null;
             _generatedActionDefine = null;
         }
-        /// <summary>
-        /// 将当前正在编辑的对象入栈
-        /// </summary>
-        private void pushCurEditObjectToStack()
-        {
-            if (_generatedActionDefine != null)
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _generatedActionDefine, null, _graphInfo));
-            else
-                _editObjectStack.Push(new DisplayInfo(_curCardPoolId, _effect, null, _graphInfo));
-            _ui.setReturnButtonActive(true);
-        }
-        private void popPrevEditObjectFromStackAndOpen()
-        {
-            display(_editObjectStack.Pop());
-        }
         private string[] getTranslatedTargetCheckerTypes()
         {
             string[] targetCheckerTypes = new string[_targetCheckerTypes.Length];
@@ -1893,26 +1872,6 @@ namespace Controllers
                 }
             }
         }
-        /// <summary>
-        /// 设置一个节点的一个常量的值，并将这次修改加入到撤销列表记录中。
-        /// </summary>
-        /// <param name="node">节点。</param>
-        /// <param name="name">常量名。</param>
-        /// <param name="value">常量值。</param>
-        private void setNodeConst(Node node, string name, object value)
-        {
-            var beforeValue = node.getConst(name);
-            if (value is ICloneable clonable)
-            {
-                value = clonable.Clone();
-            }
-            if (beforeValue is ICloneable beforeClonable)
-            {
-                beforeValue = beforeClonable.Clone();
-            }
-            node.setConst(name, value);
-            addOperationRecord(new ChangeNodeConstOperation(this, node, name, beforeValue, value));
-        }
         private async Task initNodeConstDefaultValue(ActionNodeItem item, Node node, int constIndex, ActionNodeValueInfo constInfo)
         {
             if (constInfo.type == ActionNodeValueType.cardReference || constInfo.type == ActionNodeValueType.cardReferenceCollection)
@@ -1956,6 +1915,8 @@ namespace Controllers
         }
         private Task displayCardSelectPanel(long cardPoolId)
         {
+            if (isReadonly)
+                return Task.CompletedTask;
             if (onStartSelectCard != null)
             {
                 return onStartSelectCard.Invoke(cardPoolId);
@@ -1970,6 +1931,8 @@ namespace Controllers
         public event Action<Node> OnNodeVisualEffectButtonClicked;
         public event Func<long, Task> onStartSelectCard;
         public event Action<string> onShowErrorTip;
+        public event Action<ActionNode, string> onOpenActionNodeConstCardDefine;
+        public event Action<ActionNode, string, int> onOpenActionNodeConstItemCardDefine;
         #endregion
         #region 属性字段
         [TranslateMsg("编辑器-在分类中返回上一层的按钮({0}为按钮文本)")]
@@ -2000,12 +1963,13 @@ namespace Controllers
         public IAppManager app { get; }
         [Obsolete]
         public MainCtrl main { get; }
+        public bool isReadonly => _isReadonly;
         [SerializeField]
         ActionNodeGraphPanel _ui;
         [SerializeField]
+        bool _isReadonly;
+
         ConfigManager _config;
-
-
         ConfigManager config 
         {
             get
@@ -2032,7 +1996,6 @@ namespace Controllers
                 return null;
             }
         }
-        ActionNodeGraphInfo _graphInfo;
         long _curCardPoolId = 0;
         GeneratedEffect _effect;
         /// <summary>
@@ -2051,7 +2014,6 @@ namespace Controllers
         /// 当前正在编辑的动作节点常量子项索引
         /// </summary>
         int _curEditActionNodeConstItemIndex = -1;
-        readonly Stack<DisplayInfo> _editObjectStack = new Stack<DisplayInfo>();
         string[] _targetCheckerTypes = new string[]
         {
             DEFINE.TARGET_TYPE_CHARACTER,
@@ -2125,6 +2087,11 @@ namespace Controllers
         const string EDITOR_ENUM_CARD_TYPE_SKILL = "技能";
         [TranslateMsg("卡牌类型，道具")]
         const string EDITOR_ENUM_CARD_TYPE_ITEM = "道具";
+
+        [TranslateMsg]
+        const string TITLE_NODE_OBSOLETE = "过时的节点";
+        [TranslateMsg("参数0为节点自带的消息")]
+        const string MESSAGE_NODE_OBSOLETE = "此节点已被弃用，很可能在之后的版本中删除。\n{0}";
 
         public static readonly Dictionary<string, string> _nameTextDict = new Dictionary<string, string>()
         {
@@ -2248,16 +2215,13 @@ namespace Controllers
         #region 内部类
         public class DisplayInfo : UIDisplayInfo
         {
-            public DisplayInfo(long cardPoolId, object editObject, DisplayInfo[] editObjectStack, ActionNodeGraphInfo graphInfo)
+            public DisplayInfo(long cardPoolId, object editObject)
             {
                 this.cardPoolId = cardPoolId;
                 this.editObject = editObject;
-                this.editObjectStack = editObjectStack;
-                this.graphInfo = graphInfo;
             }
             public long cardPoolId;
             public object editObject;
-            public DisplayInfo[] editObjectStack;
             public ActionNodeGraphInfo graphInfo;
         }
         #endregion

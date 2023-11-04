@@ -70,15 +70,14 @@ namespace Controllers
 
             updateCustomProperties();
             updateKeywords();
-            _effectEditorCtrl.updateEventTriggerTimes(_cardPoolId);
             _effectEditorCtrl.hideActionGraph();
             if (effects.Length > 0)
             {
-                await _effectEditorCtrl.display(_cardPoolId, _cardDefine, effects[0]);
+                await _effectEditorCtrl.display(_cardPoolId, effects[0]);
             }
             updateEffectList(effects);
 
-            _graphEditorPanelCtrl.display(_cardPoolId);
+            _graphEditor.display(_cardPoolId);
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -220,9 +219,9 @@ namespace Controllers
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
 
-            _graphEditorPanelCtrl.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
-            _graphEditorPanelCtrl.onAnimationValueChanged += onNodeAnimationValueChangedCallback;
-            _graphEditorPanelCtrl.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
+            _graphEditor.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
+            _graphEditor.onAnimationValueChanged += onNodeAnimationValueChangedCallback;
+            _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
         }
         #endregion
         #region 事件回调
@@ -449,7 +448,7 @@ namespace Controllers
         }
 
         #region Effects
-        private void onCreateEffect(GeneratedEffect effect)
+        private async void onCreateEffect(GeneratedEffect effect)
         {
             markUnsaved();
             var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
@@ -457,8 +456,8 @@ namespace Controllers
             var effectArray = effects.Append(effect).ToArray();
             _cardDefine.setEffects(effectArray);
 
-            _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
-            _graphEditorPanelCtrl.updateUndoRedoButton();
+            await _effectEditorCtrl.display(_cardPoolId, effect);
+            _graphEditor.updateUndoRedoButton();
             updateEffectList(effectArray);
             
             _ui.setEffectScrollValue(1);
@@ -467,15 +466,15 @@ namespace Controllers
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
 
-        private void onClickEditEffectButton(int index)
+        private async void onClickEditEffectButton(int index)
         {
             var effects = _cardDefine.getEffects().OfType<GeneratedEffect>();
             GeneratedEffect effect = effects.ElementAt(index);
             if (_effectEditorCtrl.getCurrentEffect() != effect)
             {
-                _effectEditorCtrl.display(_cardPoolId, _cardDefine, effect);
+                await _effectEditorCtrl.display(_cardPoolId, effect);
                 updateEffectList(effects.ToArray());
-                _graphEditorPanelCtrl.updateUndoRedoButton();
+                _graphEditor.updateUndoRedoButton();
             }
             else
             {
@@ -844,8 +843,8 @@ namespace Controllers
                     animIndex = Array.IndexOf(defines, define);
                 }
             }
-            _graphEditorPanelCtrl.setNodeAnimationDialog(animIndex, new VisualEffectDialogInfo(animRef));
-            _graphEditorPanelCtrl.displayNodeAnimationDialog(node);
+            _graphEditor.setNodeAnimationDialog(animIndex, new VisualEffectDialogInfo(animRef));
+            _graphEditor.displayNodeAnimationDialog(node);
         }
         private void onNodeAnimationValueChangedCallback(Node node, int index)
         {
@@ -1256,8 +1255,6 @@ namespace Controllers
         CardPoolViewPanelCtrl _cardPoolViewPanelCtrl;
         [SerializeField]
         Button _cancelCardPoolSelectButton;
-        [SerializeField]
-        GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
 
         [TranslateMsg("尝试删除卡牌的警告")]

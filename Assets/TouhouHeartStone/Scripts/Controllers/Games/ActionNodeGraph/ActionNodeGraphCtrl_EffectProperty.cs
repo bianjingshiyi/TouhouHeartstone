@@ -26,133 +26,7 @@ namespace Controllers
                 return true;
             return false;
         }
-        #region 事件回调
-        private void onClickAddEffectPropertyButtonCallback()
-        {
-            onAddEffectPropertyButtonClicked?.Invoke();
-        }
-        private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
-        {
-            var prop = _effect.getProp(name);
-            if (prop is object[] array)
-            {
-                var list = new List<object>(array);
-                list[index] = value;
-                setEffectProp(name, list.ToArray());
-                addRecordBreakpoint();
-            }
-        }
-        private void onClickEffectPropertyItemButtonCallback(string name, int index)
-        {
-        }
-        private async void onClickEffectPropertyItemCardButtonCallback(string name, int index)
-        {
-            var prop = _effect.getProp<DefineReference[]>(name);
-            if (prop == null)
-                return;
-            //打开卡牌选择界面
-            long poolId = _curCardPoolId;
-            var define = prop?[index];
-            if (define != null && define.defineId != 0)
-            {
-                poolId = define.cardPoolId;
-            }
-            await displayCardSelectPanel(poolId );
-            _curCardSeekingEffectPropName = name;
-            _curCardSeekingEffectPropIndex = index;
-        }
-        private async void onClickEffectPropertyItemCardEditButtonCallback(string name, int index)
-        {
-            var prop = _effect.getProp<DefineReference[]>(name);
-            if (prop == null || index < 0 || index >= prop.Length)
-                return;
-            var define = prop[index];
-            await scene.editor.openReferedCard(define, setPropAction);
-
-            void setPropAction(CardDefine cardDefine)
-            {
-                prop[index] = new DefineReference(cardDefine.cardPoolId, cardDefine.id);
-                setEffectProp(name, prop);
-                updatePropertyItem(name);
-            }
-        }
-        private void onClickEffectPropertyAddItemButtonCallback(string name)
-        {
-            var array = _effect.getProp<object[]>(name);
-            if (array == null)
-                return;
-            var propItem = GetEffectPropertyItem(name);
-            var list = new List<object>(array)
-            {
-                getDefaultValue(propItem.type, false)
-            };
-            setEffectProp(name, list.ToArray());
-            addRecordBreakpoint();
-        }
-
-        private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
-        {
-            var array = _effect.getProp<object[]>(name);
-            if (array == null)
-                return;
-            var list = new List<object>(array);
-            list.RemoveAt(index);
-            setEffectProp(name, list.ToArray());
-            addRecordBreakpoint();
-        }
-        private void onEffectPropertyValueChangedCallback(string name, object value)
-        {
-            // 从UI传递到的效果属性要复制一份，免得UI的数据修改时，效果的属性也会同时更改。
-            if (value is ICloneable valueCloneable)
-            {
-                value = valueCloneable.Clone();
-            }
-            setEffectProp(name, value);
-            addRecordBreakpoint();
-        }
-        private void onClickEffectPropertyButtonCallback(string name)
-        {
-        }
-        private async void onClickEffectPropertyCardButtonCallback(string name)
-        {
-            var prop = _effect.getProp<DefineReference>(name);
-            if (prop == null)
-                return;
-            //打开卡牌选择界面
-            long poolId = _curCardPoolId;
-            if (prop.defineId != 0)
-            {
-                poolId = prop.cardPoolId;
-            }
-            await displayCardSelectPanel(poolId);
-            _curCardSeekingEffectPropName = name;
-            _curCardSeekingEffectPropIndex = -1;
-        }
-        private async void onClickEffectPropertyCardEditButtonCallback(string name)
-        {
-            var prop = _effect.getProp<DefineReference>(name);
-            await scene.editor.openReferedCard(prop, setPropAction);
-
-            void setPropAction(CardDefine cardDefine)
-            {
-                setEffectProp(name, new DefineReference(cardDefine.cardPoolId, cardDefine.id));
-                updatePropertyItem(name);
-            }
-        }
-
-        private void onDeleteEffectPropertyCallback(string name)
-        {
-            var item = GetEffectPropertyItem(name);
-            _effect.removeProp(name);
-            addOperationRecord(new RemoveEffectPropertyOperation(this, item));
-
-            updateEffectProperties();
-            addRecordBreakpoint();
-        }
-        #endregion
-
-        #region 私有方法
-        private void setEffectProp(string name, object value)
+        public void setEffectProp(string name, object value)
         {
             var beforeValue = _effect.getProp(name);
             _effect.setProp(name, value);
@@ -171,6 +45,143 @@ namespace Controllers
             addOperationRecord(new ChangeEffectPropertyValueOperation(this, name, recordBeforeValue, recordValue));
             updatePropertyItem(name);
         }
+        /// <summary>
+        /// 更新一项属性。
+        /// </summary>
+        /// <param name="name">属性名称。</param>
+        public void updatePropertyItem(string name)
+        {
+            var item = GetEffectPropertyItem(name);
+            var nodeItem = getEffectEntryNodeItem();
+            if (item != null)
+            {
+                nodeItem.updateEffectPropertyItem(name, item, game.card);
+            }
+        }
+        #region 事件回调
+        private void onClickAddEffectPropertyButtonCallback()
+        {
+            if (isReadonly)
+                return;
+            onAddEffectPropertyButtonClicked?.Invoke();
+        }
+        private void onEffectPropertyItemValueChangedCallback(string name, int index, object value)
+        {
+            if (isReadonly)
+                return;
+            var prop = _effect.getProp(name);
+            if (prop is object[] array)
+            {
+                var list = new List<object>(array);
+                list[index] = value;
+                setEffectProp(name, list.ToArray());
+                addRecordBreakpoint();
+            }
+        }
+        private void onClickEffectPropertyItemButtonCallback(string name, int index)
+        {
+        }
+        private async void onClickEffectPropertyItemCardButtonCallback(string name, int index)
+        {
+            if (isReadonly)
+                return;
+            var prop = _effect.getProp<DefineReference[]>(name);
+            if (prop == null)
+                return;
+            //打开卡牌选择界面
+            long poolId = _curCardPoolId;
+            var define = prop?[index];
+            if (define != null && define.defineId != 0)
+            {
+                poolId = define.cardPoolId;
+            }
+            await displayCardSelectPanel(poolId );
+            _curCardSeekingEffectPropName = name;
+            _curCardSeekingEffectPropIndex = index;
+        }
+        private void onClickEffectPropertyItemCardEditButtonCallback(string name, int index)
+        {
+            onOpenEffectPropertyItemCardDefine?.Invoke(_effect, name, index);
+        }
+        private void onClickEffectPropertyAddItemButtonCallback(string name)
+        {
+            if (isReadonly)
+                return;
+            var array = _effect.getProp<object[]>(name);
+            if (array == null)
+                return;
+            var propItem = GetEffectPropertyItem(name);
+            var list = new List<object>(array)
+            {
+                getDefaultValue(propItem.type, false)
+            };
+            setEffectProp(name, list.ToArray());
+            addRecordBreakpoint();
+        }
+
+        private void onClickEffectPropertyRemoveItemButtonCallback(string name, int index)
+        {
+            if (isReadonly)
+                return;
+            var array = _effect.getProp<object[]>(name);
+            if (array == null)
+                return;
+            var list = new List<object>(array);
+            list.RemoveAt(index);
+            setEffectProp(name, list.ToArray());
+            addRecordBreakpoint();
+        }
+        private void onEffectPropertyValueChangedCallback(string name, object value)
+        {
+            if (isReadonly)
+                return;
+            // 从UI传递到的效果属性要复制一份，免得UI的数据修改时，效果的属性也会同时更改。
+            if (value is ICloneable valueCloneable)
+            {
+                value = valueCloneable.Clone();
+            }
+            setEffectProp(name, value);
+            addRecordBreakpoint();
+        }
+        private void onClickEffectPropertyButtonCallback(string name)
+        {
+        }
+        private async void onClickEffectPropertyCardButtonCallback(string name)
+        {
+            if (isReadonly)
+                return;
+            var prop = _effect.getProp<DefineReference>(name);
+            if (prop == null)
+                return;
+            //打开卡牌选择界面
+            long poolId = _curCardPoolId;
+            if (prop.defineId != 0)
+            {
+                poolId = prop.cardPoolId;
+            }
+            await displayCardSelectPanel(poolId);
+            _curCardSeekingEffectPropName = name;
+            _curCardSeekingEffectPropIndex = -1;
+        }
+        private void onClickEffectPropertyCardEditButtonCallback(string name)
+        {
+            onOpenEffectPropertyCardDefine?.Invoke(_effect, name);
+        }
+
+        private void onDeleteEffectPropertyCallback(string name)
+        {
+            if (isReadonly)
+                return;
+            var item = GetEffectPropertyItem(name);
+            _effect.removeProp(name);
+            addOperationRecord(new RemoveEffectPropertyOperation(this, item));
+
+            updateEffectProperties();
+            addRecordBreakpoint();
+        }
+        #endregion
+
+        #region 私有方法
         private ActionNodeItem getEffectEntryNodeItem()
         {
             Node entryNode = null;
@@ -206,19 +217,6 @@ namespace Controllers
             if (item != null)
             {
                 item.updateEffectProperties(items, game.card);
-            }
-        }
-        /// <summary>
-        /// 更新一项属性。
-        /// </summary>
-        /// <param name="name">属性名称。</param>
-        private void updatePropertyItem(string name)
-        {
-            var item = GetEffectPropertyItem(name);
-            var nodeItem = getEffectEntryNodeItem();
-            if (item != null)
-            {
-                nodeItem.updateEffectPropertyItem(name, item, game.card);
             }
         }
         private PropertyItemInfo[] GetEffectPropItems()
@@ -410,6 +408,8 @@ namespace Controllers
 
         #region 事件
         public event Action onAddEffectPropertyButtonClicked;
+        public event Action<GeneratedEffect, string> onOpenEffectPropertyCardDefine;
+        public event Action<GeneratedEffect, string, int> onOpenEffectPropertyItemCardDefine;
         #endregion
 
         #region 属性字段

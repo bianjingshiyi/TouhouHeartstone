@@ -321,13 +321,7 @@ namespace Controllers
         /// </summary>
         private async void onClickNewCardButton()
         {
-            var cardPoolId = _curCardPoolId;
-            markCardPoolUnsaved(cardPoolId);
-            var cardPoolInfo = getCardPoolInfo(cardPoolId);
-            game.card.createCard(cardPoolInfo, out CardDefine newCardDefine, out var skin);
-            game.card.addCard(cardPoolInfo, newCardDefine);
-            game.card.addCardSkin(cardPoolId, skin);
-
+            createCard(out var newCardDefine, out _);
             await openCardEditor(newCardDefine);
         }
         /// <summary>
@@ -674,11 +668,18 @@ namespace Controllers
             }
             _ui.updateDeckCardList(viewData);
         }
-        private async Task createNewCardAndOpen(Action<CardDefine> setPropAction)
+        private void createCard(out CardDefine newCardDefine, out CardSkinData skin)
         {
             var cardPoolId = _curCardPoolId;
-            var cardPoolInfo = getCurrentCardPoolInfo();
-            game.card.createCard(cardPoolInfo, out var newDefine, out var newSkin);
+            markCardPoolUnsaved(cardPoolId);
+            var cardPoolInfo = getCardPoolInfo(cardPoolId);
+            game.card.createCard(cardPoolInfo, out newCardDefine, out skin);
+            game.card.addCard(cardPoolInfo, newCardDefine);
+            game.card.addCardSkin(cardPoolId, skin);
+        }
+        private async Task createNewCardAndOpen(Action<CardDefine> setPropAction)
+        {
+            createCard(out var newDefine, out _);
             setPropAction?.Invoke(newDefine);
 
             await openCardEditor(newDefine);
@@ -752,7 +753,7 @@ namespace Controllers
                 editor = scene.cardEditor;
             else if (displayObj.buffDefine != null)
                 editor = scene.buffEditor;
-            else if (displayObj.cardDefine != null)
+            else if (displayObj.actionDefine != null)
                 editor = scene.actionEditor;
             if (editor != null)
             {

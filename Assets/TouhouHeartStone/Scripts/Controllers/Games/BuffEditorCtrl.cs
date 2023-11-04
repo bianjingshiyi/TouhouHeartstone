@@ -44,15 +44,14 @@ namespace Controllers
             // 皮肤
             await setCurSkinIndex(0);
 
-            _effectEditorCtrl.updateEventTriggerTimes(_cardPoolId);
             _effectEditorCtrl.hideActionGraph();
 
             if (effects.Length > 0)
             {
-                await _effectEditorCtrl.display(_cardPoolId, _buffDefine, effects[0]);
+                await _effectEditorCtrl.display(_cardPoolId, effects[0]);
             }
             updateEffectList(effects);
-            _graphEditorPanelCtrl.display(_cardPoolId);
+            _graphEditor.display(_cardPoolId);
         }
         public override async Task display(CardPoolDisplayPage info)
         {
@@ -125,9 +124,9 @@ namespace Controllers
             _effectEditorCtrl.onCreateEffect += onCreateEffect;
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
 
-            _graphEditorPanelCtrl.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
-            _graphEditorPanelCtrl.onAnimationValueChanged += onNodeAnimationValueChangedCallback;
-            _graphEditorPanelCtrl.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
+            _graphEditor.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
+            _graphEditor.onAnimationValueChanged += onNodeAnimationValueChangedCallback;
+            _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
         }
         #endregion
         #region 事件回调
@@ -238,29 +237,29 @@ namespace Controllers
         }
 
         #region 效果
-        private void onCreateEffect(GeneratedEffect effect)
+        private async void onCreateEffect(GeneratedEffect effect)
         {
             markUnsaved();
             _buffDefine.effectList.Add(effect);
 
-            _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
+            await _effectEditorCtrl.display(_cardPoolId, effect);
             updateEffectList(_buffDefine.effectList.ToArray());
-            _graphEditorPanelCtrl.updateUndoRedoButton();
+            _graphEditor.updateUndoRedoButton();
 
             _ui.setEffectScrollValue(1);
         }
         /// <summary>
         /// 当点击编辑效果按钮，打开编辑效果界面。
         /// </summary>
-        private void onClickEditEffectButton(int index)
+        private async void onClickEditEffectButton(int index)
         {
             var effects = _buffDefine.effectList.OfType<GeneratedEffect>();
             GeneratedEffect effect = effects.ElementAt(index);
             if (_effectEditorCtrl.getCurrentEffect() != effect)
             {
-                _effectEditorCtrl.display(_cardPoolId, _buffDefine, effect);
+                await _effectEditorCtrl.display(_cardPoolId, effect);
                 updateEffectList(effects.ToArray());
-                _graphEditorPanelCtrl.updateUndoRedoButton();
+                _graphEditor.updateUndoRedoButton();
             }
             else
             {
@@ -319,8 +318,8 @@ namespace Controllers
                     animIndex = Array.IndexOf(defines, define);
                 }
             }
-            _graphEditorPanelCtrl.setNodeAnimationDialog(animIndex, new VisualEffectDialogInfo(animRef));
-            _graphEditorPanelCtrl.displayNodeAnimationDialog(node);
+            _graphEditor.setNodeAnimationDialog(animIndex, new VisualEffectDialogInfo(animRef));
+            _graphEditor.displayNodeAnimationDialog(node);
         }
         private void onNodeAnimationValueChangedCallback(Node node, int index)
         {
@@ -893,8 +892,6 @@ namespace Controllers
         #region 属性字段
         [SerializeField]
         Button _cancelCardPoolSelectButton;
-        [SerializeField]
-        GraphEditorPanelCtrl _graphEditorPanelCtrl;
 
         [TranslateMsg("游戏中卡牌的自定义属性的名称")]
         public const string GAME_CARD_PROP_NAME_CUSTOM_PROPERTY = "自定义属性";

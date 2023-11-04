@@ -19,9 +19,11 @@ namespace Controllers
         #region 公有方法
         public async void display()
         {
-            var cardDefine = game.card.getCardDefine(new DefineReference(0, MegaReaver.ID));
+            var standardRef = game.card.getLocalCardPoolReference(1);
+            var (info, standardPool) = await game.card.getOrLoadCardPool(standardRef);
+            var cardDefine = standardPool.cardDefineList.FirstOrDefault();
             var skin = game.card.getCardSkin(cardDefine);
-            _cardEditor.display(cardDefine, skin);
+            await _cardEditor.display(cardDefine, skin);
             _ui.gameObject.SetActive(true);
             return;
             loadCharacterList();

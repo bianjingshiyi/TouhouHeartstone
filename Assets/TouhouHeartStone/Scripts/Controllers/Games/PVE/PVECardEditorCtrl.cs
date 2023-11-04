@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using TouhouCardEngine;
 using UI;
 using UnityEngine;
@@ -9,10 +11,17 @@ namespace Controllers
     class PVECardEditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 私有方法
-        public void display(CardDefine define, CardSkinData skin)
+        public async Task display(CardDefine define, CardSkinData skin)
         {
             gameObject.SetActive(true);
             _ui.setCard(define, skin);
+            var effect = define.getGeneratedEffects().FirstOrDefault();
+            if (effect == null)
+                _effectEditor.hideActionGraph();
+            else
+                await _effectEditor.display(define.cardPoolId, effect);
+
+
             var list = new List<CardGemViewData>();
             for (int i = 0; i < 100; i++)
             {
@@ -86,6 +95,8 @@ namespace Controllers
         private int draggingGemIndex;
         [SerializeField]
         private PVECardEditor _ui;
+        [SerializeField]
+        private EffectEditorCtrl _effectEditor;
         [SerializeField]
         private ActionNodeGraphCtrl _graphCtrl;
         #endregion

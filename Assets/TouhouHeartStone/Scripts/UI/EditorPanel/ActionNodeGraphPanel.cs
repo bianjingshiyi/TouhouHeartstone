@@ -40,6 +40,7 @@ namespace UI
             actionNodeItem.onTargetCheckerTypeValueChanged += onTargetCheckerTypeValueChangedCallback;
             actionNodeItem.onTargetCheckerErrorTipValueChanged += onTargetCheckerErrorTipValueChangedCallback;
             actionNodeItem.onClickHelpButton += onActionNodeClickHelpButton;
+            actionNodeItem.onClickObsoleteButton += onActionNodeClickObsoleteButtonCallback;
             actionNodeItem.onClickVisualEffectButton += onActionNodeVisualEffectButtonClickedCallback;
 
             actionNodeItem.onClickAddEffectPropertyButton += onClickAddEffectPropertyButtonCallback;
@@ -315,10 +316,6 @@ namespace UI
             _dragHiddenConnection = null;
             clearFreePlaceCheckRegion();
         }
-        public void setReturnButtonActive(bool value)
-        {
-            _returnButton.gameObject.SetActive(value);
-        }
         public Vector2 getActionNodePosition(ActionNodeItem item)
         {
             Vector3 position = item.transform.position;
@@ -574,9 +571,6 @@ namespace UI
             {
                 _ActionNodeGraphLineTemplate.gameObject.SetActive(false);
             }
-
-            _returnButton.onClick.AddListener(onClickReturnButtonCallback);
-
             // 效果属性。
             #region 缩放函数所需要的初始化参数及eventTrigger相关By断剑君
             _backgroundOriginScale = _content.localScale;//读取目前的缩放比例 
@@ -1118,6 +1112,10 @@ namespace UI
             clearFreePlaceCheckRegion();
         }
 
+        private void onActionNodeClickObsoleteButtonCallback(string value)
+        {
+            onClickActionNodeObsoleteButton?.Invoke(value);
+        }
         private void onActionNodeClickHelpButton(int key)
         {
             setFocused();
@@ -1454,6 +1452,7 @@ namespace UI
         public event Action<string> onDeleteEffectProperty;
         public event Action<string> onClickEffectPropertyAddItemButton;
         public event Action<string, int> onClickEffectPropertyRemoveItemButton;
+        public event Action<string> onClickActionNodeObsoleteButton;
         #endregion
         #endregion
         #region 属性字段
@@ -1478,8 +1477,6 @@ namespace UI
         float _autoPosSpacingWidth = 600;
         [SerializeField]
         float _autoPosSpacingHeight = 300;
-        [SerializeField]
-        Button _returnButton;
         [SerializeField]
         Image _backgroundImage;
         [SerializeField]

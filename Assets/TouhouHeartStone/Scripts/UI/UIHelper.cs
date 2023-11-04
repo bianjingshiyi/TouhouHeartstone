@@ -56,7 +56,7 @@ namespace Game
         {
             var skin = cardManager.getCardSkin(card);
             ui.setCardDefine(card, skin, isFaceUp);
-
+            // 先设置卡牌定义再加载卡图，不然卡框会和卡图一起被突然改变，看起来会有些别扭
             Sprite image = skin.image;
             if (!image)
             {

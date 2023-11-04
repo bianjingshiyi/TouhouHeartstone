@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using BJSYGameCore;
 using BJSYGameCore.UI;
 using Game;
 using TouhouCardEngine;
@@ -11,76 +9,29 @@ using UnityEngine;
 
 namespace Controllers
 {
-    partial class EffectEditorCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
+    partial class EffectEditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法
-        public Task display(long cardPoolId, CardDefine cardDefine, GeneratedEffect effect)
+        public async Task display(long cardPoolId, GeneratedEffect effect)
         {
-            return display(new DisplayInfo(cardPoolId, cardDefine, effect, new ActionNodeGraphCtrl.DisplayInfo(
-                        cardPoolId,
-                        effect,
-                        null,
-                        game.card.getOrCreateCardEffectActionNodeGraphInfo(cardPoolId, cardDefine.id, cardDefine.getEffects().indexOf(effect)))
-                ));
-        }
-        public Task display(long cardPoolId, GeneratedBuffDefine buffDefine, GeneratedEffect effect)
-        {
-            return display(new DisplayInfo(cardPoolId, buffDefine, effect, new ActionNodeGraphCtrl.DisplayInfo(
-                        cardPoolId,
-                        effect,
-                        null,
-                        game.card.getOrCreateBuffEffectActionNodeGraphInfo(cardPoolId, buffDefine.id, buffDefine.effectList.IndexOf(effect))
-                )));
-        }
-        public async Task display(UIDisplayInfo displayInfo)
-        {
-            if (displayInfo is DisplayInfo info)
-            {
-                _cardPoolId = info.cardPoolId;
-                _cardDefine = info.cardDefine;
-                _buffDefine = info.buffDefine;
-                _effect = info.effect;
-                gameObject.SetActive(true);
-                if (info.actionNodeGraphDisplayInfo != null)
-                    await _actionNodeGraphCtrl.display(info.actionNodeGraphDisplayInfo);
-                else
-                    await _actionNodeGraphCtrl.hide();
-                updateEventTriggerTimes(_cardPoolId);
-            }
+            _cardPoolId = cardPoolId;
+            _effect = effect;
+            gameObject.SetActive(true);
+            await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, effect));
+            updateEventTriggerTimes(_cardPoolId);
         }
         public void updateEventTriggerTimes(long cardPoolId)
         {
             _eventTriggerTimes = game.card.getAllEventDefines(cardPoolId).getEventTriggerTimes();
             _ui.setEventTypeNames(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
         }
-        public UIDisplayInfo getCurrentDisplayInfo()
-        {
-            if (_buffDefine != null)
-            {
-                return new DisplayInfo(_cardPoolId, _buffDefine, _effect,
-                    _actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
-            }
-            else
-            {
-                return new DisplayInfo(_cardPoolId, _cardDefine, _effect,
-                    _actionNodeGraphCtrl.getCurrentDisplayInfo() as ActionNodeGraphCtrl.DisplayInfo);
-            }
-        }
         public GeneratedEffect getCurrentEffect()
         {
             return _effect;
         }
-        public Task hide()
-        {
-            hideActionGraph();
-            gameObject.SetActive(false);
-            return Task.CompletedTask;
-        }
         public void hideActionGraph()
         {
             _cardPoolId = 0;
-            _cardDefine = null;
-            _buffDefine = null;
             _effect = null;
             _actionNodeGraphCtrl.hide();
         }
@@ -113,7 +64,7 @@ namespace Controllers
         {
             OnGraphEdited?.Invoke();
         }
-        
+
         private void onConfirmCreateEventEffectCallback(int index)
         {
             var effect = game.card.createEffectByIndex(_cardPoolId, CardManager.EVENT_EFFECT_IDX);
@@ -140,12 +91,9 @@ namespace Controllers
         #region 属性字段
         [SerializeField]
         EffectEditorPanel _ui;
-
         [SerializeField]
         ActionNodeGraphCtrl _actionNodeGraphCtrl;
         long _cardPoolId;
-        CardDefine _cardDefine;
-        GeneratedBuffDefine _buffDefine;
         GeneratedEffect _effect;
         EventTriggerTime[] _eventTriggerTimes;
         #endregion

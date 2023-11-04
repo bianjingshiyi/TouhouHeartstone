@@ -508,7 +508,7 @@ namespace UI
                 _effectPropertyItemTemplate.gameObject.SetActive(false);
             }
             _addTargetCheckerButton.onClick.AddListener(onClickAddTargetCheckerButtonCallback);
-            _warningObj.onClick.AddListener(onClickObsoleteBtn);
+            _warningObj.onClick.AddListener(onClickObsoleteBtnCallback);
             _helpBtn.onClick.AddListener(onClickHelpBtn);
             _visualEffectButton.onClick.AddListener(onClickVisualEffectButtonCallback);
             _addEffectPropertyItemButton.onClick.AddListener(onClickAddEffectPropertyButtonCallback);
@@ -658,16 +658,9 @@ namespace UI
         }
         #endregion
 
-        [TranslateMsg]
-        const string TITLE_NODE_OBSOLETE = "过时的节点";
-
-        [TranslateMsg("参数0为节点自带的消息")]
-        const string MESSAGE_NODE_OBSOLETE = "此节点已被弃用，很可能在之后的版本中删除。\n{0}";
-
-        private void onClickObsoleteBtn()
+        private void onClickObsoleteBtnCallback()
         {
-            var ctrl = gameObject.GetComponentInParent<EffectEditorCtrl>();
-            ctrl.game.ui.dialog?.ShowConfirm(ctrl.game.lang._(TITLE_NODE_OBSOLETE), ctrl.game.lang._(MESSAGE_NODE_OBSOLETE, obsoleteMessage));
+            onClickObsoleteButton?.Invoke(obsoleteMessage);
         }
 
         private void onClickHelpBtn()
@@ -735,6 +728,7 @@ namespace UI
         public event Action<ActionNodeItem, int, string> onTargetCheckerErrorTipValueChanged;
         public event Action<ActionNodeItem> onUpdateTransform;
         public event Action<int> onClickHelpButton;
+        public event Action<string> onClickObsoleteButton;
         public event Action<ActionNodeItem> onClickVisualEffectButton;
 
         #region 效果属性

@@ -64,7 +64,6 @@ namespace Game
         public ReplaySelectPanelCtrl replaySelectCtrl { get; }
         public EditorCtrl editorCtrl { get; }
         public CardEditorCtrl cardEditorCtrl { get; }
-        public EffectEditorCtrl effectEditorCtrl { get; }
         public ActionNodeGraphCtrl actionNodeGraphCtrl { get; }
     }
     class MainMenuCtrl : IController<MainCtrl>

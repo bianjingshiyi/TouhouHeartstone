@@ -27,11 +27,7 @@ namespace Controllers
             _ui.setCategory(actionDefine.category);
             _ui.setDefineType(getDefineTypeName(actionDefine.type));
 
-            await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(
-                        cardPoolId,
-                        actionDefine,
-                        null,
-                        game.card.getOrCreateActionDefineActionNodeGraphInfo(cardPoolId, actionDefine.defineId)));
+            await _actionNodeGraphCtrl.display(new ActionNodeGraphCtrl.DisplayInfo(cardPoolId, actionDefine));
             updateProperties();
             _graphEditorPanelCtrl.display(_cardPoolId);
         }

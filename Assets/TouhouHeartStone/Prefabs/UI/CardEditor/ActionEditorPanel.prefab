@@ -2200,7 +2200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scene: {fileID: 0}
-  _effectEditorCtrl: {fileID: 0}
+  _graphEditor: {fileID: 4568162287426417985}
   _actionNodeGraphCtrl: {fileID: 8770111921071751288}
   _graphEditorPanelCtrl: {fileID: 4568162287426417985}
 --- !u!114 &4568162287426417985
@@ -2238,6 +2238,7 @@ MonoBehaviour:
   _cardSelectPanel: {fileID: 6155324471884284643}
   _hintMessageText: {fileID: 5832195234620650290}
   _createEffectPropDialog: {fileID: 3749821967293025104}
+  _createEventEffectDialog: {fileID: 0}
 --- !u!1 &5753859873116036121
 GameObject:
   m_ObjectHideFlags: 0
