@@ -31,6 +31,14 @@ namespace UI
                     slot.onEndDrag -= onSlotEndDragCallback;
                 });
         }
+        public CardGemSlot getSlot(int index)
+        {
+            return _slotList.getElement<CardGemSlot>(index);
+        }
+        public int indexOf(CardGemSlot slot)
+        {
+            return _slotList.indexOf(slot);
+        }
         #region 私有方法
 
         #region 事件回调

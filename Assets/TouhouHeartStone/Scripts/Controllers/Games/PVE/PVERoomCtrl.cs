@@ -17,15 +17,8 @@ namespace Controllers
     class PVERoomCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 公有方法
-        public async void display()
+        public async Task display()
         {
-            var standardRef = game.card.getLocalCardPoolReference(1);
-            var (info, standardPool) = await game.card.getOrLoadCardPool(standardRef);
-            var cardDefine = standardPool.cardDefineList.FirstOrDefault();
-            var skin = game.card.getCardSkin(cardDefine);
-            await _cardEditor.display(cardDefine, skin);
-            _ui.gameObject.SetActive(true);
-            return;
             loadCharacterList();
             if (game.pve.hasData())
             {
@@ -41,6 +34,10 @@ namespace Controllers
             }
             _ui.gameObject.SetActive(true);
         }
+        public void openGamePage()
+        {
+            _ui.openInRunGamePage();
+        }
         #endregion
 
         #region 私有方法
@@ -54,6 +51,7 @@ namespace Controllers
             _ui.onFightClicked += onFightClickedCallback;
             _ui.onGiveUpClicked += onGiveUpClickedCallback;
             _ui.onInRunQuitButtonClicked += onInRunQuitClickedCallback;
+            _ui.onInventoryButtonClicked += onInventoryClickedCallback;
             _ui.onSelectCardChoiceClicked += onSelectCardChoiceClickedCallback;
             _ui.onConfirmSelectCardClicked += onConfirmSelectCardClickedCallback;
             _ui.onSkipSelectCardClicked += onSkipSelectCardClickedCallback;
@@ -100,6 +98,15 @@ namespace Controllers
         private void onInRunQuitClickedCallback()
         {
             quit();
+        }
+        private async void onInventoryClickedCallback()
+        {
+            var standardRef = game.card.getLocalCardPoolReference(1);
+            var (info, standardPool) = await game.card.getOrLoadCardPool(standardRef);
+            var cardDefine = standardPool.cardDefineList.FirstOrDefault();
+            await _cardEditor.display(cardDefine, game.card);
+            _ui.openCardEditorPage();
+            return;
         }
         private async void onSelectCardChoiceClickedCallback(int index)
         {
@@ -208,36 +215,6 @@ namespace Controllers
             _selectedCharacter = null;
             await game.pve.saveData(_saveData);
         }
-        private async Task displayInRunPanel()
-        {
-            _ui.setPreStartPanelVisible(false);
-            _ui.setInRunPanelVisible(true);
-
-            var deck = _saveData.deck;
-            var yourDeckCardsViewData = await getDeckCardViewData(deck);
-            _ui.updateYourDeck(yourDeckCardsViewData);
-
-            if (_saveData.stageState == PVEStageState.SelectCard)
-            {
-                generateSelectingCards();
-                var defRefs = getNextSelectingCards();
-                var cardManager = game.card;
-                var cardDefines = defRefs.Select(d => cardManager.getLocalCardDefine(d)).ToArray();
-                _ui.updateSelectCardPanel(cardDefines, cardManager);
-                _ui.switchToSelectCardPanel();
-            }
-            else
-            {
-                generateNextBoss();
-                var character = getNextEnemyCharacter();
-                var (name, image) = await getCharacterViewData(character);
-                var desc = game.lang._(character.description);
-                var deckCardsViewData = await getCharacterDeckCardViewData(character);
-                _ui.updateEnemyInfoPanel(name, image, desc);
-                _ui.updateEnemyInfoPanelDeck(deckCardsViewData);
-                _ui.switchToEnemyInfoPanel();
-            }
-        }
         private void showGiveUpDialog()
         {
             var title = game.lang._(StringTable.HINT_TITLE);
@@ -334,6 +311,37 @@ namespace Controllers
             _ui.updatePlayerInfoPanel(name, image, desc);
             _ui.updatePlayerInfoPanelDeck(deckCardsViewData);
             _ui.setPlayerInfoPanelVisible(true);
+        }
+        private async Task displayInRunPanel()
+        {
+            _ui.setPreStartPanelVisible(false);
+            _ui.setInRunPanelVisible(true);
+            _ui.openInRunGamePage();
+
+            var deck = _saveData.deck;
+            var yourDeckCardsViewData = await getDeckCardViewData(deck);
+            _ui.updateYourDeck(yourDeckCardsViewData);
+
+            if (_saveData.stageState == PVEStageState.SelectCard)
+            {
+                generateSelectingCards();
+                var defRefs = getNextSelectingCards();
+                var cardManager = game.card;
+                var cardDefines = defRefs.Select(d => cardManager.getLocalCardDefine(d)).ToArray();
+                _ui.updateSelectCardPanel(cardDefines, cardManager);
+                _ui.switchToSelectCardPanel();
+            }
+            else
+            {
+                generateNextBoss();
+                var character = getNextEnemyCharacter();
+                var (name, image) = await getCharacterViewData(character);
+                var desc = game.lang._(character.description);
+                var deckCardsViewData = await getCharacterDeckCardViewData(character);
+                _ui.updateEnemyInfoPanel(name, image, desc);
+                _ui.updateEnemyInfoPanelDeck(deckCardsViewData);
+                _ui.switchToEnemyInfoPanel();
+            }
         }
         /// <summary>
         /// 更新可选择的当前的卡组列表

@@ -38,10 +38,14 @@ namespace UI
         {
             _inRunPanelObj.SetActive(visible);
         }
+        public void openInRunGamePage()
+        {
+            switchInRunPage(_gamePageObj);
+        }
         #region 敌人信息面板
         public void switchToEnemyInfoPanel()
         {
-            switchInRunPanelPage(_enemyInfoPanelObj);
+            switchGamePanel(_enemyInfoPanelObj);
         }
         public void updateEnemyInfoPanel(string name, Sprite sprite, string desc)
         {
@@ -55,11 +59,17 @@ namespace UI
         #region 选择卡牌面板
         public void switchToSelectCardPanel()
         {
-            switchInRunPanelPage(_selectCardPanelObj);
+            switchGamePanel(_selectCardPanelObj);
         }
         public void updateSelectCardPanel(CardDefine[] defines, CardManager cardManager)
         {
             _cardSelectPanel.updateCards(defines, cardManager);
+        }
+        #endregion
+        #region 编辑器面板
+        public void openCardEditorPage()
+        {
+            switchInRunPage(_cardEditorPageObj);
         }
         #endregion
         public void updateYourDeck((string name, Sprite image, int count)[] viewDatas)
@@ -78,6 +88,7 @@ namespace UI
             _enemyInfoPanel.onConfirmClicked += onFightClickedCallback;
             _enemyInfoPanel.onGiveUpClicked += onGiveUpClickedCallback;
             _enemyInfoPanel.onQuitClicked += onInRunQuitButtonClickedCallback;
+            _enemyInfoPanel.onInventoryClicked += onInRunInventoryButtonClickedCallback;
             _cardSelectPanel.onChoiceClicked += onSelectCardChoiceClickedCallback;
             _cardSelectPanel.onConfirmClicked += onConfirmSelectCardClickedCallback;
             _cardSelectPanel.onSkipClicked += onSkipSelectCardClickedCallback;
@@ -117,6 +128,10 @@ namespace UI
         {
             onInRunQuitButtonClicked?.Invoke();
         }
+        private void onInRunInventoryButtonClickedCallback()
+        {
+            onInventoryButtonClicked?.Invoke();
+        }
         private void onSelectCardChoiceClickedCallback(int index)
         {
             onSelectCardChoiceClicked?.Invoke(index);
@@ -131,10 +146,15 @@ namespace UI
         }
         #endregion
         #endregion
-        private void switchInRunPanelPage(GameObject switchTo)
+        private void switchGamePanel(GameObject switchTo)
         {
             setInRunPage(_enemyInfoPanelObj, switchTo);
             setInRunPage(_selectCardPanelObj, switchTo);
+        }
+        private void switchInRunPage(GameObject switchTo)
+        {
+            setInRunPage(_gamePageObj, switchTo);
+            setInRunPage(_cardEditorPageObj, switchTo);
         }
         private void setInRunPage(GameObject page, GameObject switchTo)
         {
@@ -171,6 +191,10 @@ namespace UI
         /// </summary>
         public event Action onInRunQuitButtonClicked;
         /// <summary>
+        /// 打开背包时触发
+        /// </summary>
+        public event Action onInventoryButtonClicked;
+        /// <summary>
         /// 选择一个选卡选项后触发
         /// </summary>
         public event Action<int> onSelectCardChoiceClicked;
@@ -205,6 +229,10 @@ namespace UI
         GameObject _enemyInfoPanelObj;
         [SerializeField]
         GameObject _selectCardPanelObj;
+        [SerializeField]
+        GameObject _gamePageObj;
+        [SerializeField]
+        GameObject _cardEditorPageObj;
         [SerializeField]
         PVECharacterInfoPanel _enemyInfoPanel;
         [SerializeField]

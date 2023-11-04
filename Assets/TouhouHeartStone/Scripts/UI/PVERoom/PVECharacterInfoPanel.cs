@@ -22,27 +22,18 @@ namespace UI
         private void Awake()
         {
             if (_confirmButton)
-                _confirmButton.onClick.AddListener(onConfirmButtonClickedCallback);
+                _confirmButton.onClick.AddListener(() => onConfirmClicked?.Invoke());
             if (_giveUpButton)
-                _giveUpButton.onClick.AddListener(onGiveUpButtonClickedCallback);
+                _giveUpButton.onClick.AddListener(() => onGiveUpClicked?.Invoke());
             if (_quitButton)
-                _quitButton.onClick.AddListener(onQuitButtonClickedCallback);
-        }
-        private void onConfirmButtonClickedCallback()
-        {
-            onConfirmClicked?.Invoke();
-        }
-        private void onGiveUpButtonClickedCallback()
-        {
-            onGiveUpClicked?.Invoke();
-        }
-        private void onQuitButtonClickedCallback()
-        {
-            onQuitClicked?.Invoke();
+                _quitButton.onClick.AddListener(() => onQuitClicked?.Invoke());
+            if (_inventoryButton)
+                _inventoryButton.onClick.AddListener(() => onInventoryClicked?.Invoke());
         }
         public event Action onConfirmClicked;
         public event Action onGiveUpClicked;
         public event Action onQuitClicked;
+        public event Action onInventoryClicked;
         [SerializeField]
         TextMeshProUGUI _masterName;
         [SerializeField]
@@ -55,6 +46,8 @@ namespace UI
         Button _giveUpButton;
         [SerializeField]
         Button _quitButton;
+        [SerializeField]
+        Button _inventoryButton;
         [SerializeField]
         DeckCardList _deckView;
     }

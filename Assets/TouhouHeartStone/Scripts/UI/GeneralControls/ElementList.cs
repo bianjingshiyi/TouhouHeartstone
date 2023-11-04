@@ -29,6 +29,11 @@ namespace UI
         {
             return _itemList[index];
         }
+        public T getElement<T>(int index) where T : Component
+        {
+            return getElement(index).GetComponent<T>();
+        }
+        public int count => _itemList.Count;
         [SerializeField]
         private RectTransform _listRoot;
         [SerializeField]

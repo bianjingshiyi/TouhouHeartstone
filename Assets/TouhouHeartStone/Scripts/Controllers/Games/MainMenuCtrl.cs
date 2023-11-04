@@ -57,10 +57,10 @@ namespace Controllers
         /// <summary>
         /// 进入PVE模式界面
         /// </summary>
-        private void onEntryPVEMode()
+        private async void onEntryPVEMode()
         {
+            await scene.pveRoom.display();
             _ui.gameObject.SetActive(false);
-            scene.pveRoom.display();
         }
         
         private void onEditorButtonClick()

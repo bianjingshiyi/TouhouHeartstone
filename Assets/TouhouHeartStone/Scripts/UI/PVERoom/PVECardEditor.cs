@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Game;
+using Game.BattleTable;
 using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,9 +13,9 @@ namespace UI
     public class PVECardEditor : MonoBehaviour
     {
         #region 公有方法
-        public void setCard(CardDefine define, CardSkinData skin)
+        public async Task setCard(CardDefine define, CardManager cardManager)
         {
-            _card.setCardDefine(define, skin);
+            await _card.setCardDefine(define, cardManager);
         }
         public void updateGemInventory(CardGemViewData[] viewDatas)
         {
@@ -43,12 +45,14 @@ namespace UI
         }
         public void updateGemSlot(CardGemSlotGroupViewData[] viewDatas)
         {
+            _gemSlotGroupList.Clear();
             _gemSlotGroupElementList.updateList(viewDatas.Length,
                 (i, rect) =>
                 {
                     CardGemSlotGroup gem = rect.GetComponent<CardGemSlotGroup>();
                     var viewData = viewDatas[i];
                     gem.update(viewData);
+                    _gemSlotGroupList.Add(gem);
                 },
                 rect =>
                 {
@@ -66,20 +70,55 @@ namespace UI
                 });
         }
 
-        public void startDragInventoryGem(int index)
+        public CardGem getInventoryGem(int index)
         {
-            var gem = _gemInventoryList[index];
-            gem.startDrag();
+            return _gemInventoryList[index];
         }
-        public void releaseDragInventoryGem(int index)
+        public CardGemSlot getSlot(int groupIndex, int slotIndex)
         {
-            var gem = _gemInventoryList[index];
-            gem.releaseDrag();
+            var group = _gemSlotGroupList[groupIndex];
+            return group.getSlot(slotIndex);
         }
-        public void moveInventoryGem(int index, Vector2 position)
+        public CardGem getSlotGem(int groupIndex, int slotIndex)
         {
-            var gem = _gemInventoryList[index];
-            gem.move(position);
+            return getSlot(groupIndex, slotIndex).getGem();
+        }
+        public DraggingCardGem createDraggingGem(CardGemViewData viewData)
+        {
+            var gemObj = Instantiate(_draggingGemTemplate, _draggingGemRoot);
+            gemObj.SetActive(true);
+            var gem = gemObj.GetComponent<DraggingCardGem>();
+            gem.gem.update(viewData);
+            gem.onDestroy += removeDraggingGem;
+            return gem;
+        }
+        public void resetDragging()
+        {
+            foreach (var gem in _draggingGems.ToArray())
+            {
+                gem.destroy();
+            }
+        }
+
+        public (int groupIndex, int slotIndex) getHoveredGemSlotIndex(PointerEventData pointer)
+        {
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, results);
+            foreach (var result in results)
+            {
+                var slot = result.gameObject.GetComponentInParent<CardGemSlot>();
+                if (slot)
+                {
+                    for (int g = 0; g < _gemSlotGroupList.Count; g++)
+                    {
+                        var group = _gemSlotGroupList[g];
+                        var slotIndex = group.indexOf(slot);
+                        if (slotIndex >= 0)
+                            return (g, slotIndex);
+                    }
+                }
+            }
+            return (-1, -1);
         }
         #endregion
 
@@ -88,7 +127,12 @@ namespace UI
         #region 生命周期
         private void Awake()
         {
+            _draggingGemTemplate.SetActive(false);
             _closeButton.onClick.AddListener(() => onCloseClicked?.Invoke());
+        }
+        private void OnEnable()
+        {
+            resetDragging();
         }
         #endregion
 
@@ -126,6 +170,11 @@ namespace UI
 
         #endregion
 
+        private void removeDraggingGem(DraggingCardGem gem)
+        {
+            _draggingGems.Remove(gem);
+        }
+
         #endregion
 
         #region 事件
@@ -140,6 +189,7 @@ namespace UI
 
         #region 属性字段
         private List<CardGem> _gemInventoryList = new List<CardGem>();
+        private List<CardGemSlotGroup> _gemSlotGroupList = new List<CardGemSlotGroup>();
         [SerializeField]
         private Card _card;
         [SerializeField]
@@ -148,6 +198,12 @@ namespace UI
         private ElementList _gemInventoryElementList;
         [SerializeField]
         private ElementList _gemSlotGroupElementList;
+        [SerializeField]
+        private GameObject _draggingGemTemplate;
+        [SerializeField]
+        private Transform _draggingGemRoot;
+        [SerializeField]
+        private List<DraggingCardGem> _draggingGems = new List<DraggingCardGem>();
         #endregion
     }
 }

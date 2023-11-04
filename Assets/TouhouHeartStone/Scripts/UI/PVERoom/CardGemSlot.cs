@@ -12,6 +12,10 @@ namespace UI
             //image.sprite = viewData.frameSprite;
             gem.update(viewData.gemViewData);
         }
+        public CardGem getGem()
+        {
+            return gem;
+        }
         private void Awake()
         {
             gem.onBeginDrag += (g, p) => onBeginDrag?.Invoke(this, p);

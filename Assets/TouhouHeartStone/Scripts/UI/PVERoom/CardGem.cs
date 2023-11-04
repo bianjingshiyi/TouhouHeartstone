@@ -12,49 +12,19 @@ namespace UI
         {
             if (viewData == null)
             {
-                _image.gameObject.SetActive(false);
+                gameObject.SetActive(false);
                 return;
             }
-            _image.gameObject.SetActive(true);
+            gameObject.SetActive(true);
             //_image.sprite = viewData.sprite;
         }
-        public void startDrag()
+        public void setVisible(bool value)
         {
-            _lockPosition = false;
-            _image.maskable = false;
-        }
-        public void releaseDrag()
-        {
-            _lockPosition = true;
-        }
-        public void move(Vector2 position)
-        {
-            var pos = _rootTrans.position;
-            pos.x = position.x;
-            pos.y = position.y;
-            _rootTrans.position = pos;
+            _image.enabled = value;
         }
         #endregion
 
         #region 私有方法
-
-        private void OnEnable()
-        {
-            _lockPosition = true;
-            _image.maskable = true;
-            _rootTrans.localPosition = Vector3.zero;
-        }
-        private void Update()
-        {
-            if (_lockPosition)
-            {
-                _rootTrans.localPosition = _rootTrans.localPosition * 0.5f;
-                if (_rootTrans.localPosition.sqrMagnitude < 2000)
-                {
-                    _image.maskable = true;
-                }
-            }
-        }
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData) => onBeginDrag?.Invoke(this, eventData);
         void IDragHandler.OnDrag(PointerEventData eventData) => onDrag?.Invoke(this, eventData);
         void IEndDragHandler.OnEndDrag(PointerEventData eventData) => onEndDrag?.Invoke(this, eventData);
@@ -65,10 +35,6 @@ namespace UI
         public event Action<CardGem, PointerEventData> onDrag;
         public event Action<CardGem, PointerEventData> onEndDrag;
 
-        [SerializeField]
-        private bool _lockPosition = true;
-        [SerializeField]
-        private RectTransform _rootTrans;
         [SerializeField]
         private Image _image;
     }
