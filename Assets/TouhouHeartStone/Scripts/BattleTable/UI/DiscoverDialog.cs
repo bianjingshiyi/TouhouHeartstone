@@ -29,6 +29,9 @@ namespace Game.BattleTable
         {
             var choice = Instantiate(_choiceTemplate, _choiceRoot).GetComponent<DiscoverItem>();
             choice.gameObject.SetActive(true);
+            var localPos = choice.transform.localPosition;
+            localPos.z = -_choices.Count;
+            choice.transform.localPosition = localPos;
             _choices.Add(choice);
             choice.onClick += onItemClickCallback;
             return choice;
