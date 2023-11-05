@@ -1166,10 +1166,11 @@ namespace Game.BattleTable
 
             bool setPosition = true;
             // 拖回手牌
-            var worldPos = pointer.pointerCurrentRaycast.worldPosition;
+            var screenPos = pointer.position;
+            var worldPos = ScreenToWorldPosition(screenPos);
             var pos = WorldToTablePosition(worldPos);
             var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(worldPos);
-            if (table.SelfHandList.containsPosition(inverseTransPosition))
+            if (table.SelfHandList.containsPosition(inverseTransPosition) || screenPos.y < 0)
             {
                 //移除随从占位
                 if (card.isServant())
@@ -1204,9 +1205,10 @@ namespace Game.BattleTable
             //拖拽卡片
             if (setPosition)
             {
-                var handPos = pos;
-                handPos.y = hand.transform.position.y;
-                hand.transform.position = TableToWorldPosition(pos);
+                var handPos = WorldToTablePosition(hand.transform.position);
+                handPos.x = pos.x;
+                handPos.z = pos.z;
+                hand.transform.position = TableToWorldPosition(handPos);
             }
         }
         /// <summary>
@@ -1225,10 +1227,11 @@ namespace Game.BattleTable
                 return;
             }
             // 拖回手牌
-            var worldPos = pointer.pointerCurrentRaycast.worldPosition;
+            var screenPos = pointer.position;
+            var worldPos = ScreenToWorldPosition(screenPos);
             var pos = WorldToTablePosition(worldPos);
             var inverseTransPosition = table.SelfHandList.transform.InverseTransformPoint(worldPos);
-            if (table.SelfHandList.containsPosition(inverseTransPosition))
+            if (table.SelfHandList.containsPosition(inverseTransPosition) || screenPos.y < 0)
             {
                 //如果松开，取消使用
                 resetUse();
@@ -1301,8 +1304,7 @@ namespace Game.BattleTable
             Player targetPlayer = list == table.SelfHandList ? player : game.getOpponent(player);
             if (!table.SelfHandList.isZoomIn && targetPlayer.getHand().count > 0)
             {
-                var pos = pointer.pointerCurrentRaycast.worldPosition;
-                var tablePos = WorldToTablePosition(pos);
+                var tablePos = ScreenToTablePosition(pointer.position);
                 tablePos.y = 0;
                 showTipBox(lang._(TAB_CARD_NUMBER, getCard(hand).getOwner().getHand().count), tablePos, hand.gameObject);
             }
@@ -1347,7 +1349,7 @@ namespace Game.BattleTable
             if (!canCardBeControlled(card))
                 return;
             //拉动距离也应该有一个阈值
-            var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
+            var pos = ScreenToTablePosition(pointer.position);
             var masterPos = WorldToTablePosition(master.transform.position);
             if (Vector3.Distance(masterPos, pos) > masterAttackThreshold)
             {
@@ -1431,7 +1433,7 @@ namespace Game.BattleTable
                 showErrorTip(info);
                 return;
             }
-            var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
+            var pos = ScreenToTablePosition(pointer.position);
             var skillPos = WorldToTablePosition(skill.transform.position);
             if (Vector3.Distance(skillPos, pos) > skillDragThreshold)
             {
@@ -1483,8 +1485,7 @@ namespace Game.BattleTable
         private void onSkillPointerEnterCallback(Skill skill, PointerEventData pointer)
         {
             string desc = getSkin(skill == table.SelfSkill ? player.getSkill() : game.getOpponent(player).getSkill()).desc;
-            var pos = pointer.pointerCurrentRaycast.worldPosition;
-            var tablePos = WorldToTablePosition(pos);
+            var tablePos = ScreenToTablePosition(pointer.position);
             tablePos.y = 0;
             showTipBox(desc, tablePos, skill.gameObject);
         }
@@ -1533,7 +1534,7 @@ namespace Game.BattleTable
             if (isSelectingTargetForOtherCards(card))//正在操作的卡牌并非该仆从。
                 return;
             //拉动距离也应该有一个阈值
-            var pos = WorldToTablePosition(pointer.pointerCurrentRaycast.worldPosition);
+            var pos = ScreenToTablePosition(pointer.position);
             var servantPos = WorldToTablePosition(servant.transform.position);
             if (Vector3.Distance(servantPos, pos) > servantAttackThreshold)
             {
@@ -1602,8 +1603,7 @@ namespace Game.BattleTable
             {
                 tip = lang._(self ? TAB_YOUR_NO_HAVE_CARD : TAB_OPPONENT_OUT_OF_CARDS);
             }
-            var pos = pointer.pointerCurrentRaycast.worldPosition;
-            var tablePos = WorldToTablePosition(pos);
+            var tablePos = ScreenToTablePosition(pointer.position);
             tablePos.y = 0;
             showTipBox(tip, tablePos, deck.gameObject);
         }
@@ -1635,8 +1635,7 @@ namespace Game.BattleTable
             string tip = curGrave.count > 0 ?
                 lang._(TAB_GRAVEYARD_HAS, curGrave.count) :
                 lang._(TAB_GRAVEYARD_NULL);
-            var pos = pointer.pointerCurrentRaycast.worldPosition;
-            var tablePos = WorldToTablePosition(pos);
+            var tablePos = ScreenToTablePosition(pointer.position);
             tablePos.y = 0;
             showTipBox(tip, tablePos, deck.gameObject);
         }

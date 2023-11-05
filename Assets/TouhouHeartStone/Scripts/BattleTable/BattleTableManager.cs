@@ -97,6 +97,8 @@ namespace Game.BattleTable
         public Vector3 TableToWorldPosition(Vector3 tablePos) => table.TableToWorldPosition(tablePos);
         public Vector3 TableToWorldScale(Vector3 tableScale) => table.TableToWorldScale(tableScale);
         public float TableToWorldDistance(float tableDis) => table.TableToWorldDistance(tableDis);
+        public Vector3 ScreenToWorldPosition(Vector3 screenPos) => table.Camera.ScreenToWorldPoint(screenPos);
+        public Vector3 ScreenToTablePosition(Vector3 screenPos) => WorldToTablePosition(ScreenToWorldPosition(screenPos));
         #endregion
         #region 皮肤
         public CardSkinData getSkin(ICardData card)
