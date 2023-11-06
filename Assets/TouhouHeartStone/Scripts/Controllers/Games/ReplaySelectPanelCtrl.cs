@@ -19,6 +19,8 @@ namespace Controllers
             await loadMetas();
             await updateView();
             _ui.gameObject.SetActive(true);
+            _selectIndex = -1;
+            updateSelected();
         }
         public void hide()
         {
@@ -104,6 +106,7 @@ namespace Controllers
             var poolRef = pools.FirstOrDefault(p => p.CardPoolID == defRef.cardPoolId);
             if (poolRef == null)
                 return cardManager.getDefaultSprite();
+            await cardManager.getOrLoadCardPool(poolRef, true);
             var define = game.card.getCardDefine(poolRef, defRef.defineId);
             if (define == null)
                 return cardManager.getDefaultSprite();

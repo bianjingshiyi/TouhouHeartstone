@@ -12,6 +12,7 @@ namespace Game.Replays
         public ReplayPlayerData playerA;
         public ReplayPlayerData playerB;
         public List<IResponse> responses;
+        public List<float> responseTimes;
     }
     [Serializable]
     public class SerializableReplayData
@@ -23,6 +24,7 @@ namespace Game.Replays
             playerA = new SerializableReplayPlayerData(replayData.playerA);
             playerB = new SerializableReplayPlayerData(replayData.playerB);
             responses = replayData.responses;
+            responseTimes = replayData.responseTimes;
         }
         public ReplayData toData()
         {
@@ -32,7 +34,8 @@ namespace Game.Replays
                 option = option.toOption(),
                 playerA = playerA.toData(),
                 playerB = playerB.toData(),
-                responses = responses
+                responses = responses,
+                responseTimes = responseTimes,
             };
         }
         public int version;
@@ -40,5 +43,6 @@ namespace Game.Replays
         public SerializableReplayPlayerData playerA;
         public SerializableReplayPlayerData playerB;
         public List<IResponse> responses;
+        public List<float> responseTimes;
     }
 }

@@ -1598,7 +1598,6 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onSkillDragCallback(Skill skill, PointerEventData pointer)
         {
-            //TODO:按帧记录Replay
             if (!canControl)
                 return;
             var skillCard = player.getSkill();

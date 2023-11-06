@@ -81,6 +81,10 @@ namespace Game
                     quitGame();
                     return;
                 }
+                if (_recordingReplay)
+                {
+                    _replayRecorder.update(Time.deltaTime);
+                }
                 if (_replayPlayer != null)
                 {
                     //如果在Replay模式
@@ -295,8 +299,9 @@ namespace Game
         {
             if (_replayPlayer != null)
                 _replayPlayer = null;
-            if (_replaySystem.isRecording)
-                _replaySystem.stopRecord();
+            if (_replayRecorder.isRecording)
+                _replayRecorder.stopRecord();
+            _recordingReplay = false;
             if (game != null)
             {
                 game.Dispose();

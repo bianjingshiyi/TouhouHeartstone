@@ -7,7 +7,7 @@ using TouhouHeartstone;
 
 namespace Game.Replays
 {
-    public class ReplaySystem
+    public class ReplayRecorder
     {
         #region 公有方法
         public void startRecord(CardEngine game, RoomData roomData, int localPlayerId)
@@ -32,16 +32,20 @@ namespace Game.Replays
                 option = game.getOption(),
                 playerA = new ReplayPlayerData(localPlayer),
                 playerB = new ReplayPlayerData(otherPlayer),
-                responses = new List<IResponse>()
+                responses = new List<IResponse>(),
+                responseTimes = new List<float>()
             };
             game.answers.onResponse += onPlayerResponseCallback;
-            game.triggers.onEventAfter += onEventAfterCallback;
+            _currentTime = 0;
         }
         public void stopRecord()
         {
             game.answers.onResponse -= onPlayerResponseCallback;
-            game.triggers.onEventAfter -= onEventAfterCallback;
             game = null;
+        }
+        public void update(float deltaTime)
+        {
+            _currentTime += deltaTime;
         }
         #endregion
 
@@ -51,11 +55,7 @@ namespace Game.Replays
         private void onPlayerResponseCallback(IResponse response)
         {
             replay.responses.Add(response);
-        }
-        private void onEventAfterCallback(IEventArg arg)
-        {
-            if (arg is HearthStoneRule.GameEndEventArg)
-                stopRecord();
+            replay.responseTimes.Add(_currentTime);
         }
         #endregion
 
@@ -64,6 +64,7 @@ namespace Game.Replays
         #region 属性字段
         public const int REPLAY_VERSION = 0;
         public bool isRecording => game != null;
+        private float _currentTime = 0;
         CardEngine game { get; set; } = null;
         public ReplayMeta meta { get; private set; } = null;
         public ReplayData replay { get; private set; } = null;

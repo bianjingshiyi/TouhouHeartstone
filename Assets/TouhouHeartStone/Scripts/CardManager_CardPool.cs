@@ -501,7 +501,8 @@ namespace Game
                 cardPool = null;
                 return false;
             }
-            return _cardPoolDict.TryGetValue(cardPoolRef, out cardPool);
+            cardPool = _cardPoolDict.FirstOrDefault(p => cardPoolRef.CompareCardPool(p.Key)).Value;
+            return cardPool != null;
         }
         public bool tryGetCardPool(string path, out CardPool cardPool)
         {
