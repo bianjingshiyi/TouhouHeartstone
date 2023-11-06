@@ -43,6 +43,10 @@ namespace Controllers
             {
                 _chatCtrl = TransformHelper.findComponentInScene<ChatCtrl>(gameObject.scene);
             }
+            if (_replayCtrl == null)
+            {
+                _replayCtrl = TransformHelper.findComponentInScene<ReplaySelectPanelCtrl>(gameObject.scene);
+            }
             _menu.gameObject.SetActive(true);
             _room.gameObject.SetActive(false);
             _build.gameObject.SetActive(false);
@@ -52,6 +56,7 @@ namespace Controllers
             _buffEditor.gameObject.SetActive(false);
             _actionEditor.gameObject.SetActive(false);
             _chatCtrl.gameObject.SetActive(false);
+            _replayCtrl.gameObject.SetActive(false);
         }
         public MainMenuCtrl menu => _menu;
         public RoomCtrl room => _room;
@@ -62,6 +67,7 @@ namespace Controllers
         public BuffEditorCtrl buffEditor => _buffEditor;
         public ActionEditorCtrl actionEditor => _actionEditor;
         public ChatCtrl chatCtrl => _chatCtrl;
+        public ReplaySelectPanelCtrl replay => _replayCtrl;
         [SerializeField]
         MainMenuCtrl _menu;
         [SerializeField]
@@ -80,5 +86,7 @@ namespace Controllers
         BuffEditorCtrl _buffEditor;
         [SerializeField]
         ChatCtrl _chatCtrl;
+        [SerializeField]
+        ReplaySelectPanelCtrl _replayCtrl;
     }
 }

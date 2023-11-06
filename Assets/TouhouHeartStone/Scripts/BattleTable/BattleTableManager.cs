@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BJSYGameCore;
-using Boo.Lang;
-using Game.Animations;
 using Game.BattleTable.UI;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Card = TouhouCardEngine.Card;
 
 namespace Game.BattleTable

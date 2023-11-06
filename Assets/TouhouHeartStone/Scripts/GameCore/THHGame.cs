@@ -302,34 +302,6 @@ namespace TouhouHeartstone
     }
 
     [Serializable]
-    public class HearthstoneOption : GameOption
-    {
-        public static HearthstoneOption Default => new HearthstoneOption();
-
-        // public int randomSeed = 0;
-        public int[] sortedPlayers = null;
-        public bool shuffle = true;
-        public float timeoutForInitReplace = 30;
-        public float timeoutForTurn = 75;
-        public int startGem = 0;
-        public CardPoolInfoPack[] cardPools = new CardPoolInfoPack[0];
-
-        public HearthstoneOption()
-        {
-        }
-
-        public HearthstoneOption(HearthstoneOption copyTarget)
-        {
-            randomSeed = copyTarget.randomSeed;
-            sortedPlayers = copyTarget.sortedPlayers;
-            shuffle = copyTarget.shuffle;
-            timeoutForInitReplace = copyTarget.timeoutForInitReplace;
-            timeoutForTurn = copyTarget.timeoutForTurn;
-            cardPools = copyTarget.cardPools;
-        }
-    }
-
-    [Serializable]
     public class NotYourTurnException : Exception
     {
         public NotYourTurnException()

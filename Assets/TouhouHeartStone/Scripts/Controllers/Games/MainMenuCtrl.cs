@@ -1,5 +1,4 @@
 ﻿using Game;
-using System;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
@@ -32,6 +31,7 @@ namespace Controllers
             _ui.onVsBotButtonClick += onClickVsBotButton;
             _ui.onBuildCardButtonClick += onBuildButtonClick;
             _ui.onEditorButtonClick += onEditorButtonClick;
+            _ui.onReplayButtonClick += onReplayButtonClickedCallback;
         }
         #endregion
         #region 事件回调
@@ -53,6 +53,11 @@ namespace Controllers
             _ui.gameObject.SetActive(false);
             scene.build.display();
         }
+        private async void onReplayButtonClickedCallback()
+        {
+            _ui.gameObject.SetActive(false);
+            await scene.replay.display();
+        }
 
         /// <summary>
         /// 进入PVE模式界面
@@ -62,7 +67,7 @@ namespace Controllers
             await scene.pveRoom.display();
             _ui.gameObject.SetActive(false);
         }
-        
+
         private void onEditorButtonClick()
         {
             _ui.gameObject.SetActive(false);

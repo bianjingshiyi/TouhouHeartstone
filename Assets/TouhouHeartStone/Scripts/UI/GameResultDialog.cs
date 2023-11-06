@@ -1,7 +1,5 @@
 ﻿using System;
-using BJSYGameCore;
 using BJSYGameCore.UI;
-using Game;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +7,10 @@ namespace UI
 {
     public partial class GameResultDialog : UIObject
     {
+        public void setReplayButtonVisible(bool visible)
+        {
+            _saveReplayButton.gameObject.SetActive(visible);
+        }
         public void ShowGameResult(bool success)
         {
             gameObject.SetActive(true);

@@ -202,7 +202,7 @@ namespace Game
             logic.OnCardPoolsSuggestionAnwsered += NetworkingLogic_OnCardPoolsSuggestionAnwsered;
 
             // todo: Client断开后退出房间
-            gameManager.onGameEnd += logic.ClearRoom;
+            gameManager.onGameEnd += Logic_onGameEnd;
 
             lanPanel.onConfirmPassword += onConfirmRoomPassword;
             lanPanel.onCancelPassword += onCancelRoomPassword;
@@ -440,6 +440,11 @@ namespace Game
         private void Logic_onGameStart()
         {
             gameManager.startRemoteGame(logic.CurrentRoom);
+        }
+        private void Logic_onGameEnd()
+        {
+            if (logic.RoomIsValid)
+                logic.ClearRoom();
         }
         #endregion
 

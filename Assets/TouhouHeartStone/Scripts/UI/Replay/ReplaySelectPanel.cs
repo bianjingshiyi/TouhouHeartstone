@@ -1,61 +1,85 @@
-﻿using BJSYGameCore.UI;
+﻿using System;
 using System.Collections.Generic;
-using BJSYGameCore;
+using BJSYGameCore.UI;
 using UnityEngine;
-using System;
-using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
-using Game.Replays;
-using System.Linq;
-using System.IO;
-using MongoDB.Bson.Serialization;
-using Game;
-using Controllers;
+using UnityEngine.UI;
 
 namespace UI
 {
     partial class ReplaySelectPanel : UIObject
     {
-        public void onAwake()
+        #region 公有方法
+        public void updateView(ReplayItemViewData[] viewData)
         {
-            autoInit();
-            _replayListTemplate = _replayListRoot.transform.Find("ReplayItem").gameObject;
-            _replayListTemplate.GetComponent<ReplayItem>().onAwake();
-            _replayListTemplate.gameObject.SetActive(false);
-        }
-        public void updateView(ReplaySelectViewData viewData)
-        {
-            _playButton.interactable = viewData.selectIndex >= 0;
-            if (viewData.replayItemViewDatas != null)
+            if (viewData == null)
+                return;
+            UIHelper.updateList(_replayListRoot, _replayListTemplate.transform as RectTransform, _replayList, viewData.Length, (i, item) =>
             {
-                BJSYGameCore.UI.UIHelper.updateList(_replayListRoot, _replayListTemplate.transform as RectTransform, _replayList, viewData.replayItemViewDatas.Length, (i, item) =>
-                    {
-                        ReplayItem replayItem = item.GetComponent<ReplayItem>();
-                        replayItem.updateView(viewData.replayItemViewDatas[i]);
-                        replayItem.setSelected(i == viewData.selectIndex);
-                    }, (item) =>
-                    {
-                        ReplayItem replayItem = item.GetComponent<ReplayItem>();
-                        replayItem.onAwake();
-                        replayItem.onClick += onReplayListClickCallback;
-                    }, (item) =>
-                    {
-                        item.GetComponent<ReplayItem>().onClick -= onReplayListClickCallback;
-                    });
+                ReplayItem replayItem = item.GetComponent<ReplayItem>();
+                replayItem.updateView(viewData[i]);
+            },
+            (item) =>
+            {
+                ReplayItem replayItem = item.GetComponent<ReplayItem>();
+                replayItem.onClick += onReplayListClickCallback;
+            },
+            (item) =>
+            {
+                ReplayItem replayItem = item.GetComponent<ReplayItem>();
+                replayItem.onClick -= onReplayListClickCallback;
+            });
+        }
+        public void setSelectedItem(int index)
+        {
+            for (int i = 0; i < _replayList.Count; i++)
+            {
+                var replayItem = _replayList[i].GetComponent<ReplayItem>();
+                replayItem.setSelected(i == index);
             }
         }
+        public void setPlayButtonInteractable(bool interactable)
+        {
+            _playButton.interactable = interactable;
+        }
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+        protected override void Awake()
+        {
+            _replayListTemplate.gameObject.SetActive(false);
+            _playButton.onClick.AddListener(() => onPlayButtonClick?.Invoke());
+            _backButton.onClick.AddListener(() => onBackButtonClick?.Invoke());
+        }
+        #endregion
+
+        #region 事件回调
         private void onReplayListClickCallback(ReplayItem item)
         {
-            if (onReplayListClick != null)
-                onReplayListClick(this, _replayList.IndexOf(item.transform as RectTransform));
+            onReplayListClick?.Invoke(_replayList.IndexOf(item.transform as RectTransform));
         }
-        public event Action<ReplaySelectPanel, int> onReplayListClick;
-        GameObject _replayListTemplate;
-        readonly List<RectTransform> _replayList = new List<RectTransform>();
-    }
-    public class ReplaySelectViewData
-    {
-        public int selectIndex = -1;
-        public ReplayItemViewData[] replayItemViewDatas = null;
+        #endregion
+
+        #endregion
+
+        #region 事件
+        public event Action onPlayButtonClick;
+        public event Action onBackButtonClick;
+        public event Action<int> onReplayListClick;
+        #endregion
+
+        #region 属性字段
+        [SerializeField]
+        private Button _playButton;
+        [SerializeField]
+        private Button _backButton;
+        [SerializeField]
+        private RectTransform _replayListRoot;
+        [SerializeField]
+        private GameObject _replayListTemplate;
+        [SerializeField]
+        private readonly List<RectTransform> _replayList = new List<RectTransform>();
+        #endregion
     }
 }

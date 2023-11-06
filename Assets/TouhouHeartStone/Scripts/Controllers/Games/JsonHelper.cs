@@ -1,4 +1,5 @@
 ﻿using Game;
+using Game.Replays;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
@@ -53,6 +54,21 @@ namespace Controllers
             registerClass<SerializablePassiveEffect>();
             registerClass<SerializableEventEffect>();
             registerClass<SerializableAuraEffect>();
+
+            // Replays.
+            registerClass<SerializableReplayMeta>();
+            registerClass<SerializableReplayData>();
+            registerClass<SerializableReplayPlayerData>();
+            registerClass<SerializableHearthstoneOption>();
+
+            // Responses.
+            registerClass<Response>();
+            registerClass<AttackResponse>();
+            registerClass<DiscoverResponse>();
+            registerClass<InitReplaceResponse>();
+            registerClass<SurrenderResponse>();
+            registerClass<TurnEndResponse>();
+            registerClass<UseResponse>();
             isInited = true;
         }
         public static string toJson(this object obj, bool readFriendly = false)

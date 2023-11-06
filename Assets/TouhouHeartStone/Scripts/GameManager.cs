@@ -4,18 +4,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using BJSYGameCore;
-using BJSYGameCore.UI;
 using Game.Animations;
 using Game.BattleTable;
 using Game.BattleTable.UI;
-using MongoDB.Bson;
 using MukioI18n;
 using NitoriNetwork.Common;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
-using TouhouCardEngine.Shared;
 using TouhouHeartstone;
-using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -30,7 +26,9 @@ namespace Game
         {
             //创建游戏
             CardEngine game = await createGame(room);
-            await startGame(game, GameMode.local, room.playerDataList[0].id, true);
+            var localId = room.playerDataList[0].id;
+            initReplay(game, room, localId);
+            await startGame(game, GameMode.local, localId, true);
         }
         public Task startPVEGame(RoomData room)
         {
@@ -53,13 +51,8 @@ namespace Game
             game.answers.client = client;
             //初始化本地玩家与UI
             var localId = client.id;
+            initReplay(game, room, localId);
             await startGame(game, GameMode.remote, localId);
-        }
-        public async Task startReplayGame(Replay rep)
-        {
-            CardEngine game = await createGame(rep.option, rep.players);
-            new ReplayPlayer(rep, game);
-            await startGame(game, GameMode.replay, game.players.First().id);
         }
         #endregion
         #region 私有方法
@@ -122,7 +115,8 @@ namespace Game
         }
         private void onSurrenderCallback()
         {
-            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, SURRENDER_QUESTION, () => {
+            main.ui.dialog?.ShowQuestion(StringTable.HINT_TITLE, SURRENDER_QUESTION, () =>
+            {
                 localPlayer.cmdSurrender(game);
             });
         }
@@ -132,13 +126,6 @@ namespace Game
             {
                 onGameFinished?.Invoke(gameEnd.winners);
             }
-        }
-        private async void onSaveReplayButtonClick()
-        {
-            await getManager<MainManager>().fileManager.savePersistentFile(
-                _replaySystem.getSaveDir() + "/" + _replaySystem.getSaveFileName(_replaySystem.replay) + "." + _replaySystem.getSaveFileExtension(),
-                _replaySystem.replay.players.Select(p => p.getDeck().masterCardRef).ToArray().ToJson() + "\r\n" +
-                _replaySystem.replay.ToJson());
         }
         #endregion
         private Task<CardEngine> createGame(RoomData room)
@@ -202,17 +189,9 @@ namespace Game
                 playerList.ToArray());
             return game;
         }
-        private Task runGame(CardEngine game, bool recordReplay = true)
+
+        private Task runGame(CardEngine game)
         {
-            if (recordReplay)
-                _replaySystem.startRecord(game, game.players.Select(p =>
-                {
-                    RoomPlayerData playerData = new RoomPlayerData(p.id, p.name, RoomPlayerType.human);
-                    playerData.setDeck(new Deck(
-                        p.getMaster().define.getDefineRef(),
-                        p.getDeck().Select(c => c.define.getDefineRef())));
-                    return playerData;
-                }).ToArray());
             onGameStart?.Invoke();
             gameTask = game.run();
             return gameTask;
@@ -225,10 +204,9 @@ namespace Game
             var cardManager = cards;
             animDict.Clear();
             // 尝试从本地获取卡组，否则读取缓存卡组。
-            foreach (var pool in option.cardPools)
+            foreach (var poolRef in option.cardPools)
             {
-                long poolId = pool.cardPoolId;
-                var poolRef = pool.ToReference();
+                long poolId = poolRef.cardPoolId;
 
                 if (cards.isBuiltinCardPool(poolId))
                 {
@@ -239,14 +217,14 @@ namespace Game
                 CardPool cardPool = null;
                 var poolInfo = cards.getCardPoolInfo(poolRef);
                 // 尝试获取本地卡池的卡牌定义（要求版本正确）。
-                if (poolInfo != null && poolInfo.editTime == pool.version)
+                if (poolInfo != null && poolInfo.editTime == poolRef.version)
                 {
-                    cardPool = (await cards.getOrLoadCardPool(pool.GetReference())).cardPool;
+                    cardPool = (await cards.getOrLoadCardPool(poolRef)).cardPool;
                 }
                 // 如果本地卡地没有任何卡牌定义，或者版本不正确，尝试获取缓存内的该卡池。
                 if (cardPool == null)
                 {
-                    cardPool = (await cards.loadCachedCardPoolAsync(poolId, pool.version)).cardPool;
+                    cardPool = (await cards.loadCachedCardPoolAsync(poolId, poolRef.version)).cardPool;
                 }
                 if (cardPool != null)
                 {
@@ -368,7 +346,8 @@ namespace Game
                 tableUI.onSurrender += onSurrenderCallback;
                 tableUI.GameResultDialog.onGameEnd += onGameEndCallback;
                 tableUI.GameResultDialog.onQuitButtonClicked += onGameResultQuitGameButtonClicked;
-                tableUI.GameResultDialog.onSaveReplayButtonClicked += onGameResultQuitGameButtonClicked; // 保存并退出
+                tableUI.GameResultDialog.setReplayButtonVisible(mode != GameMode.replay);
+                tableUI.GameResultDialog.onSaveReplayButtonClicked += onSaveReplayButtonClickCallback; // 保存并退出
             }
         }
         private void disposeTableUI()
@@ -379,7 +358,7 @@ namespace Game
                 tableUI.onSurrender -= onSurrenderCallback;
                 tableUI.GameResultDialog.onGameEnd -= onGameEndCallback;
                 tableUI.GameResultDialog.onQuitButtonClicked -= onGameResultQuitGameButtonClicked;
-                tableUI.GameResultDialog.onSaveReplayButtonClicked -= onGameResultQuitGameButtonClicked;
+                tableUI.GameResultDialog.onSaveReplayButtonClicked -= onSaveReplayButtonClickCallback;
             }
         }
         private void reset()
@@ -410,6 +389,8 @@ namespace Game
         public event Action onGameQuit;
         #endregion
         #region 属性字段
+        [TranslateMsg("游戏回放保存成功后的提醒")]
+        public const string GAME_REPLAY_SAVED = "回放保存成功";
         [TranslateMsg("开始游戏时，读取卡池失败时的报错")]
         public const string GAME_CREATE_ERROR_LOAD_CARDS_FAILED = "开始游戏失败，无法读取游戏所需的卡池。";
         [TranslateMsg]

@@ -31,9 +31,7 @@ namespace UI
             _vsBotButton.onClick.AddListener(onVsBotButtonClickCallback);
             _pveButton.onClick.AddListener(onPVEButtonClickCallback);
             _buildCardButton.onClick.AddListener(onBuildCardButtonClickCallback);
-            buildButton.onClick.AddListener(() =>
-            {
-            });
+            _replayButton.onClick.AddListener(onReplayButtonClickCallback);
             quitButton.onClick.AddListener(() =>
             {
                 Application.Quit();
@@ -74,6 +72,10 @@ namespace UI
         {
             onBuildCardButtonClick?.Invoke();
         }
+        private void onReplayButtonClickCallback()
+        {
+            onReplayButtonClick?.Invoke();
+        }
 #endregion
 #endregion
 #region 事件
@@ -81,6 +83,7 @@ namespace UI
         public event Action onPVEButtonClick;
         public event Action onEditorButtonClick;
         public event Action onBuildCardButtonClick;
+        public event Action onReplayButtonClick;
 #endregion
         [SerializeField]
         Button _vsBotButton;
@@ -88,6 +91,8 @@ namespace UI
         Button _pveButton;
         [SerializeField]
         Button _buildCardButton;
+        [SerializeField]
+        Button _replayButton;
     }
 
 }

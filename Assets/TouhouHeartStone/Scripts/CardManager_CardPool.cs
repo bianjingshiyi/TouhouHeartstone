@@ -1195,7 +1195,22 @@ namespace Game
             }
             _creatingCardPoolInfo = null;
         }
-
+        /// <summary>
+        /// 检测本地是否有某个卡池及其版本。
+        /// </summary>
+        /// <param name="includingCache">是否包括缓存内的卡池。</param>
+        /// <returns></returns>
+        public bool hasCardPool(ICardPoolReference poolRef, bool includingCache = false)
+        {
+            if (isBuiltinCardPool(poolRef.CardPoolID) || isStandardCardPool(poolRef.CardPoolID))
+                return true;
+            if (!includingCache && !isLocalCardPool(poolRef))
+            {
+                return false;
+            }
+            var cardPoolInfo = getCardPoolInfo(poolRef);
+            return cardPoolInfo != null;
+        }
         public void showCardPoolLoadErrorDialog()
         {
             var title = game.lang._(StringTable.ERROR);

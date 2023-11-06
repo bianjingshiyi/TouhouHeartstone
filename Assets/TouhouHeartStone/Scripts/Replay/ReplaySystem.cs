@@ -1,69 +1,71 @@
-﻿using TouhouHeartstone;
-using System;
-using TouhouCardEngine.Interfaces;
-using MongoDB.Bson.Serialization;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
-using System.Collections.Generic;
+using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
 
 namespace Game.Replays
 {
     public class ReplaySystem
     {
-        public void startRecord(CardEngine game, RoomPlayerData[] players)
+        #region 公有方法
+        public void startRecord(CardEngine game, RoomData roomData, int localPlayerId)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
             this.game = game;
+
+            var players = roomData.playerDataList.ToArray();
+            var localPlayer = players.FirstOrDefault(p => p.id == localPlayerId);
+            var otherPlayer = players.FirstOrDefault(p => p.id != localPlayerId);
+            meta = new ReplayMeta()
+            {
+                playerAMasterDefRef = localPlayer.getDeck().masterCardRef,
+                playerBMasterDefRef = otherPlayer.getDeck().masterCardRef,
+                requiredCardPools = roomData.getCardPools(),
+                name = ReplayManager.getNowReplayFileName()
+            };
             replay = new ReplayData()
             {
+                version = REPLAY_VERSION,
                 option = game.getOption(),
-                players = players,
+                playerA = new ReplayPlayerData(localPlayer),
+                playerB = new ReplayPlayerData(otherPlayer),
                 responses = new List<IResponse>()
             };
-            // game.onPlayerResponse += onPlayerResponse;
-            // game.onEnd += onEnd;
+            game.answers.onResponse += onPlayerResponseCallback;
+            game.triggers.onEventAfter += onEventAfterCallback;
         }
         public void stopRecord()
         {
-            // game.onPlayerResponse -= onPlayerResponse;
-            // game.onEnd -= onEnd;
+            game.answers.onResponse -= onPlayerResponseCallback;
+            game.triggers.onEventAfter -= onEventAfterCallback;
             game = null;
         }
-        public string getSaveDir()
-        {
-            return "Replays";
-        }
-        public string getSaveFileName(ReplayData replay)
-        {
-            return DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-        }
-        public string getSaveFileExtension()
-        {
-            return "zmrep";
-        }
-        public bool isRecording
-        {
-            get { return game != null; }
-        }
-        #region 私有成员
-        static ReplaySystem()
-        {
-            foreach (var item in typeof(Response).Assembly.GetTypes())
-            {
-                if (item.IsSubclassOf(typeof(Response)) || item.GetInterfaces().Contains(typeof(IResponse)))
-                    BsonClassMap.LookupClassMap(item);
-            }
-        }
-        private void onPlayerResponse(int playerId, IResponse response)
+        #endregion
+
+        #region 私有方法
+
+        #region 事件回调
+        private void onPlayerResponseCallback(IResponse response)
         {
             replay.responses.Add(response);
         }
-        private void onEnd()
+        private void onEventAfterCallback(IEventArg arg)
         {
-            stopRecord();
+            if (arg is HearthStoneRule.GameEndEventArg)
+                stopRecord();
         }
+        #endregion
+
+        #endregion
+
+        #region 属性字段
+        public const int REPLAY_VERSION = 0;
+        public bool isRecording => game != null;
         CardEngine game { get; set; } = null;
+        public ReplayMeta meta { get; private set; } = null;
         public ReplayData replay { get; private set; } = null;
         #endregion
     }

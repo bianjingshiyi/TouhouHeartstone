@@ -25,10 +25,6 @@ namespace UI
             _lANButton.onClick.AddListener(ANButtonClickCallback);
             _serverButton = transform.Find(PATH_SERVERBUTTON).GetComponent<Button>();
             _serverButton.onClick.AddListener(ErverButtonClickCallback);
-            _buildButton = transform.Find(PATH_BUILDBUTTON).GetComponent<Button>();
-            _buildButton.onClick.AddListener(UildButtonClickCallback);
-            _replayButton = transform.Find(PATH_REPLAYBUTTON).GetComponent<Button>();
-            _replayButton.onClick.AddListener(EplayButtonClickCallback);
             _newsButton = transform.Find(PATH_NEWSBUTTON).GetComponent<Button>();
             _newsButton.onClick.AddListener(EwsButtonClickCallback);
             _aboutButton = transform.Find(PATH_ABOUTBUTTON).GetComponent<Button>();
@@ -44,22 +40,16 @@ namespace UI
             _quitButton = transform.Find(PATH_QUITBUTTON).GetComponent<Button>();
             _quitButton.onClick.AddListener(UitButtonClickCallback);
             _editorButton = transform.Find(PATH_EDITORBUTTON).GetComponent<Button>();
-            _editorButton.onClick.AddListener(DitorButtonClickCallback);
-            _pVEButton = transform.Find(PATH_PVEBUTTON).GetComponent<Button>();
-            _pVEButton.onClick.AddListener(VEButtonClickCallback);
         }
         public void autoClear()
         {
             _lANButton.onClick.RemoveListener(ANButtonClickCallback);
             _serverButton.onClick.RemoveListener(ErverButtonClickCallback);
-            _buildButton.onClick.RemoveListener(UildButtonClickCallback);
             _replayButton.onClick.RemoveListener(EplayButtonClickCallback);
             _newsButton.onClick.RemoveListener(EwsButtonClickCallback);
             _aboutButton.onClick.RemoveListener(BoutButtonClickCallback);
             _settingButton.onClick.RemoveListener(EttingButtonClickCallback);
             _quitButton.onClick.RemoveListener(UitButtonClickCallback);
-            _editorButton.onClick.RemoveListener(DitorButtonClickCallback);
-            _pVEButton.onClick.RemoveListener(VEButtonClickCallback);
         }
         public GameObject _buttonPanel;
         public const string PATH_BUTTONPANEL = "ButtonPanel";
@@ -116,54 +106,12 @@ namespace UI
                 onErverButtonClick(this);
             }
         }
-        public Button _buildButton;
-        public const string PATH_BUILDBUTTON = "ButtonPanel/MainBtn/Build";
-        public Button buildButton
-        {
-            get
-            {
-                if ((_buildButton == null))
-                {
-                    _buildButton = transform.Find(PATH_BUILDBUTTON).GetComponent<Button>();
-                }
-                return _buildButton;
-            }
-        }
-        public event Action<MainMenu> onUildButtonClick;
-        private void UildButtonClickCallback()
-        {
-            if ((onUildButtonClick != null))
-            {
-                onUildButtonClick(this);
-            }
-        }
-        public Button _replayButton;
-        public const string PATH_REPLAYBUTTON = "ButtonPanel/MainBtn/Replay";
-        public Button replayButton
-        {
-            get
-            {
-                if ((_replayButton == null))
-                {
-                    _replayButton = transform.Find(PATH_REPLAYBUTTON).GetComponent<Button>();
-                }
-                return _replayButton;
-            }
-        }
         public event Action<MainMenu> onEplayButtonClick;
         private void EplayButtonClickCallback()
         {
             if ((onEplayButtonClick != null))
             {
                 onEplayButtonClick(this);
-            }
-        }
-        public event Action onReplayButtonClick;
-        private void ReplayButtonClickCallback()
-        {
-            if ((this.onReplayButtonClick != null))
-            {
-                this.onReplayButtonClick();
             }
         }
         public Button _newsButton;
@@ -339,35 +287,6 @@ namespace UI
                     _editorButton = transform.Find(PATH_EDITORBUTTON).GetComponent<Button>();
                 }
                 return _editorButton;
-            }
-        }
-        public event Action<MainMenu> onDitorButtonClick;
-        private void DitorButtonClickCallback()
-        {
-            if ((onDitorButtonClick != null))
-            {
-                onDitorButtonClick(this);
-            }
-        }
-        public Button _pVEButton;
-        public const string PATH_PVEBUTTON = "ButtonPanel/MainBtn/PVE";
-        public Button pVEButton
-        {
-            get
-            {
-                if ((_pVEButton == null))
-                {
-                    _pVEButton = transform.Find(PATH_PVEBUTTON).GetComponent<Button>();
-                }
-                return _pVEButton;
-            }
-        }
-        public event Action<MainMenu> onVEButtonClick;
-        private void VEButtonClickCallback()
-        {
-            if ((onVEButtonClick != null))
-            {
-                onVEButtonClick(this);
             }
         }
     }

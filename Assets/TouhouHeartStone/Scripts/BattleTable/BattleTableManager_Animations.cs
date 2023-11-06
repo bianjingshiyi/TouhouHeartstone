@@ -333,7 +333,7 @@ namespace Game.BattleTable
         }
         public bool isPlayingAnimation()
         {
-            return _animationGroups.Count > 0;
+            return _animationGroups.Count + _animationQueue.Count > 0;
         }
         public AnimationGroup getAnimGroupOfAnim(TableAnimation anim)
         {

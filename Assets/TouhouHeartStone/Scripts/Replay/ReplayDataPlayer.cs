@@ -1,8 +1,7 @@
-﻿using TouhouHeartstone;
-using System.Linq;
-using TouhouCardEngine.Interfaces;
-using System;
+﻿using System.Linq;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
 
 namespace Game.Replays
 {
@@ -13,24 +12,13 @@ namespace Game.Replays
             this.game = game;
             this.replay = replay;
         }
-        public void playNextMove(IRequest request)
+        public IResponse getNextResponse()
         {
-            for (int i = 0; i < request.playersId.Length; i++)
-            {
-                IResponse response = replay.responses[currentResponseIndex];
-                currentResponseIndex++;
-                while (!request.isValidResponse(response) && !isReplayEnd)
-                {
-                    response = replay.responses[currentResponseIndex];
-                    currentResponseIndex++;
-                }
-                if (request.isValidResponse(response))
-                {
-                    game.answers.answer(response.playerId, response);
-                    if (request.isAny)
-                        return;
-                }
-            }
+            return replay.responses[currentResponseIndex];
+        }
+        public void Next()
+        {
+            currentResponseIndex++;
         }
         public bool isReplayEnd
         {

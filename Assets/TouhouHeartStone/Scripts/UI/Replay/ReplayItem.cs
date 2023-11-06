@@ -1,33 +1,56 @@
-﻿using BJSYGameCore;
+﻿using System;
 using BJSYGameCore.UI;
 using Game;
+using TMPro;
 using TouhouCardEngine;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
-    partial class ReplayItem : UIObject
+    class ReplayItem : UIObject
     {
-        public void onAwake()
-        {
-            autoInit();
-        }
+        #region 公有方法
         public void updateView(ReplayItemViewData viewData)
         {
-            // TODO: 以后重新开放回放的时候要加入这场回放使用的卡池引用列表，不然这俩人物头像没法正确获取
-            //_playerAImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerAMasterDefRef).image;
-            //_playerBImage.sprite = ui.getManager<CardManager>().getCardSkin(viewData.playerBMasterDefRef).image;
+            _playerAImage.sprite = viewData.playerAMasterSprite;
+            _playerBImage.sprite = viewData.playerBMasterSprite;
             _nameText.text = viewData.name;
         }
-
         public void setSelected(bool selected)
         {
-            _selected.gameObject.SetActive(selected);
+            _selectedFrameObj.SetActive(selected);
         }
+        #endregion
+
+        #region 私有方法
+        protected override void Awake()
+        {
+            _itemButton.onClick.AddListener(() => onClick?.Invoke(this));
+        }
+        #endregion
+
+        #region 事件
+        public event Action<ReplayItem> onClick;
+        #endregion
+
+        #region 属性字段
+        [SerializeField]
+        private Image _playerAImage;
+        [SerializeField]
+        private Image _playerBImage;
+        [SerializeField]
+        private Button _itemButton;
+        [SerializeField]
+        private TextMeshProUGUI _nameText;
+        [SerializeField]
+        private GameObject _selectedFrameObj;
+        #endregion
     }
     public class ReplayItemViewData
     {
-        public DefineReference playerAMasterDefRef;
-        public DefineReference playerBMasterDefRef;
+        public Sprite playerAMasterSprite;
+        public Sprite playerBMasterSprite;
         public string name;
     }
 }
