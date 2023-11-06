@@ -17,6 +17,9 @@ pipeline {
         timeout(time: 2, unit: 'HOURS')
         buildDiscarder logRotator(artifactDaysToKeepStr: '15', artifactNumToKeepStr: '15', daysToKeepStr: '90', numToKeepStr: '30')
     }
+    environment {
+		AIFADIAN = credentials('aifadian-zmcs')
+	}
     stages {
 		stage('env-check') {
 			steps {

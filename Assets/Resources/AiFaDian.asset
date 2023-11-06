@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8e802ea5b844e94ab12136e59cb0bb6, type: 3}
+  m_Name: AiFaDian
+  m_EditorClassIdentifier: 
+  sponsorList:
+  - "\u95F2\u4ED9\u5929\u97F3"
+  - "\u5E15\u79CB\u8389\xB7\u8BFA\u857E\u59EC"
+  - "\u7231\u53D1\u7535\u7528\u6237_a19b6"
+  - "\u843D\u53F6"
+  - "\u7A00\u795E\u767D\u591C"
+  - "\u9621\u4E09\u513F"
+  - "\u7231\u53D1\u7535\u7528\u6237_84998"
+  - "\u8283\u513F"
+  - "\u66E6"
+  - "\u6570\u77E5\u667A"
+  - "\u6211\u53EF\u662F\u5929\u5B50"
+  - "\u6587\u6587\u5B50"
+  - Suika
+  - "\u8FB9\u5883\u62FE\u9057"
+  - "\u7231\u53D1\u7535\u7528\u6237_stFb"
+  - "\u7231\u53D1\u7535\u7528\u6237_wfX8"
+  updateTime: 1699230425

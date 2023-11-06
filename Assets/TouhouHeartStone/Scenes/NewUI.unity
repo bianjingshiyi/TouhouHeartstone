@@ -8798,6 +8798,7 @@ MonoBehaviour:
   _initStates: []
   license: {fileID: 11400000, guid: 0a24e5d4ca88d7d40a4bc8580d0baa1f, type: 2}
   staff: {fileID: 4900000, guid: f0b91c6a28a8e9549b6412f6d5b682ad, type: 3}
+  aifadian: {fileID: 11400000, guid: aa52e5acfa9ebd64c970ef81e2d24cf2, type: 2}
   _Image: {fileID: 0}
   _AboutImage: {fileID: 903408309}
   _TitleText: {fileID: 1486430554}
@@ -14696,7 +14697,8 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 21563344409783084, guid: aee96bc531e6eba468ec405e536f515f,
+        type: 2}
     - target: {fileID: 6095950798539291792, guid: 3274ef919aad371409aa5b1167dc71b9,
         type: 3}
       propertyPath: m_AnchorMax.y
