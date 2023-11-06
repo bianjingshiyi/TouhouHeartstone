@@ -14,7 +14,7 @@ using MukioI18n;
 
 namespace Controllers
 {
-    class CardEditorCtrl : CardPoolEditor, IController<MainCtrl>
+    class CardEditorCtrl : CardPoolEditor
     {
         #region 公有方法
         /// <summary>
@@ -1243,11 +1243,6 @@ namespace Controllers
             Skill,
             Property
         }
-
-        [Obsolete]
-        public IAppManager app { get; }
-        [Obsolete]
-        public MainCtrl main { get; }
         CardEditorPanel _ui;
         string[] _types;
 

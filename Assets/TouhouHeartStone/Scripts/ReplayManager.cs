@@ -1,27 +1,43 @@
-﻿using TouhouHeartstone;
-using BJSYGameCore;
-using System;
-using MongoDB.Bson;
+﻿using System;
 using System.IO;
-using UnityEngine;
-using TouhouCardEngine.Interfaces;
-using MongoDB.Bson.IO;
-using MongoDB.Bson.Serialization;
 using System.Linq;
 using System.Threading.Tasks;
+using BJSYGameCore;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using TouhouCardEngine;
-using UI;
+using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
+using UnityEngine;
 
 namespace Game
 {
     public class ReplayManager : Manager
     {
-        Replay rep;
-        float startTime = 0;
+        #region 公有方法
+        public string[] getPaths()
+        {
+            return fileManager.getPersistentFiles(DIRECTORY, $"*.{EXTENSION}", true);
+        }
+        public static string getReplayFolder()
+        {
+            return Path.Combine(Application.persistentDataPath, DIRECTORY);
+        }
+        public async void Play(string fileName)
+        {
+            string str = File.ReadAllText(Path.Combine(getReplayFolder(), fileName));
+            Replay readRep = BsonSerializer.Deserialize(str, typeof(Replay)) as Replay;
+#if UNITY_EDITOR
+            _currentReplay = readRep;
+            _currentReplay.showContents();
+#endif
+            await getManager<GameManager>().startReplayGame(readRep);
+        }
+        #endregion
 
-        private GameManager _gm;
-        public GameManager gm => _gm = _gm ?? getManager<GameManager>();
+        #region 私有方法
 
+        #region 生命周期
         protected override void onAwake()
         {
             foreach (var item in typeof(Response).Assembly.GetTypes())
@@ -29,14 +45,12 @@ namespace Game
                 if (item.IsSubclassOf(typeof(Response)))
                     BsonClassMap.LookupClassMap(item);
             }
-        }
-
-        private void Start()
-        {
             gm.onGameEnd += onGameEnd;
             gm.onGameStart += onGameStart;
         }
+        #endregion
 
+        #region 事件回调
         private void onGameStart()
         {
             // gm.game.onPlayerResponse += onPlayerResponse;
@@ -50,37 +64,33 @@ namespace Game
             UberDebug.LogChannel("Replay", $"Log End!");
 
             var str = rep.ToJson();
-            if (!Directory.Exists(ReplayFolder()))
+            if (!Directory.Exists(getReplayFolder()))
             {
-                Directory.CreateDirectory(ReplayFolder());
+                Directory.CreateDirectory(getReplayFolder());
             }
-            File.WriteAllText(Path.Combine(ReplayFolder(), DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "." + Extension), str);
+            File.WriteAllText(Path.Combine(getReplayFolder(), DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + "." + EXTENSION), str);
         }
-
         void onPlayerResponse(int id, IResponse response)
         {
             UberDebug.LogChannel("Replay", $"[{id}] LOG: {response}");
             rep.logs.Add(new Replay.ReplayLogLine(id, response, Time.time - startTime));
         }
+        #endregion
 
-        public static string ReplayFolder()
-        {
-            return Path.Combine(Application.persistentDataPath, "replay");
-        }
+        #endregion
 
-        public const string Extension = "zgrep";
+        #region 属性字段
+        public const string DIRECTORY = "replay";
+        public const string EXTENSION = "ddrep";
+        private FileManager fileManager => main.fileManager;
+        public GameManager gm => main.game;
+        private MainManager main => this.findInstance<MainManager>();
+        Replay rep;
+        float startTime = 0;
         [SerializeField]
         Replay _currentReplay;
-        public async void Play(string fileName)
-        {
-            string str = File.ReadAllText(Path.Combine(ReplayFolder(), fileName));
-            Replay readRep = BsonSerializer.Deserialize(str, typeof(Replay)) as Replay;
-#if UNITY_EDITOR
-            _currentReplay = readRep;
-            _currentReplay.showContents();
-#endif
-            await getManager<GameManager>().startReplayGame(readRep);
-        }
+        #endregion
+
     }
 
     public class ReplayPlayer

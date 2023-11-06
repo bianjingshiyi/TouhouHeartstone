@@ -11,167 +11,15 @@ using System;
 using MukioI18n;
 using CustomBuilder;
 using UnityEngine.SceneManagement;
-using Game.Replays;
 using Controllers;
-using MongoDB.Bson.Serialization;
 using System.IO;
 using System.Reflection;
-using System.Collections.Generic;
 using System.Linq;
 using Game.PVE;
 
 namespace Game
 {
-    partial class MainCtrl : IController<MainCtrl>
-    {
-        public MainCtrl(IAppManager appManager)
-        {
-            app = appManager;
-        }
-        public void onAwake()
-        {
-
-        }
-        public void onStart()
-        {
-            for (int i = 0; i < SceneManager.sceneCount; i++)
-            {
-                Scene scene = SceneManager.GetSceneAt(i);
-                if (scene.name == "NewUI")
-                    lobbySceneCtrl = new LobbySceneCtrl(app, this, scene);
-            }
-        }
-
-        public ReplaySystem replays { get; } = new ReplaySystem();
-
-        public LobbySceneCtrl lobbySceneCtrl { get; private set; }
-        public IAppManager app { get; }
-        public MainCtrl main => this;
-    }
-    class LobbySceneCtrl : IController<MainCtrl>
-    {
-        public LobbySceneCtrl(IAppManager app, MainCtrl main, Scene scene)
-        {
-            this.app = app;
-            this.main = main;
-            mainMenuCtrl = new MainMenuCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/MainMenu").gameObject.GetComponent<MainMenu>());
-            replaySelectCtrl = new ReplaySelectPanelCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/Replay").gameObject.GetComponent<ReplaySelectPanel>());
-            //editorCtrl = new EditorCtrl(app, main, scene.findInstanceAt<Transform>("Canvas/Main/EditorPanel").gameObject.GetComponent<EditorPanel>());
-        }
-        public IAppManager app { get; }
-        public MainCtrl main { get; }
-        public MainMenuCtrl mainMenuCtrl { get; }
-        public ReplaySelectPanelCtrl replaySelectCtrl { get; }
-        public EditorCtrl editorCtrl { get; }
-        public CardEditorCtrl cardEditorCtrl { get; }
-        public ActionNodeGraphCtrl actionNodeGraphCtrl { get; }
-    }
-    class MainMenuCtrl : IController<MainCtrl>
-    {
-        public MainMenuCtrl(IAppManager app, MainCtrl main, MainMenu ui)
-        {
-            this.app = app;
-            this.main = main;
-            _ui = ui;
-            _ui.onReplayButtonClick += onReplayButtonClick;
-        }
-        public void display()
-        {
-            _ui.gameObject.SetActive(true);
-        }
-        private async void onReplayButtonClick()
-        {
-            _ui.gameObject.SetActive(false);
-            await main.lobbySceneCtrl.replaySelectCtrl.displayAsync();
-        }
-        void onEditorButtonClick()
-        {
-            //_ui.gameObject.SetActive(false);
-            main.lobbySceneCtrl.editorCtrl.display();
-        }
-        public MainCtrl main { get; }
-        public IAppManager app { get; }
-        MainMenu _ui;
-    }
-    partial class ReplaySelectPanelCtrl : IController<MainCtrl>
-    {
-        public ReplaySelectPanelCtrl(IAppManager app, MainCtrl main, ReplaySelectPanel ui)
-        {
-            this.app = app;
-            this.main = main;
-            _ui = ui;
-            _ui.onAwake();
-            _ui.onPlayButtonClick += onPlayButtonClick;
-            _ui.onReplayListClick += onReplayListClick;
-            _ui.onBackButtonClick += onReturnButtonClick;
-        }
-        private void onReturnButtonClick(ReplaySelectPanel ui)
-        {
-            ui.gameObject.SetActive(false);
-            main.lobbySceneCtrl.mainMenuCtrl.display();
-        }
-        public async Task displayAsync()
-        {
-            //读取Replay文件头
-            _paths = app.fileManager.getPersistentFiles(main.replays.getSaveDir(), "*." + main.replays.getSaveFileExtension(), true);
-            string[][] fileHeads = await app.fileManager.readPersistentTextFiles(_paths);
-            //转化为显示数据并刷新显示
-            ReplayItemViewData[] viewDatas = new ReplayItemViewData[fileHeads.Length];
-            for (int i = 0; i < fileHeads.Length; i++)
-            {
-                if (BsonSerializer.Deserialize<int[]>(fileHeads[i][0]) is int[] masterIds)
-                {
-                    viewDatas[i] = new ReplayItemViewData()
-                    {
-                        name = Path.GetFileNameWithoutExtension(_paths[i]),
-                        playerAMasterDefRef = new DefineReference(0, masterIds[0]),
-                        playerBMasterDefRef = new DefineReference(0, masterIds[1])
-                    };
-                }
-                else if (BsonSerializer.Deserialize<DefineReference[]>(fileHeads[i][0]) is DefineReference[] masterDefRefs)
-                {
-                    viewDatas[i] = new ReplayItemViewData()
-                    {
-                        name = Path.GetFileNameWithoutExtension(_paths[i]),
-                        playerAMasterDefRef = masterDefRefs[0],
-                        playerBMasterDefRef = masterDefRefs[1]
-                    };
-                }
-            }
-            _ui.updateView(new ReplaySelectViewData()
-            {
-                replayItemViewDatas = viewDatas
-            });
-            _ui.gameObject.SetActive(true);
-        }
-        public void hide()
-        {
-            _ui.gameObject.SetActive(false);
-        }
-        private async void onPlayButtonClick(ReplaySelectPanel ui)
-        {
-            string path = _paths[_selectIndex];
-            var content = await app.fileManager.readPersistentTextFile(path, 1, 1);
-            string json = content[0];
-            ReplayData replay = BsonSerializer.Deserialize<ReplayData>(json);
-            hide();
-            _ = (app as MainManager).getManager<GameManager>().startReplayGame(replay);
-        }
-        private void onReplayListClick(ReplaySelectPanel ui, int index)
-        {
-            _selectIndex = index;
-            _ui.updateView(new ReplaySelectViewData()
-            {
-                selectIndex = index
-            });
-        }
-        public MainCtrl main { get; }
-        public IAppManager app { get; }
-        string[] _paths;
-        int _selectIndex = -1;
-        ReplaySelectPanel _ui;
-    }
-    public class MainManager : Manager, IAppManager
+    public class MainManager : Manager
     {
         public long NewSnowflakeId()
         {
@@ -482,6 +330,7 @@ namespace Game
         public GameManager game => getManager<GameManager>();
         public EventManager eventManager => getManager<EventManager>();
         public SEManager seManager => getManager<SEManager>();
+        public ReplayManager replays => getManager<ReplayManager>();
         public FileManager fileManager => new FileManager();
         /// <summary>
         /// 语言管理器，仅用于控制语言的修改。如果你需要翻译，请使用 i18n._();
@@ -495,11 +344,9 @@ namespace Game
         /// 语言管理器，仅用于控制语言的修改。如果你需要翻译，请使用 i18n._();
         /// </summary>
         public ILanguageManager langManager => getManager<LangManager>();
-        public IResourceManager resourceManager => getManager<ResourceManager>();
         public CardManager card => getManager<CardManager>();
         public DeckManager deck => getManager<DeckManager>();
         public BGMManager bgm => getManager<BGMManager>();
-        public TriggerManager triggers => this.findInstance<TriggerManager>();
         public CacheManager cache => getManager<CacheManager>();
         public AnimationManager anims => getManager<AnimationManager>();
         public EditorManager editor => _editor;
@@ -516,7 +363,6 @@ namespace Game
         [SerializeField]
         UnityEvent onLoadingFinish;
         Main mainUI => ui.getObject<Main>();
-        RoomData currentRoomData;
         Task _loadCardTask = null;
         Task<ClientUpdateInfo> _getNewVersionTask = null;
         int _playerKey;

@@ -14,7 +14,7 @@ using UnityEngine;
 
 namespace Controllers
 {
-    partial class ActionNodeGraphCtrl : GameObjectCtrl<MainSceneCtrl>, IController<MainCtrl>, IUICtrl
+    partial class ActionNodeGraphCtrl : GameObjectCtrl<MainSceneCtrl>, IUICtrl
     {
         #region 公有方法
         /// <summary>
@@ -1958,11 +1958,6 @@ namespace Controllers
         public const string EDITOR_ERROR_CREATE_ENTRY_FOR_NON_EVENT_EFFECT = "非事件效果不能添加事件入口节点。";
         [TranslateMsg("编辑器-错误提示")]
         public const string EDITOR_ERROR_ALREADY_HAS_EVENT_ENTRY = "该事件效果已包含入口节点，请将其删除。";
-
-        [Obsolete]
-        public IAppManager app { get; }
-        [Obsolete]
-        public MainCtrl main { get; }
         public bool isReadonly => _isReadonly;
         [SerializeField]
         ActionNodeGraphPanel _ui;
