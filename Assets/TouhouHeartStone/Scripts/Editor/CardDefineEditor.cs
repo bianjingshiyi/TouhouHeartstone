@@ -10,6 +10,7 @@ using UnityEditor;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UnityEngine.UI;
+using Game.Animations;
 
 namespace TouhouHeartstone
 {

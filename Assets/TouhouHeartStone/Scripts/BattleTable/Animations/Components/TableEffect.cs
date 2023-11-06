@@ -1,4 +1,5 @@
 ﻿using Game.BattleTable;
+using System;
 using UnityEngine;
 
 namespace Game.Animations
@@ -15,7 +16,7 @@ namespace Game.Animations
             _duration = define.duration;
             _blockTime = define.blockTime;
         }
-        private void OnEnable()
+        private void Start()
         {
             if (isTestMode())
             {
@@ -65,6 +66,7 @@ namespace Game.Animations
             {
                 gameObject.SetActive(false);
             }
+            onFinished?.Invoke(this);
         }
         public bool isFinished()
         {
@@ -73,7 +75,7 @@ namespace Game.Animations
         protected bool isTestMode()
         {
 #if UNITY_EDITOR
-            return _testMode;
+            return testMode;
 #else
             return false;
 #endif
@@ -104,6 +106,7 @@ namespace Game.Animations
         public BattleTableManager table => _table;
         public float time => _time;
         public float duration => _duration;
+        public event Action<TableEffect> onFinished;
         [SerializeField]
         protected Animator _animator;
         [SerializeField]
@@ -112,7 +115,7 @@ namespace Game.Animations
         private Transform _destTransform;
 #if UNITY_EDITOR
         [SerializeField]
-        protected bool _testMode;
+        public bool testMode;
 #endif
         protected bool _finished;
         protected float _time;
