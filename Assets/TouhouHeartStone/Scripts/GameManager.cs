@@ -264,6 +264,8 @@ namespace Game
             if (battleTableManager)
             {
                 battleTableManager.setGame(main, game, localPlayer);
+                battleTableManager.canSeeAllCards = mode == GameMode.replay;
+                battleTableManager.setCanControl(mode != GameMode.replay);
             }
             initTableUI();
         }

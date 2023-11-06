@@ -51,7 +51,7 @@ namespace Game.BattleTable
                 timer.start();
                 table.showTurnTipImage(player == table.player);
                 table.currentAnimPlayer = player;
-                table.canControl = player == table.player;
+                table.isLocalTurn = player == table.player;
                 table.setAllCardControlDirty();
                 updateCards(table);
             }

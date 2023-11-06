@@ -260,7 +260,7 @@ namespace Game.BattleTable
             bool onlySelfKnows = fromSelf && (fromName == PILE.HAND || fromName == PILE.DECK || fromName == PILE.GRAVE || fromName == PILE.HEAD); //只有自己能掌握的信息
             bool sendToSelf = toSelf && (toName == PILE.HAND || toName == PILE.DECK || toName == PILE.GRAVE || toName == PILE.HEAD); //转移之后自己可以掌握的信息
             bool sharedInfo = fromName == PILE.FIELD || fromName == PILE.ITEM; // 双方玩家共享的信息。
-            bool known = onlySelfKnows || sendToSelf || sharedInfo;
+            bool known = onlySelfKnows || sendToSelf || sharedInfo || table.canSeeAllCards;
             switch (toName)
             {
                 case PILE.DECK: // 任意牌堆-->牌库

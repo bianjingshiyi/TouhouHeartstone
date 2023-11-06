@@ -103,7 +103,7 @@ namespace Game.BattleTable
 
             var player = arg.player;
             var isCanceled = record.isCanceled;
-            if (player == table.player)
+            if (player == table.player && !table.canSeeAllCards)
             {
                 if (!isCanceled)
                 {
@@ -173,7 +173,7 @@ namespace Game.BattleTable
 
             var player = arg.player;
             var isCanceled = record.isCanceled;
-            if (player == table.player)
+            if (player == table.player && !table.canSeeAllCards)
             {
                 if (!isCanceled)
                 {
@@ -219,7 +219,7 @@ namespace Game.BattleTable
             // 播放使用动画。
             if (hand)
             {
-                table.setCard(hand.card, _card, !_card.isTrap(table.game));
+                table.setCard(hand.card, _card, !_card.isTrap(table.game) || table.canSeeCardOfOwner(_card.owner));
                 hand.positionLerp.setStart();
                 hand.positionLerp.setTarget(table.table.SpellDisplayTransform);
                 AnimAnim useAnim = null;

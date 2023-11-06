@@ -363,7 +363,7 @@ namespace Game.BattleTable
         #region 手牌
         public bool isHandVisible(HandItem hand)
         {
-            return table.SelfHandList.contains(hand);
+            return table.SelfHandList.contains(hand) || canSeeAllCards;
         }
 
         /// <summary>
@@ -388,7 +388,8 @@ namespace Game.BattleTable
             }
             UberDebug.LogTraceChannel("UI", $"创建手牌UI：{desc}");
             HandItem item;
-            bool selfHand = desc.getOwner() == player;
+            Player owner = desc.getOwner();
+            bool selfHand = owner == player;
             HandList handList = selfHand ? table.SelfHandList : table.EnemyHandList;
             if (position < 0)
             {
@@ -399,7 +400,7 @@ namespace Game.BattleTable
                 item = handList.insertHand(position);
             }
             item.isDraggable = selfHand;
-            setCardDesc(item.card, desc, selfHand);
+            setCardDesc(item.card, desc, canSeeCardOfOwner(owner));
 
             var skin = cardManager.getCardSkin(desc.define);
             item.gameObject.name = skin?.name ?? $"Card<{desc.id}>";
@@ -1265,6 +1266,8 @@ namespace Game.BattleTable
         #region 事件回调
         private void onTurnEndClickCallback(TurnEndButton turnEndButton)
         {
+            if (!canControl)
+                return;
             if (isSelectingTarget())
                 return;
             sounds.PlaySE("Button");
@@ -1273,14 +1276,20 @@ namespace Game.BattleTable
         }
         private void onTurnEndPointerEnterCallback(TurnEndButton turnEndButton)
         {
+            if (!canControl)
+                return;
             turnEndButton.setHighlighted(true);
         }
         private void onTurnEndPointerExitCallback(TurnEndButton turnEndButton)
         {
+            if (!canControl)
+                return;
             turnEndButton.setHighlighted(false);
         }
         void onClickNoWhere(BattleTable table, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             cancelTargetSelect();
         }
         #region 道具
@@ -1322,6 +1331,8 @@ namespace Game.BattleTable
         }
         private void onHandItemBeginDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             if (!hand.isDraggable)
                 return;
             Card card = getCard(hand);
@@ -1332,6 +1343,8 @@ namespace Game.BattleTable
         }
         private void onHandItemDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             if (!hand.isDraggable)
                 return;
             Card card = getCard(hand);
@@ -1397,6 +1410,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onHandItemEndDragCallback(HandItem hand, HandList list, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             if (list != table.SelfHandList)//你不能用别人的卡
                 return;
             Card card = getCard(hand);
@@ -1504,6 +1519,8 @@ namespace Game.BattleTable
         }
         private void onMasterPointerUpCallback(Master master, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             // （目标选择模式）
             trySelectTargetForBattlecry(getCard(master));
         }
@@ -1520,6 +1537,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onMasterDragCallback(Master master, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             Card card = getCard(master);
             if (isSelectingTargetForOtherCards(card))//当前正在操作的卡牌不是这个英雄
                 return;
@@ -1545,6 +1564,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onMasterEndDragCallback(Master master, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             Card card = getCard(master);
             if (!isSelectingTargetForCard(card))//当前正在操作的卡牌不是这个英雄，或者没有正在操作的卡牌
                 return;
@@ -1575,6 +1596,8 @@ namespace Game.BattleTable
         {
             if (!canControl)
                 return;
+            if (!isLocalTurn)
+                return;
             var skillCard = player.getSkill();
             if (isSelectingTargetForOtherCards(skillCard))//已经在用别的牌了，不能点技能
                 return;
@@ -1599,6 +1622,8 @@ namespace Game.BattleTable
         private void onSkillDragCallback(Skill skill, PointerEventData pointer)
         {
             if (!canControl)
+                return;
+            if (!isLocalTurn)
                 return;
             var skillCard = player.getSkill();
             if (isSelectingTargetForOtherCards(skillCard)) //正在操作的卡牌不是当前技能
@@ -1629,6 +1654,8 @@ namespace Game.BattleTable
         private void onSkillEndDragCallback(Skill skill, PointerEventData pointer)
         {
             if (!canControl)
+                return;
+            if (!isLocalTurn)
             {
                 cancelTargetSelect();
                 return;
@@ -1682,6 +1709,8 @@ namespace Game.BattleTable
         }
         private void onServantPointerUpCallback(Servant master, Field field, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             // （目标选择模式）
             trySelectTargetForBattlecry(getCard(master));
         }
@@ -1704,6 +1733,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onServantDragCallback(Servant servant, Field field, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             Card card = getCard(servant);
             if (!canCardBeControlled(card))
                 return;
@@ -1729,6 +1760,8 @@ namespace Game.BattleTable
         /// <param name="pointer"></param>
         private void onServantEndDragCallback(Servant servant, Field field, PointerEventData pointer)
         {
+            if (!canControl)
+                return;
             Card card = getCard(servant);
             if (!isSelectingTargetForCard(card))//正在操作的卡牌并非该仆从，或者没有正在操作的卡牌。
                 return;
@@ -1757,10 +1790,13 @@ namespace Game.BattleTable
         {
             if (isSelectingTarget())
                 return;
+            var owner = deck == table.SelfGrave ? player : game.getOpponent(player);
+            if (owner != player && !canSeeCardOfOwner(owner))
+                return;
             ui.PilePanel.setActive(true);
-            ui.PilePanel.setTitleText(lang._(TAB_YOUR_BOX));
+            ui.PilePanel.setTitleText(lang._(owner == player ? TAB_YOUR_BOX : TAB_OPPO_DECK));
             ui.PilePanel.clearCards();
-            foreach (var card in player.getDeck().OrderBy(c => c.define.getCost()))
+            foreach (var card in owner.getDeck().OrderBy(c => c.define.getCost()))
             {
                 var item = ui.PilePanel.addCard();
                 setCard(item.card, newSnapshot(card), true);
@@ -1792,14 +1828,17 @@ namespace Game.BattleTable
         #region 墓地
 
 
-        private void onGraveClickCallback(Deck deck, PointerEventData pointer)
+        private void onGraveClickCallback(Deck grave, PointerEventData pointer)
         {
             if (isSelectingTarget())
                 return;
+            var owner = grave == table.SelfGrave ? player : game.getOpponent(player);
+            if (owner != player && !canSeeCardOfOwner(owner))
+                return;
             ui.PilePanel.setActive(true);
-            ui.PilePanel.setTitleText(lang._(TAB_YOUR_GRAVEYARD));
+            ui.PilePanel.setTitleText(lang._(owner == player ? TAB_YOUR_GRAVEYARD : TAB_OPPO_GRAVEYARD));
             ui.PilePanel.clearCards();
-            foreach (var card in player.getGrave())
+            foreach (var card in owner.getGrave())
             {
                 var item = ui.PilePanel.addCard();
                 setCard(item.card, newSnapshot(card), true);
@@ -2139,7 +2178,7 @@ namespace Game.BattleTable
                 var card = game.getCard(id);
                 updateCardControlable(card);
             }
-            table.TurnEndButton.setInteractable(game.getCurrentPlayer() == player && !_requesting && canControl);
+            table.TurnEndButton.setInteractable(game.getCurrentPlayer() == player && !_requesting && isLocalTurn);
         }
 
         private bool canCardBeControlled(Card card)
@@ -2155,7 +2194,7 @@ namespace Game.BattleTable
             if (desc == null)
                 return false;
             var owner = desc.getOwner();
-            bool highlight = owner == player && game.getCurrentPlayer() == player && canControl && !_requesting;
+            bool highlight = owner == player && game.getCurrentPlayer() == player && isLocalTurn && !_requesting;
             var pileName = card.pile?.name;
             if (pileName == PILE.HAND ||
                 (pileName == PILE.SKILL && desc.isSkill()))
@@ -2213,11 +2252,15 @@ namespace Game.BattleTable
         [TranslateMsg]
         private const string TAB_YOUR_GRAVEYARD = "你的墓地";
         [TranslateMsg]
+        private const string TAB_OPPO_GRAVEYARD = "对手的墓地";
+        [TranslateMsg]
         private const string TAB_SHOW = "显示";
         [TranslateMsg]
         private const string TAB_HIDE = "隐藏";
         [TranslateMsg]
         private const string TAB_YOUR_BOX = "你的牌库";
+        [TranslateMsg]
+        private const string TAB_OPPO_DECK = "对手的牌库";
         [TranslateMsg]
         private const string TAB_BOX_HAS = "牌库里有{0}张卡牌";
         [TranslateMsg]
@@ -2236,7 +2279,7 @@ namespace Game.BattleTable
         /// <summary>
         /// 当前是否可以控制（是否是自己的回合）
         /// </summary>
-        public bool canControl { get; set; }
+        public bool isLocalTurn { get; set; }
         /// <summary>
         /// 当前正在拖动的手牌卡牌。
         /// </summary>

@@ -11,7 +11,7 @@ namespace Game.BattleTable
         {
             base.postEvent(table, eventArg);
             if (eventArg.player == table.player)
-                table.canControl = false;
+                table.isLocalTurn = false;
         }
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {

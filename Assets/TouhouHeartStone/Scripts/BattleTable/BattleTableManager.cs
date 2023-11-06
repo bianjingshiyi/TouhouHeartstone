@@ -82,6 +82,14 @@ namespace Game.BattleTable
         {
             ui.OpponentWaitingObj.SetActive(waiting);
         }
+        public void setCanControl(bool value)
+        {
+            canControl = value;
+        }
+        public bool canSeeCardOfOwner(Player owner)
+        {
+            return owner == player || canSeeAllCards;
+        }
         #region 坐标转换
         // 为了防止Table的Transform被随便旋转缩放后造成的坐标错乱问题，现分为世界坐标和桌面坐标两个坐标系。
         // 世界坐标即Unity场景中各种transform的position，单位为每100px为1。
@@ -183,12 +191,14 @@ namespace Game.BattleTable
             table.SelfDeck.onClick += onDeckClickCallback;
             table.SelfDeck.onPointerEnter += onDeckPointerEnterCallback;
             table.SelfDeck.onPointerExit += onDeckPointerExitCallback;
+            table.EnemyDeck.onClick += onDeckClickCallback;
             table.EnemyDeck.onPointerEnter += onDeckPointerEnterCallback;
             table.EnemyDeck.onPointerExit += onDeckPointerExitCallback;
 
             table.SelfGrave.onClick += onGraveClickCallback;
             table.SelfGrave.onPointerEnter += onGravePointerEnterCallback;
             table.SelfGrave.onPointerExit += onGravePointerExitCallback;
+            table.EnemyGrave.onClick += onGraveClickCallback;
             table.EnemyGrave.onPointerEnter += onGravePointerEnterCallback;
             table.EnemyGrave.onPointerExit += onGravePointerExitCallback;
 
@@ -238,7 +248,7 @@ namespace Game.BattleTable
                 else if (_hoveredHeadItem != null)
                 {
                     var headCard = getCard(_hoveredHeadItem);
-                    if (!headCard.isTrap(game) || headCard.getOwner() == player)
+                    if (!headCard.isTrap(game) || canSeeCardOfOwner(headCard.getOwner()))
                     {
                         hoveringCard = headCard;
                         targetPosition = WorldToTablePosition(_hoveredHeadItem.transform.position);
@@ -332,6 +342,8 @@ namespace Game.BattleTable
         #region 换牌
         private void onMulliganItemClickCallback(int index)
         {
+            if (!canControl)
+                return;
             var initPile = player.getInit();
             var card = initPile[index];
             bool mulliganed = _mulliganedCards.Contains(card);
@@ -347,6 +359,8 @@ namespace Game.BattleTable
         }
         private void onMulliganAcceptCallback()
         {
+            if (!canControl)
+                return;
             player.cmdInitReplace(game, _mulliganedCards.ToArray());
             ui.InitReplaceDialog.setWaiting(true);
         }
@@ -354,6 +368,8 @@ namespace Game.BattleTable
         #region 选牌
         private void onCardChooseCallback(int index)
         {
+            if (!canControl)
+                return;
             if (_cardChooseMode == CardChooseMode.Card)
             {
                 var cardId = _choosingCards[index];
@@ -472,7 +488,6 @@ namespace Game.BattleTable
             }
         }
         #endregion
-
         private void reset()
         {
             ui.InitReplaceDialog.setActive(false);
@@ -540,6 +555,14 @@ namespace Game.BattleTable
         private List<Card> _mulliganedCards = new List<Card>();
         private MainManager _main;
         private GameObject _tipboxSource;
+        /// <summary>
+        /// 能否看到所有卡牌，用于回放或观战。
+        /// </summary>
+        public bool canSeeAllCards { get; set; }
+        /// <summary>
+        /// 能否控制，用于回放或观战。
+        /// </summary>
+        private bool canControl = true;
         [SerializeField]
         private TableUI _ui;
         [SerializeField]

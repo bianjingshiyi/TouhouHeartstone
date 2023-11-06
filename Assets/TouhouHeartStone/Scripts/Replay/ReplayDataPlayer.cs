@@ -12,9 +12,13 @@ namespace Game.Replays
         }
         public void update(IRequest[] requests, float deltaTime)
         {
+            if (isReplayEnd)
+                return;
             _currentTime += deltaTime;
             foreach (var request in requests)
             {
+                if (isReplayEnd)
+                    return;
                 if (request == null)
                     continue;
                 var time = replay.responseTimes[currentResponseIndex];
