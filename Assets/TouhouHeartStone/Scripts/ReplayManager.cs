@@ -23,6 +23,10 @@ namespace Game
         {
             return $"{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}.{EXTENSION}";
         }
+        public bool deleteReplay(string path)
+        {
+            return main.fileManager.deletePersistentFile(path);
+        }
         public async Task saveReplay(ReplayMeta meta, ReplayData replay)
         {
             var path = Path.Combine(DIRECTORY, getNowReplayFileName());

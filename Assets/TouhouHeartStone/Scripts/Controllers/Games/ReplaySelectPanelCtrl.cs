@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Game;
 using Game.Replays;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UI;
@@ -20,7 +22,7 @@ namespace Controllers
             await updateView();
             _ui.gameObject.SetActive(true);
             _selectIndex = -1;
-            updateSelected();
+            await updateSelected();
         }
         public void hide()
         {
@@ -35,6 +37,8 @@ namespace Controllers
         {
             _ui.onPlayButtonClick += onPlayButtonClick;
             _ui.onReplayListClick += onReplayListClick;
+            _ui.onDeleteItemClick += onDeleteItemClick;
+            _ui.onClearReplayClick += onClearReplayClick;
             _ui.onBackButtonClick += onReturnButtonClick;
         }
         #endregion
@@ -47,46 +51,86 @@ namespace Controllers
         }
         private async void onPlayButtonClick()
         {
-            string path = _metas[_selectIndex].path;
+            if (_selectIndex < 0 || _selectIndex >= _metas.Count)
+                return;
+            var meta = _metas[_selectIndex];
+            if (!isReplayCanPlay(meta))
+            {
+                const int maxDisplayPoolCount = 5;
+                var pools = meta.requiredCardPools;
+                var cardManager = game.card;
+                var poolStrings = pools
+                    .Where(p => !cardManager.hasCardPool(p))
+                    .Take(maxDisplayPoolCount)
+                    .Select(p => game.lang._(REPLAY_MISSING_CARDPOOL_NAME_TEMPLATE, p.cardPoolName, p.version));
+                var cardPools = string.Join(",", poolStrings); 
+                if (pools.Length > 5)
+                {
+                    cardPools = game.lang._(REPLAY_CARDPOOL_NAME_OVERFLOW_TEMPLATE, cardPools);
+                }
+                var title = game.lang._(StringTable.ERROR);
+                var msg = game.lang._(REPLAY_CANNOT_PLAY_REPLAY, cardPools);
+                game.ui.dialog.ShowConfirm(title, msg);
+                return;
+            }
+            string path = meta.path;
             var content = await fileManager.readPersistentTextFile(path, 1, 1);
             string json = content[0];
             ReplayData replay = JsonHelper.fromJson<ReplayData>(json);
             hide();
             _ = gameManager.startReplayGame(replay);
         }
-        private void onReplayListClick(int index)
+        private async void onReplayListClick(int index)
         {
             _selectIndex = index;
-            updateSelected();
+            await updateSelected();
+        }
+        private void onDeleteItemClick(int index)
+        {
+            var title = game.lang._(StringTable.WARNING);
+            var content = game.lang._(REPLAY_CONFIRM_DELETE_REPLAY);
+            game.ui.dialog.ShowQuestion(title, content, async () =>
+            {
+                await deleteReplayItem(index);
+            });
+        }
+        private void onClearReplayClick()
+        {
+            var title = game.lang._(StringTable.WARNING);
+            var content = game.lang._(REPLAY_CONFIRM_CLEAR_REPLAY);
+            game.ui.dialog.ShowQuestion(title, content, async () =>
+            {
+                await deleteReplays();
+            });
         }
         #endregion
 
         private async Task loadMetas()
         {
             var paths = replayManager.getPaths();
-            _metas = new ReplayMeta[paths.Length];
-            for (int i = 0; i < _metas.Length; i++)
+            _metas.Clear();
+            foreach (var path in paths)
             {
-                var path = paths[i];
                 string[] fileHeads = await fileManager.readPersistentTextFile(path, 0, 1);
                 string fileHead = fileHeads[0];
                 var seri = JsonHelper.fromJson<SerializableReplayMeta>(fileHead);
                 var meta = seri.toMeta();
                 meta.path = path;
-                _metas[i] = meta;
+                _metas.Add(meta);
             }
         }
         private async Task updateView()
         {
             //转化为显示数据并刷新显示
-            ReplayItemViewData[] viewDatas = new ReplayItemViewData[_metas.Length];
+            ReplayItemViewData[] viewDatas = new ReplayItemViewData[_metas.Count];
             for (int i = 0; i < viewDatas.Length; i++)
             {
                 var meta = _metas[i];
                 viewDatas[i] = await getMetaViewData(meta);
             }
             _ui.updateView(viewDatas);
-            updateSelected();
+            _ui.setClearButtonInteractable(_metas.Count > 0);
+            await updateSelected();
         }
         private async Task<ReplayItemViewData> getMetaViewData(ReplayMeta meta)
         {
@@ -112,17 +156,63 @@ namespace Controllers
                 return cardManager.getDefaultSprite();
             return await main.card.loadCardImage(define);
         }
-        private void updateSelected()
+        private async Task<string> getMasterRefName(DefineReference defRef, ICardPoolReference[] pools)
+        {
+            var cardManager = game.card;
+            var poolRef = pools.FirstOrDefault(p => p.CardPoolID == defRef.cardPoolId);
+            if (poolRef != null)
+            {
+                await cardManager.getOrLoadCardPool(poolRef, true);
+                var define = game.card.getCardDefine(poolRef, defRef.defineId);
+                if (define != null)
+                {
+                    var skin = main.card.getCardSkin(define);
+                    return skin.name;
+                }
+            }
+            return game.lang._(StringTable.BUILD_UNKNOW_CARD_NAME);
+        }
+        private async Task deleteReplayItem(int index)
+        {
+            if (index == _selectIndex)
+            {
+                _selectIndex = -1;
+                await updateSelected();
+            }
+            var path = _metas[index].path;
+            game.replays.deleteReplay(path);
+            _metas.RemoveAt(index);
+            await updateView();
+        }
+        private async Task deleteReplays()
+        {
+            foreach (var meta in _metas)
+            {
+                game.replays.deleteReplay(meta.path);
+            }
+            _metas.Clear();
+            await updateView();
+            _selectIndex = -1;
+            await updateSelected();
+        }
+        private async Task updateSelected()
         {
             _ui.setSelectedItem(_selectIndex);
-            _ui.setPlayButtonInteractable(isReplayCanPlay(_selectIndex));
+            _ui.setPlayButtonInteractable(_selectIndex >= 0 && _selectIndex < _metas.Count);
+            _ui.setDescText(await getDescText(_selectIndex));
         }
-        private bool isReplayCanPlay(int index)
+        private async Task<string> getDescText(int index)
         {
-            if (index < 0 || index >= _metas.Length)
-                return false;
+            if (index < 0 || index >= _metas.Count)
+                return string.Empty;
             var meta = _metas[index];
-            return isReplayCanPlay(meta);
+            var pools = meta.requiredCardPools;
+            var cardManager = game.card;
+            var selfMaster = await getMasterRefName(meta.playerAMasterDefRef, pools);
+            var enemyMaster = await getMasterRefName(meta.playerBMasterDefRef, pools);
+            var poolStrings = pools.Select(p => game.lang._(REPLAY_CARDPOOL_NAME_TEMPLATE, p.cardPoolName, p.version));
+            var cardPools = string.Join("\n", poolStrings);
+            return game.lang._(REPLAY_DESC_TEMPLATE, selfMaster, enemyMaster, cardPools);
         }
         private bool isReplayCanPlay(ReplayMeta meta)
         {
@@ -136,12 +226,26 @@ namespace Controllers
         }
         #endregion
         #region 属性字段
+        [TranslateMsg("删除单个回放时的警告")]
+        public const string REPLAY_CONFIRM_DELETE_REPLAY = "确认要删除这条回放？";
+        [TranslateMsg("删除所有回放时的警告")]
+        public const string REPLAY_CONFIRM_CLEAR_REPLAY = "确认要清除所有回放？";
+        [TranslateMsg("无法播放回放时的错误，0为缺失的卡池")]
+        public const string REPLAY_CANNOT_PLAY_REPLAY = "无法播放该回放，以下卡池缺失：\n{0}";
+        [TranslateMsg("回放描述模板，0为己方英雄的卡牌名，1为对方英雄的卡牌名，2为所需的卡池列表")]
+        public const string REPLAY_DESC_TEMPLATE = "己方英雄：{0}\n对方英雄：{1}\n所需卡池：\n{2}";
+        [TranslateMsg("回放描述的卡池名模板，0为卡池名，1为卡池版本")]
+        public const string REPLAY_CARDPOOL_NAME_TEMPLATE = "·{0}(版本{1})";
+        [TranslateMsg("回放无法播放错误中的卡池名模板，0为卡池名，1为卡池版本")]
+        public const string REPLAY_MISSING_CARDPOOL_NAME_TEMPLATE = "{0}(版本{1})";
+        [TranslateMsg("回放无法播放错误中，卡池名数量超过最大显示量的模板，0为所有卡池名的组合")]
+        public const string REPLAY_CARDPOOL_NAME_OVERFLOW_TEMPLATE = "{0}...";
         private ReplayManager replayManager => main.replays;
         private GameManager gameManager => game.game;
         private FileManager fileManager => game.fileManager;
         private Main mainUI => game.ui.getObject<Main>();
         private MainManager main => this.findInstance<MainManager>();
-        private ReplayMeta[] _metas;
+        private List<ReplayMeta> _metas = new List<ReplayMeta>();
         private int _selectIndex = -1;
         [SerializeField]
         private ReplaySelectPanel _ui;

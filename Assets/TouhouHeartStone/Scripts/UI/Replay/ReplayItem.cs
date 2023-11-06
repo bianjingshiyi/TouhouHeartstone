@@ -27,11 +27,13 @@ namespace UI
         protected override void Awake()
         {
             _itemButton.onClick.AddListener(() => onClick?.Invoke(this));
+            _deleteButton.onClick.AddListener(() => onDeleteClick?.Invoke(this));
         }
         #endregion
 
         #region 事件
         public event Action<ReplayItem> onClick;
+        public event Action<ReplayItem> onDeleteClick;
         #endregion
 
         #region 属性字段
@@ -41,6 +43,8 @@ namespace UI
         private Image _playerBImage;
         [SerializeField]
         private Button _itemButton;
+        [SerializeField]
+        private Button _deleteButton;
         [SerializeField]
         private TextMeshProUGUI _nameText;
         [SerializeField]

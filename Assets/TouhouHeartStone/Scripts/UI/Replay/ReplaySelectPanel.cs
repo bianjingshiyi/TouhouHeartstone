@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BJSYGameCore.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,11 +23,13 @@ namespace UI
             {
                 ReplayItem replayItem = item.GetComponent<ReplayItem>();
                 replayItem.onClick += onReplayListClickCallback;
+                replayItem.onDeleteClick += onDeleteItemClickCallback;
             },
             (item) =>
             {
                 ReplayItem replayItem = item.GetComponent<ReplayItem>();
                 replayItem.onClick -= onReplayListClickCallback;
+                replayItem.onDeleteClick -= onDeleteItemClickCallback;
             });
         }
         public void setSelectedItem(int index)
@@ -41,6 +44,14 @@ namespace UI
         {
             _playButton.interactable = interactable;
         }
+        public void setClearButtonInteractable(bool interactable)
+        {
+            _clearButton.interactable = interactable;
+        }
+        public void setDescText(string text)
+        {
+            _descText.text = text;
+        }
         #endregion
 
         #region 私有方法
@@ -51,6 +62,7 @@ namespace UI
             _replayListTemplate.gameObject.SetActive(false);
             _playButton.onClick.AddListener(() => onPlayButtonClick?.Invoke());
             _backButton.onClick.AddListener(() => onBackButtonClick?.Invoke());
+            _clearButton.onClick.AddListener(() => onClearReplayClick?.Invoke());
         }
         #endregion
 
@@ -58,6 +70,10 @@ namespace UI
         private void onReplayListClickCallback(ReplayItem item)
         {
             onReplayListClick?.Invoke(_replayList.IndexOf(item.transform as RectTransform));
+        }
+        private void onDeleteItemClickCallback(ReplayItem item)
+        {
+            onDeleteItemClick?.Invoke(_replayList.IndexOf(item.transform as RectTransform));
         }
         #endregion
 
@@ -67,13 +83,19 @@ namespace UI
         public event Action onPlayButtonClick;
         public event Action onBackButtonClick;
         public event Action<int> onReplayListClick;
+        public event Action<int> onDeleteItemClick;
+        public event Action onClearReplayClick;
         #endregion
 
         #region 属性字段
         [SerializeField]
         private Button _playButton;
         [SerializeField]
+        private Button _clearButton;
+        [SerializeField]
         private Button _backButton;
+        [SerializeField]
+        private TextMeshProUGUI _descText;
         [SerializeField]
         private RectTransform _replayListRoot;
         [SerializeField]
