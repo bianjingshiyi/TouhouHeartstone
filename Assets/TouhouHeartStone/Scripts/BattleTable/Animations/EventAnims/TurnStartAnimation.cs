@@ -43,7 +43,6 @@ namespace Game.BattleTable
         }
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
-            table.clearDeadCardAnchors();
             var player = arg.player;
 
             var timer = new Timer() { duration = 2 };

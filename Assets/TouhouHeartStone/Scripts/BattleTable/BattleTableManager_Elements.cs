@@ -1103,14 +1103,6 @@ namespace Game.BattleTable
             {
                 return skill.transform;
             }
-            else if (tryGetDeckOfCard(card, out Deck deck))
-            {
-                return deck.transform;
-            }
-            else if (tryGetGraveOfCard(card, out Deck grave))
-            {
-                return grave.transform;
-            }
             else if (tryGetMovingCard(card, out var movingCard))
             {
                 return movingCard.transform;
@@ -1118,6 +1110,14 @@ namespace Game.BattleTable
             else if (tryGetDeadCardAnchor(card.id, out Transform trans))
             {
                 return trans;
+            }
+            else if (tryGetDeckOfCard(card, out Deck deck))
+            {
+                return deck.transform;
+            }
+            else if (tryGetGraveOfCard(card, out Deck grave))
+            {
+                return grave.transform;
             }
             return null;
         }

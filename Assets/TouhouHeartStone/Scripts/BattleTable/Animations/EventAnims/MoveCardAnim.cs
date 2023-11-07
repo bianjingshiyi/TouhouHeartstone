@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using UDeck = Game.BattleTable.Deck;
 namespace Game.BattleTable
 {
@@ -72,6 +70,11 @@ namespace Game.BattleTable
                     yield return moveFromNull(table);
                     break;
             }
+
+            if (toName == PILE.DECK)
+                table.addCardToDeck(_card);
+            else if (toName == PILE.GRAVE)
+                table.addCardToGrave(_card);
         }
 
         #region 源牌堆
@@ -265,7 +268,6 @@ namespace Game.BattleTable
                         var targetTransform = deck.HoverTransform;
                         var targetHeight = deck.getCardHeight();
                         yield return createCardToDeck(table, _card, startPos, targetTransform, targetHeight, startHeight, known);
-                        table.addCardToDeck(_card);
                     }
                     break;
                 case PILE.HAND: // 任意牌堆-->手牌
@@ -286,7 +288,6 @@ namespace Game.BattleTable
                         var targetTransform = targetGrave.HoverTransform;
                         var targetHeight = targetGrave.getCardHeight();
                         yield return createCardToDeck(table, _card, startPos, targetTransform, targetHeight, startHeight, known);
-                        table.addCardToGrave(_card);
                     }
                     break;
             }
