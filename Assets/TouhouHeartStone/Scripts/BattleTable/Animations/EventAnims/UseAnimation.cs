@@ -68,6 +68,7 @@ namespace Game.BattleTable
                     else
                     {
                         var handPosition = _card.position;
+                        table.updateCardDescriptor(_card);
                         // 如果有这个随从，播放回手动画。
                         if (table.tryGetServant(_card, out _))
                         {

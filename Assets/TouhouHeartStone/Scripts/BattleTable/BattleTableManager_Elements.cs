@@ -1975,6 +1975,7 @@ namespace Game.BattleTable
             if (!tryGetHand(card, out HandItem hand))
             {
                 int handPosition = card.pile.indexOf(card);
+                updateCardDescriptor(card);
                 // 强制完成随从的入场预览动画。
                 if (_servantPreviewAnim != null)
                 {

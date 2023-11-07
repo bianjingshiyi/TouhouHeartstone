@@ -500,6 +500,8 @@ namespace Controllers
                 var characterRef = _characterFilters[i];
                 var localPoolRef = game.card.getLocalCardPoolReference(characterRef.cardPoolId);
                 var character = game.card.getCardDefine(localPoolRef, characterRef.defineId);
+                if (character == null)
+                    continue;
                 characterNameList.Add(game.card.getDefaultSkin(character).name);
             }
             return characterNameList.ToArray();

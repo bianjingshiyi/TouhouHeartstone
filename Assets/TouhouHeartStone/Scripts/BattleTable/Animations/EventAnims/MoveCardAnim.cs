@@ -153,6 +153,7 @@ namespace Game.BattleTable
                 case PILE.HAND: // 战场-->手牌
                     {
                         //获得控制权
+                        table.updateCardDescriptor(_card);
                         TableAnimation anim = new FieldToHandAnim(_card.id, _position);
                         while (anim != null && !anim.update(table, _deltaTime))
                             yield return null;

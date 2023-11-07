@@ -669,6 +669,8 @@ namespace Game
         }
         public ICardPoolReference getCardPoolReferenceOfCard(CardDefine card)
         {
+            if (card == null)
+                return null;
             if (isBuiltinCard(card))
                 return builtinCardPoolReference;
             foreach (var pair in _cardPoolDict)

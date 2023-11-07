@@ -526,6 +526,8 @@ namespace Game
         }
         public bool isBuiltinCard(CardDefine card)
         {
+            if (card == null)
+                return false;
             return isBuiltinCardPool(card.cardPoolId);
         }
         public bool isBuiltinCardPool(long cardPoolId)
