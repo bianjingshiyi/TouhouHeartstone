@@ -295,7 +295,9 @@ namespace Game.BattleTable
 
             if (isSelectingTarget())
             {
-                showArrowWhileUsing(pointerPosition);
+                var targetPosition = pointerPosition;
+                targetPosition.y = 0;
+                showArrowWhileUsing(targetPosition);
             }
 
             //随从牌使用预览

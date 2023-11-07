@@ -10,25 +10,23 @@ namespace Game.BattleTable
         }
         public void connect(BattleTableManager table, Vector3 from, Vector3 to)
         {
-            from.y = 0;
-            to.y = 0;
+            var maxY = Mathf.Max(from.y, to.y);
+            from.y = maxY;
+            to.y = maxY;
             _arrowLineTransform.position = table.TableToWorldPosition(from);
             _arrowHeadTransform.position = table.TableToWorldPosition(to);
 
-            var localPos = _arrowLineTransform.localPosition;
-            localPos.y = 0;
-            _arrowLineTransform.localPosition = localPos;
-
-            localPos = _arrowHeadTransform.localPosition;
-            localPos.y = 0;
-            _arrowHeadTransform.localPosition = localPos;
-
-            var angle = Vector3.SignedAngle(to - from, Vector3.forward, Vector3.down);
-            var euler = Vector3.up * angle;
+            var distance = to - from;
+            
+            var quat = Quaternion.FromToRotation(Vector3.forward, distance);
+            var euler = quat.eulerAngles;
+            euler.x *= -1;
+            euler.z = 0;
             _arrowLineTransform.localEulerAngles = euler;
             _arrowHeadTransform.localEulerAngles = euler;
 
-            var scale = Mathf.Max(0, Vector3.Distance(from, to) - _arrowHeadHeight) / _arrowLineLength;
+            var lineLength = Mathf.Max(0, distance.magnitude - _arrowHeadHeight);
+            var scale = lineLength / _arrowLineLength;
             _arrowLineTransform.localScale = new Vector3(1, 1, scale);
         }
 

@@ -24,6 +24,7 @@ namespace Game.BattleTable
         }
         public override IEnumerator update(BattleTableManager table)
         {
+            table.removeHand(_servantDesc.id);
             _tableCard = table.createMovingCard(_servantDesc, _startPosition);
             var field = _servantDesc.getOwner() == table.player ? table.table.SelfField : table.table.EnemyField;
             // 手牌移动到目标位置。

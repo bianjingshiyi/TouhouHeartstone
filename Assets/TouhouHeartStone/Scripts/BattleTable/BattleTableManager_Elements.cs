@@ -85,8 +85,6 @@ namespace Game.BattleTable
             if (resetHandItem)
             {
                 resetHand(usingCard);
-                var handList = table.SelfHandList;
-                handList.ignoreAlignHand = null;
             }
             usingCard = null;
             _servantPreviewAnim = null;
@@ -492,6 +490,9 @@ namespace Game.BattleTable
                 setCardDesc(usingHand.card, desc, true);
                 usingHand.card.transform.localScale = Vector3.one;
                 usingHand.card.transform.localPosition = Vector3.zero;
+
+                var handList = table.SelfHandList;
+                handList.ignoreAlignHand = null;
             }
         }
         /// <summary>
@@ -1437,7 +1438,6 @@ namespace Game.BattleTable
                     _servantPreviewAnim = new HandToFieldAnim(pos, getCardDescriptor(card), index);
                     addAnim(_servantPreviewAnim);
                     table.SelfHandList.zoomOut();//手牌缩小
-                    removeHand(card);
                 }
                 else
                 {
@@ -1459,7 +1459,6 @@ namespace Game.BattleTable
                     //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                     enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
                     table.SelfHandList.zoomOut();//手牌缩小
-                    removeHand(card);
                 }
                 else
                 {
@@ -1946,25 +1945,21 @@ namespace Game.BattleTable
                         sourceTransform = master.transform;
                     }
                 }
-                else if (tryGetServant(source, out Servant servant))
+                else if (tryGetMovingCard(source, out var movingCard))
                 {
-                    sourceTransform = servant.transform;
+                    sourceTransform = movingCard.transform;
                 }
-                else if (tryGetMaster(source, out Master master))
+                else
                 {
-                    sourceTransform = master.transform;
-                }
-                else if (tryGetSkill(source, out Skill skill))
-                {
-                    sourceTransform = skill.transform;
-                }
-                else if (tryGetHand(source, out HandItem hand))
-                {
-                    sourceTransform = hand.transform;
+                    var trans = getCardTransform(source);
+                    if (trans != null)
+                    {
+                        sourceTransform = trans;
+                    }
                 }
             }
             //拖出箭头
-            var sourcePos = WorldToTablePosition(sourceTransform.position);
+            var sourcePos = WorldToTablePosition(sourceTransform.position + Vector3.up * 10);
             displayArrow(sourceTransform, sourcePos, position);
         }
         /// <summary>
@@ -1977,7 +1972,7 @@ namespace Game.BattleTable
             if (card == null)
                 return false;
             // 如果没有手牌。
-            if (!tryGetHand(card, out _))
+            if (!tryGetHand(card, out HandItem hand))
             {
                 int handPosition = card.pile.indexOf(card);
                 // 强制完成随从的入场预览动画。
@@ -1999,6 +1994,12 @@ namespace Game.BattleTable
                         createHand(getCardDescriptor(card), handPosition);
                     }
                 }
+            }
+            else
+            {
+                HandList handList = table.SelfHandList.contains(hand) ? table.SelfHandList : table.EnemyHandList;
+                if (handList.ignoreAlignHand == hand)
+                    handList.ignoreAlignHand = null;
             }
             return true;
         }
