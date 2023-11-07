@@ -943,7 +943,7 @@ namespace Controllers
         private EditorPanel _ui;
         private List<long> _cardPoolIdList = new List<long>();
         private long _curCardPoolId = -1;
-        private List<long> _unsavedCardPools = new List<long>();
+        private HashSet<long> _unsavedCardPools = new HashSet<long>();
         long _firstOpenedCardPoolId;
         /// <summary>
         /// 编辑器对于显示物体的引用栈，用于返回上一个编辑器。
