@@ -12,7 +12,7 @@ namespace Game
         }
         private void OnFireButtonClick()
         {
-            ProjectileEffect projectile = Instantiate(_projectilePrefab);
+            ProjectileEffect projectile = Instantiate(_projectilePrefab, transform.position, _projectilePrefab.transform.rotation);
             projectile.sourceTransform = transform;
             projectile.destTransform = _targetTransform;
             projectile.testMode = true;
