@@ -22,6 +22,9 @@ namespace Game
             { BuiltinActionDefineID.Damage, typeof(THHCard.DamageEventArg) },    // 造成伤害
             { BuiltinActionDefineID.Discard, typeof(THHCard.DiscardEventArg) },    // 丢弃卡牌
             { BuiltinActionDefineID.CreateTokenToField, typeof(HearthStoneRule.CreateTokenEventArg) },    // 创建衍生卡并置入战场
+            { BuiltinActionDefineID.CreateTokenToHand, typeof(THHPile.MoveCardEventArg) },    // 创建衍生卡并置入手牌
+            { BuiltinActionDefineID.CreateTokenToDeck, typeof(THHPile.MoveCardEventArg) },    // 创建衍生卡并洗入牌库
+            { BuiltinActionDefineID.CreateTokenToItem, typeof(HearthStoneRule.EquipItemEventArg) },    // 创建衍生卡并装备到道具栏
             { BuiltinActionDefineID.SetCardProp, typeof(Card.PropChangeEventArg) },    // 设置属性
             { BuiltinActionDefineID.DealDamageOrSpellDamage, typeof(THHCard.DamageEventArg) },    // 造成伤害或法伤
             { BuiltinActionDefineID.DealDamageSplitAmong, typeof(THHCard.DamageEventArg) },    // 造成伤害或法伤兵分配给目标
@@ -31,6 +34,7 @@ namespace Game
             { BuiltinActionDefineID.HealTargets, typeof(THHCard.HealEventArg) },    // 治疗目标卡牌
             { BuiltinActionDefineID.Shackle, typeof(THHCard.ShackleEventArg) },    // 禁锢
             { BuiltinActionDefineID.Seal, typeof(THHCard.SilenceEventArg) },    // 沉默
+            { BuiltinActionDefineID.Kill, typeof(Card.PropChangeEventArg) },    // 消灭
             { BuiltinActionDefineID.AddAmountOfArmor, typeof(THHCard.SetArmorEventArg) },    // 增加固定数量护甲
             { BuiltinActionDefineID.AddArmor, typeof(THHCard.SetArmorEventArg) },    // 增加护甲
             { BuiltinActionDefineID.LoseArmor, typeof(THHCard.SetArmorEventArg) },    // 失去护甲
