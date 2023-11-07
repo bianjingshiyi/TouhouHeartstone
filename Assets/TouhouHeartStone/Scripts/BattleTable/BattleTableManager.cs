@@ -388,7 +388,6 @@ namespace Game.BattleTable
                 });
                 _choosingCardDefineRefs = null;
             }
-            closeDiscoverDialog();
         }
         private void onDiscoverHideButtonClick()
         {
@@ -445,14 +444,6 @@ namespace Game.BattleTable
         }
         void onResponse(IResponse response)
         {
-            switch (response)
-            {
-                case DiscoverResponse _:
-                    closeDiscoverDialog();
-                    break;
-                default:
-                    break;
-            }
         }
         /// <summary>
         /// 事件前处理

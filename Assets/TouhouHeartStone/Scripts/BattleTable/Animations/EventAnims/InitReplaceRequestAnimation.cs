@@ -1,12 +1,13 @@
-﻿using TouhouHeartstone;
+﻿using System.Collections;
+using TouhouHeartstone;
 namespace Game.BattleTable
 {
     class InitReplaceRequestAnimation : RequestAnimation<InitReplaceRequest>
     {
-        public override bool display(BattleTableManager table, InitReplaceRequest request)
+        public override IEnumerator display(BattleTableManager table, InitReplaceRequest request)
         {
             table.showInitReplaceDialog(request);
-            return true;
+            yield break;
         }
     }
 }

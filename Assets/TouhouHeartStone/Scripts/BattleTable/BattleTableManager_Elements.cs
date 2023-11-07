@@ -1790,7 +1790,7 @@ namespace Game.BattleTable
         {
             if (isSelectingTarget())
                 return;
-            var owner = deck == table.SelfGrave ? player : game.getOpponent(player);
+            var owner = deck == table.SelfDeck ? player : game.getOpponent(player);
             if (owner != player && !canSeeCardOfOwner(owner))
                 return;
             ui.PilePanel.setActive(true);

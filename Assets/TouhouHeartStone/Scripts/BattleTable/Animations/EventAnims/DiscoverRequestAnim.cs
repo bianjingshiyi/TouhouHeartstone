@@ -1,23 +1,24 @@
-﻿using TouhouHeartstone;
+﻿using System.Collections;
+using System.Linq;
+using TouhouHeartstone;
 namespace Game.BattleTable
 {
     class DiscoverRequestAnim : RequestAnimation<DiscoverRequest>
     {
-        bool _isOpened = false;
-        public override bool display(BattleTableManager table, DiscoverRequest request)
+        public const float minDisplayTime = 1;
+        public override IEnumerator display(BattleTableManager table, DiscoverRequest request)
         {
-            if (!_isOpened)
+            if (request.cardRefArray != null)
+                table.displayDiscoverDialog(request.cardRefArray, request.title);
+            else
+                table.displayDiscoverDialog(request.cardIdArray, request.title);
+            // 最短持续1秒，防止看回放的时候什么都没看就直接选了
+            while (_duration <= minDisplayTime || table.game.answers.getAllRequests().Contains(request))
             {
-                _isOpened = true;
-                if (request.cardRefArray != null)
-                    table.displayDiscoverDialog(request.cardRefArray, request.title);
-                else
-                    table.displayDiscoverDialog(request.cardIdArray, request.title);
+                yield return null;
             }
-            if (table.table.Discover.IsActive())
-                return false;
+            table.closeDiscoverDialog();
             table.setAllCardControlDirty();
-            return true;
         }
     }
 }

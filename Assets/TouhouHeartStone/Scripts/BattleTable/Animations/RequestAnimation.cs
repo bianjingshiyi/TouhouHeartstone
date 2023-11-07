@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using TouhouCardEngine.Interfaces;
 using UnityEngine;
 namespace Game.BattleTable
@@ -18,10 +19,10 @@ namespace Game.BattleTable
             get { return _request; }
             set { _request = value is T t ? t : default; }
         }
-        public override bool update(BattleTableManager table, float time)
+        public override IEnumerator update(BattleTableManager table)
         {
             return display(table, request is T t ? t : default);
         }
-        public abstract bool display(BattleTableManager table, T request);
+        public abstract IEnumerator display(BattleTableManager table, T request);
     }
 }

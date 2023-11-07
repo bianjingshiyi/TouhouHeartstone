@@ -16,7 +16,6 @@ namespace Game.BattleTable
         public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
         {
             table.cancelTargetSelect();
-            table.closeDiscoverDialog();
             yield break;
         }
     }
