@@ -696,6 +696,128 @@ namespace Game.BattleTable
         }
         #endregion
 
+        #region 牌库
+        public void addCardToDeck(ICardData card) => addCardToDeck(card.owner, card.id);
+        public void addCardToDeck(Player owner, int cardId)
+        {
+            var deckList = owner == player ? _selfDeckList : _enemyDeckList;
+            deckList.Add(cardId);
+        }
+        public void removeCardFromDeck(ICardData card) => removeCardFromDeck(card.id);
+        public void removeCardFromDeck(int cardId)
+        {
+            _selfDeckList.Remove(cardId);
+            _enemyDeckList.Remove(cardId);
+        }
+        /// <summary>
+        /// 获取牌库引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public Deck getDeckOfCard(ICardData card) => getDeckOfCard(card.id);
+        /// <summary>
+        /// 获取牌库引用
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public Deck getDeckOfCard(int cardId)
+        {
+            if (_selfDeckList.Contains(cardId))
+                return table.SelfDeck;
+            else if (_enemyDeckList.Contains(cardId))
+                return table.EnemyDeck;
+            throw new ActorNotFoundException(game.getCard(cardId));
+        }
+        /// <summary>
+        /// 尝试获取牌库引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public bool tryGetDeckOfCard(ICardData card, out Deck deck) => tryGetDeckOfCard(card?.id ?? 0, out deck);
+
+        /// <summary>
+        /// 尝试获取牌库引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public bool tryGetDeckOfCard(int id, out Deck deck)
+        {
+            if (_selfDeckList.Contains(id))
+            {
+                deck = table.SelfDeck;
+                return true;
+            }
+            else if (_enemyDeckList.Contains(id))
+            {
+                deck = table.EnemyDeck;
+                return true;
+            }
+            deck = null;
+            return false;
+        }
+        #endregion
+
+        #region 墓地
+        public void addCardToGrave(ICardData card) => addCardToGrave(card.owner, card.id);
+        public void addCardToGrave(Player owner, int cardId)
+        {
+            var deckList = owner == player ? _selfGraveList : _enemyGraveList;
+            deckList.Add(cardId);
+        }
+        public void removeCardFromGrave(ICardData card) => removeCardFromGrave(card.id);
+        public void removeCardFromGrave(int cardId)
+        {
+            _selfGraveList.Remove(cardId);
+            _enemyGraveList.Remove(cardId);
+        }
+        /// <summary>
+        /// 获取墓地引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public Deck getGraveOfCard(ICardData card) => getGraveOfCard(card.id);
+        /// <summary>
+        /// 获取墓地引用
+        /// </summary>
+        /// <param name="cardId"></param>
+        /// <returns></returns>
+        public Deck getGraveOfCard(int cardId)
+        {
+            if (_selfGraveList.Contains(cardId))
+                return table.SelfGrave;
+            else if (_enemyGraveList.Contains(cardId))
+                return table.EnemyGrave;
+            throw new ActorNotFoundException(game.getCard(cardId));
+        }
+        /// <summary>
+        /// 尝试获取墓地引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public bool tryGetGraveOfCard(ICardData card, out Deck deck) => tryGetGraveOfCard(card?.id ?? 0, out deck);
+
+        /// <summary>
+        /// 尝试获取墓地引用
+        /// </summary>
+        /// <param name="card"></param>
+        /// <returns></returns>
+        public bool tryGetGraveOfCard(int id, out Deck deck)
+        {
+            if (_selfGraveList.Contains(id))
+            {
+                deck = table.SelfGrave;
+                return true;
+            }
+            else if (_enemyGraveList.Contains(id))
+            {
+                deck = table.EnemyGrave;
+                return true;
+            }
+            deck = null;
+            return false;
+        }
+        #endregion
+
         #region 揭示
         public UICard createInvokeCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createInvokeCard(updateCardDescriptor(card), position, height, isFaceUp);
         public UICard createInvokeCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
@@ -731,6 +853,50 @@ namespace Game.BattleTable
             {
                 Destroy(Cards[i].gameObject);
             }
+        }
+        #endregion
+
+        #region 移动中的卡牌
+        public UICard createMovingCard(ICardData card, Vector3 position, float height = -1, bool isFaceUp = true) => createMovingCard(updateCardDescriptor(card), position, height, isFaceUp);
+        public UICard createMovingCard(CardDescriptor desc, Vector3 position, float height = -1, bool isFaceUp = true)
+        {
+            var card = createCard(desc, position, height, isFaceUp);
+            _movingCardDic.Add(desc.id, card);
+            return card;
+        }
+        public bool removeMovingCard(ICardData card)
+        {
+            return removeMovingCard(card.id);
+        }
+        public bool removeMovingCard(CardDescriptor desc)
+        {
+            return removeMovingCard(desc.id);
+        }
+        public bool removeMovingCard(int cardId)
+        {
+            if (_movingCardDic.TryGetValue(cardId, out var uiCard))
+            {
+                uiCard.destroy();
+                return _movingCardDic.Remove(cardId);
+            }
+            return false;
+        }
+        public bool tryGetMovingCard(ICardData card, out UICard uiCard)
+        {
+            return tryGetMovingCard(card.id, out uiCard);
+        }
+        public bool tryGetMovingCard(int cardId, out UICard card)
+        {
+            if (_movingCardDic.TryGetValue(cardId, out card))
+            {
+                if (!card)
+                {
+                    _movingCardDic.Remove(cardId);
+                    return false;
+                }
+                return true;
+            }
+            return false;
         }
         #endregion
 
@@ -936,6 +1102,18 @@ namespace Game.BattleTable
             else if (tryGetSkill(card, out Skill skill))
             {
                 return skill.transform;
+            }
+            else if (tryGetDeckOfCard(card, out Deck deck))
+            {
+                return deck.transform;
+            }
+            else if (tryGetGraveOfCard(card, out Deck grave))
+            {
+                return grave.transform;
+            }
+            else if (tryGetMovingCard(card, out var movingCard))
+            {
+                return movingCard.transform;
             }
             else if (tryGetDeadCardAnchor(card.id, out Transform trans))
             {
@@ -2081,6 +2259,11 @@ namespace Game.BattleTable
         private Dictionary<int, Secret> cardSecretDic = new Dictionary<int, Secret>();
         private Dictionary<int, HandItem> cardHandDic = new Dictionary<int, HandItem>();
         private Dictionary<int, MulliganCardItem> initDic = new Dictionary<int, MulliganCardItem>();
+        private List<int> _selfDeckList = new List<int>();
+        private List<int> _enemyDeckList = new List<int>();
+        private List<int> _selfGraveList = new List<int>();
+        private List<int> _enemyGraveList = new List<int>();
+        private Dictionary<int, UICard> _movingCardDic = new Dictionary<int, UICard>();
         private CardDescriptor _selfItemDesc;
         private CardDescriptor _enemyItemDesc;
         [SerializeField]

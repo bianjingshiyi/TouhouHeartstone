@@ -88,6 +88,8 @@ namespace Game.BattleTable
             Vector3 startPos = table.WorldToTablePosition(deckTransform.position);
             var lossyScale = table.WorldToTableScale(deckTransform.lossyScale);
             float startHeight = deck.getCardHeight() * lossyScale.z;
+
+            table.removeCardFromDeck(_card);
             yield return moveToAnim(table, startPos, startHeight);
         }
         private IEnumerator moveFromHand(BattleTableManager table)
@@ -127,6 +129,7 @@ namespace Game.BattleTable
             var lossyScale = table.WorldToTableScale(graveTransform.lossyScale);
             float startHeight = grave.getCardHeight() * lossyScale.z;
 
+            table.removeCardFromGrave(_card);
             yield return moveToAnim(table, startPos, startHeight);
         }
         private IEnumerator moveFromField(BattleTableManager table, Arg arg)
@@ -262,6 +265,7 @@ namespace Game.BattleTable
                         var targetTransform = deck.HoverTransform;
                         var targetHeight = deck.getCardHeight();
                         yield return createCardToDeck(table, _card, startPos, targetTransform, targetHeight, startHeight, known);
+                        table.addCardToDeck(_card);
                     }
                     break;
                 case PILE.HAND: // 任意牌堆-->手牌
@@ -282,6 +286,7 @@ namespace Game.BattleTable
                         var targetTransform = targetGrave.HoverTransform;
                         var targetHeight = targetGrave.getCardHeight();
                         yield return createCardToDeck(table, _card, startPos, targetTransform, targetHeight, startHeight, known);
+                        table.addCardToGrave(_card);
                     }
                     break;
             }
@@ -377,7 +382,7 @@ namespace Game.BattleTable
         private IEnumerator createCardToDeck(BattleTableManager table, CardSnapshot card, Vector3 startPos, Transform target, float targetHeight, float startHeight = -1, bool isFaceUp = true)
         {
             //创建卡牌
-            var cardUI = table.createCard(card, startPos, startHeight, isFaceUp);
+            var cardUI = table.createMovingCard(card, startPos, startHeight, isFaceUp);
             //播放动画
             var targetLocalScale = Vector3.one * (targetHeight / cardUI.height);
             var anim = new CardTransAnim(cardUI, target, targetLocalScale, table.fieldToDeckCurve);
@@ -385,7 +390,7 @@ namespace Game.BattleTable
             while (!anim.update(table, _deltaTime))//没放完动画就让它接着放
                 yield return null;
             //摧毁卡牌
-            Object.Destroy(cardUI.gameObject);
+            table.removeMovingCard(card);
             //放完了
         }
 

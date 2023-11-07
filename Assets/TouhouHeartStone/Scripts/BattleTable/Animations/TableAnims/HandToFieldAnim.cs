@@ -24,7 +24,7 @@ namespace Game.BattleTable
         }
         public override IEnumerator update(BattleTableManager table)
         {
-            _tableCard = table.createCard(_servantDesc, _startPosition);
+            _tableCard = table.createMovingCard(_servantDesc, _startPosition);
             var field = _servantDesc.getOwner() == table.player ? table.table.SelfField : table.table.EnemyField;
             // 手牌移动到目标位置。
             var servant = table.createServant(_servantDesc, _position);
@@ -39,7 +39,7 @@ namespace Game.BattleTable
             }
 
             // 移除手牌。
-            _tableCard.destroy();
+            table.removeMovingCard(_servantDesc);
             _tableCard = null;
 
             // 召唤仆从。
@@ -58,7 +58,7 @@ namespace Game.BattleTable
         {
             if (_tableCard)
             {
-                _tableCard.destroy();
+                table.removeMovingCard(_servantDesc);
                 _tableCard = null;
             }
             if (table.tryGetServant(_servantDesc.id, out var servant))
