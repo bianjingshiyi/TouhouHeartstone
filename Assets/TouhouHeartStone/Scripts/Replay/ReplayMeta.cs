@@ -11,6 +11,15 @@ namespace Game.Replays
         public string name;
         public string path;
     }
+    public class InvalidReplayMeta : ReplayMeta
+    {
+        public InvalidReplayMeta()
+        {
+            playerAMasterDefRef = new DefineReference(0, 0);
+            playerBMasterDefRef = new DefineReference(0, 0);
+            requiredCardPools = new CardPoolInfoPack[0];
+        }
+    }
     [Serializable]
     public class SerializableReplayMeta
     {

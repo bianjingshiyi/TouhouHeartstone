@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using BJSYGameCore;
+using Controllers;
 using Game.Replays;
 using MongoDB.Bson;
 using UnityEngine;
@@ -14,6 +16,46 @@ namespace Game
         public string[] getPaths()
         {
             return fileManager.getPersistentFiles(DIRECTORY, $"*.{EXTENSION}", true);
+        }
+        public async Task<ReplayMeta[]> loadMetas(string[] paths)
+        {
+            var metas = new List<ReplayMeta>();
+            foreach (var path in paths)
+            {
+                ReplayMeta meta;
+                try
+                {
+                    string[] fileHeads = await fileManager.readPersistentTextFile(path, 0, 1);
+                    string fileHead = fileHeads[0];
+                    var seri = JsonHelper.fromJson<SerializableReplayMeta>(fileHead);
+                    meta = seri.toMeta();
+                }
+                catch
+                {
+                    meta = new InvalidReplayMeta()
+                    {
+                        name = Path.GetFileName(path)
+                    };
+                }
+                meta.path = path;
+                metas.Add(meta);
+            }
+            return metas.ToArray();
+        }
+        public async Task<ReplayData> loadReplay(string path)
+        {
+            try
+            {
+                var content = await fileManager.readPersistentTextFile(path, 1, 1);
+                string json = content[0];
+                var seri = JsonHelper.fromJson<SerializableReplayData>(json);
+                return seri.toData();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"回放{path}加载错误：{e}");
+            }
+            return null;
         }
         public static string getReplayFolder()
         {
