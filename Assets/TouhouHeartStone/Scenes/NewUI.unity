@@ -2580,6 +2580,9 @@ MonoBehaviour:
   - {fileID: 5655374305018783585, guid: 6b888f38f0d652b4e881752db7833318, type: 3}
   - {fileID: 1483083726215927169, guid: de53b7a5405d0c349a4854a674de0fad, type: 3}
   - {fileID: 8870694013726260511, guid: 9136cc70ae4901344bf5e17e3075d6c5, type: 3}
+  - {fileID: 1063996623512116538, guid: e440a4e9c00abea40ab9f2a5bf7a426a, type: 3}
+  - {fileID: 7128317401256350186, guid: 026cdfad5cf929d4c9888cdf86d3be58, type: 3}
+  - {fileID: 2705811923670505146, guid: dc5146d74ba33564596f6d84e1559493, type: 3}
 --- !u!114 &123776328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6357,8 +6360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
-    type: 2}
+  m_EffectMaterial: {fileID: 0}
   m_EffectFactor: 1
   m_ColorFactor: 1
   m_BlurFactor: 0
@@ -6457,8 +6459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
-    type: 2}
+  m_EffectMaterial: {fileID: 0}
   m_EffectFactor: 1
   m_ColorFactor: 1
   m_BlurFactor: 0
@@ -6485,8 +6486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
-    type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
@@ -8913,8 +8913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
-    type: 2}
+  m_EffectMaterial: {fileID: 0}
   m_EffectFactor: 1
   m_ColorFactor: 1
   m_BlurFactor: 0
@@ -9358,8 +9357,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Version: 300
-  m_EffectMaterial: {fileID: 8567381165550669738, guid: aee96bc531e6eba468ec405e536f515f,
-    type: 2}
+  m_EffectMaterial: {fileID: 0}
   m_EffectFactor: 1
   m_ColorFactor: 1
   m_BlurFactor: 0
