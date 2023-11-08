@@ -615,6 +615,8 @@ namespace UI
         }
         private bool filterNodeDefine(NodeDefine define)
         {
+            if (define.isObsolete())
+                return false;
             if (!string.IsNullOrEmpty(categoryFilter))
             {
                 if (categoryFilter != ACTION_CATEGORY_NAME_NONE)

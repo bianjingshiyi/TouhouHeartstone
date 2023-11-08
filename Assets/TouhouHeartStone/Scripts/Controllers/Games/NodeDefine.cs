@@ -16,6 +16,14 @@ namespace Controllers
         {
             eventTriggerTime = triggerTime;
         }
+        public bool isObsolete()
+        {
+            if (actionDefine != null)
+            {
+                return actionDefine.obsoleteMsg != null;
+            }
+            return false;
+        }
         public string getCategory()
         {
             if (actionDefine != null)
