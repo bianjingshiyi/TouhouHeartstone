@@ -877,6 +877,7 @@ namespace Game
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CheckCardPile_Obsolete, StringTable.EDITOR_NODE_CATEGORY_PILE, EDITOR_NODE_NAME_CHECK_CARD_PILE_OBSOLETE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static bool checkCardPileObsolete(
