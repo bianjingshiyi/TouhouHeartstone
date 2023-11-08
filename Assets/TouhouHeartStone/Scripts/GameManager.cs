@@ -81,10 +81,6 @@ namespace Game
                     quitGame();
                     return;
                 }
-                if (_recordingReplay)
-                {
-                    _replayRecorder.update(Time.deltaTime);
-                }
                 if (_replayPlayer != null)
                 {
                     //如果在Replay模式

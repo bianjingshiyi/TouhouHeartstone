@@ -10,26 +10,22 @@ namespace Game.Replays
             this.game = game;
             this.replay = replay;
         }
-        public void update(IRequest[] requests, float deltaTime)
+        public void update(IAnswerManager anwserManager)
         {
             if (isReplayEnd)
                 return;
-            _currentTime += deltaTime;
+            var requests = anwserManager.getAllRequests();
             foreach (var request in requests)
             {
                 if (isReplayEnd)
                     return;
                 if (request == null)
                     continue;
-                var time = replay.responseTimes[currentResponseIndex];
-                if (_currentTime < time)
-                    continue;
                 IResponse nextResponse = replay.responses[currentResponseIndex];
-                if (request.isValidResponse(nextResponse))
-                {
-                    game.answers.answer(nextResponse.playerId, nextResponse);
-                    currentResponseIndex++;
-                }
+                if (!anwserManager.isCorrectResponse(request, nextResponse))
+                    continue;
+                game.answers.answer(nextResponse.playerId, nextResponse);
+                currentResponseIndex++;
             }
         }
         public bool isReplayEnd
@@ -37,7 +33,6 @@ namespace Game.Replays
             get { return currentResponseIndex >= replay.responses.Count; }
         }
         int currentResponseIndex { get; set; } = 0;
-        float _currentTime = 0;
         CardEngine game { get; }
         ReplayData replay { get; }
     }

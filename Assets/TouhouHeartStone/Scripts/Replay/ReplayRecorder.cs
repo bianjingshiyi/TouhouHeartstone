@@ -32,20 +32,14 @@ namespace Game.Replays
                 option = game.getOption(),
                 playerA = new ReplayPlayerData(localPlayer),
                 playerB = new ReplayPlayerData(otherPlayer),
-                responses = new List<IResponse>(),
-                responseTimes = new List<float>()
+                responses = new List<IResponse>()
             };
             game.answers.onResponse += onPlayerResponseCallback;
-            _currentTime = 0;
         }
         public void stopRecord()
         {
             game.answers.onResponse -= onPlayerResponseCallback;
             game = null;
-        }
-        public void update(float deltaTime)
-        {
-            _currentTime += deltaTime;
         }
         #endregion
 
@@ -55,7 +49,6 @@ namespace Game.Replays
         private void onPlayerResponseCallback(IResponse response)
         {
             replay.responses.Add(response);
-            replay.responseTimes.Add(_currentTime);
         }
         #endregion
 
@@ -64,7 +57,6 @@ namespace Game.Replays
         #region 属性字段
         public const int REPLAY_VERSION = 0;
         public bool isRecording => game != null;
-        private float _currentTime = 0;
         CardEngine game { get; set; } = null;
         public ReplayMeta meta { get; private set; } = null;
         public ReplayData replay { get; private set; } = null;

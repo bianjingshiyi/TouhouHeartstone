@@ -20,11 +20,19 @@ namespace TouhouHeartstone
             var choice = game.responseRandomInt(0, cardRefArray.Length);
             if (cardRefArray != null)
             {
-                return new DiscoverResponse() { cardDefRef = cardRefArray[choice] };
+                return new DiscoverResponse() 
+                { 
+                    playerId = playerId,
+                    cardDefRef = cardRefArray[choice] 
+                };
             }
             else
             {
-                return new DiscoverResponse() { cardId = cardIdArray[choice] };
+                return new DiscoverResponse()
+                {
+                    playerId = playerId,
+                    cardId = cardIdArray[choice] 
+                };
             }
         }
         public override bool isValidResponse(IResponse response)

@@ -1,10 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Game.BattleTable;
 using Game.Replays;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
-using UnityEngine;
 
 namespace Game
 {
@@ -26,9 +23,7 @@ namespace Game
             // 如果还没放完
             if (!_replayPlayer.isReplayEnd)
             {
-                // 有询问，并且UI正在等待该询问的回应
-                var requests = game.answers.getAllRequests();
-                _replayPlayer.update(requests, Time.deltaTime);
+                _replayPlayer.update(game.answers);
             }
         }
         private async void onSaveReplayButtonClickCallback()
