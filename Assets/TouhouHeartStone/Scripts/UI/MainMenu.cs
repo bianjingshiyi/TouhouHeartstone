@@ -23,6 +23,11 @@ namespace UI
         {
             base.Awake();
             autoInit();
+#if DEBUG || DEVELOPMENT_BUILD || UNITY_EDITOR
+            _pveButton.gameObject.SetActive(true);
+#else
+            _pveButton.gameObject.SetActive(false);
+#endif
             _vsBotButton.onClick.AddListener(onVsBotButtonClickCallback);
             _pveButton.onClick.AddListener(onPVEButtonClickCallback);
             _buildCardButton.onClick.AddListener(onBuildCardButtonClickCallback);
@@ -51,8 +56,8 @@ namespace UI
             });
             editorButton.onClick.AddListener(onEditorButtonClickCallback);
         }
-        #endregion
-        #region 事件回调
+#endregion
+#region 事件回调
         private void onVsBotButtonClickCallback()
         {
             onVsBotButtonClick?.Invoke();
@@ -69,14 +74,14 @@ namespace UI
         {
             onBuildCardButtonClick?.Invoke();
         }
-        #endregion
-        #endregion
-        #region 事件
+#endregion
+#endregion
+#region 事件
         public event Action onVsBotButtonClick;
         public event Action onPVEButtonClick;
         public event Action onEditorButtonClick;
         public event Action onBuildCardButtonClick;
-        #endregion
+#endregion
         [SerializeField]
         Button _vsBotButton;
         [SerializeField]
