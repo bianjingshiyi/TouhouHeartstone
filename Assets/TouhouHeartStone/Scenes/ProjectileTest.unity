@@ -1159,6 +1159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fireButton: {fileID: 1170409632}
+  _sourceTransform: {fileID: 0}
   _targetTransform: {fileID: 683620301}
   _projectilePrefab: {fileID: 919023637945781043, guid: 9136cc70ae4901344bf5e17e3075d6c5,
     type: 3}
