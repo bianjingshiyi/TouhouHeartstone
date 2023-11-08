@@ -291,7 +291,7 @@ namespace UI
         }
 #endregion
 #endregion
-#region 事件
+        #region 事件
         public event Action onVsBotButtonClick;
         public event Action onPVEButtonClick;
         public event Action onEditorButtonClick;
@@ -326,7 +326,7 @@ namespace UI
         public event Action onRecoverCaptchaClick;
 
         public event Action<PlayerInfoEditInfo> onPlayerInfoEditConfirmClick;
-#endregion
+        #endregion
         [SerializeField]
         EULAPanel _eulaPanel;
         [SerializeField]

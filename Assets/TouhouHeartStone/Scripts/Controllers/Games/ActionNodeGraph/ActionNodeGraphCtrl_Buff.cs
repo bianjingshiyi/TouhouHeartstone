@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Boo.Lang;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;

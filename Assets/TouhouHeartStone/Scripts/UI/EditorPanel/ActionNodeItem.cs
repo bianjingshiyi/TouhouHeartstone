@@ -297,14 +297,14 @@ namespace UI
             {
                 // normal
                 _nameBackground.color = _normalTitleColor;
-                _selectedOutline.effectColor = _normalTitleColor;
+                _selectedOutline.color = _normalTitleColor;
                 _warningObj.gameObject.SetActive(false);
             }
             else
             {
                 // obsolete
                 _nameBackground.color = _warningTitleColor;
-                _selectedOutline.effectColor = _warningTitleColor;
+                _selectedOutline.color = _warningTitleColor;
                 _warningObj.gameObject.SetActive(true);
             }
             SetDirty();
@@ -779,7 +779,7 @@ namespace UI
         [SerializeField]
         GameObject _selectedIndicator;
         [SerializeField]
-        NicerOutline _selectedOutline;
+        Image _selectedOutline;
 
         [Header("输入")]
         [SerializeField]
