@@ -5171,7 +5171,7 @@ MonoBehaviour:
   _textureDirName: Textures
   _editorCardPoolDirName: ExternalData/CardPools
   _editorTextureDirName: ExternalData/Textures
-  _standardCardPoolsId: 0100000000000000
+  _standardCardPoolsId: 01000000000000000200000000000000
 --- !u!4 &902763123
 Transform:
   m_ObjectHideFlags: 0
