@@ -154,13 +154,6 @@
       "dependencies": {},
       "url": "https://registry.npmjs.org"
     },
-    "io.sentry.unity": {
-      "version": "https://github.com/getsentry/unity.git#1.7.0",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "d3bd4445ea03f0aa0c8b93cb962f8fcc95dfacc5"
-    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,
