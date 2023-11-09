@@ -14,36 +14,34 @@ namespace Game.PVE
         /// </summary>
         public int initSeed;
         /// <summary>
-        /// 整个PVE流程的种子
+        /// 整个PVE流程的随机数生成器
         /// </summary>
-        public int runSeed;
+        public RNG runRNG;
         /// <summary>
         /// 当前层的种子
         /// </summary>
         public int stageSeed;
         public int currentStage;
+        public List<DefineReference> plugins;
         public PVEStageState stageState;
         public Deck deck;
         public void init()
         {
-            var rng = new Random(initSeed);
-            runSeed = rng.Next();
-            generateStageSeed();
+            runRNG = new RNG(initSeed);
+            newStageSeed();
         }
         public void advanceStage()
         {
             currentStage++;
-            generateStageSeed();
+            newStageSeed();
         }
         public DefineReference getCharacter()
         {
             return deck.masterCardRef;
         }
-        private void generateStageSeed()
+        private void newStageSeed()
         {
-            var rng = new Random(runSeed);
-            stageSeed = rng.Next();
-            runSeed = rng.Next();
+            stageSeed = runRNG.next();
         }
     }
     [Serializable]
@@ -53,11 +51,12 @@ namespace Game.PVE
         {
             version = data.version;
             initSeed = data.initSeed;
-            runSeed = data.runSeed;
+            runRNG = new SerializableRNG(data.runRNG);
             stageSeed = data.stageSeed;
             currentStage = data.currentStage;
             stageState = (int)data.stageState;
             deck = data.deck.toDefRefArray(true);
+            plugins = data.plugins?.ToArray() ?? Array.Empty<DefineReference>();
         }
         public SaveData ToSaveData()
         {
@@ -65,44 +64,22 @@ namespace Game.PVE
             {
                 version = version,
                 initSeed = initSeed,
-                runSeed = runSeed,
+                runRNG = runRNG.toRNG(),
                 stageSeed = stageSeed,
                 currentStage = currentStage,
                 stageState = (PVEStageState)stageState,
-                deck = new Deck(deck)
+                deck = new Deck(deck),
+                plugins = plugins.ToList()
             };
         }
         public int version;
         public int initSeed;
-        public int runSeed;
+        public SerializableRNG runRNG;
         public int stageSeed;
         public int currentStage;
         public int stageState;
         public DefineReference[] deck;
-    }
-
-    public static class RandomHelper
-    {
-        public static int getNextSeed(this int seed)
-        {
-            var rng = new Random(seed);
-            return rng.Next();
-        }
-        public static IEnumerable<T> randomTake<T>(this IEnumerable<T> enumrable, int seed, int count)
-        {
-            List<T> list = enumrable.ToList();
-            if (list.Count <= count)
-                return list;
-            T[] results = new T[count];
-            var rng = new Random(seed);
-            for (int i = 0; i < results.Length; i++)
-            {
-                int index = rng.Next(0, list.Count - 1);
-                results[i] = list[index];
-                list.RemoveAt(index);
-            }
-            return results;
-        }
+        public DefineReference[] plugins;
     }
     public enum PVEStageState
     {

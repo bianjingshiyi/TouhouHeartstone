@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Game;
+using Game.PVE;
 using TouhouCardEngine;
 using UI;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Controllers
     class PVECardEditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
         #region 私有方法
-        public async Task display(CardDefine define, CardManager cardManager)
+        public async Task display(string dataName, SaveData data, CardDefine define, CardManager cardManager)
         {
             gameObject.SetActive(true);
             await _ui.setCard(define, cardManager);
@@ -26,15 +27,12 @@ namespace Controllers
                 await _effectEditor.display(define.cardPoolId, effect);
 
 
+            _dataName = dataName;
+            var inventory = data.plugins;
             _gemInventory.Clear();
-            for (int i = 0; i < 10; i++)
-            {
-                _gemInventory.Add(new CardGem());
-            }
-            _slotGroups = new CardGemSlotGroup[]
-            {
-                new CardGemSlotGroup(3),
-            };
+            _gemInventory.AddRange(inventory.Select(d => new CardGem(d)));
+
+            _slotGroups = PVEManager.getCardDefineSlots(define) ?? new CardGemSlotGroup[0];
             updateGemInventory();
             updateGemSlots();
         }
@@ -278,6 +276,7 @@ namespace Controllers
         private DraggingCardGem _draggingGem;
         private List<CardGem> _gemInventory = new List<CardGem>();
         private CardGemSlotGroup[] _slotGroups;
+        private string _dataName;
         [SerializeField]
         private PVECardEditor _ui;
         [SerializeField]

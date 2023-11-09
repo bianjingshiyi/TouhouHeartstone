@@ -8,14 +8,18 @@ namespace UI
         #region 公有方法
         public void setEventTypeNames(string[] names)
         {
-            _createEventEffectDialog.setTypes(names);
+            if (_createEventEffectDialog)
+                _createEventEffectDialog.setTypes(names);
         }
         public void setEventTypeValue(int index)
         {
-            _createEventEffectDialog.setEventValue(index);
+            if (_createEventEffectDialog)
+                _createEventEffectDialog.setEventValue(index);
         }
         public void displayEventEffectDialog(bool display)
         {
+            if (!_createEventEffectDialog)
+                return;
             if (display)
             {
                 _createEventEffectDialog.display();

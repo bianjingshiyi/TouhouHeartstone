@@ -6,7 +6,6 @@ using Game.PVE;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
-using TouhouHeartstone.Builtin;
 using UI;
 using UnityEngine;
 using Deck = TouhouHeartstone.Deck;
@@ -25,6 +24,7 @@ namespace Controllers
             {
                 _saveData = await game.pve.loadData(dataName);
                 await game.pve.loadGeneratedCardPool(dataName);
+                await generateStageData();
             }
             if (_saveData == null)
             {
@@ -86,6 +86,7 @@ namespace Controllers
         private async void onGameStartClickedCallback()
         {
             await createSaveFile();
+            await generateStageData();
             await displayInRunPanel();
         }
         private async void onFightClickedCallback()
@@ -102,16 +103,17 @@ namespace Controllers
         }
         private async void onInventoryClickedCallback()
         {
-            var standardRef = game.card.getLocalCardPoolReference(1);
-            var (info, standardPool) = await game.card.getOrLoadCardPool(standardRef);
-            var cardDefine = standardPool.cardDefineList.FirstOrDefault();
-            await _cardEditor.display(cardDefine, game.card);
+            var pvePoolRef = game.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID);
+            var (_, pvePool) = await game.card.getOrLoadCardPool(pvePoolRef);
+            var cardDefine = pvePool.cardDefineList.FirstOrDefault(d => PVEManager.cardDefineHasSlots(d));
+            await _cardEditor.display(getPVEDataName(), _saveData, cardDefine, game.card);
             _ui.openCardEditorPage();
             return;
         }
         private async void onSelectCardChoiceClickedCallback(int index)
         {
-            var selectedDefRef = _nextSelectingCards[index];
+            var choices = getNextSelectingCards();
+            var selectedDefRef = choices[index];
             _saveData.deck.addCard(selectedDefRef);
             await nextStage();
         }
@@ -132,6 +134,7 @@ namespace Controllers
             {
                 // 获胜
                 _saveData.stageState = PVEStageState.SelectCard;
+                _saveData.plugins.AddRange(_stageData.pluginRewards);
                 var dataName = getPVEDataName();
                 await pve.saveData(dataName, _saveData);
                 gameResult = PVEGameResult.Win;
@@ -211,7 +214,7 @@ namespace Controllers
                 }
                 else
                 {
-                    deck = _nextBoss.deck;
+                    deck = getNextEnemyCharacter().deck;
                 }
                 player.setDeck(deck);
             }
@@ -226,7 +229,7 @@ namespace Controllers
                 pvePoolInfo.ToCardPoolInfoPack(),
                 genPoolInfo.info.ToCardPoolInfoPack()
             };
-            var seed = _saveData.stageSeed;
+            var seed = _stageData.fightSeed;
             HearthstoneOption option = new HearthstoneOption()
             {
                 randomSeed = seed,
@@ -250,23 +253,21 @@ namespace Controllers
             _saveData.stageState = PVEStageState.Main;
             var dataName = getPVEDataName();
             await game.pve.saveData(dataName, _saveData);
+
+            await generateStageData();
             await displayInRunPanel();
         }
         private PVECharacter getNextEnemyCharacter()
         {
-            return _nextBoss;
+            return _stageData.boss;
         }
         private DefineReference[] getNextSelectingCards()
         {
-            return _nextSelectingCards;
+            return _stageData.cardRewards[0];
         }
-        private void generateNextBoss()
+        private async Task generateStageData()
         {
-            _nextBoss = game.pve.generateNextBoss(_saveData.stageSeed);
-        }
-        private void generateSelectingCards()
-        {
-            _nextSelectingCards = game.pve.generateNextSelectingCards(_saveData.stageSeed);
+            _stageData = await game.pve.generateStageData(_saveData.stageSeed);
         }
         private void reset()
         {
@@ -307,7 +308,6 @@ namespace Controllers
 
             if (_saveData.stageState == PVEStageState.SelectCard)
             {
-                generateSelectingCards();
                 var defRefs = getNextSelectingCards();
                 var cardManager = game.card;
                 var cardDefines = defRefs.Select(d => cardManager.getLocalCardDefine(d)).ToArray();
@@ -316,7 +316,6 @@ namespace Controllers
             }
             else
             {
-                generateNextBoss();
                 var character = getNextEnemyCharacter();
                 var (name, image) = await getCharacterViewData(character);
                 var desc = game.lang._(character.description);
@@ -418,8 +417,7 @@ namespace Controllers
         PVECharacter _selectedCharacter = null;
         List<PVECharacter> _characterList = new List<PVECharacter>();
         private SaveData _saveData;
-        private PVECharacter _nextBoss;
-        private DefineReference[] _nextSelectingCards;
+        private StageData _stageData;
         private PVEGameResult gameResult;
         private GameManager gameManager => game.game;
         #endregion

@@ -3,11 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TouhouCardEngine;
+using TouhouHeartstone.Builtin;
 
 namespace Game.PVE
 {
     public class CardGem
     {
+        public CardGem(DefineReference def)
+        {
+            _cardRef = def;
+        }
+        public void setTags(string[] tags)
+        {
+            _tags = tags;
+        }
+        public DefineReference cardRef => _cardRef;
+        public string[] tags => _tags;
+        private DefineReference _cardRef;
+        private string[] _tags;
     }
     public class CardGemSlot
     {
@@ -32,7 +46,13 @@ namespace Game.PVE
         {
             return _slots[index];
         }
+        public void setTags(string[] tags)
+        {
+            _tags = tags;
+        }
         public CardGemSlot[] slots => _slots;
         private CardGemSlot[] _slots;
+        public string[] tags => _tags;
+        private string[] _tags;
     }
 }

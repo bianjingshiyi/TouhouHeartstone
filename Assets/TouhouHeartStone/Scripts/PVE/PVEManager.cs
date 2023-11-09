@@ -55,6 +55,7 @@ namespace Game.PVE
             {
                 initSeed = seed,
                 deck = deck,
+                plugins = new List<DefineReference>(),
                 currentStage = 0,
                 version = VERSION_NUMBER
             };
@@ -135,7 +136,7 @@ namespace Game.PVE
             var (_, pvePool) = await main.card.getOrLoadCardPool(pvePoolRef);
             if (pvePool != null)
             {
-                var define = pvePool.cardDefineList.FirstOrDefault(d => d.getProp<object>(CARD_PROP_SLOTS) != null);
+                var define = pvePool.cardDefineList.FirstOrDefault(d => cardDefineHasSlots(d));
                 if (define != null)
                 {
                     deck.addCard(new DefineReference(define.cardPoolId, define.id));
@@ -148,7 +149,69 @@ namespace Game.PVE
             });
             return characterList.ToArray();
         }
-        public PVECharacter generateNextBoss(int seed)
+        public async Task<StageData> generateStageData(int stageSeed)
+        {
+            var rng = new RNG(stageSeed);
+            return new StageData()
+            {
+                boss = generateNextBoss(rng.next()),
+                cardRewards = generateCardRewards(rng.next()),
+                pluginRewards = await generatePluginRewards(rng.next()),
+                fightSeed = rng.next(),
+            };
+        }
+        #endregion
+
+        public static bool cardDefineIsGem(CardDefine define)
+        {
+            return define.getProp<string>(CARD_PROP_GEM) != null;
+        }
+        public static CardGem getCardDefineGem(CardDefine define)
+        {
+            var tagString = define.getProp<string>(CARD_PROP_GEM);
+            if (tagString == null)
+                return null;
+            var gem = new CardGem(define.getDefineRef());
+            var tags = tagString.Split(',');
+            gem.setTags(tags);
+            return gem;
+        }
+        public static bool cardDefineHasSlots(CardDefine define)
+        {
+            return define.getProp<string[]>(CARD_PROP_SLOTS) != null;
+        }
+        public static CardGemSlotGroup[] getCardDefineSlots(CardDefine define)
+        {
+            var slotProps = define.getProp<string[]>(CARD_PROP_SLOTS);
+            if (slotProps == null)
+                return null;
+            var slotGroups = slotProps.GroupBy(tags => tags);
+            var groupList = new List<CardGemSlotGroup>();
+            foreach (var group in slotGroups)
+            {
+                int count = group.Count();
+                var gemGroup = new CardGemSlotGroup(count);
+                var tags = group.Key.Split(',');
+                gemGroup.setTags(tags);
+                groupList.Add(gemGroup);
+            }
+            return groupList.ToArray();
+        }
+        #endregion
+        #region 私有方法
+        private string getSaveDataDirectory(string dataName)
+        {
+            return Path.Combine(Application.persistentDataPath, _directory, dataName);
+        }
+        private string getPersistentSavePath(string dataName)
+        {
+            return Path.Combine(_directory, dataName, $"{_saveFileName}.{SAVE_FILE_EXTENSION}");
+        }
+        private string getCardPoolFilePath(string dataName)
+        {
+            return Path.Combine(Application.persistentDataPath, _directory, dataName, $"{_cardPoolFileName}.{main.card.cardPoolFilePostfix}");
+        }
+        private PVECharacter generateNextBoss(int seed)
         {
             var deck = new Deck();
             deck.masterCardRef = new DefineReference(0, Sanae.ID);
@@ -169,7 +232,18 @@ namespace Game.PVE
                 deck = deck
             };
         }
-        public DefineReference[] generateNextSelectingCards(int seed)
+        private async Task<DefineReference[]> generatePluginRewards(int seed)
+        {
+            var poolRef = main.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID);
+            var (info, pvePool) = await main.card.getOrLoadCardPool(poolRef);
+            if (pvePool != null)
+            {
+                var rng = new RNG(seed);
+                return pvePool.cardDefineList.Where(d => cardDefineIsGem(d)).randomTake(rng, 2).Select(d => new DefineReference(d.cardPoolId, d.id)).ToArray();
+            }
+            return Array.Empty<DefineReference>();
+        }
+        private DefineReference[][] generateCardRewards(int seed)
         {
             List<DefineReference> list = new List<DefineReference>()
             {
@@ -191,22 +265,11 @@ namespace Game.PVE
                 new DefineReference(0, RoyalFlare.ID),
                 new DefineReference(0, SilentSelene.ID),
             };
-            return list.randomTake(seed, 3).ToArray();
-        }
-        #endregion
-        #endregion
-        #region 私有方法
-        private string getSaveDataDirectory(string dataName)
-        {
-            return Path.Combine(Application.persistentDataPath, _directory, dataName);
-        }
-        private string getPersistentSavePath(string dataName)
-        {
-            return Path.Combine(_directory, dataName, $"{_saveFileName}.{SAVE_FILE_EXTENSION}");
-        }
-        private string getCardPoolFilePath(string dataName)
-        {
-            return Path.Combine(Application.persistentDataPath, _directory, dataName, $"{_cardPoolFileName}.{main.card.cardPoolFilePostfix}");
+            var rng = new RNG(seed);
+            return new DefineReference[][]
+            {
+                list.randomTake(rng, 3).ToArray()
+            };
         }
         #endregion
         #region 属性字段
@@ -238,6 +301,7 @@ namespace Game.PVE
         public const string SAVE_FILE_EXTENSION = "dds";
         public const string DEFAULT_PVE_DATA_NAME = "default";
         public const string CARD_PROP_SLOTS = "插槽";
+        public const string CARD_PROP_GEM = "插件";
         #endregion
     }
 }
