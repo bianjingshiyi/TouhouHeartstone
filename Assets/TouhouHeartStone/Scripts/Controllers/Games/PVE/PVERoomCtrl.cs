@@ -19,10 +19,12 @@ namespace Controllers
         #region 公有方法
         public async Task display()
         {
-            loadCharacterList();
-            if (game.pve.hasData())
+            await loadCharacterList();
+            var dataName = getPVEDataName();
+            if (game.pve.hasData(dataName))
             {
-                _saveData = await game.pve.loadData();
+                _saveData = await game.pve.loadData(dataName);
+                await game.pve.loadGeneratedCardPool(dataName);
             }
             if (_saveData == null)
             {
@@ -55,7 +57,6 @@ namespace Controllers
             _ui.onSelectCardChoiceClicked += onSelectCardChoiceClickedCallback;
             _ui.onConfirmSelectCardClicked += onConfirmSelectCardClickedCallback;
             _ui.onSkipSelectCardClicked += onSkipSelectCardClickedCallback;
-            gameManager.onGameStart += onGameStartCallback;
             gameManager.onGameFinished += onGameFinishedCallback;
             gameManager.onGameQuit += onGameQuitCallback;
         }
@@ -121,37 +122,18 @@ namespace Controllers
         {
             await nextStage();
         }
-        private async void onGameStartCallback()
-        {
-            if (!gameManager.isPVE)
-                return;
-            var game = gameManager.game;
-            foreach (var player in game.getSortedPlayers())
-            {
-                var master = player.getMaster();
-                if (player != gameManager.localPlayer)
-                {
-                    await master.addModifier(game, new LifeModifier(10 * (_saveData.currentStage + 1), true));
-                }
-                else
-                {
-                    await master.setCurrentLife(game, _saveData.currentHealth);
-                }
-            }
-        }
         private async void onGameFinishedCallback(Player[] winners)
         {
             if (!gameManager.isPVE)
                 return;
             var localPlayer = gameManager.localPlayer;
-            var pve = this.game.pve;
-            var game = gameManager.game;
+            var pve = game.pve;
             if (winners.Contains(localPlayer))
             {
                 // 获胜
                 _saveData.stageState = PVEStageState.SelectCard;
-                _saveData.currentHealth = localPlayer.getMaster().getCurrentLife(game);
-                await pve.saveData(_saveData);
+                var dataName = getPVEDataName();
+                await pve.saveData(dataName, _saveData);
                 gameResult = PVEGameResult.Win;
             }
             else if (winners.Length <= 0)
@@ -163,11 +145,12 @@ namespace Controllers
             {
                 // 输掉
                 _saveData = null;
-                pve.deleteData();
+                var dataName = getPVEDataName();
+                pve.deleteData(dataName);
                 gameResult = PVEGameResult.Defeat;
             }
         }
-        private void onGameQuitCallback()
+        private async void onGameQuitCallback()
         {
             if (!gameManager.isPVE)
                 return;
@@ -176,7 +159,7 @@ namespace Controllers
                 case PVEGameResult.Win:
                 case PVEGameResult.Draw:
                     scene.menu.hide();
-                    display();
+                    await display();
                     break;
                 case PVEGameResult.Defeat:
                     reset();
@@ -186,34 +169,21 @@ namespace Controllers
         }
         #endregion
         #region 实现方法
-        private void loadCharacterList()
+        private async Task loadCharacterList()
         {
-            var deck = new Deck();
-            deck.masterCardRef = new DefineReference(0, Patchouli.ID);
-
-            deck.addCard(new DefineReference(0, ElementSprite.ID));
-            deck.addCard(new DefineReference(0, MultiCast.ID));
-            deck.addCard(new DefineReference(0, TheGreatLibrary.ID));
-            deck.addCard(new DefineReference(0, LibraryProtector.ID));
-            deck.addCard(new DefineReference(0, BestMagic.ID));
-            deck.addCard(new DefineReference(0, AgniShine.ID));
-            deck.addCard(new DefineReference(0, MetalFatigue.ID));
-            deck.addCard(new DefineReference(0, SylphyHorn.ID));
-            deck.addCard(new DefineReference(0, PhilosopherStone.ID));
-            deck.addCard(new DefineReference(0, MegaReaver.ID));
             _characterList.Clear();
-            _characterList.Add(new PVECharacter()
-            {
-                deck = deck,
-                description = PVE_PATCHOULI_DESC
-            });
+            _characterList.AddRange(await game.pve.getStartingCharacterList());
         }
         #region 游戏内容
         private async Task createSaveFile()
         {
             _saveData = await game.pve.generateNewSaveData(_selectedCharacter);
             _selectedCharacter = null;
-            await game.pve.saveData(_saveData);
+            var dataName = getPVEDataName();
+            await game.pve.saveData(dataName, _saveData);
+
+            game.pve.createGeneratedCardPool(dataName, out var info, out var cardPool);
+            await game.pve.saveGeneratedCardPool(dataName, info, cardPool);
         }
         private void showGiveUpDialog()
         {
@@ -245,9 +215,16 @@ namespace Controllers
                 }
                 player.setDeck(deck);
             }
+
+            var dataName = getPVEDataName();
+            var standardPoolInfo = game.card.getCardPoolInfo(CardManager.STANDARD_POOL_ID);
+            var pvePoolInfo = game.card.getCardPoolInfo(CardManager.PVE_POOL_ID);
+            var genPoolInfo = await game.pve.getGeneratedCardPool(dataName);
             var cardPools = new CardPoolInfoPack[]
             {
-                new CardPoolInfoPack(0, string.Empty, 0)
+                standardPoolInfo.ToCardPoolInfoPack(),
+                pvePoolInfo.ToCardPoolInfoPack(),
+                genPoolInfo.info.ToCardPoolInfoPack()
             };
             var seed = _saveData.stageSeed;
             HearthstoneOption option = new HearthstoneOption()
@@ -263,14 +240,16 @@ namespace Controllers
         }
         private void giveUp()
         {
-            game.pve.deleteData();
+            var dataName = getPVEDataName();
+            game.pve.deleteData(dataName);
             quit();
         }
         private async Task nextStage()
         {
             _saveData.advanceStage();
             _saveData.stageState = PVEStageState.Main;
-            await game.pve.saveData(_saveData);
+            var dataName = getPVEDataName();
+            await game.pve.saveData(dataName, _saveData);
             await displayInRunPanel();
         }
         private PVECharacter getNextEnemyCharacter()
@@ -293,6 +272,10 @@ namespace Controllers
         {
             _saveData = null;
             gameResult = PVEGameResult.None;
+        }
+        private string getPVEDataName()
+        {
+            return PVEManager.DEFAULT_PVE_DATA_NAME;
         }
         #endregion
         #region UI
@@ -423,8 +406,6 @@ namespace Controllers
         #endregion
 
         #region 属性字段
-        [TranslateMsg("PVE模式人物描述-帕秋莉")]
-        private const string PVE_PATCHOULI_DESC = "操纵元素之力的魔法使，使用大量的法术向敌人倾泻火力或进行防御。\n通过元素融合还可将法术进行升级，产生更加强大的力量。";
         [TranslateMsg("PVE模式-放弃一局游戏的提示")]
         private const string PVE_CONFIRM_GIVE_UP = "确认要放弃本局游戏？";
         [SerializeField]

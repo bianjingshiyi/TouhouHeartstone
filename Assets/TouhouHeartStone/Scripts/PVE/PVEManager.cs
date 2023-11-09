@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using BJSYGameCore;
 using Controllers;
 using MongoDB.Bson;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
@@ -16,6 +18,28 @@ namespace Game.PVE
     public class PVEManager : Manager
     {
         #region 公有方法
+
+        #region 数据文件夹
+        public void deleteData(string dataName)
+        {
+            if (!hasData(dataName))
+                return;
+            if (_pvePoolDict.TryGetValue(dataName, out var info))
+            {
+                main.card.removeCardPool(info);
+                _pvePoolDict.Remove(dataName);
+            }
+            var dir = getSaveDataDirectory(dataName);
+            Directory.Delete(dir, true);
+        }
+        public bool hasData(string dataName)
+        {
+            var dir = getSaveDataDirectory(dataName);
+            return Directory.Exists(dir);
+        }
+        #endregion
+
+        #region PVE数据
         public async Task<SaveData> generateNewSaveData(PVECharacter character)
         {
             var rand = new byte[4];
@@ -25,19 +49,104 @@ namespace Game.PVE
             var masterRef = character.getCharacter();
             var poolRef = main.card.getLocalCardPoolReference(masterRef.cardPoolId);
             await main.card.getOrLoadCardPool(poolRef);
-            var masterDefine = main.card.getCardDefine(poolRef, masterRef.defineId);
 
             var deck = character.deck;
             var saveData = new SaveData()
             {
                 initSeed = seed,
                 deck = deck,
-                currentHealth = masterDefine.getLife(),
                 currentStage = 0,
                 version = VERSION_NUMBER
             };
             saveData.init();
             return saveData;
+        }
+        public async Task saveData(string dataName, SaveData data)
+        {
+            var serializable = new SerializableSaveData(data);
+            var json = serializable.ToJson();
+            var path = getPersistentSavePath(dataName);
+            await main.fileManager.savePersistentFile(path, new string[]
+            {
+                json
+            });
+        }
+        public async Task<SaveData> loadData(string dataName)
+        {
+            if (!hasData(dataName))
+                return null;
+            var path = getPersistentSavePath(dataName);
+            var json = await main.fileManager.readPersistentTextFile(path, lineCount: 1);
+            var seri = JsonHelper.fromJson<SerializableSaveData>(json[0]);
+            return seri.ToSaveData();
+        }
+        #endregion
+
+        #region PVE玩家生成卡池
+        public void createGeneratedCardPool(string dataName, out CardPoolInfo info, out CardPool pool)
+        {
+            main.card.createCardPool(out info, out pool);
+            info.cardPoolName = main.lang._(DEFAULT_GEN_POOL_NAME);
+            _pvePoolDict.Add(dataName, info);
+        }
+        public async Task<bool> saveGeneratedCardPool(string dataName, CardPoolInfo info, CardPool pool)
+        {
+            var cardManager = main.card;
+            var path = getCardPoolFilePath(dataName);
+            return await cardManager.saveCardPool(info, pool, path);
+        }
+        public async Task<(CardPoolInfo info, CardPool pool)> loadGeneratedCardPool(string dataName)
+        {
+            var path = getCardPoolFilePath(dataName);
+            var (info, pool) = await main.card.loadCardPool(path);
+            _pvePoolDict.Add(dataName, info);
+            return (info, pool);
+        }
+        public async Task<(CardPoolInfo info, CardPool pool)> getGeneratedCardPool(string dataName)
+        {
+            if (_pvePoolDict.TryGetValue(dataName, out var info))
+            {
+                return await main.card.getOrLoadCardPool(info);
+            }
+            return (null, null);
+        }
+        #endregion
+
+        #region PVE逻辑
+        public async Task<PVECharacter[]> getStartingCharacterList()
+        {
+            List<PVECharacter> characterList = new List<PVECharacter>();
+            var deck = new Deck();
+            deck.masterCardRef = new DefineReference(0, Patchouli.ID);
+
+            deck.addCard(new DefineReference(0, ElementSprite.ID));
+            deck.addCard(new DefineReference(0, MultiCast.ID));
+            deck.addCard(new DefineReference(0, TheGreatLibrary.ID));
+            deck.addCard(new DefineReference(0, LibraryProtector.ID));
+            deck.addCard(new DefineReference(0, BestMagic.ID));
+            deck.addCard(new DefineReference(0, AgniShine.ID));
+            deck.addCard(new DefineReference(0, MetalFatigue.ID));
+            deck.addCard(new DefineReference(0, SylphyHorn.ID));
+            deck.addCard(new DefineReference(0, PhilosopherStone.ID));
+            deck.addCard(new DefineReference(0, MegaReaver.ID));
+
+            // 将PVE卡池中，第一个拥有插槽的卡牌加入到套牌中。
+            var pvePoolRef = main.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID);
+            var (_, pvePool) = await main.card.getOrLoadCardPool(pvePoolRef);
+            if (pvePool != null)
+            {
+                var define = pvePool.cardDefineList.FirstOrDefault(d => d.getProp<object>(CARD_PROP_SLOTS) != null);
+                if (define != null)
+                {
+                    deck.addCard(new DefineReference(define.cardPoolId, define.id));
+                }
+            }
+            characterList.Add(new PVECharacter()
+            {
+                deck = deck,
+                description = main.lang._(PVE_PATCHOULI_DESC)
+            });
+            return characterList.ToArray();
         }
         public PVECharacter generateNextBoss(int seed)
         {
@@ -84,45 +193,27 @@ namespace Game.PVE
             };
             return list.randomTake(seed, 3).ToArray();
         }
-        public async Task saveData(SaveData data)
-        {
-            var serializable = new SerializableSaveData(data);
-            var json = serializable.ToJson();
-            var path = getSavePath();
-            await main.fileManager.savePersistentFile(path, new string[]
-            {
-                json
-            });
-        }
-        public void deleteData()
-        {
-            if (!hasData())
-                return;
-            var path = getSavePath();
-            main.fileManager.deletePersistentFile(path);
-        }
-        public bool hasData()
-        {
-            var path = getSavePath();
-            return main.fileManager.isPersistentFileExist(path);
-        }
-        public async Task<SaveData> loadData()
-        {
-            if (!hasData())
-                return null;
-            var path = getSavePath();
-            var json = await main.fileManager.readPersistentTextFile(path, lineCount: 1);
-            var seri = JsonHelper.fromJson<SerializableSaveData>(json[0]);
-            return seri.ToSaveData();
-        }
+        #endregion
         #endregion
         #region 私有方法
-        private string getSavePath()
+        private string getSaveDataDirectory(string dataName)
         {
-            return _savePath;
+            return Path.Combine(Application.persistentDataPath, _directory, dataName);
+        }
+        private string getPersistentSavePath(string dataName)
+        {
+            return Path.Combine(_directory, dataName, $"{_saveFileName}.{SAVE_FILE_EXTENSION}");
+        }
+        private string getCardPoolFilePath(string dataName)
+        {
+            return Path.Combine(Application.persistentDataPath, _directory, dataName, $"{_cardPoolFileName}.{main.card.cardPoolFilePostfix}");
         }
         #endregion
         #region 属性字段
+        [TranslateMsg("PVE模式人物描述-帕秋莉")]
+        private const string PVE_PATCHOULI_DESC = "操纵元素之力的魔法使，使用大量的法术向敌人倾泻火力或进行防御。\n通过元素融合还可将法术进行升级，产生更加强大的力量。";
+        [TranslateMsg("PVE生成卡池的默认名称")]
+        public const string DEFAULT_GEN_POOL_NAME = "PVE生成卡池";
         public MainManager main
         {
             get
@@ -136,8 +227,17 @@ namespace Game.PVE
         }
         private MainManager _main;
         [SerializeField]
-        private string _savePath = "pve.dds";
+        private string _directory = "pve";
+        [SerializeField]
+        private string _saveFileName = "main";
+        [SerializeField]
+        private string _cardPoolFileName = "cardpool";
+        private Dictionary<string, CardPoolInfo> _pvePoolDict = new Dictionary<string, CardPoolInfo>();
         private const int VERSION_NUMBER = 0;
+
+        public const string SAVE_FILE_EXTENSION = "dds";
+        public const string DEFAULT_PVE_DATA_NAME = "default";
+        public const string CARD_PROP_SLOTS = "插槽";
         #endregion
     }
 }

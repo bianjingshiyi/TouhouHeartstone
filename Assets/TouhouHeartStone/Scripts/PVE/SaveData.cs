@@ -23,7 +23,6 @@ namespace Game.PVE
         public int stageSeed;
         public int currentStage;
         public PVEStageState stageState;
-        public int currentHealth;
         public Deck deck;
         public void init()
         {
@@ -58,7 +57,6 @@ namespace Game.PVE
             stageSeed = data.stageSeed;
             currentStage = data.currentStage;
             stageState = (int)data.stageState;
-            currentHealth = data.currentHealth;
             deck = data.deck.toDefRefArray(true);
         }
         public SaveData ToSaveData()
@@ -71,7 +69,6 @@ namespace Game.PVE
                 stageSeed = stageSeed,
                 currentStage = currentStage,
                 stageState = (PVEStageState)stageState,
-                currentHealth = currentHealth,
                 deck = new Deck(deck)
             };
         }
@@ -81,7 +78,6 @@ namespace Game.PVE
         public int stageSeed;
         public int currentStage;
         public int stageState;
-        public int currentHealth;
         public DefineReference[] deck;
     }
 

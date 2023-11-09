@@ -137,17 +137,17 @@ namespace Game
         /// </summary>
         /// <param name="cardPoolInfo"></param>
         /// <returns>是否成功保存卡池。</returns>
-        public async Task<bool> saveCardPool(CardPoolInfo cardPoolInfo)
+        public Task<bool> saveCardPool(CardPoolInfo cardPoolInfo)
         {
             if (!Application.isEditor && isStandardCardPool(cardPoolInfo.cardPoolId))
             {
                 //不能修改标准卡池，虽然其实玩家想改也没人能阻止就是了，最多是和别人玩会失去同步吧。
                 game.ui.dialog.ShowConfirm(StringTable.INVALID_OPERATION, StringTable.EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL, null);
-                return false;
+                return Task.FromResult(false);
             }
             //如果当前的卡池没有被保存过，没有分配地址，则给它分配一个地址。
             string cardPoolPath = null;
-            if (cardPoolInfo == null) { return false; }//如果没有保存需求就跳过这个流程
+            if (cardPoolInfo == null) { return Task.FromResult(false); }//如果没有保存需求就跳过这个流程
             foreach (var pair in _cardPoolInfoDict)
             {
                 if (pair.Value.cardPoolId == cardPoolInfo.cardPoolId)
@@ -161,8 +161,33 @@ namespace Game
                 //没有指定地址
                 cardPoolPath = allocCardPoolPath(cardPoolInfo);
             }
+            return saveCardPool(cardPoolInfo, cardPoolPath);
+        }
+
+        /// <summary>
+        /// 按指定的路径保存卡池。
+        /// </summary>
+        /// <param name="cardPoolInfo">卡池信息。</param>
+        /// <param name="path">路径。</param>
+        /// <returns>是否成功保存卡池。</returns>
+        public Task<bool> saveCardPool(CardPoolInfo cardPoolInfo, string path)
+        {
             var cardPoolRef = cardPoolInfo.ToReference();
             var cardPool = _cardPoolDict[cardPoolRef];
+            return saveCardPool(cardPoolInfo, cardPool, path);
+        }
+
+
+        /// <summary>
+        /// 按指定的路径保存卡池。
+        /// </summary>
+        /// <param name="cardPoolInfo">卡池信息。</param>
+        /// <param name="cardPool">卡池内容。</param>
+        /// <param name="path">路径。</param>
+        /// <returns>是否成功保存卡池。</returns>
+        public async Task<bool> saveCardPool(CardPoolInfo cardPoolInfo, CardPool cardPool, string path)
+        {
+            var cardPoolRef = cardPoolInfo.ToReference();
             // 获取卡池中对其他卡池的卡牌的引用。
             // TODO: 在被引用的卡池有新版本后，卡池保存时会提示玩家需要将卡池引用修改到新版本。
             cardPoolInfo.dependencyRefs = evaluateCardPoolDependencies(cardPoolRef);
@@ -176,7 +201,6 @@ namespace Game
             // 对缓存的图片进行保存
             await saveExternalImages(cardPoolInfo.cardPoolId, cardPool);
             //保存文件
-            string path = cardPoolPath;
             if (isStandardCardPool(cardPoolInfo))
             {
                 //官方卡池只能保存到指定路径下面，也就是工程文件
@@ -197,7 +221,7 @@ namespace Game
 
             // 卡池版本+1。
             cardPoolInfo.editTime++;
-            _cardPoolInfoDict[cardPoolPath] = cardPoolInfo;
+            _cardPoolInfoDict[path] = cardPoolInfo;
             _cardPoolDict.Remove(cardPoolRef);
             _cardPoolDict.Add(cardPoolInfo.ToReference(), cardPool);
 
@@ -1832,6 +1856,8 @@ namespace Game
         const int CARD_POOL_VERSION_1 = 1;
         const int CARD_POOL_VERSION_2 = 2;
         const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_2;
+        public const long STANDARD_POOL_ID = 1;
+        public const long PVE_POOL_ID = 2;
         public static readonly CardPoolReference builtinCardPoolReference = new CardPoolReference(0, 0);
         #endregion
     }
