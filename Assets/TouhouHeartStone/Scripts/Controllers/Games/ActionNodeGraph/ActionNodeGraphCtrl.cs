@@ -816,6 +816,8 @@ namespace Controllers
                 connectPorts4UI(connection.source, connection.destination);
             }
             updatePortModes(null);
+
+            updateReadonly();
         }
 
         private async Task<ActionNodeItem> createNodeUI4Node(Node node)
@@ -1922,6 +1924,10 @@ namespace Controllers
                 return onStartSelectCard.Invoke(cardPoolId);
             }
             return Task.CompletedTask;
+        }
+        private void updateReadonly()
+        {
+            _ui.setReadonly(_isReadonly);
         }
         #endregion
         #region 事件

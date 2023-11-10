@@ -24,6 +24,14 @@ namespace UI
         {
             _errorTipInputField.SetTextWithoutNotify(text);
         }
+        public void setReadonly(bool isReadonly)
+        {
+            var canEdit = !isReadonly;
+            _targetDropdown.interactable = canEdit;
+            _editButton.interactable = canEdit;
+            _removeButton.interactable = canEdit;
+            _errorTipInputField.interactable = canEdit;
+        }
         protected void Awake()
         {
             _targetDropdown.onValueChanged.AddListener(onTargetDropdownValueChangedCallback);

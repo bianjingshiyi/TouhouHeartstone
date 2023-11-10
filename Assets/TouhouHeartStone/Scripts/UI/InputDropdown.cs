@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -82,6 +81,16 @@ namespace UI
                 onValueChanged?.Invoke(value);
             }
         }
+        public bool interactable
+        {
+            get => _interactable;
+            set
+            {
+                _interactable = value;
+                _dropdown.interactable = value;
+            }
+        }
+        private bool _interactable;
         [SerializeField]
         private string _value;
         [SerializeField]

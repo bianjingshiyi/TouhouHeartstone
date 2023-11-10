@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UI.Extensions;
 
 namespace UI
 {
@@ -9,6 +10,7 @@ namespace UI
         #region 生命周期
         private void Awake()
         {
+            _inputField.interactable = _dropdown.interactable;
             _inputField.onEndEdit.AddListener(onEndEditCallback);
         }
         #endregion

@@ -4,6 +4,7 @@ using System.Linq;
 using Controllers;
 using Game;
 using MukioI18n;
+using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -103,6 +104,7 @@ namespace UI
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
                     item.setValueInfo(valueInfos[i]);
+                    item.setReadonly(_isReadonly);
                 }, itemRect =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
@@ -339,6 +341,7 @@ namespace UI
                 item.setTargetType(targetCheckers[i].typeIndex);
                 item.setName(targetCheckers[i].name);
                 item.setErrorTip(targetCheckers[i].errorTip);
+                item.setReadonly(_isReadonly);
             }, itemRect =>
             {
                 ActionNodeItemTriggerTargetChecker item = itemRect.GetComponent<ActionNodeItemTriggerTargetChecker>();
@@ -391,6 +394,28 @@ namespace UI
         public ActionNodeItemOutput[] getOutputs()
         {
             return _outputList.Select(r => r.GetComponent<ActionNodeItemOutput>()).ToArray();
+        }
+        public void setReadonly(bool isReadonly)
+        {
+            _isReadonly = isReadonly;
+            bool canEdit = !isReadonly;
+            _addEffectPropertyItemButton.interactable = canEdit;
+            _addTargetCheckerButton.interactable = canEdit;
+            _buffDropdown.interactable = canEdit;
+            _editBuffButton.interactable = canEdit;
+            _visualEffectButton.interactable = canEdit;
+            _visualEffectButton.interactable = canEdit;
+
+            foreach (var targetCheckerRect in _targetCheckerList)
+            {
+                var targetChecker = targetCheckerRect.GetComponent<ActionNodeItemTriggerTargetChecker>();
+                targetChecker.setReadonly(_isReadonly);
+            }
+            foreach (var valueFieldRect in _valueList)
+            {
+                var valueField = valueFieldRect.GetComponent<ValueInputField>();
+                valueField.setReadonly(_isReadonly);
+            }
         }
         #region 自定义属性
         public void updateEffectProperties(PropertyItemInfo[] properties, CardManager cardManager)
@@ -762,6 +787,7 @@ namespace UI
         string obsoleteMessage = "";
         int documentKey = -1;
         private bool _dirty;
+        private bool _isReadonly;
 
         [Header("基本")]
         [SerializeField]

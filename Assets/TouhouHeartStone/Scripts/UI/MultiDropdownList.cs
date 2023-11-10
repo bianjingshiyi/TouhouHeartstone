@@ -10,6 +10,7 @@ namespace UI
         #region 生命周期
         private void OnEnable()
         {
+            _inputField.interactable = _dropdown.interactable;
             _inputField.onEndEdit.AddListener(onEndEditCallback);
             _dropdown.onShowDropdownList();
         }

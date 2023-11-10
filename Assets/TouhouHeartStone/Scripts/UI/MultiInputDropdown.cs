@@ -116,6 +116,16 @@ namespace UI
                 Set(value, true);
             }
         }
+        public bool interactable
+        {
+            get => _interactable;
+            set
+            {
+                _interactable = value;
+                _dropdown.interactable = value;
+            }
+        }
+        private bool _interactable;
         [SerializeField]
         private bool _showingDropdownList;
         [SerializeField]

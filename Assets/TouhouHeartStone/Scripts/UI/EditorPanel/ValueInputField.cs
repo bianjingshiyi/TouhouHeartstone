@@ -71,6 +71,26 @@ namespace UI
         {
             _cardPropertyNameItems = values;
         }
+        public void setReadonly(bool isReadonly)
+        {
+            _isReadonly = isReadonly;
+            bool canEdit = !isReadonly;
+            _inputField.interactable = canEdit;
+            _toggle.interactable = canEdit;
+            _button.interactable = canEdit;
+            _dropdown.interactable = canEdit;
+            _buildItem.CanClick = canEdit;
+            _buildItemEditButton.interactable = canEdit;
+            _inputDropdown.interactable = canEdit;
+            _multiInputDropdown.interactable = canEdit;
+            _addItemButton.interactable = canEdit;
+            _removeItemButton.interactable = canEdit;
+            foreach (var item in _list)
+            {
+                var field = item.GetComponent<ValueInputField>();
+                field.setReadonly(isReadonly);
+            }
+        }
         #endregion
         #region 私有方法
         protected void Awake()
@@ -358,6 +378,7 @@ namespace UI
                 UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, array.Length, (i, itemRect) =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    item.setReadonly(_isReadonly);
                     item.setValueInfo(null, new ActionNodeValueInfo()
                     {
                         type = _valueInfo.type,
@@ -672,6 +693,7 @@ namespace UI
                     UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, triggerCollection.Count, (i, itemRect) =>
                     {
                         ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                        item.setReadonly(_isReadonly);
                         item.setValueInfo(null, new ActionNodeValueInfo()
                         {
                             type = ActionNodeValueType.trigger,
@@ -711,6 +733,7 @@ namespace UI
                 UIHelper.updateList(_listContentRoot, GetListTemplate(), _list, cardReferenceCollection != null ? cardReferenceCollection.Count() : 0, (i, itemRect) =>
                 {
                     ValueInputField item = itemRect.GetComponent<ValueInputField>();
+                    item.setReadonly(_isReadonly);
                     item.setValueInfo(null, new ActionNodeValueInfo()
                     {
                         type = ActionNodeValueType.cardReference,
@@ -778,6 +801,7 @@ namespace UI
         public event Action<ValueInputField, int> onClickItemRemoveButton;
         #endregion
         #region 属性字段
+        private bool _isReadonly;
         [SerializeField]
         Text _nameText;
         [SerializeField]

@@ -552,6 +552,14 @@ namespace UI
             if (_currentSelectedPort)
                 _currentSelectedPort.setSelected(true);
         }
+        public void setReadonly(bool isReadonly)
+        {
+            _isReadonly = isReadonly;
+            foreach (var item in _actionNodeItemList)
+            {
+                item.setReadonly(_isReadonly);
+            }
+        }
         #endregion
         #region 私有方法
         #region 生命周期
@@ -767,6 +775,7 @@ namespace UI
             if (_isTouchZooming) return;
 
             setFocused();
+            if (_isReadonly) return;
             int inputIndex = item.indexOfInput(input);
             int index = _connectionList.FindIndex(c => c.inputNode == item && c.inputIndex == inputIndex);
             if (index >= 0 && !input.isControl)
@@ -799,6 +808,7 @@ namespace UI
             if (_isTouchZooming) return;
 
             setFocused();
+            if (_isReadonly) return;
             GameObject from = input.getNode();
             GameObject to = new GameObject();
             to.name = "Slot";
@@ -818,6 +828,7 @@ namespace UI
         /// <param name="eventData"></param>
         private void onEndDragInputNode(ActionNodeItem item, ActionNodeItemInput input, BaseEventData eventData)
         {
+            if (_isReadonly) return;
             var inputIndex = item.indexOfInput(input);
             if (_dragHiddenConnection)
             {
@@ -885,29 +896,28 @@ namespace UI
         /// <param name="eventData"></param>
         private void onBeginDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
-            if (!_isTouchZooming)
+            if (_isTouchZooming) return;
+            setFocused();
+            if (_isReadonly) return;
+            int outputIndex = item.indexOfOutput(output);
+            int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == outputIndex);
+            if (index >= 0 && output.isControl)
             {
-                setFocused();
-                int outputIndex = item.indexOfOutput(output);
-                int index = _connectionList.FindIndex(c => c.outputNode == item && c.outputIndex == outputIndex);
-                if (index >= 0 && output.isControl)
-                {
-                    _dragHiddenConnection = _connectionList[index].line.gameObject;
-                    _dragHiddenConnection.SetActive(false);
-                }
-
-                GameObject from = output.getNode();
-                GameObject to = new GameObject();
-                to.name = "Slot";
-                GameObject tod = new GameObject();
-                tod.name = "Slot_d";
-                tod.transform.SetParent(to.transform);
-                to.transform.SetParent(_actionNodeLineRoot);
-                to.transform.position = eventData.currentInputModule.input.mousePosition;
-                _dragLine = createLine(from, to, output.GetColor(), output.GetColor());
-
-                onStartConnection?.Invoke(item, outputIndex, true);
+                _dragHiddenConnection = _connectionList[index].line.gameObject;
+                _dragHiddenConnection.SetActive(false);
             }
+
+            GameObject from = output.getNode();
+            GameObject to = new GameObject();
+            to.name = "Slot";
+            GameObject tod = new GameObject();
+            tod.name = "Slot_d";
+            tod.transform.SetParent(to.transform);
+            to.transform.SetParent(_actionNodeLineRoot);
+            to.transform.position = eventData.currentInputModule.input.mousePosition;
+            _dragLine = createLine(from, to, output.GetColor(), output.GetColor());
+
+            onStartConnection?.Invoke(item, outputIndex, true);
         }
         /// <summary>
         /// 拖拽输入接口，使连线一段的位置跟着鼠标移动
@@ -920,6 +930,7 @@ namespace UI
             if (_isTouchZooming) return;
 
             setFocused();
+            if (_isReadonly) return;
             GameObject from = output.getNode();
             GameObject to = new GameObject();
             to.name = "Slot";
@@ -938,6 +949,7 @@ namespace UI
         /// <param name="eventData"></param>
         private void onEndDragOutputNode(ActionNodeItem item, ActionNodeItemOutput output, BaseEventData eventData)
         {
+            if (_isReadonly) return;
             int outputIndex = item.indexOfOutput(output);
             if (_dragHiddenConnection)
             {
@@ -1101,10 +1113,6 @@ namespace UI
         {
             setFocused();
             onTargetCheckerErrorTipValueChanged?.Invoke(item, targetCheckerIndex, value);
-        }
-        private void onClickReturnButtonCallback()
-        {
-            onClickReturnButton?.Invoke();
         }
         private void onActionNodeItemUpdateTransform(ActionNodeItem item)
         {
@@ -1537,6 +1545,7 @@ namespace UI
         private Touch _perviousTouch1;
         private Touch _perviousTouch2;
         private bool _isTouchZooming;
+        private bool _isReadonly;
         private ActionNodeItemKnob _currentSelectedPort;
         /// <summary>
         /// 因为拖拽而被隐藏的连接。
