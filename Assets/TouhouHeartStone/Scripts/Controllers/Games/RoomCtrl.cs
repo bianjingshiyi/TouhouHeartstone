@@ -1157,7 +1157,7 @@ namespace Controllers
             List<BuffSkin> missingBuffSkins = new List<BuffSkin>();
             foreach (var poolInfoPack in cardPools)
             {
-                if (game.card.isStandardCardPool(poolInfoPack.cardPoolId) || _isLocalGame)
+                if (game.card.isInnateCardPool(poolInfoPack.cardPoolId) || _isLocalGame)
                 {
                     continue;
                 }

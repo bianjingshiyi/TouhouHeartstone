@@ -9,6 +9,7 @@ using Controllers;
 using MongoDB.Bson;
 using MukioI18n;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UnityEngine;
@@ -56,7 +57,7 @@ namespace Game.PVE
                 initSeed = seed,
                 deck = deck,
                 plugins = new List<DefineReference>(),
-                currentStage = 0,
+                currentStage = 1,
                 version = VERSION_NUMBER
             };
             saveData.init();
@@ -98,10 +99,17 @@ namespace Game.PVE
         }
         public async Task<(CardPoolInfo info, CardPool pool)> loadGeneratedCardPool(string dataName)
         {
-            var path = getCardPoolFilePath(dataName);
-            var (info, pool) = await main.card.loadCardPool(path);
-            _pvePoolDict.Add(dataName, info);
-            return (info, pool);
+            if (_pvePoolDict.TryGetValue(dataName, out var poolInfo))
+            {
+                return await main.card.getOrLoadCardPool(poolInfo);
+            }
+            else
+            {
+                var path = getCardPoolFilePath(dataName);
+                var (info, pool) = await main.card.loadCardPool(path);
+                _pvePoolDict.Add(dataName, info);
+                return (info, pool);
+            }
         }
         public async Task<(CardPoolInfo info, CardPool pool)> getGeneratedCardPool(string dataName)
         {
@@ -132,8 +140,7 @@ namespace Game.PVE
             deck.addCard(new DefineReference(0, MegaReaver.ID));
 
             // 将PVE卡池中，第一个拥有插槽的卡牌加入到套牌中。
-            var pvePoolRef = main.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID);
-            var (_, pvePool) = await main.card.getOrLoadCardPool(pvePoolRef);
+            var (_, pvePool) = await getOrLoadPVECardPool();
             if (pvePool != null)
             {
                 var define = pvePool.cardDefineList.FirstOrDefault(d => cardDefineHasSlots(d));
@@ -149,12 +156,12 @@ namespace Game.PVE
             });
             return characterList.ToArray();
         }
-        public async Task<StageData> generateStageData(int stageSeed)
+        public async Task<StageData> generateStageData(int stage, int stageSeed)
         {
             var rng = new RNG(stageSeed);
             return new StageData()
             {
-                boss = generateNextBoss(rng.next()),
+                boss = await generateNextBoss(stage, rng.next()),
                 cardRewards = generateCardRewards(rng.next()),
                 pluginRewards = await generatePluginRewards(rng.next()),
                 fightSeed = rng.next(),
@@ -197,6 +204,11 @@ namespace Game.PVE
             }
             return groupList.ToArray();
         }
+        public async Task<(CardPoolInfo info, CardPool pool)> getOrLoadPVECardPool()
+        {
+            var poolRef = main.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID);
+            return await main.card.getOrLoadCardPool(poolRef);
+        }
         #endregion
         #region 私有方法
         private string getSaveDataDirectory(string dataName)
@@ -211,21 +223,20 @@ namespace Game.PVE
         {
             return Path.Combine(Application.persistentDataPath, _directory, dataName, $"{_cardPoolFileName}.{main.card.cardPoolFilePostfix}");
         }
-        private PVECharacter generateNextBoss(int seed)
+        private async Task<PVECharacter> generateNextBoss(int stage, int seed)
         {
-            var deck = new Deck();
-            deck.masterCardRef = new DefineReference(0, Sanae.ID);
-
-            deck.addCard(new DefineReference(0, LittleShrine.ID));
-            deck.addCard(new DefineReference(0, BumperCrop.ID));
-            deck.addCard(new DefineReference(0, GuestStarsMiracle.ID));
-            deck.addCard(new DefineReference(0, OpenSeaMiracle.ID));
-            deck.addCard(new DefineReference(0, FlyingSnake.ID));
-            deck.addCard(new DefineReference(0, GodSummon.ID));
-            deck.addCard(new DefineReference(0, ManipulatedGaintFrog.ID));
-            deck.addCard(new DefineReference(0, OrochiOfAncientTimes.ID));
-            deck.addCard(new DefineReference(0, MoriyaSuwako.ID));
-            deck.addCard(new DefineReference(0, YasakaKanako.ID));
+            var (info, pvePool) = await getOrLoadPVECardPool();
+            var rng = new RNG(seed);
+            var master = pvePool.cardDefineList.Where(d => d.getProp<int>(CARD_PROP_BOSS_STAGE) == stage).random(rng);
+            if (master == null)
+            {
+                return new PVECharacter()
+                {
+                    description = "占位符",
+                    deck = new Deck(new DefineReference(0, Sanae.ID), new DefineReference[0])
+                };
+            }
+            var deck = new Deck(master.getDefineRef(), master.getProp<DefineReference[]>(CARD_PROP_BOSS_DECK));
             return new PVECharacter()
             {
                 description = "占位符",
@@ -234,8 +245,7 @@ namespace Game.PVE
         }
         private async Task<DefineReference[]> generatePluginRewards(int seed)
         {
-            var poolRef = main.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID);
-            var (info, pvePool) = await main.card.getOrLoadCardPool(poolRef);
+            var (info, pvePool) = await getOrLoadPVECardPool();
             if (pvePool != null)
             {
                 var rng = new RNG(seed);
@@ -302,6 +312,8 @@ namespace Game.PVE
         public const string DEFAULT_PVE_DATA_NAME = "default";
         public const string CARD_PROP_SLOTS = "插槽";
         public const string CARD_PROP_GEM = "插件";
+        public const string CARD_PROP_BOSS_STAGE = "Boss层数";
+        public const string CARD_PROP_BOSS_DECK = "Boss套牌";
         #endregion
     }
 }

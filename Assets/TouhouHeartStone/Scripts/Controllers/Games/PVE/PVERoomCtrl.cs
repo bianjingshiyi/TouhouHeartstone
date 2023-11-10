@@ -103,8 +103,7 @@ namespace Controllers
         }
         private async void onInventoryClickedCallback()
         {
-            var pvePoolRef = game.card.getLocalCardPoolReference(CardManager.PVE_POOL_ID);
-            var (_, pvePool) = await game.card.getOrLoadCardPool(pvePoolRef);
+            var (_, pvePool) = await game.pve.getOrLoadPVECardPool();
             var cardDefine = pvePool.cardDefineList.FirstOrDefault(d => PVEManager.cardDefineHasSlots(d));
             await _cardEditor.display(getPVEDataName(), _saveData, cardDefine, game.card);
             _ui.openCardEditorPage();
@@ -225,6 +224,7 @@ namespace Controllers
             var genPoolInfo = await game.pve.getGeneratedCardPool(dataName);
             var cardPools = new CardPoolInfoPack[]
             {
+                CardPoolHelper.BuiltinCardPoolInfoPack,
                 standardPoolInfo.ToCardPoolInfoPack(),
                 pvePoolInfo.ToCardPoolInfoPack(),
                 genPoolInfo.info.ToCardPoolInfoPack()
@@ -267,7 +267,7 @@ namespace Controllers
         }
         private async Task generateStageData()
         {
-            _stageData = await game.pve.generateStageData(_saveData.stageSeed);
+            _stageData = await game.pve.generateStageData(_saveData.currentStage, _saveData.stageSeed);
         }
         private void reset()
         {

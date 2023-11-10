@@ -139,7 +139,7 @@ namespace Game
         /// <returns>是否成功保存卡池。</returns>
         public Task<bool> saveCardPool(CardPoolInfo cardPoolInfo)
         {
-            if (!Application.isEditor && isStandardCardPool(cardPoolInfo.cardPoolId))
+            if (!Application.isEditor && isInnateCardPool(cardPoolInfo.cardPoolId))
             {
                 //不能修改标准卡池，虽然其实玩家想改也没人能阻止就是了，最多是和别人玩会失去同步吧。
                 game.ui.dialog.ShowConfirm(StringTable.INVALID_OPERATION, StringTable.EDITOR_DIALOG_CANNOT_MODIFY_STANDARD_CARDPOOL, null);
@@ -201,7 +201,7 @@ namespace Game
             // 对缓存的图片进行保存
             await saveExternalImages(cardPoolInfo.cardPoolId, cardPool);
             //保存文件
-            if (isStandardCardPool(cardPoolInfo))
+            if (isInnateCardPool(cardPoolInfo))
             {
                 //官方卡池只能保存到指定路径下面，也就是工程文件
                 path = Path.Combine(editorCardPoolDirName, $"{cardPoolInfo.cardPoolName}.{cardPoolFilePostfix}");
@@ -1070,13 +1070,27 @@ namespace Game
             }
             return skinList.ToArray();
         }
-        public bool isStandardCardPool(CardPoolInfo cardPool)
+        /// <summary>
+        /// 是否是游戏自带的卡池。
+        /// </summary>
+        /// <param name="cardPool"></param>
+        /// <returns></returns>
+        public bool isInnateCardPool(CardPoolInfo cardPool)
         {
-            return isStandardCardPool(cardPool.cardPoolId);
+            return isInnateCardPool(cardPool.cardPoolId);
         }
-        public bool isStandardCardPool(long cardPoolId)
+        /// <summary>
+        /// 是否是游戏自带的卡池。
+        /// </summary>
+        /// <param name="cardPoolId"></param>
+        /// <returns></returns>
+        public bool isInnateCardPool(long cardPoolId)
         {
             return _standardCardPoolsId.Contains(cardPoolId);
+        }
+        public bool isCardPoolHidden(long cardPoolId)
+        {
+            return _hiddenCardPoolsId.Contains(cardPoolId);
         }
 
         /// <summary>
@@ -1107,7 +1121,7 @@ namespace Game
         public bool isLocalCardPool(ICardPoolReference cardPoolRef)
         {
             // 内置和经典卡池肯定是本人拥有的。
-            if (isBuiltinCardPool(cardPoolRef.CardPoolID) || isStandardCardPool(cardPoolRef.CardPoolID))
+            if (isBuiltinCardPool(cardPoolRef.CardPoolID) || isInnateCardPool(cardPoolRef.CardPoolID))
                 return true;
             if (isCreatingCardPool(cardPoolRef.CardPoolID))
                 return true;
@@ -1227,7 +1241,7 @@ namespace Game
         /// <returns></returns>
         public bool hasCardPool(ICardPoolReference poolRef, bool includingCache = false)
         {
-            if (isBuiltinCardPool(poolRef.CardPoolID) || isStandardCardPool(poolRef.CardPoolID))
+            if (isBuiltinCardPool(poolRef.CardPoolID) || isInnateCardPool(poolRef.CardPoolID))
                 return true;
             if (!includingCache && !isLocalCardPool(poolRef))
             {
@@ -1849,6 +1863,11 @@ namespace Game
         long[] _standardCardPoolsId = new long[]
         {
             1
+        };
+        [SerializeField]
+        long[] _hiddenCardPoolsId = new long[]
+        {
+            PVE_POOL_ID
         };
         const float CARD_POOL_VERSION_0_3 = 0.3f;
         const float CARD_POOL_VERSION_0_2 = 0.2f;

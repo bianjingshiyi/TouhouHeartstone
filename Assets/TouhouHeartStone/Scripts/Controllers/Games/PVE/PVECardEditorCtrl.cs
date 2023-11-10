@@ -33,8 +33,7 @@ namespace Controllers
             _gemInventory.AddRange(inventory.Select(d => new CardGem(d)));
 
             _slotGroups = PVEManager.getCardDefineSlots(define) ?? new CardGemSlotGroup[0];
-            updateGemInventory();
-            updateGemSlots();
+            await updateAllGems();
         }
 
         #region 生命周期
@@ -55,10 +54,10 @@ namespace Controllers
         {
             _pveRoom.openGamePage();
         }
-        private void onInventoryGemBeginDragCallback(int index, PointerEventData pointer)
+        private async void onInventoryGemBeginDragCallback(int index, PointerEventData pointer)
         {
             var gem = _gemInventory[index];
-            var viewData = getGemViewData(gem);
+            var viewData = await getGemViewData(gem);
             var gemUI = _ui.getInventoryGem(index);
             _draggingGem = _ui.createDraggingGem(viewData);
             _draggingGem.startDrag(gemUI);
@@ -69,7 +68,7 @@ namespace Controllers
                 return;
             _draggingGem.move(pointer.position);
         }
-        private void onInventoryGemEndDragCallback(int index, PointerEventData pointer)
+        private async void onInventoryGemEndDragCallback(int index, PointerEventData pointer)
         {
             if (!_draggingGem)
                 return;
@@ -83,11 +82,10 @@ namespace Controllers
                     var invIndex = removeGemFromSlot(groupIndex, slotIndex);
                     insertGemToSlot(index, groupIndex, slotIndex);
                     invIndex--;
-                    updateGemInventory();
-                    updateGemSlots();
+                    await updateAllGems();
 
                     // 创造一个交换的动画。
-                    var viewData = getGemViewData(slotGem);
+                    var viewData = await getGemViewData(slotGem);
                     var newDraggingGem = _ui.createDraggingGem(viewData);
                     var originPos = _ui.getSlot(groupIndex, slotIndex).transform.position;
                     var invSource = _ui.getInventoryGem(invIndex);
@@ -101,8 +99,7 @@ namespace Controllers
                 {
                     // 镶嵌宝石。
                     insertGemToSlot(index, groupIndex, slotIndex);
-                    updateGemInventory();
-                    updateGemSlots();
+                    await updateAllGems();
 
                     var slotUI = _ui.getSlotGem(groupIndex, slotIndex);
                     _draggingGem.changeSource(slotUI);
@@ -111,14 +108,14 @@ namespace Controllers
             _draggingGem.release();
             _draggingGem = null;
         }
-        private void onSlotGemBeginDragCallback(int groupIndex, int index, PointerEventData pointer)
+        private async void onSlotGemBeginDragCallback(int groupIndex, int index, PointerEventData pointer)
         {
             var gem = getSlotGem(groupIndex, index);
             if (gem != null)
             {
                 _draggingGemSlotGroupIndex = groupIndex;
                 _draggingGemSlotIndex = index;
-                var viewData = getGemViewData(gem);
+                var viewData = await getGemViewData(gem);
                 var gemUI = _ui.getSlotGem(groupIndex, index);
                 _draggingGem = _ui.createDraggingGem(viewData);
                 _draggingGem.startDrag(gemUI);
@@ -132,7 +129,7 @@ namespace Controllers
                 return;
             _draggingGem.move(pointer.position);
         }
-        private void onSlotGemEndDragCallback(int groupIndex, int slotIndex, PointerEventData pointer)
+        private async void onSlotGemEndDragCallback(int groupIndex, int slotIndex, PointerEventData pointer)
         {
             if (!_draggingGem)
                 return;
@@ -145,8 +142,7 @@ namespace Controllers
                 var invIndex = removeGemFromSlot(groupIndex, slotIndex);
                 if (invIndex >= 0)
                 {
-                    updateGemInventory();
-                    updateGemSlots();
+                    await updateAllGems();
                     var source = _ui.getInventoryGem(invIndex);
                     _draggingGem.changeSource(source);
                 }
@@ -155,12 +151,11 @@ namespace Controllers
             {
                 var hoverGem = getSlotGem(hoverGroup, hoverSlot);
                 moveGemBetweenSlots(groupIndex, slotIndex, hoverGroup, hoverSlot);
-                updateGemInventory();
-                updateGemSlots();
+                await updateAllGems();
                 if (hoverGem != null)
                 {
                     // 创造一个交换的动画。
-                    var viewData = getGemViewData(hoverGem);
+                    var viewData = await getGemViewData(hoverGem);
                     var newDraggingGem = _ui.createDraggingGem(viewData);
                     var originPos = _ui.getSlot(hoverGroup, hoverSlot).transform.position;
                     var curSource = _ui.getSlotGem(groupIndex, slotIndex);
@@ -216,31 +211,33 @@ namespace Controllers
             var slot = group.getSlotAt(slotIndex);
             return slot.gem;
         }
-        private CardGemViewData getGemViewData(CardGem gem)
+        private async Task<CardGemViewData> getGemViewData(CardGem gem)
         {
             if (gem == null)
                 return null;
+            var cardDefine = game.card.getCardDefine(gem.cardRef);
+            var image = await game.card.loadCardImage(cardDefine);
             return new CardGemViewData()
             {
-                sprite = null
+                sprite = image
             };
         }
         private Sprite getFrameSprite(CardGemSlot slot)
         {
             return null;
         }
-        private void updateGemInventory()
+        private async Task updateGemInventory()
         {
             var inventoryView = new CardGemViewData[_gemInventory.Count];
             for (int g = 0; g < inventoryView.Length; g++)
             {
                 var gem = _gemInventory[g];
-                var gemViewData = getGemViewData(gem);
+                var gemViewData = await getGemViewData(gem);
                 inventoryView[g] = gemViewData;
             }
             _ui.updateGemInventory(inventoryView);
         }
-        private void updateGemSlots()
+        private async Task updateGemSlots()
         {
             var groupViews = new CardGemSlotGroupViewData[_slotGroups.Length];
             for (int g = 0; g < groupViews.Length; g++)
@@ -251,7 +248,7 @@ namespace Controllers
                 {
                     var slot = group.slots[s];
                     var frameSprite = getFrameSprite(slot);
-                    var gemViewData = getGemViewData(slot.gem);
+                    var gemViewData = await getGemViewData(slot.gem);
                     var slotView = new CardGemSlotViewData
                     {
                         frameSprite = frameSprite,
@@ -267,7 +264,11 @@ namespace Controllers
             }
             _ui.updateGemSlot(groupViews);
         }
-
+        private async Task updateAllGems()
+        {
+            await updateGemInventory();
+            await updateGemSlots();
+        }
         #endregion
 
         #region 属性字段

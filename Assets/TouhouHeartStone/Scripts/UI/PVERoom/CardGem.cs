@@ -16,10 +16,11 @@ namespace UI
                 return;
             }
             gameObject.SetActive(true);
-            //_image.sprite = viewData.sprite;
+            _image.sprite = viewData.sprite;
         }
         public void setVisible(bool value)
         {
+            _frameImage.enabled = value;
             _image.enabled = value;
         }
         #endregion
@@ -35,6 +36,8 @@ namespace UI
         public event Action<CardGem, PointerEventData> onDrag;
         public event Action<CardGem, PointerEventData> onEndDrag;
 
+        [SerializeField]
+        private Image _frameImage;
         [SerializeField]
         private Image _image;
     }

@@ -432,7 +432,7 @@ namespace Controllers
         {
             if (_disableStandardCardPool &&
                 game.card.getCardPoolInfoOfCard(c) is CardPoolInfo cardPoolInfo &&
-                game.card.isStandardCardPool(cardPoolInfo))
+                game.card.isInnateCardPool(cardPoolInfo))
             {
                 return false;
             }

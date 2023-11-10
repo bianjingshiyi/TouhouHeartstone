@@ -1,4 +1,4 @@
-{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(2), "cardPoolName" : "PVE卡池", "versionNumber" : 2, "editTime" : 2, "dependencyRefs" : [] }
+{ "_t" : "CardPoolInfo", "cardPoolId" : NumberLong(2), "cardPoolName" : "PVE卡池", "versionNumber" : 2, "editTime" : 4, "dependencyRefs" : [] }
 {
   "_t" : "SerializableCardPool",
   "cardDefineList" : [{
@@ -187,27 +187,321 @@
           }
         }],
       "effectList" : []
+    }, {
+      "_id" : 5,
+      "type" : "Skill",
+      "propDict" : {
+        "cost" : 0,
+        "characterId" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(2),
+          "defineId" : 4
+        }
+      },
+      "effects" : [{
+          "_t" : "SerializableActiveEffect",
+          "name" : "主动效果1",
+          "propDict" : { },
+          "graph" : {
+            "nodes" : [{
+                "_t" : "SerializableActiveEntryNode",
+                "tags" : null,
+                "_id" : 1,
+                "posX" : 0.0,
+                "posY" : 0.0,
+                "consts" : { },
+                "targetCheckerList" : []
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 2,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 101006
+                },
+                "posX" : 528.169921875,
+                "posY" : -407.86749267578125,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 3,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 111012
+                },
+                "posX" : 950.169921875,
+                "posY" : -407.86749267578125,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 4,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 103004
+                },
+                "posX" : 1167.11865234375,
+                "posY" : -718.53955078125,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 5,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 103008
+                },
+                "posX" : 716.42279052734375,
+                "posY" : -728.0257568359375,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 6,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 206001
+                },
+                "posX" : 1784.4036865234375,
+                "posY" : 22.360233306884766,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 7,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 111008
+                },
+                "posX" : 1371.7742919921875,
+                "posY" : -192.96086120605469,
+                "constDict" : { },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 8,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 112006
+                },
+                "posX" : 722.11865234375,
+                "posY" : -911.0394287109375,
+                "constDict" : {
+                  "value" : "Fairy"
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }, {
+                "_t" : "SerializableActionNode",
+                "_id" : 9,
+                "defineRef" : {
+                  "cardPoolId" : NumberLong(0),
+                  "defineId" : 106002
+                },
+                "posX" : 1248.1304931640625,
+                "posY" : 197.51553344726563,
+                "constDict" : {
+                  "buffDefine" : {
+                    "_t" : "DefineReference",
+                    "cardPoolId" : NumberLong(2),
+                    "defineId" : 1
+                  }
+                },
+                "defineName" : null,
+                "branches" : null,
+                "inputs" : null,
+                "regVar" : null,
+                "consts" : null
+              }],
+            "connections" : [{
+                "sourceName" : "玩家",
+                "sourceNodeId" : 1,
+                "destName" : "player",
+                "destNodeId" : 2
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 2,
+                "destName" : "array",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "element",
+                "sourceNodeId" : 3,
+                "destName" : "card",
+                "destNodeId" : 5
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 5,
+                "destName" : "cardDefine",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 4,
+                "destName" : "condition",
+                "destNodeId" : 3
+              }, {
+                "sourceName" : "action",
+                "sourceNodeId" : 1,
+                "destName" : "enter",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 7,
+                "destName" : "cards",
+                "destNodeId" : 6
+              }, {
+                "sourceName" : "return",
+                "sourceNodeId" : 3,
+                "destName" : "collection",
+                "destNodeId" : 7
+              }, {
+                "sourceName" : "value",
+                "sourceNodeId" : 8,
+                "destName" : "tag",
+                "destNodeId" : 4
+              }, {
+                "sourceName" : "value",
+                "sourceNodeId" : 9,
+                "destName" : "buffDefine",
+                "destNodeId" : 6
+              }]
+          }
+        }],
+      "effectList" : []
+    }, {
+      "_id" : 4,
+      "type" : "Master",
+      "propDict" : {
+        "cost" : 15,
+        "life" : 10,
+        "skillRef" : {
+          "_t" : "DefineReference",
+          "cardPoolId" : NumberLong(2),
+          "defineId" : 5
+        },
+        "tags" : {
+          "_t" : "System.String[]",
+          "_v" : []
+        },
+        "Boss层数" : 1,
+        "Boss套牌" : {
+          "_t" : "TouhouCardEngine.DefineReference[], TouhouCardEngine",
+          "_v" : [{
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8200
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8200
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8225
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8225
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8226
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8226
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8240
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8240
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8227
+            }, {
+              "cardPoolId" : NumberLong(0),
+              "defineId" : 8227
+            }]
+        }
+      },
+      "effects" : [],
+      "effectList" : []
     }],
   "cardSkinList" : [{
       "_id" : 2,
       "_name" : "火焰弹",
       "_imagePath" : "9fa91879397d2fea5f426953e24ac2d1b88d16694e5d974a7eaa9b593e56cad3.jpg",
       "_desc" : "造成1点伤害",
+      "_language" : "zh-Hans",
       "_animationRefs" : []
     }, {
       "_id" : 1,
       "_name" : "普通的魔法使",
       "_imagePath" : "bab030e09788ca3588ef16270b2c6daa3f87edb2de78e7140b1fe3497bf95bc1.jpg",
+      "_language" : "zh-Hans",
       "_animationRefs" : []
     }, {
       "_id" : 3,
       "_name" : "抽牌",
       "_imagePath" : "c97942db145c4672f8ffb66959e42ffff5fd93ccc3279d8d36d5543fb08f36e7.jpg",
       "_desc" : "抽1张牌",
+      "_language" : "zh-Hans",
+      "_animationRefs" : []
+    }, {
+      "_id" : 5,
+      "_name" : "妖精之力",
+      "_subname" : "",
+      "_desc" : "随机使你手牌中的一张妖精牌灵力值消耗减少（1）点。",
+      "_language" : "zh-Hans",
+      "_animationRefs" : []
+    }, {
+      "_id" : 4,
+      "_name" : "杂鱼小妖精",
+      "_language" : "zh-Hans",
       "_animationRefs" : []
     }],
-  "buffDefineList" : [],
-  "buffSkinList" : [],
+  "buffDefineList" : [{
+      "_id" : 1,
+      "propModifierList" : [{
+          "_t" : "CostModifier",
+          "propertyName" : "cost",
+          "value" : -1,
+          "isSet" : false,
+          "minValue" : -2147483648,
+          "maxValue" : 2147483647,
+          "onCheckCondition" : null
+        }],
+      "existLimitList" : [],
+      "effects" : []
+    }],
+  "buffSkinList" : [{
+      "buffId" : 1,
+      "language" : "zh-Hans",
+      "name" : "妖精之力",
+      "desc" : "灵力值消耗减少（1）点。",
+      "_animationRefs" : []
+    }],
   "actionDefineList" : [],
   "animationDefineList" : [],
   "actionNodeGraphInfoList" : []

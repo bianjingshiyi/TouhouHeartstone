@@ -187,7 +187,7 @@ namespace Game
                 {
                     token.ThrowIfCancellationRequested();
                     var poolRef = roomPool.GetReference();
-                    if (game.card.isBuiltinCardPool(roomPool.cardPoolId) || game.card.isStandardCardPool(roomPool.cardPoolId))
+                    if (game.card.isBuiltinCardPool(roomPool.cardPoolId) || game.card.isInnateCardPool(roomPool.cardPoolId))
                     {
                         continue;
                     }

@@ -33,7 +33,7 @@ namespace Game
             if (cardPoolInfo == null)
                 return null;
 
-            if (isBuiltinCardPool(cardPoolInfo.cardPoolId) || isStandardCardPool(cardPoolInfo))
+            if (isBuiltinCardPool(cardPoolInfo.cardPoolId) || isInnateCardPool(cardPoolInfo))
             {
                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.HINT_TITLE), game.i18n._(ERROR_BUILTIN_CARDPOOL));
                 return null;

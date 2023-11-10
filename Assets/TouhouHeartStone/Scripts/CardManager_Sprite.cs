@@ -223,7 +223,7 @@ namespace Game
             byte[] bytes = saveAsJpg ? texture.EncodeToJPG(jpgQuality) : texture.EncodeToPNG();
             string hash = calcHashString(bytes);
             string path = saveAsJpg ? string.Format("{0}.jpg", hash) : string.Format("{0}.png", hash);
-            if (isStandardCardPool(cardPoolId))
+            if (isInnateCardPool(cardPoolId))
             {
                 string filePath = Path.Combine(editorTextureDirName, path);
                 if (!game.fileManager.isFileExist(filePath))

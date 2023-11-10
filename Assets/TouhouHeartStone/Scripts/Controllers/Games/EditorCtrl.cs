@@ -276,7 +276,7 @@ namespace Controllers
         private void onClickDeleteCardPoolButton(int index)
         {
             long cardPoolId = _cardPoolIdList[index];
-            if (game.card.isStandardCardPool(cardPoolId))
+            if (game.card.isInnateCardPool(cardPoolId))
             {
                 game.ui.dialog.ShowConfirm(game.i18n._(StringTable.INVALID_OPERATION), game.i18n._(StringTable.EDITOR_DIALOG_CANNOT_DELETE_STANDARD_CARDPOOL), null);
             }
@@ -391,7 +391,7 @@ namespace Controllers
         private void onClickDeleteCurCardPoolButton()
         {
             var cardPoolId = _curCardPoolId;
-            if (game.card.isStandardCardPool(cardPoolId))
+            if (game.card.isInnateCardPool(cardPoolId))
             {
                 game.ui.dialog.ShowConfirm(
                     game.i18n._(StringTable.INVALID_OPERATION),
@@ -432,6 +432,10 @@ namespace Controllers
             {
                 CardPoolInfo cardPool = pair.Value;
                 var poolId = cardPool.cardPoolId;
+#if !UNITY_EDITOR
+                if (game.card.isCardPoolHidden(poolId))
+                    continue;
+#endif
                 int index = _cardPoolIdList.FindIndex(id => id == poolId);
                 if (index >= 0)
                 {
@@ -785,7 +789,7 @@ namespace Controllers
             string content = null;
             string[] options = null;
             Action<int> clickButtonAction = null;
-            if (!Application.isEditor && game.card.isStandardCardPool(_curCardPoolId))
+            if (!Application.isEditor && game.card.isInnateCardPool(_curCardPoolId))
             {
                 // 尝试保存经典卡池
                 content = game.lang._(EDITOR_TRY_TO_SAVE_STANDARD_CARDPOOL);
