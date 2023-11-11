@@ -1,5 +1,6 @@
 ﻿using Game.BattleTable;
 using System;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace Game.Animations
@@ -80,6 +81,14 @@ namespace Game.Animations
             return false;
 #endif
         }
+        [Conditional("UNITY_EDITOR")]
+        public void setTestMode(bool value)
+        {
+
+#if UNITY_EDITOR
+            testMode = value;
+#endif
+        }
         public float blockTime => _blockTime;
         public Transform sourceTransform 
         {
@@ -115,7 +124,7 @@ namespace Game.Animations
         private Transform _destTransform;
 #if UNITY_EDITOR
         [SerializeField]
-        public bool testMode;
+        private bool testMode;
 #endif
         protected bool _finished;
         protected float _time;

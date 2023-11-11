@@ -16,7 +16,7 @@ namespace Game
             ProjectileEffect projectile = Instantiate(_projectilePrefab, srcTransform.position, _projectilePrefab.transform.rotation);
             projectile.sourceTransform = srcTransform;
             projectile.destTransform = _targetTransform;
-            projectile.testMode = true;
+            projectile.setTestMode(true);
             projectile.onFinished += e => Destroy(e.gameObject);
         }
         [SerializeField]
