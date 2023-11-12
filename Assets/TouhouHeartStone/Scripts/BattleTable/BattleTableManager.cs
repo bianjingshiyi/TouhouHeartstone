@@ -309,12 +309,10 @@ namespace Game.BattleTable
             }
 
             //随从牌使用预览
-            if (_servantPreviewAnim != null)
+            var removeKeys = _servantPreviewAnimDict.Where(p => p.Value.isFinished()).Select(p => p.Key).ToArray();
+            foreach (var key in removeKeys)
             {
-                if (_servantPreviewAnim.isFinished())
-                {
-                    _servantPreviewAnim = null;
-                }
+                _servantPreviewAnimDict.Remove(key);
             }
             //游戏事件处理
             eventCache.poll();

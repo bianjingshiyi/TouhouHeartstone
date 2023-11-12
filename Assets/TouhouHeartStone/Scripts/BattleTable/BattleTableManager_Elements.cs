@@ -75,7 +75,7 @@ namespace Game.BattleTable
             }
         }
         /// <summary>
-        /// 重置使用卡牌状态
+        /// 将使用卡牌状态重置到什么也没做的状态。
         /// </summary>
         /// <param name="resetHandItem">是否重置手牌</param>
         /// <param name="resetServantPreview">是否重置随从占位</param>
@@ -86,12 +86,12 @@ namespace Game.BattleTable
             {
                 resetHand(usingCard);
             }
-            usingCard = null;
-            _servantPreviewAnim = null;
             if (resetServantPreview)
             {
                 table.SelfField.setPreviewPosition(-1);
+                _servantPreviewAnimDict.Clear();
             }
+            usingCard = null;
             if (finishSelectTarget)
                 finishTargetSelect();
             else
@@ -482,7 +482,7 @@ namespace Game.BattleTable
             return false;
         }
         /// <summary>
-        /// 重置手牌的各种属性，如拖拽等。
+        /// 重置手牌的各种显示属性，如拖拽等。
         /// </summary>
         /// <param name="handCard"></param>
         public void resetHand(ICardData handCard)
@@ -491,7 +491,7 @@ namespace Game.BattleTable
             {
                 usingHand.card.setVisible(true);
                 usingHand.setSpellReady(false);
-                var desc = getCardDescriptor(handCard.id);
+                var desc = updateCardDescriptor(handCard);
                 setCardDesc(usingHand.card, desc, true);
                 usingHand.card.transform.localScale = Vector3.one;
                 usingHand.card.transform.localPosition = Vector3.zero;
@@ -544,7 +544,7 @@ namespace Game.BattleTable
                 servant = field.insertServant(position);
             }
             var skin = cardManager.getCardSkin(desc.define);
-            servant.gameObject.name = skin?.name ?? $"Card<{desc.id}>";
+            servant.gameObject.name = $"{skin?.name ?? "Card"}<{desc.id}>";
             UberDebug.LogChannel(servant, "UI", $"为{desc.id}创建{servant}");
             setServant(servant, desc);
             cardServantDic.Add(desc.id, servant);
@@ -1354,7 +1354,7 @@ namespace Game.BattleTable
             if (!hand.isDraggable)
                 return;
             Card card = getCard(hand);
-            if (isSelectingTargetForOtherCards(card)) //不存在使用中的卡牌
+            if (isSelectingTargetForOtherCards(card)) //已经在用别的牌了
                 return;
             if (usingCard != card)
             {
@@ -1421,12 +1421,9 @@ namespace Game.BattleTable
             if (list != table.SelfHandList)//你不能用别人的卡
                 return;
             Card card = getCard(hand);
-            if (usingCard != card)
-            {
-                resetUse();
+            if (isSelectingTargetForOtherCards(card)) // 已经在用别的牌了
                 return;
-            }
-            if (card.pile != player.getHand())
+            if (usingCard != card || card.pile != player.getHand())
             {
                 resetUse();
                 return;
@@ -1460,9 +1457,7 @@ namespace Game.BattleTable
                 {
                     //进入选择目标状态，固定手牌到占位上，高亮可以选择的目标
                     enterTargetSelectMode(TargetSelectMode.Use, card, card.getAvaliableTargets(game));
-                    _servantUsingPosition = index;
-                    _servantPreviewAnim = new HandToFieldAnim(pos, getCardDescriptor(card), index);
-                    addAnim(_servantPreviewAnim);
+                    addServantPreviewAnim(card, index, pos);
                     table.SelfHandList.zoomOut();//手牌缩小
                 }
                 else
@@ -2020,38 +2015,8 @@ namespace Game.BattleTable
         {
             if (card == null)
                 return false;
-            // 如果没有手牌。
-            if (!tryGetHand(card, out HandItem hand))
-            {
-                int handPosition = card.pile.indexOf(card);
-                updateCardDescriptor(card);
-                // 强制完成随从的入场预览动画。
-                if (_servantPreviewAnim != null)
-                {
-                    _servantPreviewAnim.forceFinish(this);
-                    _servantPreviewAnim = null;
-                    addAnim(new FieldToHandAnim(card.id, handPosition));
-                }
-                else
-                {
-                    // 如果有这个随从，播放回手动画。
-                    if (tryGetServant(card, out _))
-                    {
-                        addAnim(new FieldToHandAnim(card.id, handPosition));
-                    }
-                    else //没有这个随从，直接创建手牌。
-                    {
-                        createHand(getCardDescriptor(card), handPosition);
-                    }
-                }
-            }
-            else
-            {
-                HandList handList = table.SelfHandList.contains(hand) ? table.SelfHandList : table.EnemyHandList;
-                if (handList.ignoreAlignHand == hand)
-                    handList.ignoreAlignHand = null;
-            }
-            return true;
+            // 取消随从的入场预览动画。
+            return cancelServantPreviewAnim(card);
         }
         /// <summary>
         /// 尝试确定选择目标。
@@ -2108,7 +2073,58 @@ namespace Game.BattleTable
                 return false;
             return targetSelectingCard != null && (targetSelectingCard.isServant() || targetSelectingCard.isItem());
         }
-
+        private HandToFieldAnim addServantPreviewAnim(Card card, int index, Vector3 pos)
+        {
+            cancelServantPreviewAnim(card);
+            _servantUsingPosition = index;
+            var fieldAnim = new HandToFieldAnim(pos, getCardDescriptor(card), index);
+            addAnim(fieldAnim);
+            _servantPreviewAnimDict.Add(card.id, fieldAnim);
+            return fieldAnim;
+        }
+        private bool cancelServantPreviewAnim(Card card)
+        {
+            if (finishServantPreviewAnim(card.id) && card.pile == player.getHand())
+            {
+                var handPosition = card.pile.indexOf(card);
+                // 如果没有手牌。
+                if (!tryGetHand(card, out HandItem hand))
+                {
+                    // 如果有这个随从，播放回手动画。
+                    if (tryGetServant(card, out _))
+                    {
+                        updateCardDescriptor(card);
+                        addAnim(new FieldToHandAnim(card.id, handPosition));
+                    }
+                    else //没有这个随从，直接创建手牌。
+                    {
+                        createHand(getCardDescriptor(card), handPosition);
+                    }
+                }
+                else // 有这张手牌。
+                {
+                    HandList handList = table.SelfHandList.contains(hand) ? table.SelfHandList : table.EnemyHandList;
+                    if (handList.ignoreAlignHand == hand)
+                        handList.ignoreAlignHand = null;
+                }
+                return true;
+            }
+            return false;
+        }
+        private bool finishServantPreviewAnim(int cardId)
+        {
+            if (_servantPreviewAnimDict.TryGetValue(cardId, out var anim))
+            {
+                if (anim.isStarted() && !anim.isFinished())
+                {
+                    anim.forceFinish(this);
+                }
+                removeAnim(anim);
+                _servantPreviewAnimDict.Remove(cardId);
+                return true;
+            }
+            return false;
+        }
         #endregion
         private async Task<CardBuffListItemViewData[]> getCardBuffViewDatas(IEnumerable<Buff> buffs)
         {

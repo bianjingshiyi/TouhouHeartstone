@@ -298,6 +298,17 @@ namespace Game.BattleTable
         {
             _animationCache.Add(anim);
         }
+        public bool removeAnim(TableAnimation anim)
+        {
+            if (_animationCache.Remove(anim) || _animationQueue.Remove(anim))
+                return true;
+            foreach (var group in _animationGroups)
+            {
+                if (group.Remove(anim))
+                    return true;
+            }
+            return false;
+        }
         public void queueAnims()
         {
             bool canAddToQueue = false;
@@ -401,7 +412,7 @@ namespace Game.BattleTable
         /// 当前回合的玩家（仅限动画显示）。
         /// </summary>
         public Player currentAnimPlayer { get; set; }
-        HandToFieldAnim _servantPreviewAnim = null;
+        Dictionary<int, HandToFieldAnim> _servantPreviewAnimDict = new Dictionary<int, HandToFieldAnim>();
         Dictionary<int, Transform> deadCardAnchors = new Dictionary<int, Transform>();
         #endregion
     }

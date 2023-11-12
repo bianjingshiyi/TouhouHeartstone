@@ -34,7 +34,7 @@ namespace Game.BattleTable
             _tableCard.positionLerp.setStart(table.TableToWorldPosition(_startPosition));
             _tableCard.positionLerp.setTarget(servant.transform);
 
-            while (!SimpleAnimHelper.update(table, ref anim, _tableCard.onSummon, _tableCard.animator, _deltaTime))
+            while (_tableCard && !SimpleAnimHelper.update(table, ref anim, _tableCard.onSummon, _tableCard.animator, _deltaTime))
             {
                 yield return null;
             }

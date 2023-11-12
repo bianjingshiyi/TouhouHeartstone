@@ -13,6 +13,7 @@ namespace Game.BattleTable
     {
         protected float _deltaTime;
         protected float _duration;
+        private bool _started = false;
         private bool _finished = false;
         private Coroutine _coroutine;
         /// <summary>
@@ -25,21 +26,28 @@ namespace Game.BattleTable
         }
         public virtual bool update(BattleTableManager table, float time)
         {
+            _started = true;
             _deltaTime = time;
             _duration += _deltaTime;
-            if (_coroutine == null)
-            {
-                _coroutine = table.StartCoroutine(updateCoroutine(table));
-            }
             if (_finished)
             {
                 table.StopCoroutine(_coroutine);
+                _coroutine = null;
+                return true;
             }
-            return _finished;
+            else if (_coroutine == null)
+            {
+                _coroutine = table.StartCoroutine(updateCoroutine(table));
+            }
+            return false;
         }
         public virtual IEnumerator update(BattleTableManager table)
         {
             yield break;
+        }
+        public bool isStarted()
+        {
+            return _started;
         }
         public bool isFinished()
         {
