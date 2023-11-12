@@ -11,12 +11,9 @@ namespace Game.BattleTable
         {
             base.postEvent(table, eventArg);
             if (eventArg.player == table.player)
-                table.isLocalTurn = false;
-        }
-        public override IEnumerator update(BattleTableManager table, EventRecord record, Arg arg)
-        {
-            table.cancelTargetSelect();
-            yield break;
+            {
+                table.endLocalTurn();
+            }
         }
     }
 }

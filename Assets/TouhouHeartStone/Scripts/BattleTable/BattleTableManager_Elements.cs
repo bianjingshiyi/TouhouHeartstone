@@ -98,6 +98,16 @@ namespace Game.BattleTable
                 cancelTargetSelect();
         }
 
+        public void startLocalTurn()
+        {
+            isLocalTurn = true;
+            setAllCardControlDirty();
+        }
+        public void endLocalTurn()
+        {
+            isLocalTurn = false;
+            cancelTargetSelect();
+        }
         #region 英雄
         /// <summary>
         /// 初始化Master的事件
@@ -533,9 +543,9 @@ namespace Game.BattleTable
             {
                 servant = field.insertServant(position);
             }
-            UberDebug.LogChannel(servant, "UI", $"为{desc}创建{servant}");
             var skin = cardManager.getCardSkin(desc.define);
             servant.gameObject.name = skin?.name ?? $"Card<{desc.id}>";
+            UberDebug.LogChannel(servant, "UI", $"为{desc.id}创建{servant}");
             setServant(servant, desc);
             cardServantDic.Add(desc.id, servant);
             setCardControlDirty(desc.id);
@@ -682,9 +692,10 @@ namespace Game.BattleTable
             if (cardServantDic.ContainsKey(id))
             {
                 var item = cardServantDic[id];
+                UberDebug.LogChannel(item, "UI", $"移除ID为{id}的仆从{item}"); 
                 cardServantDic.Remove(id);
-                bool selfRemoved = table.SelfField.removeServant(item);
-                bool enemyRemoved = table.EnemyField.removeServant(item);
+                table.SelfField.removeServant(item);
+                table.EnemyField.removeServant(item);
                 item.destroy();
                 return true;
             }
@@ -1231,6 +1242,7 @@ namespace Game.BattleTable
 
         public void cancelTargetSelect()
         {
+            // TODO: 目前只能取消宣言，因为目前只有宣言的操作是需要点两下，攻击需要拖动。
             if (isSelectingTargetForBattlecry())
             {
                 cancelBattlecry(targetSelectingCard);
@@ -1410,6 +1422,11 @@ namespace Game.BattleTable
                 return;
             Card card = getCard(hand);
             if (usingCard != card)
+            {
+                resetUse();
+                return;
+            }
+            if (card.pile != player.getHand())
             {
                 resetUse();
                 return;
@@ -2087,7 +2104,6 @@ namespace Game.BattleTable
         }
         private bool isSelectingTargetForBattlecry()
         {
-            // TODO: 需要改为“是否正在使用点击来选择目标”
             if (targetSelectMode != TargetSelectMode.Use)
                 return false;
             return targetSelectingCard != null && (targetSelectingCard.isServant() || targetSelectingCard.isItem());
