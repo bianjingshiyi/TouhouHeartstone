@@ -1189,6 +1189,9 @@ namespace TouhouHeartstone
             //不能是自己
             if (card == target)
                 return false;
+            //目标不在战场或者英雄位
+            if (target.pile?.name != PILE.FIELD && target.pile?.name != PILE.MASTER)
+                return false;
             //目标不可作为效果目标
             if (target.isStealth(game) && target.getOwner() != card.getOwner())
                 return false;
