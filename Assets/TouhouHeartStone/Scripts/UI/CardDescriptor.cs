@@ -43,8 +43,7 @@ namespace Game
             owner = card.owner;
             define = card.define;
             cost = card.getCost(game);
-            // TODO：以后修改了英雄从道具获取攻击力之后要把这个改了，这里只是做个兼容
-            attack = card.getProp<int>(game, DEFINE.ATTACK);
+            attack = card.getAttack(game);
             health = card.getLife(game);
             currentHealth = card.getCurrentLife(game);
             armor = card.getArmor(game);
@@ -68,8 +67,7 @@ namespace Game
         public bool isItem() => define.isItem();
         public Player getOwner() => owner;
         public int getCost() => Math.Max(0, cost);
-        // TODO：以后修改了英雄从道具获取攻击力之后要给这个加个Math.Max(0)
-        public int getAttack() => attack;
+        public int getAttack() => Math.Max(0, attack);
         public int getLife() => health;
         public int getCurrentLife() => currentHealth;
         public string[] getTags() => tags ?? Array.Empty<string>();

@@ -60,12 +60,12 @@ namespace Game.BattleTable
                 else
                 {
                     // 被取消。
-                    table.resetUse();
-                    if (table.tryGetHand(_card, out var item))
+                    if (table.tryGetHand(_card, out var item)) // 如果有这张手牌
                     {
-                        table.setCard(item.card, _card, true);
+                        // 重置手牌显示。
+                        table.resetHand(_card);
                     }
-                    else
+                    else // 没有这张手牌。
                     {
                         var handPosition = _card.position;
                         table.updateCardDescriptor(_card);
@@ -119,11 +119,16 @@ namespace Game.BattleTable
                 }
                 else
                 {
-                    if (table.tryGetHand(_card, out var item))
+                    var handPosition = _card.position;
+                    if (table.tryGetHand(_card, out _)) // 手上有这张牌
                     {
-                        table.setCard(item.card, _card, true);
+                        // 重置手牌显示。
+                        table.resetHand(_card);
                     }
-                    table.resetUse();
+                    else //没有这个手牌，直接创建手牌。
+                    {
+                        table.createHand(table.getCardDescriptor(_card.id), handPosition);
+                    }
                 }
             }
             else
@@ -188,11 +193,16 @@ namespace Game.BattleTable
                 }
                 else
                 {
-                    if (table.tryGetHand(_card, out var item))
+                    var handPosition = _card.position;
+                    if (table.tryGetHand(_card, out _)) // 手上有这张牌
                     {
-                        table.setCard(item.card, _card, true);
+                        // 重置手牌显示。
+                        table.resetHand(_card);
                     }
-                    table.resetUse();
+                    else //没有这个手牌，直接创建手牌。
+                    {
+                        table.createHand(table.getCardDescriptor(_card.id), handPosition);
+                    }
                 }
             }
             else
