@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 
-namespace TouhouCardEngine
+namespace TouhouHeartstone
 {
-    public class ActiveEntryNode : Node, ITargetCheckerNode
+    public class ActiveEntryNode : Node, ITargetCheckerNode, IEntryNode
     {
         #region 公有方法
         public ActiveEntryNode(int id)

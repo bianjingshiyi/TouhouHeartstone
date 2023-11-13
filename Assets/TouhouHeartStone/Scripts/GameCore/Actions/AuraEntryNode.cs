@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TouhouHeartstone.Builtin;
+using TouhouCardEngine;
 
-namespace TouhouCardEngine
+namespace TouhouHeartstone
 {
-    public class AuraEntryNode : Node
+    public class AuraEntryNode : Node, IEntryNode
     {
         #region 公有方法
         public AuraEntryNode()

@@ -16,6 +16,8 @@ namespace Controllers
         public int editTime;
         public CardPoolReference[] dependencyRefs;
         [BsonIgnoreIfNull]
+        public string texturesDir;
+        [BsonIgnoreIfNull]
         public long[] dependencies;
         long ICardPoolReference.CardPoolID => cardPoolId;
 

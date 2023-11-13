@@ -91,7 +91,6 @@ namespace Controllers
             await ApplyGraph(_generatedActionDefine.graph);
             //设置参数
             updateActionDefineEntryAndReturnNodes();
-            updateContentSize();
         }
         private void updateActionDefineReturnNodes()
         {

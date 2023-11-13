@@ -598,7 +598,7 @@ namespace UI
         private void updateDeleteButton()
         {
             var selectedNodes = _actionGraphCtrl.getSelectedNodes();
-            _deleteButton.interactable = selectedNodes != null && selectedNodes.Length > 0 && selectedNodes.Any(n => _actionGraphCtrl.CanNodeBeDeleted(n)) && !_actionGraphCtrl.isReadonly;
+            _deleteButton.interactable = selectedNodes != null && selectedNodes.Length > 0 && selectedNodes.Any(n => ActionNodeGraphCtrl.CanNodeBeDeleted(n)) && !_actionGraphCtrl.isReadonly;
             _deleteButtonDirty = false;
         }
         private string getNodeDefineName(NodeDefine define)

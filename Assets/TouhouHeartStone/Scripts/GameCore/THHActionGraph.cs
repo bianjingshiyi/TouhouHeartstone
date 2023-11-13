@@ -14,7 +14,6 @@ namespace TouhouHeartstone
             node.posY = posY;
             node.graph = graph;
             graph.addNode(node);
-            graph.updateSize();
             return node;
         }
         public static PassiveEntryNode createPassiveEntryNode(this ActionGraph graph, float posX = 0, float posY = 0)
@@ -26,7 +25,6 @@ namespace TouhouHeartstone
             node.posY = posY;
             node.graph = graph;
             graph.addNode(node);
-            graph.updateSize();
             return node;
         }
         public static EventEntryNode createEventEntryNode(this ActionGraph graph, long cardPoolId, string eventName, float posX = 0, float posY = 0)
@@ -38,7 +36,6 @@ namespace TouhouHeartstone
             node.posY = posY;
             node.graph = graph;
             graph.addNode(node);
-            graph.updateSize();
             return node;
         }
         public static EventEntryNode createEventEntryNode(this ActionGraph graph, EventTriggerTime triggerTime, float posX = 0, float posY = 0)
@@ -61,7 +58,6 @@ namespace TouhouHeartstone
             node.posY = posY;
             node.graph = graph;
             graph.addNode(node);
-            graph.updateSize();
             return node;
         }
         public static Node findNodeById(this ActionGraph graph, int id)

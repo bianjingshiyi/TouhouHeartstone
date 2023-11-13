@@ -111,7 +111,56 @@ namespace Controllers
         {
             return _ui.isFocused();
         }
-
+        public static SerializableActionNodeGraph copyNodes(IEnumerable<Node> nodes, out ActionGraph buffer)
+        {
+            buffer = new ActionGraph();
+            foreach (var node in nodes)
+            {
+                buffer.addNode(node);
+                var connections = buffer.getNodeConnections(node).Where(c => c != null && nodes.Contains(c.source?.node) && nodes.Contains(c.destination?.node));
+                buffer.AddConnections(connections);
+            }
+            return copyNodeGraph(buffer);
+        }
+        public static SerializableActionNodeGraph copyNodeGraph(ActionGraph buffer)
+        {
+            return new SerializableActionNodeGraph(buffer);
+        }
+        public static ActionGraph pasteNodes(SerializableActionNodeGraph seri, ActionGraph graph, Vector2 pos, INodeDefiner definer, out Dictionary<int, int> idMap)
+        {
+            var clipGraph = seri.toActionGraph(definer);
+            Vector2 centerPos = new Vector2(clipGraph.centerX, clipGraph.centerY);
+            idMap = new Dictionary<int, int>();
+            foreach (var node in clipGraph.nodes)
+            {
+                var oldId = node.id;
+                node.id = graph.getUniqueNodeId();
+                node.posX += pos.x - centerPos.x;
+                node.posY += pos.y - centerPos.y;
+                node.graph = graph;
+                graph.addNode(node);
+                idMap.Add(oldId, node.id);
+            }
+            graph.AddConnections(clipGraph.connections);
+            return clipGraph;
+        }
+        /// <summary>
+        /// 防止增益被跨卡池引用。
+        /// </summary>
+        /// <param name="node"></param>
+        public void fixTransCardPoolBuffRef(Node node)
+        {
+            // 防止增益被跨卡池引用
+            // 虽然这以后肯定是要实现的，但是不是现在要做的事情
+            if (node is ActionNode action && action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
+            {
+                var pairs = node.consts.Where(p => p.Value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId).ToArray();
+                foreach (var pair in pairs)
+                {
+                    node.setConst(pair.Key, new DefineReference(_curCardPoolId, 0));
+                }
+            }
+        }
 
 
         #region 节点选择
@@ -120,16 +169,7 @@ namespace Controllers
             var selectedNodes = _ui.getSelectedNodes();
             if (selectedNodes.Count() <= 0)
                 return null;
-            var graph = new ActionGraph();
-            var nodes = selectedNodes.Select(i => getActionNode(i)).Where(n => CanNodeBeCloned(n));
-            foreach (var node in nodes)
-            {
-                graph.addNode(node);
-                var connections = graph.getNodeConnections(node).Where(c => c != null && nodes.Contains(c.source?.node) && nodes.Contains(c.destination?.node));
-                graph.AddConnections(connections);
-            }
-
-            var seri = new SerializableActionNodeGraph(graph);
+            var seri = copyNodes(selectedNodes.Select(i => getActionNode(i)).Where(n => CanNodeBeCloned(n)), out _);
             return seri.toJson();
         }
         public Task pasteClipboard(string clipboard)
@@ -142,39 +182,19 @@ namespace Controllers
             if (string.IsNullOrEmpty(clipboard))
                 return;
             var seri = JsonHelper.fromJson<SerializableActionNodeGraph>(clipboard);
-
-
             var definer = game.card.getNodeDefiner();
-            var clipGraph = seri.toActionGraph(definer);
-            clipGraph.updateSize();
-            Vector2 centerPos = new Vector2(clipGraph.centerX, clipGraph.centerY);
+            var clipGraph = pasteNodes(seri, graph, pos, definer, out _);
+
             foreach (var node in clipGraph.nodes)
             {
-                node.id = graph.getUniqueNodeId();
-                node.posX += pos.x - centerPos.x;
-                node.posY += pos.y - centerPos.y;
-                node.graph = graph;
-                // 防止增益被跨卡池引用
-                // 虽然这以后肯定是要实现的，但是不是现在要做的事情
-                if (node is ActionNode action && action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
-                {
-                    var pairs = node.consts.Where(p => p.Value is DefineReference defRef && defRef.cardPoolId != _curCardPoolId).ToArray();
-                    foreach (var pair in pairs)
-                    {
-                        node.setConst(pair.Key, new DefineReference(_curCardPoolId, 0));
-                    }
-                }
-                graph.addNode(node);
+                fixTransCardPoolBuffRef(node);
                 await createNodeUI4Node(node);
             }
-            graph.AddConnections(clipGraph.connections);
             foreach (var connection in clipGraph.connections)
             {
                 connectPorts4UI(connection.source, connection.destination);
             }
-
             _ui.clearSelection();
-            updateContentSize();
         }
         public void deleteSelection()
         {
@@ -192,7 +212,7 @@ namespace Controllers
             return _ui.getSelectedNodes().Select(n => getActionNode(n)).ToArray();
         }
 
-        public bool CanNodeBeCloned(Node node)
+        public static bool CanNodeBeCloned(Node node)
         {
             if (node == null)
                 return false;
@@ -200,7 +220,7 @@ namespace Controllers
                 return false;
             return true;
         }
-        public bool CanNodeBeDeleted(Node node)
+        public static bool CanNodeBeDeleted(Node node)
         {
             if (node is EventEntryNode) // 事件入口节点可以删除
                 return true;
@@ -212,13 +232,13 @@ namespace Controllers
         {
             return node is ActionNode action && getActionDefine(action.defineRef) is GeneratedActionDefine;
         }
-        public bool CanActionDefineBeCreated(ActionDefine define)
+        public static bool CanActionDefineBeCreated(ActionDefine define)
         {
             if (define == null)
                 return false;
             return true;
         }
-        public bool CanNodeOpenDocument(Node node)
+        public static bool CanNodeOpenDocument(Node node)
         {
             if (!(node is ActionNode actionNode)) // 不是动作节点
                 return false;
@@ -226,7 +246,7 @@ namespace Controllers
                 return false;
             return true;
         }
-        public bool CanNodeDefineOpenDocument(NodeDefine node)
+        public static bool CanNodeDefineOpenDocument(NodeDefine node)
         {
             if (node.actionDefine == null) // 不是动作节点
                 return false;
@@ -243,7 +263,6 @@ namespace Controllers
             _actionNodeList.Add(actionNode);
             addOperationRecord(new CreateNodeOperation(this, actionNode));
             ActionNodeItem actionNodeItem = await createNodeUI4ActionNode(actionNode);
-            updateContentSize();
             return actionNodeItem;
         }
         public Task<ActionNodeItem> createActionNode(ActionDefine actionDefine, Vector2 pos)
@@ -270,7 +289,6 @@ namespace Controllers
             addOperationRecord(new CreateNodeOperation(this, actionNode));
             ActionNodeItem actionNodeItem = createNodeUI4PassiveEntryNode(actionNode);
             updateEffectProperties();
-            updateContentSize();
             return actionNodeItem;
         }
         public ActionNodeItem createEventEntryNode(EventTriggerTime eventTriggerTime, Vector2 pos)
@@ -575,7 +593,6 @@ namespace Controllers
                 node.posY += movedY;
                 _ui.moveActionNodeTo(item, new Vector2(item.posX + movedX, item.posY + movedY));
             }
-            updateContentSize();
             if (selectedNodes.Count() == 1)
             {
                 moveExistingNodeItem(selectedNodes.FirstOrDefault());
@@ -776,7 +793,6 @@ namespace Controllers
             _ui.clearGraph();
             await ApplyGraph(effect.graph);
 
-            updateContentSize();
             updateEffectProperties();
         }
         #endregion
@@ -1070,7 +1086,6 @@ namespace Controllers
             addOperationRecord(new DeleteNodeOperation(this, node));
             //将节点从UI上移除
             _ui.removeNode(actionNodeItem);
-            updateContentSize();
         }
         private ActionNodeItem getActionNodeItem(Node actionNode)
         {
@@ -1744,33 +1759,6 @@ namespace Controllers
                 targetCheckerTypes[i] = game.langManager.getString(_nameTextDict[_targetCheckerTypes[i]]);
             }
             return targetCheckerTypes;
-        }
-        private void updateContentSize()
-        {
-            //更新边界
-            Vector2 size = new Vector2();
-            for (int i = 0; i < _actionNodeItemList.Count; i++)
-            {
-                RectTransform childRectTransform = _actionNodeItemList[i].transform as RectTransform;
-                Rect childRect = childRectTransform.rect;
-                if (size.x < Mathf.Abs(childRectTransform.anchoredPosition.x + childRect.xMin))
-                {
-                    size.x = Mathf.Abs(childRectTransform.anchoredPosition.x + childRect.xMin);
-                }
-                if (size.x < Mathf.Abs(childRectTransform.anchoredPosition.x + childRect.xMax))
-                {
-                    size.x = Mathf.Abs(childRectTransform.anchoredPosition.x + childRect.xMax);
-                }
-                if (size.y < Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMin))
-                {
-                    size.y = Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMin);
-                }
-                if (size.y < Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMax))
-                {
-                    size.y = Mathf.Abs(childRectTransform.anchoredPosition.y + childRect.yMax);
-                }
-            }
-
         }
         public string getNodeConstNameByIndex(Node node, int index)
         {

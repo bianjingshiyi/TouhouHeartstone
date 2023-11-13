@@ -1,4 +1,5 @@
 ﻿using Game;
+using Game.PVE;
 using Game.Replays;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
@@ -69,6 +70,10 @@ namespace Controllers
             registerClass<SurrenderResponse>();
             registerClass<TurnEndResponse>();
             registerClass<UseResponse>();
+
+            // PVE.
+            registerClass<SerializableSaveData>();
+            registerClass<SerializableCardGem>();
             isInited = true;
         }
         public static string toJson(this object obj, bool readFriendly = false)

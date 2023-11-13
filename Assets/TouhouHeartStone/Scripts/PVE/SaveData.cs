@@ -21,8 +21,12 @@ namespace Game.PVE
         /// 当前层的种子
         /// </summary>
         public int stageSeed;
+        /// <summary>
+        /// 下一个插件的ID。
+        /// </summary>
+        public int gemId = 1;
         public int currentStage;
-        public List<DefineReference> plugins;
+        public List<CardGem> plugins;
         public PVEStageState stageState;
         public Deck deck;
         public void init()
@@ -55,8 +59,9 @@ namespace Game.PVE
             stageSeed = data.stageSeed;
             currentStage = data.currentStage;
             stageState = (int)data.stageState;
+            gemId = data.gemId;
             deck = data.deck.toDefRefArray(true);
-            plugins = data.plugins?.ToArray() ?? Array.Empty<DefineReference>();
+            plugins = data.plugins?.Select(p => new SerializableCardGem(p))?.ToArray() ?? Array.Empty<SerializableCardGem>();
         }
         public SaveData ToSaveData()
         {
@@ -69,7 +74,8 @@ namespace Game.PVE
                 currentStage = currentStage,
                 stageState = (PVEStageState)stageState,
                 deck = new Deck(deck),
-                plugins = plugins.ToList()
+                gemId = gemId,
+                plugins = plugins.Select(p => p.toGem()).ToList()
             };
         }
         public int version;
@@ -78,8 +84,9 @@ namespace Game.PVE
         public int stageSeed;
         public int currentStage;
         public int stageState;
+        public int gemId;
         public DefineReference[] deck;
-        public DefineReference[] plugins;
+        public SerializableCardGem[] plugins;
     }
     public enum PVEStageState
     {

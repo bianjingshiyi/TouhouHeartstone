@@ -7,7 +7,7 @@ using TouhouHeartstone;
 
 namespace TouhouCardEngine
 {
-    public class PassiveEntryNode : Node
+    public class PassiveEntryNode : Node, IEntryNode
     {
         #region 公有方法
         public PassiveEntryNode()

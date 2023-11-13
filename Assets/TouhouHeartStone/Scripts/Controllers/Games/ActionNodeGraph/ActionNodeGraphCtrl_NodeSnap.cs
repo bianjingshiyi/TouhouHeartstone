@@ -3,6 +3,7 @@ using System.Linq;
 using Game;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 

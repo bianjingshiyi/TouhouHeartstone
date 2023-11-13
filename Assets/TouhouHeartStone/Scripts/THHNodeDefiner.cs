@@ -1,5 +1,5 @@
-﻿using Controllers;
-using TouhouCardEngine;
+﻿using TouhouCardEngine;
+using TouhouHeartstone;
 
 namespace Game
 {

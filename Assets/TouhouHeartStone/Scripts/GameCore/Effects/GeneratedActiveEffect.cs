@@ -61,9 +61,9 @@ namespace TouhouHeartstone
             {
                 invalidMsg = null;
                 //如果触发不包含任何目标，那么目标肯定不是合法目标
-                if (entryNode.targetCheckerList == null || entryNode.targetCheckerList.Count < 1)
+                if (targetCheckers == null || targetCheckers.Count() < 1)
                     return false;
-                foreach (var targetChecker in entryNode.targetCheckerList)
+                foreach (var targetChecker in targetCheckers)
                 {
                     //检查目标条件
                     if (target.isMaster() && targetChecker.targetType == DEFINE.SERVANT)
@@ -129,6 +129,7 @@ namespace TouhouHeartstone
         #endregion
         #region 属性字段
         public virtual ActiveEntryNode entryNode => graph?.nodes?.OfType<ActiveEntryNode>().FirstOrDefault();
+        public IEnumerable<TargetChecker> targetCheckers => entryNode?.targetCheckerList;
         Node IEntryNodeEffect.entryNode => entryNode;
         #endregion
     }

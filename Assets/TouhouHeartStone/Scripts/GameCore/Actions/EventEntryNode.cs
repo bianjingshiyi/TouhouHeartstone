@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 
-namespace TouhouCardEngine
+namespace TouhouHeartstone
 {
-    public class EventEntryNode : PassiveEntryNode, IDefineNode<EventTriggerTime>
+    public class EventEntryNode : PassiveEntryNode, IDefineNode<EventTriggerTime>, IEntryNode
     {
         #region 公有方法
         public EventEntryNode(long eventCardPoolId, string eventName) : base()

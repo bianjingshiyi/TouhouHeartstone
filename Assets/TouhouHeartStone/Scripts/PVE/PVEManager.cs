@@ -8,8 +8,10 @@ using BJSYGameCore;
 using Controllers;
 using MongoDB.Bson;
 using MukioI18n;
+using PVE;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
+using TouhouCardEngine.Shared;
 using TouhouHeartstone;
 using TouhouHeartstone.Builtin;
 using UnityEngine;
@@ -56,7 +58,7 @@ namespace Game.PVE
             {
                 initSeed = seed,
                 deck = deck,
-                plugins = new List<DefineReference>(),
+                plugins = new List<CardGem>(),
                 currentStage = 1,
                 version = VERSION_NUMBER
             };
@@ -88,13 +90,23 @@ namespace Game.PVE
         public void createGeneratedCardPool(string dataName, out CardPoolInfo info, out CardPool pool)
         {
             main.card.createCardPool(out info, out pool);
+            info.texturesDir = _generatedTexturesPath;
             info.cardPoolName = main.lang._(DEFAULT_GEN_POOL_NAME);
             _pvePoolDict.Add(dataName, info);
+        }
+        public async Task<bool> saveGeneratedCardPool(string dataName, CardPoolInfo info)
+        {
+            var cardManager = main.card;
+            var path = getCardPoolFilePath(dataName);
+            return await cardManager.saveCardPool(info, path);
         }
         public async Task<bool> saveGeneratedCardPool(string dataName, CardPoolInfo info, CardPool pool)
         {
             var cardManager = main.card;
             var path = getCardPoolFilePath(dataName);
+            var dir = Path.GetDirectoryName(path);
+            var texDir = Path.Combine(dir, _generatedTexturesPath);
+            Directory.CreateDirectory(texDir);
             return await cardManager.saveCardPool(info, pool, path);
         }
         public async Task<(CardPoolInfo info, CardPool pool)> loadGeneratedCardPool(string dataName)
@@ -168,38 +180,120 @@ namespace Game.PVE
             };
         }
         #endregion
+        public CardGem createGemByDefineReference(SaveData saveData, DefineReference defRef)
+        {
+            var poolRef = main.card.getLocalCardPoolReference(defRef.cardPoolId);
+            return createGemByCardDefine(saveData, main.card.getCardDefine(poolRef, defRef.defineId));
+        }
+        public static CardGem createGemByCardDefine(SaveData saveData, CardDefine define)
+        {
+            var tagString = define.getProp<string>(CARD_PROP_GEM);
+            if (tagString == null)
+                return null;
+            var gem = new CardGem(saveData.gemId, define.getDefineRef());
+            var tags = tagString.Split(',');
+            gem.setTags(tags);
+            saveData.gemId++;
+            return gem;
+        }
 
         public static bool cardDefineIsGem(CardDefine define)
         {
             return define.getProp<string>(CARD_PROP_GEM) != null;
         }
-        public static CardGem getCardDefineGem(CardDefine define)
-        {
-            var tagString = define.getProp<string>(CARD_PROP_GEM);
-            if (tagString == null)
-                return null;
-            var gem = new CardGem(define.getDefineRef());
-            var tags = tagString.Split(',');
-            gem.setTags(tags);
-            return gem;
-        }
         public static bool cardDefineHasSlots(CardDefine define)
         {
             return define.getProp<string[]>(CARD_PROP_SLOTS) != null;
+        }
+        public static GeneratedEffect getSlotEffect(CardDefine define, string slotTagStr)
+        {
+            var tags = slotTagStr.Split(",");
+            return getSlotEffect(define, tags);
+        }
+        public static GeneratedEffect getSlotEffect(CardDefine define, string[] tags)
+        {
+            return define.getGeneratedEffects().FirstOrDefault(e => isValidEffectForSlot(define, tags, e));
+        }
+        public static bool isValidEffectForSlot(CardDefine define, string[] slotTags, GeneratedEffect effect)
+        {
+            if (slotTags.Contains(GEMTAG.SERVANT)) // 只能是仆从牌。
+            {
+                if (!define.isServant())
+                    return false;
+            }
+            else if (slotTags.Contains(GEMTAG.SPELL)) // 只能是法术牌。
+            {
+                if (!define.isSpell())
+                    return false;
+            }
+
+
+            if (slotTags.Contains(GEMTAG.ACTIVE)) // 只能是主动效果
+            {
+                if (effect is not GeneratedActiveEffect genActive)
+                    return false;
+                if (slotTags.Contains(GEMTAG.PLAYED)) // 只能是宣言
+                {
+                    if (!effect.hasTag(EFFECTTAG.ACTIVE_PLAYED))
+                        return false;
+                }
+                if (slotTags.Contains(GEMTAG.TARGET_SERVANT)) // 只能是可以选择仆从的主动效果
+                {
+                    if (genActive.targetCheckers == null || !genActive.targetCheckers.All(tc => tc.targetType == DEFINE.TARGET_TYPE_SERVANT))
+                        return false;
+                }
+                else if (slotTags.Contains(GEMTAG.TARGET)) // 只能是可以选择目标的主动效果
+                {
+                    if (genActive.targetCheckers == null)
+                        return false;
+                }
+            }
+            else if (slotTags.Contains(GEMTAG.PASSIVE)) // 只能是被动效果
+            {
+                if (effect is not GeneratedPassiveEffect)
+                    return false;
+                if (slotTags.Contains(GEMTAG.LASTWORD)) // 只能是遗言
+                {
+                    if (!effect.hasTag(EFFECTTAG.PASSIVE_LASTWORD))
+                        return false;
+                }
+            }
+            else if (slotTags.Contains(GEMTAG.AURA)) // 只能是光环效果
+            {
+                if (effect is not GeneratedAura)
+                    return false;
+            }
+            return true;
         }
         public static CardGemSlotGroup[] getCardDefineSlots(CardDefine define)
         {
             var slotProps = define.getProp<string[]>(CARD_PROP_SLOTS);
             if (slotProps == null)
                 return null;
-            var slotGroups = slotProps.GroupBy(tags => tags);
+            var slotGroups = slotProps.Select((tagStr, index) => (index, tagStr)).GroupBy(p => getSlotEffect(define, p.tagStr));
+            // 分组。
+            var effectList = define.getGeneratedEffects();
             var groupList = new List<CardGemSlotGroup>();
             foreach (var group in slotGroups)
             {
                 int count = group.Count();
-                var gemGroup = new CardGemSlotGroup(count);
-                var tags = group.Key.Split(',');
-                gemGroup.setTags(tags);
+
+                // 创建组。
+                var effect = group.Key;
+                var effectIndex = Array.IndexOf(effectList, effect);
+                var gemGroup = new CardGemSlotGroup(effectIndex, count);
+
+                // 向组内添加插槽。
+                for (int i = 0; i < count; i++)
+                {
+                    var propItem = group.ElementAt(i);
+                    var slotTagStr = propItem.tagStr;
+                    var slotTags = slotTagStr.Split(',');
+                    var slot = new CardGemSlot(propItem.index, slotTags);
+                    gemGroup.setSlotAt(i, slot);
+                }
+
+                // 将组加到列表中。
                 groupList.Add(gemGroup);
             }
             return groupList.ToArray();
@@ -298,6 +392,7 @@ namespace Game.PVE
                 return _main;
             }
         }
+        public string directory => _directory;
         private MainManager _main;
         [SerializeField]
         private string _directory = "pve";
@@ -305,6 +400,8 @@ namespace Game.PVE
         private string _saveFileName = "main";
         [SerializeField]
         private string _cardPoolFileName = "cardpool";
+        [SerializeField]
+        private string _generatedTexturesPath = "Textures";
         private Dictionary<string, CardPoolInfo> _pvePoolDict = new Dictionary<string, CardPoolInfo>();
         private const int VERSION_NUMBER = 0;
 
@@ -314,6 +411,7 @@ namespace Game.PVE
         public const string CARD_PROP_GEM = "插件";
         public const string CARD_PROP_BOSS_STAGE = "Boss层数";
         public const string CARD_PROP_BOSS_DECK = "Boss套牌";
+        public const string CARD_PROP_TEMPLATE_DEFINE = "模板卡牌";
         #endregion
     }
 }

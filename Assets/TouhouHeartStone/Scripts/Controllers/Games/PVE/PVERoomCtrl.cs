@@ -103,9 +103,37 @@ namespace Controllers
         }
         private async void onInventoryClickedCallback()
         {
-            var (_, pvePool) = await game.pve.getOrLoadPVECardPool();
-            var cardDefine = pvePool.cardDefineList.FirstOrDefault(d => PVEManager.cardDefineHasSlots(d));
-            await _cardEditor.display(getPVEDataName(), _saveData, cardDefine, game.card);
+            CardDefine srcCardDefine = null;
+            CardDefine cardDefine = null;
+            var (genPoolInfo, generatedPool) = await game.pve.getGeneratedCardPool(getPVEDataName());
+            var generatedCard = generatedPool.cardDefineList.FirstOrDefault(d => PVEManager.cardDefineHasSlots(d));
+            if (generatedCard != null)
+            {
+                cardDefine = generatedCard;
+                var defRef = generatedCard.getProp<DefineReference>(PVEManager.CARD_PROP_TEMPLATE_DEFINE);
+                srcCardDefine = game.card.getCardDefine(defRef);
+            }
+            else
+            {
+                // 从PVE中找一张有插槽的卡牌定义复制。
+                var (pvePoolInfo, pvePool) = await game.pve.getOrLoadPVECardPool();
+                var pveCard = pvePool.cardDefineList.FirstOrDefault(d => PVEManager.cardDefineHasSlots(d));
+                var clonedCard = game.card.cloneCardDefine(pveCard);
+                var cardSkins = game.card.cloneCardSkins(pvePoolInfo, pveCard.id);
+                clonedCard.cardPoolId = genPoolInfo.cardPoolId;
+                game.card.addCard(genPoolInfo, clonedCard);
+                foreach (var skin in cardSkins)
+                {
+                    var image = await game.card.loadCardImage(pveCard);
+                    skin.imagePath = await game.card.saveImage(genPoolInfo.cardPoolId, image.texture);
+                    game.card.addCardSkin(genPoolInfo.cardPoolId, skin);
+                }
+                clonedCard.setProp(PVEManager.CARD_PROP_TEMPLATE_DEFINE, pveCard.getDefineRef());
+
+                srcCardDefine = pveCard;
+                cardDefine = clonedCard;
+            }
+            await _cardEditor.display(getPVEDataName(), _saveData, srcCardDefine, cardDefine, game.card);
             _ui.openCardEditorPage();
             return;
         }
@@ -132,11 +160,13 @@ namespace Controllers
             if (winners.Contains(localPlayer))
             {
                 // 获胜
+                gameResult = PVEGameResult.Win;
+                // 进入选卡阶段
                 _saveData.stageState = PVEStageState.SelectCard;
-                _saveData.plugins.AddRange(_stageData.pluginRewards);
+                // 添加宝石
+                _saveData.plugins.AddRange(_stageData.pluginRewards.Select(p => pve.createGemByDefineReference(_saveData, p)));
                 var dataName = getPVEDataName();
                 await pve.saveData(dataName, _saveData);
-                gameResult = PVEGameResult.Win;
             }
             else if (winners.Length <= 0)
             {

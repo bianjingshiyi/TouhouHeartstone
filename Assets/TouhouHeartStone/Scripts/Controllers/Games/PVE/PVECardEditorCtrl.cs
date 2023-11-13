@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Game;
 using Game.PVE;
 using TouhouCardEngine;
+using TouhouHeartstone;
 using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,8 +17,8 @@ namespace Controllers
 {
     class PVECardEditorCtrl : GameObjectCtrl<MainSceneCtrl>
     {
-        #region 私有方法
-        public async Task display(string dataName, SaveData data, CardDefine define, CardManager cardManager)
+        #region 公有方法
+        public async Task display(string dataName, SaveData data, CardDefine srcCardDefine, CardDefine define, CardManager cardManager)
         {
             gameObject.SetActive(true);
             await _ui.setCard(define, cardManager);
@@ -26,15 +28,19 @@ namespace Controllers
             else
                 await _effectEditor.display(define.cardPoolId, effect);
 
-
+            _srcCardDefine = srcCardDefine;
+            _cardDefine = define;
             _dataName = dataName;
             var inventory = data.plugins;
             _gemInventory.Clear();
-            _gemInventory.AddRange(inventory.Select(d => new CardGem(d)));
+            _gemInventory.AddRange(inventory);
 
-            _slotGroups = PVEManager.getCardDefineSlots(define) ?? new CardGemSlotGroup[0];
+            setSlotGroups(PVEManager.getCardDefineSlots(define) ?? new CardGemSlotGroup[0]);
             await updateAllGems();
         }
+        #endregion
+
+        #region 私有方法
 
         #region 生命周期
         private void Awake()
@@ -46,14 +52,24 @@ namespace Controllers
             _ui.onSlotGemBeginDrag += onSlotGemBeginDragCallback;
             _ui.onSlotGemDrag += onSlotGemDragCallback;
             _ui.onSlotGemEndDrag += onSlotGemEndDragCallback;
+
+            _graphCtrl.OnGraphEdited += onGraphEditedCallback;
         }
         #endregion
 
         #region 事件回调
-        private void onCloseClickedCallback()
+        private async void onCloseClickedCallback()
         {
+            if (_hasUnsavedChanges)
+            {
+                _hasUnsavedChanges = false;
+                var poolRef = game.card.getCardPoolInfoOfCard(_cardDefine);
+                await game.pve.saveGeneratedCardPool(_dataName, poolRef);
+            }
             _pveRoom.openGamePage();
         }
+
+        #region 宝石拖动
         private async void onInventoryGemBeginDragCallback(int index, PointerEventData pointer)
         {
             var gem = _gemInventory[index];
@@ -174,36 +190,64 @@ namespace Controllers
         }
         #endregion
 
+        #region 宝石回调
+        private async void onAddGemCallback(CardGemSlotGroup group, CardGemSlot slot, CardGem gem)
+        {
+            await updateGemEffect(group);
+        }
+        private async void onRemoveGemCallback(CardGemSlotGroup group, CardGemSlot slot)
+        {
+            await updateGemEffect(group);
+        }
+        #endregion
+        private void onGraphEditedCallback()
+        {
+            _hasUnsavedChanges = true;
+        }
+
+        #endregion
+
+        #region 宝石逻辑
         private void insertGemToSlot(int index, int groupIndex, int slotIndex)
         {
             var gem = _gemInventory[index];
             _gemInventory.RemoveAt(index);
-            var group = _slotGroups[groupIndex];
-            var slot = group.getSlotAt(slotIndex);
-            slot.setGem(gem);
+            setSlotGem(groupIndex, slotIndex, gem);
         }
         private int removeGemFromSlot(int groupIndex, int slotIndex)
         {
-            var group = _slotGroups[groupIndex];
-            var slot = group.getSlotAt(slotIndex);
-            var gem = slot.gem;
-            if (gem == null)
+            var gem = getSlotGem(groupIndex, slotIndex);
+            if (!removeSlotGem(groupIndex, slotIndex))
                 return -1;
-            slot.setGem(null);
             var index = _gemInventory.Count;
             _gemInventory.Add(gem);
             return index;
         }
         private void moveGemBetweenSlots(int groupIndex, int slotIndex, int targetGroupIndex, int targetSlotIndex)
         {
+            var gem = getSlotGem(groupIndex, slotIndex);
+            var targetGem = getSlotGem(targetGroupIndex, targetSlotIndex);
+            removeSlotGem(groupIndex, slotIndex);
+            removeSlotGem(targetGroupIndex, targetSlotIndex);
+            setSlotGem(groupIndex, slotIndex, targetGem);
+            setSlotGem(targetGroupIndex, targetSlotIndex, gem);
+        }
+        private void setSlotGem(int groupIndex, int slotIndex, CardGem gem)
+        {
+            var group = _slotGroups[groupIndex];
+            var slot = group.getSlotAt(slotIndex);
+            slot.setGem(gem);
+        }
+        private bool removeSlotGem(int groupIndex, int slotIndex)
+        {
             var group = _slotGroups[groupIndex];
             var slot = group.getSlotAt(slotIndex);
             var gem = slot.gem;
-            var targetGroup = _slotGroups[targetGroupIndex];
-            var targetSlot = targetGroup.getSlotAt(targetSlotIndex);
-            var targetGem = targetSlot.gem;
-            targetSlot.setGem(gem);
-            slot.setGem(targetGem);
+            if (gem == null)
+                return false;
+            slot.setGem(null);
+            return true;
+
         }
         private CardGem getSlotGem(int groupIndex, int slotIndex)
         {
@@ -211,6 +255,193 @@ namespace Controllers
             var slot = group.getSlotAt(slotIndex);
             return slot.gem;
         }
+        #endregion
+
+        #region 节点图操作
+        private void resetGraphToSource(ActionGraph sourceGraph, ActionGraph targetGraph)
+        {
+            targetGraph.Clear();
+
+            // 复制
+            var seri = new SerializableActionNodeGraph(sourceGraph);
+
+            // 粘贴
+            var definer = game.card.getNodeDefiner();
+            ActionNodeGraphCtrl.pasteNodes(seri, targetGraph, Vector2.zero, definer, out _);
+        }
+        private Dictionary<int, int> cloneNodes(IEnumerable<Node> source, ActionGraph targetGraph)
+        {
+            if (source.Count() <= 0)
+                return null;
+
+            // 复制
+            var seri = ActionNodeGraphCtrl.copyNodes(source, out var buffer);
+
+            // 粘贴
+            var definer = game.card.getNodeDefiner();
+            var rect = new Rect(targetGraph.centerX - targetGraph.width * 0.5f, targetGraph.centerY - targetGraph.height * 0.5f, targetGraph.width, targetGraph.height);
+            var rightTop = new Vector2(rect.xMax, rect.yMax);
+            var pos = rightTop + new Vector2(200 + buffer.width * 0.5f, buffer.height * -0.5f);
+            ActionNodeGraphCtrl.pasteNodes(seri, targetGraph, pos, definer, out var idMap);
+            return idMap;
+        }
+        private ControlInput getFirstEnterPort(GeneratedEffect effect)
+        {
+            if (effect is IEntryNodeEffect entryEffect)
+            {
+                var node = entryEffect.entryNode;
+                if (node is IEntryNode entryNode)
+                {
+                    return entryNode.getActionOutputPort().getConnectedInputPort();
+                }
+                else if (node is ActionNode action)
+                {
+                    return action.getExitPort().getConnectedInputPort();
+                }
+            }
+            return null;
+        }
+        private (string name, ValueInput input)[] getConnectedValuePorts(GeneratedEffect effect)
+        {
+            if (effect is IEntryNodeEffect entryEffect)
+            {
+                var node = entryEffect.entryNode;
+                var valueOutputs = node.getOutputPorts<ValueOutput>();
+                return valueOutputs.SelectMany(o => o.connections.Select(c => (c.source.name, c.destination as ValueInput))).ToArray();
+            }
+            return null;
+        }
+        private (ValueOutput output, ValueInput input)[] getShouldConnectValuePorts(GeneratedEffect effect, (string name, ValueInput input)[] oldConnections, Dictionary<int, int> idMap)
+        {
+            if (effect is IEntryNodeEffect entryEffect)
+            {
+                var entryNode = entryEffect.entryNode;
+                var graph = effect.graph;
+                return oldConnections.Select(p => {
+                    var src = entryNode.getOutputPort<ValueOutput>(p.name);
+                    var destNode = graph.findNodeById(idMap[p.input.node.id]);
+                    var dest = destNode.getInputPort<ValueInput>(p.input.name);
+                    return (src, dest);
+                }).ToArray();
+            }
+            return null;
+        }
+        private ControlOutput getLastExitPort(GeneratedEffect effect)
+        {
+            if (effect is IEntryNodeEffect entryEffect)
+            {
+                return getExitPortChain(entryEffect.entryNode);
+            }
+            return null;
+        }
+        private ControlOutput getExitPortChain(Node node)
+        {
+            ControlOutput port = null;
+            if (node is IEntryNode entryNode)
+            {
+                port = entryNode.getActionOutputPort();
+            }
+            else if (node is ActionNode action)
+            {
+                port = action.getExitPort();
+            }
+            var connected = port.getConnectedInputPort();
+            if (connected != null)
+            {
+                return getExitPortChain(connected.node);
+            }
+            return port;
+        }
+        private async Task updateGemEffect(CardGemSlotGroup group)
+        {
+            var srcCardDefine = _srcCardDefine;
+            var cardDefine = _cardDefine;
+            var cardManager = game.card;
+            var pveManager = game.pve;
+
+            // 获取复制目标的效果。
+            var destEffect = getGemGroupEffect(group);
+
+            // 重置该效果的节点图。
+            var destEffectIndex = Array.IndexOf(_cardDefine.getGeneratedEffects(), destEffect);
+            var srcCardEffect = srcCardDefine.getGeneratedEffects()[destEffectIndex];
+            destEffect.graph.Clear();
+            resetGraphToSource(srcCardEffect.graph, destEffect.graph);
+
+            // 根据插槽内的宝石更新效果的节点图。
+            foreach (var slot in group.slots)
+            {
+                var gem = slot.gem;
+                if (slot.gem == null)
+                    continue;
+                // 获取宝石对应的卡牌定义。
+                var gemPoolRef = cardManager.getLocalCardPoolReference(gem.cardRef.cardPoolId);
+                await cardManager.getOrLoadCardPool(gemPoolRef);
+                var gemCardDefine = cardManager.getLocalCardDefine(gem.cardRef);
+
+                // 获取宝石卡牌定义的效果。
+                var srcEffect = PVEManager.getSlotEffect(gemCardDefine, slot.tags);
+
+                // 获取要复制的节点，要连接的动作端口和值端口。
+                var nodes = srcEffect.graph.nodes;
+                var cloneableNodes = srcEffect.graph.nodes.Where(n => ActionNodeGraphCtrl.CanNodeBeCloned(n));
+                var connectedEnterPort = getFirstEnterPort(srcEffect);
+                var connectedValuePorts = getConnectedValuePorts(srcEffect);
+
+                // 没有要复制的节点则跳出。
+                if (cloneableNodes.Count() <= 0)
+                    continue;
+                // 复制节点。
+                var idMap = cloneNodes(cloneableNodes, destEffect.graph);
+                // 没有复制成功则跳出。
+                if (idMap == null)
+                    continue;
+
+                // 重新连接应该连接的端口。
+                var firstEnterPortNodeId = idMap[connectedEnterPort.node.id];
+                var firstEnterPortNode = destEffect.graph.findNodeById(firstEnterPortNodeId);
+                var firstEnterPort = firstEnterPortNode.getInputPort<ControlInput>(connectedEnterPort.name);
+                var valueConnnections = getShouldConnectValuePorts(destEffect, connectedValuePorts, idMap);
+                var lastActionPort = getLastExitPort(destEffect);
+                // 找不到对应的连接端口，跳出。
+                if (valueConnnections == null || lastActionPort == null)
+                    continue;
+
+                foreach (var valueConnection in valueConnnections)
+                {
+                    destEffect.graph.connect(valueConnection.output, valueConnection.input);
+                }
+                destEffect.graph.connect(lastActionPort, firstEnterPort);
+            }
+            await _effectEditor.display(_cardDefine.cardPoolId, destEffect);
+        }
+        public GeneratedEffect getGemGroupEffect(CardGemSlotGroup group)
+        {
+            return _cardDefine.getGeneratedEffects()[group.effectIndex];
+        }
+        private void setSlotGroups(CardGemSlotGroup[] groups)
+        {
+            if (_slotGroups != null)
+            {
+                foreach (var slotGroup in _slotGroups)
+                {
+                    slotGroup.onAddGem -= onAddGemCallback;
+                    slotGroup.onRemoveGem -= onRemoveGemCallback;
+                }
+            }
+            _slotGroups = groups;
+            if (_slotGroups != null)
+            {
+                foreach (var slotGroup in _slotGroups)
+                {
+                    slotGroup.onAddGem += onAddGemCallback;
+                    slotGroup.onRemoveGem += onRemoveGemCallback;
+                }
+            }
+        }
+        #endregion
+
+        #region UI
         private async Task<CardGemViewData> getGemViewData(CardGem gem)
         {
             if (gem == null)
@@ -271,13 +502,18 @@ namespace Controllers
         }
         #endregion
 
+        #endregion
+
         #region 属性字段
         private int _draggingGemSlotGroupIndex = -1;
         private int _draggingGemSlotIndex = -1;
         private DraggingCardGem _draggingGem;
         private List<CardGem> _gemInventory = new List<CardGem>();
         private CardGemSlotGroup[] _slotGroups;
+        private CardDefine _srcCardDefine;
+        private CardDefine _cardDefine;
         private string _dataName;
+        private bool _hasUnsavedChanges;
         [SerializeField]
         private PVECardEditor _ui;
         [SerializeField]

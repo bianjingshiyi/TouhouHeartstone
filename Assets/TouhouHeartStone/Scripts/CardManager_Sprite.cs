@@ -222,26 +222,14 @@ namespace Game
         {
             byte[] bytes = saveAsJpg ? texture.EncodeToJPG(jpgQuality) : texture.EncodeToPNG();
             string hash = calcHashString(bytes);
-            string path = saveAsJpg ? string.Format("{0}.jpg", hash) : string.Format("{0}.png", hash);
-            if (isInnateCardPool(cardPoolId))
+            string fileName = saveAsJpg ? string.Format("{0}.jpg", hash) : string.Format("{0}.png", hash);
+            string filePath = Path.Combine(getCardPoolTexturesDirectory(getCardPoolInfo(cardPoolId)), fileName);
+            if (!game.fileManager.isFileExist(filePath))
             {
-                string filePath = Path.Combine(editorTextureDirName, path);
-                if (!game.fileManager.isFileExist(filePath))
-                {
-                    await game.fileManager.saveFile(filePath, bytes);
-                    Debug.Log($"另存为图片{path}成功");
-                }
+                await game.fileManager.saveFile(filePath, bytes);
+                Debug.Log($"另存为图片{fileName}成功");
             }
-            else
-            {
-                string filePath = Path.Combine(textureDirName, path);
-                if (!game.fileManager.isPersistentFileExist(filePath))
-                {
-                    await game.fileManager.savePersistentFile(filePath, bytes);
-                    Debug.Log($"另存为图片{path}成功");
-                }
-            }
-            return path;
+            return fileName;
         }
         /// <summary>
         /// 加载指定卡池，指定路径的图片并转换为Sprite。
@@ -321,7 +309,7 @@ namespace Game
                         //因为无法区分可持续化文件和工程文件的相对路径，所以需要通过绝对路径来读取文件
                         //外部图片路径无法记载绝对路径，因为不确定安装平台和目录，所以一定是相对路径
                         string picId = Path.GetFileNameWithoutExtension(path);
-                        string absPath = Path.Combine(getCardPoolPathRootDir(getCardPoolPath(cardPoolInfo)), textureDirName, path);
+                        string absPath = Path.Combine(getCardPoolTexturesDirectory(cardPoolInfo), path);
                         try
                         {
                             if (game.fileManager.isFileExist(absPath))

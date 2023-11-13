@@ -961,7 +961,7 @@ namespace Game
                     else
                     {
                         //绝对路径
-                        return loadExternalImage(path, Path.Combine(getCardPoolPathRootDir(cardPoolPath), textureDirName));
+                        return loadExternalImage(path, getCardPoolTexturesDirectory(cardPool));
                     }
                 }
                 else
@@ -975,15 +975,15 @@ namespace Game
         {
             return loadCardImage(getCardDefine(cardPoolRef, cardId));
         }
-        public string getCardPoolPathRootDir(string path)
+        public string getCardPoolTexturesDirectory(CardPoolInfo cardPoolInfo)
         {
-            DirectoryInfo dirInfo = Directory.GetParent(path);
-            if (dirInfo.Name != cardPoolDirName)
+            var path = getCardPoolPath(cardPoolInfo);
+            var relativePath = $"../{textureDirName}";
+            if (!string.IsNullOrEmpty(cardPoolInfo.texturesDir))
             {
-                dirInfo = dirInfo.Parent;
+                relativePath = $"{cardPoolInfo.texturesDir}";
             }
-            dirInfo = dirInfo.Parent;
-            return dirInfo.FullName;
+            return Path.Combine(Path.GetDirectoryName(path), relativePath);
         }
         public bool tryGetCardSkin(ICardPoolReference cardPoolRef, int cardId, out CardSkinData skin)
         {
@@ -1103,14 +1103,20 @@ namespace Game
             if (string.IsNullOrEmpty(path))
                 return false;
 
-            // 如果路径以本地卡池的路径开头，说明是本身拥有的卡池。
-            string startPath = Path.Combine(Application.persistentDataPath, cardPoolDirName);
+            // StreamingAssets或Resources。
             path = path.Replace("/", "\\");
-            startPath = startPath.Replace("/", "\\");
-            if (path.StartsWith(startPath) || path.StartsWith("sa:") || path.StartsWith("res:") || path.StartsWith(cardPoolDirName))
-            {
+            if (path.StartsWith("sa:") || path.StartsWith("res:"))
                 return true;
-            }
+
+            // 如果路径以本地卡池的路径开头，说明是本身拥有的卡池。
+            string cardPoolDir = Path.Combine(Application.persistentDataPath, cardPoolDirName).Replace("/", "\\");
+            if (path.StartsWith(cardPoolDirName) || path.StartsWith(cardPoolDir))
+                return true;
+
+            // PVE
+            string pveDir = Path.Combine(Application.persistentDataPath, game.pve.directory).Replace("/", "\\");
+            if (path.StartsWith(game.pve.directory) || path.StartsWith(pveDir))
+                return true;
             return false;
         }
         /// <summary>
