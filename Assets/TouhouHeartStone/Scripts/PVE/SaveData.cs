@@ -27,6 +27,7 @@ namespace Game.PVE
         public int gemId = 1;
         public int currentStage;
         public List<CardGem> plugins;
+        public List<int> usedGems = new List<int>();
         public PVEStageState stageState;
         public Deck deck;
         public void init()
@@ -39,10 +40,23 @@ namespace Game.PVE
             currentStage++;
             newStageSeed();
         }
-        public DefineReference getCharacter()
+        public CardGem getGem(int gemId)
         {
-            return deck.masterCardRef;
+            return plugins.FirstOrDefault(p => p.id == gemId);
         }
+        public CardGem[] getInventoryGems()
+        {
+            return plugins.Where(p => !usedGems.Contains(p.id)).ToArray();
+        }
+        public void addUsedGem(int id)
+        {
+            usedGems.Add(id);
+        }
+        public bool removeUsedGem(int id)
+        {
+            return usedGems.Remove(id);
+        }
+        
         private void newStageSeed()
         {
             stageSeed = runRNG.next();
@@ -62,6 +76,7 @@ namespace Game.PVE
             gemId = data.gemId;
             deck = data.deck.toDefRefArray(true);
             plugins = data.plugins?.Select(p => new SerializableCardGem(p))?.ToArray() ?? Array.Empty<SerializableCardGem>();
+            usedGems = data.usedGems.ToArray();
         }
         public SaveData ToSaveData()
         {
@@ -75,7 +90,8 @@ namespace Game.PVE
                 stageState = (PVEStageState)stageState,
                 deck = new Deck(deck),
                 gemId = gemId,
-                plugins = plugins.Select(p => p.toGem()).ToList()
+                plugins = plugins.Select(p => p.toGem()).ToList(),
+                usedGems = usedGems.ToList(),
             };
         }
         public int version;
@@ -87,6 +103,7 @@ namespace Game.PVE
         public int gemId;
         public DefineReference[] deck;
         public SerializableCardGem[] plugins;
+        public int[] usedGems;
     }
     public enum PVEStageState
     {

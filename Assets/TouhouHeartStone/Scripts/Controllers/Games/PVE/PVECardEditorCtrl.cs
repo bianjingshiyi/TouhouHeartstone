@@ -31,12 +31,15 @@ namespace Controllers
             _srcCardDefine = srcCardDefine;
             _cardDefine = define;
             _dataName = dataName;
-            var inventory = data.plugins;
-            _gemInventory.Clear();
-            _gemInventory.AddRange(inventory);
+            _saveData = data;
 
-            setSlotGroups(PVEManager.getCardDefineSlots(define) ?? new CardGemSlotGroup[0]);
+            updateInventory();
+            setSlotGroups(PVEManager.getCardDefineSlots(_saveData, define) ?? new CardGemSlotGroup[0]);
             await updateAllGems();
+        }
+        public void markUnsaved()
+        {
+            _hasUnsavedChanges = true;
         }
         #endregion
 
@@ -52,8 +55,6 @@ namespace Controllers
             _ui.onSlotGemBeginDrag += onSlotGemBeginDragCallback;
             _ui.onSlotGemDrag += onSlotGemDragCallback;
             _ui.onSlotGemEndDrag += onSlotGemEndDragCallback;
-
-            _graphCtrl.OnGraphEdited += onGraphEditedCallback;
         }
         #endregion
 
@@ -63,8 +64,8 @@ namespace Controllers
             if (_hasUnsavedChanges)
             {
                 _hasUnsavedChanges = false;
-                var poolRef = game.card.getCardPoolInfoOfCard(_cardDefine);
-                await game.pve.saveGeneratedCardPool(_dataName, poolRef);
+                await game.pve.saveData(_dataName, _saveData);
+                await game.pve.saveGeneratedCardPool(_dataName);
             }
             _pveRoom.openGamePage();
         }
@@ -72,7 +73,8 @@ namespace Controllers
         #region 宝石拖动
         private async void onInventoryGemBeginDragCallback(int index, PointerEventData pointer)
         {
-            var gem = _gemInventory[index];
+            var inventory = getInventoryGems();
+            var gem = inventory[index];
             var viewData = await getGemViewData(gem);
             var gemUI = _ui.getInventoryGem(index);
             _draggingGem = _ui.createDraggingGem(viewData);
@@ -96,7 +98,7 @@ namespace Controllers
                 {
                     // 与背包中的进行交换。
                     var invIndex = removeGemFromSlot(groupIndex, slotIndex);
-                    insertGemToSlot(index, groupIndex, slotIndex);
+                    insertGemToSlot(slotGem.id, groupIndex, slotIndex);
                     invIndex--;
                     await updateAllGems();
 
@@ -113,13 +115,15 @@ namespace Controllers
                 }
                 else
                 {
+                    var invGem = getInventoryGems()[index];
                     // 镶嵌宝石。
-                    insertGemToSlot(index, groupIndex, slotIndex);
+                    insertGemToSlot(invGem.id, groupIndex, slotIndex);
                     await updateAllGems();
 
                     var slotUI = _ui.getSlotGem(groupIndex, slotIndex);
                     _draggingGem.changeSource(slotUI);
                 }
+                markUnsaved();
             }
             _draggingGem.release();
             _draggingGem = null;
@@ -162,6 +166,7 @@ namespace Controllers
                     var source = _ui.getInventoryGem(invIndex);
                     _draggingGem.changeSource(source);
                 }
+                markUnsaved();
             }
             else if (groupIndex != hoverGroup || hoverSlot != slotIndex)
             {
@@ -182,6 +187,7 @@ namespace Controllers
                 // 移动宝石
                 var newSource = _ui.getSlotGem(hoverGroup, hoverSlot);
                 _draggingGem.changeSource(newSource);
+                markUnsaved();
             }
             _draggingGem.release();
             _draggingGem = null;
@@ -191,37 +197,36 @@ namespace Controllers
         #endregion
 
         #region 宝石回调
-        private async void onAddGemCallback(CardGemSlotGroup group, CardGemSlot slot, CardGem gem)
+        private async void onAddGemCallback(CardGemSlotGroup group, int slotIndex, CardGem gem)
         {
             await updateGemEffect(group);
+            PVEManager.setCardDefineInsertedGem(_cardDefine, slotIndex, gem);
+            markUnsaved();
         }
-        private async void onRemoveGemCallback(CardGemSlotGroup group, CardGemSlot slot)
+        private async void onRemoveGemCallback(CardGemSlotGroup group, int slotIndex)
         {
             await updateGemEffect(group);
+            PVEManager.setCardDefineInsertedGem(_cardDefine, slotIndex, null);
+            markUnsaved();
         }
         #endregion
-        private void onGraphEditedCallback()
-        {
-            _hasUnsavedChanges = true;
-        }
 
         #endregion
 
         #region 宝石逻辑
-        private void insertGemToSlot(int index, int groupIndex, int slotIndex)
+        private void insertGemToSlot(int gemId, int groupIndex, int slotIndex)
         {
-            var gem = _gemInventory[index];
-            _gemInventory.RemoveAt(index);
+            var gem = _saveData.getGem(gemId);
+            removeInventoryGem(gemId);
             setSlotGem(groupIndex, slotIndex, gem);
         }
         private int removeGemFromSlot(int groupIndex, int slotIndex)
         {
             var gem = getSlotGem(groupIndex, slotIndex);
-            if (!removeSlotGem(groupIndex, slotIndex))
+            if (gem == null || !removeSlotGem(groupIndex, slotIndex))
                 return -1;
-            var index = _gemInventory.Count;
-            _gemInventory.Add(gem);
-            return index;
+            addInventoryGem(gem.id);
+            return Array.IndexOf(getInventoryGems(), gem);
         }
         private void moveGemBetweenSlots(int groupIndex, int slotIndex, int targetGroupIndex, int targetSlotIndex)
         {
@@ -249,11 +254,29 @@ namespace Controllers
             return true;
 
         }
+        private void removeInventoryGem(int gemId)
+        {
+            _saveData.addUsedGem(gemId);
+            updateInventory();
+        }
+        private void addInventoryGem(int gemId)
+        {
+            _saveData.removeUsedGem(gemId);
+            updateInventory();
+        }
         private CardGem getSlotGem(int groupIndex, int slotIndex)
         {
             var group = _slotGroups[groupIndex];
             var slot = group.getSlotAt(slotIndex);
             return slot.gem;
+        }
+        private void updateInventory()
+        {
+            _inventoryGems = _saveData.getInventoryGems();
+        }
+        private CardGem[] getInventoryGems()
+        {
+            return _inventoryGems;
         }
         #endregion
 
@@ -459,10 +482,11 @@ namespace Controllers
         }
         private async Task updateGemInventory()
         {
-            var inventoryView = new CardGemViewData[_gemInventory.Count];
+            var inventory = getInventoryGems();
+            var inventoryView = new CardGemViewData[inventory.Length];
             for (int g = 0; g < inventoryView.Length; g++)
             {
-                var gem = _gemInventory[g];
+                var gem = inventory[g];
                 var gemViewData = await getGemViewData(gem);
                 inventoryView[g] = gemViewData;
             }
@@ -508,10 +532,11 @@ namespace Controllers
         private int _draggingGemSlotGroupIndex = -1;
         private int _draggingGemSlotIndex = -1;
         private DraggingCardGem _draggingGem;
-        private List<CardGem> _gemInventory = new List<CardGem>();
         private CardGemSlotGroup[] _slotGroups;
         private CardDefine _srcCardDefine;
         private CardDefine _cardDefine;
+        private SaveData _saveData;
+        private CardGem[] _inventoryGems;
         private string _dataName;
         private bool _hasUnsavedChanges;
         [SerializeField]

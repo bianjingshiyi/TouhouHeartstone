@@ -981,7 +981,7 @@ namespace Game
             var relativePath = $"../{textureDirName}";
             if (!string.IsNullOrEmpty(cardPoolInfo.texturesDir))
             {
-                relativePath = $"{cardPoolInfo.texturesDir}";
+                relativePath = cardPoolInfo.texturesDir;
             }
             return Path.Combine(Path.GetDirectoryName(path), relativePath);
         }

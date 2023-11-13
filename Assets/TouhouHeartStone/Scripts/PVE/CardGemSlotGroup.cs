@@ -36,19 +36,19 @@ namespace Game.PVE
         #region 事件回调
         private void onAddGemCallback(CardGemSlot slot, CardGem gem)
         {
-            onAddGem?.Invoke(this, slot, gem);
+            onAddGem?.Invoke(this, Array.IndexOf(_slots, slot), gem);
         }
         private void onRemoveGemCallback(CardGemSlot slot)
         {
-            onRemoveGem?.Invoke(this, slot);
+            onRemoveGem?.Invoke(this, Array.IndexOf(_slots, slot));
         }
         #endregion
 
         #endregion
 
         #region 事件
-        public event Action<CardGemSlotGroup, CardGemSlot, CardGem> onAddGem;
-        public event Action<CardGemSlotGroup, CardGemSlot> onRemoveGem;
+        public event Action<CardGemSlotGroup, int, CardGem> onAddGem;
+        public event Action<CardGemSlotGroup, int> onRemoveGem;
         #endregion
 
         #region 属性字段

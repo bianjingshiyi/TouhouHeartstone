@@ -94,6 +94,11 @@ namespace Game.PVE
             info.cardPoolName = main.lang._(DEFAULT_GEN_POOL_NAME);
             _pvePoolDict.Add(dataName, info);
         }
+        public async Task<bool> saveGeneratedCardPool(string dataName)
+        {
+            var (info, _) = await loadGeneratedCardPool(dataName);
+            return await saveGeneratedCardPool(dataName, info);
+        }
         public async Task<bool> saveGeneratedCardPool(string dataName, CardPoolInfo info)
         {
             var cardManager = main.card;
@@ -265,7 +270,7 @@ namespace Game.PVE
             }
             return true;
         }
-        public static CardGemSlotGroup[] getCardDefineSlots(CardDefine define)
+        public static CardGemSlotGroup[] getCardDefineSlots(SaveData saveData, CardDefine define)
         {
             var slotProps = define.getProp<string[]>(CARD_PROP_SLOTS);
             if (slotProps == null)
@@ -274,6 +279,9 @@ namespace Game.PVE
             // 分组。
             var effectList = define.getGeneratedEffects();
             var groupList = new List<CardGemSlotGroup>();
+
+            // 获取这张卡上插着的宝石。
+            var insertedGems = getCardDefineInsertedGems(saveData, define);
             foreach (var group in slotGroups)
             {
                 int count = group.Count();
@@ -288,8 +296,15 @@ namespace Game.PVE
                 {
                     var propItem = group.ElementAt(i);
                     var slotTagStr = propItem.tagStr;
+                    var slotIndex = propItem.index;
+
                     var slotTags = slotTagStr.Split(',');
-                    var slot = new CardGemSlot(propItem.index, slotTags);
+                    var slot = new CardGemSlot(slotIndex, slotTags);
+                    var gem = insertedGems[slotIndex];
+                    if (gem != null)
+                    {
+                        slot.setGem(gem);
+                    }
                     gemGroup.setSlotAt(i, slot);
                 }
 
@@ -297,6 +312,20 @@ namespace Game.PVE
                 groupList.Add(gemGroup);
             }
             return groupList.ToArray();
+        }
+        public static CardGem[] getCardDefineInsertedGems(SaveData data, CardDefine define)
+        {
+            var gems = getOrCreateCardDefineInsertedGemProp(define);
+            if (gems == null)
+                return null;
+            return gems.Select(id => data.plugins.FirstOrDefault(p => p.id == id)).ToArray();
+        }
+        public static void setCardDefineInsertedGem(CardDefine define, int index, CardGem gem)
+        {
+            var gems = getOrCreateCardDefineInsertedGemProp(define);
+            if (gems == null)
+                return;
+            gems[index] = gem?.id ?? 0;
         }
         public async Task<(CardPoolInfo info, CardPool pool)> getOrLoadPVECardPool()
         {
@@ -375,6 +404,26 @@ namespace Game.PVE
                 list.randomTake(rng, 3).ToArray()
             };
         }
+        private static int[] getOrCreateCardDefineInsertedGemProp(CardDefine define)
+        {
+            var slotProps = define.getProp<string[]>(CARD_PROP_SLOTS);
+            if (slotProps == null)
+                return null;
+            var gems = define.getProp<int[]>(CARD_PROP_INSERTED_GEMS);
+            if (gems == null)
+            {
+                gems = new int[slotProps.Length];
+                define.setProp(CARD_PROP_INSERTED_GEMS, gems);
+            }
+            else if (gems.Length != slotProps.Length)
+            {
+                var newGems = new int[slotProps.Length];
+                gems.CopyTo(newGems, 0);
+                gems = newGems;
+                define.setProp(CARD_PROP_INSERTED_GEMS, gems);
+            }
+            return gems;
+        }
         #endregion
         #region 属性字段
         [TranslateMsg("PVE模式人物描述-帕秋莉")]
@@ -412,6 +461,7 @@ namespace Game.PVE
         public const string CARD_PROP_BOSS_STAGE = "Boss层数";
         public const string CARD_PROP_BOSS_DECK = "Boss套牌";
         public const string CARD_PROP_TEMPLATE_DEFINE = "模板卡牌";
+        public const string CARD_PROP_INSERTED_GEMS = "插入的插件";
         #endregion
     }
 }

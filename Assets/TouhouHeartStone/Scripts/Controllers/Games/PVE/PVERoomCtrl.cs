@@ -130,6 +130,9 @@ namespace Controllers
                 }
                 clonedCard.setProp(PVEManager.CARD_PROP_TEMPLATE_DEFINE, pveCard.getDefineRef());
 
+                // 替换套牌中的这张卡。
+                
+
                 srcCardDefine = pveCard;
                 cardDefine = clonedCard;
             }
