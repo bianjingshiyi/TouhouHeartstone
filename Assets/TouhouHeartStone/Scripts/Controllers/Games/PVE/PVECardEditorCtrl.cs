@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Game;
 using Game.PVE;
@@ -34,7 +35,7 @@ namespace Controllers
             _saveData = data;
 
             updateInventory();
-            setSlotGroups(PVEManager.getCardDefineSlots(_saveData, define) ?? new CardGemSlotGroup[0]);
+            _slotGroups = PVEManager.getCardDefineSlots(_saveData, define) ?? new CardGemSlotGroup[0];
             await updateAllGems();
         }
         public void markUnsaved()
@@ -99,14 +100,17 @@ namespace Controllers
             var (groupIndex, slotIndex) = _ui.getHoveredGemSlotIndex(pointer);
             if (groupIndex >= 0 && slotIndex >= 0)
             {
+                var inventory = getInventoryGems();
+                var invGem = inventory[index];
                 var slotGem = getSlotGem(groupIndex, slotIndex);
                 if (slotGem != null)
                 {
                     // 与背包中的进行交换。
-                    var invIndex = removeGemFromSlot(groupIndex, slotIndex);
-                    insertGemToSlot(slotGem.id, groupIndex, slotIndex);
-                    invIndex--;
+                    removeGemFromSlot(groupIndex, slotIndex);
+                    insertGemToSlot(invGem.id, groupIndex, slotIndex);
+                    await updateGemEffect(getSlotGroup(groupIndex));
                     await updateAllGems();
+                    var invIndex = Array.IndexOf(getInventoryGems(), slotGem);
 
                     // 创造一个交换的动画。
                     var viewData = await getGemViewData(slotGem);
@@ -121,9 +125,9 @@ namespace Controllers
                 }
                 else
                 {
-                    var invGem = getInventoryGems()[index];
                     // 镶嵌宝石。
                     insertGemToSlot(invGem.id, groupIndex, slotIndex);
+                    await updateGemEffect(getSlotGroup(groupIndex));
                     await updateAllGems();
 
                     var slotUI = _ui.getSlotGem(groupIndex, slotIndex);
@@ -165,19 +169,23 @@ namespace Controllers
             if (hoverGroup < 0 || hoverSlot < 0)
             {
                 // 移除宝石
-                var invIndex = removeGemFromSlot(groupIndex, slotIndex);
-                if (invIndex >= 0)
+                var slotGem = getSlotGem(groupIndex, slotIndex);
+                if (slotGem != null)
                 {
+                    removeGemFromSlot(groupIndex, slotIndex);
+                    await updateGemEffect(getSlotGroup(groupIndex));
                     await updateAllGems();
+                    var invIndex = Array.IndexOf(getInventoryGems(), slotGem);
                     var source = _ui.getInventoryGem(invIndex);
                     _draggingGem.changeSource(source);
+                    markUnsaved();
                 }
-                markUnsaved();
             }
             else if (groupIndex != hoverGroup || hoverSlot != slotIndex)
             {
                 var hoverGem = getSlotGem(hoverGroup, hoverSlot);
                 moveGemBetweenSlots(groupIndex, slotIndex, hoverGroup, hoverSlot);
+                await updateGemEffect(getSlotGroup(groupIndex));
                 await updateAllGems();
                 if (hoverGem != null)
                 {
@@ -202,21 +210,6 @@ namespace Controllers
         }
         #endregion
 
-        #region 宝石回调
-        private async void onAddGemCallback(CardGemSlotGroup group, int slotIndex, CardGem gem)
-        {
-            await updateGemEffect(group);
-            PVEManager.setCardDefineInsertedGem(_cardDefine, slotIndex, gem);
-            markUnsaved();
-        }
-        private async void onRemoveGemCallback(CardGemSlotGroup group, int slotIndex)
-        {
-            await updateGemEffect(group);
-            PVEManager.setCardDefineInsertedGem(_cardDefine, slotIndex, null);
-            markUnsaved();
-        }
-        #endregion
-
         #endregion
 
         #region 宝石逻辑
@@ -226,39 +219,31 @@ namespace Controllers
             removeInventoryGem(gemId);
             setSlotGem(groupIndex, slotIndex, gem);
         }
-        private int removeGemFromSlot(int groupIndex, int slotIndex)
+        private bool removeGemFromSlot(int groupIndex, int slotIndex)
         {
             var gem = getSlotGem(groupIndex, slotIndex);
-            if (gem == null || !removeSlotGem(groupIndex, slotIndex))
-                return -1;
+            if (gem == null)
+                return false;
+            setSlotGem(groupIndex, slotIndex, null);
             addInventoryGem(gem.id);
-            return Array.IndexOf(getInventoryGems(), gem);
+            return true;
         }
         private void moveGemBetweenSlots(int groupIndex, int slotIndex, int targetGroupIndex, int targetSlotIndex)
         {
             var gem = getSlotGem(groupIndex, slotIndex);
             var targetGem = getSlotGem(targetGroupIndex, targetSlotIndex);
-            removeSlotGem(groupIndex, slotIndex);
-            removeSlotGem(targetGroupIndex, targetSlotIndex);
+            setSlotGem(groupIndex, slotIndex, null);
+            setSlotGem(targetGroupIndex, targetSlotIndex, null);
             setSlotGem(groupIndex, slotIndex, targetGem);
             setSlotGem(targetGroupIndex, targetSlotIndex, gem);
         }
         private void setSlotGem(int groupIndex, int slotIndex, CardGem gem)
         {
-            var group = _slotGroups[groupIndex];
-            var slot = group.getSlotAt(slotIndex);
+            var slot = getSlot(groupIndex, slotIndex);
             slot.setGem(gem);
-        }
-        private bool removeSlotGem(int groupIndex, int slotIndex)
-        {
-            var group = _slotGroups[groupIndex];
-            var slot = group.getSlotAt(slotIndex);
-            var gem = slot.gem;
-            if (gem == null)
-                return false;
-            slot.setGem(null);
-            return true;
 
+            PVEManager.setCardDefineInsertedGem(_cardDefine, slotIndex, gem);
+            markUnsaved();
         }
         private void removeInventoryGem(int gemId)
         {
@@ -272,9 +257,16 @@ namespace Controllers
         }
         private CardGem getSlotGem(int groupIndex, int slotIndex)
         {
-            var group = _slotGroups[groupIndex];
-            var slot = group.getSlotAt(slotIndex);
+            var slot = getSlot(groupIndex, slotIndex);
             return slot.gem;
+        }
+        private CardGemSlot getSlot(int groupIndex, int slotIndex)
+        {
+            return getSlotGroup(groupIndex).getSlotAt(slotIndex);
+        }
+        private CardGemSlotGroup getSlotGroup(int groupIndex)
+        {
+            return _slotGroups[groupIndex];
         }
         private void updateInventory()
         {
@@ -447,26 +439,6 @@ namespace Controllers
         public GeneratedEffect getGemGroupEffect(CardGemSlotGroup group)
         {
             return _cardDefine.getGeneratedEffects()[group.effectIndex];
-        }
-        private void setSlotGroups(CardGemSlotGroup[] groups)
-        {
-            if (_slotGroups != null)
-            {
-                foreach (var slotGroup in _slotGroups)
-                {
-                    slotGroup.onAddGem -= onAddGemCallback;
-                    slotGroup.onRemoveGem -= onRemoveGemCallback;
-                }
-            }
-            _slotGroups = groups;
-            if (_slotGroups != null)
-            {
-                foreach (var slotGroup in _slotGroups)
-                {
-                    slotGroup.onAddGem += onAddGemCallback;
-                    slotGroup.onRemoveGem += onRemoveGemCallback;
-                }
-            }
         }
         #endregion
 
