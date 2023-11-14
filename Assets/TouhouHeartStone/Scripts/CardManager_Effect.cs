@@ -1,5 +1,4 @@
-﻿using Controllers;
-using TouhouCardEngine;
+﻿using TouhouCardEngine;
 using TouhouHeartstone;
 
 namespace Game
@@ -7,6 +6,29 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
+
+        #region 创建效果
+        public GeneratedEffect createEffectByIndex(long cardPoolId, int index)
+        {
+            ActionGraph graph = new ActionGraph();
+            GeneratedEffect effect;
+            if (index == AURA_EFFECT_IDX)
+                effect = new GeneratedAura(graph);
+            else if (index == EVENT_EFFECT_IDX)
+                effect = new GeneratedEventEffect(graph);
+            else if (index == PASSIVE_EFFECT_IDX)
+                effect = new GeneratedPassiveEffect(graph);
+            else
+                effect = new GeneratedActiveEffect(graph);
+            effect.Init();
+
+            var nodeDefiner = getLocalNodeDefiner();
+            graph.DefineNodes(nodeDefiner);
+            return effect;
+        }
+        #endregion
+
+        #region 获取效果
         /// <summary>
         /// 获取所有效果类型的名称
         /// </summary>
@@ -30,24 +52,6 @@ namespace Game
             }
             return effectNames;
         }
-        public GeneratedEffect createEffectByIndex(long cardPoolId, int index)
-        {
-            ActionGraph graph = new ActionGraph();
-            GeneratedEffect effect;
-            if (index == AURA_EFFECT_IDX)
-                effect = new GeneratedAura(graph);
-            else if (index == EVENT_EFFECT_IDX)
-                effect = new GeneratedEventEffect(graph);
-            else if (index == PASSIVE_EFFECT_IDX)
-                effect = new GeneratedPassiveEffect(graph);
-            else
-                effect = new GeneratedActiveEffect(graph);
-            effect.Init();
-
-            var nodeDefiner = getLocalNodeDefiner();
-            graph.DefineNodes(nodeDefiner);
-            return effect;
-        }
         public int getEffectTypeIndex(GeneratedEffect effect)
         {
             if (effect is GeneratedAura)
@@ -60,7 +64,14 @@ namespace Game
                 return ACTIVE_EFFECT_IDX;
         }
         #endregion
+
+        #endregion
+
         #region 属性字段
+        public const int ACTIVE_EFFECT_IDX = 0;
+        public const int PASSIVE_EFFECT_IDX = 1;
+        public const int EVENT_EFFECT_IDX = 2;
+        public const int AURA_EFFECT_IDX = 3;
         readonly string[] _effectTypes = new string[]
         {
             StringTable.EDITOR_EFFECT_NAME_ACTIVE_EFFECT,
@@ -68,10 +79,6 @@ namespace Game
             StringTable.EDITOR_EFFECT_NAME_EVENT_EFFECT,
             StringTable.EDITOR_EFFECT_NAME_AURA_EFFECT,
         };
-        public const int ACTIVE_EFFECT_IDX = 0;
-        public const int PASSIVE_EFFECT_IDX = 1;
-        public const int EVENT_EFFECT_IDX = 2;
-        public const int AURA_EFFECT_IDX = 3;
         #endregion
     }
 }

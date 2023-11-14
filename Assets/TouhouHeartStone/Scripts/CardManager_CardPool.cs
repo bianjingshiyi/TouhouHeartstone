@@ -19,92 +19,8 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
-        /// <summary>
-        /// 读取卡池信息
-        /// </summary>
-        /// <param name="onCardPoolInfoRead"></param>
-        /// <returns>Key为路径，Value为信息</returns>
-        public async Task<Dictionary<string, CardPoolInfo>> loadCardPoolInfosAsync(Action<string, CardPoolInfo> onCardPoolInfoRead = null)
-        {
-            Debug.Log("开始读取卡池信息");
-            _cardPoolInfoDict.Clear();
-            string[] fileList = getCardPoolsPath();
-            for (int i = 0; i < fileList.Length; i++)
-            {
-                string path = fileList[i];
-                try
-                {
-                    Debug.Log($"开始读取卡池信息{path}");
-                    string[] lines;
-                    if (path.StartsWith("sa:"))
-                    {
-                        lines = await game.fileManager.readStreamingTextFile(path.Substring(3, path.Length - 3), lineCount: 1);
-                    }
-                    else
-                    {
-                        lines = await game.fileManager.readTextFile(path, lineCount: 1);
-                    }
-                    if (lines == null || lines.Length < 1)
-                    {
-                        Debug.LogWarning($"读取卡池信息{path}为空");
-                        continue;
-                    }
-                    CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
 
-                    removeConflictCardPoolInfo(cardPool);
-                    _cardPoolInfoDict.Add(path, cardPool);
-                    onCardPoolInfoRead?.Invoke(path, cardPool);
-                    Debug.Log($"读取卡池信息{path}完毕");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"读取卡池信息{path}失败：{e}");
-                }
-            }
-
-
-            // 旧版本转换
-            // 将dependencies转为dependencyRefs;
-            foreach (var pair in _cardPoolInfoDict)
-            {
-                var cardPool = pair.Value;
-                if (cardPool.dependencyRefs == null && cardPool.dependencies != null)
-                {
-                    var depInfos = cardPool.dependencies.SelectMany(depPoolId => _cardPoolInfoDict.Values.Where(p => p.cardPoolId == depPoolId));
-                    var depRefs = depInfos.Select(poolInfo => poolInfo.ToReference());
-                    cardPool.dependencies = null;
-                    cardPool.dependencyRefs = depRefs.ToArray();
-                }
-            }
-
-            Debug.Log($"卡池信息读取完毕，共{fileList.Length}个卡池");
-            return new Dictionary<string, CardPoolInfo>(_cardPoolInfoDict);
-        }
-        /// <summary>
-        /// 获取所有卡池的路径
-        /// </summary>
-        /// <returns></returns>
-        public string[] getCardPoolsPath()
-        {
-            //自定义卡池，C盘的完整地址或者是Android的Data地址
-            string searchPattern = string.Intern($"*.{_cardPoolFilePostfix}");
-            List<string> fileList = new List<string>(game.fileManager.getPersistentFiles(_cardPoolDirName, searchPattern, true));
-            if (Application.isEditor)
-            {
-                //编辑器下的官方卡池，位于项目文件夹下的ExternalData中
-                string[] files = game.fileManager.getFiles(Path.GetFullPath(_editorCardPoolDirName), searchPattern);
-                fileList.AddRange(files);
-                Debug.Log($"获取编辑器卡池：\r\n{string.Join(",\r\n", files)}");
-            }
-            if (!Application.isEditor || _enableStreamingAssetsInEditor)
-            {
-                //官方卡池，以sa:开头的StreamingAssets
-                string[] files = game.fileManager.getStreamingFiles(_cardPoolDirName, searchPattern);
-                fileList.AddRange(files);
-                Debug.Log($"获取官方卡池：\r\n{string.Join(",\r\n", files)}");
-            }
-            return fileList.ToArray();
-        }
+        #region 创建卡池
         public void createCardPool(out CardPoolInfo cardPoolInfo, out CardPool cardPool)
         {
             //int cardPoolId = 0;
@@ -132,6 +48,32 @@ namespace Game
             _cardPoolDict[cardPoolRef] = cardPool;
             _creatingCardPoolInfo = cardPoolInfo;
         }
+        public bool isCreatingCardPool(long cardPoolId)
+        {
+            if (_creatingCardPoolInfo == null)
+                return false;
+            return _creatingCardPoolInfo.cardPoolId == cardPoolId;
+        }
+        public void finishCreatingCardPool()
+        {
+            if (_creatingCardPoolInfo == null)
+                return;
+            _creatingCardPoolInfo = null;
+        }
+        public void deleteCreatingCardPool()
+        {
+            if (_creatingCardPoolInfo == null)
+                return;
+            var cardPoolRefs = _cardPoolDict.Keys.Where(p => p.CompareCardPool(_creatingCardPoolInfo)).ToArray();
+            foreach (var cardPoolRef in cardPoolRefs)
+            {
+                _cardPoolDict.Remove(cardPoolRef);
+            }
+            _creatingCardPoolInfo = null;
+        }
+        #endregion
+
+        #region 保存卡池
         /// <summary>
         /// 保存卡池，如果卡池没有被保存过那么会被分配一个新的地址，否则会覆盖已经保存的文件。
         /// </summary>
@@ -239,7 +181,515 @@ namespace Game
             Debug.Log($"保存卡池{path}成功");
             return true;
         }
+        #endregion
 
+        #region 读取卡池
+        /// <summary>
+        /// 读取卡池信息
+        /// </summary>
+        /// <param name="onCardPoolInfoRead"></param>
+        /// <returns>Key为路径，Value为信息</returns>
+        public async Task<Dictionary<string, CardPoolInfo>> loadCardPoolInfosAsync(Action<string, CardPoolInfo> onCardPoolInfoRead = null)
+        {
+            Debug.Log("开始读取卡池信息");
+            _cardPoolInfoDict.Clear();
+            string[] fileList = getCardPoolsPath();
+            for (int i = 0; i < fileList.Length; i++)
+            {
+                string path = fileList[i];
+                try
+                {
+                    Debug.Log($"开始读取卡池信息{path}");
+                    string[] lines;
+                    if (path.StartsWith("sa:"))
+                    {
+                        lines = await game.fileManager.readStreamingTextFile(path.Substring(3, path.Length - 3), lineCount: 1);
+                    }
+                    else
+                    {
+                        lines = await game.fileManager.readTextFile(path, lineCount: 1);
+                    }
+                    if (lines == null || lines.Length < 1)
+                    {
+                        Debug.LogWarning($"读取卡池信息{path}为空");
+                        continue;
+                    }
+                    CardPoolInfo cardPool = parseCardPoolInfo(lines[0]);
+
+                    removeConflictCardPoolInfo(cardPool);
+                    _cardPoolInfoDict.Add(path, cardPool);
+                    onCardPoolInfoRead?.Invoke(path, cardPool);
+                    Debug.Log($"读取卡池信息{path}完毕");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"读取卡池信息{path}失败：{e}");
+                }
+            }
+
+
+            // 旧版本转换
+            // 将dependencies转为dependencyRefs;
+            foreach (var pair in _cardPoolInfoDict)
+            {
+                var cardPool = pair.Value;
+                if (cardPool.dependencyRefs == null && cardPool.dependencies != null)
+                {
+                    var depInfos = cardPool.dependencies.SelectMany(depPoolId => _cardPoolInfoDict.Values.Where(p => p.cardPoolId == depPoolId));
+                    var depRefs = depInfos.Select(poolInfo => poolInfo.ToReference());
+                    cardPool.dependencies = null;
+                    cardPool.dependencyRefs = depRefs.ToArray();
+                }
+            }
+
+            Debug.Log($"卡池信息读取完毕，共{fileList.Length}个卡池");
+            return new Dictionary<string, CardPoolInfo>(_cardPoolInfoDict);
+        }
+
+        /// <summary>
+        /// 从目标路径上加载卡池
+        /// </summary>
+        /// <param name="path">流文件路径或者绝对路径</param>
+        /// <param name="handleException">是否在方法内就捕获异常。</param>
+        /// <exception cref="FileLoadException">卡池文件为空。</exception>
+        /// <exception cref="FormatException">反序列化失败。</exception>
+        /// <returns></returns>
+        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> loadCardPool(string path, bool handleException = false)
+        {
+            //初始化JSON
+            if (!JsonHelper.isInited)
+            {
+                JsonHelper.init();
+            }
+            try
+            {
+                string[] lines;
+                if (path.StartsWith("sa:"))
+                {
+                    lines = await game.fileManager.readStreamingTextFile(path, 0, 0);
+                }
+                else
+                {
+                    lines = await game.fileManager.readTextFile(path, 0, 0);
+                }
+                if (lines == null || lines.Length < 1)
+                {
+                    throw new FileLoadException($"卡池文件{path}为空");
+                }
+                CardPoolInfo cardPoolInfo;
+                CardPool cardPool;
+                try
+                {
+                    (cardPoolInfo, cardPool) = parseCardPool(lines);
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException($"反序列化卡池{path}失败：{e}", e);
+                }
+                removeConflictCardPoolInfo(cardPoolInfo);
+                addCardPool(cardPool, cardPoolInfo, path);
+
+                //错误信息修复
+                await fixCardPool(cardPoolInfo, cardPool);
+                return (cardPoolInfo, cardPool);
+            }
+            catch (Exception e)
+            {
+                if (!handleException)
+                {
+                    throw;
+                }
+                Debug.LogError($"卡池{path}加载失败：{e}");
+                return (null, null);
+            }
+        }
+
+        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(long cardPoolId, int version)
+        {
+            try
+            {
+                string resID = CardPoolReference.GetResourceID(cardPoolId, version);
+                if (game.cache.FileExists(game.fileManager, ResourceType.CardDefine, resID))
+                {
+                    string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
+                    var cardPoolData = await loadCardPool(path);
+                    return cardPoolData;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+            return (null, null);
+        }
+        public async Task<(CardDefine[] defines, CardSkinData[] skins)> loadCachedCardDefinesAsync(long cardPoolId, int version)
+        {
+            List<CardDefine> defineList = new List<CardDefine>();
+            List<CardSkinData> skinList = new List<CardSkinData>();
+
+            var cardPoolData = await loadCachedCardPoolAsync(cardPoolId, version);
+            var cardPool = cardPoolData.cardPool;
+            if (cardPool != null)
+            {
+                defineList.AddRange(cardPool.cardDefineList);
+                skinList.AddRange(cardPool.cardSkinList);
+            }
+            return (defineList.ToArray(), skinList.ToArray());
+        }
+        public async Task<Dictionary<ICardPoolReference, CardDefine[]>> reloadCardPoolsAndGetCardDefinesAsync(IEnumerable<ICardPoolReference> cardPoolsRef)
+        {
+            Dictionary<ICardPoolReference, CardDefine[]> cardPoolDict = new Dictionary<ICardPoolReference, CardDefine[]>();
+            var cardPoolInfoDict = await loadCardPoolInfosAsync();
+            foreach (var cardPoolRef in cardPoolsRef)
+            {
+                if (isBuiltinCardPool(cardPoolRef.CardPoolID))
+                {
+                    //内置卡牌
+                    cardPoolDict.Add(builtinCardPoolReference, defineDic.Values.ToArray());
+                    continue;
+                }
+                foreach (var pair in cardPoolInfoDict)
+                {
+                    if (pair.Value.CompareCardPool(cardPoolRef))
+                    {
+                        var result = await loadCardPool(pair.Key);
+                        cardPoolDict.Add(result.cardPoolInfo.ToReference(), result.cardPool.cardDefineList.ToArray());
+                    }
+                }
+            }
+            return cardPoolDict;
+        }
+        #endregion
+
+        #region 获取卡池
+        /// <summary>
+        /// 获取所有卡池的路径
+        /// </summary>
+        /// <returns></returns>
+        public string[] getCardPoolsPath()
+        {
+            //自定义卡池，C盘的完整地址或者是Android的Data地址
+            string searchPattern = string.Intern($"*.{_cardPoolFilePostfix}");
+            List<string> fileList = new List<string>(game.fileManager.getPersistentFiles(_cardPoolDirName, searchPattern, true));
+            if (Application.isEditor)
+            {
+                //编辑器下的官方卡池，位于项目文件夹下的ExternalData中
+                string[] files = game.fileManager.getFiles(Path.GetFullPath(_editorCardPoolDirName), searchPattern);
+                fileList.AddRange(files);
+                Debug.Log($"获取编辑器卡池：\r\n{string.Join(",\r\n", files)}");
+            }
+            if (!Application.isEditor || _enableStreamingAssetsInEditor)
+            {
+                //官方卡池，以sa:开头的StreamingAssets
+                string[] files = game.fileManager.getStreamingFiles(_cardPoolDirName, searchPattern);
+                fileList.AddRange(files);
+                Debug.Log($"获取官方卡池：\r\n{string.Join(",\r\n", files)}");
+            }
+            return fileList.ToArray();
+        }
+        /// <summary>
+        /// 根据卡池路径获取卡池。如果卡池没有被加载，加载卡池。
+        /// </summary>
+        /// <param name="path">卡池路径。</param>
+        /// <param name="handleException">是否在方法内就捕获异常。</param>
+        /// <returns></returns>
+        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> getOrLoadCardPool(string path, bool handleException = false)
+        {
+            if (tryGetCardPool(path, out var cardPool) && _cardPoolInfoDict.TryGetValue(path, out CardPoolInfo cardPoolInfo))
+            {
+                return (cardPoolInfo, cardPool);
+            }
+
+            if (path is string)
+            {
+                return await loadCardPool(path, handleException);
+            }
+            return (null, null);
+        }
+        /// <summary>
+        /// 根据卡池引用获取卡池。如果卡池没有被加载，加载卡池。
+        /// </summary>
+        /// <param name="path">卡池引用。</param>
+        /// <param name="handleException">是否在方法内就捕获异常。</param>
+        /// <returns></returns>
+        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> getOrLoadCardPool(ICardPoolReference poolRef, bool handleException = false)
+        {
+            if (tryGetCardPool(poolRef, out var cardPool))
+            {
+                return (getCardPoolInfo(poolRef), cardPool);
+            }
+
+            var path = getCardPoolPath(poolRef);
+            if (path is string)
+            {
+                return await loadCardPool(path, handleException);
+            }
+            var cache = await loadCachedCardPoolAsync(poolRef);
+            if (cache.info != null && cache.cardPool != null)
+            {
+                return cache;
+            }
+            return (null, null);
+        }
+        /// 根据卡池ID获取卡池引用（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <returns></returns>
+        public ICardPoolReference getCardPoolReference(long cardPoolId)
+        {
+            return getLocalCardPoolReference(cardPoolId, true);
+        }
+        /// <summary>
+        /// <summary>
+        /// 根据卡池ID获取本地的卡池（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <param name="fallbackCached">如果没有非缓存卡池，是否获取缓存中的卡池？</param>
+        /// <param name="cardPool">获取到的卡池。</param>
+        /// <returns></returns>
+        public CardPool getLocalCardPool(long cardPoolId, bool fallbackCached = false)
+        {
+            var cardPoolRef = getLocalCardPoolReference(cardPoolId, fallbackCached);
+            if (cardPoolRef == null)
+            {
+                return null;
+            }
+            return _cardPoolDict[cardPoolRef];
+        }
+        /// <summary>
+        /// 根据卡池ID获取本地的卡池（包括缓存内的卡池）。
+        /// </summary>
+        /// <param name="cardPoolId"></param>
+        /// <param name="cardPool"></param>
+        /// <returns></returns>
+        public bool tryGetCardPool(long cardPoolId, out CardPool cardPool)
+        {
+            cardPool = _cardPoolDict.FirstOrDefault(p => p.Key.CardPoolID == cardPoolId).Value;
+            return cardPool != null;
+        }
+        public bool tryGetCardPool(ICardPoolReference cardPoolRef, out CardPool cardPool)
+        {
+            if (cardPoolRef == null)
+            {
+                cardPool = null;
+                return false;
+            }
+            cardPool = _cardPoolDict.FirstOrDefault(p => cardPoolRef.CompareCardPool(p.Key)).Value;
+            return cardPool != null;
+        }
+        public bool tryGetCardPool(string path, out CardPool cardPool)
+        {
+            if (_cardPoolInfoDict.TryGetValue(path, out CardPoolInfo cardPoolInfo))
+            {
+                return tryGetCardPool(cardPoolInfo.ToReference(), out cardPool);
+            }
+            else
+            {
+                cardPool = null;
+                return false;
+            }
+        }
+        public bool removeCardPool(ICardPoolReference cardPoolRef)
+        {
+            if (_cardPoolDict.ContainsKey(cardPoolRef))
+            {
+                _cardPoolDict.Remove(cardPoolRef);
+            }
+            string path = null;
+            foreach (var pair in _cardPoolInfoDict)
+            {
+                if (pair.Value.CompareCardPool(cardPoolRef))
+                {
+                    path = pair.Key;
+                    break;
+                }
+            }
+            if (path != null)
+            {
+                _cardPoolInfoDict.Remove(path);
+                game.fileManager.deleteFile(path);
+                return true;
+            }
+            else
+                return false;
+        }
+        public Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(ICardPoolReference poolRef)
+        {
+            return loadCachedCardPoolAsync(poolRef.CardPoolID, poolRef.CardPoolVersion);
+        }
+        public CardPoolInfo getCardPoolInfoOfCard(CardDefine card)
+        {
+            return getCardPoolInfo(getCardPoolReferenceOfCard(card));
+        }
+        public CardPool getCardPoolOfCard(CardDefine card)
+        {
+            foreach (var pair in _cardPoolDict)
+            {
+                if (pair.Key.CardPoolID == card.cardPoolId && pair.Value.cardDefineList.Contains(card))
+                {
+                    return pair.Value;
+                }
+            }
+            return null;
+        }
+        public string getCardPoolPath(CardPoolInfo cardPoolInfo)
+        {
+            return getCardPoolPath(cardPoolInfo.ToReference());
+        }
+        /// <summary>
+        /// 根据卡池引用获取卡池路径（结果为第一个符合ID的卡池）。
+        /// </summary>
+        /// <param name="cardPoolRef">卡池引用。</param>
+        /// <returns>卡池路径。</returns>
+        public string getCardPoolPath(ICardPoolReference cardPoolRef)
+        {
+            foreach (var pair in _cardPoolInfoDict)
+            {
+                if (pair.Value.CompareCardPool(cardPoolRef))
+                    return pair.Key;
+            }
+            return null;
+        }
+        public CardPoolInfo getCardPoolInfo(long cardPoolId)
+        {
+            foreach (var cardPool in _cardPoolInfoDict.Values)
+            {
+                if (cardPool.cardPoolId == cardPoolId)
+                    return cardPool;
+            }
+            if (_creatingCardPoolInfo != null && _creatingCardPoolInfo.cardPoolId == cardPoolId)
+            {
+                return _creatingCardPoolInfo;
+            }
+            return null;
+        }
+        public CardPoolInfo getCardPoolInfo(ICardPoolReference cardPoolRef)
+        {
+            foreach (var cardPool in _cardPoolInfoDict.Values)
+            {
+                if (cardPool.CompareCardPool(cardPoolRef))
+                    return cardPool;
+            }
+            if (_creatingCardPoolInfo != null && _creatingCardPoolInfo.CompareCardPool(cardPoolRef))
+            {
+                return _creatingCardPoolInfo;
+            }
+            return null;
+        }
+        #endregion
+
+        #region 获取卡池引用
+        public ICardPoolReference getCardPoolReferenceOfBuff(BuffDefine buff)
+        {
+            if (isBuiltinCardPool(buff.cardPoolId))
+                return builtinCardPoolReference;
+            foreach (var pair in _cardPoolDict)
+            {
+                if (pair.Key.CardPoolID == buff.cardPoolId && pair.Value.buffDefineList.Contains(buff))
+                {
+                    return pair.Key;
+                }
+            }
+            return null;
+        }
+        public ICardPoolReference getCardPoolReferenceOfCard(CardDefine card)
+        {
+            if (card == null)
+                return null;
+            if (isBuiltinCard(card))
+                return builtinCardPoolReference;
+            foreach (var pair in _cardPoolDict)
+            {
+                if (pair.Key.CardPoolID == card.cardPoolId && pair.Value.cardDefineList.Contains(card))
+                {
+                    return pair.Key;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 在一个卡池引用的集合中，根据卡池的ID获取指定的卡池引用。
+        /// 多用于根据卡池ID获取某个房间内允许的卡池。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <param name="set">卡池引用集合。</param>
+        /// <param name="fallbackLocal">如果没有找到卡池引用，是否获取本地的卡池引用。</param>
+        /// <returns>获取到的卡池引用。</returns>
+        public ICardPoolReference getCardPoolReferenceInSet(long cardPoolId, IEnumerable<ICardPoolReference> set, bool fallbackLocal = true)
+        {
+            // 集合不存在，返回null。
+            if (set == null)
+            {
+                return null;
+            }
+
+            // 内置卡池，返回内置卡尺引用。
+            if (isBuiltinCardPool(cardPoolId))
+            {
+                return builtinCardPoolReference;
+            }
+
+            // 查找集合内的卡池引用。
+            var pool = set.FirstOrDefault(p => p.CardPoolID == cardPoolId);
+            if (pool != null)
+            {
+                return pool.ToReference();
+            }
+
+            // 没有找到，获取本地卡池。
+            if (fallbackLocal)
+            {
+                return getLocalCardPoolReference(cardPoolId);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 根据卡池ID获取本地的卡池引用（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <param name="fallbackCached">如果没有非缓存卡池，是否获取缓存中的卡池？</param>
+        /// <returns></returns>
+        public ICardPoolReference getLocalCardPoolReference(long cardPoolId, bool fallbackCached = false)
+        {
+            if (isCreatingCardPool(cardPoolId))
+            {
+                return new CardPoolReference(cardPoolId, 0);
+            }
+            if (isBuiltinCardPool(cardPoolId))
+            {
+                return builtinCardPoolReference;
+            }
+            var info = _cardPoolInfoDict.Values.FirstOrDefault(p => p.cardPoolId == cardPoolId && isLocalCardPool(p));
+            if (info == null && fallbackCached)
+            {
+                info = _cardPoolInfoDict.Values.FirstOrDefault(p => p.cardPoolId == cardPoolId);
+            }
+            if (info != null)
+            {
+                return info.ToReference();
+            }
+            return null;
+        }
+        /// <summary>
+        /// 检测本地是否有某个卡池及其版本。
+        /// </summary>
+        /// <param name="includingCache">是否包括缓存内的卡池。</param>
+        /// <returns></returns>
+        public bool hasCardPool(ICardPoolReference poolRef, bool includingCache = false)
+        {
+            if (isBuiltinCardPool(poolRef.CardPoolID) || isInnateCardPool(poolRef.CardPoolID))
+                return true;
+            if (!includingCache && !isLocalCardPool(poolRef))
+            {
+                return false;
+            }
+            var cardPoolInfo = getCardPoolInfo(poolRef);
+            return cardPoolInfo != null;
+        }
+        #endregion
+
+        #region 卡池解析
         /// <summary>
         /// 获取卡池内的所有包含过时节点的节点图。
         /// </summary>
@@ -329,765 +779,9 @@ namespace Game
                 return (cardPoolInfo, cardPool);
             }
         }
-
-        /// <summary>
-        /// 从目标路径上加载卡池
-        /// </summary>
-        /// <param name="path">流文件路径或者绝对路径</param>
-        /// <param name="handleException">是否在方法内就捕获异常。</param>
-        /// <exception cref="FileLoadException">卡池文件为空。</exception>
-        /// <exception cref="FormatException">反序列化失败。</exception>
-        /// <returns></returns>
-        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> loadCardPool(string path, bool handleException = false)
-        {
-            //初始化JSON
-            if (!JsonHelper.isInited)
-            {
-                JsonHelper.init();
-            }
-            try
-            {
-                string[] lines;
-                if (path.StartsWith("sa:"))
-                {
-                    lines = await game.fileManager.readStreamingTextFile(path, 0, 0);
-                }
-                else
-                {
-                    lines = await game.fileManager.readTextFile(path, 0, 0);
-                }
-                if (lines == null || lines.Length < 1)
-                {
-                    throw new FileLoadException($"卡池文件{path}为空");
-                }
-                CardPoolInfo cardPoolInfo;
-                CardPool cardPool;
-                try
-                {
-                    (cardPoolInfo, cardPool) = parseCardPool(lines);
-                }
-                catch (Exception e)
-                {
-                    throw new FormatException($"反序列化卡池{path}失败：{e}", e);
-                }
-                removeConflictCardPoolInfo(cardPoolInfo);
-                addCardPool(cardPool, cardPoolInfo, path);
-
-                //错误信息修复
-                await fixCardPool(cardPoolInfo, cardPool);
-                return (cardPoolInfo, cardPool);
-            }
-            catch (Exception e)
-            {
-                if (!handleException)
-                {
-                    throw;
-                }
-                Debug.LogError($"卡池{path}加载失败：{e}");
-                return (null, null);
-            }
-        }
-
-        /// <summary>
-        /// 根据卡池路径获取卡池。如果卡池没有被加载，加载卡池。
-        /// </summary>
-        /// <param name="path">卡池路径。</param>
-        /// <param name="handleException">是否在方法内就捕获异常。</param>
-        /// <returns></returns>
-        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> getOrLoadCardPool(string path, bool handleException = false)
-        {
-            if (tryGetCardPool(path, out var cardPool) && _cardPoolInfoDict.TryGetValue(path, out CardPoolInfo cardPoolInfo))
-            {
-                return (cardPoolInfo, cardPool);
-            }
-
-            if (path is string)
-            {
-                return await loadCardPool(path, handleException);
-            }
-            return (null, null);
-        }
-        /// <summary>
-        /// 根据卡池引用获取卡池。如果卡池没有被加载，加载卡池。
-        /// </summary>
-        /// <param name="path">卡池引用。</param>
-        /// <param name="handleException">是否在方法内就捕获异常。</param>
-        /// <returns></returns>
-        public async Task<(CardPoolInfo cardPoolInfo, CardPool cardPool)> getOrLoadCardPool(ICardPoolReference poolRef, bool handleException = false)
-        {
-            if (tryGetCardPool(poolRef, out var cardPool))
-            {
-                return (getCardPoolInfo(poolRef), cardPool);
-            }
-
-            var path = getCardPoolPath(poolRef);
-            if (path is string)
-            {
-                return await loadCardPool(path, handleException);
-            }
-            var cache = await loadCachedCardPoolAsync(poolRef);
-            if (cache.info != null && cache.cardPool != null)
-            {
-                return cache;
-            }
-            return (null, null);
-        }
-
-        /// <summary>
-        /// 在一个卡池引用的集合中，根据卡池的ID获取指定的卡池引用。
-        /// 多用于根据卡池ID获取某个房间内允许的卡池。
-        /// </summary>
-        /// <param name="cardPoolId">卡池ID。</param>
-        /// <param name="set">卡池引用集合。</param>
-        /// <param name="fallbackLocal">如果没有找到卡池引用，是否获取本地的卡池引用。</param>
-        /// <returns>获取到的卡池引用。</returns>
-        public ICardPoolReference getCardPoolReferenceInSet(long cardPoolId, IEnumerable<ICardPoolReference> set, bool fallbackLocal = true)
-        {
-            // 集合不存在，返回null。
-            if (set == null)
-            {
-                return null;
-            }
-
-            // 内置卡池，返回内置卡尺引用。
-            if (isBuiltinCardPool(cardPoolId))
-            {
-                return builtinCardPoolReference;
-            }
-
-            // 查找集合内的卡池引用。
-            var pool = set.FirstOrDefault(p => p.CardPoolID == cardPoolId);
-            if (pool != null)
-            {
-                return pool.ToReference();
-            }
-
-            // 没有找到，获取本地卡池。
-            if (fallbackLocal)
-            {
-                return getLocalCardPoolReference(cardPoolId);
-            }
-            return null;
-        }
-        /// <summary>
-        /// 根据卡池ID获取卡池引用（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
-        /// </summary>
-        /// <param name="cardPoolId">卡池ID。</param>
-        /// <returns></returns>
-        public ICardPoolReference getCardPoolReference(long cardPoolId)
-        {
-            return getLocalCardPoolReference(cardPoolId, true);
-        }
-        /// <summary>
-        /// 根据卡池ID获取本地的卡池引用（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
-        /// </summary>
-        /// <param name="cardPoolId">卡池ID。</param>
-        /// <param name="fallbackCached">如果没有非缓存卡池，是否获取缓存中的卡池？</param>
-        /// <returns></returns>
-        public ICardPoolReference getLocalCardPoolReference(long cardPoolId, bool fallbackCached = false)
-        {
-            if (isCreatingCardPool(cardPoolId))
-            {
-                return new CardPoolReference(cardPoolId, 0);
-            }
-            if (isBuiltinCardPool(cardPoolId))
-            {
-                return builtinCardPoolReference;
-            }
-            var info = _cardPoolInfoDict.Values.FirstOrDefault(p => p.cardPoolId == cardPoolId && isLocalCardPool(p));
-            if (info == null && fallbackCached)
-            {
-                info = _cardPoolInfoDict.Values.FirstOrDefault(p => p.cardPoolId == cardPoolId);
-            }
-            if (info != null)
-            {
-                return info.ToReference();
-            }
-            return null;
-        }
-        /// <summary>
-        /// 根据卡池ID获取本地的卡池（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
-        /// </summary>
-        /// <param name="cardPoolId">卡池ID。</param>
-        /// <param name="fallbackCached">如果没有非缓存卡池，是否获取缓存中的卡池？</param>
-        /// <param name="cardPool">获取到的卡池。</param>
-        /// <returns></returns>
-        public CardPool getLocalCardPool(long cardPoolId, bool fallbackCached = false)
-        {
-            var cardPoolRef = getLocalCardPoolReference(cardPoolId, fallbackCached);
-            if (cardPoolRef == null)
-            {
-                return null;
-            }
-            return _cardPoolDict[cardPoolRef];
-        }
-        /// <summary>
-        /// 根据卡池ID获取本地的卡池（包括缓存内的卡池）。
-        /// </summary>
-        /// <param name="cardPoolId"></param>
-        /// <param name="cardPool"></param>
-        /// <returns></returns>
-        public bool tryGetCardPool(long cardPoolId, out CardPool cardPool)
-        {
-            cardPool = _cardPoolDict.FirstOrDefault(p => p.Key.CardPoolID == cardPoolId).Value;
-            return cardPool != null;
-        }
-        public bool tryGetCardPool(ICardPoolReference cardPoolRef, out CardPool cardPool)
-        {
-            if (cardPoolRef == null)
-            {
-                cardPool = null;
-                return false;
-            }
-            cardPool = _cardPoolDict.FirstOrDefault(p => cardPoolRef.CompareCardPool(p.Key)).Value;
-            return cardPool != null;
-        }
-        public bool tryGetCardPool(string path, out CardPool cardPool)
-        {
-            if (_cardPoolInfoDict.TryGetValue(path, out CardPoolInfo cardPoolInfo))
-            {
-                return tryGetCardPool(cardPoolInfo.ToReference(), out cardPool);
-            }
-            else
-            {
-                cardPool = null;
-                return false;
-            }
-        }
-        public bool removeCardPool(ICardPoolReference cardPoolRef)
-        {
-            if (_cardPoolDict.ContainsKey(cardPoolRef))
-            {
-                _cardPoolDict.Remove(cardPoolRef);
-            }
-            string path = null;
-            foreach (var pair in _cardPoolInfoDict)
-            {
-                if (pair.Value.CompareCardPool(cardPoolRef))
-                {
-                    path = pair.Key;
-                    break;
-                }
-            }
-            if (path != null)
-            {
-                _cardPoolInfoDict.Remove(path);
-                game.fileManager.deleteFile(path);
-                return true;
-            }
-            else
-                return false;
-        }
-
-        public Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(ICardPoolReference poolRef)
-        {
-            return loadCachedCardPoolAsync(poolRef.CardPoolID, poolRef.CardPoolVersion);
-        }
-        public async Task<(CardPoolInfo info, CardPool cardPool)> loadCachedCardPoolAsync(long cardPoolId, int version)
-        {
-            try
-            {
-                string resID = CardPoolReference.GetResourceID(cardPoolId, version);
-                if (game.cache.FileExists(game.fileManager, ResourceType.CardDefine, resID))
-                {
-                    string path = game.cache.GetCachePath(ResourceType.CardDefine, resID);
-                    var cardPoolData = await loadCardPool(path);
-                    return cardPoolData;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-            }
-            return (null, null);
-        }
-        public async Task<(CardDefine[] defines, CardSkinData[] skins)> loadCachedCardDefinesAsync(long cardPoolId, int version)
-        {
-            List<CardDefine> defineList = new List<CardDefine>();
-            List<CardSkinData> skinList = new List<CardSkinData>();
-
-            var cardPoolData = await loadCachedCardPoolAsync(cardPoolId, version);
-            var cardPool = cardPoolData.cardPool;
-            if (cardPool != null)
-            {
-                defineList.AddRange(cardPool.cardDefineList);
-                skinList.AddRange(cardPool.cardSkinList);
-            }
-            return (defineList.ToArray(), skinList.ToArray());
-        }
-        public async Task<Dictionary<ICardPoolReference, CardDefine[]>> reloadCardPoolsAndGetCardDefinesAsync(IEnumerable<ICardPoolReference> cardPoolsRef)
-        {
-            Dictionary<ICardPoolReference, CardDefine[]> cardPoolDict = new Dictionary<ICardPoolReference, CardDefine[]>();
-            var cardPoolInfoDict = await loadCardPoolInfosAsync();
-            foreach (var cardPoolRef in cardPoolsRef)
-            {
-                if (isBuiltinCardPool(cardPoolRef.CardPoolID))
-                {
-                    //内置卡牌
-                    cardPoolDict.Add(builtinCardPoolReference, defineDic.Values.ToArray());
-                    continue;
-                }
-                foreach (var pair in cardPoolInfoDict)
-                {
-                    if (pair.Value.CompareCardPool(cardPoolRef))
-                    {
-                        var result = await loadCardPool(pair.Key);
-                        cardPoolDict.Add(result.cardPoolInfo.ToReference(), result.cardPool.cardDefineList.ToArray());
-                    }
-                }
-            }
-            return cardPoolDict;
-        }
-        #region 卡牌
-        public void createCard(CardPoolInfo cardPoolInfo, out CardDefine cardDefine, out CardSkinData cardSkin)
-        {
-            if (!tryGetCardPool(cardPoolInfo.ToReference(), out CardPool cardPool))
-            {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolInfo.cardPoolId}");
-            }
-            int cardId = 0;
-            for (int i = 1; i < 0xFFFF; i++)
-            {
-                cardId = i;
-                if (cardPool.cardDefineList.Exists(c => c.id == cardId))
-                    continue;
-                break;
-            }
-            cardDefine = new CardDefine(cardId, DEFINE.SERVANT);
-            cardDefine.cardPoolId = cardPoolInfo.cardPoolId;
-            cardSkin = new CardSkinData();
-            cardSkin.id = cardDefine.id;
-        }
-        public void addCard(CardPoolInfo cardPoolInfo, CardDefine cardDefine)
-        {
-            addCard(cardPoolInfo.cardPoolId, cardDefine);
-        }
-        public void addCard(long cardPoolId, CardDefine cardDefine)
-        {
-            var cardPool = getLocalCardPool(cardPoolId);
-            if (cardPool == null)
-            {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-            }
-            cardPool.cardDefineList.Add(cardDefine);
-        }
-        public void removeCard(CardDefine card)
-        {
-            var cardPool = getCardPoolOfCard(card);
-            if (cardPool != null)
-            {
-                if (cardPool.cardDefineList.Remove(card))
-                {
-                    cardPool.cardSkinList.RemoveAll(s => s.id == card.id);
-                }
-            }
-        }
-        public void removeCard(long cardPoolId, int cardId)
-        {
-            removeCard(getCardDefine(cardPoolId, cardId));
-        }
-        public CardDefine cloneCardDefine(CardDefine define)
-        {
-            var json = new SerializableCardDefine(define).toJson();
-            var cloneSeri = JsonHelper.fromJson<SerializableCardDefine>(json);
-            var nodeDefiner = getLocalNodeDefiner();
-            var clone = cloneSeri.toCardDefine(nodeDefiner);
-            clone.cardPoolId = define.cardPoolId;
-            return clone;
-        }
-        public CardSkinData[] cloneCardSkins(CardPoolInfo info, int cardId)
-        {
-            return cloneCardSkins(getAllSkins(info.ToReference(), cardId));
-        }
-        public CardSkinData[] cloneCardSkins(CardSkinData[] skins)
-        {
-            var json = skins.toJson();
-            var clone = JsonHelper.fromJson<CardSkinData[]>(json);
-            return clone;
-        }
         #endregion
-        public CardPoolInfo getCardPoolInfoOfCard(CardDefine card)
-        {
-            return getCardPoolInfo(getCardPoolReferenceOfCard(card));
-        }
-        public ICardPoolReference getCardPoolReferenceOfCard(CardDefine card)
-        {
-            if (card == null)
-                return null;
-            if (isBuiltinCard(card))
-                return builtinCardPoolReference;
-            foreach (var pair in _cardPoolDict)
-            {
-                if (pair.Key.CardPoolID == card.cardPoolId && pair.Value.cardDefineList.Contains(card))
-                {
-                    return pair.Key;
-                }
-            }
-            return null;
-        }
-        public CardPool getCardPoolOfCard(CardDefine card)
-        {
-            foreach (var pair in _cardPoolDict)
-            {
-                if (pair.Key.CardPoolID == card.cardPoolId && pair.Value.cardDefineList.Contains(card))
-                {
-                    return pair.Value;
-                }
-            }
-            return null;
-        }
-        public string getCardPoolPath(CardPoolInfo cardPoolInfo)
-        {
-            return getCardPoolPath(cardPoolInfo.ToReference());
-        }
-        /// <summary>
-        /// 根据卡池引用获取卡池路径（结果为第一个符合ID的卡池）。
-        /// </summary>
-        /// <param name="cardPoolRef">卡池引用。</param>
-        /// <returns>卡池路径。</returns>
-        public string getCardPoolPath(ICardPoolReference cardPoolRef)
-        {
-            foreach (var pair in _cardPoolInfoDict)
-            {
-                if (pair.Value.CompareCardPool(cardPoolRef))
-                    return pair.Key;
-            }
-            return null;
-        }
-        public CardPoolInfo getCardPoolInfo(long cardPoolId)
-        {
-            foreach (var cardPool in _cardPoolInfoDict.Values)
-            {
-                if (cardPool.cardPoolId == cardPoolId)
-                    return cardPool;
-            }
-            if (_creatingCardPoolInfo != null && _creatingCardPoolInfo.cardPoolId == cardPoolId)
-            {
-                return _creatingCardPoolInfo;
-            }
-            return null;
-        }
-        public CardPoolInfo getCardPoolInfo(ICardPoolReference cardPoolRef)
-        {
-            foreach (var cardPool in _cardPoolInfoDict.Values)
-            {
-                if (cardPool.CompareCardPool(cardPoolRef))
-                    return cardPool;
-            }
-            if (_creatingCardPoolInfo != null && _creatingCardPoolInfo.CompareCardPool(cardPoolRef))
-            {
-                return _creatingCardPoolInfo;
-            }
-            return null;
-        }
-        #region 卡牌皮肤
-        public CardSkinData createSkin(long cardPoolId, int cardDefineId)
-        {
-            var cardPool = getLocalCardPool(cardPoolId);
-            if (cardPool != null)
-            {
-                CardSkinData skin = new CardSkinData();
-                skin.id = cardDefineId;
-                skin.skinName = StringTable.EDITOR_NEW_SKIN_DEFAULT_NAME;
-                var skinIds = getAllLocalSkins(cardPoolId, cardDefineId).GroupBy(c => c.skinId).Select(g => g.Key);
-                if (skinIds.Count() > 0)
-                    skin.skinId = skinIds.Max() + 1;
-                else
-                    skin.skinId = 1;
-                return skin;
-            }
-            else
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-        }
-        public CardSkinData createSkinForDiffLanguage(long cardPoolId, CardSkinData skin, string language)
-        {
-            var cardPool = getLocalCardPool(cardPoolId);
-            if (cardPool != null)
-            {
-                CardSkinData newSkin = new CardSkinData(skin);
-                newSkin.language = language;
-                return newSkin;
-            }
-            else
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-        }
-        public void addCardSkin(long cardPoolId, CardSkinData cardSkin)
-        {
-            var cardPool = getLocalCardPool(cardPoolId);
-            if (cardPool == null)
-            {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-            }
-            cardPool.cardSkinList.Add(cardSkin);
-        }
-        public void removeAllCardSkins(long cardPoolId, int cardDefineId)
-        {
-            var cardPool = getLocalCardPool(cardPoolId);
-            if (cardPool == null)
-            {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-            }
-            cardPool.cardSkinList.RemoveAll(s => s.id == cardDefineId);
-        }
-        public void removeSkin(long cardPoolId, int cardDefineId, int skinId)
-        {
-            var cardPool = getLocalCardPool(cardPoolId);
-            if (cardPool != null)
-            {
-                cardPool.cardSkinList.RemoveAll(s => s.id == cardDefineId && s.skinId == skinId);
-            }
-            else
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-        }
-        #endregion
-        public async Task<Sprite> loadExternalImage(string path, string dirName)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
-            Sprite sprite;
-            if (path.StartsWith("res:"))
-            {
-                sprite = getSpriteFromCache(path);
-                if (sprite != null)
-                {
-                    return sprite;
-                }
-                //Unity资源
-                sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
-                if (sprite == null)
-                {
-                    Debug.LogError($"加载图片{path}为空");
-                }
-            }
-            else if (path.StartsWith("sa:"))
-            {
-                sprite = getSpriteFromCache(path);
-                if (sprite != null)
-                {
-                    return sprite;
-                }
-                byte[] bytes;
-                try
-                {
-                    try
-                    {
-                        bytes = await game.fileManager.readStreamingBinaryFile(path.Substring(3, path.Length - 3));
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        //可能是后缀不对
-                        bytes = await game.fileManager.readStreamingBinaryFile(
-                            path.EndsWith(".png") ?
-                            path.Substring(3, path.Length - 3).Replace(".png", ".jpg") :
-                            path.Substring(3, path.Length - 3).Replace(".jpg", ".png"));
-                    }
-                    Texture2D texture = new Texture2D(512, 512);
-                    texture.LoadImage(bytes);
-                    sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
-                }
-                catch (IOException e)
-                {
-                    Debug.LogError($"加载图片{path}失败：{e}");
-                    sprite = null;
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(dirName))
-                {
-                    path = Path.Combine(dirName, path);
-                }
-                sprite = getSpriteFromCache(path);
-                if (sprite != null)
-                {
-                    return sprite;
-                }
-                //外部贴图
-                var fileManager = game.fileManager;
-                bool fullPath = Path.GetFullPath(path) == path;
-                byte[] bytes;
-                if (fullPath && fileManager.isFileExist(path))
-                {
-                    //如果直接给出完整路径就直接从完整路径上读
-                    bytes = await fileManager.readBinaryFile(path);
-                }
-                else if (fileManager.isPersistentFileExist(path))
-                {
-                    // 从外部图片路径读取图片。
-                    bytes = await fileManager.readPersistentBinaryFile(path);
-                }
-                else
-                {
-                    //如果图片不存在，尝试从缓存资源中读取。
-                    string picId = Path.GetFileNameWithoutExtension(path);
-                    if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
-                    {
-                        bytes = await game.cache.ReadCache(fileManager, ResourceType.Picture, picId);
-                    }
-                    else
-                    {
-                        // 实在找不到了，返回一个空数组
-                        Debug.LogWarning($"未找到路径为{path}的图片。");
-                        bytes = Array.Empty<byte>();
-                    }
-                }
-                // 如果是空数组，返回默认Sprite.
-                if (bytes.Length <= 0)
-                {
-                    return getDefaultSprite();
-                }
-                Texture2D texture = new Texture2D(512, 512);
-                texture.LoadImage(bytes);
-                sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
-            }
-            //添加到缓存
-            if (sprite != null)
-            {
-                addSpriteToCache(path, sprite);
-            }
-            return sprite;
-        }
-        public Task<Sprite> loadCardImage(CardDefine define)
-        {
-            CardSkinData skin = getCardSkin(define);
-            if (skin == null)
-            {
-                return Task.FromResult(getDefaultSprite());
-            }
-            if (skin.image != null)
-                return Task.FromResult(skin.image);
-            else
-            {
-                string path = skin.imagePath;
-                var cardPoolRef = getCardPoolReferenceOfCard(define);
-                if (string.IsNullOrEmpty(path))
-                {
-                    return Task.FromResult<Sprite>(null);
-                }
-                else if (getCardPoolInfo(cardPoolRef) is CardPoolInfo cardPool &&
-                    game.card.getCardPoolPath(cardPool) is string cardPoolPath)
-                {
-                    if (cardPoolPath.StartsWith("sa:") &&
-                        !path.StartsWith("sa:") &&
-                        !path.StartsWith("res:"))
-                    {
-                        //流文件
-                        return loadExternalImage($"sa:{Path.Combine(textureDirName, path)}", null);
-                    }
-                    else
-                    {
-                        //绝对路径
-                        return loadExternalImage(path, getCardPoolTexturesDirectory(cardPool));
-                    }
-                }
-                else
-                {
-                    //没有卡池信息
-                    return loadExternalImage(path, game.card.textureDirName);
-                }
-            }
-        }
-        public Task<Sprite> loadCardImage(ICardPoolReference cardPoolRef, int cardId)
-        {
-            return loadCardImage(getCardDefine(cardPoolRef, cardId));
-        }
-        public string getCardPoolTexturesDirectory(CardPoolInfo cardPoolInfo)
-        {
-            var path = getCardPoolPath(cardPoolInfo);
-            var relativePath = $"../{textureDirName}";
-            if (!string.IsNullOrEmpty(cardPoolInfo.texturesDir))
-            {
-                relativePath = cardPoolInfo.texturesDir;
-            }
-            return Path.Combine(Path.GetDirectoryName(path), relativePath);
-        }
-        public bool tryGetCardSkin(ICardPoolReference cardPoolRef, int cardId, out CardSkinData skin)
-        {
-            skin = null;
-            if (tryGetCardPool(cardPoolRef, out var cardPool))
-            {
-                //查找所有皮肤
-                var skinGroups = cardPool.cardSkinList.Where(s => s.id == cardId).GroupBy(s => s.skinId).OrderBy(g => g.Key);
-                if (skinGroups.Count() > 0)
-                {
-                    var firstSkinGroup = skinGroups.First();
-                    //如果存在语言相同的皮肤，则返回
-                    skin = firstSkinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
-                    if (skin != null)
-                        return true;
-                    //如果存在默认语言的皮肤，则返回
-                    skin = firstSkinGroup.FirstOrDefault(s => s.language == game.langManager.getDefaultLanguage());
-                    if (skin != null)
-                        return true;
-                    //都没有，随便返回第一个
-                    skin = firstSkinGroup.First();
-                    return true;
-                }
-            }
-            if (tempSkinDic.ContainsKey(cardId))
-            {
-                skin = tempSkinDic[cardId];
-                return true;
-            }
-            if (skinDic.ContainsKey(cardId))
-            {
-                skin = skinDic[cardId];
-                return true;
-            }
-            return false;
-        }
-        public CardSkinData[] getAllLocalSkins(long cardPoolId, int cardId)
-        {
-            var localRef = getLocalCardPoolReference(cardPoolId);
-            if (localRef != null)
-            {
-                return getAllSkins(localRef, cardId);
-            }
-            return Array.Empty<CardSkinData>();
-        }
 
-        public CardSkinData[] getAllSkins(ICardPoolReference cardPoolRef, int cardId)
-        {
-            List<CardSkinData> skinList = new List<CardSkinData>();
-            for (int i = 0; i < _skins.Length; i++)
-            {
-                if (_skins[i].id == cardId)
-                {
-                    skinList.Add(_skins[i]);
-                }
-            }
-            if (skinDic.TryGetValue(cardId, out CardSkinData builtinSkin))
-            {
-                skinList.Add(builtinSkin);
-            }
-            if (tempSkinDic.TryGetValue(cardId, out CardSkinData tempSkin))
-            {
-                skinList.Add(tempSkin);
-            }
-            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
-            {
-                foreach (var skin in cardPool.cardSkinList)
-                {
-                    if (skin.id == cardId)
-                    {
-                        skinList.Add(skin);
-                    }
-                }
-            }
-            return skinList.ToArray();
-        }
-        public CardSkinData[] getAllSkins()
-        {
-            List<CardSkinData> skinList = new List<CardSkinData>();
-            skinList.AddRange(_skins);
-            foreach (var cardPool in _cardPoolDict.Values)
-            {
-                skinList.AddRange(cardPool.cardSkinList);
-            }
-            return skinList.ToArray();
-        }
+        #region 卡池属性检测
         /// <summary>
         /// 是否是游戏自带的卡池。
         /// </summary>
@@ -1156,6 +850,8 @@ namespace Game
             string path = getCardPoolPath(cardPoolRef);
             return isLocalCardPoolPath(path);
         }
+        #endregion
+
         /// <summary>
         /// 重新获取一个卡池内对其他卡池的引用。
         /// </summary>
@@ -1239,45 +935,6 @@ namespace Game
                 }
             }
         }
-        public bool isCreatingCardPool(long cardPoolId)
-        {
-            if (_creatingCardPoolInfo == null)
-                return false;
-            return _creatingCardPoolInfo.cardPoolId == cardPoolId;
-        }
-        public void finishCreatingCardPool()
-        {
-            if (_creatingCardPoolInfo == null)
-                return;
-            _creatingCardPoolInfo = null;
-        }
-        public void deleteCreatingCardPool()
-        {
-            if (_creatingCardPoolInfo == null)
-                return;
-            var cardPoolRefs = _cardPoolDict.Keys.Where(p => p.CompareCardPool(_creatingCardPoolInfo)).ToArray();
-            foreach (var cardPoolRef in cardPoolRefs)
-            {
-                _cardPoolDict.Remove(cardPoolRef);
-            }
-            _creatingCardPoolInfo = null;
-        }
-        /// <summary>
-        /// 检测本地是否有某个卡池及其版本。
-        /// </summary>
-        /// <param name="includingCache">是否包括缓存内的卡池。</param>
-        /// <returns></returns>
-        public bool hasCardPool(ICardPoolReference poolRef, bool includingCache = false)
-        {
-            if (isBuiltinCardPool(poolRef.CardPoolID) || isInnateCardPool(poolRef.CardPoolID))
-                return true;
-            if (!includingCache && !isLocalCardPool(poolRef))
-            {
-                return false;
-            }
-            var cardPoolInfo = getCardPoolInfo(poolRef);
-            return cardPoolInfo != null;
-        }
         public void showCardPoolLoadErrorDialog()
         {
             var title = game.lang._(StringTable.ERROR);
@@ -1285,7 +942,10 @@ namespace Game
             game.ui.dialog.ShowConfirm(title, content);
         }
         #endregion
+
         #region 私有方法
+
+        #region 生命周期
         private void onAwake_CardPool()
         {
             //注册序列化类型
@@ -1304,7 +964,9 @@ namespace Game
                 }
             }
         }
+        #endregion
 
+        #region 添加卡池
         /// <summary>
         /// 向当前卡池信息添加一个卡池
         /// </summary>
@@ -1316,6 +978,9 @@ namespace Game
             _cardPoolInfoDict[filePath] = info;
             _cardPoolDict[info.ToReference()] = cardPool;
         }
+        #endregion
+
+        #region 卡池解析
 
         /// <summary>
         /// 解析卡池文件，版本1.0-2.0
@@ -1446,24 +1111,9 @@ namespace Game
             }
             return cardPool;
         }
-        [Obsolete("Use parseCardPool_v1 and addCardPool instead.")]
-        private async Task<CardPool> loadCardPool_v1(string path, CardPoolInfo cardPoolInfo)
-        {
-            string json = path.StartsWith("sa:") ?
-                await game.fileManager.readStreamingTextFileToEnd(path, 1) :
-                await game.fileManager.readTextFileToEnd(path, 1);
-            CardPool cardPool;
-            try
-            {
-                cardPool = parseCardPool_v1(json, cardPoolInfo.cardPoolId);
-            }
-            catch (Exception e)
-            {
-                throw new FormatException($"反序列化卡池{path}失败", e);
-            }
-            addCardPool(cardPool, cardPoolInfo, path);
-            return cardPool;
-        }
+        #endregion
+
+        #region 卡池修复
         private async Task fixCardPool(CardPoolInfo cardPoolInfo, CardPool cardPool)
         {
             Dictionary<int, int> massEventNodeMap = new Dictionary<int, int>()
@@ -1801,44 +1451,6 @@ namespace Game
             }
             #endregion
         }
-
-        private string allocCardPoolPath(CardPoolInfo cardPool)
-        {
-            string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, $"{cardPool.cardPoolName}.{cardPoolFilePostfix}");
-            for (int i = 0; i < 100 && File.Exists(path); i++)
-            {
-                if (i == 99)
-                {
-                    throw new IOException("达到最大文件存储上限");
-                }
-                Match match = Regex.Match(path, $@"(?<path>.+)\s\((?<num>\d+)\)\.{cardPoolFilePostfix}");
-                if (match.Success)
-                {
-                    int num = int.Parse(match.Groups["num"].Value);
-                    path = path.Replace($"({num})", $"({num + 1})");
-                }
-                else
-                {
-                    path = path.Insert(path.LastIndexOf('.'), " (0)");
-                }
-            }
-            return path;
-        }
-
-        /// <summary>
-        /// 建立需要的卡池文件夹
-        /// </summary>
-        void prepareCardpoolDir()
-        {
-            var cardPoolDir = Path.Combine(Application.persistentDataPath, cardPoolDirName);
-            if (!Directory.Exists(cardPoolDir))
-                Directory.CreateDirectory(cardPoolDir);
-
-            var picDir = Path.Combine(Application.persistentDataPath, textureDirName);
-            if (!Directory.Exists(picDir))
-                Directory.CreateDirectory(picDir);
-        }
-
         private void traverseActionGraphs(CardPool cardPool, Action<CardDefine, GeneratedEffect> cardAction,
             Action<BuffDefine, GeneratedEffect> buffAction,
             Action<GeneratedActionDefine> defineAction)
@@ -1896,56 +1508,111 @@ namespace Game
             }
         }
         #endregion
+
+        private string allocCardPoolPath(CardPoolInfo cardPool)
+        {
+            string path = Path.Combine(Application.persistentDataPath, cardPoolDirName, $"{cardPool.cardPoolName}.{cardPoolFilePostfix}");
+            for (int i = 0; i < 100 && File.Exists(path); i++)
+            {
+                if (i == 99)
+                {
+                    throw new IOException("达到最大文件存储上限");
+                }
+                Match match = Regex.Match(path, $@"(?<path>.+)\s\((?<num>\d+)\)\.{cardPoolFilePostfix}");
+                if (match.Success)
+                {
+                    int num = int.Parse(match.Groups["num"].Value);
+                    path = path.Replace($"({num})", $"({num + 1})");
+                }
+                else
+                {
+                    path = path.Insert(path.LastIndexOf('.'), " (0)");
+                }
+            }
+            return path;
+        }
+        /// <summary>
+        /// 建立需要的卡池文件夹
+        /// </summary>
+        private void prepareCardpoolDir()
+        {
+            var cardPoolDir = Path.Combine(Application.persistentDataPath, cardPoolDirName);
+            if (!Directory.Exists(cardPoolDir))
+                Directory.CreateDirectory(cardPoolDir);
+
+            var picDir = Path.Combine(Application.persistentDataPath, textureDirName);
+            if (!Directory.Exists(picDir))
+                Directory.CreateDirectory(picDir);
+        }
+
+        private static ICollection<string> getCardPoolImages(CardPool cardPool)
+        {
+            HashSet<string> imageFiles = new HashSet<string>();
+            foreach (var item in cardPool.cardSkinList)
+            {
+                // 不导出内置资源
+                var path = item.imagePath;
+                if (string.IsNullOrEmpty(path) || path.StartsWith("sa:") || path.StartsWith("res:"))
+                    continue;
+                imageFiles.Add(path);
+            }
+            foreach (var item in cardPool.buffSkinList)
+            {
+                // 不导出内置资源
+                var path = item.imagePath;
+                if (string.IsNullOrEmpty(path) || path.StartsWith("sa:") || path.StartsWith("res:"))
+                    continue;
+                imageFiles.Add(path);
+            }
+
+            return imageFiles;
+        }
+        #endregion
+
         #region 属性字段
         [TranslateMsg]
         public const string CARD_POOL_LOAD_ERROR_DESC = "卡池加载失败，卡池文件可能已损坏。";
+        public const long STANDARD_POOL_ID = 1;
+        public const long PVE_POOL_ID = 2;
+        public static readonly CardPoolReference builtinCardPoolReference = new CardPoolReference(0, 0);
         public string cardPoolDirName => _cardPoolDirName;
-        public string textureDirName => _textureDirName;
         public string editorCardPoolDirName => _editorCardPoolDirName;
-        public string editorTextureDirName => _editorTextureDirName;
         public string cardPoolFilePostfix => _cardPoolFilePostfix;
         public long[] standardCardPoolsId => _standardCardPoolsId;
         /// <summary>
         /// 键为文件地址，值为卡池信息
         /// </summary>
-        Dictionary<string, CardPoolInfo> _cardPoolInfoDict = new Dictionary<string, CardPoolInfo>();
+        private Dictionary<string, CardPoolInfo> _cardPoolInfoDict = new Dictionary<string, CardPoolInfo>();
         /// <summary>
         /// 键为卡池Id，值为卡池
         /// </summary>
-        Dictionary<ICardPoolReference, CardPool> _cardPoolDict = new Dictionary<ICardPoolReference, CardPool>();
+        private Dictionary<ICardPoolReference, CardPool> _cardPoolDict = new Dictionary<ICardPoolReference, CardPool>();
         private CardPoolInfo _creatingCardPoolInfo = null;
         [Header("卡池")]
         [SerializeField]
-        bool _enableStreamingAssetsInEditor = false;
+        private bool _enableStreamingAssetsInEditor = false;
         [SerializeField]
-        string _cardPoolFilePostfix = "ddcp";
+        private string _cardPoolFilePostfix = "ddcp";
         [SerializeField]
-        string _cardPoolDirName = "CardPools";
+        private string _cardPoolDirName = "CardPools";
         [SerializeField]
-        string _textureDirName = "Textures";
+        private string _editorCardPoolDirName = "ExternalData/CardPools";
         [SerializeField]
-        string _editorCardPoolDirName = "ExternalData/CardPools";
-        [SerializeField]
-        string _editorTextureDirName = "ExternalData/Textures";
-        [SerializeField]
-        long[] _standardCardPoolsId = new long[]
+        private long[] _standardCardPoolsId = new long[]
         {
             1
         };
         [SerializeField]
-        long[] _hiddenCardPoolsId = new long[]
+        private long[] _hiddenCardPoolsId = new long[]
         {
             PVE_POOL_ID
         };
-        const float CARD_POOL_VERSION_0_3 = 0.3f;
-        const float CARD_POOL_VERSION_0_2 = 0.2f;
-        const float CARD_POOL_VERSION_0_1 = 0.1f;
-        const int CARD_POOL_VERSION_1 = 1;
-        const int CARD_POOL_VERSION_2 = 2;
-        const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_2;
-        public const long STANDARD_POOL_ID = 1;
-        public const long PVE_POOL_ID = 2;
-        public static readonly CardPoolReference builtinCardPoolReference = new CardPoolReference(0, 0);
+        private const float CARD_POOL_VERSION_0_3 = 0.3f;
+        private const float CARD_POOL_VERSION_0_2 = 0.2f;
+        private const float CARD_POOL_VERSION_0_1 = 0.1f;
+        private const int CARD_POOL_VERSION_1 = 1;
+        private const int CARD_POOL_VERSION_2 = 2;
+        private const int CURRENT_CARD_POOL_VERSION = CARD_POOL_VERSION_2;
         #endregion
     }
 }

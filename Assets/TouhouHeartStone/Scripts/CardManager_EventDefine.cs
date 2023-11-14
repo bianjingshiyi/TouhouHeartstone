@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
@@ -11,6 +10,8 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
+
+        #region 获取事件定义
         public static EventReference getEventReferenceOfAction(GeneratedActionDefine gen)
         {
             return new EventReference(gen.cardPoolId, gen.getEventName());
@@ -65,6 +66,10 @@ namespace Game
             }
             return actionDefineList.ToArray();
         }
+        #endregion
+
+        #region 获取事件触发时间
+
         public EventTriggerTime getEventTriggerTime(ICardPoolReference cardPoolRef, string name, bool includeHidden = true)
         {
             if (tryGetCardPool(cardPoolRef, out var cardPool))
@@ -116,6 +121,9 @@ namespace Game
             return null;
         }
         #endregion
+
+        #endregion
+
         #region 私有方法
         private EventDefine[] getEventDefines(CardPool cardPool)
         {

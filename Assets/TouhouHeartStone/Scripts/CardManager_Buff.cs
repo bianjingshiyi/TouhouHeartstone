@@ -1,31 +1,20 @@
-﻿using BJSYGameCore;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Controllers;
 using TouhouCardEngine;
-using System.Collections.Generic;
+using TouhouCardEngine.Shared;
 using UI;
 using UnityEngine;
-using System.Linq;
-using TouhouCardEngine.Shared;
-using Controllers;
-using TouhouHeartstone;
 
 namespace Game
 {
     partial class CardManager
     {
         #region 公有方法
-        public ICardPoolReference getCardPoolReferenceOfBuff(BuffDefine buff)
-        {
-            if (isBuiltinCardPool(buff.cardPoolId))
-                return builtinCardPoolReference;
-            foreach (var pair in _cardPoolDict)
-            {
-                if (pair.Key.CardPoolID == buff.cardPoolId && pair.Value.buffDefineList.Contains(buff))
-                {
-                    return pair.Key;
-                }
-            }
-            return null;
-        }
+
+        #region 增益定义
+
+        #region 创建
         public GeneratedBuffDefine createBuffDefine(long cardPoolId)
         {
             var cardPool = getLocalCardPool(cardPoolId);
@@ -46,15 +35,6 @@ namespace Game
             };
             return buffDefine;
         }
-        public void addBuffDefine(long cardPoolId, GeneratedBuffDefine define)
-        {
-            var cardPool = getLocalCardPool(cardPoolId);
-            if (cardPool == null)
-            {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-            }
-            cardPool.buffDefineList.Add(define);
-        }
         public GeneratedBuffDefine cloneBuffDefine(GeneratedBuffDefine buffDefine)
         {
             var json = new SerializableBuffDefine(buffDefine).toJson();
@@ -64,6 +44,21 @@ namespace Game
             clone.cardPoolId = buffDefine.cardPoolId;
             return clone;
         }
+        #endregion
+
+        #region 添加
+        public void addBuffDefine(long cardPoolId, GeneratedBuffDefine define)
+        {
+            var cardPool = getLocalCardPool(cardPoolId);
+            if (cardPool == null)
+            {
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
+            }
+            cardPool.buffDefineList.Add(define);
+        }
+        #endregion
+
+        #region 删除
         public bool removeBuffDefine(long cardPoolId, int buffId)
         {
             var poolRef = getLocalCardPoolReference(cardPoolId);
@@ -82,6 +77,9 @@ namespace Game
             }
             return cardPool.buffDefineList.Remove(buffDefine);
         }
+        #endregion
+
+        #region 获取
         public bool tryGetBuffDefine(ICardPoolReference cardPoolRef, int buffDefineId, out GeneratedBuffDefine buffDefine)
         {
             if (!tryGetCardPool(cardPoolRef, out CardPool cardPool))
@@ -108,16 +106,13 @@ namespace Game
             }
             return buffDefDict;
         }
-        public string[] getBuffDefineNames(BuffDefine[] buffDefines)
-        {
-            string[] buffDefineNames = new string[buffDefines.Length];
-            for (int i = 0; i < buffDefines.Length; i++)
-            {
-                BuffSkin buffSkin = getBuffSkin(buffDefines[i]);
-                buffDefineNames[i] = buffSkin != null ? buffSkin.name : buffDefines[i].ToString();
-            }
-            return buffDefineNames;
-        }
+        #endregion
+
+        #endregion
+
+        #region 增益皮肤
+
+        #region 创建
         public BuffSkin createBuffSkin(long cardPoolId, int buffId, string language)
         {
             var cardPool = getLocalCardPool(cardPoolId);
@@ -136,15 +131,6 @@ namespace Game
             }
             return buffSkin;
         }
-        public void addBuffSkin(long cardPoolId, BuffSkin buffSkin)
-        {
-            var cardPool = getLocalCardPool(cardPoolId);
-            if (cardPool == null)
-            {
-                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
-            }
-            cardPool.buffSkinList.Add(buffSkin);
-        }
         public BuffSkin[] cloneBuffSkins(long cardPoolId, int buffId)
         {
             var poolRef = getLocalCardPoolReference(cardPoolId);
@@ -161,6 +147,21 @@ namespace Game
             var clone = JsonHelper.fromJson<BuffSkin[]>(json);
             return clone;
         }
+        #endregion
+
+        #region 添加
+        public void addBuffSkin(long cardPoolId, BuffSkin buffSkin)
+        {
+            var cardPool = getLocalCardPool(cardPoolId);
+            if (cardPool == null)
+            {
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
+            }
+            cardPool.buffSkinList.Add(buffSkin);
+        }
+        #endregion
+
+        #region 删除
         public void removeAllBuffSkins(long cardPoolId, int buffId)
         {
             var pool = getLocalCardPool(cardPoolId);
@@ -180,6 +181,9 @@ namespace Game
             }
             return false;
         }
+        #endregion
+
+        #region 获取
         /// <summary>
         /// 获取增益定义的皮肤，有当前语言优先获取当前语言，没有就获取第一个，再没有就返回空
         /// </summary>
@@ -222,13 +226,20 @@ namespace Game
             }
             return cardPool.buffSkinList.ToArray();
         }
+        public string[] getBuffDefineNames(BuffDefine[] buffDefines)
+        {
+            string[] buffDefineNames = new string[buffDefines.Length];
+            for (int i = 0; i < buffDefines.Length; i++)
+            {
+                BuffSkin buffSkin = getBuffSkin(buffDefines[i]);
+                buffDefineNames[i] = buffSkin != null ? buffSkin.name : buffDefines[i].ToString();
+            }
+            return buffDefineNames;
+        }
         #endregion
-        #region 属性字段
-        /// <summary>
-        /// 外部增益定义字段，Key为卡池Id，值为增益定义列表
-        /// </summary>
-        //Dictionary<int, List<GeneratedBuffDefine>> _externalBuffDefineDict = new Dictionary<int, List<GeneratedBuffDefine>>();
-        //Dictionary<int, List<BuffSkin>> _externalBuffSkinDict = new Dictionary<int, List<BuffSkin>>();
+
+        #endregion
+
         #endregion
     }
 }

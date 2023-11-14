@@ -1,28 +1,22 @@
-﻿using Controllers;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
 using System.IO;
 using System.IO.Compression;
-using System;
-using SFB;
-using System.Text;
-using MongoDB.Bson.Serialization;
-using MukioI18n;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Threading;
+using System.Text;
+using System.Threading.Tasks;
+using Controllers;
+using MukioI18n;
+using SFB;
 using TouhouCardEngine.Shared;
+using UnityEngine;
 
 namespace Game
 {
     partial class CardManager
     {
-        const string CardPoolPackExt = "dcpp";
-        const string CardPoolPackManifest = "manifest.json";
-        string CardPoolPackDefine => $"cardpool.{_cardPoolFilePostfix}";
-
+        #region 公有方法
         /// <summary>
         /// 导出卡池
         /// </summary>
@@ -79,82 +73,6 @@ namespace Game
             return exportPath;
 #endif
         }
-
-        private async Task exportCardPool(CardPoolInfo cardPoolInfo, string cardPoolDefineFile, CardPool cardPool, string exportPath)
-        {
-            // 关联卡片资源列表
-            var imageFiles = getCardPoolImages(cardPool);
-            byte[] defineHash;
-            using (var file = File.OpenRead(cardPoolDefineFile))
-            {
-                var sha256 = SHA256.Create();
-                defineHash = sha256.ComputeHash(file);
-            }
-            var manifest = new CardPoolPackManifest(cardPoolInfo, Convert.ToBase64String(defineHash));
-
-            using (var ms = new MemoryStream())
-            {
-                using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
-                {
-                    // 写出卡池定义文件
-                    var defineEntry = await archive.CreateEntryFromFileAsync(cardPoolDefineFile, CardPoolPackDefine);
-
-                    // 写卡池包清单，之后要校验
-                    archive.CreateEntryFromData(Encoding.UTF8.GetBytes(manifest.toJson()), CardPoolPackManifest);
-
-                    // 写出卡池图片文件
-                    foreach (var file in imageFiles)
-                    {
-                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, textureDirName, file), $"{textureDirName}/{file}");
-                    }
-                }
-
-                using (var fileStream = new FileStream(exportPath, FileMode.Create))
-                {
-                    ms.Seek(0, SeekOrigin.Begin);
-                    ms.CopyTo(fileStream);
-                }
-            }
-
-            Debug.Log($"卡池文件已打包至{exportPath}");
-        }
-
-        private static ICollection<string> getCardPoolImages(CardPool cardPool)
-        {
-            HashSet<string> imageFiles = new HashSet<string>();
-            foreach (var item in cardPool.cardSkinList)
-            {
-                // 不导出内置资源
-                var path = item.imagePath;
-                if (string.IsNullOrEmpty(path) || path.StartsWith("sa:") || path.StartsWith("res:"))
-                    continue;
-                imageFiles.Add(path);
-            }
-            foreach (var item in cardPool.buffSkinList)
-            {
-                // 不导出内置资源
-                var path = item.imagePath;
-                if (string.IsNullOrEmpty(path) || path.StartsWith("sa:") || path.StartsWith("res:"))
-                    continue;
-                imageFiles.Add(path);
-            }
-
-            return imageFiles;
-        }
-
-        [TranslateMsg]
-        const string ERROR_WRONG_FORMAT = "卡池格式错误或内部文件丢失";
-        [TranslateMsg]
-        const string ERROR_WRONG_VERSION = "无法识别的卡池版本，请尝试更新客户端";
-        [TranslateMsg("{0}是即将导入的卡池，{1}是已存在的卡池名称")]
-        const string ERROR_ALREADY_EXISTS = "导入的卡池{0}与{1}重复，请在导入前删除卡池{1}";
-        [TranslateMsg]
-        const string ERROR_SIGNATURE_NOT_MATCH = "卡池签名错误";
-        [TranslateMsg]
-        const string ERROR_BUILTIN_CARDPOOL = "无法导出内置卡池";
-        [TranslateMsg("{0}是默认导入路径")]
-        const string ERROR_FILE_NOT_FOUND = "无法找到需要导入的卡池。请将需要导入的卡池放置于{0}";
-
         public async Task<bool> importCardPool()
         {
 #if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_EDITOR
@@ -194,7 +112,47 @@ namespace Game
             return await importCardPool(importPath);
 #endif
         }
+        #endregion
 
+        #region 私有方法
+        private async Task exportCardPool(CardPoolInfo cardPoolInfo, string cardPoolDefineFile, CardPool cardPool, string exportPath)
+        {
+            // 关联卡片资源列表
+            var imageFiles = getCardPoolImages(cardPool);
+            byte[] defineHash;
+            using (var file = File.OpenRead(cardPoolDefineFile))
+            {
+                var sha256 = SHA256.Create();
+                defineHash = sha256.ComputeHash(file);
+            }
+            var manifest = new CardPoolPackManifest(cardPoolInfo, Convert.ToBase64String(defineHash));
+
+            using (var ms = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, true))
+                {
+                    // 写出卡池定义文件
+                    var defineEntry = await archive.CreateEntryFromFileAsync(cardPoolDefineFile, CardPoolPackDefine);
+
+                    // 写卡池包清单，之后要校验
+                    archive.CreateEntryFromData(Encoding.UTF8.GetBytes(manifest.toJson()), CardPoolPackManifest);
+
+                    // 写出卡池图片文件
+                    foreach (var file in imageFiles)
+                    {
+                        await archive.CreateEntryFromFileAsync(Path.Combine(Application.persistentDataPath, textureDirName, file), $"{textureDirName}/{file}");
+                    }
+                }
+
+                using (var fileStream = new FileStream(exportPath, FileMode.Create))
+                {
+                    ms.Seek(0, SeekOrigin.Begin);
+                    ms.CopyTo(fileStream);
+                }
+            }
+
+            Debug.Log($"卡池文件已打包至{exportPath}");
+        }
         private async Task<bool> importCardPool(string importPath)
         {
             prepareCardpoolDir();
@@ -295,6 +253,25 @@ namespace Game
             }
             return true;
         }
+        #endregion
+
+        #region 属性字段
+        [TranslateMsg]
+        const string ERROR_WRONG_FORMAT = "卡池格式错误或内部文件丢失";
+        [TranslateMsg]
+        const string ERROR_WRONG_VERSION = "无法识别的卡池版本，请尝试更新客户端";
+        [TranslateMsg("{0}是即将导入的卡池，{1}是已存在的卡池名称")]
+        const string ERROR_ALREADY_EXISTS = "导入的卡池{0}与{1}重复，请在导入前删除卡池{1}";
+        [TranslateMsg]
+        const string ERROR_SIGNATURE_NOT_MATCH = "卡池签名错误";
+        [TranslateMsg]
+        const string ERROR_BUILTIN_CARDPOOL = "无法导出内置卡池";
+        [TranslateMsg("{0}是默认导入路径")]
+        const string ERROR_FILE_NOT_FOUND = "无法找到需要导入的卡池。请将需要导入的卡池放置于{0}";
+        const string CardPoolPackExt = "dcpp";
+        const string CardPoolPackManifest = "manifest.json";
+        string CardPoolPackDefine => $"cardpool.{_cardPoolFilePostfix}";
+        #endregion
     }
 
     class CardPoolPackManifest

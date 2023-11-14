@@ -1,15 +1,17 @@
-﻿using System.Threading.Tasks;
-using UnityEngine;
-using SFB;
-using UnityEngine.Networking;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System;
-using Controllers;
-using UI;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using BJSYGameCore;
+using Controllers;
+using SFB;
+using TouhouCardEngine;
+using TouhouCardEngine.Shared;
+using UI;
+using UnityEngine;
+using ResourceType = TouhouCardEngine.ResourceType;
 
 namespace Game
 {
@@ -231,6 +233,8 @@ namespace Game
             }
             return fileName;
         }
+
+        #region 加载
         /// <summary>
         /// 加载指定卡池，指定路径的图片并转换为Sprite。
         /// </summary>
@@ -352,6 +356,161 @@ namespace Game
             }
             return sprite;
         }
+        public async Task<Sprite> loadExternalImage(string path, string dirName)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+            Sprite sprite;
+            if (path.StartsWith("res:"))
+            {
+                sprite = getSpriteFromCache(path);
+                if (sprite != null)
+                {
+                    return sprite;
+                }
+                //Unity资源
+                sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
+                if (sprite == null)
+                {
+                    Debug.LogError($"加载图片{path}为空");
+                }
+            }
+            else if (path.StartsWith("sa:"))
+            {
+                sprite = getSpriteFromCache(path);
+                if (sprite != null)
+                {
+                    return sprite;
+                }
+                byte[] bytes;
+                try
+                {
+                    try
+                    {
+                        bytes = await game.fileManager.readStreamingBinaryFile(path.Substring(3, path.Length - 3));
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        //可能是后缀不对
+                        bytes = await game.fileManager.readStreamingBinaryFile(
+                            path.EndsWith(".png") ?
+                            path.Substring(3, path.Length - 3).Replace(".png", ".jpg") :
+                            path.Substring(3, path.Length - 3).Replace(".jpg", ".png"));
+                    }
+                    Texture2D texture = new Texture2D(512, 512);
+                    texture.LoadImage(bytes);
+                    sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+                }
+                catch (IOException e)
+                {
+                    Debug.LogError($"加载图片{path}失败：{e}");
+                    sprite = null;
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(dirName))
+                {
+                    path = Path.Combine(dirName, path);
+                }
+                sprite = getSpriteFromCache(path);
+                if (sprite != null)
+                {
+                    return sprite;
+                }
+                //外部贴图
+                var fileManager = game.fileManager;
+                bool fullPath = Path.GetFullPath(path) == path;
+                byte[] bytes;
+                if (fullPath && fileManager.isFileExist(path))
+                {
+                    //如果直接给出完整路径就直接从完整路径上读
+                    bytes = await fileManager.readBinaryFile(path);
+                }
+                else if (fileManager.isPersistentFileExist(path))
+                {
+                    // 从外部图片路径读取图片。
+                    bytes = await fileManager.readPersistentBinaryFile(path);
+                }
+                else
+                {
+                    //如果图片不存在，尝试从缓存资源中读取。
+                    string picId = Path.GetFileNameWithoutExtension(path);
+                    if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
+                    {
+                        bytes = await game.cache.ReadCache(fileManager, ResourceType.Picture, picId);
+                    }
+                    else
+                    {
+                        // 实在找不到了，返回一个空数组
+                        Debug.LogWarning($"未找到路径为{path}的图片。");
+                        bytes = Array.Empty<byte>();
+                    }
+                }
+                // 如果是空数组，返回默认Sprite.
+                if (bytes.Length <= 0)
+                {
+                    return getDefaultSprite();
+                }
+                Texture2D texture = new Texture2D(512, 512);
+                texture.LoadImage(bytes);
+                sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.one * .5f);
+            }
+            //添加到缓存
+            if (sprite != null)
+            {
+                addSpriteToCache(path, sprite);
+            }
+            return sprite;
+        }
+        public Task<Sprite> loadCardImage(CardDefine define)
+        {
+            CardSkinData skin = getCardSkin(define);
+            if (skin == null)
+            {
+                return Task.FromResult(getDefaultSprite());
+            }
+            if (skin.image != null)
+                return Task.FromResult(skin.image);
+            else
+            {
+                string path = skin.imagePath;
+                var cardPoolRef = getCardPoolReferenceOfCard(define);
+                if (string.IsNullOrEmpty(path))
+                {
+                    return Task.FromResult<Sprite>(null);
+                }
+                else if (getCardPoolInfo(cardPoolRef) is CardPoolInfo cardPool &&
+                    game.card.getCardPoolPath(cardPool) is string cardPoolPath)
+                {
+                    if (cardPoolPath.StartsWith("sa:") &&
+                        !path.StartsWith("sa:") &&
+                        !path.StartsWith("res:"))
+                    {
+                        //流文件
+                        return loadExternalImage($"sa:{Path.Combine(textureDirName, path)}", null);
+                    }
+                    else
+                    {
+                        //绝对路径
+                        return loadExternalImage(path, getCardPoolTexturesDirectory(cardPool));
+                    }
+                }
+                else
+                {
+                    //没有卡池信息
+                    return loadExternalImage(path, game.card.textureDirName);
+                }
+            }
+        }
+        public Task<Sprite> loadCardImage(ICardPoolReference cardPoolRef, int cardId)
+        {
+            return loadCardImage(getCardDefine(cardPoolRef, cardId));
+        }
+        #endregion
+
         /// <summary>
         /// 将外部图片添加到缓存
         /// </summary>
@@ -407,6 +566,29 @@ namespace Game
         public bool isExternalImageExists(string path)
         {
             return game.fileManager.isFileExist(getExternalImagePath(path));
+        }
+        public string getCardPoolTexturesDirectory(CardPoolInfo cardPoolInfo)
+        {
+            var path = getCardPoolPath(cardPoolInfo);
+            var relativePath = $"../{textureDirName}";
+            if (!string.IsNullOrEmpty(cardPoolInfo.texturesDir))
+            {
+                relativePath = cardPoolInfo.texturesDir;
+            }
+            return Path.Combine(Path.GetDirectoryName(path), relativePath);
+        }
+
+        /// <summary>
+        /// 获取默认卡片贴图
+        /// </summary>
+        /// <returns></returns>
+        public Sprite getDefaultSprite()
+        {
+            return _defaultImage;
+        }
+        public void setDefaultImagePath(string path)
+        {
+            _defaultImagePath = path;
         }
         public static string calcHashString(byte[] bytes)
         {
@@ -553,8 +735,8 @@ namespace Game
             var resized = ResizeImage(image, maxWidth, maxHeight);
             return CropImage(resized, (resized.width - maxWidth) / 2, (resized.height - maxHeight) / 2, maxWidth, maxHeight);
         }
-
         #endregion
+
         #region 私有方法
         private async void onAwake_Sprite()
         {
@@ -566,11 +748,21 @@ namespace Game
             }
         }
         #endregion
-        #region 属性字段
-        public string externalImageDir { get; private set; }
-        Dictionary<string, Sprite> _externalSpriteCacheDict = new Dictionary<string, Sprite>();
 
+        #region 属性字段
+        public string textureDirName => _textureDirName;
+        public string editorTextureDirName => _editorTextureDirName;
+        public string externalImageDir { get; private set; }
         private static SHA256 _hashProvider = SHA256.Create();
+        private Dictionary<string, Sprite> _externalSpriteCacheDict = new Dictionary<string, Sprite>();
+        [SerializeField]
+        string _textureDirName = "Textures";
+        [SerializeField]
+        string _editorTextureDirName = "ExternalData/Textures";
+        [SerializeField]
+        string _defaultImagePath = "Textures/DrBoom.png";
+        [SerializeField]
+        Sprite _defaultImage;
         #endregion
     }
 }

@@ -11,6 +11,8 @@ namespace Game
     partial class CardManager
     {
         #region 公有方法
+
+        #region 创建
         public GeneratedActionDefine createActionDefine(long cardPoolId, string name, NodeDefineType type)
         {
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
@@ -37,6 +39,30 @@ namespace Game
             }
             return null;
         }
+
+        public GeneratedActionDefine cloneActionDefine(long cardPoolId, GeneratedActionDefine define)
+        {
+            var json = new SerializableActionDefine(define).toJson();
+            var cloneSeri = JsonHelper.fromJson<SerializableActionDefine>(json);
+
+
+            var nodeDefiner = getLocalNodeDefiner();
+            // 铺设节点。
+            var clone = cloneSeri.toGeneratedActionDefine(game.editor.getTypeByName);
+            clone.cardPoolId = cardPoolId;
+            // 定义所有节点。
+            clone.graph.DefineGeneratedActionDefine(clone);
+            clone.graph.DefineNodes(nodeDefiner);
+            // 连接所有节点。
+            var graph = clone.graph;
+            var nodes = cloneSeri.graph.GetConnections(graph);
+            graph.AddConnections(nodes);
+
+            return clone;
+        }
+        #endregion
+
+        #region 添加
         public void addActionDefine(long cardPoolId, GeneratedActionDefine actionDefine)
         {
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
@@ -49,6 +75,9 @@ namespace Game
                 }
             }
         }
+        #endregion
+
+        #region 移除
         public bool removeActionDefine(GeneratedActionDefine actionDefine)
         {
             if (actionDefine == null)
@@ -70,26 +99,9 @@ namespace Game
         {
             return removeActionDefine(getActionDefine(cardPoolId, id) as GeneratedActionDefine);
         }
-        public GeneratedActionDefine cloneActionDefine(long cardPoolId, GeneratedActionDefine define)
-        {
-            var json = new SerializableActionDefine(define).toJson();
-            var cloneSeri = JsonHelper.fromJson<SerializableActionDefine>(json);
+        #endregion
 
-
-            var nodeDefiner = getLocalNodeDefiner();
-            // 铺设节点。
-            var clone = cloneSeri.toGeneratedActionDefine(game.editor.getTypeByName);
-            clone.cardPoolId = cardPoolId;
-            // 定义所有节点。
-            clone.graph.DefineGeneratedActionDefine(clone);
-            clone.graph.DefineNodes(nodeDefiner);
-            // 连接所有节点。
-            var graph = clone.graph;
-            var nodes = cloneSeri.graph.GetConnections(graph);
-            graph.AddConnections(nodes);
-
-            return clone;
-        }
+        #region 获取
         public ActionDefine getActionDefine(ActionReference actRef)
         {
             if (actRef == null)
@@ -153,6 +165,10 @@ namespace Game
             return actionDefineList.ToArray();
         }
         #endregion
+
+        #endregion
+
+        #region 私有方法
         private void onAwake_Actions()
         {
             // 加载内置动作定义
@@ -163,6 +179,10 @@ namespace Game
                 typeof(EffectEditorLibrary).Assembly
             });
         }
+        #endregion
+
+        #region 属性字段
         public Dictionary<int, ActionDefine> builtinActionDefines { get; private set; }
+        #endregion
     }
 }

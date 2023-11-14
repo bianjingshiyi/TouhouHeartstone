@@ -17,43 +17,15 @@ using IGensoukyo;
 using System.Text.RegularExpressions;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone.Builtin;
+using Controllers;
 
 namespace Game
 {
     public partial class CardManager : Manager
     {
-        #region 生命周期
-        protected override void onAwake()
-        {
-            base.onAwake();
-            onAwake_Sprite();
-            onAwake_CardPool();
-            onAwake_Actions();
-        }
-        protected void Reset()
-        {
-            _game = TransformHelper.findComponentInScene<MainManager>(gameObject.scene);
-        }
-        #endregion
-        [SerializeField]
-        string _defaultImagePath = "Textures/DrBoom.png";
-        [SerializeField]
-        Sprite _defaultImage;
-        /// <summary>
-        /// 获取默认卡片贴图
-        /// </summary>
-        /// <returns></returns>
-        public Sprite getDefaultSprite()
-        {
-            return _defaultImage;
-        }
-        public void setDefaultImagePath(string path)
-        {
-            _defaultImagePath = path;
-        }
-        [SerializeField]
-        CardSkinData[] _skins = new CardSkinData[0];
-        Dictionary<int, CardSkinData> skinDic { get; } = new Dictionary<int, CardSkinData>();
+        #region 公有方法
+
+        #region 加载
         /// <summary>
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
@@ -248,201 +220,74 @@ namespace Game
 
             return cards.ToArray();
         }
-        /// <summary>
-        /// 加载文件中的皮肤
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="platform">当前平台</param>
-        /// <param name="logger">提示用Logger</param>
-        /// <returns></returns>
-        public async Task<CardSkinData[]> loadSkins(string path, PlatformCompability platform = null, StageLogger logger = null, bool loadResources = true)
+        #endregion
+
+        #region 创建卡牌定义
+        public void createCard(CardPoolInfo cardPoolInfo, out CardDefine cardDefine, out CardSkinData cardSkin)
         {
-            platform = platform ?? PlatformCompability.Current;
-
-            DataSet dataset = platform.SupportExcelReading ?
-                await getManager<THHResourceManager>().loadExcelAsDataSet(path, platform) :
-                await getManager<THHResourceManager>().loadDataSet(path, platform);
-
-            if (dataset.Tables.Count < 1) throw new Exception("空数据集");
-            var cardTable = dataset.Tables[0];
-            var skinTable = dataset.Tables[1];
-            List<CardSkinData> skins = new List<CardSkinData>();
-
-            // Excel的第一行是注释，忽略
-            for (int i = 1; i < cardTable.Rows.Count; i++)
+            if (!tryGetCardPool(cardPoolInfo.ToReference(), out CardPool cardPool))
             {
-                try
-                {
-                    var datarow = cardTable.Rows[i];
-
-                    if (datarow.ReadCol("Ignore", false))
-                        continue;
-                    CardSkinData skin = await loadSkinInCardTable(path, datarow, logger, loadResources);
-                    int index = skins.FindIndex(s => s.id == skin.id);
-                    if (index > 0)
-                        skins[index] = skin;
-                    else
-                        skins.Add(skin);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"Error when loading {path} (row {i}): {e}");
-                }
+                throw new KeyNotFoundException($"不存在卡池{cardPoolInfo.cardPoolId}");
             }
-            for (int i = 1; i < skinTable.Rows.Count; i++)
+            int cardId = 0;
+            for (int i = 1; i < 0xFFFF; i++)
             {
-                try
-                {
-                    var datarow = skinTable.Rows[i];
-
-                    CardSkinData skin = await loadSkinInSkinTable(path, datarow, loadResources);
-                    int index = skins.FindIndex(s => s.id == skin.id);
-                    if (index > 0)
-                        skins[index] = skin;
-                    else
-                        skins.Add(skin);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"Error when loading {path} (row {i}): {e}");
-                }
+                cardId = i;
+                if (cardPool.cardDefineList.Exists(c => c.id == cardId))
+                    continue;
+                break;
             }
-            return skins.ToArray();
+            cardDefine = new CardDefine(cardId, DEFINE.SERVANT);
+            cardDefine.cardPoolId = cardPoolInfo.cardPoolId;
+            cardSkin = new CardSkinData();
+            cardSkin.id = cardDefine.id;
         }
-
-        private async Task<CardSkinData> loadSkinInCardTable(string path, DataRow datarow, StageLogger logger = null, bool loadResources = true)
+        public CardDefine cloneCardDefine(CardDefine define)
         {
-            //加载文字信息
-            var skin = new CardSkinData()
-            {
-                id = datarow.ReadCol<int>("ID"),
-                name = datarow.ReadCol<string>("Name"),
-                desc = datarow.ReadCol("Desc", "")
-            };
-            logger?.NextSub($"加载卡片资源: {skin.name}");
-            //加载图片
-            string imagePath = datarow.ReadCol("Image", "");
-
-            if (loadResources)
-            {
-                try
-                {
-                    if (imagePath.StartsWith("res:"))
-                    {
-                        skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
-                    }
-                    else
-                    {
-                        if (string.IsNullOrEmpty(imagePath))
-                        {
-                            skin.image = getDefaultSprite();
-                        }
-                        else
-                        {
-                            Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
-                            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                            skin.image = sprite;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"加载贴图 {imagePath} 失败：{e}");
-                    skin.image = getDefaultSprite();
-                }
-            }
-            else
-            {
-                if (imagePath == null || imagePath.StartsWith("res:"))
-                {
-                    //什么也不做
-                }
-                else
-                {
-                    //标记贴图路径为流文件
-                    imagePath = $"sa:{Path.GetDirectoryName(path)}/{imagePath}";
-                }
-                skin.imagePath = imagePath;
-            }
-
-            return skin;
+            var json = new SerializableCardDefine(define).toJson();
+            var cloneSeri = JsonHelper.fromJson<SerializableCardDefine>(json);
+            var nodeDefiner = getLocalNodeDefiner();
+            var clone = cloneSeri.toCardDefine(nodeDefiner);
+            clone.cardPoolId = define.cardPoolId;
+            return clone;
         }
-        private async Task<CardSkinData> loadSkinInSkinTable(string path, DataRow datarow, bool loadResources = true)
+        #endregion
+
+        #region 添加卡牌定义
+        public void addCard(CardPoolInfo cardPoolInfo, CardDefine cardDefine)
         {
-            //加载文字信息
-            var skin = new CardSkinData()
-            {
-                id = datarow.ReadCol<int>("ID"),
-                name = datarow.ReadCol<string>("Name"),
-                desc = datarow.ReadCol("Desc", "")
-            };
-            //加载图片
-            string imagePath = datarow.ReadCol("Image", "");
-            if (loadResources)
-            {
-                try
-                {
-                    if (imagePath.StartsWith("res:"))
-                    {
-                        skin.image = Resources.Load<Sprite>(imagePath.Replace("res:", string.Empty));
-                    }
-                    else
-                    {
-                        Texture2D texture = await getManager<THHResourceManager>().loadTexture(imagePath, Path.GetDirectoryName(path));
-                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 100);
-                        skin.image = sprite;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogWarning($"加载贴图 {imagePath} 失败：{e}");
-                    skin.image = getDefaultSprite();
-                }
-            }
-            else
-            {
-                if (imagePath == null || imagePath.StartsWith("res:"))
-                {
-                    //什么也不做
-                }
-                else
-                {
-                    //标记为流文件
-                    imagePath = $"sa:{Path.GetDirectoryName(path)}/{imagePath}";
-                }
-                skin.imagePath = imagePath;
-            }
-            //加载音效
-            string soundPath = datarow.ReadCol("Sound_onUse", "");
-            if (loadResources)
-            {
-                if (!string.IsNullOrEmpty(soundPath))
-                    skin.sound_onUse = await getManager<THHResourceManager>().loadAudio(soundPath);
-            }
-            else
-            {
-                skin.soundPath_onUse = soundPath;
-            }
-            //加载投射物
-            string projPath = datarow.ReadCol("Projectile", "");
-            skin.projectilePath = projPath;
-            return skin;
+            addCard(cardPoolInfo.cardPoolId, cardDefine);
         }
-
-        /// <summary>
-        /// 卸载所有加载的资源
-        /// </summary>
-        public void Unload()
+        public void addCard(long cardPoolId, CardDefine cardDefine)
         {
-
+            var cardPool = getLocalCardPool(cardPoolId);
+            if (cardPool == null)
+            {
+                throw new KeyNotFoundException($"不存在卡池{cardPoolId}");
+            }
+            cardPool.cardDefineList.Add(cardDefine);
         }
-        [SerializeField]
-        string[] _externalCardPaths = new string[0];
+        #endregion
 
-        ExcelDataSetList excelList => ExcelDataSetList.Instance;
+        #region 移除卡牌定义
+        public void removeCard(CardDefine card)
+        {
+            var cardPool = getCardPoolOfCard(card);
+            if (cardPool != null)
+            {
+                if (cardPool.cardDefineList.Remove(card))
+                {
+                    cardPool.cardSkinList.RemoveAll(s => s.id == card.id);
+                }
+            }
+        }
+        public void removeCard(long cardPoolId, int cardId)
+        {
+            removeCard(getCardDefine(cardPoolId, cardId));
+        }
+        #endregion
 
-        Dictionary<int, CardDefine> defineDic { get; set; } = new Dictionary<int, CardDefine>();
-
+        #region 获取卡牌定义
         /// <summary>
         /// 根据id获取卡片定义
         /// </summary>
@@ -524,48 +369,7 @@ namespace Game
                 defineDic.Values);
             return cardList.ToArray();
         }
-        public bool isBuiltinCard(CardDefine card)
-        {
-            if (card == null)
-                return false;
-            return isBuiltinCardPool(card.cardPoolId);
-        }
-        public bool isBuiltinCardPool(long cardPoolId)
-        {
-            return cardPoolId == 0;
-        }
-        /// <summary>
-        /// 卡牌定义是否是自定义。
-        /// </summary>
-        /// <param name="card">卡牌定义。</param>
-        /// <returns></returns>
-        public bool isExternalCard(CardDefine card)
-        {
-            return isExternalCard(card.cardPoolId, card.id);
-        }
-        /// <summary>
-        /// 卡牌引用是否是自定义。
-        /// </summary>
-        /// <param name="card">卡牌ID。</param>
-        /// <returns></returns>
-        public bool isExternalCard(DefineReference defRef)
-        {
-            return isExternalCard(defRef.cardPoolId, defRef.defineId);
-        }
-        /// <summary>
-        /// 卡牌ID是否是自定义。
-        /// </summary>
-        /// <param name="card">卡牌ID。</param>
-        /// <returns></returns>
-        public bool isExternalCard(long cardPoolId, int cardId)
-        {
-            if (cardPoolId == 0 || Array.IndexOf(standardCardPoolsId, cardPoolId) >= 0)
-            {
-                //0是内置卡池，包含在经典卡池内是经典卡池
-                return false;
-            }
-            return true;
-        }
+
         public Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> getCardDefines(ICardPoolReference[] cardPoolsId)
         {
             Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<ICardPoolReference, Dictionary<int, CardDefine>>();
@@ -633,95 +437,53 @@ namespace Game
                 return new CardDefine[0];
             }
         }
-        public CardSkinData getDefaultSkin(CardDefine cardDefine)
+        #endregion
+
+        #region 卡牌卡池检测
+        public bool isBuiltinCard(CardDefine card)
         {
-            return getDefaultSkin(getCardPoolReferenceOfCard(cardDefine), cardDefine.id);
+            if (card == null)
+                return false;
+            return isBuiltinCardPool(card.cardPoolId);
         }
-        public CardSkinData getDefaultSkin(ICardPoolReference cardPoolRef, int id)
+        public bool isBuiltinCardPool(long cardPoolId)
         {
-            var skinGroup = getAllSkins(cardPoolRef, id).GroupBy(s => s.skinId).FirstOrDefault();
-            if (skinGroup == null)
-            {
-                //卡牌没有任何皮肤
-                throw new InvalidOperationException($"卡牌{id}没有任何皮肤");
-            }
-            //获取对应语言的皮肤
-            CardSkinData skin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
-            //如果没有对应语言，就第一个
-            if (skin == null)
-                skin = skinGroup.First();
-            return skin;
+            return cardPoolId == 0;
         }
         /// <summary>
-        /// 根据id获取卡片皮肤
+        /// 卡牌定义是否是自定义。
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="card">卡牌定义。</param>
         /// <returns></returns>
-        public CardSkinData getCardSkin(ICardPoolReference cardPoolRef, int cardId)
+        public bool isExternalCard(CardDefine card)
         {
-            if (cardPoolRef.CompareCardPool(builtinCardPoolReference))
-            {
-                if (skinDic.TryGetValue(cardId, out CardSkinData builtInSkin))
-                    return builtInSkin;
-            }
-            if (tryGetCardSkin(cardPoolRef, cardId, out CardSkinData skin))
-                return skin;
-            return null;
+            return isExternalCard(card.cardPoolId, card.id);
         }
-        public CardSkinData getCardSkin(CardDefine cardDefine)
-        {
-            if (cardDefine == null)
-                return null;
-            return getCardSkin(getCardPoolReferenceOfCard(cardDefine), cardDefine.id);
-        }
-        Dictionary<int, CardSkinData> tempSkinDic { get; } = new Dictionary<int, CardSkinData>();
         /// <summary>
-        /// 添加临时的卡片皮肤
+        /// 卡牌引用是否是自定义。
         /// </summary>
-        /// <param name="skin"></param>
-        public void AddCardSkinTemp(CardSkinData skin)
+        /// <param name="card">卡牌ID。</param>
+        /// <returns></returns>
+        public bool isExternalCard(DefineReference defRef)
         {
-            if (skinDic.ContainsKey(skin.id))
-            {
-                Debug.LogError($"已存在相同的皮肤{skinDic[skin.id]}");
-                return;
-            }
-            if (tempSkinDic.ContainsKey(skin.id))
-            {
-                Debug.LogError($"已存在相同的皮肤{tempSkinDic[skin.id]}");
-                return;
-            }
-            tempSkinDic.Add(skin.id, skin);
+            return isExternalCard(defRef.cardPoolId, defRef.defineId);
         }
-        public bool isStandardCard(CardDefine c)
+        /// <summary>
+        /// 卡牌ID是否是自定义。
+        /// </summary>
+        /// <param name="card">卡牌ID。</param>
+        /// <returns></returns>
+        public bool isExternalCard(long cardPoolId, int cardId)
         {
-            if (c.id == 0)//非法卡片
-                return false;
-            if (c.GetType().Assembly != typeof(THHGame).Assembly)//非游戏用卡片
-                return false;
-            if (c.isMaster())//不是英雄牌
-                return false;
-            else if (c.isSkill())//不是技能牌
-                return false;
-            else if (c.isServant())
+            if (cardPoolId == 0 || Array.IndexOf(standardCardPoolsId, cardPoolId) >= 0)
             {
-                if (c.isToken())
-                    return false;
-            }
-            else if (c.isSpell())
-            {
-                if (c.isToken())
-                    return false;
-            }
-            else if (c.isItem())
-            {
-                if (c.isToken())
-                {
-                    return false;
-                }
+                //0是内置卡池，包含在经典卡池内是经典卡池
+                return false;
             }
             return true;
         }
+        #endregion
+
         /// <summary>
         /// 尝试获取翻译过后的卡牌标签名称。
         /// </summary>
@@ -755,15 +517,39 @@ namespace Game
                 (a, n) => getActionDefine(a),
                 (poolId, name) => getEventTriggerTime(getLocalCardPoolReference(poolId), name, true));
         }
+        #endregion
+
+        #region 私有方法
+
+        #region 生命周期
+        protected override void onAwake()
+        {
+            base.onAwake();
+            onAwake_Sprite();
+            onAwake_CardPool();
+            onAwake_Actions();
+        }
+        protected void Reset()
+        {
+            _game = TransformHelper.findComponentInScene<MainManager>(gameObject.scene);
+        }
+        #endregion
+
+        #endregion
+
         #region 属性字段
         public MainManager game
         {
             get { return _game; }
             set { _game = value; }
         }
-        [SerializeField]
-        MainManager _game;
         private static Dictionary<string, string> _translateTagDic;
+        private ExcelDataSetList excelList => ExcelDataSetList.Instance;
+        private Dictionary<int, CardDefine> defineDic { get; set; } = new Dictionary<int, CardDefine>();
+        [SerializeField]
+        private MainManager _game;
+        [SerializeField]
+        private string[] _externalCardPaths = new string[0];
         #endregion
     }
 
