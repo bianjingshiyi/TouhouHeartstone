@@ -202,7 +202,7 @@ namespace UI
         public void switchCardFace(CardFaceType type)
         {
             _editSubnameButton.gameObject.SetActive(type != CardFaceType.Spell && type != CardFaceType.Item);
-            _editTagButton.gameObject.SetActive(type == CardFaceType.Servant);
+            _tagDropdown.gameObject.SetActive(type == CardFaceType.Servant);
             _editAttackButton.gameObject.SetActive(type != CardFaceType.Spell);
             _editLifeButton.gameObject.SetActive(type != CardFaceType.Spell);
 
@@ -231,8 +231,7 @@ namespace UI
             _characterDropdown.Hide();
             _typeDropdown.Hide();
             _tagDropdown.Hide();
-            _editTagButton.gameObject.SetActive(true);
-            _tagDropdown.gameObject.SetActive(false);
+            _tagDropdown.gameObject.SetActive(true);
             _costInputField.DeactivateInputField();
             _editCostButton.gameObject.SetActive(true);
             _costInputField.gameObject.SetActive(false);
@@ -382,7 +381,6 @@ namespace UI
             _editSubnameButton.onClick.AddListener(onEditSubnameButtonClicked);
             _editDescButton.onClick.AddListener(onEditDescButtonClicked);
             _editImageButton.onClick.AddListener(onEditImageButtonClicked);
-            _editTagButton.onClick.AddListener(onEditTagButtonClicked);
             _editCostButton.onClick.AddListener(onEditCostButtonClicked);
             _editAttackButton.onClick.AddListener(onEditAttackButtonClicked);
             _editLifeButton.onClick.AddListener(onEditLifeButtonClicked);
@@ -539,12 +537,6 @@ namespace UI
                 _editImageButton.gameObject.SetActive(true);
             }
         }
-        private void onEditTagButtonClicked()
-        {
-            _editTagButton.gameObject.SetActive(false);
-            _tagDropdown.gameObject.SetActive(true);
-            _tagDropdown.Show();
-        }
         private void onEditCostButtonClicked()
         {
             _editCostButton.gameObject.SetActive(false);
@@ -614,8 +606,6 @@ namespace UI
         }
         private void onTagDropdownValueChangedCallback(int value)
         {
-            _tagDropdown.gameObject.SetActive(false);
-            _editTagButton.gameObject.SetActive(true);
             onChangeRace?.Invoke(value);
         }
         private void onCostInputFieldEndEdit(string text)
@@ -992,8 +982,6 @@ namespace UI
         Button _editSubnameButton;
         [SerializeField]
         Button _editDescButton;
-        [SerializeField]
-        Button _editTagButton;
         [SerializeField]
         Button _editCostButton;
         [SerializeField]
