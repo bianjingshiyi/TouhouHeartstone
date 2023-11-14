@@ -64,6 +64,12 @@ namespace Controllers
             if (_hasUnsavedChanges)
             {
                 _hasUnsavedChanges = false;
+
+                // 替换套牌中的这张卡。
+                bool removed = _saveData.deck.removeCard(_srcCardDefine.getDefineRef());
+                if (removed)
+                    _saveData.deck.addCard(_cardDefine.getDefineRef());
+
                 await game.pve.saveData(_dataName, _saveData);
                 await game.pve.saveGeneratedCardPool(_dataName);
             }

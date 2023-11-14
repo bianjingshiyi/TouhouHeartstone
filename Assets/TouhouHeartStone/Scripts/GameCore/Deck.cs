@@ -52,6 +52,23 @@ namespace TouhouHeartstone
                 addCard(cardRef);
             }
         }
+        public bool removeCard(DefineReference defRef)
+        {
+            var deckItem = cardList.FirstOrDefault(i => i.cardRef == defRef);
+            if (deckItem == null)
+                return false;
+            return removeCard(deckItem);
+        }
+        public bool removeCard(DeckItem deckItem)
+        {
+            if (!cardList.Contains(deckItem))
+                return false;
+            //从卡组中删除一张卡牌
+            deckItem.count--;
+            if (deckItem.count <= 0)
+                cardList.Remove(deckItem);
+            return true;
+        }
         public void clearCards()
         {
             cardList.Clear();

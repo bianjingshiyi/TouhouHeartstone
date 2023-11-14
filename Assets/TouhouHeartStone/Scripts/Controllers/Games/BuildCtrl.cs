@@ -741,10 +741,7 @@ namespace Controllers
             //获取拖拽卡牌
             var orderedCards = deckList.OrderBy(e => game.card.getLocalCardDefine(e.cardRef)?.getCost() ?? 0).ToArray();
             var deckItem = orderedCards[index];
-            //从卡组中删除一张卡牌
-            deckItem.count--;
-            if (deckItem.count <= 0)
-                deckList.Remove(deckItem);
+            _deck.removeCard(deckItem);
             //刷新卡池显示
             _cardPoolViewPanelCtrl.updateContents();
             return deckItem;
