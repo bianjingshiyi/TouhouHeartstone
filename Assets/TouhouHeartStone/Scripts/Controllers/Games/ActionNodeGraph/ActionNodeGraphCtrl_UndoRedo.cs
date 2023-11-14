@@ -111,6 +111,14 @@ namespace Controllers
                 _destName = destName;
                 _destParamIndex = destParamIndex;
             }
+            public ConnectOperation(ActionNodeGraphCtrl graphCtrl, IPort source, IPort dest) : 
+                this(graphCtrl, source.node, source.name, dest.node, dest.name,
+                     dest is ValueInput vi ? vi.paramIndex : -1)
+            {
+            }
+            public ConnectOperation(ActionNodeGraphCtrl graphCtrl, NodeConnection connection) : this(graphCtrl, connection.source, connection.destination)
+            {
+            }
 
             public override void undo()
             {

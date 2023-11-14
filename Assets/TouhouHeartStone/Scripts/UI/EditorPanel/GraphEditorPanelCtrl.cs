@@ -188,7 +188,7 @@ namespace UI
             if (string.IsNullOrEmpty(clipboard))
                 return;
             await _actionGraphCtrl.pasteClipboard(clipboard);
-            updatePasteButton();
+            _actionGraphCtrl.addRecordBreakpoint();
         }
         private void OnClickDeleteButton()
         {
@@ -696,7 +696,7 @@ namespace UI
                     if (!string.IsNullOrEmpty(clipboard))
                     {
                         await _actionGraphCtrl.pasteClipboard(clipboard);
-                        updatePasteButton();
+                        _actionGraphCtrl.addRecordBreakpoint();
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.D) && !_actionGraphCtrl.isReadonly)
@@ -704,11 +704,12 @@ namespace UI
                     // Ctrl + D：复制并粘贴
                     var clipboard = _actionGraphCtrl.copySelection();
                     scene.editor.nodeClipboard = clipboard;
+                    updatePasteButton();
                     if (!string.IsNullOrEmpty(clipboard))
                     {
                         await _actionGraphCtrl.pasteClipboard(clipboard);
+                        _actionGraphCtrl.addRecordBreakpoint();
                     }
-                    updatePasteButton();
                 }
                 if (Input.GetKeyDown(KeyCode.X) && !_actionGraphCtrl.isReadonly)
                 {

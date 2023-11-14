@@ -189,10 +189,12 @@ namespace Controllers
             {
                 fixTransCardPoolBuffRef(node);
                 await createNodeUI4Node(node);
+                addOperationRecord(new CreateNodeOperation(this, node));
             }
             foreach (var connection in clipGraph.connections)
             {
                 connectPorts4UI(connection.source, connection.destination);
+                addOperationRecord(new ConnectOperation(this, connection));
             }
             _ui.clearSelection();
         }
