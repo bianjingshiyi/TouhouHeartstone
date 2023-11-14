@@ -1,13 +1,13 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TouhouCardEngine;
+using Game;
+using MongoDB.Bson.Serialization.Attributes;
 using UnityEngine;
 
 namespace UI
 {
-    public class CardSkinData
+    public class CardSkinData : ISkin
     {
         /// <summary>
         /// 构造一个空的卡牌皮肤
@@ -34,15 +34,6 @@ namespace UI
             {
                 _animationRefs.Add(new SkinAnimationRef(animRef));
             }
-        }
-        public DefineReference getEffectNodeAnimationRef(string key)
-        {
-            var existed = getAnimRef(key);
-            if (existed != null)
-            {
-                return existed.animRef;
-            }
-            return null;
         }
         public SkinAnimationRef[] getAllAnimRefs()
         {

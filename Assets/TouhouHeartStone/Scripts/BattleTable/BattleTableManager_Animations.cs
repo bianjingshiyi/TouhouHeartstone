@@ -197,12 +197,7 @@ namespace Game.BattleTable
                 if (effectArg.effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
-                if (node == null) return null; // 节点不存在
-
-                if (!isCorrectEventForNode(arg, node)) return null; // 事件不正确
-
-                var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
-                return skin.getAnimRef(key);
+                return getAnimRefOfEventNode(skin, arg, node);
 
             }
             else if (card != null)
@@ -212,12 +207,7 @@ namespace Game.BattleTable
                 if (effectArg.effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
 
                 var node = genEffect.graph.findNodeById(arg.flowNodeId);
-                if (node == null) return null; // 节点不存在
-
-                if (!isCorrectEventForNode(arg, node)) return null; // 事件不正确
-
-                var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
-                return skin.getAnimRef(key);
+                return getAnimRefOfEventNode(skin, arg, node);
             }
             return null;
         }
@@ -225,36 +215,25 @@ namespace Game.BattleTable
         {
             var card = effectArg.card;
             var buff = effectArg.buff;
-            SkinAnimationRef animRef = null;
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
                 var skin = cardManager.getBuffSkin(define);
-                if (define is GeneratedBuffDefine && effectArg.effect is IEntryNodeEffect entryNodeEffect)
-                {
-                    Node node = entryNodeEffect.entryNode;
-                    if (node != null)
-                    {
-                        var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
-                        animRef = skin.getAnimRef(key);
-                    }
-                }
+                if (effectArg.effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
+
+                var node = entryNodeEffect.entryNode;
+                return getAnimRefOfEntryNode(skin, node);
             }
             else if (card != null)
             {
                 var define = card.define;
                 var skin = cardManager.getCardSkin(define);
-                if (effectArg.effect is IEntryNodeEffect entryNodeEffect)
-                {
-                    var node = entryNodeEffect.entryNode;
-                    if (node != null)
-                    {
-                        var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
-                        animRef = skin.getAnimRef(key);
-                    }
-                }
+                if (effectArg.effect is not IEntryNodeEffect entryNodeEffect) return null; //效果不正确
+
+                var node = entryNodeEffect.entryNode;
+                return getAnimRefOfEntryNode(skin, node);
             }
-            return animRef;
+            return null;
         }
         public Card getEventSkinAnimCard(EffectTriggerEventArg effectArg, IEventArg arg, int position)
         {
@@ -275,17 +254,37 @@ namespace Game.BattleTable
             }
             return null;
         }
-        private bool isCorrectEventForNode(IEventArg arg, Node node)
+        private SkinAnimationRef getAnimRefOfEntryNode(ISkin skin, Node node)
         {
-            if (node is ActionNode action)
+            if (node == null) return null; // 节点不存在
+
+            var key = SkinAnimationRef.getNodeKey(node);
+            return skin.getAnimRef(key);
+        }
+        private SkinAnimationRef getAnimRefOfEventNode(ISkin skin, IEventArg arg, Node node)
+        {
+            if (node == null) return null; // 节点不存在
+            var key = SkinAnimationRef.getNodeKey(node);
+            var animRef = skin.getAnimRef(key);
+
+            if (!isCorrectEventForAnimRef(arg, animRef, node)) return null; // 事件不正确
+
+            return animRef;
+        }
+        private bool isCorrectEventForAnimRef(IEventArg arg, SkinAnimationRef animRef, Node node)
+        {
+            if (animRef == null)
+                return false;
+            var eventRef = animRef.eventReference;
+            if (eventRef == null) // 不存在事件名，可能是老版本的引用，获取该节点可能事件的第一个。
             {
-                var eventRefs = cardManager.getActionBindedEvents(action.defineRef);
-                if (eventRefs == null)
-                    return false;
-                var eventRef = CardManager.getEventReferenceOfEventArg(arg);
-                return eventRefs.Any(e => e == eventRef);
+                var eventRefs = _main.anims.getNodeVisualEffectEventRefs(node);
+                // 该节点的所有事件可能也会因为是入口节点导致是null，那就不改
+                if (eventRefs != null)
+                    eventRef = eventRefs.FirstOrDefault();
             }
-            return false;
+            var argRef = CardManager.getEventReferenceOfEventArg(arg);
+            return eventRef == argRef;
         }
         #endregion
         [SerializeField]

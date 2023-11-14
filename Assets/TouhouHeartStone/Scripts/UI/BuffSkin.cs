@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game;
 using TouhouCardEngine;
 
 namespace UI
 {
-    public class BuffSkin
+    public class BuffSkin : ISkin
     {
         public int buffId;
         public string language;
@@ -13,16 +14,10 @@ namespace UI
         public string desc;
         public string imagePath;
         List<SkinAnimationRef> _animationRefs = new List<SkinAnimationRef>();
-
-
-        public DefineReference getEffectNodeAnimationRef(string key)
+        int ISkin.skinId 
         {
-            var existed = getAnimRef(key);
-            if (existed != null)
-            {
-                return existed.animRef;
-            }
-            return null;
+            get => buffId;
+            set => buffId = value;
         }
         public SkinAnimationRef[] getAllAnimRefs()
         {

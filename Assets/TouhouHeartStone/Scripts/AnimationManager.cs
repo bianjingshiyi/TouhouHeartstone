@@ -11,7 +11,7 @@ namespace Game
     /// <summary>
     /// 用于管理卡牌的特效等内容。
     /// </summary>
-    public class AnimationManager : Manager
+    public partial class AnimationManager : Manager
     {
         #region 公有方法
         public IEnumerable<string> getBuiltinEffectNames()

@@ -14,20 +14,30 @@ namespace UI
             _effectDropdown.ClearOptions();
             _effectDropdown.AddOptions(new List<string>(effectNames));
         }
-        public void initSourcePositionOptions(string[] options)
+        public void initEvents(string[] eventNames)
+        {
+            _eventDropdownFieldObj.SetActive(eventNames != null);
+            _eventDropdown.ClearOptions();
+            if (eventNames != null)
+                _eventDropdown.AddOptions(new List<string>(eventNames));
+        }
+        public void initPositionOptions(string[] options)
         {
             _sourcePositionDropdown.ClearOptions();
             _sourcePositionDropdown.AddOptions(new List<string>(options));
-        }
-        public void initTargetPositionOptions(string[] options)
-        {
             _targetPositionDropdown.ClearOptions();
             _targetPositionDropdown.AddOptions(new List<string>(options));
         }
-        public void setVisualEffectInfo(VisualEffectDialogInfo info)
+        public void update(VisualEffectDialogInfo viewData)
         {
-            setSourcePosition(info.sourcePosition);
-            setTargetPosition(info.targetPosition);
+            setEvent(viewData.eventIndex);
+            setAnimation(viewData.animIndex);
+            setSourcePosition(viewData.sourcePosition);
+            setTargetPosition(viewData.targetPosition);
+        }
+        public void setEvent(int index)
+        {
+            _eventDropdown.SetValueWithoutNotify(index);
         }
         public void setAnimation(int index)
         {
@@ -45,20 +55,13 @@ namespace UI
         #region 私有方法
         protected void Awake()
         {
-            _effectDropdown.onValueChanged.AddListener(OnEffectDropdownValueChangedCallback);
-            _sourcePositionDropdown.onValueChanged.AddListener(OnSourcePositionDropdownValueChangedCallback);
-            _targetPositionDropdown.onValueChanged.AddListener(OnTargetPositionDropdownValueChangedCallback);
+            _eventDropdown.onValueChanged.AddListener(v => onValueChangedCallback());
+            _effectDropdown.onValueChanged.AddListener(v => onValueChangedCallback());
+            _sourcePositionDropdown.onValueChanged.AddListener(v => onValueChangedCallback());
+            _targetPositionDropdown.onValueChanged.AddListener(v => onValueChangedCallback());
             _confirmButton.onClick.AddListener(OnConfirmCallback);
         }
-        private void OnEffectDropdownValueChangedCallback(int value)
-        {
-            onEffectDropdownValueChanged?.Invoke(value);
-        }
-        private void OnSourcePositionDropdownValueChangedCallback(int value)
-        {
-            onPropValueChanged?.Invoke(toInfo());
-        }
-        private void OnTargetPositionDropdownValueChangedCallback(int value)
+        private void onValueChangedCallback()
         {
             onPropValueChanged?.Invoke(toInfo());
         }
@@ -70,17 +73,22 @@ namespace UI
         {
             return new VisualEffectDialogInfo()
             {
+                eventIndex = _eventDropdown.value,
+                animIndex = _effectDropdown.value - 1,
                 sourcePosition = _sourcePositionDropdown.value,
                 targetPosition = _targetPositionDropdown.value,
             };
         }
         #endregion
         #region 事件
-        public event Action<int> onEffectDropdownValueChanged;
         public event Action<VisualEffectDialogInfo> onPropValueChanged;
         public event Action onConfirm;
         #endregion
         #region 属性字段
+        [SerializeField]
+        private GameObject _eventDropdownFieldObj;
+        [SerializeField]
+        private Dropdown _eventDropdown;
         [SerializeField]
         private Dropdown _effectDropdown;
         [SerializeField]
@@ -91,29 +99,10 @@ namespace UI
         private Button _confirmButton;
         #endregion
     }
-    public class VisualEffectDialogInfo
+    public struct VisualEffectDialogInfo
     {
-        public VisualEffectDialogInfo()
-        {
-        }
-        public VisualEffectDialogInfo(SkinAnimationRef animRef)
-        {
-            if (animRef != null)
-            {
-                sourcePosition = animRef.sourcePosition;
-                targetPosition = animRef.targetPosition;
-            }
-            else
-            {
-                sourcePosition = 0;
-                targetPosition = 0;
-            }
-        }
-        public void update(SkinAnimationRef animRef)
-        {
-            animRef.sourcePosition = sourcePosition;
-            animRef.targetPosition = targetPosition;
-        }
+        public int eventIndex;
+        public int animIndex;
         public int sourcePosition;
         public int targetPosition;
     }

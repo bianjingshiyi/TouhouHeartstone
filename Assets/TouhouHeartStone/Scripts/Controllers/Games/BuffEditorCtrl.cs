@@ -6,7 +6,6 @@ using BJSYGameCore;
 using Game;
 using MukioI18n;
 using TouhouCardEngine;
-using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
 using UI;
 using UnityEngine;
@@ -72,7 +71,7 @@ namespace Controllers
         public override void hide()
         {
             base.hide();
-            cleanUnusedVisualEffects();
+            AnimationManager.cleanUnusedVisualEffects(_curBuffSkin, _buffDefine.effectList);
         }
         #endregion
         #region 私有方法
@@ -126,7 +125,6 @@ namespace Controllers
             _effectEditorCtrl.OnGraphEdited += onGraphEdited;
 
             _graphEditor.onOpenNodeAnimationDialog += onOpenNodeAnimationDialogCallback;
-            _graphEditor.onAnimationValueChanged += onNodeAnimationValueChangedCallback;
             _graphEditor.onAnimationPropChanged += onNodeAnimationPropChangedCallback;
         }
         #endregion
@@ -306,41 +304,14 @@ namespace Controllers
         #region 特效
         private void onOpenNodeAnimationDialogCallback(Node node)
         {
-            var defines = game.anims.getAllAnimationDefines();
-            int animIndex = -1;
-            var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
-            SkinAnimationRef animRef = null;
-            if (!string.IsNullOrEmpty(key))
-            {
-                animRef = _curBuffSkin.getAnimRef(key);
-                if (animRef != null)
-                {
-                    var define = defines.FirstOrDefault(d => d.cardPoolId == animRef.animRef.cardPoolId && d.id == animRef.animRef.defineId);
-                    animIndex = Array.IndexOf(defines, define);
-                }
-            }
-            _graphEditor.setNodeAnimationDialog(animIndex, new VisualEffectDialogInfo(animRef));
+            var eventNames = game.anims.getNodeVisualEffectEventEditorNames(node);
+            var eventViewData = game.anims.getNodeAnimationViewData(node, _curBuffSkin);
+            _graphEditor.updateAnimationDialog(eventNames, eventViewData);
             _graphEditor.displayNodeAnimationDialog(node);
-        }
-        private void onNodeAnimationValueChangedCallback(Node node, int index)
-        {
-            var defines = game.anims.getAllAnimationDefines();
-            var animRef = getOrInitNodeAnimationRef(node);
-            if (index < 0)
-            {
-                animRef.animRef = new DefineReference(0, 0);
-            }
-            else
-            {
-                var define = defines[index];
-                animRef.animRef = new DefineReference(define.cardPoolId, define.id);
-            }
-            markUnsaved();
         }
         private void onNodeAnimationPropChangedCallback(Node node, VisualEffectDialogInfo info)
         {
-            var animRef = getOrInitNodeAnimationRef(node);
-            info.update(animRef);
+            game.anims.updateNodeAnimRef(node, _curBuffSkin, info);
             markUnsaved();
         }
         #endregion
@@ -494,40 +465,6 @@ namespace Controllers
         #endregion
 
         #endregion
-        private void cleanUnusedVisualEffects()
-        {
-            var allAnimRefs = _curBuffSkin.getAllAnimRefs();
-            foreach (var animRef in allAnimRefs)
-            {
-                var key = animRef.key;
-                var keys = _buffDefine.effectList.SelectMany(e => e.graph.nodes).Select(n => n.getConst<string>(SkinAnimationRef.NODE_CONST_KEY));
-                var hasKey = keys.Contains(key);
-                if (!hasKey)
-                {
-                    _curBuffSkin.removeAnimRef(key);
-                }
-            }
-        }
-        private SkinAnimationRef getOrInitNodeAnimationRef(Node node)
-        {
-            var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
-            if (string.IsNullOrEmpty(key))
-            {
-                var animRefs = _curBuffSkin.getAllAnimRefs();
-                key = $"AnimRef{animRefs.Length}_{node.id}";
-                node.setConst(SkinAnimationRef.NODE_CONST_KEY, key);
-            }
-            var animRef = _curBuffSkin.getAnimRef(key);
-            if (animRef == null)
-            {
-                var defines = game.anims.getAllAnimationDefines();
-                var defaultDefine = defines.FirstOrDefault();
-                var defRef = new DefineReference(defaultDefine?.cardPoolId ?? 0, defaultDefine?.id ?? 1);
-                animRef = new SkinAnimationRef(key, defRef);
-                _curBuffSkin.addAnimRef(animRef);
-            }
-            return animRef;
-        }
         private void updateSkinNames()
         {
             BuffSkin[] skins = getCurrentLangSkins();

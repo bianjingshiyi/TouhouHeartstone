@@ -85,13 +85,12 @@ namespace UI
         public void initNodeAnimationDialog(string[] animations, string[] positions)
         {
             _editVisualEffectDialog.initEffects(animations);
-            _editVisualEffectDialog.initSourcePositionOptions(positions);
-            _editVisualEffectDialog.initTargetPositionOptions(positions);
+            _editVisualEffectDialog.initPositionOptions(positions);
         }
-        public void setNodeAnimationDialog(int animIndex, VisualEffectDialogInfo info)
+        public void updateAnimationDialog(string[] eventNames, VisualEffectDialogInfo viewData)
         {
-            _editVisualEffectDialog.setAnimation(animIndex + 1);
-            _editVisualEffectDialog.setVisualEffectInfo(info);
+            _editVisualEffectDialog.initEvents(eventNames);
+            _editVisualEffectDialog.update(viewData);
         }
         public void displayNodeAnimationDialog(Node node)
         {
@@ -135,7 +134,6 @@ namespace UI
             _nodesPanel.onSearchFilterEndEdit += onSearchFilterEndEdit;
             _nodesPanel.onCreateActionClicked += onCreateActionClicked;
 
-            _editVisualEffectDialog.onEffectDropdownValueChanged += onAnimationValueChangedCallback;
             _editVisualEffectDialog.onPropValueChanged += onAnimationPropChangedCallback;
             _editVisualEffectDialog.onConfirm += onAnimationConfirmButtonClickedCallback;
 
@@ -376,10 +374,6 @@ namespace UI
             displayCreateActionDefineDialog(true);
         }
         #region 特效
-        private void onAnimationValueChangedCallback(int index)
-        {
-            onAnimationValueChanged?.Invoke(_curEditingVisualEffectNode, index - 1);
-        }
         private void onAnimationPropChangedCallback(VisualEffectDialogInfo info)
         {
             onAnimationPropChanged?.Invoke(_curEditingVisualEffectNode, info);
@@ -750,7 +744,6 @@ namespace UI
         #endregion
         #region 事件
         public event Action<Node> onOpenNodeAnimationDialog;
-        public event Action<Node, int> onAnimationValueChanged;
         public event Action<Node, VisualEffectDialogInfo> onAnimationPropChanged;
         #endregion
 
