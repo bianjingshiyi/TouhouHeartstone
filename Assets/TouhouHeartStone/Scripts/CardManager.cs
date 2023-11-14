@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using TouhouCardEngine.Shared;
 using TouhouHeartstone.Builtin;
 using Controllers;
+using MukioI18n;
 
 namespace Game
 {
@@ -25,38 +26,40 @@ namespace Game
     {
         #region 公有方法
 
-        #region 加载
+        #region 加载内置卡
         /// <summary>
         /// 加载配置路径中的所有卡片和皮肤。
         /// </summary>
         /// <returns></returns>
         public Task loadBuiltinCards(Assembly[] assemblies = default, string[] namespaces = null, bool builtinOnly = false, ILogger logger = null, StageLogger screenLogger = null, bool loadResources = true)
         {
-            return load(builtinOnly ? new string[0] : _externalCardPaths, assemblies, namespaces, logger, screenLogger, loadResources);
+            return loadBuiltinCards(builtinOnly ? new string[0] : _externalCardPaths, assemblies, namespaces, logger, screenLogger, loadResources);
         }
         /// <summary>
         /// 从给出的路径中加载卡片和皮肤，支持通配符，比如“Cards/*.xls”
         /// </summary>
         /// <param name="excelPaths"></param>
         /// <returns></returns>
-        public async Task load(string[] excelPaths, Assembly[] assemblies = default, string[] namespaces = null, ILogger logger = null, StageLogger screenLogger = null, bool loadResources = true)
+        public async Task loadBuiltinCards(string[] excelPaths, Assembly[] assemblies = default, string[] namespaces = null, ILogger logger = null, StageLogger screenLogger = null, bool loadResources = true)
         {
             //加载内置卡片
             screenLogger?.NextStage("加载内置卡片");
             if (assemblies == default)
                 assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            List<CardDefine> cardList = new List<CardDefine>(CardHelper.getCardDefines(assemblies, namespaces, logger));
-            foreach (CardDefine card in cardList)
+
+            // 将通过反射获取到的卡牌加入卡牌定义字典。
+            var gotCardDefines = CardHelper.getCardDefines(assemblies, namespaces, logger);
+            foreach (CardDefine card in gotCardDefines)
             {
-                if (defineDic.ContainsKey(card.id))
+                if (builtinDefineDic.ContainsKey(card.id))
                 {
-                    Debug.LogWarning($"存在重复ID的卡片{defineDic[card.id]}和{card}");
+                    Debug.LogWarning($"存在重复ID的卡片{builtinDefineDic[card.id]}和{card}");
                     continue;
                 }
-                defineDic.Add(card.id, card);
+                builtinDefineDic.Add(card.id, card);
             }
-            cardList.Clear();
-            //加载外置卡片
+
+            // 获取外置卡牌xls的路径
             List<string> pathList = new List<string>();
             if (excelPaths != null)
             {
@@ -71,7 +74,8 @@ namespace Game
                             // 去重
                             foreach (var item in pathes)
                             {
-                                if (!pathList.Contains(item)) pathList.Add(item);
+                                if (!pathList.Contains(item)) 
+                                    pathList.Add(item);
                             }
                         }
                         else
@@ -82,29 +86,34 @@ namespace Game
                             {
                                 if (Regex.Match(item, regexp).Success)
                                 {
-                                    if (!pathList.Contains(item)) pathList.Add(item);
+                                    if (!pathList.Contains(item)) 
+                                        pathList.Add(item);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        if (!pathList.Contains(excelPath)) pathList.Add(excelPath);
+                        if (!pathList.Contains(excelPath)) 
+                            pathList.Add(excelPath);
                     }
                 }
             }
+
+            // 加载xls外置卡牌
             screenLogger?.NextStage("加载卡片集", pathList.Count);
             int cardCount = 0;
+            List<CardDefine> cardList = new List<CardDefine>();
             foreach (string path in pathList)
             {
                 try
                 {
                     screenLogger?.NextSub($"加载卡片集：{Path.GetFileNameWithoutExtension(path)}");
 
-                    CardDefine[] cards = await loadCards(path);
+                    CardDefine[] cards = await loadXLSCards(path);
                     foreach (var card in cards)
                     {
-                        CardDefine older = defineDic.FirstOrDefault(p => p.Value.id == card.id).Value;
+                        CardDefine older = builtinDefineDic.FirstOrDefault(p => p.Value.id == card.id).Value;
                         if (older != null)
                         {
                             older.merge(card);
@@ -120,36 +129,41 @@ namespace Game
                     UberDebug.LogError($"读取外部卡牌文件{path}失败，发生异常：{e}");
                 }
             }
+
+            // 外置卡牌去重
             foreach (CardDefine card in cardList)
             {
-                if (defineDic.ContainsKey(card.id))
+                if (builtinDefineDic.ContainsKey(card.id))
                 {
-                    Debug.LogWarning($"存在重复ID的卡片{defineDic[card.id]}和{card}");
+                    Debug.LogWarning($"存在重复ID的卡片{builtinDefineDic[card.id]}和{card}");
                     continue;
                 }
-                defineDic.Add(card.id, card);
+                builtinDefineDic.Add(card.id, card);
             }
             cardList.Clear();
+
+
             //加载内置皮肤
-            skinDic.Clear();
+            builtinSkinDic.Clear();
             foreach (CardSkinData skin in _skins)
             {
                 if (skin.image == null)
                     skin.image = getDefaultSprite();
-                skinDic[skin.id] = skin;
+                builtinSkinDic[skin.id] = skin;
             }
+
             //加载外置皮肤
             screenLogger?.NextStage("加载外置皮肤", cardCount);
             foreach (string path in pathList)
             {
                 try
                 {
-                    CardSkinData[] skins = await loadSkins(path, logger: screenLogger, loadResources: loadResources);
+                    CardSkinData[] skins = await loadXLSSkins(path, logger: screenLogger, loadResources: loadResources);
                     foreach (var skin in skins)
                     {
-                        if (skinDic.ContainsKey(skin.id))
-                            Debug.LogWarning($"存在重复ID的皮肤{skinDic[skin.id]}和{skin}");
-                        skinDic[skin.id] = skin;
+                        if (builtinSkinDic.ContainsKey(skin.id))
+                            Debug.LogWarning($"存在重复ID的皮肤{builtinSkinDic[skin.id]}和{skin}");
+                        builtinSkinDic[skin.id] = skin;
                     }
                 }
                 catch (Exception e)
@@ -159,11 +173,11 @@ namespace Game
             }
         }
         /// <summary>
-        /// 加载文件中的卡片
+        /// 加载xls文件中的卡片
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<CardDefine[]> loadCards(string path, PlatformCompability platform = null)
+        public async Task<CardDefine[]> loadXLSCards(string path, PlatformCompability platform = null)
         {
             platform = platform ?? PlatformCompability.Current;
 
@@ -193,10 +207,10 @@ namespace Game
                     if (datarow.ReadCol("Ignore", false))
                     {
                         int id = datarow.ReadCol<int>("ID");
-                        if (defineDic.ContainsKey(id))
+                        if (builtinDefineDic.ContainsKey(id))
                         {
-                            Debug.Log($"忽略卡牌{defineDic[id]}");
-                            defineDic.Remove(id);
+                            Debug.Log($"忽略卡牌{builtinDefineDic[id]}");
+                            builtinDefineDic.Remove(id);
                         }
                         continue;
                     }
@@ -239,8 +253,7 @@ namespace Game
             }
             cardDefine = new CardDefine(cardId, DEFINE.SERVANT);
             cardDefine.cardPoolId = cardPoolInfo.cardPoolId;
-            cardSkin = new CardSkinData();
-            cardSkin.id = cardDefine.id;
+            cardSkin = createSkin(cardDefine.cardPoolId, cardDefine.id);
         }
         public CardDefine cloneCardDefine(CardDefine define)
         {
@@ -270,7 +283,7 @@ namespace Game
         #endregion
 
         #region 移除卡牌定义
-        public void removeCard(CardDefine card)
+        public bool removeCard(CardDefine card)
         {
             var cardPool = getCardPoolOfCard(card);
             if (cardPool != null)
@@ -278,12 +291,14 @@ namespace Game
                 if (cardPool.cardDefineList.Remove(card))
                 {
                     cardPool.cardSkinList.RemoveAll(s => s.id == card.id);
+                    return true;
                 }
             }
+            return false;
         }
-        public void removeCard(long cardPoolId, int cardId)
+        public bool removeCard(long cardPoolId, int cardId)
         {
-            removeCard(getCardDefine(cardPoolId, cardId));
+            return removeCard(getCardDefine(cardPoolId, cardId));
         }
         #endregion
 
@@ -298,17 +313,17 @@ namespace Game
         {
             if (cardPoolRef == null)
                 return null;
+            // 老版本卡牌定义的兼容。
             if (cardPoolRef.CardPoolID == 0 && cardId < 0)
-            {
                 cardPoolRef = new CardPoolReference(cardId << 1 >> 17, cardId);
-            }
-            if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
+
+            if (tryGetCardPool(cardPoolRef, out CardPool cardPool)) // 自定义卡池。
             {
                 return cardPool.cardDefineList.Find(d => d.id == cardId);
             }
-            else if (defineDic.ContainsKey(cardId))
+            else if (builtinDefineDic.ContainsKey(cardId)) // 内置卡池。
             {
-                return defineDic[cardId];
+                return builtinDefineDic[cardId];
             }
             return null;
         }
@@ -320,15 +335,17 @@ namespace Game
         /// <returns></returns>
         public CardDefine getCardDefine(long cardPoolId, int cardId)
         {
+            // 老版本卡牌定义的兼容。
             if (cardPoolId == 0 && cardId < 0)
                 cardPoolId = cardId << 1 >> 17;
+
             if (tryGetCardPool(cardPoolId, out CardPool cardPool))
             {
                 return cardPool.cardDefineList.Find(d => d.id == cardId);
             }
-            else if (defineDic.ContainsKey(cardId))
+            else if (builtinDefineDic.ContainsKey(cardId))
             {
-                return defineDic[cardId];
+                return builtinDefineDic[cardId];
             }
             return null;
         }
@@ -365,23 +382,9 @@ namespace Game
                 }
             }
             cardList.AddRange(filter != null ?
-                defineDic.Values.Where(d => filter.Invoke(d)) :
-                defineDic.Values);
+                builtinDefineDic.Values.Where(d => filter.Invoke(d)) :
+                builtinDefineDic.Values);
             return cardList.ToArray();
-        }
-
-        public Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> getCardDefines(ICardPoolReference[] cardPoolsId)
-        {
-            Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<ICardPoolReference, Dictionary<int, CardDefine>>();
-            for (int i = 0; i < cardPoolsId.Length; i++)
-            {
-                if (_cardPoolDict.TryGetValue(cardPoolsId[i], out var cardPool))
-                {
-                    //已经加载卡池
-                    cardPoolDict.Add(cardPoolsId[i], cardPool.cardDefineList.ToDictionary(c => c.id));
-                }
-            }
-            return cardPoolDict;
         }
         public Dictionary<int, CardDefine> getCardDefines(ICardPoolReference cardPoolRef)
         {
@@ -389,21 +392,11 @@ namespace Game
                 return cardPool.cardDefineList.ToDictionary(c => c.id);
             return null;
         }
-        public Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> getCardDefines()
-        {
-            Dictionary<ICardPoolReference, Dictionary<int, CardDefine>> cardPoolDict = new Dictionary<ICardPoolReference, Dictionary<int, CardDefine>>();
-            foreach (var cardPool in _cardPoolDict)
-            {
-                cardPoolDict.Add(cardPool.Key, cardPool.Value.cardDefineList.ToDictionary(c => c.id));
-            }
-            cardPoolDict.Add(builtinCardPoolReference, new Dictionary<int, CardDefine>(defineDic));
-            return cardPoolDict;
-        }
         public CardDefine[] findCardDefines(Predicate<CardDefine> filter = null)
         {
             List<CardDefine> cardDefineList = new List<CardDefine>();
             //反射卡牌
-            cardDefineList.AddRange(filter == null ? defineDic.Values : defineDic.Values.Where(c => filter(c)));
+            cardDefineList.AddRange(filter == null ? builtinDefineDic.Values : builtinDefineDic.Values.Where(c => filter(c)));
             //卡池卡牌
             foreach (var cardPool in _cardPoolDict.Values)
             {
@@ -439,51 +432,12 @@ namespace Game
         }
         #endregion
 
-        #region 卡牌卡池检测
         public bool isBuiltinCard(CardDefine card)
         {
             if (card == null)
                 return false;
             return isBuiltinCardPool(card.cardPoolId);
         }
-        public bool isBuiltinCardPool(long cardPoolId)
-        {
-            return cardPoolId == 0;
-        }
-        /// <summary>
-        /// 卡牌定义是否是自定义。
-        /// </summary>
-        /// <param name="card">卡牌定义。</param>
-        /// <returns></returns>
-        public bool isExternalCard(CardDefine card)
-        {
-            return isExternalCard(card.cardPoolId, card.id);
-        }
-        /// <summary>
-        /// 卡牌引用是否是自定义。
-        /// </summary>
-        /// <param name="card">卡牌ID。</param>
-        /// <returns></returns>
-        public bool isExternalCard(DefineReference defRef)
-        {
-            return isExternalCard(defRef.cardPoolId, defRef.defineId);
-        }
-        /// <summary>
-        /// 卡牌ID是否是自定义。
-        /// </summary>
-        /// <param name="card">卡牌ID。</param>
-        /// <returns></returns>
-        public bool isExternalCard(long cardPoolId, int cardId)
-        {
-            if (cardPoolId == 0 || Array.IndexOf(standardCardPoolsId, cardPoolId) >= 0)
-            {
-                //0是内置卡池，包含在经典卡池内是经典卡池
-                return false;
-            }
-            return true;
-        }
-        #endregion
-
         /// <summary>
         /// 尝试获取翻译过后的卡牌标签名称。
         /// </summary>
@@ -492,17 +446,6 @@ namespace Game
         /// <returns>是否成功获取。</returns>
         public bool tryGetTranslatedTag(string tag, out string text)
         {
-            if (_translateTagDic == null)
-            {
-                _translateTagDic = new Dictionary<string, string>();
-                var T = typeof(TranslateTags);
-                FieldInfo[] fields = T.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance);
-                for (int i = 0; i < fields.Length; i++)
-                {
-                    _translateTagDic.Add(fields[i].Name, fields[i].GetValue(null).ToString());
-                    //Debug.Log("这里是字典结果" + fields[i].Name + fields[i].GetValue(null).ToString());
-                }
-            }
             if (tag != null && _translateTagDic.TryGetValue(tag, out string translatedTag))
             {
                 text = game.lang._(translatedTag);
@@ -538,14 +481,40 @@ namespace Game
         #endregion
 
         #region 属性字段
+        [TranslateMsg("卡牌标签")]
+        public const string CARD_TAG_FAIRY = "妖精";
+        [TranslateMsg("卡牌标签")]
+        public const string CARD_TAG_MECH = "机械";
+        [TranslateMsg("卡牌标签")]
+        public const string CARD_TAG_DEMON = "恶魔";
+        [TranslateMsg("卡牌标签")]
+        public const string CARD_TAG_ELEMENTAL = "元素";
+        [TranslateMsg("卡牌标签")]
+        public const string CARD_TAG_BEAST = "野兽";
+        [TranslateMsg("卡牌标签")]
+        public const string CARD_TAG_BUG = "昆虫";
+        [TranslateMsg("卡牌标签")]
+        public const string CARD_TAG_GOD = "神明";
+        [TranslateMsg("卡牌标签")]
+        public const string CARD_TAG_GHOST = "幽灵";
         public MainManager game
         {
             get { return _game; }
             set { _game = value; }
         }
-        private static Dictionary<string, string> _translateTagDic;
+        private static Dictionary<string, string> _translateTagDic = new Dictionary<string, string>
+        {
+            { TAG.FAIRY, CARD_TAG_FAIRY },
+            { TAG.MACHINE, CARD_TAG_MECH },
+            { TAG.DEMON, CARD_TAG_DEMON },
+            { TAG.ELEMENT, CARD_TAG_ELEMENTAL },
+            { TAG.BEAST, CARD_TAG_BEAST },
+            { TAG.BUG, CARD_TAG_BUG },
+            { TAG.GOD, CARD_TAG_GOD },
+            { TAG.GHOST, CARD_TAG_GHOST },
+        };
         private ExcelDataSetList excelList => ExcelDataSetList.Instance;
-        private Dictionary<int, CardDefine> defineDic { get; set; } = new Dictionary<int, CardDefine>();
+        private Dictionary<int, CardDefine> builtinDefineDic { get; set; } = new Dictionary<int, CardDefine>();
         [SerializeField]
         private MainManager _game;
         [SerializeField]

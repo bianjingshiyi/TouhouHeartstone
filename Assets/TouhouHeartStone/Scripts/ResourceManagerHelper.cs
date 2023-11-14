@@ -23,9 +23,9 @@ namespace Game
             if (string.IsNullOrEmpty(path))
                 return null;
 
-            if (path.StartsWith("res:"))
+            if (path.isResourcesPath(out var resourcesPath))
             {
-                return Task.FromResult(Resources.Load<AudioClip>(path.Replace("res:", "")));
+                return Task.FromResult(Resources.Load<AudioClip>(resourcesPath));
             }
 
             if (path.StartsWith("se:"))

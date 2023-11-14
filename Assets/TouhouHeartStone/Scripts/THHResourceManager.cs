@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters.Binary;
 using ExcelDataReader;
 using UnityEngine.Experimental.Rendering;
+using Game;
 
 namespace BJSYGameCore
 {
@@ -43,8 +44,8 @@ namespace BJSYGameCore
             if (string.IsNullOrEmpty(path))
                 return null;
 
-            if (path.StartsWith("res:"))
-                return Task.FromResult(Resources.Load<Texture2D>(path.Replace("res:", "")));
+            if (path.isResourcesPath(out var resourcesPath))
+                return Task.FromResult(Resources.Load<Texture2D>(resourcesPath));
 
             platform = platform ?? PlatformCompability.Current;
             if (platform.RequireWebRequest)
@@ -92,8 +93,8 @@ namespace BJSYGameCore
         {
             if (string.IsNullOrEmpty(path))
                 return default;
-            if (path.StartsWith("res:"))
-                return Task.FromResult(Resources.Load<T>(path.Replace("res:", "")));
+            if (path.isResourcesPath(out var resourcesPath))
+                return Task.FromResult(Resources.Load<T>(resourcesPath));
             throw new NotImplementedException();
         }
         public async override Task<T> loadAsync<T>(string path, string dir)

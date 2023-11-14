@@ -45,7 +45,7 @@ namespace Tests
             string xlsFile = Path.Combine(Application.streamingAssetsPath, fileName);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
 
-            await cm.load(new string[] { fileName });
+            await cm.loadBuiltinCards(new string[] { fileName });
 
             File.Delete(xlsFile);
             return cm;
@@ -74,7 +74,7 @@ namespace Tests
 
             string xlsFile = Path.Combine(Application.streamingAssetsPath, "Cards", "Test.xls");
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
-            var task = cm.load(new string[] { "Cards/*.xls" });
+            var task = cm.loadBuiltinCards(new string[] { "Cards/*.xls" });
 
             yield return new WaitUntil(() => task.IsCompleted);
             Assert.IsNull(task.Exception);
@@ -132,19 +132,6 @@ namespace Tests
             Assert.NotNull(task2);
         }
 
-        [UnityTest]
-        public IEnumerator CardSkinTest()
-        {
-            var task = loadCards();
-            yield return new WaitUntil(() => task.IsCompleted);
-            var cm = task.Result;
-
-            cm.AddCardSkinTemp(new UI.CardSkinData { id = NonExistsCardID });
-            var skin = cm.getCardSkin(CardManager.builtinCardPoolReference, NonExistsCardID);
-            Assert.NotNull(skin);
-            Assert.AreEqual(skin.id, NonExistsCardID);
-        }
-
         /// <summary>
         /// 在Test/Resources文件夹中有测试用的表格和图片，在测试开始的时候把它们复制到streamingAssets中，然后测试能够从中加载出卡片，再删掉测试文件。
         /// </summary>
@@ -160,7 +147,7 @@ namespace Tests
 
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
 
-            var task = cm.loadCards(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
+            var task = cm.loadXLSCards(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
             var cards = task.Result;
 
@@ -204,7 +191,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\TestPicture.jpg", pictureFile);
 
-            var task = cm.loadSkins(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
+            var task = cm.loadXLSSkins(xlsFile, new PlatformCompability(RuntimePlatform.WindowsPlayer));
             yield return new WaitUntil(() => task.IsCompleted);
             var skins = task.Result;
 
@@ -237,7 +224,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls", xlsFile);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls.dataset", dataSetFile);
 
-            var task = cm.loadCards(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
+            var task = cm.loadXLSCards(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             var cards = task.Result;
 
@@ -275,7 +262,7 @@ namespace Tests
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\TestPicture.jpg", pictureFile);
             safeCopy("Assets\\TouhouHeartStone\\Tests\\Resources\\Cards.xls.dataset", dataSetFile);
 
-            var task = cm.loadSkins(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
+            var task = cm.loadXLSSkins(dataSetFileName, new PlatformCompability(RuntimePlatform.Android));
             yield return new WaitUntil(() => task.IsCompleted);
             var skins = task.Result;
 

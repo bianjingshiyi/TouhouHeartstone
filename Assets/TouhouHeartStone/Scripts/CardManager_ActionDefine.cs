@@ -20,15 +20,7 @@ namespace Game
             {
                 var actDefList = cardPool.actionDefineList;
                 //分配Id
-                int id = 0;
-                for (int i = 0; i < actDefList.Count; i++)
-                {
-                    if (actDefList[i].id > id)
-                    {
-                        id = actDefList[i].id;
-                    }
-                }
-                id++;
+                int id = Math.Max(0, actDefList.Max(def => def.defineId)) + 1;
                 var graph = new ActionGraph();
                 GeneratedActionDefine actionDefine = new GeneratedActionDefine(graph, id, type, null, name, null, null, null);
                 actionDefine.cardPoolId = cardPoolId;
@@ -113,30 +105,36 @@ namespace Game
             //自定义
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
             if (tryGetCardPool(cardPoolRef, out CardPool cardPool))
-            {
-                return cardPool.actionDefineList.Find(g => g.id == id);
-            }
+                return cardPool.actionDefineList.Find(g => g.defineId == id);
+
             //内置
             if (builtinActionDefines.TryGetValue(id, out ActionDefine actionDefine))
-            {
                 return actionDefine;
-            }
+
+            // 过时内置。
             var obsoleteDefine = builtinActionDefines.Values.FirstOrDefault(d => d.obsoleteNames.Contains(name));
             if (obsoleteDefine != null)
-            {
                 return obsoleteDefine;
-            }
+
             return null;
         }
+        /// <summary>
+        /// 根据名称获取过时的内置动作定义。
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public ActionReference getBuiltinActionReferenceFromName(string name)
         {
             var builtin = builtinActionDefines.Values.FirstOrDefault(d => d.obsoleteNames.Contains(name));
             if (builtin != null)
-            {
                 return new ActionReference(0, builtin.defineId);
-            }
             return null;
         }
+        /// <summary>
+        /// 获取一个自定义卡池内的所有动作定义。
+        /// </summary>
+        /// <param name="cardPoolId"></param>
+        /// <returns></returns>
         public GeneratedActionDefine[] getActionDefines(long cardPoolId)
         {
             var cardPoolRef = getLocalCardPoolReference(cardPoolId);
@@ -146,6 +144,11 @@ namespace Game
             }
             return new GeneratedActionDefine[0];
         }
+        /// <summary>
+        /// 获取内置的所有动作定义，以及几个自定义卡池内的所有动作定义。
+        /// </summary>
+        /// <param name="includedCardPools"></param>
+        /// <returns></returns>
         public ActionDefine[] getAllActionDefines(params long[] includedCardPools)
         {
             //内置

@@ -255,7 +255,7 @@ namespace Game
                 //存在缓存，直接返回缓存
                 return sprite;
             }
-            if (path.StartsWith("sa:"))
+            if (path.isStreamingAssetsPath(out var streamingPath))
             {
                 //读取文件
                 byte[] bytes;
@@ -263,15 +263,15 @@ namespace Game
                 {
                     try
                     {
-                        bytes = await game.fileManager.readStreamingBinaryFile(path.Substring(3, path.Length - 3));
+                        bytes = await game.fileManager.readStreamingBinaryFile(streamingPath);
                     }
                     catch (FileNotFoundException)
                     {
                         //可能是后缀不对
                         bytes = await game.fileManager.readStreamingBinaryFile(
                             path.EndsWith(".png") ?
-                            path.Substring(3, path.Length - 3).Replace(".png", ".jpg") :
-                            path.Substring(3, path.Length - 3).Replace(".jpg", ".png"));
+                            streamingPath.Replace(".png", ".jpg") :
+                            streamingPath.Replace(".jpg", ".png"));
                     }
                     Texture2D texture = new Texture2D(512, 512);
                     texture.LoadImage(bytes);
@@ -282,10 +282,10 @@ namespace Game
                     Debug.LogError($"加载图片{path}失败：{e}");
                 }
             }
-            else if (path.StartsWith("res:"))
+            else if (path.isResourcesPath(out var resourcesPath))
             {
                 //读取文件
-                sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
+                sprite = Resources.Load<Sprite>(resourcesPath);
                 if (sprite == null)
                 {
                     Debug.LogError($"加载图片{path}为空");
@@ -298,9 +298,9 @@ namespace Game
                 if (getCardPoolInfo(cardPoolId) is CardPoolInfo cardPoolInfo &&
                     getCardPoolPath(cardPoolInfo) is string cardPoolPath)
                 {
-                    if (cardPoolPath.StartsWith("sa:") &&
-                        !path.StartsWith("sa:") &&
-                        !path.StartsWith("res:"))
+                    if (cardPoolPath.isStreamingAssetsPath(out _) &&
+                        !path.isStreamingAssetsPath(out _) &&
+                        !path.isResourcesPath(out _))
                     {
                         //卡池在StreamingAssets中，但是卡图是相对路径
                         //需要从StreamingAssets中读取相对路径上的图片
@@ -320,10 +320,10 @@ namespace Game
                             {
                                 bytes = await game.fileManager.readBinaryFile(absPath);
                             }
-                            else if (game.cache.FileExists(game.fileManager, TouhouCardEngine.ResourceType.Picture, picId))
+                            else if (game.cache.FileExists(game.fileManager, ResourceType.Picture, picId))
                             {
                                 //如果图片不存在，尝试从缓存资源中读取。
-                                bytes = await game.cache.ReadCache(game.fileManager, TouhouCardEngine.ResourceType.Picture, picId);
+                                bytes = await game.cache.ReadCache(game.fileManager, ResourceType.Picture, picId);
                             }
                             else
                             {
@@ -363,7 +363,7 @@ namespace Game
                 return null;
             }
             Sprite sprite;
-            if (path.StartsWith("res:"))
+            if (path.isResourcesPath(out var resourcesPath))
             {
                 sprite = getSpriteFromCache(path);
                 if (sprite != null)
@@ -371,13 +371,13 @@ namespace Game
                     return sprite;
                 }
                 //Unity资源
-                sprite = Resources.Load<Sprite>(path.Substring(4, path.Length - 4));
+                sprite = Resources.Load<Sprite>(resourcesPath);
                 if (sprite == null)
                 {
                     Debug.LogError($"加载图片{path}为空");
                 }
             }
-            else if (path.StartsWith("sa:"))
+            else if (path.isStreamingAssetsPath(out var streamingPath))
             {
                 sprite = getSpriteFromCache(path);
                 if (sprite != null)
@@ -389,15 +389,15 @@ namespace Game
                 {
                     try
                     {
-                        bytes = await game.fileManager.readStreamingBinaryFile(path.Substring(3, path.Length - 3));
+                        bytes = await game.fileManager.readStreamingBinaryFile(streamingPath);
                     }
                     catch (FileNotFoundException)
                     {
                         //可能是后缀不对
                         bytes = await game.fileManager.readStreamingBinaryFile(
                             path.EndsWith(".png") ?
-                            path.Substring(3, path.Length - 3).Replace(".png", ".jpg") :
-                            path.Substring(3, path.Length - 3).Replace(".jpg", ".png"));
+                            streamingPath.Replace(".png", ".jpg") :
+                            streamingPath.Replace(".jpg", ".png"));
                     }
                     Texture2D texture = new Texture2D(512, 512);
                     texture.LoadImage(bytes);
@@ -485,9 +485,9 @@ namespace Game
                 else if (getCardPoolInfo(cardPoolRef) is CardPoolInfo cardPool &&
                     game.card.getCardPoolPath(cardPool) is string cardPoolPath)
                 {
-                    if (cardPoolPath.StartsWith("sa:") &&
-                        !path.StartsWith("sa:") &&
-                        !path.StartsWith("res:"))
+                    if (cardPoolPath.isStreamingAssetsPath(out _) &&
+                        !path.isStreamingAssetsPath(out _) &&
+                        !path.isResourcesPath(out _))
                     {
                         //流文件
                         return loadExternalImage($"sa:{Path.Combine(textureDirName, path)}", null);

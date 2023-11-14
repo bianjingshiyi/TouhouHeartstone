@@ -399,22 +399,7 @@ namespace Game
             List<string> paths = new List<string>();
             if (game.card.tryGetCardPool(cardPoolRef, out var cardPool))
             {
-                foreach (var skin in cardPool.cardSkinList)
-                {
-                    if (string.IsNullOrEmpty(skin.imagePath))
-                    {
-                        continue;
-                    }
-                    paths.Add(skin.imagePath);
-                }
-                foreach (var skin in cardPool.buffSkinList)
-                {
-                    if (string.IsNullOrEmpty(skin.imagePath))
-                    {
-                        continue;
-                    }
-                    paths.Add(skin.imagePath);
-                }
+                paths.AddRange(CardManager.getCardPoolImages(cardPool));
             }
             return paths.ToArray();
         }

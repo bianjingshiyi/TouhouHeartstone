@@ -621,8 +621,10 @@ namespace Controllers
             }
             else if (isCurrentCardPoolUnsaved()) // 退出时重新加载牌库信息，防止出现临时卡牌变更。
             {
+                await game.card.loadCardPoolInfosAsync();
                 var cardPoolRef = game.card.getLocalCardPoolReference(cardPoolId);
-                await game.card.reloadCardPoolsAndGetCardDefinesAsync(new ICardPoolReference[] { cardPoolRef });
+                var path = game.card.getCardPoolPath(cardPoolRef);
+                await game.card.loadCardPool(path);
             }
             // 删除所有属于该卡池的页面信息。
             _displayPagePool.RemoveAll(p => p.cardPoolId == _curCardPoolId);

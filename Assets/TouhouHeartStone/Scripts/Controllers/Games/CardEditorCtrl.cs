@@ -66,7 +66,7 @@ namespace Controllers
                 _ui.setRace(0, _races[0]);
             GeneratedEffect[] effects = cardDefine.getEffects().OfType<GeneratedEffect>().ToArray();
             await updateCardType();
-            await setCurSkinIndex(0);
+            await resetSkin();
 
             updateCustomProperties();
             updateKeywords();
@@ -232,61 +232,51 @@ namespace Controllers
         private async void onChangeSkin(int skinIndex)
         {
             markUnsaved();
-            if (skinIndex == getSkinCount())
+            if (skinIndex == getCurrentLangaugeSkins().Length)
             {
                 //新建皮肤
                 _curCardSkin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 _cardSkins.Add(_curCardSkin);
                 updateSkinNames();
             }
-            await setCurSkinIndex(skinIndex);
+            await setSkin(skinIndex);
         }
         private async void onChangeSkinName(string skinName)
         {
             markUnsaved();
-            var skinGroup = getCurrentCardSkins().GroupBy(c => c.skinId).ToList();
-            int index = skinGroup.FindIndex(g => g.Key == _curCardSkin.skinId);
-            var curSkinGroup = skinGroup[index];
-            foreach (var skin in curSkinGroup)
+            var curLanguageGroup = getCurrentIdSkins();
+            foreach (var skin in curLanguageGroup)
             {
                 skin.skinName = skinName;
             }
             updateSkinNames();
-            await setCurSkinIndex(index);
+            await setSkin(_curCardSkin);
         }
         private async void onDeleteSkin()
         {
             markUnsaved();
-            var skinGroup = getCurrentCardSkins().GroupBy(c => c.skinId).ToList();
-            if (skinGroup.Count < 2)
+            var skinGroup = getCurrentLangaugeSkins();
+            if (skinGroup.Length < 2)
             {
                 Debug.LogWarning("你不能删除卡牌的最后一个皮肤");
                 return;
             }
             _cardSkins.Remove(_curCardSkin);
             updateSkinNames();
-            await setCurSkinIndex(0);
+            await resetSkin();
         }
         private async void onChangeLanguage(int languageIndex)
         {
             string language = game.langManager.getLanguages()[languageIndex];
-            var skinGroup = getCurrentCardSkins().GroupBy(s => s.skinId).First(g => g.Key == _curCardSkin.skinId);
-            var targetSkin = skinGroup.FirstOrDefault(s => s.language == language);
+            var targetSkin = getSkin(language, _curCardSkin.skinId);
             if (targetSkin == null)
             {
                 markUnsaved();
                 //不存在对应语言的皮肤，新建一个
-                targetSkin = game.card.createSkinForDiffLanguage(_cardPoolId, _curCardSkin, language);
+                targetSkin = game.card.createSkinForDiffLanguage(_curCardSkin, language);
                 _cardSkins.Add(targetSkin);
             }
-            _curCardSkin = targetSkin;
-            _ui.setLanguage(languageIndex);
-            _ui.setName(targetSkin.name);
-            _ui.setSubName(targetSkin.subname);
-            _ui.setDesc(targetSkin.desc);
-            string path = targetSkin.imagePath;
-            Sprite image = await game.card.loadImage(targetSkin.imagePath, _cardDefine.cardPoolId);
-            _ui.setImage(image);
+            await setSkin(targetSkin);
         }
         /// <summary>
         /// 当用户更改类型
@@ -920,42 +910,63 @@ namespace Controllers
 
         private void updateSkinNames()
         {
-            CardSkinData[] skins = getCurrentCardSkins();
+            CardSkinData[] skins = getCurrentLangaugeSkins();
             if (skins.Length < 1)
             {
                 CardSkinData skin = game.card.createSkin(_cardPoolId, _cardDefine.id);
                 skins = new CardSkinData[] { skin };
                 _cardSkins.Add(skin);
             }
-            _ui.setSkinNames(skins.GroupBy(s => s.skinId)
-                .Select(g => g.FirstOrDefault(s => s.language == game.langManager.getLanguage()) is CardSkinData s2 ? s2.skinName : g.First().skinName)
-                .ToArray());
+            _ui.setSkinNames(skins.Select(s => s.name).ToArray());
         }
-        private async Task setCurSkinIndex(int skinIndex)
+
+        #region 设置卡牌皮肤
+        private Task resetSkin()
         {
-            var skinGroup = getCurrentCardSkins().GroupBy(s => s.skinId).ToArray().ElementAt(skinIndex);
-            //获取对应语言的皮肤
-            var skin = skinGroup.FirstOrDefault(s => s.language == game.langManager.getLanguage());
-            //如果没有对应语言，就第一个
-            if (skin == null)
-                skin = skinGroup.First();
+            return setSkin(0, getDefaultSkin());
+        }
+        private Task setSkin(int index)
+        {
+            var skin = getCurrentIdSkins()[index];
+            return setSkin(index, skin);
+        }
+        private Task setSkin(CardSkinData skin)
+        {
+            var index = Array.FindIndex(getCurrentLangaugeSkins(), s => s.skinId == skin.skinId);
+            return setSkin(index, skin);
+        }
+        private async Task setSkin(int index, CardSkinData skin)
+        {
             _curCardSkin = skin;
-            _ui.setSkin(skinIndex);
-            _ui.setLanguage(Array.IndexOf(game.langManager.getLanguages(), skin.language));
+            var curLang = game.langManager.getLanguages();
+            _ui.setSkin(index);
+            _ui.setLanguage(Array.IndexOf(curLang, skin.language));
             _ui.setName(skin.name);
             _ui.setSubName(skin.subname);
             _ui.setDesc(skin.desc);
             Sprite image = await game.card.loadImage(skin.imagePath, _cardDefine.cardPoolId);
             _ui.setImage(image);
         }
-        private int getSkinCount()
+        #endregion
+
+        #region 获取卡牌皮肤
+        private CardSkinData getDefaultSkin()
         {
-            return getCurrentCardSkins().GroupBy(s => s.skinId).Count();
+            return _cardSkins.getDefaultSkin(game.langManager.getLanguage());
         }
-        private CardSkinData[] getCurrentCardSkins()
+        private CardSkinData getSkin(string language, int skinId)
         {
-            return _cardSkins.ToArray();
+            return _cardSkins.FirstOrDefault(s => s.skinId == skinId && s.language == language);
         }
+        private CardSkinData[] getCurrentLangaugeSkins()
+        {
+            return _cardSkins.getCardSkinsOfLanguage(game.langManager.getLanguage());
+        }
+        private CardSkinData[] getCurrentIdSkins()
+        {
+            return _cardSkins.getCardSkinsOfId(_curCardSkin.skinId);
+        }
+        #endregion
 
         private async Task setSkillRef(DefineReference defRef)
         {
