@@ -38,14 +38,16 @@ namespace Game
             var genActionDefines = ConvertActionDefines(_cardPool.actionDefineList);
             var cardDefines = _cardPool.cardDefineList.ConvertAll(c => ConvertCardDefine(c));
             var buffDefines = _cardPool.buffDefineList.ConvertAll(b => ConvertBuffDefine(b));
+            var cardSkins = _cardPool.cardSkinList.ConvertAll(s => s.toSkin());
+            var buffSkins = _cardPool.buffSkinList.ConvertAll(s => s.toSkin());
 
             var pool = new CardPool()
             {
                 cardDefineList = cardDefines,
                 buffDefineList = buffDefines,
                 actionDefineList = new List<GeneratedActionDefine>(genActionDefines),
-                cardSkinList = _cardPool.cardSkinList,
-                buffSkinList = _cardPool.buffSkinList,
+                cardSkinList = cardSkins,
+                buffSkinList = buffSkins,
             };
             return pool;
         }

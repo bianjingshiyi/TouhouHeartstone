@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace UI
 {
-    [Serializable]
     public class CardSkinData
     {
         /// <summary>
@@ -205,5 +204,65 @@ namespace UI
             name += $"<{id}>";
             return name;
         }
+    }
+
+    [Serializable]
+    public class SerializableCardSkinData
+    {
+        public SerializableCardSkinData(CardSkinData other)
+        {
+            _id = other.id;
+            _skinId = other.skinId;
+            _illustrator = other.illustrator;
+            _skinName = other.skinName;
+            _name = other.name;
+            _subname = other.subname;
+            _imagePath = other.imagePath;
+            _desc = other.desc;
+            _soundPath_onUse = other.soundPath_onUse;
+            _projectilePath = other.projectilePath;
+            _language = other.language;
+            foreach (var animRef in other.getAllAnimRefs())
+            {
+                _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
+            }
+        }
+        public CardSkinData toSkin()
+        {
+            var skin = new CardSkinData()
+            {
+                id = _id,
+                skinId = _skinId,
+                illustrator = _illustrator,
+                skinName = _skinName,
+                name = _name,
+                subname = _subname,
+                imagePath = _imagePath,
+                desc = _desc,
+                soundPath_onUse = _soundPath_onUse,
+                projectilePath = _projectilePath,
+                language = _language
+            };
+            if (_animationRefs != null)
+            {
+                foreach (var animRef in _animationRefs)
+                {
+                    skin.addAnimRef(animRef.toRef());
+                }
+            }
+            return skin;
+        }
+        public int _id;
+        public int _skinId;
+        public string _illustrator;
+        public string _skinName;
+        public string _name;
+        public string _subname;
+        public string _imagePath;
+        public string _desc;
+        public string _soundPath_onUse;
+        public string _projectilePath;
+        public string _language;
+        public List<SerializableSkinAnimationRef> _animationRefs = new List<SerializableSkinAnimationRef>();
     }
 }

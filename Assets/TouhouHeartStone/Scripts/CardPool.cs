@@ -29,9 +29,9 @@ namespace Game
             if (cardPool == null)
                 throw new ArgumentNullException(nameof(cardPool));
             cardDefineList = cardPool.cardDefineList.ConvertAll(c => new SerializableCardDefine(c));
-            cardSkinList = cardPool.cardSkinList;
+            cardSkinList = cardPool.cardSkinList.ConvertAll(s => new SerializableCardSkinData(s));
             buffDefineList = cardPool.buffDefineList.ConvertAll(b => new SerializableBuffDefine(b));
-            buffSkinList = cardPool.buffSkinList;
+            buffSkinList = cardPool.buffSkinList.ConvertAll(s => new SerializableBuffSkin(s));
             if (cardPool.actionDefineList.Count > 0)
                 actionDefineList = cardPool.actionDefineList.ConvertAll(a => new SerializableActionDefine(a));
             else
@@ -58,8 +58,8 @@ namespace Game
                 buffDefineList = buffDefines,
                 actionDefineList = new List<GeneratedActionDefine>(_genActionDefines),
                 animationDefineList = animationDefines,
-                cardSkinList = cardSkinList,
-                buffSkinList = buffSkinList,
+                cardSkinList = cardSkinList.ConvertAll(s => s.toSkin()),
+                buffSkinList = buffSkinList.ConvertAll(s => s.toSkin()),
                 eventDefineList = new List<EventDefine>(_loadedEventDefines)
             };
         }
@@ -144,9 +144,9 @@ namespace Game
         private List<EventDefine> _loadedEventDefines;
 
         public List<SerializableCardDefine> cardDefineList = new List<SerializableCardDefine>();
-        public List<CardSkinData> cardSkinList = new List<CardSkinData>();
+        public List<SerializableCardSkinData> cardSkinList = new List<SerializableCardSkinData>();
         public List<SerializableBuffDefine> buffDefineList = new List<SerializableBuffDefine>();
-        public List<BuffSkin> buffSkinList = new List<BuffSkin>();
+        public List<SerializableBuffSkin> buffSkinList = new List<SerializableBuffSkin>();
         public List<SerializableActionDefine> actionDefineList;
         public List<SerializableAnimationDefine> animationDefineList;
         [Obsolete]

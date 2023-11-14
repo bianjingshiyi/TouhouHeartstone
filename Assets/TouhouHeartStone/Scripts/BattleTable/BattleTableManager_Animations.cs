@@ -190,36 +190,36 @@ namespace Game.BattleTable
         {
             var card = effectArg.card;
             var buff = effectArg.buff;
-            SkinAnimationRef animRef = null;
             if (buff is GeneratedBuff genBuff)
             {
                 var define = game.getBuffDefine(genBuff.defineRef);
                 var skin = cardManager.getBuffSkin(define);
-                if (define is GeneratedBuffDefine genBuffDef && effectArg.effect is GeneratedEffect genEffect)
-                {
-                    var node = genEffect.graph.findNodeById(arg.flowNodeId);
-                    if (node != null && isCorrectEventForNode(arg, node))
-                    {
-                        var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
-                        animRef = skin.getAnimRef(key);
-                    }
-                }
+                if (effectArg.effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
+
+                var node = genEffect.graph.findNodeById(arg.flowNodeId);
+                if (node == null) return null; // 节点不存在
+
+                if (!isCorrectEventForNode(arg, node)) return null; // 事件不正确
+
+                var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+                return skin.getAnimRef(key);
+
             }
             else if (card != null)
             {
                 var define = card.define;
                 var skin = cardManager.getCardSkin(define);
-                if (effectArg.effect is GeneratedEffect genEffect)
-                {
-                    var node = genEffect.graph.findNodeById(arg.flowNodeId);
-                    if (node != null && isCorrectEventForNode(arg, node))
-                    {
-                        var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
-                        animRef = skin.getAnimRef(key);
-                    }
-                }
+                if (effectArg.effect is not GeneratedEffect genEffect) return null; // 不是自定义效果
+
+                var node = genEffect.graph.findNodeById(arg.flowNodeId);
+                if (node == null) return null; // 节点不存在
+
+                if (!isCorrectEventForNode(arg, node)) return null; // 事件不正确
+
+                var key = node.getConst<string>(SkinAnimationRef.NODE_CONST_KEY);
+                return skin.getAnimRef(key);
             }
-            return animRef;
+            return null;
         }
         public SkinAnimationRef getEffectEntrySkinAnimRef(EffectTriggerEventArg effectArg)
         {

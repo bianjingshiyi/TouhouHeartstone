@@ -5,7 +5,6 @@ using TouhouCardEngine;
 
 namespace UI
 {
-    [Serializable]
     public class BuffSkin
     {
         public int buffId;
@@ -41,5 +40,46 @@ namespace UI
         {
             return _animationRefs.RemoveAll(r => r.key == key);
         }
+    }
+    [Serializable]
+    public class SerializableBuffSkin
+    {
+        public SerializableBuffSkin(BuffSkin skin)
+        {
+            buffId = skin.buffId;
+            language = skin.language;
+            name = skin.name;
+            desc = skin.desc;
+            imagePath = skin.imagePath;
+            foreach (var animRef in skin.getAllAnimRefs())
+            {
+                _animationRefs.Add(new SerializableSkinAnimationRef(animRef));
+            }
+        }
+        public BuffSkin toSkin()
+        {
+            var skin = new BuffSkin()
+            {
+                buffId = buffId,
+                language = language,
+                name = name,
+                desc = desc,
+                imagePath = imagePath,
+            };
+            if (_animationRefs != null)
+            {
+                foreach (var animRef in _animationRefs)
+                {
+                    skin.addAnimRef(animRef.toRef());
+                }
+            }
+            return skin;
+        }
+        public int buffId;
+        public string language;
+        public string name;
+        public string desc;
+        public string imagePath;
+        List<SerializableSkinAnimationRef> _animationRefs = new List<SerializableSkinAnimationRef>();
     }
 }
