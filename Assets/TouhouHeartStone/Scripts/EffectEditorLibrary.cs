@@ -1,8 +1,8 @@
-﻿using MukioI18n;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouCardEngine.Interfaces;
 using TouhouHeartstone;
@@ -12,6 +12,11 @@ namespace Game
 
     public static partial class EffectEditorLibrary
     {
+        private static void setOutParam(Flow flow, ActionNode node, string name, object value)
+        {
+            flow.setValue(node.getOutputPort<ValueOutput>(name), value);
+        }
+
         #region 其他
         [TranslateMsg("动作图编辑器中动作节点名称之X到Y之间的随机数")]
         public const string EDITOR_NODE_NAME_GET_RANDOM_INT = "X到Y之间的随机整数";
@@ -213,26 +218,36 @@ namespace Game
         private const string EDITOR_PARAM_NAME_FROM_PILE = "源牌堆";
         [TranslateMsg("节点参数-删除牌堆/成功移动")]
         private const string EDITOR_PARAM_NAME_CARD_MOVED = "成功移动";
+
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_GAME_END_EVENT = "游戏结束事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_MOVE_CARD_EVENT = "卡牌移动事件";
         /// <summary>
         /// 使玩家获胜
         /// </summary>
         [EventNode(typeof(HearthStoneRule.GameEndEventArg))]
         [THHActionMethod(BuiltinActionDefineID.MakePlayersWin, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MAKE_PLAYERS_WIN)]
-        public static Task makePlayersWin(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player[] players)
+        public static async Task makePlayersWin(CardEngine game, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player[] players,
+            [ActionNodeParam(EDITOR_PARAM_NAME_GAME_END_EVENT, isOut: true)] HearthStoneRule.GameEndEventArg outEvent)
         {
-            return game.gameEnd(players ?? Array.Empty<Player>());
+            outEvent = await game.gameEnd(players ?? Array.Empty<Player>());
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
+
         /// <summary>
         /// 使玩家失败
         /// </summary>
         [EventNode(typeof(HearthStoneRule.GameEndEventArg))]
         [THHActionMethod(BuiltinActionDefineID.MakePlayersLose, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MAKE_PLAYERS_LOSE)]
-        public static Task makePlayersLose(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player[] losers)
+        public static async Task makePlayersLose(CardEngine game, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player[] losers,
+            [ActionNodeParam(EDITOR_PARAM_NAME_GAME_END_EVENT, isOut: true)] HearthStoneRule.GameEndEventArg outEvent)
         {
             var winners = losers == null ? game.getSortedPlayers() : game.getSortedPlayers().Except(losers).ToArray();
-            return game.gameEnd(winners);
+            outEvent = await game.gameEnd(winners);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
         /// <summary>
         /// 创建牌堆
@@ -274,14 +289,16 @@ namespace Game
         [EventNode(typeof(THHPile.MoveCardEventArg))]
         [THHActionMethod(BuiltinActionDefineID.MoveCardFromPileToPile, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MOVE_CARD_FROM_PILE_TO_PILE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_CARD_MOVED)]
-        public static async Task<bool> moveCardFromPileToPile(CardEngine game,
+        public static async Task<bool> moveCardFromPileToPile(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(EDITOR_PARAM_NAME_FROM_PILE)] Pile fromPile,
-            [ActionNodeParam(EDITOR_PARAM_NAME_TO_PILE)] Pile toPile)
+            [ActionNodeParam(EDITOR_PARAM_NAME_TO_PILE)] Pile toPile,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg outEvent)
         {
             if (card == null)
                 return false;
             var arg = await fromPile.moveTo(game, card, toPile);
+            setOutParam(flow, node, nameof(outEvent), arg);
             return arg.success;
         }
         #endregion
@@ -349,7 +366,12 @@ namespace Game
         const string EDITOR_PARAM_TARGET_NAME = "目标名";
         [TranslateMsg("节点参数-获取法术伤害/输入")]
         const string EDITOR_PARAM_NAME_SPELL_CARD = "法术牌";
-        
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_NAME_SET_GEM_EVENT = "设置灵力值事件";
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT = "设置最大灵力值事件";
+        [TranslateMsg("节点参数")]
+        const string EDITOR_PARAM_NAME_FAITH_DUEL_EVENT = "信仰对决事件";
 
 
         /// <summary>
@@ -442,16 +464,16 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.DrawTargetCard, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD)]
         public static Task drawTargetCard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card targetCard,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)] out HearthStoneRule.DrawEventArg drawEvent,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BURN_EVENT)] out HearthStoneRule.BurnEventArg burnEvent)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)] out HearthStoneRule.DrawEventArg outEventDraw,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BURN_EVENT)] out HearthStoneRule.BurnEventArg outEventBurn)
         {
             if (targetCard == null)
             {
-                drawEvent = null;
-                burnEvent = null;
+                outEventDraw = null;
+                outEventBurn = null;
                 return Task.CompletedTask;
             }
-            return targetCard.owner.draw(game, targetCard, out drawEvent, out burnEvent);
+            return targetCard.owner.draw(game, targetCard, out outEventDraw, out outEventBurn);
         }
 
         ///从一定数量卡牌中选一张
@@ -515,12 +537,14 @@ namespace Game
         /// </summary>
         [EventNode(typeof(Card.PropChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ResetSkill, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_RESET_SKILL)]
-        public static async Task resetSkill(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        public static async Task resetSkill(CardEngine game, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)] Card.PropChangeEventArg outEvent)
         {
             if ((player != null) && player.getSkill().isUsed(game))
             {
-                await player.getSkill().setUsed(game, false);
+                outEvent = await player.getSkill().setUsed(game, false);
+                setOutParam(flow, node, nameof(outEvent), outEvent);
             }
         }
         /// <summary>
@@ -550,11 +574,14 @@ namespace Game
         /// </summary>
         [EventNode(typeof(Card.PropChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DestroyItem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_DESTROY_ITEM)]
-        public static async Task destroyItem(CardEngine game,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
+        public static async Task destroyItem(CardEngine game, Flow flow, ActionNode node,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
+            [ActionNodeParam(EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT, isOut: true)] Card.PropChangeEventArg outEvent)
         {
-            if (player != null)
-                await player.destroyItem(game);
+            if (player == null)
+                return;
+            outEvent = await player.destroyItem(game);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
         /// <summary>
         /// 获取暂存区
@@ -604,12 +631,15 @@ namespace Game
         /// </summary>
         [EventNode(typeof(HearthStoneRule.SetGemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetPlayerGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_AMOUNT_OF_GEM)]
-        public static async Task setGem(CardEngine game,
+        public static async Task setGem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_GEM_EVENT, isOut: true)] HearthStoneRule.SetGemEventArg outEvent)
         {
-            if (player != null)
-                await player.setGem(game, count);
+            if (player == null)
+                return;
+            outEvent = await player.setGem(game, count);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
 
         /// <summary>
@@ -617,12 +647,15 @@ namespace Game
         /// </summary>
         [EventNode(typeof(HearthStoneRule.SetGemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddPlayerGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_GEM)]
-        public static async Task addGem(CardEngine game,
+        public static async Task addGem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_GEM_EVENT, isOut: true)] HearthStoneRule.SetGemEventArg outEvent)
         {
-            if (player != null)
-                await player.setGem(game, player.getGem() + count);
+            if (player == null)
+                return;
+            outEvent = await player.setGem(game, player.getGem() + count);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
 
         /// <summary>
@@ -630,12 +663,15 @@ namespace Game
         /// </summary>
         [EventNode(typeof(HearthStoneRule.SetMaxGemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetPlayerMaxGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_SET_MAX_GEM)]
-        public static async Task setMaxGem(CardEngine game,
+        public static async Task setMaxGem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT, isOut: true)] HearthStoneRule.SetMaxGemEventArg outEvent)
         {
-            if (player != null)
-                await player.setMaxGem(game, count);
+            if (player == null)
+                return;
+            outEvent = await player.setMaxGem(game, count);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
 
         /// <summary>
@@ -643,12 +679,15 @@ namespace Game
         /// </summary>
         [EventNode(typeof(HearthStoneRule.SetMaxGemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddPlayerMaxGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_MAX_GEM)]
-        public static async Task addMaxGem(CardEngine game,
+        public static async Task addMaxGem(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: false)] int count,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_MAX_GEM_EVENT, isOut: true)] HearthStoneRule.SetMaxGemEventArg outEvent)
         {
-            if (player != null)
-                await player.setMaxGem(game, player.getMaxGem() + count);
+            if (player == null)
+                return;
+            outEvent = await player.setMaxGem(game, player.getMaxGem() + count);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
 
 
@@ -694,12 +733,13 @@ namespace Game
         [EventNode(typeof(THHPlayer.RevealDuelEventArg))]
         [THHActionMethod(BuiltinActionDefineID.FaithDuel, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_FAITHDUEL)]
         [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
-        public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
+        public static async Task<bool> faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER)] NodeValueRef<bool> filter,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_FILTER_CARD, isOut: true)] Card element,
             [ActionNodeParam(EDITOR_NODE_FAITHDUEL_SELF_CARD, isOut: true)] Card selfCard,
-            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard)
+            [ActionNodeParam(EDITOR_NODE_FAITHDUEL_OPPONENT_CARD, isOut: true)] Card opponentCard,
+            [ActionNodeParam(EDITOR_PARAM_NAME_FAITH_DUEL_EVENT, isOut: true)] THHPlayer.RevealDuelEventArg outEvent)
         {
             if (player == null)
                 return false;
@@ -717,10 +757,12 @@ namespace Game
                 }
                 return valid;
             }
-            var arg = player.revealDuel(game, filterFunc).Result;
-            flow.setValue(node.getOutputPort<ValueOutput>(nameof(selfCard)), arg.youCard);
-            flow.setValue(node.getOutputPort<ValueOutput>(nameof(opponentCard)), arg.oppoCard);
-            return arg.result;
+            outEvent = await player.revealDuel(game, filterFunc);
+
+            setOutParam(flow, node, nameof(selfCard), outEvent.youCard);
+            setOutParam(flow, node, nameof(opponentCard), outEvent.oppoCard);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
+            return outEvent.result;
         }
         /// <summary>
         /// 获取所有玩家
@@ -965,7 +1007,12 @@ namespace Game
         private const string EDITOR_NODE_NAME_GET_DEFINE_OF_BUFF = "获取单个增益的定义";
         [TranslateMsg("编辑器-节点名称")]
         private const string EDITOR_NODE_NAME_GET_ALL_BUFFS_ON_CARD = "获取卡牌上的所有增益";
-        
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_ADD_BUFF_EVENT = "添加增益事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_REMOVE_BUFF_EVENT = "移除增益事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_ENTER_FIELD_EVENT = "入场事件";
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_THIS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
@@ -977,13 +1024,15 @@ namespace Game
         [EventNode(typeof(Card.AddBuffEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_ADD_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
-        public static async Task<Buff[]> addBuff(CardEngine game,
+        public static async Task<Buff[]> addBuff(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)] BuffDefine buffDefine)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)] BuffDefine buffDefine,
+            [ActionNodeParam(EDITOR_PARAM_NAME_ADD_BUFF_EVENT, isOut: true)] Card.AddBuffEventArg[] outEvent)
         {
             if (cards == null || buffDefine == null)
                 return Array.Empty<Buff>();
 
+            List<Card.AddBuffEventArg> buffEvents = new List<Card.AddBuffEventArg>();
             List<Buff> buffList = new List<Buff>();
             foreach (var card in cards)
             {
@@ -991,23 +1040,26 @@ namespace Game
                     continue;
                 Buff buff = new GeneratedBuff(buffDefine);
                 buffList.Add(buff);
-                await card.addBuff(game, buff);
+                buffEvents.Add(await card.addBuff(game, buff));
             }
+            setOutParam(flow, node, nameof(outEvent), outEvent);
             return buffList.ToArray();
         }
 
         [EventNode(typeof(Card.RemoveBuffEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.RemoveBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_REMOVE_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_IS_BUFF_REMOVED)]
-        public static async Task<bool> removeBuff(CardEngine game,
+        public static async Task<bool> removeBuff(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff buff,
+            [ActionNodeParam(EDITOR_PARAM_NAME_REMOVE_BUFF_EVENT, isOut: true)] Card.RemoveBuffEventArg outEvent)
         {
             if (card == null || buff == null)
                 return false;
 
-            var arg = await card.removeBuff(game, buff);
-            return arg?.removed ?? false;
+            outEvent = await card.removeBuff(game, buff);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
+            return outEvent?.removed ?? false;
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.HasBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_HAS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
@@ -1022,20 +1074,24 @@ namespace Game
 
         [EventNode(typeof(Buff.PropertyChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetBuffProp, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_SET_BUFF_PROP)]
-        public static async Task setBuffProp(CardEngine game,
+        public static async Task setBuffProp(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff[] buffs,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME, isConst: true)] string propName,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value,
+            [ActionNodeParam(EDITOR_PARAM_NAME_BUFF_PROP_CHANGED_EVENT, isOut: true)] Buff.PropertyChangeEventArg[] outEvent)
         {
             if (buffs == null)
                 return;
 
+            var list = new List<Buff.PropertyChangeEventArg>();
             for (int i = 0; i < buffs.Length; i++)
             {
                 if (buffs[i] == null)
                     continue;
-                await buffs[i].setProp(game, propName, value);
+                list.Add(await buffs[i].setProp(game, propName, value));
             }
+            outEvent = list.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
         }
 
 
@@ -1102,18 +1158,22 @@ namespace Game
         /// <param name="game"></param>
         /// <param name="card"></param>
         /// <param name="player"></param>
-        /// <param name="drawEvent"></param>
+        /// <param name="outEventDraw"></param>
         /// <returns></returns>
         [EventNode(typeof(HearthStoneRule.DrawEventArg), typeof(HearthStoneRule.BurnEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SimpleDraw, StringTable.EDITOR_CATEGORY__ACTION__NAME, StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT)]
         public static Card simpleDrawCard(CardEngine game, Card card,
-            [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player)
+            [ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__PLAYER)] Player player,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)] out HearthStoneRule.DrawEventArg outEventDraw,
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BURN_EVENT)] out HearthStoneRule.BurnEventArg outEventBurn)
         {
+            outEventDraw = null;
+            outEventBurn = null;
             if (player == null)
                 return null;
-            player.draw(game, out var drawEvent);
-            return drawEvent?.card;
+            player.draw(game, out outEventDraw, out outEventBurn);
+            return outEventDraw?.card;
         }
 
         /// <summary>
@@ -1122,15 +1182,17 @@ namespace Game
         [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToField, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> moveToField(CardEngine game,
+        public static async Task<Card[]> moveToField(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
+            [ActionNodeParam(EDITOR_PARAM_NAME_ENTER_FIELD_EVENT, isOut: true)] HearthStoneRule.EnterFieldEventArg[] outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
 
+            List<HearthStoneRule.EnterFieldEventArg> eventList = new List<HearthStoneRule.EnterFieldEventArg>();
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
@@ -1145,7 +1207,7 @@ namespace Game
                     else
                     {
                         game.logger.logTrace($"将{string.Join("，", card)}置入{player}的战场");
-                        await player.tryEnterField(game, card.pile, card, player.getField().count);
+                        eventList.Add(await player.tryEnterField(game, card.pile, card, player.getField().count));
                         MoveList.Add(card);
                     }
                 }
@@ -1154,6 +1216,8 @@ namespace Game
                     game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入战场");
                 }
             }
+            outEvent = eventList.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
             return MoveList.ToArray();
         }
 
@@ -1163,23 +1227,27 @@ namespace Game
         [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHand, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HAND)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> moveToHand(CardEngine game,
+        public static async Task<Card[]> moveToHand(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
 
+            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
                 if (card == null)
                     continue;
-                await card.returnToHand(game, player);
+                eventList.Add(await card.returnToHand(game, player));
                 MoveList.Add(card);
             }
+            outEvent = eventList.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
             return MoveList.ToArray();
         }
 
@@ -1189,16 +1257,18 @@ namespace Game
         [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToDeck, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_DECK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> moveToDeck(CardEngine game,
+        public static async Task<Card[]> moveToDeck(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP, isConst: true)] bool top)
+            [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP, isConst: true)] bool top,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
 
+            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
@@ -1206,9 +1276,11 @@ namespace Game
                     continue;
                 int position = top ? player.getDeck().count : game.randomInt(0, player.getDeck().count);
                 game.logger.logTrace($"将{string.Join("，", card)}洗入{player}的牌库");
-                await card.pile.moveTo(game, card, player.getDeck(), position);
+                eventList.Add(await card.pile.moveTo(game, card, player.getDeck(), position));
                 MoveList.Add(card);
             }
+            outEvent = eventList.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
             return MoveList.ToArray();
         }
 
@@ -1218,24 +1290,28 @@ namespace Game
         [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToGrave, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> moveToGrave(CardEngine game,
+        public static async Task<Card[]> moveToGrave(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
 
+            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
                 if (card == null)
                     continue;
                 game.logger.logTrace($"将{string.Join("，", card)}置入{player}的墓地");
-                await card.pile.moveTo(game, card, player.getGrave());
+                eventList.Add(await card.pile.moveTo(game, card, player.getGrave()));
                 MoveList.Add(card);
             }
+            outEvent = eventList.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
             return MoveList.ToArray();
         }
 
@@ -1245,15 +1321,17 @@ namespace Game
         [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHead, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> moveToHead(CardEngine game,
+        public static async Task<Card[]> moveToHead(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
 
+            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
@@ -1268,7 +1346,7 @@ namespace Game
                     else
                     {
                         game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
-                        await card.pile.moveTo(game, card, player.getHead());
+                        eventList.Add(await card.pile.moveTo(game, card, player.getHead()));
                         MoveList.Add(card);
                     }
                 }
@@ -1277,6 +1355,8 @@ namespace Game
                     game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入延迟区");
                 }
             }
+            outEvent = eventList.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
             return MoveList.ToArray();
         }
 
@@ -1303,25 +1383,28 @@ namespace Game
         [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToWarp, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_WARP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card[]> moveToWARP(CardEngine game,
+        public static async Task<Card[]> moveToWARP(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
-            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards)
+            [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
 
+            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
             List<Card> MoveList = new List<Card>();
             foreach (var card in cards)
             {
                 if (card == null)
                     continue;
                 game.logger.logTrace($"将{string.Join("，", card)}置入{player}的暂存区");
-                //await card.resetCard(game);
-                await card.pile.moveTo(game, card, player.getWarp());
+                eventList.Add(await card.pile.moveTo(game, card, player.getWarp()));
                 MoveList.Add(card);
             }
+            outEvent = eventList.ToArray();
+            setOutParam(flow, node, nameof(outEvent), outEvent);
             return MoveList.ToArray();
         }
         #endregion

@@ -227,15 +227,17 @@ namespace Game
         [EventNode(typeof(Card.SetDefineEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardDefineOfCard, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_SET_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
-        public static async Task<Card> cardSetDefine(CardEngine game,
+        public static async Task<Card> cardSetDefine(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine define,
-            [ActionNodeParam(EDITOR_NODE_CARD_IS_RESET, isConst: true)] bool isreset)
+            [ActionNodeParam(EDITOR_NODE_CARD_IS_RESET, isConst: true)] bool isreset,
+            [ActionNodeParam(EDITOR_PARAM_NAME_SET_CARD_DEFINE_EVENT, isOut: true)] Card.SetDefineEventArg outEvent)
         {
             if (define == null)
                 return card;
-            var setDefineEvent = await card.setDefine(game, define, isreset);
-            return setDefineEvent?.card;
+            outEvent = await card.setDefine(game, define, isreset);
+            setOutParam(flow, node, nameof(outEvent), outEvent);
+            return outEvent?.card;
         }
 
 
