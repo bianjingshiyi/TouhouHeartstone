@@ -75,7 +75,7 @@ namespace Tests
 
                 you.createToken(game, game.getDefine<DefaultServant>());
                 you.getField()[0].setDead(game, true);
-                game.updateDeath();
+                game.updateGameState();
 
                 //if (!you.getHead().Any(c => c.define is DefaultServant))
                 //{
@@ -189,7 +189,7 @@ namespace Tests
             game.skipUntilCanUse<Nazrin_09>(you);
             you.cmdUse(game, you.getHand().getCard<Nazrin_09>());
             you.getField()[0].setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
 
             Assert.True(you.getHand().Any(c => c.define is Nazrin_10));
 

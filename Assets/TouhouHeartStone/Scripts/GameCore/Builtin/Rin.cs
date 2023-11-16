@@ -237,7 +237,7 @@ namespace TouhouHeartstone.Builtin
         {
             Card[] field = card.getOwner().getField().ToArray();
             await field.setDead(game, true);
-            await game.updateDeath();
+            await game.updateGameState();
             foreach (var c in field)
             {
                 await card.getOwner().reborn(game, c);
@@ -311,7 +311,7 @@ namespace TouhouHeartstone.Builtin
             new LambdaSingleTargetEffect(async (game, card, target) =>
             {
                 await target.kill(game);
-                await game.updateDeath();
+                await game.updateGameState();
             },PileFlag.self | PileFlag.field)
         };
 

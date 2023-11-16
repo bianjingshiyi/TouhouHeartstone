@@ -5,8 +5,6 @@ using BJSYGameCore;
 using MukioI18n;
 using TouhouCardEngine;
 using UnityEngine;
-using TouhouHeartstone;
-using System.Threading.Tasks;
 
 namespace Game
 {

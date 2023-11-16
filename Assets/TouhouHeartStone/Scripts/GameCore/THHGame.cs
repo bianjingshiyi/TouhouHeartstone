@@ -158,12 +158,12 @@ namespace TouhouHeartstone
         public static Player getCurrentPlayer(this CardEngine game) => game.getRule().getCurrentPlayer(game);
 
         /// <summary>
-        /// 死亡结算，清理战场上死亡的随从
+        /// 更新游戏状态，包括死亡结算，光环更新等。
         /// </summary>
         /// <returns></returns>
-        public static Task updateDeath(this CardEngine game)
+        public static Task updateGameState(this CardEngine game)
         {
-            return game.getRule().updateDeath(game);
+            return game.getRule().updateGameState(game);
         }
 
         public static int getTurnCount(this CardEngine game)
@@ -187,14 +187,13 @@ namespace TouhouHeartstone
         }
 
         public static event Action<int, IResponse> onPlayerResponse;
-        public static event Action onEnd;
 
         public static void logPlayerAction(this CardEngine game, int playerID, IResponse response)
         {
             onPlayerResponse?.Invoke(playerID, response);
         }
 
-        public static Task gameEnd(this CardEngine game, Player[] winners)
+        public static Task<HearthStoneRule.GameEndEventArg> gameEnd(this CardEngine game, Player[] winners)
         {
             return game.getRule().gameEnd(game, winners);
         }
@@ -496,10 +495,10 @@ namespace TouhouHeartstone
             return game.getProp<ITimer>(GAME.TURNTIMER);
         }
         /// <summary>
-        /// 死亡结算，清理战场上死亡的随从
+        /// 更新游戏状态，包括死亡结算，光环更新等。
         /// </summary>
         /// <returns></returns>
-        public async Task updateDeath(CardEngine game)
+        public async Task updateGameState(CardEngine game)
         {
             // 更新光环。
             await updateAura(game);
@@ -731,7 +730,7 @@ namespace TouhouHeartstone
                 //重置技能
                 await player.getSkill().setUsed(game, false);
             });
-            await game.updateDeath();
+            await game.updateGameState();
             //倒计时75秒
             setTurnTimer(game, game.time.startTimer(getOption(game).timeoutForTurn));
             getTurnTimer(game).onExpired += () => onTurnTimeout(game);
@@ -783,7 +782,7 @@ namespace TouhouHeartstone
                         await game.surrender(game.getPlayer(surrender.playerId));
                         return;
                 }
-                await game.updateDeath();
+                await game.updateGameState();
             }
         }
 
@@ -828,17 +827,17 @@ namespace TouhouHeartstone
 
                 game.answers.cancel(game.answers.getRequests(player.id));
             });
-            await game.updateDeath();
+            await game.updateGameState();
             game.time.cancel(getTurnTimer(game));
             setTurnTimer(game, null);
         }
-        internal async Task gameEnd(CardEngine game, Player[] winners)
+        internal Task<GameEndEventArg> gameEnd(CardEngine game, Player[] winners)
         {
             if (!game.isRunning)
-                return;
+                return Task.FromResult<GameEndEventArg>(null);
             game.logger.logTrace("Debug", $"游戏结束，{string.Join("，", winners.Select(p => p.ToString()))}获得游戏胜利");
             game.close();
-            await game.triggers.doEvent(new GameEndEventArg() { winners = winners });
+            return game.triggers.doEvent(new GameEndEventArg() { winners = winners });
         }
         public override async Task onPlayerCommand(CardEngine game, Player player, CardEngine.CommandEventArg command)
         {
@@ -1354,6 +1353,7 @@ namespace TouhouHeartstone
             }
         }
 
+        [EventChildren(typeof(THHPile.MoveCardEventArg))]
         public class EnterFieldEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
@@ -1436,6 +1436,7 @@ namespace TouhouHeartstone
             public int life;
         }
 
+        [EventChildren(typeof(THHPile.MoveCardEventArg))]
         public class EquipItemEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)

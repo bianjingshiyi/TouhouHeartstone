@@ -110,7 +110,7 @@ namespace TouhouHeartstone.Builtin
                         return;
                     arg.card = selected.choose;
                     await card.damageItem(game, 1);
-                    await game.updateDeath();
+                    await game.updateGameState();
                 }),
         };
 

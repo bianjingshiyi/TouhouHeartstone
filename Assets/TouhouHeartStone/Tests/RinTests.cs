@@ -36,7 +36,7 @@ namespace Tests
             game.skipUntilCanUse<ZombieFairy>(you);
             you.cmdUse<ZombieFairy>(game, out var servant);
             servant.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.True(you.getField()[0].define is GhostOfHatred);
             game.Dispose();
         }
@@ -65,7 +65,7 @@ namespace Tests
             game.skipUntilCanUse<GhostFire>(you);
             you.cmdUse<GhostFire>(game, out var s);
             s.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(28, oppo.getMaster().getCurrentLife(game));
             game.Dispose();
         }
@@ -88,7 +88,7 @@ namespace Tests
                 servant.setDead(game, true);
             }
 
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(28, oppo.getMaster().getCurrentLife(game));
             game.Dispose();
         }
@@ -145,7 +145,7 @@ namespace Tests
             game.skipUntilCanUse<ReisenUdongeinInaba_N>(you);
             you.cmdUse<ReisenUdongeinInaba_N>(game, out var s);
             s.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(1, you.getGrave().count);
             Assert.True(you.getGrave()[0].define is ReisenUdongeinInaba_N);
             game.skipUntilCanUse<CorpseVoyage>(you);
@@ -155,7 +155,7 @@ namespace Tests
             game.skipUntilCanUse<DefaultServant>(you);
             you.cmdUse<DefaultServant>(game, out s);
             s.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             game.skipUntilCanUse<CorpseVoyage>(you);
             you.cmdUse<CorpseVoyage>(game);
             Assert.AreEqual(1, you.getField().count);
@@ -176,7 +176,7 @@ namespace Tests
             you.cmdUse<VengefulCannibalSpirit>(game, out var s2, 0, s1);
             Assert.AreEqual(1, you.getField().count);
             s2.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(2, you.getField().count);
             Assert.True(you.getField()[0].define is GhostOfHatred);
             game.Dispose();
@@ -194,7 +194,7 @@ namespace Tests
             Assert.True(s.canAttack(game));
             int count = you.getHand().count;
             s.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(count + 1, you.getHand().count);
             Assert.True(you.getHand()[count].hasKeyword(game, KEYWORD.DEATHRATTLE));
             game.Dispose();
@@ -255,7 +255,7 @@ namespace Tests
             game.skipUntilCanUse<ZombieFairy>(you);
             you.cmdUse<ZombieFairy>(game, out var fairy);
             fairy.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(1, you.getGrave().count);
             game.skipUntilCanUse<GhostTown>(you);
             int handCount = you.getHand().count;
@@ -307,15 +307,15 @@ namespace Tests
             int handCount = you.getHand().count;
             you.cmdUse<DefaultServant>(game, out var card);
             card.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(handCount, you.getHand().count);
             Assert.True(you.getHand()[handCount - 1].define is GhostOfHatred);
 
             you.getField()[0].setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             you.cmdUse<DefaultServant>(game, out card);
             card.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(handCount - 1, you.getHand().count);
 
             game.Dispose();
@@ -330,7 +330,7 @@ namespace Tests
             game.skipUntilCanUse<DefaultServant>(you);
             you.cmdUse<DefaultServant>(game, out var s);
             s.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             //此时墓地有一个白板，场上无随从
             Assert.AreEqual(1, you.getGrave().count);
             Assert.True(you.getGrave()[0].define is DefaultServant);
@@ -342,7 +342,7 @@ namespace Tests
             game.skipUntilCanUse<ZombieFairy>(you);
             you.cmdUse<ZombieFairy>(game, out s);
             s.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             //此时场上有一个由丧失妖精召唤的怨灵
             Assert.AreEqual(1, you.getField().count);
             game.skipUntilCanUse<CorpseShoppingDistrict>(you);
@@ -393,7 +393,7 @@ namespace Tests
                 s.setDead(game, true);
             }
 
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(3, oppo.getGrave().count);
             game.skipUntilCanUse<HellTrafficAccident>(you);
             you.cmdUse<HellTrafficAccident>(game);
@@ -412,7 +412,7 @@ namespace Tests
             game.skipUntilCanUse<CoffinCarrier>(you);
             you.cmdUse<CoffinCarrier>(game, out var carrier);
             carrier.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             game.skipUntilCanUse<GhostTown>(you);
             you.cmdUse<GhostTown>(game);
             DiscoverRequest discoverRequest = game.answers.getRequest<DiscoverRequest>(you.id);

@@ -55,7 +55,7 @@ namespace Tests
             you.cmdUse(game, you.getHand().getCard<Crow>());
 
             you.getField()[0].setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             foreach (Card c in you.getHand())
             {
                 Debug.Log("法力：" + c.getCost(game));

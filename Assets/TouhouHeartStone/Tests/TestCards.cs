@@ -908,7 +908,7 @@ namespace Tests
                     },null,async (g1,c1,b1,a1, t1)=>
                     {
                         await c1.setDead(g,true);
-                        await g1.updateDeath();
+                        await g1.updateGameState();
                     })));
             }, PileFlag.field,null,(g,c,t)=>
             {
@@ -1080,7 +1080,7 @@ namespace Tests
                     //起效部分，效果是消灭随从
                     await c1.setDead(game, true);
                     //由于回合开始不会进行死亡结算，所以这里要强制进行一次。
-                    await g1.updateDeath();
+                    await g1.updateGameState();
                     }
                     )));
             },PileFlag.self | PileFlag.field)
@@ -1148,7 +1148,7 @@ namespace Tests
             },async(g,c,b,a)=>
             {
                  await a.card.setDead(g,true);
-                 await g.updateDeath();//死亡结算
+                 await g.updateGameState();//死亡结算
             })
         };
 
@@ -1398,7 +1398,7 @@ namespace Tests
             }, null, async (g, c, a, targets) =>
             {
                 await c.setDead(g, true);
-                await g.updateDeath();
+                await g.updateGameState();
             })
         };
 

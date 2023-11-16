@@ -235,6 +235,8 @@ namespace TouhouHeartstone
             PILE.ITEM,
             PILE.HEAD
         };
+
+        [EventChildren(typeof(Card.PropChangeEventArg))]
         public class MoveCardEventArg : EventArg, ICardEventArg
         {
             public MoveCardEventArg()

@@ -224,6 +224,7 @@ namespace Game
         /// <summary>
         /// 变形为卡牌定义
         /// </summary>
+        [EventNode(typeof(Card.SetDefineEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardDefineOfCard, EDITOR_NODE_CATEGORY_CARD_DEFINE, EDITOR_NODE_CARD_SET_DEFINE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> cardSetDefine(CardEngine game,

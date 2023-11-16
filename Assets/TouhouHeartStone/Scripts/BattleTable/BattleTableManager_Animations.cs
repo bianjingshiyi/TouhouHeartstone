@@ -279,10 +279,11 @@ namespace Game.BattleTable
         {
             if (node is ActionNode action)
             {
-                var type = EffectEditorLibrary.getActionBindedEventType(action.defineRef);
-                if (type == null)
+                var names = EffectEditorLibrary.getActionBindedEventNames(action.defineRef);
+                if (names == null)
                     return false;
-                return type.IsAssignableFrom(arg.GetType());
+                var name = EventHelper.getName(arg);
+                return names.FirstOrDefault() == name;
             }
             return false;
         }

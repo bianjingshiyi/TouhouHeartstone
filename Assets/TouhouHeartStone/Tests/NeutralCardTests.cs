@@ -655,7 +655,7 @@ namespace Tests
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
             you.getField()[0].setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
 
             game.Dispose();
         }
@@ -768,7 +768,7 @@ namespace Tests
             Assert.True(you.getField()[0].canAttack(game));
 
             you.getField()[0].setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             you.cmdTurnEnd(game);
             oppo.cmdTurnEnd(game);
 
@@ -1002,7 +1002,7 @@ namespace Tests
             you.cmdUse<MoriyaSuwako_N>(game, out var s);
             Assert.True(s.canAttack(game));
             s.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(you.getField().count, oppo.getField().count);
             Assert.True(you.getField()[0].define is Frog_N && you.getField()[0].canAttack(game));
             game.Dispose();
@@ -1097,7 +1097,7 @@ namespace Tests
             def.addBuff(game, new CodeBuff(1, new AttackModifier(2)));
             Assert.AreEqual(9 - def.getAttack(game), yugi.getCost(game));
             def.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(9,yugi.getCost(game));
             game.Dispose();
         }
@@ -1132,7 +1132,7 @@ namespace Tests
             Assert.AreEqual(1,atk);
             oppo.getField().setDead(game, true);
             rin.setDead(game,true);
-            game.updateDeath();
+            game.updateGameState();
             you.cmdUse<KaenbyouRin>(game, out rin);
             Assert.AreEqual(atk+4, rin.getAttack(game));
         }

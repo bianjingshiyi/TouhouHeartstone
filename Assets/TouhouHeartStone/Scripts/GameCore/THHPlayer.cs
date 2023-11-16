@@ -51,7 +51,7 @@ namespace TouhouHeartstone
             }
         }
 
-        public static Task setGem(this Player player, CardEngine game, int value)
+        public static Task<HearthStoneRule.SetGemEventArg> setGem(this Player player, CardEngine game, int value)
         {
             return game.triggers.doEvent(new HearthStoneRule.SetGemEventArg() { player = player, value = value }, arg =>
             {
@@ -64,7 +64,7 @@ namespace TouhouHeartstone
             });
         }
 
-        public static Task setMaxGem(this Player player, CardEngine game, int value)
+        public static Task<HearthStoneRule.SetMaxGemEventArg> setMaxGem(this Player player, CardEngine game, int value)
         {
             return game.triggers.doEvent(new HearthStoneRule.SetMaxGemEventArg() { player = player, value = value }, arg =>
             {
@@ -148,7 +148,7 @@ namespace TouhouHeartstone
                         game.logger.logTrace("debug");
                         await card.activeEffect(game, p, new Card[0]);
                         await p.getWarp().moveTo(game, card, p.getGrave());
-                        await game.updateDeath();
+                        await game.updateGameState();
                         await player.draw(game);
                     }
                     else
@@ -284,11 +284,11 @@ namespace TouhouHeartstone
                     game.logger.logTrace($"{player}装备了{arg.card}");
             }
         }
-        public static Task destroyItem(this Player player, CardEngine game)
+        public static Task<Card.PropChangeEventArg> destroyItem(this Player player, CardEngine game)
         {
             if (player[PILE.ITEM].count > 0 && player[PILE.ITEM][0] is Card item)
-                return item.destroy(game);
-            return Task.CompletedTask;
+                return item.kill(game);
+            return Task.FromResult<Card.PropChangeEventArg>(null);
         }
         /// <summary>
         /// 让玩家从提供的卡牌定义中选择一张，创建相应卡牌并置入手牌中
@@ -961,6 +961,7 @@ namespace TouhouHeartstone
             }
         }
 
+        [EventChildren(typeof(BurnEventArg), typeof(THHPile.MoveCardEventArg))]
         public class DrawEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
@@ -1330,6 +1331,8 @@ namespace TouhouHeartstone
             public Player player;
             public Card card;
         }
+
+        [EventChildren(typeof(HearthStoneRule.EnterFieldEventArg))]
         public class CreateTokenEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)

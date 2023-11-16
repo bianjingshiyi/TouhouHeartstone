@@ -216,6 +216,7 @@ namespace Game
         /// <summary>
         /// 使玩家获胜
         /// </summary>
+        [EventNode(typeof(HearthStoneRule.GameEndEventArg))]
         [THHActionMethod(BuiltinActionDefineID.MakePlayersWin, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MAKE_PLAYERS_WIN)]
         public static Task makePlayersWin(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player[] players)
@@ -225,6 +226,7 @@ namespace Game
         /// <summary>
         /// 使玩家失败
         /// </summary>
+        [EventNode(typeof(HearthStoneRule.GameEndEventArg))]
         [THHActionMethod(BuiltinActionDefineID.MakePlayersLose, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MAKE_PLAYERS_LOSE)]
         public static Task makePlayersLose(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player[] losers)
@@ -269,6 +271,7 @@ namespace Game
         /// <summary>
         /// 从牌堆将卡牌移动到目标牌堆
         /// </summary>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [THHActionMethod(BuiltinActionDefineID.MoveCardFromPileToPile, StringTable.EDITOR_NODE_CATEGORY_GAME, EDITOR_NODE_MOVE_CARD_FROM_PILE_TO_PILE)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_CARD_MOVED)]
         public static async Task<bool> moveCardFromPileToPile(CardEngine game,
@@ -434,6 +437,8 @@ namespace Game
                 return Array.Empty<Card>();
             return player.getDeck();
         }
+
+        [EventNode(typeof(HearthStoneRule.DrawEventArg), typeof(HearthStoneRule.BurnEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DrawTargetCard, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_DRAW_TARGET_CARD)]
         public static Task drawTargetCard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card targetCard,
@@ -448,6 +453,7 @@ namespace Game
             }
             return targetCard.owner.draw(game, targetCard, out drawEvent, out burnEvent);
         }
+
         ///从一定数量卡牌中选一张
         [ObsoletedKeyMethod(BuiltinActionDefineID.SelectOneFromCards, StringTable.EDITOR_NODE_CATEGORY_PLAYER, StringTable.EDITOR_NODE_NAME_SELECT_ONE_FROM_MANY_CARDS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
@@ -507,6 +513,7 @@ namespace Game
         /// <summary>
         /// 复原技能
         /// </summary>
+        [EventNode(typeof(Card.PropChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ResetSkill, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_RESET_SKILL)]
         public static async Task resetSkill(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
@@ -541,6 +548,7 @@ namespace Game
         /// <summary>
         /// 摧毁道具
         /// </summary>
+        [EventNode(typeof(Card.PropChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DestroyItem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_DESTROY_ITEM)]
         public static async Task destroyItem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player)
@@ -590,9 +598,11 @@ namespace Game
                 return 0;
             return player.getMaxGem();
         }
+
         /// <summary>
         /// 设置当前灵力值
         /// </summary>
+        [EventNode(typeof(HearthStoneRule.SetGemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetPlayerGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_AMOUNT_OF_GEM)]
         public static async Task setGem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -601,9 +611,11 @@ namespace Game
             if (player != null)
                 await player.setGem(game, count);
         }
+
         /// <summary>
         /// 增加当前灵力值
         /// </summary>
+        [EventNode(typeof(HearthStoneRule.SetGemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddPlayerGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_GEM)]
         public static async Task addGem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -612,9 +624,11 @@ namespace Game
             if (player != null)
                 await player.setGem(game, player.getGem() + count);
         }
+
         /// <summary>
         /// 设置灵力上限
         /// </summary>
+        [EventNode(typeof(HearthStoneRule.SetMaxGemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetPlayerMaxGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_SET_MAX_GEM)]
         public static async Task setMaxGem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -623,9 +637,11 @@ namespace Game
             if (player != null)
                 await player.setMaxGem(game, count);
         }
+
         /// <summary>
         /// 增加灵力上限
         /// </summary>
+        [EventNode(typeof(HearthStoneRule.SetMaxGemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddPlayerMaxGem, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_ADD_MAX_GEM)]
         public static async Task addMaxGem(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -675,6 +691,7 @@ namespace Game
         /// <summary>
         /// 信仰对决
         /// </summary>
+        [EventNode(typeof(THHPlayer.RevealDuelEventArg))]
         [THHActionMethod(BuiltinActionDefineID.FaithDuel, StringTable.EDITOR_NODE_CATEGORY_PLAYER, EDITOR_NODE_FAITHDUEL)]
         [return: ActionNodeParam(EDITOR_NODE_FAITHDUEL_WIN)]
         public static bool faithduel(CardEngine game, Card card, Buff buff, EventArg eventArg, Flow flow, ActionNode node,
@@ -956,6 +973,8 @@ namespace Game
         {
             return buff;
         }
+
+        [EventNode(typeof(Card.AddBuffEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_ADD_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
         public static async Task<Buff[]> addBuff(CardEngine game,
@@ -976,6 +995,8 @@ namespace Game
             }
             return buffList.ToArray();
         }
+
+        [EventNode(typeof(Card.RemoveBuffEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.RemoveBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_REMOVE_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_IS_BUFF_REMOVED)]
         public static async Task<bool> removeBuff(CardEngine game,
@@ -998,6 +1019,8 @@ namespace Game
                 return false;
             return card.hasBuff(buffDefine);
         }
+
+        [EventNode(typeof(Buff.PropertyChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetBuffProp, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_SET_BUFF_PROP)]
         public static async Task setBuffProp(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)] Buff[] buffs,
@@ -1081,6 +1104,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="drawEvent"></param>
         /// <returns></returns>
+        [EventNode(typeof(HearthStoneRule.DrawEventArg), typeof(HearthStoneRule.BurnEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SimpleDraw, StringTable.EDITOR_CATEGORY__ACTION__NAME, StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__NAME)]
         [return: ActionNodeParam(StringTable.EDITOR_NODE__SIMPLE_DRAW_CARD__DRAW_EVENT)]
         public static Card simpleDrawCard(CardEngine game, Card card,
@@ -1091,9 +1115,11 @@ namespace Game
             player.draw(game, out var drawEvent);
             return drawEvent?.card;
         }
+
         /// <summary>
         /// 卡牌置入战场
         /// </summary>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToField, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToField(CardEngine game,
@@ -1130,9 +1156,11 @@ namespace Game
             }
             return MoveList.ToArray();
         }
+
         /// <summary>
         /// 卡牌移回手牌
         /// </summary>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHand, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HAND)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHand(CardEngine game,
@@ -1154,9 +1182,11 @@ namespace Game
             }
             return MoveList.ToArray();
         }
+
         /// <summary>
         /// 卡牌从洗入牌库
         /// </summary>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToDeck, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_DECK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToDeck(CardEngine game,
@@ -1181,9 +1211,11 @@ namespace Game
             }
             return MoveList.ToArray();
         }
+
         /// <summary>
         /// 卡牌从置入墓地
         /// </summary>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToGrave, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToGrave(CardEngine game,
@@ -1206,9 +1238,11 @@ namespace Game
             }
             return MoveList.ToArray();
         }
+
         /// <summary>
         /// 卡牌置入延迟区
         /// </summary>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHead, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHead(CardEngine game,
@@ -1245,9 +1279,11 @@ namespace Game
             }
             return MoveList.ToArray();
         }
+
         /// <summary>
         /// 卡牌装备到道具栏(有显示问题）
         /// </summary>
+        [EventNode(typeof(HearthStoneRule.EquipItemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToItem, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_ITEM)]
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EQUIP_EVENT)]
         public static async Task<HearthStoneRule.EquipItemEventArg> moveToItem(CardEngine game,
@@ -1260,9 +1296,11 @@ namespace Game
                 return null;
             return await player.equip(game, card.pile, card);
         }
+
         /// <summary>
         /// 卡牌移动到暂存区(有显示问题）
         /// </summary>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToWarp, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_WARP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToWARP(CardEngine game,

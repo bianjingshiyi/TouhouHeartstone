@@ -135,6 +135,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
+        [EventNode(typeof(HearthStoneRule.CreateTokenEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToField, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardToField(CardEngine game,
@@ -150,6 +151,7 @@ namespace Game
         /// 创建衍生卡并置入手牌
         /// </summary>
         /// <returns></returns>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToHand, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_HAND)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardToHand(CardEngine game,
@@ -171,6 +173,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
+        [EventNode(typeof(THHPile.MoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToDeck, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_SHUFFLE_TO_DECK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardShuffleToDeck(CardEngine game,
@@ -193,6 +196,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
+        [EventNode(typeof(HearthStoneRule.EquipItemEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToItem, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CREATE_TOKEN_CARD_EQUIP_TO_ITEM)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardEquipToItem(CardEngine game,
@@ -231,6 +235,7 @@ namespace Game
         /// <summary>
         /// 设置卡牌属性
         /// </summary>
+        [EventNode(typeof(Card.PropChangeEventArg))]
         [THHActionMethod(BuiltinActionDefineID.SetCardProp, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_SET_CARD_PROPERTY)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
         public static Task setCardProp(CardEngine game,
@@ -260,14 +265,14 @@ namespace Game
         [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetCardProp_Obsolete, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SET_PROPERTY, "SetProperty")]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROP_CHANGE_EVENT)]
-        public static Task<IPropChangeEventArg> setPropObsolete(CardEngine game,
+        public static Task<Card.PropChangeEventArg> setPropObsolete(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PROPERTY_NAME)] string propName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
             if (card != null)
                 return card.setProp(game, propName, value);
-            return Task.FromResult<IPropChangeEventArg>(null);
+            return Task.FromResult<Card.PropChangeEventArg>(null);
         }
         /// <summary>
         /// 获取花费
@@ -321,6 +326,7 @@ namespace Game
         /// <summary>
         /// 丢弃卡牌
         /// </summary>
+        [EventNode(typeof(THHCard.DiscardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Discard, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DISCARD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DRAW_EVENT)]
         public static Task<THHCard.DiscardEventArg[]> discard(CardEngine game,
@@ -335,6 +341,7 @@ namespace Game
         /// <summary>
         /// 增加固定数量的护甲
         /// </summary>
+        [EventNode(typeof(THHCard.SetArmorEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_ADD_AMOUNT_OF_ARMOR)]
         public static async Task addArmorToTarget(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_COUNT, isConst: true)] int count,
@@ -346,6 +353,7 @@ namespace Game
         /// <summary>
         /// 增加护甲
         /// </summary>
+        [EventNode(typeof(THHCard.SetArmorEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddAmountOfArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_ADD_ARMOR)]
         public static async Task addAmountOfArmorToTarget(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -357,6 +365,7 @@ namespace Game
         /// <summary>
         /// 失去护甲
         /// </summary>
+        [EventNode(typeof(THHCard.SetArmorEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.LoseArmor, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_LOSE_ARMOR)]
         public static async Task loseArmor(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
@@ -430,7 +439,6 @@ namespace Game
         public const string EDITOR_NODE_NAME_DEAL_SPELL_DAMAGE = "造成法术伤害";
         [TranslateMsg("编辑器/伤害分类/节点名称")]
         public const string EDITOR_PARAM_NAME_DAMAGE_SOURCE = "伤害源";
-
         [ObsoletedKeyMethod(BuiltinActionDefineID.Damage, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE, "Damage")]
         [Obsolete]
         public static Task damage(
@@ -519,6 +527,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害
         /// </summary>
+        [EventNode(typeof(THHCard.DamageEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageOrSpellDamage, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamage(CardEngine game, Card card,
@@ -541,6 +550,7 @@ namespace Game
         /// <summary>
         /// 造成伤害或法术伤害并分配给目标
         /// </summary>
+        [EventNode(typeof(THHCard.DamageEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageSplitAmong, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_SPLIT_TO_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageSplitToTargets(CardEngine game, Card card,
@@ -563,6 +573,7 @@ namespace Game
         /// <summary>
         /// 对固定数量的随机目标造成伤害或法术伤害
         /// </summary>
+        [EventNode(typeof(THHCard.DamageEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DealDamageToRandomTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_DEAL_DAMAGE_OR_SPELL_DAMAGE_TO_SPECIFIC_NUMBER_OF_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_DAMAGE_EVENT)]
         public static Task<THHCard.DamageEventArg[]> dealDamageOrSpellDamageToSpecificNumberOfTargets(CardEngine game, Card card,
@@ -686,6 +697,7 @@ namespace Game
         /// <summary>
         /// 治疗
         /// </summary>
+        [EventNode(typeof(THHCard.HealEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.HealTargets, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_HEAL_TARGETS)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_HEAL_EVENT)]
         public static Task<THHCard.HealEventArg[]> healTargets(CardEngine game, Card card,
@@ -783,6 +795,7 @@ namespace Game
             return characters;
         }
         #endregion
+        [EventNode(typeof(THHCard.ShackleEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Shackle, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_FREEZE)]
         public static Task freeze(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
         {
@@ -796,6 +809,7 @@ namespace Game
         /// <param name="game"></param>
         /// <param name="cards"></param>
         /// <returns></returns>
+        [EventNode(typeof(THHCard.SilenceEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Seal, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_SILENCE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_SILENCE_EVENT)]
         public static Task<THHCard.SilenceEventArg[]> silence(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
@@ -804,6 +818,7 @@ namespace Game
                 return Task.FromResult(Array.Empty<THHCard.SilenceEventArg>());
             return cards.silence(game);
         }
+        [EventNode(typeof(Card.PropChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.Kill, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_DESTROY)]
         public static Task destroy(CardEngine game, [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
@@ -815,7 +830,7 @@ namespace Game
         [ObsoletedKeyMethod(BuiltinActionDefineID.ForceUpdateCardsState, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_UPDATE_CARDS_STATE)]
         public static Task forceUpdateCardsState(CardEngine game)
         {
-            return game.updateDeath();
+            return game.updateGameState();
         }
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.IsDead, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_IS_DEAD)]
@@ -977,7 +992,6 @@ namespace Game
         /// 重置卡牌
         /// </summary>
         [ObsoletedKeyMethod(BuiltinActionDefineID.ResetCard, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_RESET_CARD)]
-
         public static async Task resetCards(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards)
         {
@@ -993,6 +1007,7 @@ namespace Game
         /// <summary>
         /// 强制攻击目标
         /// </summary>
+        [EventNode(typeof(THHCard.AttackEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ForceAttack, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_FORCE_ATTACK)]
         public static async Task forceAttackTargets(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_FORCE_ATTACKER)] Card[] cards,
@@ -1015,6 +1030,7 @@ namespace Game
         /// <summary>
         /// 本回合增加一次攻击次数
         /// </summary>
+        [EventNode(typeof(Card.PropChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddAttackChance, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_EXTRA_ATTACK)]
         public static async Task extraAttack(CardEngine game,
             [ActionNodeParam(EDITOR_PARAM_NAME_FORCE_ATTACKER)]Card[] cards)
@@ -1063,6 +1079,7 @@ namespace Game
         /// <summary>
         /// 揭示卡牌
         /// </summary>
+        [EventNode(typeof(HearthStoneRule.RevealEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.RevealCard, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_REVEAL)]
         public static void revealCard(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card)
@@ -1078,6 +1095,7 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="card"></param>
         /// <returns></returns>
+        [EventNode(typeof(THHPile.MoveCardEventArg), typeof(Card.PropChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.TakeControl, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_NAME_CARD_TAKE_CONTRL)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task takeControl(CardEngine game,
@@ -1120,6 +1138,7 @@ namespace Game
         /// <summary>
         /// 设置蓄力层数
         /// </summary>
+        [EventNode(typeof(Card.PropChangeEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetChargedLevel, StringTable.EDITOR_NODE_CATEGORY_CARD, EDITOR_NODE_SET_CHARGED_LEVEL)]
         public static async void setChargedLevel(CardEngine game,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card card,

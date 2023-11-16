@@ -245,7 +245,7 @@ namespace Tests
             game.skipUntilCanUse<BurgeoningRise>(you);
             you.cmdUse(game, you.getHand().getCard<BurgeoningRise>(), targets: s);
             s.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(1, you.getField().count);
             s = you.getField()[0];
             Assert.True(s.define is HalfPhantom);

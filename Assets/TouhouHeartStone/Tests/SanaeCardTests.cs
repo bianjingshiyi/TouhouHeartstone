@@ -308,7 +308,7 @@ namespace Tests
             you.revealDuel(game);
 
             you.getField()[0].setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             Assert.AreEqual(0, you.getField().count + oppo.getField().count);
             game.Dispose();
         }
@@ -402,7 +402,7 @@ namespace Tests
                 }
 
                 you.getField().setDead(game, true);
-                game.updateDeath();
+                game.updateGameState();
             }
         }
 
@@ -434,7 +434,7 @@ namespace Tests
                 you.cmdUse<MoriyaSuwako>(game, out Card suwako);
                 game.setNextRandomInt(i + 1);
                 suwako.setDead(game, true);
-                game.updateDeath();
+                game.updateGameState();
                 switch (i)
                 {
                     case 0:
@@ -502,7 +502,7 @@ namespace Tests
             // 这里偷了个懒，得把suwako亡语设成回手,因为目前诹访子的写法不允许选亡语触发
             // ——不许偷懒
             suwako.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             //这检查结果也太几把偷懒了，起码要改成检查诹访子没有回手吧？
             //Assert.AreEqual(10,you.hand.count);
             Assert.False(you.getHand().Any(c => c.define is MoriyaSuwako));
@@ -517,7 +517,7 @@ namespace Tests
             you.cmdUse<MoriyaSuwako>(game, out Card suwako);
             game.setNextRandomInt(1);
             suwako.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
         }
 
         [Test]
@@ -579,7 +579,7 @@ namespace Tests
             Assert.NotNull(suwako);
             game.setNextRandomInt(2);
             suwako.setDead(game, true);
-            game.updateDeath();
+            game.updateGameState();
             game.skipUntilCanUse<ForgottenRecrption>(you);
             you.cmdUse<ForgottenRecrption>(game);
             Assert.True(you.getHand().Contains(suwako));
