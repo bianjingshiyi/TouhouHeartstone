@@ -27,6 +27,7 @@ namespace Controllers
             registerClass<ExecuteResult<PublicBasicUserInfo>>();
             registerClass<DefineReference>();
             registerClass<CardReference>();
+            registerClass<EventReference>();
             registerClass<EffectTag>();
             registerClass<EventArgReference>();
             registerClass<EventReferenceProxy>();

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using MongoDB.Bson.Serialization.Attributes;
 using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
@@ -10,6 +9,10 @@ namespace Game
 {
     public partial class EffectEditorLibrary
     {
+        /// <summary>
+        /// 获取事件记录变量节点的事件参数主键。
+        /// </summary>
+        public const string EVENT_RECORD_VARIABLE_NODE_EVENT_PARAM_KEY = "record";
         //  事件处理
         [TranslateMsg("编辑器/事件记录_参数名称")]
         public const string EDITOR_TYPE_NAME_EVENT_RECORD = "事件记录";
@@ -28,6 +31,8 @@ namespace Game
         public const string EDITOR_NODE_EVENT_GET_TURN_COUNT = "获取当前回合数";
         [TranslateMsg("编辑器/事件记录_获取变量_节点名称")]
         public const string EDITOR_NODE_EVENT_RECORD_GET_VARIABLE = "获取事件记录变量";
+        [TranslateMsg("编辑器/事件记录-节点名称")]
+        public const string EDITOR_NODE_NAME_CAST_EVENT_RECORD_TYPE = "转换事件记录类型";
         [TranslateMsg("编辑器/事件记录_事件记录类型判断_节点名称")]
         public const string EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE = "事件记录类型判断";
         [TranslateMsg("编辑器/事件记录_获取本局游戏事件记录_节点名称")]
@@ -57,7 +62,7 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getRecordVariable(CardEngine game,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord record,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] string varName)
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] EventVarName varName)
         {
             if (record == null)
                 return null;
@@ -69,6 +74,17 @@ namespace Game
                 return snapshot;
             }
             return value;
+        }
+        [THHActionMethod(BuiltinActionDefineID.CastEventRecordType, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_NAME_CAST_EVENT_RECORD_TYPE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT)]
+        public static EventRecord castEventRecordType(
+            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord eventRecord,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] EventReferenceProxy eventReference)
+        {
+            if (eventRecord == null || eventReference == null)
+                return null;
+            EventReference refer = CardManager.getEventReferenceOfEventArg(eventRecord.eventArg);
+            return refer == eventReference.value ? eventRecord : null;
         }
         [ObsoletedKeyMethod(BuiltinActionDefineID.CheckEventRecordType, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_EVENT_CHECK_EVENT_RECORD_TYPE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]

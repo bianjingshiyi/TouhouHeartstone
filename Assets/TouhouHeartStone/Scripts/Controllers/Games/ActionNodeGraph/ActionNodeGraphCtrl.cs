@@ -1839,7 +1839,9 @@ namespace Controllers
         /// <param name="node">节点。</param>
         private void checkCastEventTypeNodeOutputs(Node node)
         {
-            if (node is ActionNode actionNode && actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType))
+            if (node is ActionNode actionNode && 
+                (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType) ||
+                actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventRecordType)))
             {
                 var output = actionNode.getOutputPort<ValueOutput>(EffectEditorLibrary.EVENT_CAST_EVENT_TYPE_NODE_CAST_EVENT_PARAM_KEY);
                 foreach (var connection in output.connections)
@@ -1861,10 +1863,13 @@ namespace Controllers
             if (node is not ActionNode action)
                 return;
             if (!action.defineRef.isBuiltinReference(BuiltinActionDefineID.SetEventVariable) &&
-                !action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetEventVariable))
+                !action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetEventVariable) &&
+                !action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetEventRecordVariable))
                 return;
 
-            var inputPort = node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_PARAM_KEY);
+            var inputPort = action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetEventRecordVariable) ?
+                node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_RECORD_VARIABLE_NODE_EVENT_PARAM_KEY) :
+                node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_PARAM_KEY);
             var eventRef = getConnectedEventReference(inputPort);
             var eventDefine = game.card.getEventDefine(eventRef);
 
@@ -1884,12 +1889,14 @@ namespace Controllers
         /// <returns></returns>
         private EventReference getConnectedEventReference(ValueInput inputPort)
         {
-            var connectedOutput = inputPort.getConnectedOutputPort();
+            var connectedOutput = inputPort?.getConnectedOutputPort();
             if (connectedOutput != null)
             {
                 // 转换事件类型节点。
                 var connectedNode = connectedOutput.node;
-                if (connectedNode is ActionNode conAction && conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType))
+                if (connectedNode is ActionNode conAction && 
+                    (conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType) ||
+                    conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventRecordType)))
                 {
                     return conAction.getConst<EventReference>(EffectEditorLibrary.EVENT_CAST_EVENT_TYPE_NODE_TYPE_REF_PARAM_KEY);
                 }

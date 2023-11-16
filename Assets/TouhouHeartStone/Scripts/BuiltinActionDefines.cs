@@ -175,6 +175,7 @@ namespace Game
         public const int GetEventRecordsInTurnsBefore = Type_Function + Category_EventRecord + 6;    // 获取前x-y回合内的事件记录
         public const int GetCardSnapshotOfEvent = Type_Function + Category_EventRecord + 7;    // 获取卡牌在某事件时的快照
         public const int GetTurnCount = Type_Function + Category_EventRecord + 8;    // 获得当前回合数
+        public const int CastEventRecordType = Type_Function + Category_EventRecord + 9;    // 转换事件记录类型
 
         // 集合运算
         public const int CreateArray = Type_Function + Category_Collection + 1;    // 创建集合
