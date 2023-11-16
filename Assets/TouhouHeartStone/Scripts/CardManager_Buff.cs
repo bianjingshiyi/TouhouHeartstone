@@ -59,7 +59,7 @@ namespace Game
         {
             var json = new SerializableBuffDefine(buffDefine).toJson();
             var cloneSeri = JsonHelper.fromJson<SerializableBuffDefine>(json);
-            var nodeDefiner = getNodeDefiner();
+            var nodeDefiner = getLocalNodeDefiner();
             var clone = cloneSeri.toGeneratedBuffDefine(nodeDefiner);
             clone.cardPoolId = buffDefine.cardPoolId;
             return clone;

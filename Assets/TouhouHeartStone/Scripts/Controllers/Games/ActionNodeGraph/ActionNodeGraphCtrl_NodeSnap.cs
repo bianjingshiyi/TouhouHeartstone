@@ -47,7 +47,7 @@ namespace Controllers
 
 
                     int docKey = CanNodeDefineOpenDocument(define) ? define.actionDefine.defineId : -1;
-                    bool visualEffect = EffectEditorLibrary.canActionAddEffect(new ActionReference(define.actionDefine.cardPoolId, define.actionDefine.defineId));
+                    bool visualEffect = game.anims.canActionAddEffect(new ActionReference(define.actionDefine.cardPoolId, define.actionDefine.defineId));
                     _ui.setPreviewNode(tryTranslateWithDict(define.actionDefine.editorName),
                         inputInfos,
                         constsInfo,
@@ -133,7 +133,7 @@ namespace Controllers
                 {
                     var define = actionNode.define;
                     int docKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
-                    bool visualEffect = EffectEditorLibrary.canActionAddEffect(actionNode.defineRef);
+                    bool visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
                     _ui.setPreviewNode(tryTranslateWithDict(define.editorName),
                         getNodeInputViewData(node),
                         getNodeConstValueInfos(node),

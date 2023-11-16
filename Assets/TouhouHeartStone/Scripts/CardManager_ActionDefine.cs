@@ -45,7 +45,7 @@ namespace Game
                 cardPool.actionDefineList.Add(actionDefine);
                 if (actionDefine.type == NodeDefineType.Event)
                 {
-                    cardPool.eventDefineList.Add(EventManager.generateEventDefineForActionDefine(actionDefine));
+                    cardPool.eventDefineList.Add(game.eventManager.generateEventDefineForActionDefine(actionDefine));
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace Game
             var cloneSeri = JsonHelper.fromJson<SerializableActionDefine>(json);
 
 
-            var nodeDefiner = getNodeDefiner();
+            var nodeDefiner = getLocalNodeDefiner();
             // 铺设节点。
             var clone = cloneSeri.toGeneratedActionDefine(game.editor.getTypeByName);
             clone.cardPoolId = cardPoolId;

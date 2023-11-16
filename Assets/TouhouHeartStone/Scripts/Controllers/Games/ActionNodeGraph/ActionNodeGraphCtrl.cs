@@ -31,7 +31,8 @@ namespace Controllers
                 quitGraph();
                 _curCardPoolId = info.cardPoolId;
                 // 获取事件定义列表
-                var mainEventDefines = game.card.getAllEventDefines(_curCardPoolId);
+                var poolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
+                var mainEventDefines = game.card.getAllEventDefines(includeHidden: false, poolRef);
                 _eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
                 _eventNames = mainEventDefines.Select(d => d.eventName).ToArray();
                 var _eventEditorNames = mainEventDefines.Select(d => game.lang._(d.editorName)).ToArray();
@@ -182,7 +183,7 @@ namespace Controllers
             if (string.IsNullOrEmpty(clipboard))
                 return;
             var seri = JsonHelper.fromJson<SerializableActionNodeGraph>(clipboard);
-            var definer = game.card.getNodeDefiner();
+            var definer = game.card.getLocalNodeDefiner();
             var clipGraph = pasteNodes(seri, graph, pos, definer, out _);
 
             foreach (var node in clipGraph.nodes)
@@ -820,7 +821,7 @@ namespace Controllers
                 else if (node is EventEntryNode eventEntryNode)
                 {
                     var poolRef = game.card.getLocalCardPoolReference(eventEntryNode.eventCardPoolId);
-                    var triggerTime = game.card.getEventTriggerTime(poolRef, eventEntryNode.eventName);
+                    var triggerTime = game.card.getEventTriggerTime(poolRef, eventEntryNode.eventName, true);
                     eventEntryNode.define = triggerTime;
                     eventEntryNode.Define();
                 }
@@ -976,7 +977,7 @@ namespace Controllers
             {
                 ActionNodeValueInfo[] constsInfo = getNodeConstValueInfos(actionNode);
                 int nodeKey = CanNodeOpenDocument(actionNode) ? actionNode.defineRef.defineId : -1;
-                bool visualEffect = EffectEditorLibrary.canActionAddEffect(actionNode.defineRef);
+                bool visualEffect = game.anims.canActionAddEffect(actionNode.defineRef);
                 actionNodeItem = _ui.createNode(
                     actionNode.posX,
                     actionNode.posY,

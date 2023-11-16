@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System;
 using BJSYGameCore;
 using MukioI18n;
 using TouhouCardEngine;
@@ -8,18 +8,20 @@ using UnityEngine;
 
 namespace Game
 {
-    public class EventManager : Manager
+    public partial class EventManager : Manager
     {
         #region 公有方法
         /// <summary>
         /// 获取所有事件定义，如果未加载则进行加载
         /// </summary>
-        public EventDefine[] getOrLoadBuiltinEventDefines()
+        public EventDefine[] getOrLoadBuiltinEventDefines(bool includeHidden = true)
         {
-            if (_builtinEventDefineList != null)
-                return _builtinEventDefineList.ToArray();
-            loadEventTypes();
-            return _builtinEventDefineList.ToArray();
+            if (_builtinEventDefineList == null)
+                loadBuiltinEvents();
+            IEnumerable<EventDefine> list = _builtinEventDefineList;
+            if (!includeHidden)
+                list = list.Where(e => !isEventHidden(e));
+            return list.ToArray();
         }
         public string translateEventDefineNameForEditor(EventDefine define)
         {
@@ -50,9 +52,11 @@ namespace Game
             }
             return results.ToArray();
         }
-        public static EventDefine generateEventDefineForActionDefine(GeneratedActionDefine actionDefine)
+        public EventDefine generateEventDefineForActionDefine(GeneratedActionDefine actionDefine)
         {
             string eventName = actionDefine.getEventName();
+            List<EventReference> childrenList = new List<EventReference>();
+            getGeneratedActionChildrenEventsNonAlloc(actionDefine, childrenList);
             var define = new EventDefine()
             {
                 cardPoolId = actionDefine.cardPoolId,
@@ -60,17 +64,44 @@ namespace Game
                 editorName = actionDefine.editorName,
                 beforeVariableInfos = actionDefine.getBeforeEventArgVarInfos(),
                 afterVariableInfos = actionDefine.getAfterEventArgVarInfos(),
+                childrenEvents = childrenList.ToArray(),
             };
             return define;
+        }
+        public bool isEventHidden(EventDefine define)
+        {
+            return _hiddenEvents.Contains(define.eventName);
+        }
+        public EventReference[] getEventReferenceChildren(EventReference eventRef)
+        {
+            var list = new List<EventReference>()
+            {
+                eventRef
+            };
+            getEventReferenceChildrenNonAlloc(eventRef, list);
+            return list.ToArray();
+        }
+        public void getEventReferenceChildrenNonAlloc(EventReference eventRef, List<EventReference> list)
+        {
+            var eventDefine = game.card.getEventDefine(eventRef);
+            if (eventDefine?.childrenEvents == null)
+                return;
+            foreach (var childRef in eventDefine.childrenEvents)
+            {
+                if (list.Contains(childRef))
+                    continue;
+                list.Add(childRef);
+                getEventReferenceChildrenNonAlloc(childRef, list);
+            }
         }
         #endregion
         #region 私有方法
         protected override void onAwake()
         {
             base.onAwake();
-            loadEventTypes();
+            loadBuiltinEvents();
         }
-        private void loadEventTypes()
+        private void loadBuiltinEvents()
         {
             _builtinEventDefineList = new List<EventDefine>();
             //通过反射加载硬编码的事件类型
@@ -93,10 +124,19 @@ namespace Game
                             continue;
                         }
                         var eventName = EventHelper.getName(eventArg);
-                        if (_hiddenEvents.Contains(eventName)) //隐藏的事件忽略掉。
-                            continue;
 
+                        // 获取子事件。
+                        EventReference[] childrenNames;
+                        if (type.getAttribute<EventChildrenAttribute>() is EventChildrenAttribute eventChildren)
+                        {
+                            childrenNames = eventChildren.childrenTypes.Select(t => new EventReference(0, EventHelper.getName(t))).ToArray();
+                        }
+                        else
+                        {
+                            childrenNames = Array.Empty<EventReference>();
+                        }
 
+                        // 获取编辑器名。
                         string editorName;
                         if (!_eventNameTranslations.TryGetValue(eventName, out editorName))
                         {
@@ -109,6 +149,7 @@ namespace Game
                             editorName = editorName,
                             beforeVariableInfos = eventArg.getBeforeEventVarInfos(),
                             afterVariableInfos = eventArg.getAfterEventVarInfos(),
+                            childrenEvents = childrenNames,
                         };
                         _builtinEventDefineList.Add(eventDefine);
                     }
@@ -127,6 +168,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_SHACKLE = "禁锢";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_MOVE_CARD = "卡牌移动";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_BE_CHARGED = "蓄力";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_LASTWORD = "遗言";
         static string[] _hiddenEvents =
         {
             "SecretTriggerEvent",
@@ -143,7 +188,6 @@ namespace Game
             "RemoveModiEvent",
             "PropChangeEvent",
             "CommandEvent",
-            "TestEvent",
             "ElementMixEvent",
             "LastwordEvent",
             "UpdateDeathEvent",
@@ -163,9 +207,9 @@ namespace Game
             { "DamageEvent", StringTable.EDITOR_EVENT_NAME_DAMAGE },
             { "HealEvent", StringTable.EDITOR_EVENT_NAME_HEAL },
             { "DeathEvent", StringTable.EDITOR_EVENT_NAME_DEATH },
-            //{ "SecreTriggerEvent", StringTable.EDITOR_EVENT_NAME_SECRETRIGGER },
-            //{ "MissionCompleteEvent", StringTable.EDITOR_EVENT_NAME_MISSIONCOMPLETE },
-            //{ "ComeOnStageEvent", StringTable.EDITOR_EVENT_NAME_COMEONSTAGE },
+            { "SecreTriggerEvent", StringTable.EDITOR_EVENT_NAME_SECRETTRIGGER },
+            { "MissionCompleteEvent", StringTable.EDITOR_EVENT_NAME_MISSIONCOMPLETE },
+            { "ComeOnStageEvent", StringTable.EDITOR_EVENT_NAME_COMEONSTAGE },
             { "InitEvent", StringTable.EDITOR_EVENT_NAME_INIT },
             { "StartEvent", StringTable.EDITOR_EVENT_NAME_START },
             { "GameEndEvent", StringTable.EDITOR_EVENT_NAME_GAMEEND },
@@ -173,31 +217,42 @@ namespace Game
             { "SetMaxGemEvent", StringTable.EDITOR_EVENT_NAME_SETMAXGEM },
             { "BurnEvent", StringTable.EDITOR_EVENT_NAME_BURN },
             { "EnterFieldEvent", StringTable.EDITOR_EVENT_NAME_ENTERFIELD },
-            //{ "ChooseOneEvent", StringTable.EDITOR_EVENT_NAME_CHOOSEONE },
-            //{ "RebornEvent", StringTable.EDITOR_EVENT_NAME_REBORN },
-            //{ "RevealEvent", StringTable.EDITOR_EVENT_NAME_REVEAL },
+            { "ChooseOneEvent", StringTable.EDITOR_EVENT_NAME_CHOOSEONE },
+            { "RebornEvent", StringTable.EDITOR_EVENT_NAME_REBORN },
+            { "RevealEvent", StringTable.EDITOR_EVENT_NAME_REVEAL },
             { "RevealDuelEvent", StringTable.EDITOR_EVENT_NAME_REVEALDUEL },
             { "SetGemEvent", StringTable.EDITOR_EVENT_NAME_SETGEM },
             { "DrawEvent", StringTable.EDITOR_EVENT_NAME_DRAW },
             { "FatigueEvent", StringTable.EDITOR_EVENT_NAME_FATIGUE },
-            //{ "SearchiPileEvent", StringTable.EDITOR_EVENT_NAME_SEARCHPILE },
-            //{ "ActiveEvent", StringTable.EDITOR_EVENT_NAME_ACTIVE },
+            { "SearchiPileEvent", StringTable.EDITOR_EVENT_NAME_SEARCHPILE },
+            { "ActiveEvent", StringTable.EDITOR_EVENT_NAME_ACTIVE },
             { "DiscardEvent", StringTable.EDITOR_EVENT_NAME_DISCARD },
             { "CreateTokenEvent", StringTable.EDITOR_EVENT_NAME_CREATETOKEN },
             { "SetDefineEvent", StringTable.EDITOR_EVENT_NAME_SETDEFINE },
             { "ShackleEvent", EDITOR_EVENT_NAME_SHACKLE },
-            //{ "AddModiEvent", StringTable.EDITOR_EVENT_NAME_ADDMODI },
-            //{ "RemoveModiEvent", StringTable.EDITOR_EVENT_NAME_REMOVEMODI },
-            //{ "PropChangeEvent", StringTable.EDITOR_EVENT_NAME_PROPCHANGE },
-            //{ "CommandEvent", StringTable.EDITOR_EVENT_NAME_COMMAND },
-            //{ "TestEvent", StringTable.EDITOR_EVENT_NAME_TEST },
+            { "AddModiEvent", StringTable.EDITOR_EVENT_NAME_ADDMODI },
+            { "RemoveModiEvent", StringTable.EDITOR_EVENT_NAME_REMOVEMODI },
+            { "PropChangeEvent", StringTable.EDITOR_EVENT_NAME_PROPCHANGE },
+            { "CommandEvent", StringTable.EDITOR_EVENT_NAME_COMMAND },
+            { "TestEvent", StringTable.EDITOR_EVENT_NAME_TEST },
             { "DiscoverEvent", StringTable.EDITOR_EVENT_NAME_DISCOVER },
-            //{ "SelectEvent", StringTable.EDITOR_EVENT_NAME_SELECT },
+            { "SelectEvent", StringTable.EDITOR_EVENT_NAME_SELECT },
             { "EquipItemEvent", StringTable.EDITOR_EVENT_NAME_EQUIP },
-            //{ "ElementEvent", StringTable.EDITOR_EVENT_NAME_ELEMENT },
+            { "BeChargedEvent", EDITOR_EVENT_NAME_BE_CHARGED },
+            { "ElementMixEvent", StringTable.EDITOR_EVENT_NAME_ELEMENT },
+            { "LastwordEvent", EDITOR_EVENT_NAME_LASTWORD },
         };
         List<EventDefine> _builtinEventDefineList = null;
         [SerializeField]
         MainManager _game;
+    }
+
+    public class EventNodeAttribute : Attribute
+    {
+        public EventNodeAttribute(params Type[] types)
+        {
+            this.types = types;
+        }
+        public Type[] types;
     }
 }

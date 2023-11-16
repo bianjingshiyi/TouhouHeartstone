@@ -279,11 +279,11 @@ namespace Game.BattleTable
         {
             if (node is ActionNode action)
             {
-                var names = EffectEditorLibrary.getActionBindedEventNames(action.defineRef);
-                if (names == null)
+                var eventRefs = cardManager.getActionBindedEventsRecursive(action.defineRef);
+                if (eventRefs == null)
                     return false;
-                var name = EventHelper.getName(arg);
-                return names.FirstOrDefault() == name;
+                var eventRef = CardManager.getEventReferenceOfEventArg(arg);
+                return eventRefs.Any(e => e == eventRef);
             }
             return false;
         }

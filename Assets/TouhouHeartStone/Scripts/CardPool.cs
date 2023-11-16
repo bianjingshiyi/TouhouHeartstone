@@ -46,7 +46,7 @@ namespace Game
             _nodeDefiner = new THHNodeDefiner(
                 (actRef, name) => getLoadingActionDefine(cardPoolId, mainManager, actRef, name),
                 (poolId, eventName) => getLoadingEventTriggerTime(cardPoolId, mainManager, poolId, eventName));
-            getGeneratedActionDefines(cardPoolId, typeFinder);
+            getGeneratedActionDefines(cardPoolId, mainManager, typeFinder);
 
             var cardDefines = cardDefineList.ConvertAll(c => c.toCardDefine(_nodeDefiner));
             var buffDefines = buffDefineList.ConvertAll(b => b.toGeneratedBuffDefine(_nodeDefiner));
@@ -63,7 +63,7 @@ namespace Game
                 eventDefineList = new List<EventDefine>(_loadedEventDefines)
             };
         }
-        private void getGeneratedActionDefines(long cardPoolId, TypeFinder typeFinder)
+        private void getGeneratedActionDefines(long cardPoolId, MainManager main, TypeFinder typeFinder)
         {
             var defines = actionDefineList;
             // 铺设节点。
@@ -74,7 +74,7 @@ namespace Game
                 _genActionDefines.Add(define);
                 if (define.type == NodeDefineType.Event)
                 {
-                    _loadedEventDefines.Add(EventManager.generateEventDefineForActionDefine(define));
+                    _loadedEventDefines.Add(main.eventManager.generateEventDefineForActionDefine(define));
                 }
             }
             // 定义所有节点。
@@ -129,7 +129,8 @@ namespace Game
             }
             else
             {
-                return cardManager.getLocalEventTriggerTime(cardPoolId, name);
+                var poolRef = cardManager.getLocalCardPoolReference(cardPoolId);
+                return cardManager.getEventTriggerTime(poolRef, name);
             }
         }
 

@@ -79,7 +79,8 @@ namespace Game
         }
         private EventTriggerTime getEventTriggerTime(long cardPoolId, string eventName)
         {
-            return mainManager.card.getLocalEventTriggerTime(cardPoolId, eventName);
+            var poolRef = mainManager.card.getLocalCardPoolReference(cardPoolId);
+            return mainManager.card.getEventTriggerTime(poolRef, eventName);
         }
         #region 转换定义
         /// <summary>

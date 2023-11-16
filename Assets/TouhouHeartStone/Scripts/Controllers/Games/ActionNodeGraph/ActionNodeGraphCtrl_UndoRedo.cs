@@ -64,7 +64,7 @@ namespace Controllers
             }
             public override async void redo()
             {
-                var definer = _graphCtrl.game.card.getNodeDefiner();
+                var definer = _graphCtrl.game.card.getLocalNodeDefiner();
 
                 var newNode = _seriNode.ToActionNode(_graphCtrl.graph);
                 _graphCtrl.graph.addNode(newNode);
@@ -84,7 +84,7 @@ namespace Controllers
 
             public override async void undo()
             {
-                var definer = _graphCtrl.game.card.getNodeDefiner();
+                var definer = _graphCtrl.game.card.getLocalNodeDefiner();
 
                 var newNode = _seriNode.ToActionNode(_graphCtrl.graph);
                 _graphCtrl.graph.addNode(newNode);

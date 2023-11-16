@@ -465,6 +465,15 @@ namespace Game
             return null;
         }
         /// <summary>
+        /// 根据卡池ID获取卡池引用（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
+        /// </summary>
+        /// <param name="cardPoolId">卡池ID。</param>
+        /// <returns></returns>
+        public ICardPoolReference getCardPoolReference(long cardPoolId)
+        {
+            return getLocalCardPoolReference(cardPoolId, true);
+        }
+        /// <summary>
         /// 根据卡池ID获取本地的卡池引用（优先获取不是缓存中的，并且可以在编辑器内看到的卡池）。
         /// </summary>
         /// <param name="cardPoolId">卡池ID。</param>
@@ -672,7 +681,7 @@ namespace Game
         {
             var json = new SerializableCardDefine(define).toJson();
             var cloneSeri = JsonHelper.fromJson<SerializableCardDefine>(json);
-            var nodeDefiner = getNodeDefiner();
+            var nodeDefiner = getLocalNodeDefiner();
             var clone = cloneSeri.toCardDefine(nodeDefiner);
             clone.cardPoolId = define.cardPoolId;
             return clone;
@@ -1725,7 +1734,7 @@ namespace Game
 
                         // 更新节点的信息和端口。
                         actionNode.defineRef = new ActionReference(0, newId);
-                        var definer = getNodeDefiner();
+                        var definer = getLocalNodeDefiner();
                         definer.Define(actionNode);
 
                         // 连接之前的条件节点的第一个输出端口和该节点的条件端口。

@@ -38,7 +38,8 @@ namespace Controllers
             GeneratedEffect[] effects = buffDefine.effectList.OfType<GeneratedEffect>().ToArray();
             updateModifiers();
             // 持续限制
-            _eventTriggerTimes = game.card.getAllEventDefines(_cardPoolId).getEventTriggerTimes();
+            var poolRef = game.card.getLocalCardPoolReference(cardPoolId);
+            _eventTriggerTimes = game.card.getAllEventDefines(includeHidden: false, poolRef).getEventTriggerTimes();
             _ui.initExistLimits(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
             updateExistLimits();
             // 皮肤

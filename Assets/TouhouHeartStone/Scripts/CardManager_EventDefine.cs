@@ -3,43 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TouhouCardEngine;
+using TouhouCardEngine.Interfaces;
 using TouhouCardEngine.Shared;
 
 namespace Game
 {
     partial class CardManager
     {
-        public async Task<EventDefine[]> getOrLoadEventDefines(ICardPoolReference cardPoolRef)
+        #region 公有方法
+        public static EventReference getEventReferenceOfAction(GeneratedActionDefine gen)
         {
-            var (_, cardPool) = await getOrLoadCardPool(cardPoolRef, true);
-            return getEventDefines(cardPool);
+            return new EventReference(gen.cardPoolId, gen.getEventName());
         }
-        public EventDefine getLocalEventDefine(long cardPoolId, string name)
+        public static EventReference getEventReferenceOfEventArg(IEventArg arg)
         {
-            var localRef = getLocalCardPoolReference(cardPoolId);
-            return getEventDefine(localRef, name);
-        }
-        public EventDefine getEventDefine(ICardPoolReference cardPoolRef, string name)
-        {
-            if (tryGetCardPool(cardPoolRef, out var cardPool))
+            if (arg is GeneratedEventArg gen)
             {
-                var define = cardPool.eventDefineList.FindEventDefine(name);
-                if (define != null)
-                {
-                    return define;
-                }
+                return getEventReferenceOfAction(gen.actionDefine);
             }
-            var eventDefine = game.eventManager.getOrLoadBuiltinEventDefines().FindEventDefine(name);
-            if (eventDefine != null)
+            return new EventReference(0, EventHelper.getName(arg));
+        }
+        public EventDefine getEventDefine(EventReference eventRef, bool includeHidden = true)
+        {
+            var poolRef = getCardPoolReference(eventRef.cardPoolId);
+            return getEventDefine(poolRef, eventRef.eventName, includeHidden);
+        }
+        public EventDefine getEventDefine(ICardPoolReference cardPoolRef, string name, bool includeHidden = true)
+        {
+            if (isBuiltinCardPool(cardPoolRef.CardPoolID))
             {
-                return eventDefine;
+                return game.eventManager.getOrLoadBuiltinEventDefines(includeHidden).FindEventDefine(name);
+            }
+            else if (tryGetCardPool(cardPoolRef, out var cardPool))
+            {
+                return cardPool.eventDefineList.FindEventDefine(name);
             }
             return null;
-        }
-        public EventDefine[] getLocalEventDefines(long cardPoolId)
-        {
-            var localRef = getLocalCardPoolReference(cardPoolId);
-            return getEventDefines(localRef);
         }
         public EventDefine[] getEventDefines(ICardPoolReference cardPoolRef)
         {
@@ -49,35 +48,22 @@ namespace Game
             }
             return Array.Empty<EventDefine>();
         }
-        public EventDefine[] getAllEventDefines(params long[] includedCardPools)
+        public EventDefine[] getAllEventDefines(bool includeHidden = true, params ICardPoolReference[] includedCardPools)
         {
             //内置
             List<EventDefine> actionDefineList = new List<EventDefine>();
-            actionDefineList.AddRange(game.eventManager.getOrLoadBuiltinEventDefines());
+            actionDefineList.AddRange(game.eventManager.getOrLoadBuiltinEventDefines(includeHidden));
             //自定义
             if (includedCardPools != null)
             {
-                foreach (long poolId in includedCardPools)
+                foreach (var poolRef in includedCardPools)
                 {
-                    actionDefineList.AddRange(getLocalEventDefines(poolId));
+                    actionDefineList.AddRange(getEventDefines(poolRef));
                 }
             }
             return actionDefineList.ToArray();
         }
-        private EventDefine getEventDefine(CardPool cardPool, string eventName)
-        {
-            return cardPool.eventDefineList.FindEventDefine(eventName);
-        }
-        private EventDefine[] getEventDefines(CardPool cardPool)
-        {
-            return cardPool.eventDefineList.ToArray();
-        }
-        public EventTriggerTime getLocalEventTriggerTime(long cardPoolId, string name)
-        {
-            var localRef = getLocalCardPoolReference(cardPoolId);
-            return getEventTriggerTime(localRef, name);
-        }
-        public EventTriggerTime getEventTriggerTime(ICardPoolReference cardPoolRef, string name)
+        public EventTriggerTime getEventTriggerTime(ICardPoolReference cardPoolRef, string name, bool includeHidden = true)
         {
             if (tryGetCardPool(cardPoolRef, out var cardPool))
             {
@@ -87,12 +73,52 @@ namespace Game
                     return define;
                 }
             }
-            var eventDefine = game.eventManager.getOrLoadBuiltinEventDefines().getEventTriggerTimeByName(name);
+            var eventDefine = game.eventManager.getOrLoadBuiltinEventDefines(includeHidden).getEventTriggerTimeByName(name);
             if (eventDefine != null)
             {
                 return eventDefine;
             }
             return null;
         }
+        public EventReference[] getActionBindedEvents(ActionReference actionRef)
+        {
+            if (isBuiltinCardPool(actionRef.cardPoolId))
+            {
+                return game.eventManager.getBuiltinActionBindedEvents(actionRef.defineId);
+            }
+            else
+            {
+                var actionDefine = getActionDefine(actionRef);
+                if (actionDefine is GeneratedActionDefine gen && actionDefine.type == NodeDefineType.Event)
+                {
+                    return new EventReference[] { getEventReferenceOfAction(gen) };
+                }
+            }
+            return null;
+        }
+        public EventReference[] getActionBindedEventsRecursive(ActionReference actionRef)
+        {
+            if (isBuiltinCardPool(actionRef.cardPoolId))
+            {
+                return game.eventManager.getBuiltinActionBindedEventsRecursive(actionRef.defineId);
+            }
+            else if (getActionDefine(actionRef) is GeneratedActionDefine gen && gen.type == NodeDefineType.Event)
+            {
+                var eventRef = getEventReferenceOfAction(gen);
+                List<EventReference> refs = new List<EventReference>
+                {
+                    eventRef
+                };
+                game.eventManager.getEventReferenceChildrenNonAlloc(eventRef, refs);
+            }
+            return null;
+        }
+        #endregion
+        #region 私有方法
+        private EventDefine[] getEventDefines(CardPool cardPool)
+        {
+            return cardPool.eventDefineList.ToArray();
+        }
+        #endregion
     }
 }

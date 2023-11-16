@@ -22,7 +22,8 @@ namespace Controllers
         }
         public void updateEventTriggerTimes(long cardPoolId)
         {
-            _eventTriggerTimes = game.card.getAllEventDefines(cardPoolId).getEventTriggerTimes();
+            var poolRef = game.card.getLocalCardPoolReference(cardPoolId);
+            _eventTriggerTimes = game.card.getAllEventDefines(includeHidden: false, poolRef).getEventTriggerTimes();
             _ui.setEventTypeNames(_eventTriggerTimes.getEventTriggerTimeNamesForEditor(game));
         }
         public GeneratedEffect getCurrentEffect()

@@ -2,6 +2,7 @@
 using System.Linq;
 using BJSYGameCore;
 using Game.Animations;
+using TouhouCardEngine;
 using TouhouCardEngine.Shared;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace Game
     /// </summary>
     public class AnimationManager : Manager
     {
+        #region 公有方法
         public IEnumerable<string> getBuiltinEffectNames()
         {
             return builtinEffectList.Select(e => e.defineName).ToArray();
@@ -56,9 +58,17 @@ namespace Game
         {
             return getBuiltinAnimationDefines();
         }
-        Dictionary<int, AnimationDefine> builtinAnimationDic { get; set; } = new Dictionary<int, AnimationDefine>();
+        public bool canActionAddEffect(ActionReference actionRef)
+        {
+            return main.card.getActionBindedEvents(actionRef) != null;
+        }
+        #endregion
+
+        #region 属性字段
         public MainManager main => getManager<MainManager>();
+        Dictionary<int, AnimationDefine> builtinAnimationDic { get; set; } = new Dictionary<int, AnimationDefine>();
         [SerializeField]
         private BuiltinEffect[] builtinEffectList;
+        #endregion
     }
 }

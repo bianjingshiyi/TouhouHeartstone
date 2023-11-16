@@ -21,7 +21,8 @@ namespace UI
             _nodesPanel.setOutputFilter(outputFilter);
             _nodesPanel.setSearchFilter(searchFilter);
             _createActionDefineDialog.setDefineTypeOptions(defineTypeNames.Select(n => game.lang._(n)).ToArray());
-            _eventTriggerTimes = game.card.getAllEventDefines(_cardPoolId).getEventTriggerTimes();
+            var poolRef = game.card.getLocalCardPoolReference(_cardPoolId);
+            _eventTriggerTimes = game.card.getAllEventDefines(includeHidden: false, poolRef).getEventTriggerTimes();
             updatePasteButton();
             updateDeleteButton();
             updateUndoRedoButton();

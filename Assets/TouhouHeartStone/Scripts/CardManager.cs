@@ -749,11 +749,11 @@ namespace Game
             text = null;
             return false;
         }
-        public INodeDefiner getNodeDefiner()
+        public INodeDefiner getLocalNodeDefiner()
         {
             return new THHNodeDefiner(
                 (a, n) => getActionDefine(a),
-                getLocalEventTriggerTime);
+                (poolId, name) => getEventTriggerTime(getLocalCardPoolReference(poolId), name, true));
         }
         #region 属性字段
         public MainManager game

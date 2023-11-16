@@ -287,7 +287,7 @@ namespace Controllers
             var seri = new SerializableActionNodeGraph(sourceGraph);
 
             // 粘贴
-            var definer = game.card.getNodeDefiner();
+            var definer = game.card.getLocalNodeDefiner();
             ActionNodeGraphCtrl.pasteNodes(seri, targetGraph, Vector2.zero, definer, out _);
         }
         private Dictionary<int, int> cloneNodes(IEnumerable<Node> source, ActionGraph targetGraph)
@@ -299,7 +299,7 @@ namespace Controllers
             var seri = ActionNodeGraphCtrl.copyNodes(source, out var buffer);
 
             // 粘贴
-            var definer = game.card.getNodeDefiner();
+            var definer = game.card.getLocalNodeDefiner();
             var rect = new Rect(targetGraph.centerX - targetGraph.width * 0.5f, targetGraph.centerY - targetGraph.height * 0.5f, targetGraph.width, targetGraph.height);
             var rightTop = new Vector2(rect.xMax, rect.yMax);
             var pos = rightTop + new Vector2(200 + buffer.width * 0.5f, buffer.height * -0.5f);
