@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FreespaceFinder;
 using Game;
+using TouhouCardEngine;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -347,9 +348,9 @@ namespace UI
         {
             _actionNodeItemTemplate.initEffectTags(effectTagNames, effectTagValues);
         }
-        public void initEventNames(string[] eventNames, string[] eventValues)
+        public void initEventReferences(string[] eventNames, EventReference[] eventValues)
         {
-            _actionNodeItemTemplate.initEventNames(eventNames, eventValues);
+            _actionNodeItemTemplate.initEventReferences(eventNames, eventValues);
         }
         public void resetView()
         {

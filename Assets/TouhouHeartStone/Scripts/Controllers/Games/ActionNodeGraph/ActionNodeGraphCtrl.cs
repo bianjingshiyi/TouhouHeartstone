@@ -34,13 +34,11 @@ namespace Controllers
                 var poolRef = game.card.getLocalCardPoolReference(_curCardPoolId);
                 var mainEventDefines = game.card.getAllEventDefines(includeHidden: false, poolRef);
                 _eventTriggerTimes = mainEventDefines.getEventTriggerTimes();
-                _eventNames = mainEventDefines.Select(d => d.eventName).ToArray();
-                var _eventEditorNames = mainEventDefines.Select(d => game.lang._(d.editorName)).ToArray();
+                _eventReferences = mainEventDefines.Select(d => d.getReference()).ToArray();
+                var eventEditorNames = mainEventDefines.Select(d => game.lang._(d.editorName)).ToArray();
                 //更新UI
                 _ui.gameObject.SetActive(true);
-                _ui.initEventNames(
-                    _eventEditorNames,
-                    _eventNames);
+                _ui.initEventReferences(eventEditorNames, _eventReferences);
                 _ui.resetView();
 
 
@@ -1145,7 +1143,7 @@ namespace Controllers
             //更新变长参数。
             updateInputParamsPort(inputPort);
             // 更新事件变量节点的事件变量名。
-            updateEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
+            checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
         }
 
         private void connectControlPorts(ControlOutput outputPort, ControlInput inputPort)
@@ -1438,7 +1436,7 @@ namespace Controllers
                 //更新变长参数。
                 updateInputParamsPort(inputPort);
                 // 更新事件变量节点的事件变量名。
-                updateEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
+                checkEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
             }
 
             if (outputPort != null && inputPort != null)
@@ -1679,7 +1677,7 @@ namespace Controllers
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileNameCollection, value);
             else if (type == typeof(KeywordCollection))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.keywords, value);
-            else if (type == typeof(EventArgReference))
+            else if (type == typeof(EventArgReference) || type == typeof(EventReferenceProxy))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventReference, value);
             else if (type == typeof(EffectTagCollection))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.effectTagCollection, value);
@@ -1806,6 +1804,8 @@ namespace Controllers
             {
                 await updateCardDefineConst(item, node, constPair.Key, constPair.Value);
             }
+            // 更新“转换事件类型”连接的输出端口。
+            checkCastEventTypeNodeOutputs(node);
         }
         private Task updateCardDefineConst(ActionNodeItem item, Node node, string name, object value)
         {
@@ -1833,33 +1833,77 @@ namespace Controllers
                 }
             }
         }
-        private void updateEventVariableNodeItemVarNames(ActionNodeItem item, Node node)
+        /// <summary>
+        /// 在“转换事件类型”节点的常量更改后，更新该节点的输出端口连接的节点的事件变量名列表。
+        /// </summary>
+        /// <param name="node">节点。</param>
+        private void checkCastEventTypeNodeOutputs(Node node)
+        {
+            if (node is ActionNode actionNode && actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType))
+            {
+                var output = actionNode.getOutputPort<ValueOutput>(EffectEditorLibrary.EVENT_CAST_EVENT_TYPE_NODE_CAST_EVENT_PARAM_KEY);
+                foreach (var connection in output.connections)
+                {
+                    var destNode = connection?.destination?.node;
+                    if (destNode == null)
+                        continue;
+                    checkEventVariableNodeItemVarNames(getActionNodeItem(destNode), destNode);
+                }
+            }
+        }
+        /// <summary>
+        /// 根据设置/获取事件变量节点的连接端口，更新该节点的事件变量名列表。
+        /// </summary>
+        /// <param name="item">节点UI。</param>
+        /// <param name="node">节点。</param>
+        private void checkEventVariableNodeItemVarNames(ActionNodeItem item, Node node)
         {
             if (node is not ActionNode action)
                 return;
             if (!action.defineRef.isBuiltinReference(BuiltinActionDefineID.SetEventVariable) &&
                 !action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetEventVariable))
                 return;
-            var eventInput = node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_PARAM_KEY);
-            var connectedOutput = eventInput.getConnectedOutputPort();
-            var eventType = connectedOutput?.define?.type;
-            string[] eventVarNames = Array.Empty<string>();
-            if (eventType != null)
-            {
-                if (eventType.IsArray)
-                    eventType = eventType.GetElementType();
-                var eventRef = new EventReference(0, EventHelper.getName(eventType));
-                var eventDefine = game.card.getEventDefine(eventRef);
-                var varInfos = eventDefine.afterVariableInfos;
-                if (varInfos != null)
-                {
-                    eventVarNames = varInfos.Select(v => v.name).ToArray();
-                }
-            }
+
+            var inputPort = node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_PARAM_KEY);
+            var eventRef = getConnectedEventReference(inputPort);
+            var eventDefine = game.card.getEventDefine(eventRef);
+
+            var varInfos = eventDefine?.afterVariableInfos;
+
+            string[] eventVarNames = varInfos != null ? eventVarNames = varInfos.Select(v => v.name).ToArray() :  Array.Empty<string>();
             var eventVarNamesEditor = eventVarNames.Select(n => game.lang._(n)).ToArray();
+
             item.setEventVarNames(eventVarNamesEditor, eventVarNames);
             var consts = getNodeConstValueInfos(node);
             item.setConsts(consts);
+        }
+        /// <summary>
+        /// 获取连接一个值输入端口的事件类型引用。
+        /// </summary>
+        /// <param name="inputPort">值输入端口。</param>
+        /// <returns></returns>
+        private EventReference getConnectedEventReference(ValueInput inputPort)
+        {
+            var connectedOutput = inputPort.getConnectedOutputPort();
+            if (connectedOutput != null)
+            {
+                // 转换事件类型节点。
+                var connectedNode = connectedOutput.node;
+                if (connectedNode is ActionNode conAction && conAction.defineRef.isBuiltinReference(BuiltinActionDefineID.CastEventType))
+                {
+                    return conAction.getConst<EventReference>(EffectEditorLibrary.EVENT_CAST_EVENT_TYPE_NODE_TYPE_REF_PARAM_KEY);
+                }
+                // 其他事件输出。
+                var eventType = connectedOutput.define?.type;
+                if (eventType != null)
+                {
+                    if (eventType.IsArray)
+                        eventType = eventType.GetElementType();
+                    if (typeof(IEventArg).IsAssignableFrom(eventType))
+                        return new EventReference(0, EventHelper.getName(eventType));
+                }
+            }
+            return null;
         }
         private async Task initNodeConstDefaultValue(ActionNodeItem item, Node node, int constIndex, ActionNodeValueInfo constInfo)
         {
@@ -1888,7 +1932,7 @@ namespace Controllers
                 case ActionNodeValueType.effectTag:
                     return getAllEffectTagValues()[0];
                 case ActionNodeValueType.eventReference:
-                    return _eventNames[0];
+                    return _eventReferences[0];
                 case ActionNodeValueType.pileName:
                     return getAllPiles()[0].value;
                 case ActionNodeValueType.eventVarName:
@@ -2053,7 +2097,7 @@ namespace Controllers
             DEFINE.TARGET_TYPE_SERVANT
         };
         EventTriggerTime[] _eventTriggerTimes;
-        string[] _eventNames;
+        EventReference[] _eventReferences;
 
         [TranslateMsg("内置节点名称，用于通用效果设置属性")]
         const string EDITOR_NODE_NAME_GENERATED_EFFECT_DATA = "通用效果属性";

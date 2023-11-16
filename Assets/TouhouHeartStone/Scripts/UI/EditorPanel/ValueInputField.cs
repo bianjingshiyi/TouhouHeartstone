@@ -1,4 +1,5 @@
 ﻿using EventArgReference = Game.EventArgReference;
+using EventReferenceProxy = Game.EventReferenceProxy;
 using System;
 using System.Collections.Generic;
 using Game;
@@ -47,7 +48,7 @@ namespace UI
         {
             return _list[index].GetComponent<ValueInputField>();
         }
-        public void initEventNames(string[] eventNames, string[] eventValues)
+        public void initEventReferences(string[] eventNames, EventReference[] eventValues)
         {
             _eventNames = eventNames;
             _eventValues = eventValues;
@@ -487,11 +488,19 @@ namespace UI
                 }
                 else if (_valueInfo.value is string str)
                 {
-                    index = Array.IndexOf(_eventValues, str);
+                    index = Array.FindIndex(_eventValues, e => e.cardPoolId == 0 && e.eventName == str);
                 }
-                else if (_valueInfo.value is EventArgReference evtRef)
+                else if (_valueInfo.value is EventArgReference evtArgRef)
                 {
-                    index = Array.IndexOf(_eventValues, evtRef.value);
+                    index = Array.FindIndex(_eventValues, e => e.cardPoolId == 0 && e.eventName == evtArgRef.value);
+                }
+                else if (_valueInfo.value is EventReference evtRef)
+                {
+                    index = Array.IndexOf(_eventValues, evtRef);
+                }
+                else if (_valueInfo.value is EventReferenceProxy proxy)
+                {
+                    index = Array.IndexOf(_eventValues, proxy.value);
                 }
                 if (index < 0)
                     index = 0;
@@ -796,7 +805,7 @@ namespace UI
         [SerializeField]
         private string[] _eventNames;
         [SerializeField]
-        private string[] _eventValues;
+        private EventReference[] _eventValues;
         [SerializeField]
         private string[] _eventVarNameNames;
         [SerializeField]

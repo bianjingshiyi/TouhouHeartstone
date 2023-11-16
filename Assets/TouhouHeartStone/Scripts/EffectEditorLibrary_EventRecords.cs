@@ -74,11 +74,11 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BOOLEAN)]
         public static bool checkEventRecordType(CardEngine game,
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord evt,
-            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventArgReference argRef)
+            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReferenceProxy argRef)
         {
             if (evt == null || argRef == null)
                 return false;
-            if (game.triggers.getName(evt.eventArg) == argRef.value)
+            if (CardManager.getEventReferenceOfEventArg(evt.eventArg) == argRef.value)
                 return true;
             return false;
         }

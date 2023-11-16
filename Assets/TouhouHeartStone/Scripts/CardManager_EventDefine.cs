@@ -25,6 +25,8 @@ namespace Game
         }
         public EventDefine getEventDefine(EventReference eventRef, bool includeHidden = true)
         {
+            if (eventRef == null)
+                return null;
             var poolRef = getCardPoolReference(eventRef.cardPoolId);
             return getEventDefine(poolRef, eventRef.eventName, includeHidden);
         }

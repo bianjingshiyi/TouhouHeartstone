@@ -162,7 +162,7 @@ namespace Game
             new EditorTypeInfo() { type = typeof(EffectTagCollection), typeName = StringTable.EDITOR_TYPE_NAME_EFFECT_TAG_COLLECTION, isConstType = true, color = new Color(.2f, .5f, .5f, 1) },
             
             // 事件
-            new EditorTypeInfo() { type = typeof(EventArgReference), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_TYPE, isConstType = true, color = new Color(1, 1, .2f, 1) },
+            new EditorTypeInfo() { type = typeof(EventReferenceProxy), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_TYPE, isConstType = true, color = new Color(1, 1, .2f, 1) },
             new EditorTypeInfo() { type = typeof(EventArg), typeName = StringTable.EDITOR_TYPE_NAME_EVENT_ARG, isVarType = true, color = new Color(1, 1, .2f, 1) },
             new EditorTypeInfo() { type = typeof(EventRecord), typeName = EffectEditorLibrary.EDITOR_TYPE_NAME_EVENT_RECORD, isVarType = true, color = new Color(.9f, .9f, .4f, 1) },
 

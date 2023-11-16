@@ -7,13 +7,21 @@ namespace Game
     public partial class EffectEditorLibrary
     {
         /// <summary>
-        /// 设置/获取事件变量的事件参数主键。
+        /// 设置/获取事件变量节点的事件参数主键。
         /// </summary>
         public const string EVENT_VARIABLE_NODE_EVENT_PARAM_KEY = "eventArg";
         /// <summary>
-        /// 设置/获取事件变量的变量名称参数主键。
+        /// 设置/获取事件变量节点的变量名称参数主键。
         /// </summary>
         public const string EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY = "varName";
+        /// <summary>
+        /// 转化事件类型节点的事件类型参数主键。
+        /// </summary>
+        public const string EVENT_CAST_EVENT_TYPE_NODE_TYPE_REF_PARAM_KEY = "eventReference";
+        /// <summary>
+        /// 转化事件类型节点的事件类型参数主键。
+        /// </summary>
+        public const string EVENT_CAST_EVENT_TYPE_NODE_CAST_EVENT_PARAM_KEY = MethodActionDefine.returnValueName;
         //  事件处理
         [TranslateMsg("编辑器/事件_事件_参数名称")]
         public const string EDITOR_PARAM_NAME_EVENT = "事件";
@@ -32,6 +40,8 @@ namespace Game
         public const string EDITOR_NODE_EVENT_THIS_EVENT = "当前事件";
         [TranslateMsg("编辑器/事件_阻止事件_节点名称")]
         public const string EDITOR_NODE_EVENT_STOP_EVENT = "阻止事件";
+        [TranslateMsg("编辑器/事件-节点名称")]
+        public const string EDITOR_NODE_NAME_CAST_EVENT_TYPE = "转换事件类型"; 
         [TranslateMsg("编辑器/事件_更改攻击目标_节点名称")]
         public const string EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET = "更改攻击目标";
         [TranslateMsg("编辑器/事件_更改使用目标_节点名称")]
@@ -64,6 +74,18 @@ namespace Game
             if (eventArg == null || varName == null)
                 return null;
             return eventArg.getVar(varName);
+        }
+
+        [THHActionMethod(BuiltinActionDefineID.CastEventType, EDITOR_NODE_EVENT, EDITOR_NODE_NAME_CAST_EVENT_TYPE)]
+        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT)]
+        public static EventArg castEventType(
+            [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] EventReferenceProxy eventReference)
+        {
+            if (eventArg == null || eventReference == null)
+                return null;
+            EventReference refer = CardManager.getEventReferenceOfEventArg(eventArg);
+            return refer == eventReference.value ? eventArg : null;
         }
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]

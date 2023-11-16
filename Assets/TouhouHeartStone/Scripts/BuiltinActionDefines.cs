@@ -164,6 +164,7 @@ namespace Game
         // 事件
         public const int ThisEvent = Type_Function + Category_Event + 1;    // 当前事件
         public const int GetEventVariable = Type_Function + Category_Event + 2;    // 获取变量
+        public const int CastEventType = Type_Function + Category_Event + 3;    // 转换事件类型
 
         // 事件记录
         public const int GetTurnCount_Obsolete = Type_Function + Category_EventRecord + 1;    // 获得当前回合数（过时）

@@ -29,6 +29,8 @@ namespace Controllers
             registerClass<CardReference>();
             registerClass<EffectTag>();
             registerClass<EventArgReference>();
+            registerClass<EventReferenceProxy>();
+            registerClass<EventVarName>();
             registerClass<ObjectProxy>();
             registerClass<ActionValueRef>();
             registerClass<SerializableActionValueRef>();
