@@ -6,7 +6,7 @@ namespace TouhouCardEngine
 {
     public class StringConstActionDefine : ActionDefine
     {
-        public StringConstActionDefine() : base(BuiltinActionDefineID.StringConst, "StringConst")
+        public StringConstActionDefine() : base(BuiltinActionDefineID.StringConst, defName, defName)
         {
             type = NodeDefineType.Function;
             inputs = new PortDefine[0];
@@ -18,7 +18,6 @@ namespace TouhouCardEngine
             {
                 PortDefine.Value(typeof(string), "value", "Value")
             };
-            obsoleteNames = new string[] { "StringConst" };
             category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
         public override Task<ControlOutput> run(Flow flow, Node node)
@@ -26,6 +25,7 @@ namespace TouhouCardEngine
             flow.setValue(node.getOutputPort<ValueOutput>("value"), node.getConst<string>("value") ?? string.Empty);
             return Task.FromResult(node.getOutputPort<ControlOutput>(exitPortName));
         }
+        public const string defName = "StringConst";
         public PortDefine[] inputs { get; }
         public PortDefine[] consts { get; }
         public PortDefine[] outputs { get; }

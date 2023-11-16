@@ -6,7 +6,7 @@ namespace TouhouCardEngine
 {
     public class GetBuffDefineAction : ActionDefine
     {
-        public GetBuffDefineAction() : base(BuiltinActionDefineID.GetBuffDefine, defName)
+        public GetBuffDefineAction() : base(BuiltinActionDefineID.GetBuffDefine, defName, defName, "GetBuffDefine")
         {
             type = NodeDefineType.Function;
             _inputs = new PortDefine[0];
@@ -18,12 +18,6 @@ namespace TouhouCardEngine
             {
                 PortDefine.Value(typeof(BuffDefine), outputName, "BuffDefine")
             };
-            obsoleteNames = new string[]
-            {
-                "GetBuffDefine",
-                defName
-            };
-            obsoleteNames = new string[] { defName };
             category = "Buff";
         }
         private PortDefine[] _inputs;

@@ -6,7 +6,7 @@ namespace TouhouCardEngine
 {
     public class BooleanConstActionDefine : ActionDefine
     {
-        public BooleanConstActionDefine() : base(BuiltinActionDefineID.BooleanConst, "BooleanConst")
+        public BooleanConstActionDefine() : base(BuiltinActionDefineID.BooleanConst, defName, defName)
         {
             type = NodeDefineType.Function;
             inputs = new PortDefine[0];
@@ -18,7 +18,6 @@ namespace TouhouCardEngine
             {
                 PortDefine.Value(typeof(bool), "return", "Value")
             };
-            obsoleteNames = new string[] { "BooleanConst" };
             category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
 
@@ -27,6 +26,7 @@ namespace TouhouCardEngine
             flow.setValue(node.getOutputPort<ValueOutput>("return"), node.getConst<bool>("value"));
             return Task.FromResult(node.getOutputPort<ControlOutput>(exitPortName));
         }
+        public const string defName = "BooleanConst";
 
         public override IEnumerable<PortDefine> inputDefines => inputs;
         public override IEnumerable<PortDefine> constDefines => consts;

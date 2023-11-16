@@ -6,7 +6,7 @@ namespace TouhouCardEngine
 {
     public class CompareActionDefine : ActionDefine
     {
-        public CompareActionDefine() : base(BuiltinActionDefineID.Compare, "Compare")
+        public CompareActionDefine() : base(BuiltinActionDefineID.Compare, defName, defName)
         {
             type = NodeDefineType.Function;
             inputs = new PortDefine[]
@@ -22,7 +22,6 @@ namespace TouhouCardEngine
             {
                 PortDefine.Value(typeof(bool), "result")
             };
-            obsoleteNames = new string[] { "Compare" };
             category = EffectEditorLibrary.EDITOR_CATEGORY_NAME_OTHER;
         }
         public override async Task<ControlOutput> run(Flow flow, Node node)
@@ -86,6 +85,7 @@ namespace TouhouCardEngine
             flow.setValue(node.getOutputPort<ValueOutput>("result"), result);
             return node.getOutputPort<ControlOutput>(exitPortName);
         }
+        public const string defName = "Compare";
         public PortDefine[] inputs { get; }
         public PortDefine[] consts { get; }
         public PortDefine[] outputs { get; }
