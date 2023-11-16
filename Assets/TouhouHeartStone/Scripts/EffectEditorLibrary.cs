@@ -1013,6 +1013,20 @@ namespace Game
         private const string EDITOR_PARAM_NAME_REMOVE_BUFF_EVENT = "移除增益事件";
         [TranslateMsg("节点参数")]
         private const string EDITOR_PARAM_NAME_ENTER_FIELD_EVENT = "入场事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_MASS_ADD_BUFF_EVENT = "群体添加增益事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_MASS_REMOVE_BUFF_EVENT = "群体移除增益事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_MASS_ENTER_FIELD_EVENT = "群体入场事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_MASS_RETURN_HAND_EVENT = "群体进入手牌事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_MASS_SHUFFLE_TO_DECK_EVENT = "群体洗入牌库事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_MASS_MOVE_TO_HEAD_EVENT = "群体置入延迟区事件";
+        [TranslateMsg("节点参数")]
+        private const string EDITOR_PARAM_NAME_MASS_MOVE_CARD_EVENT = "群体移动卡牌事件";
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.ThisBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_THIS_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
@@ -1021,29 +1035,19 @@ namespace Game
             return buff;
         }
 
-        [EventNode(typeof(Card.AddBuffEventArg))]
+        [EventNode(typeof(MassAddBuffEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.AddBuff, StringTable.EDITOR_NODE_CATEGORY_BUFF, StringTable.EDITOR_NODE_NAME_ADD_BUFF)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF)]
         public static async Task<Buff[]> addBuff(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_BUFF_DEFINE)] BuffDefine buffDefine,
-            [ActionNodeParam(EDITOR_PARAM_NAME_ADD_BUFF_EVENT, isOut: true)] Card.AddBuffEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MASS_ADD_BUFF_EVENT, isOut: true)] MassAddBuffEventArg outEvent)
         {
             if (cards == null || buffDefine == null)
                 return Array.Empty<Buff>();
-
-            List<Card.AddBuffEventArg> buffEvents = new List<Card.AddBuffEventArg>();
-            List<Buff> buffList = new List<Buff>();
-            foreach (var card in cards)
-            {
-                if (card == null)
-                    continue;
-                Buff buff = new GeneratedBuff(buffDefine);
-                buffList.Add(buff);
-                buffEvents.Add(await card.addBuff(game, buff));
-            }
+            outEvent = await cards.addBuffs(game, buffDefine);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return buffList.ToArray();
+            return outEvent.buffs;
         }
 
         [EventNode(typeof(Card.RemoveBuffEventArg))]
@@ -1179,185 +1183,104 @@ namespace Game
         /// <summary>
         /// 卡牌置入战场
         /// </summary>
-        [EventNode(typeof(THHPile.MoveCardEventArg))]
+        [EventNode(typeof(MassEnterFieldEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToField, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToField(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_ENTER_FIELD_EVENT, isOut: true)] HearthStoneRule.EnterFieldEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MASS_ENTER_FIELD_EVENT, isOut: true)] MassEnterFieldEventArg outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
-
-            List<HearthStoneRule.EnterFieldEventArg> eventList = new List<HearthStoneRule.EnterFieldEventArg>();
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
-            {
-                if (card == null)
-                    continue;
-                if (card.isServant())
-                {
-                    if (player.getField().isFull)
-                    {
-                        game.logger.logTrace($"{player}的战场已满，无法将{string.Join(",", card)}置入战场");
-                    }
-                    else
-                    {
-                        game.logger.logTrace($"将{string.Join("，", card)}置入{player}的战场");
-                        eventList.Add(await player.tryEnterField(game, card.pile, card, player.getField().count));
-                        MoveList.Add(card);
-                    }
-                }
-                else
-                {
-                    game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入战场");
-                }
-            }
-            outEvent = eventList.ToArray();
+            outEvent = await cards.moveToField(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return MoveList.ToArray();
+            return outEvent.movedCards.ToArray();
         }
 
         /// <summary>
         /// 卡牌移回手牌
         /// </summary>
-        [EventNode(typeof(THHPile.MoveCardEventArg))]
+        [EventNode(typeof(MassReturnHandEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHand, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HAND)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHand(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MASS_RETURN_HAND_EVENT, isOut: true)] MassReturnHandEventArg outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
-
-            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
-            {
-                if (card == null)
-                    continue;
-                eventList.Add(await card.returnToHand(game, player));
-                MoveList.Add(card);
-            }
-            outEvent = eventList.ToArray();
+            outEvent = await cards.returnToHand(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return MoveList.ToArray();
+            return outEvent.movedCards;
         }
 
         /// <summary>
         /// 卡牌从洗入牌库
         /// </summary>
-        [EventNode(typeof(THHPile.MoveCardEventArg))]
+        [EventNode(typeof(MassShuffleToDeckEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToDeck, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_DECK)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToDeck(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
             [ActionNodeParam(StringTable.EDITOR_NODE_NAME_IS_DECK_TOP, isConst: true)] bool top,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MASS_SHUFFLE_TO_DECK_EVENT, isOut: true)] MassShuffleToDeckEventArg outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
-
-            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
-            {
-                if (card == null)
-                    continue;
-                int position = top ? player.getDeck().count : game.randomInt(0, player.getDeck().count);
-                game.logger.logTrace($"将{string.Join("，", card)}洗入{player}的牌库");
-                eventList.Add(await card.pile.moveTo(game, card, player.getDeck(), position));
-                MoveList.Add(card);
-            }
-            outEvent = eventList.ToArray();
+            outEvent = await cards.moveToDeck(game, player, top);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return MoveList.ToArray();
+            return outEvent.movedCards;
         }
 
         /// <summary>
         /// 卡牌从置入墓地
         /// </summary>
-        [EventNode(typeof(THHPile.MoveCardEventArg))]
+        [EventNode(typeof(MassMoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToGrave, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_GRAVE)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToGrave(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] MassMoveCardEventArg outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
 
-            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
-            {
-                if (card == null)
-                    continue;
-                game.logger.logTrace($"将{string.Join("，", card)}置入{player}的墓地");
-                eventList.Add(await card.pile.moveTo(game, card, player.getGrave()));
-                MoveList.Add(card);
-            }
-            outEvent = eventList.ToArray();
+            outEvent = await cards.moveToGrave(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return MoveList.ToArray();
+            return outEvent.movedCards;
         }
 
         /// <summary>
         /// 卡牌置入延迟区
         /// </summary>
-        [EventNode(typeof(THHPile.MoveCardEventArg))]
+        [EventNode(typeof(MassMoveToHeadEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToHead, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_HEAD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToHead(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MASS_MOVE_TO_HEAD_EVENT, isOut: true)] MassMoveToHeadEventArg outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
 
-            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
-            {
-                if (card == null)
-                    continue;
-                if (card.isTrap(game) || card.hasKeyword(game, KEYWORD.MISSION))
-                {
-                    if (player.getHead().isFull)
-                    {
-                        game.logger.logTrace($"{player}的延迟区已满，无法将{string.Join(",", card)}置入延迟区");
-                    }
-                    else
-                    {
-                        game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
-                        eventList.Add(await card.pile.moveTo(game, card, player.getHead()));
-                        MoveList.Add(card);
-                    }
-                }
-                else
-                {
-                    game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入延迟区");
-                }
-            }
-            outEvent = eventList.ToArray();
+            outEvent = await cards.moveToHead(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return MoveList.ToArray();
+            return outEvent.movedCards;
         }
 
         /// <summary>
@@ -1380,32 +1303,21 @@ namespace Game
         /// <summary>
         /// 卡牌移动到暂存区(有显示问题）
         /// </summary>
-        [EventNode(typeof(THHPile.MoveCardEventArg))]
+        [EventNode(typeof(MassMoveCardEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.MoveToWarp, StringTable.EDITOR_CATEGORY__ACTION__NAME, EDITOR_NODE_NAME_CARD_MOVE_TO_WARP)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card[]> moveToWARP(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_EFFECT_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_MOVED_CARD)] Card[] cards,
-            [ActionNodeParam(EDITOR_PARAM_NAME_MOVE_CARD_EVENT, isOut: true)] THHPile.MoveCardEventArg[] outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_MASS_MOVE_CARD_EVENT, isOut: true)] MassMoveCardEventArg outEvent)
         {
             if (cards == null)
                 return Array.Empty<Card>();
             if (player == null)
                 return cards;
-
-            List<THHPile.MoveCardEventArg> eventList = new List<THHPile.MoveCardEventArg>();
-            List<Card> MoveList = new List<Card>();
-            foreach (var card in cards)
-            {
-                if (card == null)
-                    continue;
-                game.logger.logTrace($"将{string.Join("，", card)}置入{player}的暂存区");
-                eventList.Add(await card.pile.moveTo(game, card, player.getWarp()));
-                MoveList.Add(card);
-            }
-            outEvent = eventList.ToArray();
+            outEvent = await cards.moveToWarp(game, player);
             setOutParam(flow, node, nameof(outEvent), outEvent);
-            return MoveList.ToArray();
+            return outEvent.movedCards;
         }
         #endregion
     }

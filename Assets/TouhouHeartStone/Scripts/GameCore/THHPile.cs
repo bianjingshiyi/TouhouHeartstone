@@ -13,14 +13,22 @@ namespace TouhouHeartstone
         {
             return pile.insert(game, card, pile.count);
         }
-        public static async Task<MoveCardEventArg[]> add(this Pile pile, IGame game, IEnumerable<Card> cards)
+        public static Task<MassMoveCardEventArg> add(this Pile pile, IGame game, IEnumerable<Card> cards)
         {
-            var eventArgs = new List<MoveCardEventArg>();
-            foreach (var card in cards)
+            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = pile }, async arg =>
             {
-                eventArgs.Add(await pile.add(game, card));
-            }
-            return eventArgs.ToArray();
+                var argCards = arg.cards;
+                var argTarget = arg.to;
+                var movedCards = new List<Card>();
+                foreach (var card in argCards)
+                {
+                    var eventArg = await pile.add(game, card);
+                    if (!eventArg.success)
+                        continue;
+                    movedCards.Add(eventArg.card);
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
         }
         public static Task<MoveCardEventArg> remove(this Pile pile, IGame game, Card card)
         {
@@ -44,23 +52,39 @@ namespace TouhouHeartstone
         {
             return moveTo(game, card, pile, targetPile, targetPile.count);
         }
-        public static async Task<MoveCardEventArg[]> moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile)
+        public static Task<MassMoveCardEventArg> moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile)
         {
-            var eventArgs = new List<MoveCardEventArg>();
-            foreach (var card in cards.Reverse())
+            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = targetPile }, async arg =>
             {
-                eventArgs.Add(await pile.moveTo(game, card, targetPile));
-            }
-            return eventArgs.ToArray();
+                var argCards = arg.cards;
+                var argTarget = arg.to;
+                var movedCards = new List<Card>();
+                foreach (var card in argCards.Reverse())
+                {
+                    var eventArg = await pile.moveTo(game, card, argTarget);
+                    if (!eventArg.success)
+                        continue;
+                    movedCards.Add(eventArg.card);
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
         }
-        public static async Task<MoveCardEventArg[]> moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile, int position)
+        public static Task<MassMoveCardEventArg> moveTo(this Pile pile, IGame game, IEnumerable<Card> cards, Pile targetPile, int position)
         {
-            var eventArgs = new List<MoveCardEventArg>();
-            foreach (var card in cards.Reverse())
+            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = targetPile }, async arg =>
             {
-                eventArgs.Add(await moveTo(game, card, pile, targetPile, position));
-            }
-            return eventArgs.ToArray();
+                var argCards = arg.cards;
+                var argTarget = arg.to;
+                var movedCards = new List<Card>();
+                foreach (var card in argCards.Reverse())
+                {
+                    var eventArg = await moveTo(game, card, pile, argTarget, position);
+                    if (!eventArg.success)
+                        continue;
+                    movedCards.Add(eventArg.card);
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
         }
         public static async Task<MoveCardEventArg> moveTo(IGame game, Card card, Pile from, Pile to, int position)
         {

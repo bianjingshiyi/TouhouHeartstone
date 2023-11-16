@@ -596,7 +596,7 @@ namespace TouhouHeartstone
         {
             return player.addCardToHand(game, pool.random(game));
         }
-        public static Task<THHCard.DiscardEventArg[]> randomDiscard(this Player player, CardEngine game, int count = 1, Func<Card, bool> filter = null)
+        public static Task<MassDiscardEventArg> randomDiscard(this Player player, CardEngine game, int count = 1, Func<Card, bool> filter = null)
         {
             var cards = filter == null ? player.getHand() : player.getHand().Where(c => filter(c));
             if (cards.Count() < 1)

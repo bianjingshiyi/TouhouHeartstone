@@ -172,6 +172,30 @@ namespace Game
         public const string EDITOR_EVENT_NAME_BE_CHARGED = "蓄力";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_LASTWORD = "遗言";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_ADD_BUFF = "群体添加增益";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_DAMAGE = "群体伤害";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_DISCARD = "群体弃牌";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_ENTER_FIELD = "群体入场";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_HEAL = "群体治疗";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_MOVE_CARD = "群体移动卡牌";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_MOVE_TO_HEAD = "群体移动至延迟区";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_RETURN_TO_HAND = "群体移回手牌";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_SEAL = "群体封印";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_SET_CARD_DEFINE = "群体变形";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_SHUFFLE_TO_DECK = "群体洗入牌库";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE = "分配伤害";
         static string[] _hiddenEvents =
         {
             "SecretTriggerEvent",
@@ -192,6 +216,18 @@ namespace Game
             "LastwordEvent",
             "UpdateDeathEvent",
             "GeneratedEvent",
+            "MassAddBuffEvent",
+            "MassDamageEvent",
+            "MassDiscardEvent",
+            "MassEnterFieldEvent",
+            "MassHealEvent",
+            "MassMoveCardEvent",
+            "MassMoveToHeadEvent",
+            "MassReturnHandEvent",
+            "MassSealEvent",
+            "MassSetCardDefineEvent",
+            "MassShuffleToDeckEvent",
+            "SplitDamageEvent",
         };
         static Dictionary<string, string> _eventNameTranslations = new Dictionary<string, string>()
         {
@@ -241,6 +277,18 @@ namespace Game
             { "BeChargedEvent", EDITOR_EVENT_NAME_BE_CHARGED },
             { "ElementMixEvent", StringTable.EDITOR_EVENT_NAME_ELEMENT },
             { "LastwordEvent", EDITOR_EVENT_NAME_LASTWORD },
+            { "MassAddBuffEvent", EDITOR_EVENT_NAME_MASS_ADD_BUFF },
+            { "MassDamageEvent", EDITOR_EVENT_NAME_MASS_DAMAGE },
+            { "MassDiscardEvent", EDITOR_EVENT_NAME_MASS_DISCARD },
+            { "MassEnterFieldEvent", EDITOR_EVENT_NAME_MASS_ENTER_FIELD },
+            { "MassHealEvent", EDITOR_EVENT_NAME_MASS_HEAL },
+            { "MassMoveCardEvent", EDITOR_EVENT_NAME_MASS_MOVE_CARD },
+            { "MassMoveToHeadEvent", EDITOR_EVENT_NAME_MASS_MOVE_TO_HEAD },
+            { "MassReturnHandEvent", EDITOR_EVENT_NAME_MASS_RETURN_TO_HAND },
+            { "MassSealEvent", EDITOR_EVENT_NAME_MASS_SEAL },
+            { "MassSetCardDefineEvent", EDITOR_EVENT_NAME_MASS_SET_CARD_DEFINE },
+            { "MassShuffleToDeckEvent", EDITOR_EVENT_NAME_MASS_SHUFFLE_TO_DECK },
+            { "SplitDamageEvent", EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE },
         };
         List<EventDefine> _builtinEventDefineList = null;
         [SerializeField]

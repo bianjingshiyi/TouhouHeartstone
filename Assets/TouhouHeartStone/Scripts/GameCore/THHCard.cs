@@ -714,14 +714,16 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, DEFINE.DAMAGE_REDUCE, value);
         }
-        public static async Task<SilenceEventArg[]> silence(this IEnumerable<Card> cards, CardEngine game)
+        public static Task<MassSealEventArg> silence(this IEnumerable<Card> cards, CardEngine game)
         {
-            List<SilenceEventArg> eventArgs = new List<SilenceEventArg>();
-            foreach (var card in cards)
+            return game.triggers.doEvent(new MassSealEventArg() { cards = cards.ToArray() }, async arg =>
             {
-                eventArgs.Add(await silence(card, game));
-            }
-            return eventArgs.ToArray();
+                var argCards = arg.cards;
+                foreach (var card in argCards)
+                {
+                    await silence(card, game);
+                }
+            });
         }
 
         [EventChildren(typeof(PropChangeEventArg))]
@@ -1621,16 +1623,17 @@ namespace TouhouHeartstone
                 return actualPlayer.getHand().moveTo(game, actualCard, actualPlayer.getGrave());
             });
         }
-        public async static Task<DiscardEventArg[]> discard(this IEnumerable<Card> cards, CardEngine game)
+        public static Task<MassDiscardEventArg> discard(this IEnumerable<Card> cards, CardEngine game)
         {
-            List<DiscardEventArg> eventArgs = new List<DiscardEventArg>();
-            foreach (Card card in cards)
+            return game.triggers.doEvent(new MassDiscardEventArg() { cards = cards.ToArray() }, async arg =>
             {
-                if (card == null)
-                    continue;
-                eventArgs.Add(await card.discard(game));
-            }
-            return eventArgs.ToArray();
+                foreach (Card card in arg.cards)
+                {
+                    if (card == null)
+                        continue;
+                    await card.discard(game);
+                }
+            });
         }
 
         [EventChildren(typeof(THHPile.MoveCardEventArg))]
@@ -1795,7 +1798,173 @@ namespace TouhouHeartstone
             }
         }
 
+        public static Task<MassAddBuffEventArg> addBuffs(this Card[] cards, CardEngine game, BuffDefine buffDefine)
+        {
+            return game.triggers.doEvent(new MassAddBuffEventArg() { cards = cards, buffDefine = buffDefine }, async arg =>
+            {
+                var argCards = arg.cards;
+                var argBuffDefine = arg.buffDefine;
+                List<Buff> buffList = new List<Buff>();
+                foreach (var card in argCards)
+                {
+                    if (card == null)
+                        continue;
+                    Buff buff = new GeneratedBuff(argBuffDefine);
+                    buffList.Add(buff);
+                    await card.addBuff(game, buff);
+                }
+                arg.buffs = buffList.ToArray();
+            });
+        }
+        public static Task<MassEnterFieldEventArg> moveToField(this IEnumerable<Card> cards, CardEngine game, Player player)
+        {
+            return game.triggers.doEvent(new MassEnterFieldEventArg() { cards = cards.ToArray(), player = player }, async arg =>
+            {
+                var argCards = arg.cards;
+                var argPlayer = arg.player;
+                List<Card> movedCards = new List<Card>();
+                foreach (var card in argCards)
+                {
+                    if (card == null)
+                        continue;
+                    if (card.isServant())
+                    {
+                        if (argPlayer.getField().isFull)
+                        {
+                            game.logger.logTrace($"{argPlayer}的战场已满，无法将{string.Join(",", card)}置入战场");
+                        }
+                        else
+                        {
+                            game.logger.logTrace($"将{string.Join("，", card)}置入{argPlayer}的战场");
+                            await argPlayer.tryEnterField(game, card.pile, card, argPlayer.getField().count);
+                            movedCards.Add(card);
+                        }
+                    }
+                    else
+                    {
+                        game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入战场");
+                    }
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
+        }
+        public static Task<MassShuffleToDeckEventArg> moveToDeck(this IEnumerable<Card> cards, CardEngine game, Player player, bool top = false)
+        {
+            return game.triggers.doEvent(new MassShuffleToDeckEventArg() { cards = cards.ToArray(), player = player, top = top }, async arg =>
+            {
+                var argCards = arg.cards;
+                var argPlayer = arg.player;
+                var argTop = arg.top;
+                List<Card> movedCards = new List<Card>();
+                foreach (var card in argCards)
+                {
+                    if (card == null)
+                        continue;
+                    int position = argTop ? argPlayer.getDeck().count : game.randomInt(0, argPlayer.getDeck().count);
+                    game.logger.logTrace($"将{string.Join("，", card)}洗入{argPlayer}的牌库");
+                    var moveArg = await card.pile.moveTo(game, card, player.getDeck(), position);
+                    if (moveArg != null && moveArg.success)
+                        movedCards.Add(card);
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
+        }
+        public static Task<MassMoveCardEventArg> moveToGrave(this IEnumerable<Card> cards, CardEngine game, Player player)
+        {
+            var to = player.getGrave();
+            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = to }, async arg =>
+            {
+                var argCards = arg.cards;
+                var argTo = arg.to;
+                List<Card> movedCards = new List<Card>();
+                foreach (var card in argCards)
+                {
+                    if (card == null)
+                        continue;
+                    game.logger.logTrace($"将{string.Join("，", card)}置入墓地{argTo}");
+                    await card.pile.moveTo(game, card, argTo);
+                    movedCards.Add(card);
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
+        }
+        public static Task<MassMoveToHeadEventArg> moveToHead(this IEnumerable<Card> cards, CardEngine game, Player player)
+        {
+            return game.triggers.doEvent(new MassMoveToHeadEventArg() { cards = cards.ToArray(), player = player }, async arg =>
+            {
+                var argCards = arg.cards;
+                var argPlayer = arg.player;
+                List<Card> movedCards = new List<Card>();
+                foreach (var card in argCards)
+                {
+                    if (card == null)
+                        continue;
+                    if (card.isTrap(game) || card.hasKeyword(game, KEYWORD.MISSION))
+                    {
+                        if (player.getHead().isFull)
+                            game.logger.logTrace($"{player}的延迟区已满，无法将{string.Join(",", card)}置入延迟区");
+                        else
+                        {
+                            game.logger.logTrace($"将{string.Join("，", card)}置入{player}的延迟区");
+                            await card.pile.moveTo(game, card, player.getHead());
+                            movedCards.Add(card);
+                        }
+                    }
+                    else
+                    {
+                        game.logger.logTrace($"卡牌类型非法，无法将{string.Join(",", card)}置入延迟区");
+                    }
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
+        }
+        public static Task<MassMoveCardEventArg> moveToWarp(this IEnumerable<Card> cards, CardEngine game, Player player)
+        {
+            var to = player.getWarp();
+            return game.triggers.doEvent(new MassMoveCardEventArg() { cards = cards.ToArray(), to = to }, async arg =>
+            {
+                var argCards = arg.cards;
+                var argTo = arg.to;
+                List<Card> movedCards = new List<Card>();
+                foreach (var card in argCards)
+                {
+                    if (card == null)
+                        continue;
+                    game.logger.logTrace($"将{string.Join("，", card)}置入暂存区{argTo}");
+                    await card.pile.moveTo(game, card, argTo);
+                    movedCards.Add(card);
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
+        }
         #region 返回手牌
+        /// <summary>
+        /// 将多张卡牌返回到指定玩家的手牌。
+        /// </summary>
+        /// <param name="cards">卡牌。</param>
+        /// <param name="game"></param>
+        /// <param name="player">移动至手牌的玩家。</param>
+        /// <returns></returns>
+        public static Task<MassReturnHandEventArg> returnToHand(this IEnumerable<Card> cards, CardEngine game, Player player)
+        {
+            if (cards == null || cards.Count() <= 0 || player == null)
+                return null;
+
+            return game.triggers.doEvent(new MassReturnHandEventArg() { cards = cards.ToArray(), player = player }, async arg =>
+            {
+                var argCards = arg.cards;
+                var argPlayer = arg.player;
+                var target = argPlayer.getHand();
+                var movedCards = new List<Card>();
+                foreach (var card in argCards)
+                {
+                    var moveArg = await card.returnToHand(game, argPlayer);
+                    if (moveArg != null && moveArg.success && moveArg.to == target)
+                        movedCards.Add(moveArg.card);
+                }
+                arg.movedCards = movedCards.ToArray();
+            });
+        }
         /// <summary>
         /// 将一张卡牌返回到指定玩家的手牌。
         /// </summary>
@@ -1834,7 +2003,8 @@ namespace TouhouHeartstone
         }
         #endregion
 
-        public static async Task<DamageEventArg[]> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        [Obsolete]
+        public static async Task<DamageEventArg[]> damageObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
             if (cards.Count() <= 0)
             {
@@ -1847,11 +2017,26 @@ namespace TouhouHeartstone
             }
             return args.ToArray();
         }
+        public static Task<MassDamageEventArg> damage(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        {
+            if (cards.Count() <= 0)
+                return default;
+            return game.triggers.doEvent(new MassDamageEventArg() { cards = cards.ToArray(), source = source, value = value }, async arg =>
+            {
+                foreach (var target in arg.cards)
+                {
+                    if (target == null)
+                        continue;
+                    await target.damage(game, arg.source, arg.value);
+                }
+            });
+        }
         public static Task<DamageEventArg> damageItem(this Card item, CardEngine game, int value)
         {
             return item.damage(game, null, value);
         }
-        public static async Task<DamageEventArg[]> damageByRandom(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        [Obsolete]
+        public static async Task<DamageEventArg[]> damageByRandomObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
         {
             List<DamageEventArg> list = new List<DamageEventArg>();
             for (int i = 0; i < value; i++)
@@ -1864,14 +2049,42 @@ namespace TouhouHeartstone
             }
             return list.ToArray();
         }
-        public static Task<DamageEventArg[]> damageByRandomCount(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
+        public static Task<SplitDamageEventArg> damageByRandom(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        {
+            if (cards.Count() <= 0)
+                return default;
+            return game.triggers.doEvent(new SplitDamageEventArg() { targets = cards.ToArray(), source = source, value = value }, async arg =>
+            {
+                var argCards = arg.targets;
+                var argSource = arg.source;
+                var argValue = arg.value;
+                List<Card> hit = new List<Card>();
+                for (int i = 0; i < argValue; i++)
+                {
+                    Card target = argCards.Where(c => !c.isDead(game)).random(game);
+                    if (target == null)
+                        continue;
+                    var damageArg = await target.damage(game, argSource, 1);
+                    hit.Add(damageArg.target);
+                }
+                arg.targets = hit.ToArray();
+            });
+        }
+        [Obsolete]
+        public static Task<DamageEventArg[]> damageByRandomCountObsolete(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
+        {
+            if (cards.Count() > count)
+                cards = cards.randomTake(game, count);
+            return cards.damageObsolete(game, source, value);
+        }
+        public static Task<MassDamageEventArg> damageByRandomCount(this IEnumerable<Card> cards, CardEngine game, Card source, int value, int count)
         {
             if (cards.Count() > count)
                 cards = cards.randomTake(game, count);
             return cards.damage(game, source, value);
 
         }
-        [EventChildren(typeof(Card.PropChangeEventArg))]
+        [EventChildren(typeof(PropChangeEventArg))]
         public class DamageEventArg : EventArg, IDescribableEventArg, ICardEventArg
         {
             public Card target
@@ -1992,7 +2205,8 @@ namespace TouhouHeartstone
                 return false;
             }
         }
-        public static async Task<HealEventArg[]> heal(this IEnumerable<Card> cards, CardEngine game, Card sourse, int value)
+        [Obsolete]
+        public static async Task<HealEventArg[]> healObsolete(this IEnumerable<Card> cards, CardEngine game, Card sourse, int value)
         {
             List<HealEventArg> eventArgs = new List<HealEventArg>();
             foreach (var card in cards)
@@ -2005,6 +2219,19 @@ namespace TouhouHeartstone
                 eventArgs.Add(arg);
             }
             return eventArgs.ToArray();
+        }
+        public static Task<MassHealEventArg> heal(this IEnumerable<Card> cards, CardEngine game, Card source, int value)
+        {
+            return game.triggers.doEvent(new MassHealEventArg() { cards = cards.ToArray(), source = source, value = value }, async arg =>
+            {
+                var argCards = arg.cards;
+                var argSource = arg.source;
+                var argValue = arg.value;
+                foreach (var card in argCards)
+                {
+                    await heal(card, game, argSource, argValue);
+                }
+            });
         }
         public static Task<HealEventArg> heal(this Card card, CardEngine game, Card sourse, int value)
         {
