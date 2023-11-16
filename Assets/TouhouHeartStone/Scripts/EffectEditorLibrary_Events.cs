@@ -1,4 +1,5 @@
-﻿using MukioI18n;
+﻿using System;
+using MukioI18n;
 using TouhouCardEngine;
 using TouhouHeartstone;
 
@@ -80,7 +81,7 @@ namespace Game
         [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT)]
         public static EventArg castEventType(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] EventReferenceProxy eventReference)
+            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReferenceProxy eventReference)
         {
             if (eventArg == null || eventReference == null)
                 return null;
@@ -108,6 +109,7 @@ namespace Game
             eventArg.isCanceled = true;
         }
 
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeAttackTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_ATTACK_TARGET)]
         public static void changeAttackTarget(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
@@ -118,6 +120,8 @@ namespace Game
                 attackArg.target = target;
             }
         }
+
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.ChangeUseTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_CHANGE_USE_TARGET)]
         public static void changeUseTargets(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
@@ -127,6 +131,7 @@ namespace Game
                 eventArg.setVar(EVENTVAR.TARGETS, target);
         }
 
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeTarget, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_TARGET)]
         public static void damageEvent_changeTarget(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
@@ -137,6 +142,8 @@ namespace Game
                 damageArg.target = target;
             }
         }
+
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeSource, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_SOURCE)]
         public static void damageEvent_changeSource(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
@@ -147,6 +154,8 @@ namespace Game
                 damageArg.source = source;
             }
         }
+
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.DamageEvent_ChangeValue, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_DAMAGE_CHANGE_VALUE)]
         public static void damageEvent_changeValue(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
@@ -158,6 +167,7 @@ namespace Game
             }
         }
 
+        [Obsolete]
         [ObsoletedKeyMethod(BuiltinActionDefineID.HealEvent_ChangeValue, EDITOR_NODE_EVENT, EDITOR_NODE_EVENT_HEAL_CHANGE_VALUE)]
         public static void healEvent_changeValue(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,

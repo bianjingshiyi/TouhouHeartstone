@@ -76,10 +76,10 @@ namespace Game
             return value;
         }
         [THHActionMethod(BuiltinActionDefineID.CastEventRecordType, EDITOR_TYPE_NAME_EVENT_RECORD, EDITOR_NODE_NAME_CAST_EVENT_RECORD_TYPE)]
-        [return: ActionNodeParam(EDITOR_PARAM_NAME_EVENT)]
+        [return: ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)]
         public static EventRecord castEventRecordType(
             [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_RECORD)] EventRecord eventRecord,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, isConst: true)] EventReferenceProxy eventReference)
+            [ActionNodeParam(EDITOR_TYPE_NAME_EVENT_TYPE, isConst: true)] EventReferenceProxy eventReference)
         {
             if (eventRecord == null || eventReference == null)
                 return null;

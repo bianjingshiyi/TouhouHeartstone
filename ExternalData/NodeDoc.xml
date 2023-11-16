@@ -80,7 +80,9 @@
   </ActionComment>
   <ActionComment>
     <defineId>106002</defineId>
-    <obsoleteNames />
+    <obsoleteNames>
+      <string>GetBuffDefine</string>
+    </obsoleteNames>
     <editorName>获取增益定义</editorName>
     <category>Buff</category>
     <inputs />
@@ -562,7 +564,16 @@
         <summary><![CDATA[获得胜利的玩家。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>GameEndEventArg</type>
+        <name>outEvent</name>
+        <displayName>游戏结束事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[游戏结束事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
     <summary><![CDATA[使一些玩家获得对局胜利。]]></summary>
     <example><![CDATA[]]></example>
@@ -582,7 +593,16 @@
         <summary><![CDATA[失败的玩家。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>GameEndEventArg</type>
+        <name>outEvent</name>
+        <displayName>游戏结束事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[游戏结束事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
     <summary><![CDATA[使一些玩家在对局中失败。]]></summary>
     <example><![CDATA[]]></example>
@@ -702,6 +722,14 @@
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌移动事件。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>return</name>
@@ -993,19 +1021,19 @@
     <outputs>
       <ActionParameterComment>
         <type>DrawEventArg</type>
-        <name>drawEvent</name>
+        <name>outEventDraw</name>
         <displayName>抽牌事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[抽牌的事件。]]></summary>
+        <summary><![CDATA[成功抽牌之后产生的抽牌事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>BurnEventArg</type>
-        <name>burnEvent</name>
+        <name>outEventBurn</name>
         <displayName>爆牌事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[手牌达到上限后，抽牌导致卡牌进入墓地的事件。]]></summary>
+        <summary><![CDATA[手牌满时产生的爆牌事件。]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts />
@@ -1214,12 +1242,21 @@
         <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要复原技能的玩家。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>PropChangeEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌属性更改事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[复原技能产生的卡牌属性更改事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[复原一个玩家的技能。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -1292,12 +1329,21 @@
         <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要摧毁道具的玩家。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>PropChangeEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌属性更改事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[摧毁道具产生的卡牌属性更改事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[将一个玩家的道具标记为待摧毁，并在更新游戏状态时将其置入墓地。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -1399,7 +1445,7 @@
         <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要设置当前灵力值的玩家。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Int32</type>
@@ -1407,12 +1453,21 @@
         <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[目标灵力值数量。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>SetGemEventArg</type>
+        <name>outEvent</name>
+        <displayName>设置灵力值事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[设置灵力值事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[设置一个玩家的当前灵力值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -1427,7 +1482,7 @@
         <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要增加当前灵力值的玩家。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Int32</type>
@@ -1435,12 +1490,21 @@
         <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要增加的灵力值数量。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>SetGemEventArg</type>
+        <name>outEvent</name>
+        <displayName>设置灵力值事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[设置灵力值事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[增加一个玩家的当前灵力值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -1455,7 +1519,7 @@
         <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要设置最大灵力值的玩家。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Int32</type>
@@ -1463,12 +1527,21 @@
         <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要设置的最大灵力值。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>SetMaxGemEventArg</type>
+        <name>outEvent</name>
+        <displayName>设置最大灵力值事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[设置最大灵力值事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[设置一个玩家的最大灵力值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -1483,7 +1556,7 @@
         <displayName>玩家</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要增加最大灵力值的玩家。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Int32</type>
@@ -1491,12 +1564,21 @@
         <displayName>数量</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要增加的最大灵力值数量。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>SetMaxGemEventArg</type>
+        <name>outEvent</name>
+        <displayName>设置最大灵力值事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[设置最大灵力值事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[增加一个玩家的最大灵力值。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -1610,6 +1692,14 @@
         <isParams>false</isParams>
         <isArray>false</isArray>
         <summary><![CDATA[被进行信仰对决一方揭示的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>RevealDuelEventArg</type>
+        <name>outEvent</name>
+        <displayName>信仰对决事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[信仰对决事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Boolean</type>
@@ -1948,6 +2038,7 @@
     <defineId>105001</defineId>
     <obsoleteNames />
     <editorName>卡牌所在牌堆判断（过时）</editorName>
+    <obsoleteMsg />
     <category>牌堆</category>
     <inputs>
       <ActionParameterComment>
@@ -2184,6 +2275,14 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
+        <type>AddBuffEventArg</type>
+        <name>outEvent</name>
+        <displayName>添加增益事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[添加增益所产生的事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Buff</type>
         <name>return</name>
         <displayName>增益</displayName>
@@ -2223,6 +2322,14 @@
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>RemoveBuffEventArg</type>
+        <name>outEvent</name>
+        <displayName>移除增益事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[移除增益所产生的事件。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Boolean</type>
         <name>return</name>
@@ -2298,7 +2405,16 @@
         <summary><![CDATA[要设置的属性值。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>PropertyChangeEventArg</type>
+        <name>outEvent</name>
+        <displayName>增益属性更改事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[增益属性更改所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts>
       <ActionParameterComment>
         <type>String</type>
@@ -2429,6 +2545,22 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
+        <type>DrawEventArg</type>
+        <name>outEventDraw</name>
+        <displayName>抽牌事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[抽牌成功后产生的事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>BurnEventArg</type>
+        <name>outEventBurn</name>
+        <displayName>爆牌事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[手牌满后卡牌置入墓地产生的事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
         <displayName>抽到的卡</displayName>
@@ -2467,6 +2599,14 @@
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>EnterFieldEventArg</type>
+        <name>outEvent</name>
+        <displayName>入场事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[置入战场所产生的事件。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
@@ -2507,6 +2647,14 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
         <displayName>卡牌</displayName>
@@ -2546,6 +2694,14 @@
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
@@ -2595,6 +2751,14 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
         <displayName>卡牌</displayName>
@@ -2633,6 +2797,14 @@
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
@@ -2709,6 +2881,14 @@
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
@@ -2872,6 +3052,14 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
+        <type>CreateTokenEventArg</type>
+        <name>outEvent</name>
+        <displayName>创建衍生卡事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[创建衍生卡所产生的事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
         <displayName>卡牌</displayName>
@@ -2910,6 +3098,14 @@
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
@@ -2951,6 +3147,14 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
         <displayName>卡牌</displayName>
@@ -2987,6 +3191,14 @@
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>EquipItemEventArg</type>
+        <name>outEvent</name>
+        <displayName>装备事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[装备道具所产生的事件。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
@@ -3081,7 +3293,16 @@
         <summary><![CDATA[要设置的属性值。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>PropChangeEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌属性更改事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[设置卡牌属性所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts>
       <ActionParameterComment>
         <type>CardPropertySetterName</type>
@@ -3171,7 +3392,7 @@
     </inputs>
     <outputs>
       <ActionParameterComment>
-        <type>IPropChangeEventArg</type>
+        <type>PropChangeEventArg</type>
         <name>return</name>
         <displayName>属性更改事件</displayName>
         <isParams>false</isParams>
@@ -3326,7 +3547,7 @@
       <ActionParameterComment>
         <type>DiscardEventArg</type>
         <name>return</name>
-        <displayName>抽牌事件</displayName>
+        <displayName>弃牌事件</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[执行的弃牌事件。]]></summary>
@@ -3359,7 +3580,16 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>SetArmorEventArg</type>
+        <name>outEvent</name>
+        <displayName>护甲改变事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[更改护甲所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts>
       <ActionParameterComment>
         <type>Int32</type>
@@ -3396,7 +3626,16 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>SetArmorEventArg</type>
+        <name>outEvent</name>
+        <displayName>护甲改变事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[更改护甲所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
@@ -3424,7 +3663,16 @@
         <summary><![CDATA[]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>SetArmorEventArg</type>
+        <name>outEvent</name>
+        <displayName>护甲改变事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[更改护甲所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
     <summary><![CDATA[]]></summary>
     <example><![CDATA[]]></example>
@@ -4422,12 +4670,21 @@
         <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要禁锢的仆从。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>ShackleEventArg</type>
+        <name>outEvent</name>
+        <displayName>禁锢事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[禁锢仆从所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[禁锢一个仆从。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -4471,12 +4728,21 @@
         <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>true</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要消灭的仆从。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>PropChangeEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌属性更改事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[消灭仆从所产生的属性变化事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[将一个仆从标记为待死亡，并在下一次更新游戏状态时将其置入墓地。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -4829,9 +5095,18 @@
         <summary><![CDATA[被攻击的一方卡牌]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>AttackEventArg</type>
+        <name>outEvent</name>
+        <displayName>攻击事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[强制攻击所产生的攻击事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[强制一个角色攻击目标角色。该行为不会消耗攻击次数。]]></summary>
     <example><![CDATA[<ul>
     <li>樱花闪闪</li>
     </ul>]]></example>
@@ -4851,9 +5126,18 @@
         <summary><![CDATA[需要在本回合中额外获得攻击次数的卡牌]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>PropChangeEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌属性更改事件</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[卡牌属性更改所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[使一个角色在本回合中获得额外的一次攻击次数。]]></summary>
     <example><![CDATA[<ul>
     <li>猫步</li>
     </ul>]]></example>
@@ -4931,7 +5215,16 @@
         <summary><![CDATA[要展示的卡牌。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>RevealEventArg</type>
+        <name>outEvent</name>
+        <displayName>揭示事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[揭示卡牌所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
     <summary><![CDATA[向双方玩家展示一张卡牌。]]></summary>
     <example><![CDATA[]]></example>
@@ -4959,7 +5252,16 @@
         <summary><![CDATA[要被获得控制权的仆从。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>MoveCardEventArg</type>
+        <name>outEvent</name>
+        <displayName>卡牌移动事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌移动所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
     <summary><![CDATA[一方玩家获得一个仆从的控制权。<br>会使得该仆从进入未准备状态，在没有先攻、速攻的情况下无法在本回合进行攻击。]]></summary>
     <example><![CDATA[]]></example>
@@ -5045,7 +5347,16 @@
         <summary><![CDATA[要设置的这张卡牌的蓄力层数。]]></summary>
       </ActionParameterComment>
     </inputs>
-    <outputs />
+    <outputs>
+      <ActionParameterComment>
+        <type>BeChargedEventArg</type>
+        <name>outEvent</name>
+        <displayName>蓄力事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌蓄力所产生的事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
     <consts />
     <summary><![CDATA[设置一张卡牌的蓄力层数。]]></summary>
     <example><![CDATA[]]></example>
@@ -5485,7 +5796,7 @@
         <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要变形的卡牌。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>CardDefine</type>
@@ -5493,17 +5804,25 @@
         <displayName>卡牌定义</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要变形成为的卡牌定义。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs>
+      <ActionParameterComment>
+        <type>SetDefineEventArg</type>
+        <name>outEvent</name>
+        <displayName>设置卡牌定义事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[卡牌被改变卡牌定义所产生的时间。]]></summary>
+      </ActionParameterComment>
       <ActionParameterComment>
         <type>Card</type>
         <name>return</name>
         <displayName>卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[变形成为的卡牌。]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts>
@@ -5513,10 +5832,10 @@
         <displayName>是否重置卡牌</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[是否需要将卡牌重置为最初的状态。]]></summary>
       </ActionParameterComment>
     </consts>
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[将一个卡牌变形为指定的卡牌定义。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -8107,23 +8426,53 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>String</type>
+        <type>EventVarName</type>
         <name>varName</name>
         <displayName>变量名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[要获取的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
-          如：“使用卡牌”事件包含5个变量：
-          <ul>
-            <li>玩家（玩家）</li>
-            <li>卡牌（卡牌）</li>
-            <li>位置（整数）</li>
-            <li>花费（整数）</li>
-            <li>目标卡牌（卡牌）</li>
-          </ul>]]></summary>
+        <summary><![CDATA[要获取的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
       </ActionParameterComment>
     </consts>
     <summary><![CDATA[获取一个事件记录的某项变量。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>109009</defineId>
+    <obsoleteNames />
+    <editorName>转换事件记录类型</editorName>
+    <category>事件记录</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>EventRecord</type>
+        <name>eventRecord</name>
+        <displayName>事件记录</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要转换类型的事件记录。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventRecord</type>
+        <name>return</name>
+        <displayName>事件记录</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[转换成为的事件记录。如果类型不正确则输出不存在值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>EventReferenceProxy</type>
+        <name>eventReference</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要转换成为的事件类型。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[将一个事件记录转换为指定类型的事件记录。这会让<b>获取事件记录变量</b>自动检测该事件记录的变量名。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -8153,7 +8502,7 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>EventArgReference</type>
+        <type>EventReferenceProxy</type>
         <name>argRef</name>
         <displayName>事件类型</displayName>
         <isParams>false</isParams>
@@ -8339,23 +8688,53 @@
     </outputs>
     <consts>
       <ActionParameterComment>
-        <type>String</type>
+        <type>EventVarName</type>
         <name>varName</name>
         <displayName>变量名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[要获取的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
-          如：“使用卡牌”事件包含5个变量：
-          <ul>
-            <li>玩家（玩家）</li>
-            <li>卡牌（卡牌）</li>
-            <li>位置（整数）</li>
-            <li>花费（整数）</li>
-            <li>目标卡牌（卡牌）</li>
-          </ul>]]></summary>
+        <summary><![CDATA[要获取的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
       </ActionParameterComment>
     </consts>
     <summary><![CDATA[从一个事件中获取某项变量。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>108003</defineId>
+    <obsoleteNames />
+    <editorName>转换事件类型</editorName>
+    <category>事件</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>eventArg</name>
+        <displayName>事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要转换类型的事件。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>EventArg</type>
+        <name>return</name>
+        <displayName>事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[转换成为的事件。如果类型不正确则输出不存在值。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>EventReferenceProxy</type>
+        <name>eventReference</name>
+        <displayName>事件类型</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要转换成为的事件类型。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[将一个事件转换为指定类型的事件。这会让<b>获取变量</b>和<b>设置变量</b>自动检测该事件的变量名。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -8386,20 +8765,12 @@
     <outputs />
     <consts>
       <ActionParameterComment>
-        <type>String</type>
+        <type>EventVarName</type>
         <name>varName</name>
         <displayName>变量名</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[要设置的变量名称。<br>大部分事件的变量名称都是其作为触发器的“事件类型”时的中文输出值名称。<br>
-          如：“使用卡牌”事件包含5个变量：
-          <ul>
-            <li>玩家（玩家）</li>
-            <li>卡牌（卡牌）</li>
-            <li>位置（整数）</li>
-            <li>花费（整数）</li>
-            <li>目标卡牌（卡牌）</li>
-          </ul>]]></summary>
+        <summary><![CDATA[要设置的变量名称。<br>会根据连接的事件类型给出不同的预设属性名。]]></summary>
       </ActionParameterComment>
     </consts>
     <summary><![CDATA[为一个事件设置某项变量。]]></summary>
@@ -8429,6 +8800,7 @@
     <defineId>208003</defineId>
     <obsoleteNames />
     <editorName>更改攻击目标</editorName>
+    <obsoleteMsg />
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
@@ -8450,7 +8822,7 @@
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[更改“攻击时”事件的攻击目标。<br><b>注意：</b>仅能对“攻击时”事件生效。]]></summary>
+    <summary><![CDATA[更改“攻击时”事件的攻击目标。<br><b>注意：</b>仅能对“攻击时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[<ul>
       <li>露米娅</li>
       <li>古明地恋</li>
@@ -8460,6 +8832,7 @@
     <defineId>208004</defineId>
     <obsoleteNames />
     <editorName>更改使用目标</editorName>
+    <obsoleteMsg />
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
@@ -8481,13 +8854,14 @@
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[更改“使用卡牌时”事件的目标卡牌。<br><b>注意：</b>仅能对“使用卡牌时”事件生效。]]></summary>
+    <summary><![CDATA[更改“使用卡牌时”事件的目标卡牌。<br><b>注意：</b>仅能对“使用卡牌时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
     <defineId>208005</defineId>
     <obsoleteNames />
     <editorName>伤害/更改受伤卡牌</editorName>
+    <obsoleteMsg />
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
@@ -8509,13 +8883,14 @@
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[更改“伤害时”事件的受伤卡牌。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
+    <summary><![CDATA[更改“伤害时”事件的受伤卡牌。<br><b>注意：</b>仅能对“伤害时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
     <defineId>208006</defineId>
     <obsoleteNames />
     <editorName>伤害/更改伤害源</editorName>
+    <obsoleteMsg />
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
@@ -8537,13 +8912,14 @@
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[更改“伤害时”事件的伤害源。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
+    <summary><![CDATA[更改“伤害时”事件的伤害源。<br><b>注意：</b>仅能对“伤害时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
     <defineId>208007</defineId>
     <obsoleteNames />
     <editorName>伤害/更改伤害值</editorName>
+    <obsoleteMsg />
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
@@ -8565,13 +8941,14 @@
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[更改“伤害时”事件的伤害数值。<br><b>注意：</b>仅能对“伤害时”事件生效。]]></summary>
+    <summary><![CDATA[更改“伤害时”事件的伤害数值。<br><b>注意：</b>仅能对“伤害时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
     <defineId>208008</defineId>
     <obsoleteNames />
     <editorName>治疗/更改治疗值</editorName>
+    <obsoleteMsg />
     <category>事件</category>
     <inputs>
       <ActionParameterComment>
@@ -8580,7 +8957,7 @@
         <displayName>事件</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[“治疗时”事件。]]></summary>
       </ActionParameterComment>
       <ActionParameterComment>
         <type>Int32</type>
@@ -8588,12 +8965,12 @@
         <displayName>值</displayName>
         <isParams>false</isParams>
         <isArray>false</isArray>
-        <summary><![CDATA[]]></summary>
+        <summary><![CDATA[要更改为的治疗值。]]></summary>
       </ActionParameterComment>
     </inputs>
     <outputs />
     <consts />
-    <summary><![CDATA[]]></summary>
+    <summary><![CDATA[更改“治疗时”事件的伤害数值。<br><b>注意：</b>仅能对“治疗时”事件生效。<br>请使用<b>转换事件类型</b>和<b>设置变量</b>。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
 </ArrayOfActionComment>
