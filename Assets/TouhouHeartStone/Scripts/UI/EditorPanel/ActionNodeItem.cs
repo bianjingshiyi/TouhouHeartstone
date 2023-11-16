@@ -163,6 +163,20 @@ namespace UI
             ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
             item.initEffectTagNames(effectTagNames, effectTagValues);
         }
+        /// <summary>
+        /// 设置事件变量名称列表
+        /// </summary>
+        /// <param name="eventNames"></param>
+        public void setEventVarNames(string[] eventVarNameNames, string[] eventVarNameValues)
+        {
+            ValueInputField item = _valueTemplate.GetComponent<ValueInputField>();
+            item.initEventVarNames(eventVarNameNames, eventVarNameValues);
+            foreach (var valueRect in _valueList)
+            {
+                var valueItem = valueRect.GetComponent<ValueInputField>();
+                valueItem.initEventVarNames(eventVarNameNames, eventVarNameValues);
+            }
+        }
         public void initKeywords(string[] keywordNames, string[] keywordValues)
         {
             PropertyItemField propItem = _effectPropertyItemTemplate.GetComponent<PropertyItemField>();

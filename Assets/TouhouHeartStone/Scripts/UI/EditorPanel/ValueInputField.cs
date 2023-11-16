@@ -62,6 +62,11 @@ namespace UI
             _effectTagNames = effectTagNames;
             _effectTagValues = effectTagValues;
         }
+        public void initEventVarNames(string[] eventVarNameNames, string[] eventVarNameValues)
+        {
+            _eventVarNameNames = eventVarNameNames;
+            _eventVarNameValues = eventVarNameValues;
+        }
         public void initKeywords(string[] keywordNames, string[] keywordValues)
         {
             _keywordNames = keywordNames;
@@ -501,130 +506,50 @@ namespace UI
         {
             //自定义单选下拉菜单
 
-            // 牌堆名称。
-            if (_valueInfo.type == ActionNodeValueType.pileName)
+            switch (_valueInfo.type)
             {
-                _inputDropdown.gameObject.SetActive(true);
-                _inputDropdown.setDropdownValues(_pileNames, _pileValues);
-                string value = null;
-                if (_valueInfo.value is string str)
-                {
-                    value = str;
-                }
-                else if (_valueInfo.value is int index)
-                {
-                    value = _pileValues[index];
-                }
-                else if (_valueInfo.value is PileName propName)
-                {
-                    value = propName.value;
-                }
-                if (value == null)
-                    value = _pileValues.FirstOrDefault();
-                _inputDropdown.setValueWithoutNotify(value);
-            }
-            // 设置卡牌属性。
-            else if (_valueInfo.type == ActionNodeValueType.cardPropertyNameSet)
-            {
-                var nameItems = _cardPropertyNameItems.Where(v => v.canSet);
-                var names = nameItems.Select(v => v.name).ToArray();
-                var values = nameItems.Select(v => v.value).ToArray();
-
-                _inputDropdown.gameObject.SetActive(true);
-                _inputDropdown.setDropdownValues(names, values);
-                string value = null;
-                if (_valueInfo.value is string str)
-                {
-                    value = str;
-                }
-                else if (_valueInfo.value is int index)
-                {
-                    value = values[index];
-                }
-                else if (_valueInfo.value is CardPropertySetterName propName)
-                {
-                    value = propName.value;
-                }
-                if (value == null)
-                    value = values.FirstOrDefault();
-                _inputDropdown.setValueWithoutNotify(value);
-            }
-            // 获取卡牌属性。
-            else if (_valueInfo.type == ActionNodeValueType.cardPropertyNameGet)
-            {
-                var nameItems = _cardPropertyNameItems.Where(v => v.canGet);
-                var names = nameItems.Select(v => v.name).ToArray();
-                var values = nameItems.Select(v => v.value).ToArray();
-
-                _inputDropdown.gameObject.SetActive(true);
-                _inputDropdown.setDropdownValues(names, values);
-                string value = null;
-                if (_valueInfo.value is string str)
-                {
-                    value = str;
-                }
-                else if (_valueInfo.value is int index)
-                {
-                    value = values[index];
-                }
-                else if (_valueInfo.value is CardPropertyGetterName propName)
-                {
-                    value = propName.value;
-                }
-                if (value == null)
-                    value = values.FirstOrDefault();
-                _inputDropdown.setValueWithoutNotify(value);
-            }
-            // 获取卡牌定义属性。
-            else if (_valueInfo.type == ActionNodeValueType.cardDefinePropertyNameGet)
-            {
-                var nameItems = _cardPropertyNameItems.Where(v => v.canDefineGet);
-                var names = nameItems.Select(v => v.name).ToArray();
-                var values = nameItems.Select(v => v.value).ToArray();
-
-                _inputDropdown.gameObject.SetActive(true);
-                _inputDropdown.setDropdownValues(names, values);
-                string value = null;
-                if (_valueInfo.value is string str)
-                {
-                    value = str;
-                }
-                else if (_valueInfo.value is int index)
-                {
-                    value = values[index];
-                }
-                else if (_valueInfo.value is CardDefinePropertyGetterName propName)
-                {
-                    value = propName.value;
-                }
-                if (value == null)
-                    value = values.FirstOrDefault();
-                _inputDropdown.setValueWithoutNotify(value);
-            }
-            else if (_valueInfo.type == ActionNodeValueType.effectTag)
-            {
-                _inputDropdown.gameObject.SetActive(true);
-                _inputDropdown.setDropdownValues(_effectTagNames, _effectTagValues);
-                string value = null;
-                if (_valueInfo.value is string str)
-                {
-                    value = str;
-                }
-                else if (_valueInfo.value is int index)
-                {
-                    value = _effectTagValues[index];
-                }
-                else if (_valueInfo.value is EffectTag tag)
-                {
-                    value = tag.value;
-                }
-                if (value == null)
-                    value = _effectTagValues.FirstOrDefault();
-                _inputDropdown.setValueWithoutNotify(value);
-            }
-            else
-            {
-                _inputDropdown.gameObject.SetActive(false);
+                // 牌堆名称
+                case ActionNodeValueType.pileName:
+                    updateInputDropdownValue<PileName>(_pileNames, _pileValues);
+                    break;
+                // 设置卡牌属性
+                case ActionNodeValueType.cardPropertyNameSet:
+                    {
+                        var nameItems = _cardPropertyNameItems.Where(v => v.canSet);
+                        var names = nameItems.Select(v => v.name).ToArray();
+                        var values = nameItems.Select(v => v.value).ToArray();
+                        updateInputDropdownValue<CardPropertySetterName>(names, values);
+                        break;
+                    }
+                // 获取卡牌属性
+                case ActionNodeValueType.cardPropertyNameGet:
+                    {
+                        var nameItems = _cardPropertyNameItems.Where(v => v.canGet);
+                        var names = nameItems.Select(v => v.name).ToArray();
+                        var values = nameItems.Select(v => v.value).ToArray();
+                        updateInputDropdownValue<CardPropertyGetterName>(names, values);
+                        break;
+                    }
+                // 获取卡牌定义属性
+                case ActionNodeValueType.cardDefinePropertyNameGet:
+                    {
+                        var nameItems = _cardPropertyNameItems.Where(v => v.canDefineGet);
+                        var names = nameItems.Select(v => v.name).ToArray();
+                        var values = nameItems.Select(v => v.value).ToArray();
+                        updateInputDropdownValue<CardDefinePropertyGetterName>(names, values);
+                        break;
+                    }
+                // 效果标签
+                case ActionNodeValueType.effectTag:
+                    updateInputDropdownValue<EffectTag>(_effectTagNames, _effectTagValues);
+                    break;
+                // 事件变量名
+                case ActionNodeValueType.eventVarName:
+                    updateInputDropdownValue<EventVarName>(_eventVarNameNames, _eventVarNameValues);
+                    break;
+                default:
+                    _inputDropdown.gameObject.SetActive(false);
+                    break;
             }
         }
         private void updateMultiInputDropdown()
@@ -775,6 +700,27 @@ namespace UI
             }
         }
 
+        private void updateInputDropdownValue<T>(string[] names, string[] values) where T : NodeConstProxy<string>
+        {
+            _inputDropdown.gameObject.SetActive(true);
+            _inputDropdown.setDropdownValues(names, values);
+            string value = null;
+            if (_valueInfo.value is string str)
+            {
+                value = str;
+            }
+            else if (_valueInfo.value is int index)
+            {
+                value = values[index];
+            }
+            else if (_valueInfo.value is T tag)
+            {
+                value = tag.value;
+            }
+            if (value == null)
+                value = values.FirstOrDefault();
+            _inputDropdown.setValueWithoutNotify(value);
+        }
         private RectTransform GetListTemplate()
         {
             // 列表项模板直接引用自身，会在创建列表项时连同自身的所有列表项一同复制，造成性能开销指数上升。
@@ -851,6 +797,10 @@ namespace UI
         private string[] _eventNames;
         [SerializeField]
         private string[] _eventValues;
+        [SerializeField]
+        private string[] _eventVarNameNames;
+        [SerializeField]
+        private string[] _eventVarNameValues;
         [SerializeField]
         private CardPropertyNameItem[] _cardPropertyNameItems;
         [SerializeField]

@@ -6,6 +6,14 @@ namespace Game
 {
     public partial class EffectEditorLibrary
     {
+        /// <summary>
+        /// 设置/获取事件变量的事件参数主键。
+        /// </summary>
+        public const string EVENT_VARIABLE_NODE_EVENT_PARAM_KEY = "eventArg";
+        /// <summary>
+        /// 设置/获取事件变量的变量名称参数主键。
+        /// </summary>
+        public const string EVENT_VARIABLE_NODE_EVENT_NAME_PARAM_KEY = "varName";
         //  事件处理
         [TranslateMsg("编辑器/事件_事件_参数名称")]
         public const string EDITOR_PARAM_NAME_EVENT = "事件";
@@ -51,17 +59,21 @@ namespace Game
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)]
         public static object getVariable(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] string varName)
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] EventVarName varName)
         {
+            if (eventArg == null || varName == null)
+                return null;
             return eventArg.getVar(varName);
         }
 
         [ObsoletedKeyMethod(BuiltinActionDefineID.SetEventVariable, EDITOR_NODE_EVENT, StringTable.EDITOR_NODE_NAME_SET_VARIABLE, "SetVariable")]
         public static void setVariable(
             [ActionNodeParam(EDITOR_PARAM_NAME_EVENT)] EventArg eventArg,
-            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] string varName,
+            [ActionNodeParam(EDITOR_PARAM_NAME_VARIABLE_NAME, true)] EventVarName varName,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_VALUE)] object value)
         {
+            if (eventArg == null || varName == null)
+                return;
             eventArg.setVar(varName, value);
         }
 

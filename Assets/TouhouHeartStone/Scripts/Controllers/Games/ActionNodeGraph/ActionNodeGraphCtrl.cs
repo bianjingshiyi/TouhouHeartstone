@@ -1144,6 +1144,8 @@ namespace Controllers
             updatePortMode(_connectingPort, inputPort);
             //更新变长参数。
             updateInputParamsPort(inputPort);
+            // 更新事件变量节点的事件变量名。
+            updateEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
         }
 
         private void connectControlPorts(ControlOutput outputPort, ControlInput inputPort)
@@ -1435,6 +1437,8 @@ namespace Controllers
                 updatePortMode(_connectingPort, inputPort);
                 //更新变长参数。
                 updateInputParamsPort(inputPort);
+                // 更新事件变量节点的事件变量名。
+                updateEventVariableNodeItemVarNames(inputNodeItem, inputPort.node);
             }
 
             if (outputPort != null && inputPort != null)
@@ -1687,6 +1691,8 @@ namespace Controllers
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.cardDefinePropertyNameGet, value);
             else if (type == typeof(PileName))
                 return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.pileName, value);
+            else if (type == typeof(EventVarName))
+                return new ActionNodeValueInfo(name, constDefine.name, ActionNodeValueType.eventVarName, value);
             else
                 throw new NotImplementedException($"没有{type}对应的常数类型");
         }
@@ -1763,6 +1769,7 @@ namespace Controllers
             }
             return targetCheckerTypes;
         }
+        #region 常量
         public string getNodeConstNameByIndex(Node node, int index)
         {
             if (_nodeConstNameDict.TryGetValue(node.GetType(), out var constNames))
@@ -1777,14 +1784,17 @@ namespace Controllers
         private async void updateNodeItemConsts(Node node)
         {
             var item = getActionNodeItem(node);
-            if (node is ActionNode actionNode && actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
+            if (node is ActionNode actionNode)
             {
-                if (tryGetBuffDefine(actionNode.getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
+                if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
                 {
-                    updateBuffActionNode(item, buffDefine);
-                    return;
+                    if (tryGetBuffDefine(actionNode.getConst(GetBuffDefineAction.constName), out GeneratedBuffDefine buffDefine))
+                    {
+                        updateBuffActionNode(item, buffDefine);
+                        return;
+                    }
                 }
-            }
+            } 
 
             ActionNodeValueInfo[] constViewData = getNodeConstValueInfos(node);
             if (constViewData == null)
@@ -1823,47 +1833,33 @@ namespace Controllers
                 }
             }
         }
-        private async Task updateCardDefineInputField(Node node, ValueInputField cardInputField, DefineReference cardReference)
+        private void updateEventVariableNodeItemVarNames(ActionNodeItem item, Node node)
         {
-            if (!cardInputField)
+            if (node is not ActionNode action)
                 return;
-            CardDefine cardDefine = null;
-            if (cardReference != null)
+            if (!action.defineRef.isBuiltinReference(BuiltinActionDefineID.SetEventVariable) &&
+                !action.defineRef.isBuiltinReference(BuiltinActionDefineID.GetEventVariable))
+                return;
+            var eventInput = node.getInputPort<ValueInput>(EffectEditorLibrary.EVENT_VARIABLE_NODE_EVENT_PARAM_KEY);
+            var connectedOutput = eventInput.getConnectedOutputPort();
+            var eventType = connectedOutput?.define?.type;
+            string[] eventVarNames = Array.Empty<string>();
+            if (eventType != null)
             {
-                var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
-                // 如果卡池没有被加载，加载卡池。
-                await game.card.getOrLoadCardPool(localRef, true);
-                cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
-            }
-            CardSkinData cardSkin = null;
-            Sprite image = null;
-            if (cardDefine != null)
-            {
-                cardSkin = game.card.getDefaultSkin(cardDefine);
-                image = cardSkin.image ??
-                    await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
-            }
-            cardInputField.setCard(cardDefine, cardSkin, image);
-        }
-        private void updateInputParamsPort(IPort inputPort)
-        {
-            if (inputPort.node is ActionNode actionNode)
-            {
-                var inputNodeItem = getActionNodeItem(actionNode);
-                var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
-                if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
+                if (eventType.IsArray)
+                    eventType = eventType.GetElementType();
+                var eventRef = new EventReference(0, EventHelper.getName(eventType));
+                var eventDefine = game.card.getEventDefine(eventRef);
+                var varInfos = eventDefine.afterVariableInfos;
+                if (varInfos != null)
                 {
-                    if (_connectingPort != null && _connectingPort.define == lastInputDefine)
-                    {
-                        if (!actionNode.inputPorts.Contains(_connectingPort))
-                        {
-                            resetConnectingPort();
-                        }
-                    }
-                    inputNodeItem.setInputs(getNodeInputViewData(actionNode));
-                    updateNodePortModes(actionNode, _connectingPort);
+                    eventVarNames = varInfos.Select(v => v.name).ToArray();
                 }
             }
+            var eventVarNamesEditor = eventVarNames.Select(n => game.lang._(n)).ToArray();
+            item.setEventVarNames(eventVarNamesEditor, eventVarNames);
+            var consts = getNodeConstValueInfos(node);
+            item.setConsts(consts);
         }
         private async Task initNodeConstDefaultValue(ActionNodeItem item, Node node, int constIndex, ActionNodeValueInfo constInfo)
         {
@@ -1895,8 +1891,53 @@ namespace Controllers
                     return _eventNames[0];
                 case ActionNodeValueType.pileName:
                     return getAllPiles()[0].value;
+                case ActionNodeValueType.eventVarName:
+                    return null;
             }
             return null;
+        }
+        private async Task updateCardDefineInputField(Node node, ValueInputField cardInputField, DefineReference cardReference)
+        {
+            if (!cardInputField)
+                return;
+            CardDefine cardDefine = null;
+            if (cardReference != null)
+            {
+                var localRef = game.card.getLocalCardPoolReference(cardReference.cardPoolId);
+                // 如果卡池没有被加载，加载卡池。
+                await game.card.getOrLoadCardPool(localRef, true);
+                cardDefine = game.card.getCardDefine(localRef, cardReference.defineId);
+            }
+            CardSkinData cardSkin = null;
+            Sprite image = null;
+            if (cardDefine != null)
+            {
+                cardSkin = game.card.getDefaultSkin(cardDefine);
+                image = cardSkin.image ??
+                    await game.card.loadImage(cardSkin.imagePath, game.card.getCardPoolInfoOfCard(cardDefine) is CardPoolInfo cardPoolInfo2 ? cardPoolInfo2.cardPoolId : 0);
+            }
+            cardInputField.setCard(cardDefine, cardSkin, image);
+        }
+        #endregion
+        private void updateInputParamsPort(IPort inputPort)
+        {
+            if (inputPort.node is ActionNode actionNode)
+            {
+                var inputNodeItem = getActionNodeItem(actionNode);
+                var lastInputDefine = actionNode.define?.inputDefines.LastOrDefault();
+                if (lastInputDefine == inputPort.define && lastInputDefine?.isParams == true)
+                {
+                    if (_connectingPort != null && _connectingPort.define == lastInputDefine)
+                    {
+                        if (!actionNode.inputPorts.Contains(_connectingPort))
+                        {
+                            resetConnectingPort();
+                        }
+                    }
+                    inputNodeItem.setInputs(getNodeInputViewData(actionNode));
+                    updateNodePortModes(actionNode, _connectingPort);
+                }
+            }
         }
         private (string name, string value)[] getAllPiles()
         {

@@ -1706,7 +1706,11 @@ namespace UI
         /// <summary>
         /// 牌堆名称
         /// </summary>
-        pileName
+        pileName,
+        /// <summary>
+        /// 事件变量名
+        /// </summary>
+        eventVarName
     }
     public enum ActionNodeConnectionType
     {
