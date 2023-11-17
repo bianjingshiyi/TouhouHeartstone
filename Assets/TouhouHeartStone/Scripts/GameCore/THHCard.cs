@@ -354,7 +354,8 @@ namespace TouhouHeartstone
                 return false;
             if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, null, new object[] { target }))
                 return false;
-            if (generatedEffect != null && !generatedEffect.checkTarget(game, target, card, null, null, out invalidMsg))
+            var eventArg = new HearthStoneRule.ActiveEventArg(card.getOwner(), card, new Card[] { target });
+            if (generatedEffect != null && !generatedEffect.checkTarget(game, target, card, null, eventArg, out invalidMsg))
                 return false;
             return true;
         }

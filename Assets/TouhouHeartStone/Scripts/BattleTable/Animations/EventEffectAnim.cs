@@ -23,6 +23,10 @@ namespace Game.Animations
             target = table.getEventSkinAnimCard(effectArg, eventArg, animRef.targetPosition);
             yield return base.update(table);
         }
+        public override IEnumerable<TableAnimation> getGroupedAnimations(IEnumerable<TableAnimation> following)
+        {
+            return following.OfType<EventEffectAnim>().Where(a => a.define == define && a.eventArg.parent == eventArg.parent && a.eventArg.GetType() == eventArg.GetType());
+        }
         private IEventArg eventArg;
         private EffectTriggerEventArg effectArg;
         private SkinAnimationRef animRef;

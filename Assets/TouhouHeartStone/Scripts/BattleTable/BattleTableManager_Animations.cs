@@ -276,7 +276,10 @@ namespace Game.BattleTable
             if (animRef == null)
                 return false;
             var eventRef = animRef.eventReference;
-            if (eventRef == null) // 不存在事件名，可能是老版本的引用，获取该节点可能事件的第一个。
+            if (eventRef == null) // 不存在事件名，可能是老版本的引用，获取之前设置的默认的事件
+                eventRef = _main.eventManager.getDefaultNodeEvent(node);
+
+            if (eventRef == null) // 还是不存在，获取该节点可能事件的第一个。
             {
                 var eventRefs = _main.anims.getNodeVisualEffectEventRefs(node);
                 // 该节点的所有事件可能也会因为是入口节点导致是null，那就不改
