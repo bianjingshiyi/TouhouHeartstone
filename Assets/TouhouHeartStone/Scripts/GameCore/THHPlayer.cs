@@ -1097,7 +1097,7 @@ namespace TouhouHeartstone
                 {
                     new EventVariableInfo(){ name = EVENTVAR.CARD, type = typeof(Card)},
                     new EventVariableInfo() { name = EVENTVAR.PLAYER,type = typeof(Player)},
-                    new EventVariableInfo() { name = EVENTVAR.TARGET_CARD,type = typeof(Card)}
+                    new EventVariableInfo() { name = EVENTVAR.TARGET_CARD,type = typeof(Card[])}
                 };
             }
             public override EventVariableInfo[] getAfterEventVarInfos()
@@ -1106,19 +1106,16 @@ namespace TouhouHeartstone
                 {
                     new EventVariableInfo(){ name = EVENTVAR.CARD, type = typeof(Card)},
                     new EventVariableInfo() { name = EVENTVAR.PLAYER,type = typeof(Player)},
-                    new EventVariableInfo() { name = EVENTVAR.TARGET_CARD,type = typeof(Card)}
+                    new EventVariableInfo() { name = EVENTVAR.TARGET_CARD,type = typeof(Card[])}
                 };
             }
-            public ActiveEventArg(Player player, Card card, object[] targets)
+            public ActiveEventArg(Player player, Card card, Card[] targets)
             {
                 this.player = player;
                 this.card = card;
-                this.targets = targets;
-                setVar(EVENTVAR.PLAYER, player);
-                setVar(EVENTVAR.CARD, card);
-                setVar(EVENTVAR.TARGET_CARD, targets != null && targets.Length > 0 ? targets[0] : null);
+                this.targets = targets ?? Array.Empty<Card>();
             }
-            public ActiveEventArg(): this(null, null, new object[0])
+            public ActiveEventArg(): this(null, null, new Card[0])
             {
             }
             public override void Record(IGame game, EventRecord record)
@@ -1167,9 +1164,21 @@ namespace TouhouHeartstone
                     string.Join(", ", targets.Select(t => t is Card c ? c.getFormatString() : t.ToString()))
                 };
             }
-            public Player player;
-            public Card card;
-            public object[] targets;
+            public Player player
+            {
+                get => getVar<Player>(EVENTVAR.PLAYER);
+                set => setVar(EVENTVAR.PLAYER, value);
+            }
+            public Card card
+            {
+                get => getVar<Card>(EVENTVAR.CARD);
+                set => setVar(EVENTVAR.CARD, value);
+            }
+            public Card[] targets
+            {
+                get => getVar<Card[]>(EVENTVAR.TARGET_CARD);
+                set => setVar(EVENTVAR.TARGET_CARD, value);
+            }
         }
         public class LastwordEventArg : EventArg, IDescribableEventArg
         {

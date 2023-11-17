@@ -1133,7 +1133,7 @@ namespace Game
                 if (card == null)
                     continue;
                 else if (card.isSpell() || card.isSkill())
-                    await card.activeEffect(game, card.getOwner(), targets);
+                    await card.triggerSpellActiveEffect(game, card.getOwner(), targets);
             }
         }
         /// <summary>

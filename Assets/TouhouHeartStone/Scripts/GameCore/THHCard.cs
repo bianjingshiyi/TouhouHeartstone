@@ -354,8 +354,7 @@ namespace TouhouHeartstone
                 return false;
             if (triggerEffect != null && triggerEffect.checkTargets(game, card, null, null, new object[] { target }))
                 return false;
-            HearthStoneRule.ActiveEventArg eventArg = new HearthStoneRule.ActiveEventArg(card.owner, card, new object[] { target });
-            if (generatedEffect != null && !generatedEffect.checkTarget(game, target, card, null, eventArg, out invalidMsg))
+            if (generatedEffect != null && !generatedEffect.checkTarget(game, target, card, null, null, out invalidMsg))
                 return false;
             return true;
         }
@@ -1044,6 +1043,23 @@ namespace TouhouHeartstone
         #endregion
 
         #region 效果
+        public static (IEffect effect, Buff buff)[] getSpellActiveEffects(this Card card, IGame game)
+        {
+            List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
+            if (card.isSpell() || card.isSkill())
+            {
+                if (!card.isSilenced(game))
+                {
+                    results.AddRange(card.define.getSpellActiveEffects().Select<IEffect, (IEffect effect, Buff buff)>(e => (e, null)));
+                }
+                foreach (var buff in card.getBuffs())
+                {
+                    var effects = buff.getEffects(game as CardEngine);
+                    results.AddRange(effects.Where(e => e.isSpellActiveEffect() || e is ActiveEffect).Select<IEffect, (IEffect effect, Buff buff)>(e => (e, buff)));
+                }
+            }
+            return results.ToArray();
+        }
         public static (IEffect effect, Buff buff)[] getBattlecries(this Card card, IGame game)
         {
             List<(IEffect effect, Buff buff)> results = new List<(IEffect effect, Buff buff)>();
@@ -1151,87 +1167,56 @@ namespace TouhouHeartstone
         /// <param name="player"></param>
         /// <param name="targets"></param>
         /// <returns></returns>
-        public static Task activeEffect(this Card card, CardEngine game, Player player, Card[] targets)
+        public static Task<HearthStoneRule.ActiveEventArg> activeEffect(this Card card, CardEngine game, Player player, Card[] targets)
         {
-            bool silenced = card.isSilenced(game);
-            if (!silenced)
-            {
-                ITriggerEffect triggerEffect = card.define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
-                if (triggerEffect != null)
-                {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                    var vars = new object[] { eventArg };
-                    if (triggerEffect.checkCondition(game, card, null, vars))
-                        return triggerEffect.execute(game, card, null, vars, targets);
-                }
-                IActiveEffect activeEffect = card.define.getActiveEffect();
-                if (activeEffect != null)
-                {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                    if (activeEffect.checkCondition(game, card, null, eventArg))
-                        return activeEffect.execute(game, card, null, eventArg);
-                }
-            }
             if (card.isServant() || card.isItem() || card.isMaster())
             {
                 return triggerBattlecries(card, game, player, targets);
             }
             else if (card.isSpell() || card.isSkill())
             {
-                if (!silenced)
-                {
-                    var defineActives = card.define.getEffects().OfType<GeneratedActiveEffect>();
-                    foreach (var effect in defineActives)
-                    {
-                        var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                        if (effect.checkCondition(game, card, null, eventArg))
-                            return effect.execute(game, card, null, eventArg);
-                    }
-                }
-                foreach (var buff in card.getBuffs())
-                {
-                    var buffActives = buff.getEffects(game).OfType<GeneratedActiveEffect>();
-                    foreach (var effect in buffActives)
-                    {
-                        var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                        if (effect.checkCondition(game, card, null, eventArg))
-                            return effect.execute(game, card, null, eventArg);
-                    }
-                }
+                return triggerSpellActiveEffect(card, game, player, targets);
             }
-            return Task.CompletedTask;
+            return Task.FromResult<HearthStoneRule.ActiveEventArg>(null);
         }
         /// <summary>
         /// 发动特定法术或技能卡牌定义的主动效果
         /// </summary>
-        public static Task activeSpellCardDefineEffect(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
+        public static Task<HearthStoneRule.ActiveEventArg> triggerSpellCardDefineActiveEffect(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
         {
-            if (define.isSpell() || define.isSkill())
+            var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+            return game.triggers.doEvent(eventArg, async arg =>
             {
-                ITriggerEffect triggerEffect = define.getEffectOn<HearthStoneRule.ActiveEventArg>(game.triggers);
-                if (triggerEffect != null)
+                var argCard = arg.card;
+                var argTargets = arg.targets;
+                var activeEffects = define.getSpellActiveEffects();
+                foreach (var effect in activeEffects)
                 {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                    var vars = new object[] { eventArg };
-                    if (triggerEffect.checkCondition(game, card, null, vars))
-                        return triggerEffect.execute(game, card, null, vars, targets);
+                    if (effect is IActiveEffect active)
+                    {
+                        if (active.checkCondition(game, card, null, arg))
+                            await active.execute(game, card, null, arg);
+                    }
                 }
-                IActiveEffect activeEffect = define.getActiveEffect();
-                if (activeEffect != null)
+            });
+        }
+        public static Task<HearthStoneRule.ActiveEventArg> triggerSpellActiveEffect(this Card card, CardEngine game, Player player, Card[] targets)
+        {
+            var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
+            return game.triggers.doEvent(eventArg, async arg =>
+            {
+                var argCard = arg.card;
+                var argTargets = arg.targets;
+                var activeEffects = argCard.getSpellActiveEffects(game);
+                foreach (var (effect, buff) in activeEffects)
                 {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                    if (activeEffect.checkCondition(game, card, null, eventArg))
-                        return activeEffect.execute(game, card, null, eventArg);
+                    if (effect is IActiveEffect active)
+                    {
+                        if (active.checkCondition(game, argCard, null, arg))
+                            await active.execute(game, argCard, buff, arg);
+                    }
                 }
-                var effect = define.getEffects().OfType<GeneratedEffect>().FirstOrDefault();
-                if (effect != null)
-                {
-                    var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-                    if (effect.checkCondition(game, card, null, eventArg))
-                        return effect.execute(game, card, null, eventArg);
-                }
-            }
-            return Task.CompletedTask;
+            });
         }
         /// <summary> 
         /// 触发一个特定卡牌定义自带的宣言。
@@ -1242,36 +1227,41 @@ namespace TouhouHeartstone
         /// <param name="define">要施放宣言的卡牌定义。</param>
         /// <param name="targets">宣言的目标。</param>
         /// <returns></returns>
-        public static async Task triggerCardDefineBattlecries(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
+        public static Task<HearthStoneRule.ActiveEventArg> triggerCardDefineBattlecries(this Card card, CardEngine game, Player player, CardDefine define, Card[] targets)
         {
-            var battlecries = define.getBattlecries();
             var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-            foreach (var battlecry in battlecries)
+            return game.triggers.doEvent(eventArg, async arg =>
             {
-                if (battlecry is IActiveEffect active)
+                var argCard = arg.card;
+                var argTargets = arg.targets;
+                var battlecries = define.getBattlecries();
+                foreach (var battlecry in battlecries)
                 {
-                    if (active.checkCondition(game, card, null, eventArg))
-                        await active.execute(game, card, null, eventArg);
+                    if (battlecry is IActiveEffect active)
+                    {
+                        if (active.checkCondition(game, argCard, null, arg))
+                            await active.execute(game, argCard, null, arg);
+                    }
                 }
-            }
+            });
         }
-        public static async Task triggerBattlecries(this Card card, CardEngine game, Player player, Card[] targets)
+        public static Task<HearthStoneRule.ActiveEventArg> triggerBattlecries(this Card card, CardEngine game, Player player, Card[] targets)
         {
-            var battlecries = getBattlecries(card, game);
             var eventArg = new HearthStoneRule.ActiveEventArg(player, card, targets);
-            foreach (var (effect, buff) in battlecries)
+            return game.triggers.doEvent(eventArg, async arg =>
             {
-                if (effect is GeneratedActiveEffect genActive)
+                var argCard = arg.card;
+                var argTargets = arg.targets;
+                var battlecries = getBattlecries(argCard, game);
+                foreach (var (effect, buff) in battlecries)
                 {
-                    if (genActive.checkCondition(game, card, buff, eventArg))
-                        await genActive.execute(game, card, buff, eventArg);
+                    if (effect is IActiveEffect active)
+                    {
+                        if (active.checkCondition(game, argCard, buff, arg))
+                            await active.execute(game, argCard, buff, arg);
+                    }
                 }
-                else if (effect is ActiveEffect active)
-                {
-                    if (active.checkCondition(game, card))
-                        await active.execute(game, card, buff, eventArg);
-                }
-            }
+            });
         }
         /// <summary>
         /// 触发一个特定卡牌定义自带的遗言。

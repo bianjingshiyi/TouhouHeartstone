@@ -444,7 +444,7 @@ namespace Game
             {
                 if (card == null)
                     continue;
-                await card.activeSpellCardDefineEffect(game, card.getOwner(), cardDefine, targets);
+                await card.triggerSpellCardDefineActiveEffect(game, card.getOwner(), cardDefine, targets);
             }
         }
         /// <summary>

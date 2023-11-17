@@ -22,6 +22,10 @@ namespace TouhouHeartstone
         {
             return effect is GeneratedActiveEffect active && active.hasTag(EFFECTTAG.ACTIVE_PLAYED);
         }
+        public static bool isSpellActiveEffect(this IEffect effect)
+        {
+            return effect is GeneratedActiveEffect;
+        }
 
         /// <summary>
         /// 这个效果的可选目标

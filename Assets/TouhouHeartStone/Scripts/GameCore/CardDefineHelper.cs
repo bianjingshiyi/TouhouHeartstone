@@ -200,6 +200,14 @@ namespace TouhouHeartstone
                 return false;
             }).ToArray();
         }
+        public static IEffect[] getSpellActiveEffects(this CardDefine card)
+        {
+            if (card.isSpell() || card.isSkill())
+            {
+                return card.getEffects().Where(e => e.isSpellActiveEffect() || e is ActiveEffect).ToArray();
+            }
+            return Array.Empty<IEffect>();
+        }
         public static bool hasBattlecry(this CardDefine card)
         {
             return card.getEffects().Any(e =>
