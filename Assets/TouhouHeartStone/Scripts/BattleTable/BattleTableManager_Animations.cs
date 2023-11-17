@@ -279,7 +279,7 @@ namespace Game.BattleTable
         {
             if (node is ActionNode action)
             {
-                var eventRefs = cardManager.getActionBindedEventsRecursive(action.defineRef);
+                var eventRefs = cardManager.getActionBindedEvents(action.defineRef);
                 if (eventRefs == null)
                     return false;
                 var eventRef = CardManager.getEventReferenceOfEventArg(arg);

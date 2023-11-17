@@ -10,6 +10,7 @@ namespace Game
         public static void init()
         {
             Flow.addConversion(new CardDefineConversion());
+            Flow.addConversion(new EventReferenceProxyConversion());
             Flow.addConversion(new NodeConstProxyConversion());
             Flow.addConversion(new CollectionConversion());
         }
@@ -76,6 +77,21 @@ namespace Game
             }
             genericArgs = null;
             return false;
+        }
+    }
+    public class EventReferenceProxyConversion : ParamConversion
+    {
+        public override bool canConvert(Type from, Type to)
+        {
+            return typeof(EventReferenceProxy).IsAssignableFrom(to) && typeof(string).IsAssignableFrom(from);
+        }
+        public override object convert(Flow flow, object input, Type to)
+        {
+            if (input is string str)
+            {
+                return new EventReferenceProxy(new EventReference(0, str));
+            }
+            return input;
         }
     }
     public class CollectionConversion : ParamConversion
