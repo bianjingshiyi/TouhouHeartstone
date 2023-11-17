@@ -1175,37 +1175,23 @@ namespace TouhouHeartstone
         }
 
         /// <summary>
-        /// 选择事件，一般指从几个选项中选择一项
-        /// 卡面描述："选择一项"
+        /// 选择卡牌定义事件
         /// </summary>
-        public class ChooseOneEventArg : EventArg, IDescribableEventArg
+        public class SelectCardDefineEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public IEnumerable<CardDefine> options;
-            public CardDefine choose;
-            public bool isShow = true;
-
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
                 return null;
             }
-
             DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
             }
-
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
-
-            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项。")]
-            const string TEMPLATE = "{0} 选择 {1}";
-
-            [MukioI18n.TranslateMsg("{0}是玩家")] const string TEMPLATE_NotShow = "{0} 进行了选择";
-
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
                 if (isShow)
@@ -1219,10 +1205,9 @@ namespace TouhouHeartstone
                 return new object[]
                 {
                     player.name,
-                    choose.GetType().Name
+                    chosen.GetType().Name
                 };
             }
-
             public override EventVariableInfo[] getBeforeEventVarInfos()
             {
                 return new EventVariableInfo[]
@@ -1244,11 +1229,35 @@ namespace TouhouHeartstone
             {
                 record.setVar(EVENTVAR.PLAYER, player);
                 record.setVar(VAR_OPTIONS, options);
-                record.setVar(EVENTVAR.CHOSEN_CARD, choose);
+                record.setVar(EVENTVAR.CHOSEN_CARD, chosen);
                 record.setVar(VAR_SEEN_CARD, isShow);
             }
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项。")]
+            const string TEMPLATE = "{0} 选择 {1}";
+            [MukioI18n.TranslateMsg("{0}是玩家")] 
+            const string TEMPLATE_NotShow = "{0} 进行了选择";
             public const string VAR_OPTIONS = "选项";
             public const string VAR_SEEN_CARD = "明牌";
+            public Player player
+            {
+                get => getVar<Player>(EVENTVAR.PLAYER);
+                set => setVar(EVENTVAR.PLAYER, value);
+            }
+            public CardDefine[] options
+            {
+                get => getVar<CardDefine[]>(VAR_OPTIONS);
+                set => setVar(VAR_OPTIONS, value);
+            }
+            public CardDefine chosen
+            {
+                get => getVar<CardDefine>(EVENTVAR.CHOSEN_CARD);
+                set => setVar(EVENTVAR.CHOSEN_CARD, value);
+            }
+            public bool isShow
+            {
+                get => getVar<bool>(VAR_SEEN_CARD);
+                set => setVar(VAR_SEEN_CARD, value);
+            }
         }
 
         public class UseEventArg : EventArg, IDescribableEventArg

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.SearchPileEventArg;
+    using Arg = HearthStoneRule.SelectCardEventArg;
     public class SearchAnim : EventAnimation<Arg>
     {
         TableAnimation _anim;
@@ -14,7 +14,7 @@ namespace Game.BattleTable
         {
             var eventArg = record.eventArg as Arg;
             var player = eventArg.player;
-            var cards = eventArg.cards;
+            var cards = eventArg.options;
             //自己打出的效果不展示
             if (player == table.player)
                 yield break;

@@ -431,8 +431,8 @@ namespace TouhouHeartstone.Builtin
             var choice = await card.getOwner().searchPile(game, card.getOwner().getGrave().Where(c => c.define.isServant() && c.define.hasDeathRattles()), title: "复活吧我的勇士");
             if (choice != null)
             {
-                await choice.choose.graveToHand(game);
-                await choice.choose.triggerDeathRattles(game);
+                await choice.chosen.graveToHand(game);
+                await choice.chosen.triggerDeathRattles(game);
             }
         }
     }

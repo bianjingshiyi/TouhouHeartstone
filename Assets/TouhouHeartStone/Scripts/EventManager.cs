@@ -196,6 +196,10 @@ namespace Game
         public const string EDITOR_EVENT_NAME_MASS_SHUFFLE_TO_DECK = "群体洗入牌库";
         [TranslateMsg("事件名称")]
         public const string EDITOR_EVENT_NAME_MASS_SPLIT_DAMAGE = "分配伤害";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_SELECT_CARD = "选择卡牌";
+        [TranslateMsg("事件名称")]
+        public const string EDITOR_EVENT_NAME_SELECT_CARD_DEFINE = "选择卡牌定义";
         static string[] _hiddenEvents =
         {
             "SecretTriggerEvent",
@@ -203,8 +207,8 @@ namespace Game
             "ComeOnStageEvent",
             "RebornEvent",
             "RevealEvent",
-            "ChooseOneEvent",
-            "SearchPileEvent",
+            "SelectCardEvent",
+            "SelectCardDefineEvent",
             "ActiveEvent",
             "BeChargedEvent",
             "TestEvent",
@@ -253,14 +257,14 @@ namespace Game
             { "SetMaxGemEvent", StringTable.EDITOR_EVENT_NAME_SETMAXGEM },
             { "BurnEvent", StringTable.EDITOR_EVENT_NAME_BURN },
             { "EnterFieldEvent", StringTable.EDITOR_EVENT_NAME_ENTERFIELD },
-            { "ChooseOneEvent", StringTable.EDITOR_EVENT_NAME_CHOOSEONE },
+            { "SelectCardDefineEvent", EDITOR_EVENT_NAME_SELECT_CARD_DEFINE },
             { "RebornEvent", StringTable.EDITOR_EVENT_NAME_REBORN },
             { "RevealEvent", StringTable.EDITOR_EVENT_NAME_REVEAL },
             { "RevealDuelEvent", StringTable.EDITOR_EVENT_NAME_REVEALDUEL },
             { "SetGemEvent", StringTable.EDITOR_EVENT_NAME_SETGEM },
             { "DrawEvent", StringTable.EDITOR_EVENT_NAME_DRAW },
             { "FatigueEvent", StringTable.EDITOR_EVENT_NAME_FATIGUE },
-            { "SearchiPileEvent", StringTable.EDITOR_EVENT_NAME_SEARCHPILE },
+            { "SelectCardEvent", EDITOR_EVENT_NAME_SELECT_CARD },
             { "ActiveEvent", StringTable.EDITOR_EVENT_NAME_ACTIVE },
             { "DiscardEvent", StringTable.EDITOR_EVENT_NAME_DISCARD },
             { "CreateTokenEvent", StringTable.EDITOR_EVENT_NAME_CREATETOKEN },

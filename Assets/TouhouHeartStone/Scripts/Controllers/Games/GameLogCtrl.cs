@@ -67,7 +67,6 @@ namespace Controllers
                 case THHCard.SilenceEventArg _:
                 case THHCard.ShackleEventArg _:
                 case THHCard.DeathEventArg _:
-                case THHPlayer.DiscoverEventArg _:
                 case THHPlayer.RevealDuelEventArg _:
                 case THHCard.SecretTriggerEventArg _:
                     addLogItem(obj);
@@ -236,11 +235,6 @@ namespace Controllers
                     text = lang._(GAME_MANAGER_DEATH);
                     imageCard = death.card;
                     player = death.player;
-                    break;
-                case THHPlayer.DiscoverEventArg discover:
-                    text = lang._(GAME_MANAGER_DISCOVER);
-                    imageCard = discover.player == _localPlayer || discover.isShow ? discover.discovered : discover.player.getMaster();
-                    player = discover.player;
                     break;
                 case THHPlayer.RevealDuelEventArg revealDuel:
                     text = lang._(GAME_MANAGER_REVEAL_DUEL);

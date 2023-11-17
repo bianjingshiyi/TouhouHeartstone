@@ -1,12 +1,10 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TouhouCardEngine;
 using TouhouHeartstone;
 
 namespace Game.BattleTable
 {
-    using Arg = HearthStoneRule.ChooseOneEventArg;
+    using Arg = HearthStoneRule.SelectCardDefineEventArg;
 
     public class ChooseOneAnim : EventAnimation<Arg>
     {

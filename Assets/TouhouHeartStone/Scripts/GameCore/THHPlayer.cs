@@ -194,30 +194,34 @@ namespace TouhouHeartstone
         /// <param name="count"></param>
         /// <param name="title"></param>
         /// <returns></returns>
-        public static async Task<DiscoverEventArg> discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
+        public static async Task<Card> discover(this Player player, CardEngine game, IEnumerable<CardDefine> cardDefines, int count = 3,
             string title = null, bool isShow = false)
         {
             if (!cardDefines.Any())
             {
                 return null;
             }
-            var eventArg = await game.triggers.doEvent(new DiscoverEventArg()
+            var eventArg = await game.triggers.doEvent(new HearthStoneRule.SelectCardDefineEventArg()
             {
                 player = player,
                 isShow = isShow,
-                defines = cardDefines.ToArray()
+                options = cardDefines.ToArray()
             }, async arg =>
             {
-                cardDefines = arg.defines;
+                cardDefines = arg.options;
                 player = arg.player;
                 cardDefines = cardDefines.randomTake(game, count);
                 var selected = await game.askSelect(player, cardDefines, count, title);
-                arg.discovered = await player.addCardToHand(game, selected);
-                arg.defines = cardDefines.ToArray();
+                arg.chosen = selected;
             });
-            return eventArg;
+            if (eventArg.chosen != null)
+            {
+                var card = await player.addCardToHand(game, eventArg.chosen);
+                return card;
+            }
+            return null;
         }
-        public static async Task<HearthStoneRule.ChooseOneEventArg> chooseOne(this Player player, CardEngine game, IEnumerable<CardDefine> options, bool isShow = true, string title = "选择一项")
+        public static async Task<HearthStoneRule.SelectCardDefineEventArg> chooseOne(this Player player, CardEngine game, IEnumerable<CardDefine> options, bool isShow = true, string title = "选择一项")
         {
             if (!options.Any())
             {
@@ -226,14 +230,14 @@ namespace TouhouHeartstone
             game.logger.logTrace($"{player}从{string.Join("，", options)}中选择一项");
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
 
-            var eventArg = await game.triggers.doEvent(new HearthStoneRule.ChooseOneEventArg() { player = player, options = options, choose = null, isShow = isShow }, async arg =>
+            var eventArg = await game.triggers.doEvent(new HearthStoneRule.SelectCardDefineEventArg() { player = player, options = options.ToArray(), chosen = null, isShow = isShow }, async arg =>
             {
                 var selected = await game.askSelect(player, options, options.Count(), title);
-                arg.choose = selected;
+                arg.chosen = selected;
             });
             return eventArg;
         }
-        public static async Task<HearthStoneRule.SearchPileEventArg> searchPile(this Player player, CardEngine game, IEnumerable<Card> cards, bool isShow = false, int count = 3, string title = "选择一项")
+        public static async Task<HearthStoneRule.SelectCardEventArg> searchPile(this Player player, CardEngine game, IEnumerable<Card> cards, bool isShow = false, int count = 3, string title = "选择一项")
         {
             game.logger.logTrace($"{player}从{string.Join("，", cards)}中选择一张");
             if (cards.Count() < 1)
@@ -241,10 +245,10 @@ namespace TouhouHeartstone
             if (count > 0)
                 cards = cards.randomTake(game, count);
             //var task = game.answers.ask(id, new DiscoverRequest(options.Select(c => c.id).ToArray(), title));
-            var eventArg = await game.triggers.doEvent(new HearthStoneRule.SearchPileEventArg() { player = player, cards = cards, choose = null, isShow = isShow }, async arg =>
+            var eventArg = await game.triggers.doEvent(new HearthStoneRule.SelectCardEventArg() { player = player, options = cards.ToArray(), chosen = null, isShow = isShow }, async arg =>
             {
                 var selected = await game.askSelect(player, cards, count, title);
-                arg.choose = selected;
+                arg.chosen = selected;
             });
             return eventArg;
         }
@@ -685,98 +689,6 @@ namespace TouhouHeartstone
         #endregion
 
         #region 内嵌类
-        public class DiscoverEventArg : EventArg, IDescribableEventArg
-        {
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { name = EVENTVAR.PLAYER, type = typeof(Player) },
-                    new EventVariableInfo() { name = EVENTVAR.CARD_DEFINE, type = typeof(CardDefine[]) }
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo() { name = EVENTVAR.PLAYER, type = typeof(Player) },
-                    new EventVariableInfo() { name = EVENTVAR.CARD_DEFINE, type = typeof(CardDefine[]) },
-                    new EventVariableInfo() { name = EVENTVAR.CHOSEN_CARD, type = typeof(Card) }
-                };
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setVar(EVENTVAR.PLAYER, player);
-                record.setVar(EVENTVAR.CARD_DEFINE, defines);
-                record.setCardState(EVENTVAR.CHOSEN_CARD, discovered);
-                record.setVar(VAR_CARD_SEEN, isShow);
-            }
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return viewer == player ? discovered : null;
-            }
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return (game as CardEngine).createCards(defines).Select(t => (DescribableCard)t).ToArray();
-            }
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-            [MukioI18n.TranslateMsg("{0}玩家，{1}卡")]
-            const string TEMPLATE_SELF = "{0} 发现 {1}";
-            [MukioI18n.TranslateMsg("{0} 玩家")]
-            const string TEMPLATE_OTHER = "{0} 发现了一张牌";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                if (!isCanceled)
-                {
-                    return viewer == player ? TEMPLATE_SELF : TEMPLATE_OTHER;
-                }
-                else
-                {
-                    return "";
-                }
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    player.name,
-                    discovered.getFormatString()
-                };
-            }
-            /// <summary>
-            /// 发现的玩家
-            /// </summary>
-            public Player player
-            {
-                get { return getVar<Player>(EVENTVAR.PLAYER); }
-                set { setVar(EVENTVAR.PLAYER, value); }
-            }
-            /// <summary>
-            /// 发现的卡
-            /// </summary>
-            public Card discovered
-            {
-                get { return getVar<Card>(EVENTVAR.CHOSEN_CARD); }
-                set { setVar(EVENTVAR.CHOSEN_CARD, value); }
-            }
-            /// <summary>
-            /// 提供的选择
-            /// </summary>
-            public CardDefine[] defines
-            {
-                get { return getVar<CardDefine[]>(EVENTVAR.CARD_DEFINE); }
-                set { setVar(EVENTVAR.CARD_DEFINE, value); }
-            }
-            /// <summary>
-            /// 结果是否向对手展示
-            /// </summary>
-            public bool isShow;
-
-            public const string VAR_CARD_SEEN = "明牌";
-        }
         public class RevealDuelEventArg : EventArg, IDescribableEventArg
         {
             /// <summary>
@@ -1088,21 +1000,14 @@ namespace TouhouHeartstone
             public const string VAR_DAMAGE = "伤害";
         }
         /// <summary>
-        /// 检视事件，指从特定牌堆随机几张卡选择一张。
-        /// 卡面描述：检视某牌堆X张牌
+        /// 选择卡牌事件
         /// </summary>
-        public class SearchPileEventArg : EventArg, IDescribableEventArg
+        public class SelectCardEventArg : EventArg, IDescribableEventArg
         {
-            public Player player;
-            public IEnumerable<Card> cards;
-            public Card choose;
-            public bool isShow = true;
-
             DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
             {
-                return choose;
+                return chosen;
             }
-
             DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
             {
                 return null;
@@ -1110,21 +1015,16 @@ namespace TouhouHeartstone
             public override void Record(IGame game, EventRecord record)
             {
                 record.setVar(EVENTVAR.PLAYER, player);
-                record.setCardStates(VAR_OPTIONS, cards);
-                record.setCardState(EVENTVAR.CHOSEN_CARD, choose);
+                record.setCardStates(VAR_OPTIONS, options);
+                record.setCardState(EVENTVAR.CHOSEN_CARD, chosen);
                 record.setVar(VAR_CARD_SEEN, isShow);
             }
 
             string IDescribableEventArg.toString(IGame game, IPlayer viewer)
             {
                 IDescribableEventArg arg = this;
-                return String.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
+                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
             }
-
-            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项。")]
-            const string TEMPLATE = "{0} , 选择了 {1}";
-            [MukioI18n.TranslateMsg("{0}是玩家")]
-            const string TEMPLATE_NotShow = "{0} ，进行了选择";
 
             string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
             {
@@ -1138,30 +1038,55 @@ namespace TouhouHeartstone
                 return new object[]
                 {
                     player.name,
-                    choose?.getFormatString()
+                    chosen?.getFormatString()
                 };
             }
 
-            //public override EventVariableInfo[] getBeforeEventVarInfos()
-            //{
-            //    return new EventVariableInfo[]
-            //    {
-            //        new EventVariableInfo(){name = "Player",type=typeof(Player)},
-            //        new EventVariableInfo(){name = "Options",type=typeof(IEnumerable<CardDefine>)}
-            //    };
-            //}
-            //public override EventVariableInfo[] getAfterEventVarInfos()
-            //{
-            //    return new EventVariableInfo[]
-            //    {
-            //        new EventVariableInfo(){name = "Player",type=typeof(Player)},
-            //        new EventVariableInfo(){name = "Options",type=typeof(IEnumerable<CardDefine>)},
-            //        new EventVariableInfo(){name = "Choose",type=typeof(Card)}
-            //    };
-            //}
+            public override EventVariableInfo[] getBeforeEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
+                    new EventVariableInfo(){name = VAR_OPTIONS,type=typeof(Card[])}
+                };
+            }
+            public override EventVariableInfo[] getAfterEventVarInfos()
+            {
+                return new EventVariableInfo[]
+                {
+                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
+                    new EventVariableInfo(){name = VAR_OPTIONS,type=typeof(Card[])},
+                    new EventVariableInfo(){name = EVENTVAR.CHOSEN_CARD,type=typeof(Card)}
+                };
+            }
+
+            [MukioI18n.TranslateMsg("{0}是玩家，{1}是选项。")]
+            const string TEMPLATE = "{0} , 选择了 {1}";
+            [MukioI18n.TranslateMsg("{0}是玩家")]
+            const string TEMPLATE_NotShow = "{0} ，进行了选择";
 
             public const string VAR_OPTIONS = "选项";
             public const string VAR_CARD_SEEN = "明牌";
+            public Player player
+            {
+                get => getVar<Player>(EVENTVAR.PLAYER);
+                set => setVar(EVENTVAR.PLAYER, value);
+            }
+            public Card[] options
+            {
+                get => getVar<Card[]>(VAR_OPTIONS);
+                set => setVar(VAR_OPTIONS, value);
+            }
+            public Card chosen
+            {
+                get => getVar<Card>(EVENTVAR.CHOSEN_CARD);
+                set => setVar(EVENTVAR.CHOSEN_CARD, value);
+            }
+            public bool isShow
+            {
+                get => getVar<bool>(VAR_CARD_SEEN);
+                set => setVar(VAR_CARD_SEEN, value);
+            }
 
         }
         public class ActiveEventArg : EventArg, IDescribableEventArg, ICardEventArg

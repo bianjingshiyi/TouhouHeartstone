@@ -108,7 +108,7 @@ namespace TouhouHeartstone.Builtin
                     var selected = await card.getOwner().searchPile(game, card.getOwner().getDeck(), title: "抽它！");
                     if (selected == null)
                         return;
-                    arg.card = selected.choose;
+                    arg.card = selected.chosen;
                     await card.damageItem(game, 1);
                     await game.updateGameState();
                 }),
@@ -252,10 +252,9 @@ namespace TouhouHeartstone.Builtin
         static async Task effect(CardEngine game, Card card)
         {
             CardDefine[] defines = game.getDefines().Where(c => c.hasKeyword(KEYWORD.UNIQUE) && c.isServant() && !c.isToken()).ToArray();
-            var arg = await card.getOwner().discover(game, defines, title: "广告招租");
-            if (arg == null)
+            var discovered = await card.getOwner().discover(game, defines, title: "广告招租");
+            if (discovered == null)
                 return;
-            var discovered = arg.discovered;
             await discovered.addBuff(game, new CodeBuff(ID, new CostModifier(0, true)));
             // List<Card> unqueCards = card.getOwner().getNormalRandomPool((g, d) =>
             // {
@@ -293,11 +292,11 @@ namespace TouhouHeartstone.Builtin
 
         static async Task effect(CardEngine game, Card card)
         {
-            var arg = await card.getOwner().discover(game,
+            var discovered = await card.getOwner().discover(game,
                 game.getDefinesOf(card.getOwner().getMaster().id,CATEGORY.CHARACTER_NEUTRAL).Where(define => define.isServant() && !define.isToken()));
-            if (arg == null)
+            if (discovered == null)
                 return;
-            await arg.discovered.addBuff(game,
+            await discovered.addBuff(game,
                 new CodeBuff(ID, new CostModifier(5, true), new LifeModifier(5, true),
                     new AttackModifier(5, true)));
             // List<Card> servantCards = card.getOwner().getNormalRandomPool((g, d) =>

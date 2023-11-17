@@ -632,8 +632,8 @@ namespace TouhouHeartstone.Builtin
                 return;
             if (!player.getHand().isFull)
             {
-                await player.getGrave().moveTo(game, discovered.choose, player.getHand());
-                await discovered.choose.addBuff(game, new CodeBuff(ID, new CostModifier(-3)));
+                await player.getGrave().moveTo(game, discovered.chosen, player.getHand());
+                await discovered.chosen.addBuff(game, new CodeBuff(ID, new CostModifier(-3)));
             }
         }
     }
@@ -766,7 +766,7 @@ namespace TouhouHeartstone.Builtin
             var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck().Where(c => c.isSpell()), false, 5, "书海里寻找智慧");
             if (discover == null)
                 return;
-            await card.getOwner().draw(game, discover.choose);
+            await card.getOwner().draw(game, discover.chosen);
 
         }
     }
@@ -832,7 +832,7 @@ namespace TouhouHeartstone.Builtin
                 var discovered = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 5, "知识中寻求方法");
                 if (discovered == null)
                     continue;
-                await card.getOwner().draw(game, discovered.choose);
+                await card.getOwner().draw(game, discovered.chosen);
             }
         }
     }

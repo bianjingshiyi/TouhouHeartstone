@@ -947,10 +947,10 @@ namespace TouhouHeartstone.Builtin
             var elementCards = Patchouli.getElementCards(game);
             var selectedCard1 = await card.getOwner().chooseOne(game, elementCards, isShow: false, title: "投入魔法");
             var selectedCard2 = await card.getOwner()
-                .chooseOne(game, elementCards.Where(define => define != selectedCard1.choose), isShow: false, title: "投入魔法");
+                .chooseOne(game, elementCards.Where(define => define != selectedCard1.chosen), isShow: false, title: "投入魔法");
             if (selectedCard1 == null || selectedCard2 == null)
                 return;
-            var result = Patchouli.getMixCards(game, selectedCard1.choose, selectedCard2.choose);
+            var result = Patchouli.getMixCards(game, selectedCard1.chosen, selectedCard2.chosen);
             await card.getOwner().discover(game, result, title: "元素融合");
         }
     }
@@ -1602,7 +1602,7 @@ namespace TouhouHeartstone.Builtin
             var discover = await card.getOwner().searchPile(game, card.getOwner().getDeck(), false, 3, "选择一张牌置于牌组顶");
             if (discover == null)
                 return;
-            Card c = discover.choose;
+            Card c = discover.chosen;
             await card.getOwner().getDeck().moveTo(game, c, card.getOwner().getDeck(),
                 card.getOwner().getDeck().indexOf(card.getOwner().getDeck().top));
         }
@@ -1748,7 +1748,7 @@ namespace TouhouHeartstone.Builtin
                 var choice = await c.getOwner().chooseOne(g,options);
                 if (choice == null)
                     return;
-                switch (choice.choose.id)
+                switch (choice.chosen.id)
                 {
                     case GameOfLife_Rise_N.ID:
                         if (t.getCurrentLife(g) <= t.getLife(g) / 2)
@@ -1864,7 +1864,7 @@ namespace TouhouHeartstone.Builtin
             var choice = await c.getOwner().chooseOne(g, options, title: "选择一项");
             if (choice == null)
                 return;
-            if (choice.choose is ReturnOfImperishableNight_Eternity_N)
+            if (choice.chosen is ReturnOfImperishableNight_Eternity_N)
             {
                 await c.getOwner().getMaster().addBuff(g, new CodeBuff(ID,
                     new THHEffectBefore<HearthStoneRule.DrawEventArg>(
