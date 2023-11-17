@@ -379,37 +379,35 @@ namespace TouhouHeartstone
             await from.moveTo(game, card, player.getHead());
             return true;
         }
-        public static Task<HearthStoneRule.CreateTokenEventArg> createToken(this Player player, CardEngine game, CardDefine define, int position = -1)
+        public static async Task<HearthStoneRule.EnterFieldEventArg> createToken(this Player player, CardEngine game, CardDefine define, int position = -1)
         {
             if (game == null)
                 throw new ArgumentNullException(nameof(game));
             if (define == null)
                 throw new ArgumentNullException(nameof(define));
             if (player.getField().count >= player.getField().maxCount)
-                return Task.FromResult<HearthStoneRule.CreateTokenEventArg>(null);
+                return null;
             if (position < 0)
                 position = player.getField().count;
-            HearthStoneRule.CreateTokenEventArg eventArg = new HearthStoneRule.CreateTokenEventArg() { player = player, define = define, position = position };
-            return game.triggers.doEvent(eventArg, async arg =>
-            {
-                player = arg.player;
-                define = arg.define;
-                position = arg.position;
-                if (player.getField().count >= player.getField().maxCount)
-                    return;
-                game.logger.logTrace($"{player}召唤{define.GetType().Name}位于{position}");
-                arg.card = game.createCard(define);
-                await player.tryEnterField(game, null, arg.card, position);
-            });
+            var card = game.createCard(define);
+            return await player.tryEnterField(game, null, card, position);
         }
-        public static async Task<HearthStoneRule.CreateTokenEventArg[]> createToken(this Player player, CardEngine game, int count, CardDefine define, int position = -1)
+        [Obsolete]
+        public static async Task<Card> createTokenObsolete(this Player player, CardEngine game, CardDefine define, int position = -1)
         {
-            List<HearthStoneRule.CreateTokenEventArg> list = new List<HearthStoneRule.CreateTokenEventArg>();
+            var arg = await player.createToken(game, define, position);
+            return arg?.card;
+        }
+        public static async Task<Card[]> createToken(this Player player, CardEngine game, int count, CardDefine define, int position = -1)
+        {
+            List<Card> cards = new List<Card>();
             for (int i = 0; i < count; i++)
             {
-                list.Add(await player.createToken(game, define, position));
+                var arg = await player.createToken(game, define, position);
+                if (arg?.card != null)
+                    cards.Add(arg?.card);
             }
-            return list.ToArray();
+            return cards.ToArray();
         }
         /// <summary>
         /// 复生，墓地到场上
@@ -1311,90 +1309,6 @@ namespace TouhouHeartstone
             }
             public Player player;
             public Card card;
-        }
-        [EventChildren(typeof(EnterFieldEventArg))]
-        public class CreateTokenEventArg : EventArg, IDescribableEventArg, ICardEventArg
-        {
-            DescribableCard IDescribableEventArg.getCard(IGame game, IPlayer viewer)
-            {
-                return card;
-            }
-            ICard ICardEventArg.getCard()
-            {
-                return card;
-            }
-
-            DescribableCard[] IDescribableEventArg.getTargets(IGame game, IPlayer viewer)
-            {
-                return null;
-            }
-
-            string IDescribableEventArg.toString(IGame game, IPlayer viewer)
-            {
-                IDescribableEventArg arg = this;
-                return string.Format(arg.localizeTemplateString(game, viewer), arg.localizeStringArgs(game, viewer));
-            }
-
-            [MukioI18n.TranslateMsg("{0}是玩家，{1}是卡")]
-            const string TEMPLATE = "{0} 召唤了 {1}";
-            string IDescribableEventArg.localizeTemplateString(IGame game, IPlayer viewer)
-            {
-                return TEMPLATE;
-            }
-            object[] IDescribableEventArg.localizeStringArgs(IGame game, IPlayer viewer)
-            {
-                return new object[] {
-                    player.name,
-                    card.getFormatString()
-                };
-            }
-
-            public override EventVariableInfo[] getBeforeEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                    new EventVariableInfo(){name = EVENTVAR.CARD_DEFINE,type=typeof(CardDefine)},
-                    new EventVariableInfo(){name = EVENTVAR.POSITION,type=typeof(int)}
-                };
-            }
-            public override EventVariableInfo[] getAfterEventVarInfos()
-            {
-                return new EventVariableInfo[]
-                {
-                    new EventVariableInfo(){name = EVENTVAR.PLAYER,type=typeof(Player)},
-                    new EventVariableInfo(){name = EVENTVAR.CARD_DEFINE,type=typeof(CardDefine)},
-                    new EventVariableInfo(){name = EVENTVAR.POSITION,type=typeof(int)},
-                    new EventVariableInfo(){name = EVENTVAR.CARD,type=typeof(Card)}
-                };
-            }
-            public override void Record(IGame game, EventRecord record)
-            {
-                record.setVar(EVENTVAR.PLAYER, player);
-                record.setVar(EVENTVAR.CARD_DEFINE, define);
-                record.setVar(EVENTVAR.POSITION, position);
-                record.setCardState(EVENTVAR.CARD, card);
-            }
-            public Player player
-            {
-                get { return getVar<Player>(EVENTVAR.PLAYER); }
-                set { setVar(EVENTVAR.PLAYER, value); }
-            }
-            public CardDefine define
-            {
-                get { return getVar<CardDefine>(EVENTVAR.CARD_DEFINE); }
-                set { setVar(EVENTVAR.CARD_DEFINE, value); }
-            }
-            public int position
-            {
-                get { return getVar<int>(EVENTVAR.POSITION); }
-                set { setVar(EVENTVAR.POSITION, value); }
-            }
-            public Card card
-            {
-                get { return getVar<Card>(EVENTVAR.CARD); }
-                set { setVar(EVENTVAR.CARD, value); }
-            }
         }
         #endregion
     }

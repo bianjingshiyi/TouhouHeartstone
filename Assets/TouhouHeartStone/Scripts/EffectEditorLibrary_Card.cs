@@ -71,8 +71,6 @@ namespace Game
         [TranslateMsg("节点参数 isSet")]
         const string EDITOR_PARAM_IS_SET = "设置";
         [TranslateMsg("节点参数")]
-        const string EDITOR_PARAM_NAME_CREATE_TOKEN_EVENT = "创建衍生卡事件";
-        [TranslateMsg("节点参数")]
         const string EDITOR_PARAM_NAME_CARD_PROP_CHANGE_EVENT = "卡牌属性更改事件";
         [TranslateMsg("节点参数")]
         const string EDITOR_PARAM_NAME_BUFF_PROP_CHANGED_EVENT = "增益属性更改事件";
@@ -153,13 +151,13 @@ namespace Game
         /// <param name="player"></param>
         /// <param name="cardDefine"></param>
         /// <returns></returns>
-        [EventNode(typeof(HearthStoneRule.CreateTokenEventArg))]
+        [EventNode(typeof(HearthStoneRule.EnterFieldEventArg))]
         [ObsoletedKeyMethod(BuiltinActionDefineID.CreateTokenToField, StringTable.EDITOR_NODE_CATEGORY_CARD, StringTable.EDITOR_NODE_NAME_CREATE_TOKEN_CARD_TO_FIELD)]
         [return: ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD)]
         public static async Task<Card> createTokenCardToField(CardEngine game, Flow flow, ActionNode node,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_PLAYER)] Player player,
             [ActionNodeParam(StringTable.EDITOR_PARAM_NAME_CARD_DEFINE)] CardDefine cardDefine,
-            [ActionNodeParam(EDITOR_PARAM_NAME_CREATE_TOKEN_EVENT, isOut: true)] HearthStoneRule.CreateTokenEventArg outEvent)
+            [ActionNodeParam(EDITOR_PARAM_NAME_ENTER_FIELD_EVENT, isOut: true)] HearthStoneRule.EnterFieldEventArg outEvent)
         {
             if (player == null || cardDefine == null)
                 return null;

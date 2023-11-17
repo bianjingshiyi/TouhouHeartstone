@@ -334,7 +334,7 @@ namespace Tests
             game.skipTurnUntil(() => game.getCurrentPlayer() == you && you.getGem() >= 3);
             you.cmdUse(game, you.getHand().First());
             you.cmdTurnEnd(game);
-            Assert.AreEqual(0, game.triggers.getRecordedEvents().OfType<HearthStoneRule.CreateTokenEventArg>().Count());
+            Assert.AreEqual(0, game.triggers.getRecordedEvents().OfType<HearthStoneRule.EnterFieldEventArg>().Count());
             oppo.cmdTurnEnd(game);
             you.getMaster().gainArmor(game, 5);
             you.cmdTurnEnd(game);

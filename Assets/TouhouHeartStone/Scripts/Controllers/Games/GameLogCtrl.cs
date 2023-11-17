@@ -58,7 +58,7 @@ namespace Controllers
                 case HearthStoneRule.BurnEventArg _:
                 case HearthStoneRule.FatigueEventArg _:
                 case THHCard.DiscardEventArg _:
-                case HearthStoneRule.CreateTokenEventArg _:
+                case HearthStoneRule.EnterFieldEventArg _:
                 case HearthStoneRule.RebornEventArg _:
                 case THHCard.AttackEventArg _:
                 case THHCard.DamageEventArg _:
@@ -183,7 +183,7 @@ namespace Controllers
                     imageCard = use.card.isTrap(_game) && use.player != _localPlayer ? use.player.getMaster() : use.card;
                     player = use.player;
                     break;
-                case HearthStoneRule.CreateTokenEventArg token:
+                case HearthStoneRule.EnterFieldEventArg token:
                     icon = item.tokenIcon;
                     text = lang._(GAME_MANAGER_TOKEN);
                     imageCard = token.card;

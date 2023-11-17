@@ -508,7 +508,7 @@ namespace Tests
             oppo.cmdUse(game, oppo.getHand().First());
             oppo.cmdTurnEnd(game);
             you.cmdUse(game, you.getHand().getCard<YakumoRan_N>());
-            Card card = game.triggers.getRecordedEvents().OfType<HearthStoneRule.CreateTokenEventArg>().Last().card;
+            Card card = game.triggers.getRecordedEvents().OfType<HearthStoneRule.EnterFieldEventArg>().Last().card;
             Assert.IsInstanceOf<Chen_N>(card.define);
             Assert.True(you.getField()[1].hasKeyword(game, KEYWORD.RUSH));
             var buff = you.getField()[1].getBuffs()[0];
