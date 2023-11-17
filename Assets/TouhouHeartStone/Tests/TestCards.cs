@@ -1269,10 +1269,10 @@ namespace Tests
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new DeathRattle(ID,(g,c,b,p)=>
+            new DeathRattle(ID,(g,c,b,e)=>
             {
                 Player player = c.getOwner();
-                return player.reborn(g,c,p);
+                return player.reborn(g,c);
             })
         };
 
@@ -1296,10 +1296,10 @@ namespace Tests
 
         private IEffect[] effects1 = new IEffect[]
         {
-            new DeathRattle(ID,(g,c,b,p)=>
+            new DeathRattle(ID,(g,c,b,e)=>
             {
                 Player player = c.getOwner();
-                player.createToken(g,g.getDefine<Nerubian>(),p);
+                player.createToken(g,g.getDefine<Nerubian>());
                 return c.fieldToHand(g);
             })
         };

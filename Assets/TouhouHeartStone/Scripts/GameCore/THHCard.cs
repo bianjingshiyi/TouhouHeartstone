@@ -1270,27 +1270,45 @@ namespace TouhouHeartstone
         /// <param name="game">游戏对象。</param>
         /// <param name="define">要触发遗言的卡牌定义。</param>
         /// <returns></returns>
-        public static async Task triggerCardDefineDeathRattles(this Card card, CardEngine game, CardDefine define)
+        public static Task<HearthStoneRule.LastwordEventArg> triggerCardDefineDeathRattles(this Card card, CardEngine game, CardDefine define)
         {
-            var deathRattles = define.getDeathRattles();
             var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
-            foreach (var deathRattle in deathRattles)
+            return game.triggers.doEvent(eventArg, async arg =>
             {
-                if (deathRattle is GeneratedPassiveEffect genPassive)
+                var argCard = arg.card;
+                var deathRattles = define.getDeathRattles();
+                foreach (var deathRattle in deathRattles)
                 {
-                    if (genPassive.checkCondition(game, card, null, eventArg))
-                        await genPassive.execute(game, card, null, eventArg);
+                    if (deathRattle is GeneratedPassiveEffect genPassive)
+                    {
+                        if (genPassive.checkCondition(game, argCard, null, arg))
+                            await genPassive.execute(game, argCard, null, arg);
+                    }
+                    else if (deathRattle is DeathRattle rattle)
+                    {
+                        await rattle.execute(game, argCard, null, arg);
+                    }
                 }
-                else if (deathRattle is DeathRattle rattle)
-                {
-                    await rattle.execute(game, card, null, new DeathEventArg(card));
-                }
-            }
+            });
         }
-        public static Task triggerDeathRattles(this Card card, CardEngine game)
+        public static Task<HearthStoneRule.LastwordEventArg> triggerDeathRattles(this Card card, CardEngine game)
         {
-            var deathrattles = getDeathRattles(card, game);
-            return card.triggerDeathRattles(game, deathrattles);
+            var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
+            return game.triggers.doEvent(eventArg, arg =>
+            {
+                var argCard = arg.card;
+                var deathrattles = getDeathRattles(argCard, game);
+                return argCard.executeDeathRattles(game, arg, deathrattles);
+            });
+        }
+        public static Task<HearthStoneRule.LastwordEventArg> triggerDeathRattles(this Card card, CardEngine game, (IEffect effect, Buff buff)[] deathrattles)
+        {
+            var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
+            return game.triggers.doEvent(eventArg, arg =>
+            {
+                var argCard = arg.card;
+                return argCard.executeDeathRattles(game, arg, deathrattles);
+            });
         }
         #endregion
 
@@ -1774,19 +1792,18 @@ namespace TouhouHeartstone
         #endregion
 
         #region 私有方法
-        private static async Task triggerDeathRattles(this Card card, CardEngine game, (IEffect effect, Buff buff)[] deathrattles)
+        private static async Task executeDeathRattles(this Card argCard, CardEngine game, EventArg arg, (IEffect effect, Buff buff)[] deathrattles)
         {
-            var eventArg = new HearthStoneRule.LastwordEventArg(card.getOwner(), card);
             foreach (var (effect, buff) in deathrattles)
             {
                 if (effect is GeneratedPassiveEffect genPassive)
                 {
-                    if (genPassive.checkCondition(game, card, buff, eventArg))
-                        await genPassive.execute(game, card, buff, eventArg);
+                    if (genPassive.checkCondition(game, argCard, buff, arg))
+                        await genPassive.execute(game, argCard, buff, arg);
                 }
                 else if (effect is DeathRattle rattle)
                 {
-                    await rattle.execute(game, card, buff, new DeathEventArg(card));
+                    await rattle.execute(game, argCard, buff, arg);
                 }
             }
         }

@@ -847,7 +847,7 @@ namespace TouhouHeartstone
         public override string[] piles { get; } = new string[0];
         public CheckConditionDelegate onCheckCondition { get; }
 
-        public delegate Task ExecuteDelegate(CardEngine game, Card card, int position);
+        public delegate Task ExecuteDelegate(CardEngine game, Card card, EventArg eventArg);
 
         public ExecuteDelegate onExecute { get; }
 
@@ -855,7 +855,7 @@ namespace TouhouHeartstone
 
         public CheckConditionBuffedDelegate onCheckConditionBuffed { get; } = null;
 
-        public delegate Task ExecuteBuffedDelegate(CardEngine game, Card card, Buff buff, int position);
+        public delegate Task ExecuteBuffedDelegate(CardEngine game, Card card, Buff buff, EventArg eventArg);
 
         public ExecuteBuffedDelegate onExecuteBuffed { get; } = null;
 
@@ -886,18 +886,16 @@ namespace TouhouHeartstone
             await card.setProp(game, propName, false);
         }
 
-        public Task execute(CardEngine game, Card card, Buff buff, THHCard.DeathEventArg deathEvent)
+        public Task execute(CardEngine game, Card card, Buff buff, EventArg eventArg)
         {
-            if (deathEvent.card != card) // 死亡事件的卡牌必须是该卡牌
-                return Task.CompletedTask;
             if (onCheckConditionBuffed != null && !onCheckConditionBuffed(game, card, buff)) // 增益条件必须满足
                 return Task.CompletedTask;
             else if (onCheckCondition != null && !onCheckCondition(game, card)) // 触发条件必须满足
                 return Task.CompletedTask;
             if (onExecuteBuffed != null) 
-                return onExecuteBuffed(game, card, buff, deathEvent.position);
+                return onExecuteBuffed(game, card, buff, eventArg);
             else if (onExecute != null)
-                return onExecute(game, card, deathEvent.position);
+                return onExecute(game, card, eventArg);
             return Task.CompletedTask;
         }
 

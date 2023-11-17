@@ -103,7 +103,7 @@ namespace TouhouHeartstone.Builtin
         private IEffect[] effects1 = new IEffect[]
         {
             new DeathRattle(ID,
-                (g1, c1, p) => { return c1.getOwner().createToken(g1, g1.getDefine<LostSpecter>(), p); })
+                (g1, c1, e) => { return c1.getOwner().createToken(g1, g1.getDefine<LostSpecter>()); })
         };
 
         public override IEffect[] getEffects()
