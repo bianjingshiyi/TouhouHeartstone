@@ -3532,6 +3532,7 @@
     <defineId>202002</defineId>
     <obsoleteNames />
     <editorName>丢弃卡牌</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -3551,6 +3552,43 @@
         <isParams>false</isParams>
         <isArray>true</isArray>
         <summary><![CDATA[执行的弃牌事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[弃掉一张或多张手牌，并将其置入墓地。<br>
+      <b>注：</b><ul>
+        <li>要求卡牌必须在手牌中。</li>
+        <li>“弃牌时”触发器触发时，卡牌仍在手牌中；</li>
+        <li>“弃牌后”触发器触发时，卡牌已经被移动到墓地中。</li>
+      </ul>]]></summary>
+    <example><![CDATA[<ul>
+      <li>蕾米莉亚·斯卡蕾特</li>
+      <li>芙兰朵露·斯卡蕾特</li>
+    </ul>]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202038</defineId>
+    <obsoleteNames />
+    <editorName>丢弃卡牌</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>hands</name>
+        <displayName>手牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要丢弃的手牌列表。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>MassDiscardEventArg</type>
+        <name>return</name>
+        <displayName>群体弃牌事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[弃掉多张牌产生的群体弃牌事件。]]></summary>
       </ActionParameterComment>
     </outputs>
     <consts />
@@ -4054,6 +4092,7 @@
     <defineId>202034</defineId>
     <obsoleteNames />
     <editorName>造成伤害或法伤</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -4113,9 +4152,72 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>202041</defineId>
+    <obsoleteNames />
+    <editorName>造成伤害或法伤</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要造成的伤害。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要造成伤害的目标。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>MassDamageEventArg</type>
+        <name>return</name>
+        <displayName>群体伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[对一个或多个目标造成伤害产生的群体伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[对一个或多个目标卡牌造成伤害或法术伤害。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>202035</defineId>
     <obsoleteNames />
     <editorName>造成伤害或法伤并分配给目标</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -4175,9 +4277,72 @@
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
+    <defineId>202042</defineId>
+    <obsoleteNames />
+    <editorName>造成伤害或法伤并分配给目标</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要造成的总伤害量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[可能会将伤害分配到的目标列表。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>SplitDamageEventArg</type>
+        <name>return</name>
+        <displayName>分配伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[对目标分配伤害产生的群体伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[选择一定目标，造成总量一定的伤害或法术伤害，随机分配到它们身上。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
     <defineId>202036</defineId>
     <obsoleteNames />
     <editorName>对固定数量的随机目标造成伤害或法伤</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -4250,6 +4415,84 @@
       </ActionParameterComment>
     </consts>
     <summary><![CDATA[从一定目标中选择数个目标，对他们分别造成一定量的伤害。]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202043</defineId>
+    <obsoleteNames />
+    <editorName>对固定数量的随机目标造成伤害或法伤</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>count</name>
+        <displayName>数量</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要造成伤害的随机目标的数量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage</name>
+        <displayName>伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要对每个目标造成的伤害。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[可能会选中的目标列表。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>damageSource</name>
+        <displayName>伤害源</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[造成伤害的来源卡牌。如果为空，默认为无来源。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>MassDamageEventArg</type>
+        <name>return</name>
+        <displayName>群体伤害事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[对一个或多个目标造成伤害产生的群体伤害事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts>
+      <ActionParameterComment>
+        <type>Boolean</type>
+        <name>damagetype</name>
+        <displayName>是否为法术伤害</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[该伤害是否为法术伤害？]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>count2</name>
+        <displayName>+</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的目标数量。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>damage2</name>
+        <displayName>+</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要增加的伤害量。]]></summary>
+      </ActionParameterComment>
+    </consts>
+    <summary><![CDATA[从一定目标中随机选择数个目标，对他们分别造成一定量的伤害。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -4466,6 +4709,7 @@
     <defineId>202013</defineId>
     <obsoleteNames />
     <editorName>治疗目标卡牌</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -4497,6 +4741,43 @@
     </outputs>
     <consts />
     <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202039</defineId>
+    <obsoleteNames />
+    <editorName>治疗目标卡牌</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>targets</name>
+        <displayName>目标卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要治疗的卡牌。]]></summary>
+      </ActionParameterComment>
+      <ActionParameterComment>
+        <type>Int32</type>
+        <name>value</name>
+        <displayName>值</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[要治疗的数值。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>MassHealEventArg</type>
+        <name>return</name>
+        <displayName>群体治疗事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[治疗一个或多个目标产生的群体治疗事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[治疗一个或多个目标。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>
@@ -4691,6 +4972,7 @@
     <defineId>202015</defineId>
     <obsoleteNames />
     <editorName>沉默</editorName>
+    <obsoleteMsg />
     <category>卡牌</category>
     <inputs>
       <ActionParameterComment>
@@ -4714,6 +4996,35 @@
     </outputs>
     <consts />
     <summary><![CDATA[]]></summary>
+    <example><![CDATA[]]></example>
+  </ActionComment>
+  <ActionComment>
+    <defineId>202040</defineId>
+    <obsoleteNames />
+    <editorName>封印</editorName>
+    <category>卡牌</category>
+    <inputs>
+      <ActionParameterComment>
+        <type>Card</type>
+        <name>cards</name>
+        <displayName>卡牌</displayName>
+        <isParams>false</isParams>
+        <isArray>true</isArray>
+        <summary><![CDATA[要封印的目标。]]></summary>
+      </ActionParameterComment>
+    </inputs>
+    <outputs>
+      <ActionParameterComment>
+        <type>MassSealEventArg</type>
+        <name>return</name>
+        <displayName>群体封印事件</displayName>
+        <isParams>false</isParams>
+        <isArray>false</isArray>
+        <summary><![CDATA[封印一个或多个目标所产生的群体封印事件。]]></summary>
+      </ActionParameterComment>
+    </outputs>
+    <consts />
+    <summary><![CDATA[封印一个或多个目标。]]></summary>
     <example><![CDATA[]]></example>
   </ActionComment>
   <ActionComment>

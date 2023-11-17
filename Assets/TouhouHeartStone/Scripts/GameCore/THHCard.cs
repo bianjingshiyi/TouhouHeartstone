@@ -714,6 +714,16 @@ namespace TouhouHeartstone
         {
             return card.setProp(game, DEFINE.DAMAGE_REDUCE, value);
         }
+        [Obsolete]
+        public static async Task<SilenceEventArg[]> silenceObsoleteMass(this IEnumerable<Card> cards, CardEngine game)
+        {
+            List<SilenceEventArg> eventArgs = new List<SilenceEventArg>();
+            foreach (var card in cards)
+            {
+                eventArgs.Add(await silence(card, game));
+            }
+            return eventArgs.ToArray();
+        }
         public static Task<MassSealEventArg> silence(this IEnumerable<Card> cards, CardEngine game)
         {
             return game.triggers.doEvent(new MassSealEventArg() { cards = cards.ToArray() }, async arg =>
@@ -1622,6 +1632,18 @@ namespace TouhouHeartstone
                     return Task.CompletedTask;
                 return actualPlayer.getHand().moveTo(game, actualCard, actualPlayer.getGrave());
             });
+        }
+        [Obsolete]
+        public async static Task<DiscardEventArg[]> discardObsoleteMass(this IEnumerable<Card> cards, CardEngine game)
+        {
+            List<DiscardEventArg> eventArgs = new List<DiscardEventArg>();
+            foreach (Card card in cards)
+            {
+                if (card == null)
+                    continue;
+                eventArgs.Add(await card.discard(game));
+            }
+            return eventArgs.ToArray();
         }
         public static Task<MassDiscardEventArg> discard(this IEnumerable<Card> cards, CardEngine game)
         {

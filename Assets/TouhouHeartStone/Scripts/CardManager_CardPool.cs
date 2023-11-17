@@ -1453,6 +1453,15 @@ namespace Game
         }
         private async Task fixCardPool(CardPoolInfo cardPoolInfo, CardPool cardPool)
         {
+            Dictionary<int, int> massEventNodeMap = new Dictionary<int, int>()
+            {
+                { BuiltinActionDefineID.Discard_Obs_Mass, BuiltinActionDefineID.Discard },
+                { BuiltinActionDefineID.HealTargets_Obs_Mass, BuiltinActionDefineID.HealTargets },
+                { BuiltinActionDefineID.Seal_Obs_Mass, BuiltinActionDefineID.Seal },
+                { BuiltinActionDefineID.DealDamageOrSpellDamage_Obs_Mass, BuiltinActionDefineID.DealDamageOrSpellDamage },
+                { BuiltinActionDefineID.DealDamageSplitAmong_Obs_Mass, BuiltinActionDefineID.DealDamageSplitAmong },
+                { BuiltinActionDefineID.DealDamageToRandomTargets_Obs_Mass, BuiltinActionDefineID.DealDamageToRandomTargets },
+            };
 
             bool hasUnsavedFix = false;
             var builtinActions = builtinActionDefines;
@@ -1559,23 +1568,8 @@ namespace Game
             async void fixActionNodeIncorrectData(ActionNode actionNode)
             {
                 await fixUnknownOrObsoleteNode(actionNode);
-                foreach (var constPair in actionNode.consts)
-                {
-                    if (constPair.Value is CardReference cardRef)
-                    {
-                        //CardReference过期，使用DefineReference替代
-                        actionNode.setConst(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
-                    }
-                }
-                // 将旧版的“获取增益定义”的ID从int变为DefineReference。
-                if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
-                {
-                    var constValue = actionNode.getConst(GetBuffDefineAction.constName);
-                    if (constValue is int buffId)
-                    {
-                        actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
-                    }
-                }
+                fixMassObsoleteNode(actionNode);
+                fixOldReferences(actionNode);
                 fixConditionalNode(actionNode);
             }
             // 修复未知或过时的节点。
@@ -1640,6 +1634,52 @@ namespace Game
                     else
                     {
                         Debug.LogError($"动作节点{actionNode.id}的名称未知：{actionNode.defineName}");
+                    }
+                }
+            }
+            // 修复因加入群体事件而过时的节点。
+            void fixMassObsoleteNode(ActionNode actionNode)
+            {
+                if (actionNode.defineRef == null)
+                    return;
+                foreach (var pair in massEventNodeMap)
+                {
+                    // 不是指定的过时动作定义。
+                    if (!actionNode.defineRef.isBuiltinReference(pair.Key))
+                        continue;
+                    // 如果事件数组输出端口有连接，不自动将其修改为新的节点。
+                    var outputs = actionNode.getOutputPorts<ValueOutput>();
+                    if (outputs.Any(o =>
+                    {
+                        var type = o?.define?.type;
+                        if (type == null) return false; // 不存在类型
+                        if (!typeof(IEventArg[]).IsAssignableFrom(o?.define?.type)) return false; // 输出值不是事件数组
+                        if (o.connections.Count() <= 0) return false; // 没有任何连接
+                        return true;
+                    }))
+                        continue;
+                    // 改为新的节点。
+                    actionNode.defineRef = new ActionReference(0, pair.Value);
+                }
+            }
+            // 修复过时的CardReference或者int。
+            void fixOldReferences(ActionNode actionNode)
+            {
+                foreach (var constPair in actionNode.consts)
+                {
+                    if (constPair.Value is CardReference cardRef)
+                    {
+                        //CardReference过期，使用DefineReference替代
+                        actionNode.setConst(constPair.Key, new DefineReference(cardRef.cardPoolId, cardRef.cardId));
+                    }
+                }
+                // 将旧版的“获取增益定义”的ID从int变为DefineReference。
+                if (actionNode.defineRef.isBuiltinReference(BuiltinActionDefineID.GetBuffDefine))
+                {
+                    var constValue = actionNode.getConst(GetBuffDefineAction.constName);
+                    if (constValue is int buffId)
+                    {
+                        actionNode.setConst(GetBuffDefineAction.constName, new DefineReference(cardPoolInfo.cardPoolId, buffId));
                     }
                 }
             }

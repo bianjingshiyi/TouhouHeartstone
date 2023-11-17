@@ -250,7 +250,7 @@ namespace Game
 
         // 卡牌
         public const int Damage = Type_Action + Category_Card + 1;    // 造成伤害
-        public const int Discard = Type_Action + Category_Card + 2;    // 丢弃卡牌
+        public const int Discard_Obs_Mass = Type_Action + Category_Card + 2;    // 丢弃卡牌（群体事件过时）
         public const int CreateTokenToField = Type_Action + Category_Card + 3;    // 创建衍生卡并置入战场
         public const int CreateTokenToHand = Type_Action + Category_Card + 4;    // 创建衍生卡并置入手牌
         public const int CreateTokenToDeck = Type_Action + Category_Card + 5;    // 创建衍生卡并洗入牌库
@@ -261,9 +261,9 @@ namespace Game
         public const int DealDamageToRandomTargets_Obsolete = Type_Action + Category_Card + 10;    // 对固定数量的随机目标造成伤害或法伤（过时）
         public const int DealSpellDamageToTargets = Type_Action + Category_Card + 11;    // 造成法术伤害
         public const int DealSpecificSpellDamageToRandomTargets = Type_Action + Category_Card + 12;    // 造成固定法术伤害并分配给随机目标
-        public const int HealTargets = Type_Action + Category_Card + 13;    // 治疗目标卡牌
+        public const int HealTargets_Obs_Mass = Type_Action + Category_Card + 13;    // 治疗目标卡牌（群体事件过时）
         public const int Shackle = Type_Action + Category_Card + 14;    // 禁锢
-        public const int Seal = Type_Action + Category_Card + 15;    // 沉默
+        public const int Seal_Obs_Mass = Type_Action + Category_Card + 15;    // 沉默（群体事件过时）
         public const int Kill = Type_Action + Category_Card + 16;    // 消灭
         public const int ForceUpdateCardsState = Type_Action + Category_Card + 17;    // 强制更新所有卡牌状态
         public const int AddAmountOfArmor = Type_Action + Category_Card + 18;    // 增加固定数量护甲
@@ -282,10 +282,16 @@ namespace Game
         public const int TriggerCardDefineDeathrattles = Type_Action + Category_Card + 31;    // 触发卡牌定义遗言
         public const int TriggerCardDefineActiveEffect = Type_Action + Category_Card + 32;    // 触发法术或技能卡牌定义效果
         public const int SetChargedLevel = Type_Action + Category_Card + 33;    // 设置蓄力层数
-        public const int DealDamageOrSpellDamage = Type_Action + Category_Card + 34;    // 造成伤害或法伤
-        public const int DealDamageSplitAmong = Type_Action + Category_Card + 35;    // 造成伤害或法伤兵分配给目标
-        public const int DealDamageToRandomTargets = Type_Action + Category_Card + 36;    // 对固定数量的随机目标造成伤害或法伤
+        public const int DealDamageOrSpellDamage_Obs_Mass = Type_Action + Category_Card + 34;    // 造成伤害或法伤（群体事件过时）
+        public const int DealDamageSplitAmong_Obs_Mass = Type_Action + Category_Card + 35;    // 造成伤害或法伤兵分配给目标（群体事件过时）
+        public const int DealDamageToRandomTargets_Obs_Mass = Type_Action + Category_Card + 36;    // 对固定数量的随机目标造成伤害或法伤（群体事件过时）
         public const int SetCardProp = Type_Action + Category_Card + 37;    // 设置卡牌属性
+        public const int Discard = Type_Action + Category_Card + 38;    // 丢弃卡牌
+        public const int HealTargets = Type_Action + Category_Card + 39;    // 治疗目标卡牌
+        public const int Seal = Type_Action + Category_Card + 40;    // 沉默
+        public const int DealDamageOrSpellDamage = Type_Action + Category_Card + 41;    // 造成伤害或法伤
+        public const int DealDamageSplitAmong = Type_Action + Category_Card + 42;    // 造成伤害或法伤兵分配给目标
+        public const int DealDamageToRandomTargets = Type_Action + Category_Card + 43;    // 对固定数量的随机目标造成伤害或法伤
 
         // 增益
         public const int AddBuff = Type_Action + Category_Buff + 1;    // 添加增益
