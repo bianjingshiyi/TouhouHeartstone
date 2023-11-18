@@ -56,7 +56,7 @@ namespace IGensoukyo
                 return;
             var req = uop.webRequest;
 
-            if (req.isNetworkError || req.isHttpError || req.downloadHandler.data == null)
+            if (req.result == UnityWebRequest.Result.ConnectionError || req.result == UnityWebRequest.Result.ProtocolError || req.downloadHandler.data == null)
             {
                 img.sprite = null;
                 return;

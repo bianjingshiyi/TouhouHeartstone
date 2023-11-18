@@ -226,12 +226,12 @@ namespace BJSYGameCore
             uwr.SendWebRequest().completed += op =>
             {
                 var uop = op as UnityWebRequestAsyncOperation;
-                if (uop.webRequest.isNetworkError)
+                if (uop.webRequest.result == UnityWebRequest.Result.ConnectionError)
                 {
                     tcs.SetException(new HttpRequestException(uop.webRequest.error));
                     return;
                 }
-                if (uop.webRequest.isHttpError)
+                if (uop.webRequest.result == UnityWebRequest.Result.ProtocolError)
                 {
                     if (uop.webRequest.responseCode == 404)
                     {
@@ -403,12 +403,12 @@ namespace BJSYGameCore
             UnityWebRequest.Get(Application.streamingAssetsPath + "/" + path).SendWebRequest().completed += op =>
             {
                 var uop = op as UnityWebRequestAsyncOperation;
-                if (uop.webRequest.isNetworkError)
+                if (uop.webRequest.result == UnityWebRequest.Result.ConnectionError)
                 {
                     tcs.SetException(new HttpRequestException(uop.webRequest.error));
                     return;
                 }
-                if (uop.webRequest.isHttpError)
+                if (uop.webRequest.result == UnityWebRequest.Result.ProtocolError)
                 {
                     if (uop.webRequest.responseCode == 404)
                     {
